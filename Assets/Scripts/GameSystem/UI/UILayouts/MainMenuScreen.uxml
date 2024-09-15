@@ -1,0 +1,31 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Scripts/GameSystem/UI/UILayouts/style.uss?fileID=7433441132597879392&amp;guid=4c72b9d2bee02474982befdbead30b32&amp;type=3#style" />
+    <engine:VisualElement style="flex-grow: 1;">
+        <engine:VisualElement class="letterboxing" style="top: 0;" />
+        <engine:VisualElement class="letterboxing" style="bottom: 0;" />
+        <engine:TabView name="navBar" class="nav-bar">
+            <engine:Tab icon-image="project://database/Assets/Images/Icons/icons8-home-96.png?fileID=2800000&amp;guid=2be65e77c79024ee1a42cef702ecd4bc&amp;type=3#icons8-home-96">
+                <engine:VisualElement class="player-profile" />
+                <engine:VisualElement class="items-container">
+                    <engine:VisualElement class="item-container">
+                        <engine:Label text="1000" class="label" />
+                    </engine:VisualElement>
+                    <engine:VisualElement class="item-container">
+                        <engine:Label text="1000" class="label" />
+                    </engine:VisualElement>
+                </engine:VisualElement>
+                <engine:VisualElement style="flex-grow: 1;" />
+                <engine:VisualElement class="container bottom-lobby-container">
+                    <engine:VisualElement style="flex-grow: 1; flex-direction: row;" />
+                    <engine:VisualElement style="flex-grow: 1; flex-direction: row; justify-content: flex-end;">
+                        <engine:Button text="select game mode" name="game-mode-button" class="button game-mode-button" style="align-self: flex-end;" />
+                        <engine:Button text="PLAY!" name="play-button" class="button play-button" style="align-self: flex-end;" />
+                    </engine:VisualElement>
+                </engine:VisualElement>
+            </engine:Tab>
+            <engine:Tab icon-image="project://database/Assets/Images/Icons/icons8-chef-96.png?fileID=2800000&amp;guid=02588443caf3d42c7970590d186fe793&amp;type=3#icons8-chef-96" />
+            <engine:Tab icon-image="project://database/Assets/Images/Icons/icons8-shop-96.png?fileID=2800000&amp;guid=8bddd360023be43369db1644138f5fdb&amp;type=3#icons8-shop-96" />
+            <engine:Tab icon-image="project://database/Assets/Images/Icons/icons8-settings-96.png?fileID=2800000&amp;guid=f3f55e28fe7084597817e02bc52799e0&amp;type=3#icons8-settings-96" />
+        </engine:TabView>
+    </engine:VisualElement>
+</engine:UXML>
