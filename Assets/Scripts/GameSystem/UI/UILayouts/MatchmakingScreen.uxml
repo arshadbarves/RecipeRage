@@ -1,0 +1,19 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Scripts/GameSystem/UI/UILayouts/style.uss?fileID=7433441132597879392&amp;guid=4c72b9d2bee02474982befdbead30b32&amp;type=3#style" />
+    <engine:VisualElement class="matchmaking-container">
+        <engine:VisualElement style="flex-grow: 1;">
+            <engine:VisualElement name="top-panel" class="label-conatiner label-container">
+                <engine:Label name="matchmaking-label" text="Matchmaking" class="label" style="font-size: 34px;" />
+                <engine:Label name="matchmaking-status" text="Searching for players..." class="label" />
+                <engine:Label name="matchmaking-players" text="0/4" class="label" />
+            </engine:VisualElement>
+            <engine:VisualElement style="flex-grow: 1; align-items: center;" />
+            <engine:VisualElement name="bottom-panel" class="matchmaking-bottom-container">
+                <engine:VisualElement style="flex-grow: 1; justify-content: center; align-items: center; align-self: center;">
+                    <engine:Label text="Tip: Beware of Burning Stove" name="tip-label" class="label matchmaking-label" />
+                </engine:VisualElement>
+                <engine:Button text="Cancel" name="cancel-button" class="button cancel-button" />
+            </engine:VisualElement>
+        </engine:VisualElement>
+    </engine:VisualElement>
+</engine:UXML>

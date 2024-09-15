@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Default Local Group
+  m_EditorClassIdentifier: 
+  m_GroupName: Default Local Group
+  m_Data:
+    m_SerializedData: []
+  m_GUID: a7a2b1499ef9e4ab5aec7c3234c3c6f4
+  m_SerializeEntries:
+  - m_GUID: d080a25b1653d454b81be62873033d1c
+    m_Address: SplashScreenUXML
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 61843fe957f2245f48832ef4f800548e
+    m_Address: MainMenuScreenUXML
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 790a6eddfd6c34e85b4a6c04c80deb52
+    m_Address: LoadingScreenUXML
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 598ef6c81aae04e9ea8fbf58be7baf18
+    m_Address: MatchmakingScreenUXML
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 7aa9660f928de4ecba96885604e19bf1, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 8311e713e84434bd4b119b2769fb8d29, type: 2}
+    - {fileID: 11400000, guid: 55f3cb9e2e74e4ba884f7153fdbc5d5c, type: 2}

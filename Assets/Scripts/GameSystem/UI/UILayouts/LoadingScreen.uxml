@@ -1,0 +1,12 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Scripts/GameSystem/UI/UILayouts/style.uss?fileID=7433441132597879392&amp;guid=4c72b9d2bee02474982befdbead30b32&amp;type=3#style" />
+    <engine:VisualElement class="loading-background" style="background-image: url(&quot;project://database/Assets/Images/Arts/bg-4.png?fileID=2800000&amp;guid=c8ac88b81256647b3b39ad75f7081306&amp;type=3#bg-4&quot;);">
+        <engine:VisualElement style="flex-grow: 1;" />
+        <engine:VisualElement class="container">
+            <engine:Label text="Tip: The &apos;Swap&apos; power-up can be used to steal an ingredient from your opponent. It&apos;s a great way to get ahead!" class="label tips-label" />
+            <engine:VisualElement name="VisualElement" class="loading-element">
+                <engine:Label text="Loading..." class="label loading-label" />
+            </engine:VisualElement>
+        </engine:VisualElement>
+    </engine:VisualElement>
+</engine:UXML>
