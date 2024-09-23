@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using GameSystem.UI.Base;
 using GameSystem.UI.Effects;
 using GameSystem.UI.UIPanels;
 using UnityEngine;
@@ -16,14 +14,13 @@ namespace GameSystem.UI
         MainMenu,
         Matchmaking,
     }
-    
+
     [CreateAssetMenu(fileName = "UIPanelConfig", menuName = "GameSystem/UIPanelConfig")]
     public class UIPanelConfig : ScriptableObject
     {
-        [Header("Panel")]
-        [SerializeField] private ScreenPanel screenPanel;
+        [Header("Panel")] [SerializeField] private ScreenPanel screenPanel;
         [SerializeField] private AssetReferenceT<VisualTreeAsset> panelUxmlAsset;
-        
+
         [Header("Transition Settings")] [SerializeField]
         private bool useTransition = true;
 
@@ -31,24 +28,23 @@ namespace GameSystem.UI
         [SerializeField] private bool useTransitionOnShow = true;
         [SerializeField] private bool useTransitionOnHide = true;
 
+        [Header("Fade Transition Settings")] [SerializeField]
+        private bool transitionFadeIn = true;
+
+        [Header("Scale Transition Settings")] [SerializeField]
+        private bool transitionScaleIn = true;
+
         [Header("Transition Parameters")] [SerializeField]
         private float transitionDuration = 0.5f;
 
         [SerializeField] private float transitionDistance = 100f;
-        [SerializeField] private float transitionScaleIn = 1.2f;
-        [SerializeField] private float transitionScaleOut = 0.8f;
-        
+
         public AssetReference PanelUxmlAsset => panelUxmlAsset;
         public Type PanelType => GetPanelType();
         public bool UseTransition => useTransition;
-        public TransitionType TransitionType => transitionType;
         public bool UseTransitionOnShow => useTransitionOnShow;
         public bool UseTransitionOnHide => useTransitionOnHide;
-        public float TransitionDuration => transitionDuration;
-        public float TransitionDistance => transitionDistance;
-        public float TransitionScaleIn => transitionScaleIn;
-        public float TransitionScaleOut => transitionScaleOut;
-        
+
         private Type GetPanelType()
         {
             switch (screenPanel)
@@ -59,8 +55,30 @@ namespace GameSystem.UI
                     return typeof(MainMenuPanel);
                 case ScreenPanel.Matchmaking:
                     return typeof(MatchmakingPanel);
+                case ScreenPanel.LoadingScreen:
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    Debug.LogError($"Panel type not found for {screenPanel}");
+                    return null;
+            }
+        }
+
+        public IUIEffectTransition GetTransition()
+        {
+            switch (transitionType)
+            {
+                case TransitionType.Fade:
+                    return new UIFadeEffect(transitionDuration);
+                case TransitionType.Slide:
+                    return new UISlideEffect(transitionDuration);
+                case TransitionType.Scale:
+                    return new UIScaleEffect(transitionDuration, transitionScaleIn ? 0f : transitionDistance,
+                        transitionScaleIn ? transitionDistance : 0f);
+                case TransitionType.Flip:
+                case TransitionType.Rotate:
+                case TransitionType.Bounce:
+                default:
+                    Debug.LogError($"Transition type not found for {transitionType}");
+                    return null;
             }
         }
     }

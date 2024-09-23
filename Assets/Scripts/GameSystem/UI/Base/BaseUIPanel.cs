@@ -10,7 +10,7 @@ namespace GameSystem.UI.Base
 {
     public abstract class BaseUIPanel : IUIPanel
     {
-        protected IUITransition Transition;
+        protected IUIEffectTransition Transition;
         protected UIPanelConfig Config;
         public VisualElement Root { get; set; }
 
@@ -43,30 +43,15 @@ namespace GameSystem.UI.Base
 
         private void ConfigureTransitions()
         {
-            // Configure transition based on UIPanelConfig settings
-            switch (Config.TransitionType)
-            {
-                case TransitionType.Fade:
-                    Transition = new FadeTransition(Config.TransitionDuration);
-                    break;
-                case TransitionType.Slide:
-                    Transition = new SlideTransition(Config.TransitionDuration, Config.TransitionDistance);
-                    break;
-                case TransitionType.Scale:
-                    Transition = new ScaleTransition(Config.TransitionDuration, Config.TransitionScaleIn,
-                        Config.TransitionScaleOut);
-                    break;
-                default:
-                    Transition = new FadeTransition(Config.TransitionDuration);
-                    break;
-            }
+            // Set the transition effect based on the config
+            Transition = Config.GetTransition();
         }
 
         public virtual void Show(Action onComplete = null)
         {
             if (Config.UseTransition && Config.UseTransitionOnShow)
             {
-                Transition.TransitionIn(Root, onComplete);
+                Transition.ApplyTransitionIn(Root, onComplete);
             }
             else
             {
@@ -84,7 +69,7 @@ namespace GameSystem.UI.Base
                 // Ensure the panel is visible before applying hide transition
                 Root.style.display = DisplayStyle.Flex; // Ensure the element is visible first
                 Root.style.opacity = 1; // Ensure opacity is 1 before animating the hide transition
-                Transition.TransitionOut(Root, onComplete);
+                Transition.ApplyTransitionOut(Root, onComplete);
             }
             else
             {

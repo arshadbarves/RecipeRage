@@ -1,0 +1,113 @@
+/* ShopComponentStyles.uss */
+
+.shop-section {
+    background-color: #4169E1;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 10px;
+}
+
+.section-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.section-name {
+    color: white;
+    font-size: 20px;
+    -unity-font-style: bold;
+}
+
+.refresh-time {
+    color: #ADD8E6;
+    font-size: 14px;
+}
+
+.items-container {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.shop-item {
+    width: 150px;
+    height: 200px;
+    background-color: #1E90FF;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 5px;
+    flex-direction: column;
+}
+
+.item-type {
+    color: #ADD8E6;
+    font-size: 14px;
+}
+
+.item-name {
+    color: white;
+    font-size: 16px;
+    -unity-font-style: bold;
+    margin-top: 5px;
+}
+
+.item-image {
+    width: 100px;
+    height: 100px;
+    align-self: center;
+    margin-top: 10px;
+}
+
+.price-section {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.price-label {
+    color: white;
+    font-size: 18px;
+    -unity-font-style: bold;
+}
+
+.currency-icon-gems {
+    background-image: resource('Textures/gem_icon');
+    width: 20px;
+    height: 20px;
+}
+
+.currency-icon-coins {
+    background-image: resource('Textures/coin_icon');
+    width: 20px;
+    height: 20px;
+}
+
+.normal-price {
+    color: #A9A9A9;
+    font-size: 14px;
+    text-decoration: line-through;
+}
+
+.bonus-label {
+    color: #7FFF00;
+    font-size: 14px;
+    margin-left: 5px;
+}
+
+.free-label {
+    color: #7FFF00;
+    font-size: 18px;
+    -unity-font-style: bold;
+}
+
+.new-label {
+    background-color: #FF4500;
+    color: white;
+    padding: 2px 5px;
+    border-radius: 5px;
+    font-size: 12px;
+    align-self: flex-start;
+}
