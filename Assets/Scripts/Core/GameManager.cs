@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using GameSystem;
+using GameSystem.Audio;
+using GameSystem.Gameplay;
+using GameSystem.Input;
 using GameSystem.State;
 using GameSystem.State.GameStates;
 using GameSystem.UI;
@@ -32,7 +35,7 @@ namespace Core
         {
             await AddSystemAsync<StateSystem>();
             await AddSystemAsync<InputSystem>();
-            // await AddSystemAsync<AudioSystem>();
+            await AddSystemAsync<AudioSystem>();
             // await AddSystemAsync<CameraSystem>();
             // await AddSystemAsync<PlayerSystem>();
             // await AddSystemAsync<CookingSystem>();
@@ -40,6 +43,7 @@ namespace Core
             // await AddSystemAsync<EnvironmentSystem>();
             await AddSystemAsync<UISystem>();
             // await AddSystemAsync<ProgressionSystem>();
+            await AddSystemAsync<GameplaySystem>();
         }
 
         private async Task AddSystemAsync<T>() where T : IGameSystem

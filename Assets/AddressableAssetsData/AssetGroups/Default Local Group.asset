@@ -37,6 +37,16 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d4f6c40cd7e6d40099ba2f13a643a843
+    m_Address: ShopScreenUXML
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7dd529997e1c0487285e7248704d51de
+    m_Address: GamplayScreenUXML
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 7aa9660f928de4ecba96885604e19bf1, type: 2}
   m_SchemaSet:

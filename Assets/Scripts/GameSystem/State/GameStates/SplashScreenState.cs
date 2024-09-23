@@ -1,7 +1,6 @@
 using Core;
 using GameSystem.UI;
 using GameSystem.UI.UIPanels;
-using UnityEngine;
 
 namespace GameSystem.State.GameStates
 {

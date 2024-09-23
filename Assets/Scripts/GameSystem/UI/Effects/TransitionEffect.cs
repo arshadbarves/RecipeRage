@@ -8,11 +8,13 @@ namespace GameSystem.UI.Effects
         Fade,
         Slide,
         Scale,
-        Custom
+        Flip,
+        Rotate,
+        Bounce,
     }
-    public interface IUITransition
+    public interface IUIEffectTransition
     {
-        void TransitionIn(VisualElement uiElement, Action onComplete);
-        void TransitionOut(VisualElement uiElement, Action onComplete);
+        void ApplyTransitionIn(VisualElement uiElement, Action onComplete);
+        void ApplyTransitionOut(VisualElement uiElement, Action onComplete);
     }
 }
