@@ -19,7 +19,7 @@ namespace Core.TouchInputSystem
 
         private void InitializeControls()
         {
-            foreach (var config in controlConfigs)
+            foreach (TouchControlConfig config in controlConfigs)
             {
                 GameObject controlObject = new GameObject(config.controlName);
                 controlObject.transform.SetParent(targetCanvas.transform, false);
@@ -43,7 +43,7 @@ namespace Core.TouchInputSystem
 
         public void StartLayoutEditor()
         {
-            foreach (var control in _controls.Values)
+            foreach (BaseTouchControl control in _controls.Values)
             {
                 control.StartEdit();
             }
@@ -51,7 +51,7 @@ namespace Core.TouchInputSystem
 
         public void StopLayoutEditor()
         {
-            foreach (var control in _controls.Values)
+            foreach (BaseTouchControl control in _controls.Values)
             {
                 control.StopEdit();
             }

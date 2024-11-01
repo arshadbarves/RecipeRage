@@ -29,14 +29,14 @@ namespace Core.EventSystem
     {
         [SerializeField] private EventManagerConfig config;
 
-        private readonly SortedDictionary<int, Dictionary<Type, List<Delegate>>> _prioritizedLocalEventCallbacks = 
-            new SortedDictionary<int, Dictionary<Type, List<Delegate>>>();
-        private readonly SortedDictionary<int, Dictionary<Type, List<Delegate>>> _prioritizedNetworkEventCallbacks = 
-            new SortedDictionary<int, Dictionary<Type, List<Delegate>>>();
-        private readonly ConcurrentQueue<NetworkEventInfo> _networkEventQueue = new ConcurrentQueue<NetworkEventInfo>();
-        private float _lastNetworkEventProcessTime;
-
         private readonly Dictionary<Type, EventTypeAttribute> _eventTypeCache = new Dictionary<Type, EventTypeAttribute>();
+        private readonly ConcurrentQueue<NetworkEventInfo> _networkEventQueue = new ConcurrentQueue<NetworkEventInfo>();
+
+        private readonly SortedDictionary<int, Dictionary<Type, List<Delegate>>> _prioritizedLocalEventCallbacks =
+            new SortedDictionary<int, Dictionary<Type, List<Delegate>>>();
+        private readonly SortedDictionary<int, Dictionary<Type, List<Delegate>>> _prioritizedNetworkEventCallbacks =
+            new SortedDictionary<int, Dictionary<Type, List<Delegate>>>();
+        private float _lastNetworkEventProcessTime;
 
         protected override void Awake()
         {
@@ -55,12 +55,12 @@ namespace Core.EventSystem
 
         private void RegisterEventTypes()
         {
-            var eventTypes = Assembly.GetExecutingAssembly().GetTypes()
+            IEnumerable<Type> eventTypes = Assembly.GetExecutingAssembly().GetTypes()
                 .Where(t => t.GetCustomAttribute<EventTypeAttribute>() != null);
 
-            foreach (var type in eventTypes)
+            foreach (Type type in eventTypes)
             {
-                var attr = type.GetCustomAttribute<EventTypeAttribute>();
+                EventTypeAttribute attr = type.GetCustomAttribute<EventTypeAttribute>();
                 _eventTypeCache[type] = attr;
             }
         }
@@ -102,9 +102,9 @@ namespace Core.EventSystem
 
         private void RemoveListener(SortedDictionary<int, Dictionary<Type, List<Delegate>>> callbacks, Type eventType, Delegate callback)
         {
-            foreach (var priorityLevel in callbacks)
+            foreach (KeyValuePair<int, Dictionary<Type, List<Delegate>>> priorityLevel in callbacks)
             {
-                if (priorityLevel.Value.TryGetValue(eventType, out var eventCallbacks))
+                if (priorityLevel.Value.TryGetValue(eventType, out List<Delegate> eventCallbacks))
                 {
                     eventCallbacks.Remove(callback);
                 }
@@ -125,8 +125,7 @@ namespace Core.EventSystem
         {
             if (IsServer)
             {
-                var eventInfo = new NetworkEventInfo<T>
-                {
+                NetworkEventInfo<T> eventInfo = new NetworkEventInfo<T> {
                     EventArgs = args,
                     TargetClientId = targetClientId,
                     IsReliable = GetEventReliability<T>()
@@ -141,11 +140,11 @@ namespace Core.EventSystem
 
         private void TriggerEvent<T>(SortedDictionary<int, Dictionary<Type, List<Delegate>>> callbacks, Type eventType, T args)
         {
-            foreach (var priorityLevel in callbacks)
+            foreach (KeyValuePair<int, Dictionary<Type, List<Delegate>>> priorityLevel in callbacks)
             {
-                if (priorityLevel.Value.TryGetValue(eventType, out var eventCallbacks))
+                if (priorityLevel.Value.TryGetValue(eventType, out List<Delegate> eventCallbacks))
                 {
-                    foreach (var callback in eventCallbacks)
+                    foreach (Delegate callback in eventCallbacks)
                     {
                         (callback as Action<T>)?.Invoke(args);
                     }
@@ -155,11 +154,11 @@ namespace Core.EventSystem
 
         private async Task TriggerEventAsync<T>(SortedDictionary<int, Dictionary<Type, List<Delegate>>> callbacks, Type eventType, T args)
         {
-            foreach (var priorityLevel in callbacks)
+            foreach (KeyValuePair<int, Dictionary<Type, List<Delegate>>> priorityLevel in callbacks)
             {
-                if (priorityLevel.Value.TryGetValue(eventType, out var eventCallbacks))
+                if (priorityLevel.Value.TryGetValue(eventType, out List<Delegate> eventCallbacks))
                 {
-                    var tasks = eventCallbacks.Select(callback => Task.Run(() => (callback as Action<T>)?.Invoke(args)));
+                    IEnumerable<Task> tasks = eventCallbacks.Select(callback => Task.Run(() => (callback as Action<T>)?.Invoke(args)));
                     await Task.WhenAll(tasks);
                 }
             }
@@ -167,11 +166,10 @@ namespace Core.EventSystem
 
         private void ProcessNetworkEventQueue()
         {
-            var batch = new NetworkEventBatch();
+            NetworkEventBatch batch = new NetworkEventBatch();
             while (_networkEventQueue.TryDequeue(out NetworkEventInfo eventInfo) && batch.Events.Count < config.maxBatchSize)
             {
-                batch.Events.Add(new SerializableNetworkEventInfo
-                {
+                batch.Events.Add(new SerializableNetworkEventInfo {
                     EventTypeName = eventInfo.GetType().AssemblyQualifiedName,
                     EventArgs = eventInfo.GetNetworkVariable().Value,
                     TargetClientId = eventInfo.TargetClientId,
@@ -188,10 +186,10 @@ namespace Core.EventSystem
         [ClientRpc]
         private void TriggerNetworkEventBatchClientRpc(NetworkEventBatch eventBatch)
         {
-            foreach (var eventInfo in eventBatch.Events)
+            foreach (SerializableNetworkEventInfo eventInfo in eventBatch.Events)
             {
-                var args = eventInfo.EventArgs;
-                var eventType = Type.GetType(eventInfo.EventTypeName);
+                INetworkSerializable args = eventInfo.EventArgs;
+                Type eventType = Type.GetType(eventInfo.EventTypeName);
                 if (eventType != null)
                 {
                     TriggerEvent(_prioritizedNetworkEventCallbacks, eventType, args);
@@ -205,7 +203,7 @@ namespace Core.EventSystem
 
         public bool GetEventReliability<T>() where T : class, INetworkSerializable
         {
-            if (_eventTypeCache.TryGetValue(typeof(T), out var attr))
+            if (_eventTypeCache.TryGetValue(typeof(T), out EventTypeAttribute attr))
             {
                 return attr.IsReliable;
             }
@@ -263,7 +261,7 @@ namespace Core.EventSystem
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
             serializer.SerializeValue(ref EventTypeName);
-            
+
             if (serializer.IsReader)
             {
                 Type eventType = Type.GetType(EventTypeName);
@@ -288,8 +286,8 @@ namespace Core.EventSystem
 
     public abstract class NetworkEventInfo
     {
-        public ulong? TargetClientId;
         public bool IsReliable;
+        public ulong? TargetClientId;
 
         public abstract NetworkVariable<INetworkSerializable> GetNetworkVariable();
     }

@@ -8,12 +8,10 @@ namespace Utilities
     {
         private static T _instance;
         private static readonly object Lock = new object();
-        private static bool _applicationIsQuitting = false;
+        private static bool _applicationIsQuitting;
 
-        public static T Instance
-        {
-            get
-            {
+        public static T Instance {
+            get {
                 if (_applicationIsQuitting)
                 {
                     Debug.LogWarning(
@@ -30,7 +28,7 @@ namespace Utilities
                         if (FindObjectsByType(typeof(T), FindObjectsSortMode.None).Length > 1)
                         {
                             Debug.LogError(
-                                $"[Singleton] Something went really wrong - there should never be more than 1 singleton! Reopening the scene might fix it.");
+                                "[Singleton] Something went really wrong - there should never be more than 1 singleton! Reopening the scene might fix it.");
                             return _instance;
                         }
 
@@ -61,7 +59,7 @@ namespace Utilities
             if (_instance == null)
             {
                 _instance = (T)this;
-                DontDestroyOnLoad(this.gameObject);
+                DontDestroyOnLoad(gameObject);
             }
             else if (_instance != this)
             {
@@ -83,10 +81,8 @@ namespace Utilities
     {
         private static T _instance;
 
-        public static T Instance
-        {
-            get
-            {
+        public static T Instance {
+            get {
                 if (_instance == null)
                 {
                     _instance = FindFirstObjectByType<T>();
@@ -97,6 +93,18 @@ namespace Utilities
                 }
 
                 return _instance;
+            }
+        }
+
+        protected virtual void Awake()
+        {
+            if (_instance == null)
+            {
+                _instance = (T)this;
+            }
+            else if (_instance != this)
+            {
+                Destroy(gameObject);
             }
         }
 
@@ -123,18 +131,6 @@ namespace Utilities
             }
 
             base.OnNetworkDespawn();
-        }
-
-        protected virtual void Awake()
-        {
-            if (_instance == null)
-            {
-                _instance = (T)this;
-            }
-            else if (_instance != this)
-            {
-                Destroy(gameObject);
-            }
         }
     }
 }

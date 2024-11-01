@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 
 namespace GameSystem.Player
@@ -14,12 +15,12 @@ namespace GameSystem.Player
 
         public void Update()
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public Task CleanupAsync()
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
     }
 }

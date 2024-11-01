@@ -11,10 +11,13 @@ Shader "Custom/SuperChargeButton"
         _PulseSpeed ("Pulse Speed", Float) = 1
         _PulseAmount ("Pulse Amount", Range(0,1)) = 0.1
     }
-    
+
     SubShader
     {
-        Tags {"RenderType"="Transparent" "RenderPipeline"="UniversalPipeline" "Queue"="Transparent"}
+        Tags
+        {
+            "RenderType"="Transparent" "RenderPipeline"="UniversalPipeline" "Queue"="Transparent"
+        }
         LOD 100
 
         HLSLINCLUDE
@@ -91,19 +94,20 @@ Shader "Custom/SuperChargeButton"
 
                 // Calculate edge glow
                 float edgeGlow = saturate(1 - length(uvCentered) * 2);
-                
-                
+
+
                 // Pulsing effect when fully charged
                 float pulse = 0;
-                if (_ChargeAmount >= 0.99) {
+                if (_ChargeAmount >= 0.99)
+                {
                     pulse = sin(_Time.y * _PulseSpeed) * 0.5 + 0.5;
                 }
-                
+
                 // Combine effects
                 float3 finalColor = lerp(_Color.rgb, _ChargeColor.rgb, progressMask);
                 finalColor += edgeGlow * _ChargeColor.rgb;
                 finalColor += pulse * _PulseAmount * _EmissionColor.rgb;
-                
+
                 // Apply normal mapping
                 float3 normalWS = normalize(IN.normalWS);
                 float3 tangentWS = normalize(IN.tangentWS.xyz);
@@ -111,14 +115,14 @@ Shader "Custom/SuperChargeButton"
                 float3x3 tangentToWorld = float3x3(tangentWS, bitangentWS, normalWS);
                 float3 normalTS = normalMap;
                 float3 normal = normalize(mul(normalTS, tangentToWorld));
-                
+
                 // Simple lighting
                 float3 lightDir = normalize(_MainLightPosition.xyz);
                 float NdotL = max(0, dot(normal, lightDir));
                 float3 diffuse = NdotL * _MainLightColor.rgb;
-                
+
                 finalColor *= mainTex.rgb * (diffuse + unity_AmbientSky.rgb);
-                
+
                 return float4(finalColor, mainTex.a);
             }
             ENDHLSL

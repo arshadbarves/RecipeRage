@@ -6,8 +6,8 @@ namespace Brawlers.Stats
     [CreateAssetMenu(fileName = "CharacterStats", menuName = "Characters/CharacterStats")]
     public class BrawlerData : ScriptableObject
     {
-        [Header("Base Stats")]
-        [SerializeField] private string brawlerName;
+        [Header("Base Stats"), SerializeField]
+         private string brawlerName;
         [SerializeField] private float moveSpeed = 3.5f;
         [SerializeField] private float maxHealth = 3500f;
         [SerializeField] private float attackPower = 600f;
@@ -18,7 +18,7 @@ namespace Brawlers.Stats
         [SerializeField] private float teamworkSkill = 1.1f;
         [SerializeField] private Ability[] abilities;
         [SerializeField] private int unlockCost;
-        
+
         public string BrawlerName => brawlerName;
         public float MoveSpeed => moveSpeed;
         public float MaxHealth => maxHealth;

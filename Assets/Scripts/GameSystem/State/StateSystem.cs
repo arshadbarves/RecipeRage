@@ -6,8 +6,8 @@ namespace GameSystem.State
 {
     public class StateSystem : IGameSystem
     {
-        private StateMachine<GameState> _gameStateMachine;
         private GameManager _gameManager;
+        private StateMachine<GameState> _gameStateMachine;
 
         public Task InitializeAsync()
         {
@@ -20,7 +20,7 @@ namespace GameSystem.State
             _gameStateMachine.AddState(GameState.CharacterSelection, new CharacterSelectionState(_gameManager));
             // Add other states as needed
 
-            _gameStateMachine.OnStateChanged += (state) => _gameManager.InvokeGameStateChanged(state);
+            _gameStateMachine.OnStateChanged += state => _gameManager.InvokeGameStateChanged(state);
             return Task.CompletedTask;
         }
 

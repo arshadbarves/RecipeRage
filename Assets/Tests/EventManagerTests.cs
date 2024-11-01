@@ -1,10 +1,12 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Core.EventSystem;
 using NUnit.Framework;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.TestTools;
-using Unity.Netcode;
+using Object = UnityEngine.Object;
 
 namespace Tests
 {
@@ -14,7 +16,7 @@ namespace Tests
         public int Value { get; set; }
     }
 
-    [EventType("TestNetworkEvent", isReliable: true)]
+    [EventType("TestNetworkEvent", true)]
     public class TestNetworkEventArgs : INetworkEventArgs
     {
         public int Value { get; set; }
@@ -29,8 +31,8 @@ namespace Tests
 
     public class EventManagerTests
     {
-        private GameObject _eventManagerObject;
         private EventManager _eventManager;
+        private GameObject _eventManagerObject;
 
         [UnitySetUp]
         public IEnumerator Setup()
@@ -39,7 +41,7 @@ namespace Tests
             _eventManager = _eventManagerObject.AddComponent<EventManager>();
 
             // Create and set EventManagerConfig
-            var config = ScriptableObject.CreateInstance<EventManagerConfig>();
+            EventManagerConfig config = ScriptableObject.CreateInstance<EventManagerConfig>();
             config.networkEventProcessInterval = 0.1f;
             config.maxBatchSize = 10;
 
@@ -61,7 +63,7 @@ namespace Tests
                 receivedArgs = args;
             });
 
-            var eventArgs = new TestLocalEventArgs { Value = 42 };
+            TestLocalEventArgs eventArgs = new TestLocalEventArgs { Value = 42 };
             _eventManager.TriggerLocalEvent(eventArgs);
 
             // Wait for a frame to ensure event processing
@@ -84,7 +86,7 @@ namespace Tests
                 receivedArgs = args;
             });
 
-            var eventArgs = new TestLocalEventArgs { Value = 42 };
+            TestLocalEventArgs eventArgs = new TestLocalEventArgs { Value = 42 };
             _eventManager.TriggerLocalEventAsync(eventArgs);
 
             // Wait for a frame to ensure async event processing
@@ -104,7 +106,7 @@ namespace Tests
             _eventManager.AddLocalListener<TestLocalEventArgs>(args => executionOrder.Add(1), 1);
             _eventManager.AddLocalListener<TestLocalEventArgs>(args => executionOrder.Add(3), 3);
 
-            var eventArgs = new TestLocalEventArgs { Value = 42 };
+            TestLocalEventArgs eventArgs = new TestLocalEventArgs { Value = 42 };
             _eventManager.TriggerLocalEvent(eventArgs);
 
             // Wait for a frame to ensure event processing
@@ -117,9 +119,9 @@ namespace Tests
         public IEnumerator TestRemoveLocalListener()
         {
             int callCount = 0;
-            System.Action<TestLocalEventArgs> callback = args => callCount++;
+            Action<TestLocalEventArgs> callback = args => callCount++;
 
-            _eventManager.AddLocalListener<TestLocalEventArgs>(callback);
+            _eventManager.AddLocalListener(callback);
             _eventManager.TriggerLocalEvent(new TestLocalEventArgs());
 
             // Wait for a frame to ensure event processing
@@ -127,7 +129,7 @@ namespace Tests
 
             Assert.AreEqual(1, callCount);
 
-            _eventManager.RemoveLocalListener<TestLocalEventArgs>(callback);
+            _eventManager.RemoveLocalListener(callback);
             _eventManager.TriggerLocalEvent(new TestLocalEventArgs());
 
             // Wait for another frame
@@ -139,8 +141,8 @@ namespace Tests
         [Test]
         public void TestEventTypeCache()
         {
-            var eventType = typeof(TestNetworkEventArgs);
-            var attribute = _eventManager.GetEventTypeAttribute(eventType);
+            Type eventType = typeof(TestNetworkEventArgs);
+            EventTypeAttribute attribute = _eventManager.GetEventTypeAttribute(eventType);
 
             Assert.IsNotNull(attribute);
             Assert.AreEqual("TestNetworkEvent", attribute.EventName);

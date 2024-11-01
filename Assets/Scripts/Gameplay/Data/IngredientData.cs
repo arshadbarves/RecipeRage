@@ -16,7 +16,7 @@ namespace Gameplay.Data
         [field: SerializeField] public int ChoppingTime { get; private set; }
         [field: SerializeField] public float CookTime { get; private set; }
         [field: SerializeField] public float BurnTime { get; private set; }
-        
+
         public bool IsCookable => IngredientStates.Exists(pair => pair.State == IngredientState.Cooked);
         public bool IsChoppable => IngredientStates.Exists(pair => pair.State == IngredientState.Chopped);
     }

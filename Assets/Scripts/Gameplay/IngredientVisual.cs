@@ -6,11 +6,11 @@ namespace Gameplay
 {
     public class IngredientVisual : NetworkBehaviour
     {
-        public IngredientData Data { get; private set; }
-        public IngredientState State { get; private set; }
 
         private readonly NetworkVariable<IngredientState> _networkState = new NetworkVariable<IngredientState>();
         private GameObject _currentVisual;
+        public IngredientData Data { get; private set; }
+        public IngredientState State { get; private set; }
 
         public override void OnNetworkSpawn()
         {
@@ -46,7 +46,7 @@ namespace Gameplay
 
             _currentVisual = Instantiate(visualPrefab, transform);
         }
-        
+
         public void ResetState()
         {
             State = IngredientState.Raw;

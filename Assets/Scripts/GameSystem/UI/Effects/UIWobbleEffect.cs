@@ -35,14 +35,15 @@ namespace GameSystem.UI.Effects
         private void AnimateWobble(VisualElement uiElement, Action onComplete)
         {
             float startTime = Time.time;
-            uiElement.schedule.Execute(() => {
+            uiElement.schedule.Execute(() =>
+            {
                 float elapsedTime = Time.time - startTime;
                 if (elapsedTime < _duration)
                 {
                     float progress = elapsedTime / _duration;
                     float angle = Mathf.Sin(progress * _wobbles * Mathf.PI * 2) * _strength * (1 - progress);
                     float translation = Mathf.Cos(progress * _wobbles * Mathf.PI * 2) * _strength * (1 - progress);
-                    
+
                     uiElement.style.translate = new Translate(translation, 0, 0);
                     uiElement.style.rotate = new Rotate(new Angle(angle, AngleUnit.Degree));
                 }

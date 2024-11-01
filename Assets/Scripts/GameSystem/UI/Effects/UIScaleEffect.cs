@@ -7,8 +7,8 @@ namespace GameSystem.UI.Effects
     public class UIScaleEffect : IUIEffectTransition
     {
         private readonly float _duration;
-        private readonly float _startScale;
         private readonly float _endScale;
+        private readonly float _startScale;
 
         public UIScaleEffect(float duration = 0.5f, float startScale = 0f, float endScale = 1f)
         {

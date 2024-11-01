@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -6,15 +5,15 @@ namespace GameSystem.UI.Effects
 {
     public class UIEffectDemo : MonoBehaviour
     {
-        private VisualElement uiElement;
-        private VisualElement effectButtonContainer;
-        private Label uiLabel;
 
         private IUIEffectTransition currentEffect;
+        private VisualElement effectButtonContainer;
+        private VisualElement uiElement;
+        private Label uiLabel;
 
         private void OnEnable()
         {
-            var root = GetComponent<UIDocument>().rootVisualElement;
+            VisualElement root = GetComponent<UIDocument>().rootVisualElement;
 
             // Creating the UI Label Element to apply transitions
             uiElement = new Label("UI Effect Demo");
@@ -22,7 +21,7 @@ namespace GameSystem.UI.Effects
             uiElement.style.fontSize = 24;
             uiElement.style.width = 300;
             uiElement.style.height = 100;
-            
+
             uiElement.style.backgroundColor = new StyleColor(Color.cyan);
             uiElement.style.display = DisplayStyle.Flex;
             root.Add(uiElement);
@@ -50,8 +49,7 @@ namespace GameSystem.UI.Effects
 
         private void AddEffectButton(string effectName, IUIEffectTransition effect)
         {
-            var button = new Button(() => ApplyEffect(effect))
-            {
+            Button button = new Button(() => ApplyEffect(effect)) {
                 text = $"Apply {effectName} Effect"
             };
             effectButtonContainer.Add(button);

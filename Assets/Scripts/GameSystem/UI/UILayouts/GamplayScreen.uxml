@@ -1,15 +1,18 @@
-<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <engine:Template name="RecipeContainer" src="project://database/Assets/Scripts/GameSystem/UI/UILayouts/UIComponents/RecipeContainer.uxml?fileID=9197481963319205126&amp;guid=ce12a83d835a94800808b36d69c2df1e&amp;type=3#RecipeContainer" />
-    <engine:Template name="TimerComponent" src="project://database/Assets/Scripts/GameSystem/UI/UILayouts/UIComponents/TimerComponent.uxml?fileID=9197481963319205126&amp;guid=0725943f2567946099b28a50e57b7d56&amp;type=3#TimerComponent" />
-    <Style src="project://database/Assets/Scripts/GameSystem/UI/UILayouts/style.uss?fileID=7433441132597879392&amp;guid=4c72b9d2bee02474982befdbead30b32&amp;type=3#style" />
+<engine:UXML xmlns:engine="UnityEngine.UIElements"
+             noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <engine:Template name="RecipeContainer"
+                     src="project://database/Assets/Scripts/GameSystem/UI/UILayouts/UIComponents/RecipeContainer.uxml?fileID=9197481963319205126&amp;guid=ce12a83d835a94800808b36d69c2df1e&amp;type=3#RecipeContainer"/>
+    <engine:Template name="TimerComponent"
+                     src="project://database/Assets/Scripts/GameSystem/UI/UILayouts/UIComponents/TimerComponent.uxml?fileID=9197481963319205126&amp;guid=0725943f2567946099b28a50e57b7d56&amp;type=3#TimerComponent"/>
+    <Style src="project://database/Assets/Scripts/GameSystem/UI/UILayouts/style.uss?fileID=7433441132597879392&amp;guid=4c72b9d2bee02474982befdbead30b32&amp;type=3#style"/>
     <engine:VisualElement class="gameplay-top-panel">
         <engine:VisualElement class="recipes-container">
-            <engine:Instance template="RecipeContainer" />
-            <engine:Instance template="RecipeContainer" />
-            <engine:Instance template="RecipeContainer" />
+            <engine:Instance template="RecipeContainer"/>
+            <engine:Instance template="RecipeContainer"/>
+            <engine:Instance template="RecipeContainer"/>
         </engine:VisualElement>
         <engine:VisualElement class="primary-container">
-            <engine:Instance template="TimerComponent" />
+            <engine:Instance template="TimerComponent"/>
         </engine:VisualElement>
     </engine:VisualElement>
 </engine:UXML>

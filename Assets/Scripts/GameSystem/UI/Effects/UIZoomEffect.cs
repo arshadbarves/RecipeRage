@@ -27,8 +27,8 @@ namespace GameSystem.UI.Effects
 
             uiElement.experimental.animation
                 .Start(new StyleValues { width = 0, height = 0, opacity = 0 },
-                       new StyleValues { width = originalWidth, height = originalHeight, opacity = 1 },
-                       (int)(_duration * 1000))
+                    new StyleValues { width = originalWidth, height = originalHeight, opacity = 1 },
+                    (int)(_duration * 1000))
                 .Ease(Easing.OutBack)
                 .OnCompleted(() => onComplete?.Invoke());
         }
@@ -40,8 +40,8 @@ namespace GameSystem.UI.Effects
 
             uiElement.experimental.animation
                 .Start(new StyleValues { width = originalWidth, height = originalHeight, opacity = 1 },
-                       new StyleValues { width = originalWidth * _zoomFactor, height = originalHeight * _zoomFactor, opacity = 0 },
-                       (int)(_duration * 1000))
+                    new StyleValues { width = originalWidth * _zoomFactor, height = originalHeight * _zoomFactor, opacity = 0 },
+                    (int)(_duration * 1000))
                 .Ease(Easing.InBack)
                 .OnCompleted(() =>
                 {

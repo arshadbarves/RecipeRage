@@ -14,7 +14,7 @@ namespace Gameplay.Data
         [field: SerializeField] public int TargetValue { get; private set; }
         [field: SerializeField] public ParticleSystem UnlockEffect { get; private set; }
     }
-    
+
     public enum AchievementType
     {
         Score,

@@ -206,6 +206,18 @@
     background-color: var(--color-red-dark);
 }
 
+.back-button {
+    width: 200px;
+    height: 75px;
+    margin: var(--spacing-small);
+    background-color: var(--color-red);
+    font-size: var(--font-size-xxlarge);
+}
+
+.back-button:active {
+    background-color: var(--color-red-dark);
+}
+
 .item-container {
     width: 200px;
     height: 50px;
@@ -423,4 +435,90 @@
     -unity-font-definition: var(--primary-font);
     padding: 0;
     margin: 0;
+}
+
+.card-container {
+    flex-direction: column;
+    width: 500px;
+    min-height: 400px;
+    height: 100%;
+    background-color: var(--secondary-color);
+    margin: var(--spacing-small);
+    padding: var(--spacing-xsmall);
+    border-radius: var(--border-radius);
+    border-width: var(--border-width);
+    border-color: var(--tertiary-color);
+}
+
+.card-bottom-overlay {
+    align-items: center;
+    justify-content: center;
+    background-color: var(--rgba-black);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 25%;
+    border-radius: 0 0 var(--border-radius-small) var(--border-radius-small);
+}
+
+.card-image {
+    flex-grow: 1;
+    background-image: url("project://database/Assets/Images/Arts/bg-3.png?fileID=2800000&guid=022bb707cbb7e47fe9026679ff0e4bd1&type=3#bg-3");
+    -unity-background-scale-mode: scale-and-crop;
+    border-radius: 5px;
+}
+
+.card-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 10%;
+    border-radius: var(--border-radius-small) var(--border-radius-small) 0 0;
+    background-color: var(--rgba-black);
+    padding: var(--spacing-small);
+}
+
+.card-timer-label {
+    font-size: var(--font-size-medium);
+}
+
+.map-selection-container {
+    flex-grow: 1;
+    background-color: var(--secondary-color);
+    margin: var(--spacing-small) 0;
+    padding: var(--spacing-small);
+}
+
+.unity-scroller__low_button {
+    background-color: var(--accent-color);
+    border-radius: var(--border-radius-small);
+}
+
+.unity-base-slider__tracker {
+    background-color: var(--accent-color);
+    border-radius: var(--border-radius-small);
+}
+
+.unity-base-slider__dragger {
+    background-color: var(--secondary-color);
+    border-radius: var(--border-radius-small);
+    margin-right: 5px;
+    margin-left: 5px;
+}
+
+.letterbox-top {
+    background-color: var(--secondary-color);
+    height: 5%;
+    position: absolute;
+    width: 100%;
+}
+
+.letterbox-bottom {
+    background-color: var(--secondary-color);
+    height: 5%;
+    /*position: absolute;*/
+    width: 100%;
+    bottom: 0;
 }

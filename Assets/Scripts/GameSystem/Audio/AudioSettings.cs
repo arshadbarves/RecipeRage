@@ -1,6 +1,8 @@
+using System;
+
 namespace GameSystem.Audio
 {
-    [System.Serializable]
+    [Serializable]
     public class AudioSettings
     {
         public float MasterVolume { get; set; } = 1f;

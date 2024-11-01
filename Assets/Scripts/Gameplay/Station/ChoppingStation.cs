@@ -1,7 +1,6 @@
 using Brawlers;
 using Gameplay.Data;
 using Unity.Netcode;
-using UnityEngine;
 
 namespace Gameplay.Station
 {
@@ -9,6 +8,17 @@ namespace Gameplay.Station
     {
         private readonly NetworkVariable<float> _choppingProgress = new NetworkVariable<float>();
         private readonly NetworkVariable<IngredientType> _currentIngredient = new NetworkVariable<IngredientType>();
+
+        private void Update()
+        {
+            if (IsServer)
+            {
+                UpdateChopping();
+            }
+
+            UpdateVisibility();
+            UpdateUI();
+        }
 
         public override void OnNetworkSpawn()
         {
@@ -28,17 +38,6 @@ namespace Gameplay.Station
                 IsOccupied.Value = true;
                 _choppingProgress.Value = 0f;
             }
-        }
-
-        private void Update()
-        {
-            if (IsServer)
-            {
-                UpdateChopping();
-            }
-
-            UpdateVisibility();
-            UpdateUI();
         }
 
         private void UpdateChopping()

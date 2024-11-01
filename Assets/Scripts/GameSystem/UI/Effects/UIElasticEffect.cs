@@ -37,12 +37,12 @@ namespace GameSystem.UI.Effects
 
             uiElement.experimental.animation
                 .Start(
-                    new StyleValues { 
+                    new StyleValues {
                         width = originalWidth * start,
                         height = originalHeight * start,
                         opacity = start
                     },
-                    new StyleValues { 
+                    new StyleValues {
                         width = originalWidth * end * _overshootFactor,
                         height = originalHeight * end * _overshootFactor,
                         opacity = end
@@ -53,11 +53,11 @@ namespace GameSystem.UI.Effects
                 {
                     uiElement.experimental.animation
                         .Start(
-                            new StyleValues { 
+                            new StyleValues {
                                 width = originalWidth * end * _overshootFactor,
                                 height = originalHeight * end * _overshootFactor
                             },
-                            new StyleValues { 
+                            new StyleValues {
                                 width = originalWidth * end,
                                 height = originalHeight * end
                             },

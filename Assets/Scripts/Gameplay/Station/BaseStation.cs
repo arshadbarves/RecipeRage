@@ -11,7 +11,7 @@ namespace Gameplay.Station
         Completed,
         Burned
     }
-    
+
     public class BaseStation : NetworkBehaviour
     {
         protected readonly NetworkVariable<bool> IsOccupied = new NetworkVariable<bool>();
@@ -38,7 +38,7 @@ namespace Gameplay.Station
                 Vector3 screenPoint = Camera.main.WorldToViewportPoint(transform.position);
                 return screenPoint is { z: > 0, x: > 0 } and { x: < 1, y: > 0 and < 1 };
             }
-            
+
             return false;
         }
     }

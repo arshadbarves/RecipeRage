@@ -20,9 +20,9 @@ namespace Gameplay.GameMode
         [SerializeField] private LevelData levelData;
         [SerializeField] private Text countdownText; // Reference to the UI Text element
 
-        public LevelData LevelData => levelData;
-
         private Dictionary<string, IngredientData> _ingredientDataCache;
+
+        public LevelData LevelData => levelData;
         protected GameModeState CurrentState { get; set; }
 
         private void Awake()

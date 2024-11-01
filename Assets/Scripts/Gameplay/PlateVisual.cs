@@ -27,7 +27,7 @@ namespace Gameplay
             GameObject ingredientObj =
                 Instantiate(ingredientData.IngredientStates.Find(pair => pair.State == IngredientState.Raw)?.GameObject,
                     ingredientContainer);
-            
+
             IngredientVisual ingredient = ingredientObj.GetComponent<IngredientVisual>();
             ingredient.Initialize(ingredientData);
             _ingredients.Add(ingredient);
@@ -68,7 +68,7 @@ namespace Gameplay
             {
                 ingredientData = GameManager.Instance.GetSystem<GameplaySystem>().CurrentGameMode.GetIngredientData(ingredientID);
             }
-            
+
             return ingredientData;
         }
     }

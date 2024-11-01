@@ -11,20 +11,20 @@ namespace Utilities
         public IObjectPool<GameObject> CreatePool(string poolKey, GameObject prefab, int defaultCapacity = 10,
             int maxSize = 20)
         {
-            if (_pools.TryGetValue(poolKey, out var existingPool))
+            if (_pools.TryGetValue(poolKey, out IObjectPool<GameObject> existingPool))
             {
                 Debug.LogWarning($"Pool with key {poolKey} already exists. Returning existing pool.");
                 return existingPool;
             }
 
             IObjectPool<GameObject> pool = new ObjectPool<GameObject>(
-                createFunc: () => Instantiate(prefab),
-                actionOnGet: (obj) => obj.SetActive(true),
-                actionOnRelease: (obj) => obj.SetActive(false),
-                actionOnDestroy: (obj) => Destroy(obj),
-                collectionCheck: true,
-                defaultCapacity: defaultCapacity,
-                maxSize: maxSize
+                () => Instantiate(prefab),
+                obj => obj.SetActive(true),
+                obj => obj.SetActive(false),
+                obj => Destroy(obj),
+                true,
+                defaultCapacity,
+                maxSize
             );
 
             _pools[poolKey] = pool;

@@ -1,16 +1,25 @@
-<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/Scripts/GameSystem/UI/UILayouts/style.uss?fileID=7433441132597879392&amp;guid=4c72b9d2bee02474982befdbead30b32&amp;type=3#style" />
+<engine:UXML xmlns:engine="UnityEngine.UIElements"
+             noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd"
+             editor-extension-mode="False">
+    <Style src="project://database/Assets/Scripts/GameSystem/UI/UILayouts/style.uss?fileID=7433441132597879392&amp;guid=4c72b9d2bee02474982befdbead30b32&amp;type=3#style"/>
     <engine:VisualElement class="recipe-container">
-        <engine:ProgressBar value="100" class="recipe-progress" />
-        <engine:Label text="Label" class="recipe-label" />
+        <engine:ProgressBar value="100" class="recipe-progress"/>
+        <engine:Label text="Label" class="recipe-label"/>
         <engine:VisualElement class="recipe-icon-container" style="flex-grow: 1;">
-            <engine:VisualElement class="recipe-icon" style="background-image: url(&quot;project://database/Assets/Images/Icons/Stickers/icons8-bread-100.png?fileID=2800000&amp;guid=cd6b82af13e6a40358c8ff8d2effbe2a&amp;type=3#icons8-bread-100&quot;);" />
-            <engine:VisualElement class="recipe-icon" style="background-image: url(&quot;project://database/Assets/Images/Icons/Stickers/icons8-bread-100.png?fileID=2800000&amp;guid=cd6b82af13e6a40358c8ff8d2effbe2a&amp;type=3#icons8-bread-100&quot;);" />
-            <engine:VisualElement class="recipe-icon" style="background-image: url(&quot;project://database/Assets/Images/Icons/Stickers/icons8-bread-100.png?fileID=2800000&amp;guid=cd6b82af13e6a40358c8ff8d2effbe2a&amp;type=3#icons8-bread-100&quot;);" />
-            <engine:VisualElement class="recipe-icon" style="background-image: url(&quot;project://database/Assets/Images/Icons/Stickers/icons8-bread-100.png?fileID=2800000&amp;guid=cd6b82af13e6a40358c8ff8d2effbe2a&amp;type=3#icons8-bread-100&quot;);" />
-            <engine:VisualElement class="recipe-icon" style="background-image: url(&quot;project://database/Assets/Images/Icons/Stickers/icons8-bread-100.png?fileID=2800000&amp;guid=cd6b82af13e6a40358c8ff8d2effbe2a&amp;type=3#icons8-bread-100&quot;);" />
-            <engine:VisualElement class="recipe-icon" style="background-image: url(&quot;project://database/Assets/Images/Icons/Stickers/icons8-bread-100.png?fileID=2800000&amp;guid=cd6b82af13e6a40358c8ff8d2effbe2a&amp;type=3#icons8-bread-100&quot;);" />
-            <engine:VisualElement class="recipe-icon" style="background-image: url(&quot;project://database/Assets/Images/Icons/Stickers/icons8-bread-100.png?fileID=2800000&amp;guid=cd6b82af13e6a40358c8ff8d2effbe2a&amp;type=3#icons8-bread-100&quot;);" />
+            <engine:VisualElement class="recipe-icon"
+                                  style="background-image: url(&quot;project://database/Assets/Images/Icons/Stickers/icons8-bread-100.png?fileID=2800000&amp;guid=cd6b82af13e6a40358c8ff8d2effbe2a&amp;type=3#icons8-bread-100&quot;);"/>
+            <engine:VisualElement class="recipe-icon"
+                                  style="background-image: url(&quot;project://database/Assets/Images/Icons/Stickers/icons8-bread-100.png?fileID=2800000&amp;guid=cd6b82af13e6a40358c8ff8d2effbe2a&amp;type=3#icons8-bread-100&quot;);"/>
+            <engine:VisualElement class="recipe-icon"
+                                  style="background-image: url(&quot;project://database/Assets/Images/Icons/Stickers/icons8-bread-100.png?fileID=2800000&amp;guid=cd6b82af13e6a40358c8ff8d2effbe2a&amp;type=3#icons8-bread-100&quot;);"/>
+            <engine:VisualElement class="recipe-icon"
+                                  style="background-image: url(&quot;project://database/Assets/Images/Icons/Stickers/icons8-bread-100.png?fileID=2800000&amp;guid=cd6b82af13e6a40358c8ff8d2effbe2a&amp;type=3#icons8-bread-100&quot;);"/>
+            <engine:VisualElement class="recipe-icon"
+                                  style="background-image: url(&quot;project://database/Assets/Images/Icons/Stickers/icons8-bread-100.png?fileID=2800000&amp;guid=cd6b82af13e6a40358c8ff8d2effbe2a&amp;type=3#icons8-bread-100&quot;);"/>
+            <engine:VisualElement class="recipe-icon"
+                                  style="background-image: url(&quot;project://database/Assets/Images/Icons/Stickers/icons8-bread-100.png?fileID=2800000&amp;guid=cd6b82af13e6a40358c8ff8d2effbe2a&amp;type=3#icons8-bread-100&quot;);"/>
+            <engine:VisualElement class="recipe-icon"
+                                  style="background-image: url(&quot;project://database/Assets/Images/Icons/Stickers/icons8-bread-100.png?fileID=2800000&amp;guid=cd6b82af13e6a40358c8ff8d2effbe2a&amp;type=3#icons8-bread-100&quot;);"/>
         </engine:VisualElement>
     </engine:VisualElement>
 </engine:UXML>

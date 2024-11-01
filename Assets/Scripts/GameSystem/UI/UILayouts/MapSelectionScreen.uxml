@@ -1,0 +1,23 @@
+<engine:UXML xmlns:engine="UnityEngine.UIElements"
+             noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <engine:Template name="MapModeCard"
+                     src="project://database/Assets/Scripts/GameSystem/UI/UILayouts/UIComponents/MapModeCard.uxml?fileID=9197481963319205126&amp;guid=96211ef672b5c4923be0745896ec91bd&amp;type=3#MapModeCard"/>
+    <Style src="project://database/Assets/Scripts/GameSystem/UI/UILayouts/style.uss?fileID=7433441132597879392&amp;guid=4c72b9d2bee02474982befdbead30b32&amp;type=3#style"/>
+    <engine:VisualElement style="flex-grow: 1; background-color: rgb(54, 105, 209);">
+        <engine:VisualElement class="letterbox-top"/>
+        <engine:VisualElement style="flex-direction: row; align-items: center;">
+            <engine:Button text="BACK" class="button back-button" style="align-self: flex-start;"/>
+        </engine:VisualElement>
+        <engine:ScrollView mode="Horizontal" class="map-selection-container">
+            <engine:Instance template="MapModeCard"/>
+            <engine:Instance template="MapModeCard"/>
+            <engine:Instance template="MapModeCard"/>
+            <engine:Instance template="MapModeCard"/>
+            <engine:Instance template="MapModeCard"/>
+            <engine:Instance template="MapModeCard"/>
+            <engine:Instance template="MapModeCard"/>
+            <engine:Instance template="MapModeCard"/>
+        </engine:ScrollView>
+        <engine:VisualElement class="letterbox-bottom"/>
+    </engine:VisualElement>
+</engine:UXML>

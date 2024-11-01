@@ -6,8 +6,8 @@ namespace GameSystem.UI.Effects
 {
     public class UIBlinkEffect : IUIEffectTransition
     {
-        private readonly float _duration;
         private readonly int _blinkCount;
+        private readonly float _duration;
 
         public UIBlinkEffect(float duration = 0.5f, int blinkCount = 3)
         {
@@ -35,7 +35,8 @@ namespace GameSystem.UI.Effects
             float startTime = Time.time;
             float blinkDuration = _duration / (_blinkCount * 2);
 
-            uiElement.schedule.Execute(() => {
+            uiElement.schedule.Execute(() =>
+            {
                 float elapsedTime = Time.time - startTime;
                 if (elapsedTime < _duration)
                 {

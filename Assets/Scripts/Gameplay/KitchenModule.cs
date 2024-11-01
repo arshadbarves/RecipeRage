@@ -4,6 +4,5 @@ namespace Gameplay
 {
     public class KitchenModule : MonoBehaviour
     {
-        
     }
 }

@@ -9,23 +9,38 @@ namespace GameSystem.Player
     [Serializable]
     public class PlayerData
     {
+        [JsonProperty] private readonly Dictionary<string, int> _brawlerExperience = new Dictionary<string, int>();
+        [JsonProperty] private readonly Dictionary<string, int> _brawlerLevels = new Dictionary<string, int>();
+        [JsonProperty] private readonly List<string> _unlockedBrawlers = new List<string>();
         [JsonProperty] public int Trophies { get; set; }
         [JsonProperty] public int Coins { get; set; }
         [JsonProperty] public int Gems { get; set; }
         [JsonProperty] public int Tokens { get; set; }
         [JsonProperty] public int Level { get; set; }
         [JsonProperty] public int Experience { get; set; }
-        [JsonProperty] private readonly List<string> _unlockedBrawlers = new List<string>();
-        [JsonProperty] private readonly Dictionary<string, int> _brawlerLevels = new Dictionary<string, int>();
-        [JsonProperty] private readonly Dictionary<string, int> _brawlerExperience = new Dictionary<string, int>();
         public IReadOnlyList<string> UnlockedBrawlers => _unlockedBrawlers;
         public IReadOnlyDictionary<string, int> BrawlerLevels => _brawlerLevels;
         public IReadOnlyDictionary<string, int> BrawlerExperience => _brawlerExperience;
-        public void AddTrophies(int amount) => Trophies += Math.Max(0, amount);
-        public void AddCoins(int amount) => Coins += Math.Max(0, amount);
-        public void AddGems(int amount) => Gems += Math.Max(0, amount);
-        public void AddTokens(int amount) => Tokens += Math.Max(0, amount);
-        public void AddExperience(int amount) => Experience += Math.Max(0, amount);
+        public void AddTrophies(int amount)
+        {
+            Trophies += Math.Max(0, amount);
+        }
+        public void AddCoins(int amount)
+        {
+            Coins += Math.Max(0, amount);
+        }
+        public void AddGems(int amount)
+        {
+            Gems += Math.Max(0, amount);
+        }
+        public void AddTokens(int amount)
+        {
+            Tokens += Math.Max(0, amount);
+        }
+        public void AddExperience(int amount)
+        {
+            Experience += Math.Max(0, amount);
+        }
 
         public void SetBrawlerLevel(string brawlerName, int level)
         {
@@ -49,7 +64,10 @@ namespace GameSystem.Player
             return _brawlerExperience.GetValueOrDefault(brawlerName, 0);
         }
 
-        public bool IsBrawlerUnlocked(string brawlerName) => _unlockedBrawlers.Contains(brawlerName);
+        public bool IsBrawlerUnlocked(string brawlerName)
+        {
+            return _unlockedBrawlers.Contains(brawlerName);
+        }
 
         public void UnlockBrawler(string brawlerName)
         {
@@ -59,8 +77,14 @@ namespace GameSystem.Player
             }
         }
 
-        public string ToJson() => JsonConvert.SerializeObject(this, Formatting.Indented);
-        public static PlayerData FromJson(string json) => JsonConvert.DeserializeObject<PlayerData>(json);
+        public string ToJson()
+        {
+            return JsonConvert.SerializeObject(this, Formatting.Indented);
+        }
+        public static PlayerData FromJson(string json)
+        {
+            return JsonConvert.DeserializeObject<PlayerData>(json);
+        }
 
         public void UpdateStat(StatType statType, int value)
         {

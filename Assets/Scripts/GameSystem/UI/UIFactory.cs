@@ -19,7 +19,7 @@ namespace GameSystem.UI
         {
             _container = container;
         }
-        
+
         public async Task<IUIPanel> CreateUIElementAsync(UIPanelConfig config)
         {
             Type panelType = config.PanelType;
