@@ -17,11 +17,6 @@ namespace GameSystem.UI.Effects
             _continueSpinning = false;
         }
 
-        public void SetContinueSpinning(bool continueSpinning)
-        {
-            _continueSpinning = continueSpinning;
-        }
-
         public void ApplyTransitionIn(VisualElement uiElement, Action onComplete)
         {
             uiElement.style.display = DisplayStyle.Flex;
@@ -47,10 +42,16 @@ namespace GameSystem.UI.Effects
             });
         }
 
+        public void SetContinueSpinning(bool continueSpinning)
+        {
+            _continueSpinning = continueSpinning;
+        }
+
         private void AnimateSpin(VisualElement uiElement, float startAngle, float endAngle, Action onComplete)
         {
             float startTime = Time.time;
-            uiElement.schedule.Execute(() => {
+            uiElement.schedule.Execute(() =>
+            {
                 float elapsedTime = Time.time - startTime;
                 if (elapsedTime < _duration)
                 {

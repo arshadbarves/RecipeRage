@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,28 +8,13 @@ namespace Core.TouchInputSystem
     {
         private const string LayoutPrefsKey = "TouchControlLayout";
 
-        [System.Serializable]
-        private class ControlLayout
-        {
-            public string controlName;
-            public Vector2 position;
-            public Vector2 size;
-        }
-
-        [System.Serializable]
-        private class LayoutData
-        {
-            public List<ControlLayout> controls = new List<ControlLayout>();
-        }
-
         public void SaveLayout(Dictionary<string, BaseTouchControl> controls)
         {
             LayoutData layoutData = new LayoutData();
-            foreach (var kvp in controls)
+            foreach (KeyValuePair<string, BaseTouchControl> kvp in controls)
             {
                 RectTransform rectTransform = kvp.Value.GetComponent<RectTransform>();
-                layoutData.controls.Add(new ControlLayout
-                {
+                layoutData.controls.Add(new ControlLayout {
                     controlName = kvp.Key,
                     position = rectTransform.anchoredPosition,
                     size = rectTransform.sizeDelta
@@ -45,7 +31,7 @@ namespace Core.TouchInputSystem
             {
                 string json = PlayerPrefs.GetString(LayoutPrefsKey);
                 LayoutData layoutData = JsonUtility.FromJson<LayoutData>(json);
-                foreach (var controlLayout in layoutData.controls)
+                foreach (ControlLayout controlLayout in layoutData.controls)
                 {
                     if (controls.TryGetValue(controlLayout.controlName, out BaseTouchControl control))
                     {
@@ -55,6 +41,20 @@ namespace Core.TouchInputSystem
                     }
                 }
             }
+        }
+
+        [Serializable]
+        private class ControlLayout
+        {
+            public string controlName;
+            public Vector2 position;
+            public Vector2 size;
+        }
+
+        [Serializable]
+        private class LayoutData
+        {
+            public List<ControlLayout> controls = new List<ControlLayout>();
         }
     }
 }

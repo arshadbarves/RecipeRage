@@ -8,15 +8,6 @@ namespace Core.TouchInputSystem
         private Button _button;
         public bool IsPressed { get; private set; }
 
-        public override void Initialize(TouchControlConfig config)
-        {
-            base.Initialize(config);
-            _button = gameObject.AddComponent<Button>();
-            _button.transition = Selectable.Transition.ColorTint;
-            ColorBlock colors = _button.colors;
-            _button.colors = colors;
-        }
-
         public void OnPointerDown(PointerEventData eventData)
         {
             IsPressed = true;
@@ -25,6 +16,15 @@ namespace Core.TouchInputSystem
         public void OnPointerUp(PointerEventData eventData)
         {
             IsPressed = false;
+        }
+
+        public override void Initialize(TouchControlConfig config)
+        {
+            base.Initialize(config);
+            _button = gameObject.AddComponent<Button>();
+            _button.transition = Selectable.Transition.ColorTint;
+            ColorBlock colors = _button.colors;
+            _button.colors = colors;
         }
 
         public override void StartEdit()

@@ -10,7 +10,7 @@ namespace GameSystem.UI.Effects
         Scale,
         Flip,
         Rotate,
-        Bounce,
+        Bounce
     }
     public interface IUIEffectTransition
     {

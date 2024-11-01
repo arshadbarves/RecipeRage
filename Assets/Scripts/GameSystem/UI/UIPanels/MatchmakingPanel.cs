@@ -11,15 +11,15 @@ namespace GameSystem.UI.UIPanels
 {
     public class MatchmakingPanel : BaseUIPanel
     {
-        private VisualElement _loadingElement;
-        private VisualElement _topPanel;
         private VisualElement _bottomPanel;
+        private Button _cancelButton;
+        private VisualElement _loadingElement;
         private Label _matchmakingLabel;
+        private Label _matchmakingPlayers;
         private Label _matchmakingStatus;
         private Label _matchmakingTime;
-        private Label _matchmakingPlayers;
         private Label _tipLabel;
-        private Button _cancelButton;
+        private VisualElement _topPanel;
 
         protected override void SetupUI()
         {
@@ -53,13 +53,13 @@ namespace GameSystem.UI.UIPanels
             base.Show(onComplete);
 
             IUIEffectTransition transition =
-                new UISlideEffect(duration: 0.2f, direction: UISlideEffect.SlideDirection.Up);
+                new UISlideEffect(0.2f, UISlideEffect.SlideDirection.Up);
             transition.ApplyTransitionIn(_topPanel, null);
 
-            transition = new UISlideEffect(duration: 0.2f, direction: UISlideEffect.SlideDirection.Down);
+            transition = new UISlideEffect(0.2f, UISlideEffect.SlideDirection.Down);
             transition.ApplyTransitionIn(_bottomPanel, onComplete);
 
-            UISpinEffect spinEffect = new UISpinEffect(duration: 2f, rotations: 1f);
+            UISpinEffect spinEffect = new UISpinEffect(2f, 1f);
             spinEffect.SetContinueSpinning(true);
             spinEffect.ApplyTransitionIn(_loadingElement, null);
         }

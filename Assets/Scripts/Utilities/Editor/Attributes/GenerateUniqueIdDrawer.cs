@@ -1,4 +1,5 @@
 // Assets/Scripts/Utilities/Editor/Attributes/GenerateUniqueIdDrawer.cs
+using System;
 using UnityEditor;
 using UnityEngine;
 
@@ -13,7 +14,7 @@ namespace Utilities.Editor.Attributes
             {
                 if (string.IsNullOrEmpty(property.stringValue))
                 {
-                    property.stringValue = System.Guid.NewGuid().ToString();
+                    property.stringValue = Guid.NewGuid().ToString();
                 }
 
                 GUI.enabled = false;

@@ -37,19 +37,19 @@ namespace GameSystem.UI.Effects
 
             uiElement.experimental.animation
                 .Start(
-                    new StyleValues { 
+                    new StyleValues {
                         width = _isHorizontal ? originalWidth * startScale : originalWidth,
                         height = _isHorizontal ? originalHeight : originalHeight * startScale,
                         opacity = startScale
                     },
-                    new StyleValues { 
+                    new StyleValues {
                         width = _isHorizontal ? originalWidth * endScale : originalWidth,
                         height = _isHorizontal ? originalHeight : originalHeight * endScale,
                         opacity = endScale
                     },
                     (int)(_duration * 1000))
                 .Ease(Easing.InOutQuad)
-                .OnCompleted(() => 
+                .OnCompleted(() =>
                 {
                     uiElement.style.width = originalWidth;
                     uiElement.style.height = originalHeight;

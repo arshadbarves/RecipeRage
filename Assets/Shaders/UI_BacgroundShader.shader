@@ -8,41 +8,44 @@ Shader "Custom/UI Background Shader"
         _Color1 ("Color 1", Color) = (1, 0.67256093, 0, 1)
         _Color2 ("Color 2", Color) = (1, 0.7411765, 0, 1)
         _Color3 ("Color 3", Color) = (1, 0.7411765, 0, 1)
-        
+
         [Header(Wave Effects)]
         _Scale1 ("Wave 1 (Scale, Speed, Threshold)", Vector) = (15, 0.4, 0.975, 0)
         _Scale2 ("Wave 2 (Scale, Speed, Threshold)", Vector) = (25, 0.8, 0.5, 0)
         _Scale3 ("Wave 3 (Scale, Speed, Threshold)", Vector) = (75, 3.2, 0.8, 0)
-        
+
         [Header(Noise Effect)]
         _NoiseScale ("Noise Scale", Float) = 10
         _NoiseStrength ("Noise Strength", Range(0, 1)) = 0.1
         _NoiseSpeed ("Noise Animation Speed", Float) = 0.5
-        
+
         [Header(Vignette Effect)]
         _VignetteStrength ("Vignette Strength", Range(0, 2)) = 0.5
         _VignetteSmoothing ("Vignette Smoothing", Range(0.01, 2)) = 0.2
         _VignetteColor ("Vignette Color", Color) = (0.7372549, 0.49019608, 0.68235296, 1)
-        
+
         [Header(Pulse Effect)]
         _PulseSpeed ("Pulse Speed", Float) = 1
         _PulseStrength ("Pulse Strength", Range(0, 1)) = 0.1
-        
+
         [Header(Seasonal Effects)]
         [Enum(None, 0, Snow, 1, Leaves, 2, Bubbles, 3)] _SeasonalEffect ("Seasonal Effect", Float) = 3
         _SeasonalColor ("Seasonal Color", Color) = (1, 0.8078432, 0, 1)
         _SeasonalDensity ("Seasonal Density", Range(0, 100)) = 100
         _SeasonalSpeed ("Seasonal Speed", Float) = 1
-        
+
         [Header(Overlay Texture)]
         _OverlayTex ("Overlay Texture", 2D) = "white" {}
         _OverlayStrength ("Overlay Strength", Range(0, 1)) = 0
     }
     SubShader
     {
-        Tags {"RenderType"="Opaque" "RenderPipeline"="UniversalPipeline"}
+        Tags
+        {
+            "RenderType"="Opaque" "RenderPipeline"="UniversalPipeline"
+        }
         LOD 100
-        
+
         Pass
         {
             HLSLPROGRAM
@@ -98,7 +101,7 @@ Shader "Custom/UI Background Shader"
             float seasonalEffect(float2 uv, float time)
             {
                 float effect = 0;
-                
+
                 if (_SeasonalEffect == 1) // Snow
                 {
                     float2 snowUV = uv * _SeasonalDensity;
@@ -118,7 +121,7 @@ Shader "Custom/UI Background Shader"
                     bubbleUV.x += sin(bubbleUV.y * 10) * 0.1;
                     effect = smoothstep(0.9, 1.0, 1 - length(frac(bubbleUV) - 0.5));
                 }
-                
+
                 return effect;
             }
 

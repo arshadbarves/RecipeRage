@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Utilities.Editor.Attributes;
@@ -16,7 +17,7 @@ namespace Gameplay.Data
         [field: SerializeField] public int Reward { get; private set; }
         [field: SerializeField] public List<IngredientRequirement> Ingredients { get; private set; }
 
-        [System.Serializable]
+        [Serializable]
         public class IngredientRequirement
         {
             [field: SerializeField] public IngredientData Ingredient { get; private set; }

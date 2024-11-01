@@ -14,7 +14,7 @@ namespace GameSystem.Audio
     }
 
     public interface IAudioService
-    { 
+    {
         Task InitializeAsync();
         void PlayMusic(string clipName, float fadeInDuration = 1f, bool loop = true);
         void StopMusic(float fadeOutDuration = 1f);

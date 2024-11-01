@@ -12,29 +12,29 @@ namespace GameSystem.UI
         SplashScreen,
         LoadingScreen,
         MainMenu,
-        Matchmaking,
+        Matchmaking
     }
 
     [CreateAssetMenu(fileName = "UIPanelConfig", menuName = "GameSystem/UIPanelConfig")]
     public class UIPanelConfig : ScriptableObject
     {
-        [Header("Panel")] [SerializeField] private ScreenPanel screenPanel;
+        [Header("Panel"), SerializeField]  private ScreenPanel screenPanel;
         [SerializeField] private AssetReferenceT<VisualTreeAsset> panelUxmlAsset;
 
-        [Header("Transition Settings")] [SerializeField]
+        [Header("Transition Settings"), SerializeField] 
         private bool useTransition = true;
 
         [SerializeField] private TransitionType transitionType = TransitionType.Fade;
         [SerializeField] private bool useTransitionOnShow = true;
         [SerializeField] private bool useTransitionOnHide = true;
 
-        [Header("Fade Transition Settings")] [SerializeField]
+        [Header("Fade Transition Settings"), SerializeField] 
         private bool transitionFadeIn = true;
 
-        [Header("Scale Transition Settings")] [SerializeField]
+        [Header("Scale Transition Settings"), SerializeField] 
         private bool transitionScaleIn = true;
 
-        [Header("Transition Parameters")] [SerializeField]
+        [Header("Transition Parameters"), SerializeField] 
         private float transitionDuration = 0.5f;
 
         [SerializeField] private float transitionDistance = 100f;

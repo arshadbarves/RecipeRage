@@ -10,22 +10,22 @@ namespace Brawlers
     public abstract class BaseController : NetworkBehaviour
     {
         [SerializeField] private BrawlerData brawlerData;
-        
+
+        // Network Variables for Item/Plate Management
+        private readonly NetworkVariable<IngredientType> _heldItem = new NetworkVariable<IngredientType>();
+        private readonly NetworkVariable<bool> _isDirtyPlate = new NetworkVariable<bool>();
+        private readonly NetworkVariable<bool> _isHoldingPlate = new NetworkVariable<bool>();
+        protected Animator Animator;
+
         // Components
         protected CharacterController CharacterController;
-        protected Animator Animator;
 
         // Player Stats
         public float Health { get; private set; }
-        public float Mana { get; private set; }
+        public float Mana { get; }
         public Team CurrentTeam { get; private set; }
 
         public bool IsStunned { get; set; } = true;
-
-        // Network Variables for Item/Plate Management
-        private readonly NetworkVariable<IngredientType> _heldItem = new NetworkVariable<IngredientType>(IngredientType.None);
-        private readonly NetworkVariable<bool> _isHoldingPlate = new NetworkVariable<bool>(false);
-        private readonly NetworkVariable<bool> _isDirtyPlate = new NetworkVariable<bool>(false);
 
         public BrawlerData BrawlerData => brawlerData;
 
@@ -42,7 +42,7 @@ namespace Brawlers
 
             Health = brawlerData.MaxHealth;
         }
-        
+
         protected virtual void Update()
         {
             if (!IsStunned)
@@ -53,22 +53,22 @@ namespace Brawlers
         }
 
         /// <summary>
-        /// Abstract method to handle player movement.
+        ///     Abstract method to handle player movement.
         /// </summary>
         protected abstract void Move();
 
         /// <summary>
-        /// Ability system abstract methods.
+        ///     Ability system abstract methods.
         /// </summary>
         protected abstract void PrimaryAttack();
         protected abstract void SecondaryAttack();
         protected abstract void PrimaryInteract();
         protected abstract void SecondaryInteract();
-    
+
         public abstract Vector3 GetMoveDirection();
 
         /// <summary>
-        /// Iterates through all abilities and checks if they can be used, then activates them.
+        ///     Iterates through all abilities and checks if they can be used, then activates them.
         /// </summary>
         protected virtual void UpdateAbilities()
         {
@@ -89,12 +89,12 @@ namespace Brawlers
         }
 
         /// <summary>
-        /// Abstract method to check if an ability should be used.
+        ///     Abstract method to check if an ability should be used.
         /// </summary>
         protected abstract bool ShouldUseAbility(Ability ability);
 
         /// <summary>
-        /// Finds a valid target for an ability, if required.
+        ///     Finds a valid target for an ability, if required.
         /// </summary>
         protected BaseController FindTargetForAbility(Ability ability)
         {
@@ -103,7 +103,7 @@ namespace Brawlers
         }
 
         /// <summary>
-        /// Reduces the health of the controller and checks for death.
+        ///     Reduces the health of the controller and checks for death.
         /// </summary>
         public virtual void TakeDamage(float amount)
         {
@@ -116,7 +116,7 @@ namespace Brawlers
         }
 
         /// <summary>
-        /// Handles player death logic.
+        ///     Handles player death logic.
         /// </summary>
         protected virtual void Die()
         {
@@ -125,7 +125,7 @@ namespace Brawlers
         }
 
         /// <summary>
-        /// Determines if the provided BaseController is an enemy.
+        ///     Determines if the provided BaseController is an enemy.
         /// </summary>
         public bool IsEnemy(BaseController other)
         {
@@ -134,7 +134,7 @@ namespace Brawlers
         }
 
         /// <summary>
-        /// Assigns the player to a specified team.
+        ///     Assigns the player to a specified team.
         /// </summary>
         public void AssignToTeam(Team team)
         {
@@ -172,27 +172,39 @@ namespace Brawlers
         }
 
         /// <summary>
-        /// Checks if the player is holding any item.
+        ///     Checks if the player is holding any item.
         /// </summary>
-        public bool IsHoldingItem() => _isHoldingPlate.Value || _heldItem.Value != IngredientType.None;
+        public bool IsHoldingItem()
+        {
+            return _isHoldingPlate.Value || _heldItem.Value != IngredientType.None;
+        }
 
         /// <summary>
-        /// Returns the currently held ingredient.
+        ///     Returns the currently held ingredient.
         /// </summary>
-        public IngredientType GetHeldIngredient() => _heldItem.Value;
+        public IngredientType GetHeldIngredient()
+        {
+            return _heldItem.Value;
+        }
 
         /// <summary>
-        /// Checks if the player is holding a plate.
+        ///     Checks if the player is holding a plate.
         /// </summary>
-        public bool IsHoldingPlate() => _isHoldingPlate.Value;
+        public bool IsHoldingPlate()
+        {
+            return _isHoldingPlate.Value;
+        }
 
         /// <summary>
-        /// Checks if the player is holding a dirty plate.
+        ///     Checks if the player is holding a dirty plate.
         /// </summary>
-        public bool IsHoldingDirtyPlate() => _isHoldingPlate.Value && _isDirtyPlate.Value;
+        public bool IsHoldingDirtyPlate()
+        {
+            return _isHoldingPlate.Value && _isDirtyPlate.Value;
+        }
 
         /// <summary>
-        /// Client-side method to pick up an item.
+        ///     Client-side method to pick up an item.
         /// </summary>
         public void PickUpItem(IngredientType item)
         {
@@ -200,7 +212,7 @@ namespace Brawlers
         }
 
         /// <summary>
-        /// Client-side method to drop the held item.
+        ///     Client-side method to drop the held item.
         /// </summary>
         public void DropItem()
         {
@@ -208,7 +220,7 @@ namespace Brawlers
         }
 
         /// <summary>
-        /// Client-side method to pick up a plate.
+        ///     Client-side method to pick up a plate.
         /// </summary>
         public void PickUpPlate()
         {
@@ -216,7 +228,7 @@ namespace Brawlers
         }
 
         /// <summary>
-        /// Client-side method to pick up a dirty plate.
+        ///     Client-side method to pick up a dirty plate.
         /// </summary>
         public void PickUpDirtyPlate()
         {
@@ -224,7 +236,7 @@ namespace Brawlers
         }
 
         /// <summary>
-        /// Client-side method to drop the plate.
+        ///     Client-side method to drop the plate.
         /// </summary>
         public void DropPlate()
         {

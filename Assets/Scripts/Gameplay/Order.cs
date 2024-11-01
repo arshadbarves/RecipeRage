@@ -5,13 +5,13 @@ namespace Gameplay
 {
     public class Order : INetworkSerializable
     {
+        public bool IsDelivered;
+        public bool IsExpired;
+        public bool IsFailed;
         public string OrderId;
         public string RecipeId;
         public float TimeRemaining;
-        public bool IsDelivered;
-        public bool IsFailed;
-        public bool IsExpired;
-        
+
         public Order(string orderId, RecipeData recipeData)
         {
             OrderId = orderId;

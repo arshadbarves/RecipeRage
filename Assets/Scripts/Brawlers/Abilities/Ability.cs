@@ -6,14 +6,15 @@ namespace Brawlers.Abilities
     [Serializable]
     public abstract class Ability : MonoBehaviour
     {
+
+        // Time when the ability was last used.
+        private float _lastUsedTime;
+
         // The name of the ability (e.g., "Fireball", "Healing Wave").
         public string Name { get; set; }
 
         // Time in seconds that the ability must wait before being used again.
         public float Cooldown { get; set; }
-
-        // Time when the ability was last used.
-        private float _lastUsedTime;
 
         // Duration in seconds that the ability lasts once activated.
         public float Duration { get; set; }
@@ -64,10 +65,10 @@ namespace Brawlers.Abilities
         {
             bool isOnCooldown = Time.time - _lastUsedTime < Cooldown;
             bool hasEnoughResources = caster.Mana >= 0;
-            bool hasValidTarget = !RequiresTarget || (target != null &&
-                                                      Vector3.Distance(caster.transform.position,
-                                                          target.transform.position) <= Range &&
-                                                      target.IsEnemy(caster) && !target.IsStunned);
+            bool hasValidTarget = !RequiresTarget || target != null &&
+                Vector3.Distance(caster.transform.position,
+                    target.transform.position) <= Range &&
+                target.IsEnemy(caster) && !target.IsStunned;
 
             bool canUse = !isOnCooldown && hasEnoughResources && hasValidTarget;
             return canUse;

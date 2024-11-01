@@ -1,0 +1,14 @@
+<engine:UXML xmlns:engine="UnityEngine.UIElements"
+             noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd"
+             editor-extension-mode="False">
+    <Style src="project://database/Assets/Scripts/GameSystem/UI/UILayouts/style.uss?fileID=7433441132597879392&amp;guid=4c72b9d2bee02474982befdbead30b32&amp;type=3#style"/>
+    <engine:VisualElement class="card-container">
+        <engine:VisualElement class="card-image"/>
+        <engine:VisualElement class="card-header">
+            <engine:Label text="New event in: 2h 30m" class="label card-timer-label" style="font-size: 18px;"/>
+        </engine:VisualElement>
+        <engine:VisualElement class="card-bottom-overlay">
+            <engine:Label text="Game mode" class="label"/>
+        </engine:VisualElement>
+    </engine:VisualElement>
+</engine:UXML>

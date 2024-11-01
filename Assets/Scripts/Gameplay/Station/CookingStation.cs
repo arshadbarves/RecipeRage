@@ -7,12 +7,22 @@ namespace Gameplay.Station
 {
     public class CookingStation : BaseStation
     {
-        private readonly NetworkVariable<StationState> _currentState = new NetworkVariable<StationState>();
+        private readonly float _burningTime = 5f;
         private readonly NetworkVariable<float> _cookingProgress = new NetworkVariable<float>();
-        private readonly NetworkVariable<IngredientType> _currentIngredient = new NetworkVariable<IngredientType>();
 
         private readonly float _cookingTime = 10f;
-        private readonly float _burningTime = 5f;
+        private readonly NetworkVariable<IngredientType> _currentIngredient = new NetworkVariable<IngredientType>();
+        private readonly NetworkVariable<StationState> _currentState = new NetworkVariable<StationState>();
+
+        protected void Update()
+        {
+            if (IsServer)
+            {
+                UpdateCooking();
+            }
+            UpdateVisibility();
+            UpdateUI();
+        }
 
         public override void OnNetworkSpawn()
         {
@@ -32,16 +42,6 @@ namespace Gameplay.Station
                 _currentState.Value = StationState.InProgress;
                 _cookingProgress.Value = 0f;
             }
-        }
-
-        protected void Update()
-        {
-            if (IsServer)
-            {
-                UpdateCooking();
-            }
-            UpdateVisibility();
-            UpdateUI();
         }
 
         private void UpdateCooking()

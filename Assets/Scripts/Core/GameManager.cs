@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using GameSystem;
-using GameSystem.Audio;
 using GameSystem.Gameplay;
 using GameSystem.Input;
 using GameSystem.State;
@@ -17,13 +16,27 @@ namespace Core
 {
     public class GameManager : NetworkSingleton<GameManager>, IStartable
     {
-        [SerializeField] private ScriptableGameConfig gameConfig;
+        [SerializeField] private GameModeConfig[] gameModeConfigs;
 
         private readonly Dictionary<Type, IGameSystem> _gameSystems = new Dictionary<Type, IGameSystem>();
 
-        public event Action<GameState> OnGameStateChanged;
-
         [Inject] private IObjectResolver _container;
+
+        private void Update()
+        {
+            foreach (IGameSystem system in _gameSystems.Values)
+            {
+                system.Update();
+            }
+        }
+
+        public override async void OnDestroy()
+        {
+            foreach (IGameSystem system in _gameSystems.Values)
+            {
+                await system.CleanupAsync();
+            }
+        }
 
         public async void Start()
         {
@@ -31,11 +44,13 @@ namespace Core
             GetSystem<StateSystem>().RequestGameStateChange(GameState.Splash);
         }
 
+        public event Action<GameState> OnGameStateChanged;
+
         private async Task InitializeSystems()
         {
             await AddSystemAsync<StateSystem>();
             await AddSystemAsync<InputSystem>();
-            await AddSystemAsync<AudioSystem>();
+            // await AddSystemAsync<AudioSystem>();
             // await AddSystemAsync<CameraSystem>();
             // await AddSystemAsync<PlayerSystem>();
             // await AddSystemAsync<CookingSystem>();
@@ -71,25 +86,14 @@ namespace Core
             return (T)_gameSystems[typeof(T)];
         }
 
-        private void Update()
-        {
-            foreach (var system in _gameSystems.Values)
-            {
-                system.Update();
-            }
-        }
-
-        public override async void OnDestroy()
-        {
-            foreach (var system in _gameSystems.Values)
-            {
-                await system.CleanupAsync();
-            }
-        }
-
         public void InvokeGameStateChanged(GameState state)
         {
             OnGameStateChanged?.Invoke(state);
+        }
+
+        public GameModeConfig[] GetGameModeConfigs()
+        {
+            return gameModeConfigs;
         }
     }
 }

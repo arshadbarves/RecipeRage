@@ -10,8 +10,8 @@ namespace GameSystem.UI.Base
 {
     public abstract class BaseUIPanel : IUIPanel
     {
-        protected IUIEffectTransition Transition;
         protected UIPanelConfig Config;
+        protected IUIEffectTransition Transition;
         public VisualElement Root { get; set; }
 
         public virtual async Task InitializeAsync(UIPanelConfig config)
@@ -37,14 +37,6 @@ namespace GameSystem.UI.Base
 
             ConfigureTransitions();
             SetupUI();
-        }
-
-        protected abstract void SetupUI();
-
-        private void ConfigureTransitions()
-        {
-            // Set the transition effect based on the config
-            Transition = Config.GetTransition();
         }
 
         public virtual void Show(Action onComplete = null)
@@ -85,6 +77,14 @@ namespace GameSystem.UI.Base
         {
             Root?.RemoveFromHierarchy();
             return Task.CompletedTask;
+        }
+
+        protected abstract void SetupUI();
+
+        private void ConfigureTransitions()
+        {
+            // Set the transition effect based on the config
+            Transition = Config.GetTransition();
         }
     }
 }

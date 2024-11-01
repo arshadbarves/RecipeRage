@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Core;
 using Gameplay.Data;
-using GameSystem.Audio;
 using GameSystem.Gameplay;
 using GameSystem.Progression;
 using Unity.Netcode;
@@ -16,8 +15,8 @@ namespace Gameplay.GameMode
     public class CookingClashBaseGameMode : BaseGameMode
     {
         [SerializeField] private int maxSimultaneousOrders = 3;
-        private float _remainingTime;
         private readonly List<Order> _activeOrders = new List<Order>();
+        private float _remainingTime;
 
         private NetworkVariable<int> Score { get; } = new NetworkVariable<int>();
 
@@ -38,7 +37,7 @@ namespace Gameplay.GameMode
             {
                 EndGameServerRpc();
             }
-            
+
             foreach (Order order in _activeOrders.ToList())
             {
                 order.TimeRemaining -= Time.deltaTime;
@@ -96,7 +95,7 @@ namespace Gameplay.GameMode
             Order newOrder = new Order(orderId, recipeData);
             _activeOrders.Add(newOrder);
         }
-        
+
         [ServerRpc]
         private void DeliverOrderServerRpc(string orderId, List<string> ingredientIds)
         {
@@ -114,17 +113,17 @@ namespace Gameplay.GameMode
                 FailOrderClientRpc(orderId);
             }
         }
-        
+
         [ClientRpc]
         private void DeliverOrderClientRpc(string orderId)
         {
             // GameManager.Instance.GetSystem<AudioSystem>().PlaySfx(AudioType.OrderDelivered);
             // GameManager.Instance.GetSystem<UISystem>().HidePanel<OrderPanel>();
             // GameManager.Instance.GetSystem<UISystem>().ShowPanel<SuccessPanel>();
-            
+
             // TODO: Update the player stats for achievements, progression, and etc note to do this at game over state
         }
-        
+
         [ClientRpc]
         private void FailOrderClientRpc(string orderId)
         {
@@ -132,7 +131,7 @@ namespace Gameplay.GameMode
             // GameManager.Instance.GetSystem<UISystem>().HidePanel<OrderPanel>();
             // GameManager.Instance.GetSystem<UISystem>().ShowPanel<FailPanel>();
         }
-        
+
         [ClientRpc]
         private void ExpireOrderClientRpc(string orderId)
         {

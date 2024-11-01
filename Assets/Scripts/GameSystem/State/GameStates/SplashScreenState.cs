@@ -4,7 +4,7 @@ using GameSystem.UI.UIPanels;
 
 namespace GameSystem.State.GameStates
 {
-    public class SplashScreenState: BaseGameState
+    public class SplashScreenState : BaseGameState
     {
         public SplashScreenState(GameManager gameManager) : base(gameManager)
         {

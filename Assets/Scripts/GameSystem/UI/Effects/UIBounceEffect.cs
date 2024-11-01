@@ -8,10 +8,11 @@ namespace GameSystem.UI.Effects
     {
         public enum BounceDirection { Up, Down, Left, Right }
 
-        private readonly float _duration;
-        private readonly float _strength;
         private readonly int _bounces;
         private readonly BounceDirection _direction;
+
+        private readonly float _duration;
+        private readonly float _strength;
 
         public UIBounceEffect(float duration = 0.5f, float strength = 100f, int bounces = 3, BounceDirection direction = BounceDirection.Up)
         {
@@ -32,7 +33,7 @@ namespace GameSystem.UI.Effects
             uiElement.experimental.animation
                 .Start(startValue, endValue, (int)(_duration * 1000))
                 .Ease(Easing.OutBounce)
-                .OnCompleted(() => 
+                .OnCompleted(() =>
                 {
                     ResetPosition(uiElement);
                     onComplete?.Invoke();
@@ -47,7 +48,7 @@ namespace GameSystem.UI.Effects
             uiElement.experimental.animation
                 .Start(startValue, endValue, (int)(_duration * 1000))
                 .Ease(Easing.InBounce)
-                .OnCompleted(() => 
+                .OnCompleted(() =>
                 {
                     uiElement.style.display = DisplayStyle.None;
                     ResetPosition(uiElement);

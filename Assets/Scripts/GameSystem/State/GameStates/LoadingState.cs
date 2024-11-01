@@ -1,8 +1,9 @@
+using System;
 using Core;
 
 namespace GameSystem.State.GameStates
 {
-    public class LoadingState: BaseGameState
+    public class LoadingState : BaseGameState
     {
         public LoadingState(GameManager gameManager) : base(gameManager)
         {
@@ -15,12 +16,12 @@ namespace GameSystem.State.GameStates
 
         public override void Update()
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public override void Exit()
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
     }
 }

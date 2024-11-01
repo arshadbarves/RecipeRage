@@ -8,7 +8,7 @@ namespace Utilities
         public static void WriteValueSafe(this FastBufferWriter writer, in List<string> value)
         {
             writer.WriteValueSafe(value.Count);
-            foreach (var item in value)
+            foreach (string item in value)
             {
                 writer.WriteValueSafe(item);
             }

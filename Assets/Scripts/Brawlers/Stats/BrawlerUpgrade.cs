@@ -1,9 +1,10 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine.AddressableAssets;
 
 namespace Brawlers.Stats
 {
-    [System.Serializable]
+    [Serializable]
     public class BrawlerUpgrade
     {
         public int level;
@@ -12,11 +13,10 @@ namespace Brawlers.Stats
         public float statIncrease;
     }
 
-    [System.Serializable]
+    [Serializable]
     public static class BrawlerDataSystem
     {
-        public static Dictionary<int, BrawlerUpgrade> BrawlerUpgrades = new Dictionary<int, BrawlerUpgrade>
-        {
+        public static Dictionary<int, BrawlerUpgrade> BrawlerUpgrades = new Dictionary<int, BrawlerUpgrade> {
             { 1, new BrawlerUpgrade { level = 1, upgradeTokenCost = 0, upgradeCoinCost = 0, statIncrease = 0.05f } },
             { 2, new BrawlerUpgrade { level = 2, upgradeTokenCost = 20, upgradeCoinCost = 20, statIncrease = 0.06f } },
             { 3, new BrawlerUpgrade { level = 3, upgradeTokenCost = 30, upgradeCoinCost = 50, statIncrease = 0.07f } },
@@ -30,7 +30,7 @@ namespace Brawlers.Stats
         };
 
         public static Dictionary<string, BrawlerData> Brawlers;
-        
+
         public static void LoadBrawlerData()
         {
             Brawlers = Addressables.LoadAssetAsync<Dictionary<string, BrawlerData>>("Assets/Scripts/Brawlers/Stats/BrawlerData.asset").Result;
@@ -40,7 +40,7 @@ namespace Brawlers.Stats
         {
             return Brawlers[brawlerName];
         }
-        
+
         public static BrawlerUpgrade GetBrawlerUpgrade(int level)
         {
             return BrawlerUpgrades[level];

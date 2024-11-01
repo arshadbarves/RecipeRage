@@ -10,7 +10,7 @@ namespace GameSystem.State
         void Update();
         void Exit();
     }
-    
+
     public class StateMachine<T> where T : Enum
     {
         private readonly Dictionary<T, IState<T>> _states = new Dictionary<T, IState<T>>();
@@ -25,7 +25,7 @@ namespace GameSystem.State
 
         public void TransitionTo(T stateKey)
         {
-            if (!_states.TryGetValue(stateKey, out var newState))
+            if (!_states.TryGetValue(stateKey, out IState<T> newState))
             {
                 Debug.LogError($"State {stateKey} not found in the state machine.");
                 return;

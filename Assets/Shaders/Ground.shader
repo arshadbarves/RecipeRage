@@ -9,14 +9,17 @@ Shader "Roystan/Toon/Water Tut URP"
         _SurfaceNoise("Surface Noise", 2D) = "white" {}
         _SurfaceNoiseScroll("Surface Noise Scroll Amount", Vector) = (0.03, 0.03, 0, 0)
         _SurfaceNoiseCutoff("Surface Noise Cutoff", Range(0, 1)) = 0.777
-        _SurfaceDistortion("Surface Distortion", 2D) = "white" {}    
+        _SurfaceDistortion("Surface Distortion", 2D) = "white" {}
         _SurfaceDistortionAmount("Surface Distortion Amount", Range(0, 1)) = 0.27
         _FoamMaxDistance("Foam Maximum Distance", Float) = 0.4
-        _FoamMinDistance("Foam Minimum Distance", Float) = 0.04        
+        _FoamMinDistance("Foam Minimum Distance", Float) = 0.04
     }
     SubShader
     {
-        Tags {"RenderType"="Transparent" "Queue"="Transparent" "RenderPipeline"="UniversalPipeline"}
+        Tags
+        {
+            "RenderType"="Transparent" "Queue"="Transparent" "RenderPipeline"="UniversalPipeline"
+        }
 
         HLSLINCLUDE
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
@@ -56,7 +59,10 @@ Shader "Roystan/Toon/Water Tut URP"
         Pass
         {
             Name "WaterPass"
-            Tags {"LightMode"="UniversalForward"}
+            Tags
+            {
+                "LightMode"="UniversalForward"
+            }
 
             Blend SrcAlpha OneMinusSrcAlpha
             ZWrite Off
@@ -109,13 +115,16 @@ Shader "Roystan/Toon/Water Tut URP"
 
                 float surfaceNoiseCutoff = foamDepthDifference01 * _SurfaceNoiseCutoff;
 
-                float2 distortSample = (SAMPLE_TEXTURE2D(_SurfaceDistortion, sampler_SurfaceDistortion, IN.distortUV).xy * 2 - 1) * _SurfaceDistortionAmount;
+                float2 distortSample = (SAMPLE_TEXTURE2D(_SurfaceDistortion, sampler_SurfaceDistortion, IN.distortUV).xy
+                    * 2 - 1) * _SurfaceDistortionAmount;
 
-                float2 noiseUV = float2((IN.noiseUV.x + _Time.y * _SurfaceNoiseScroll.x) + distortSample.x, 
-                                        (IN.noiseUV.y + _Time.y * _SurfaceNoiseScroll.y) + distortSample.y);
+                float2 noiseUV = float2((IN.noiseUV.x + _Time.y * _SurfaceNoiseScroll.x) + distortSample.x,
+                                                            (IN.noiseUV.y + _Time.y * _SurfaceNoiseScroll.y) +
+                                                            distortSample.y);
                 float surfaceNoiseSample = SAMPLE_TEXTURE2D(_SurfaceNoise, sampler_SurfaceNoise, noiseUV).r;
 
-                float surfaceNoise = smoothstep(surfaceNoiseCutoff - SMOOTHSTEP_AA, surfaceNoiseCutoff + SMOOTHSTEP_AA, surfaceNoiseSample);
+                float surfaceNoise = smoothstep(surfaceNoiseCutoff - SMOOTHSTEP_AA, surfaceNoiseCutoff + SMOOTHSTEP_AA,
+     surfaceNoiseSample);
 
                 float4 surfaceNoiseColor = _FoamColor;
                 surfaceNoiseColor.a *= surfaceNoise;

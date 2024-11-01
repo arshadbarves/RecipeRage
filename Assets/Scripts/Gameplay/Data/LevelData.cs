@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Utilities.Editor.Attributes;
@@ -20,13 +21,13 @@ namespace Gameplay.Data
         [field: SerializeField] public AudioClip LevelMusic { get; private set; }
     }
 
-    [System.Serializable]
+    [Serializable]
     public struct TeamSpawnPoints
     {
         [field: SerializeField] public TeamID Team { get; private set; }
         [field: SerializeField] public List<Vector3> SpawnPoints { get; private set; }
     }
-    
+
     public enum TeamID
     {
         Team1,

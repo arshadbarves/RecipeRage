@@ -14,7 +14,7 @@ namespace Gameplay.Data
     [CreateAssetMenu(fileName = "New PowerUp", menuName = "Recipe Rage/PowerUp")]
     public class PowerUpData : ScriptableObject
     {
-        [field: SerializeField,GenerateUniqueId] public string PowerUpId { get; private set; }
+        [field: SerializeField, GenerateUniqueId] public string PowerUpId { get; private set; }
         [field: SerializeField] public PowerUpType Type { get; private set; }
         [field: SerializeField] public string PowerUpName { get; private set; }
         [field: SerializeField] public Sprite Icon { get; private set; }

@@ -25,11 +25,11 @@ namespace GameSystem.UI.UIPanels
             StartLogoAnimation();
         }
 
-        void StartLogoAnimation()
+        private void StartLogoAnimation()
         {
             _splashElement.style.opacity = 0;
             _splashElement.transform.scale = new Vector3(0.5f, 0.5f, 1);
-            
+
             _splashElement.schedule.Execute(() =>
             {
                 _splashElement.experimental.animation
@@ -41,7 +41,7 @@ namespace GameSystem.UI.UIPanels
             _splashElement.schedule.Execute(TransitionToMainScene).StartingIn(2500);
         }
 
-        void TransitionToMainScene()
+        private void TransitionToMainScene()
         {
             // Fade out
             _splashElement.experimental.animation

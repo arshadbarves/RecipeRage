@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Core;
 using Gameplay.GameMode;
 
 namespace GameSystem.Gameplay
@@ -9,17 +10,17 @@ namespace GameSystem.Gameplay
 
         public Task InitializeAsync()
         {
-            throw new System.NotImplementedException();
+            GameModeConfig[] gameModeConfigs = GameManager.Instance.GetGameModeConfigs();
+            return Task.CompletedTask;
         }
 
         public void Update()
         {
-            throw new System.NotImplementedException();
         }
 
         public Task CleanupAsync()
         {
-            throw new System.NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public void StartGame()

@@ -9,7 +9,7 @@ namespace GameSystem.State
 
         protected BaseGameState(GameManager gameManager)
         {
-            this.GameManager = gameManager;
+            GameManager = gameManager;
         }
 
         public abstract void Enter();

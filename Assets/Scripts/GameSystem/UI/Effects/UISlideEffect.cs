@@ -9,8 +9,9 @@ namespace GameSystem.UI.Effects
     {
         public enum SlideDirection { Left, Right, Up, Down }
 
-        private readonly float _duration;
         private readonly SlideDirection _direction;
+
+        private readonly float _duration;
 
         public UISlideEffect(float duration = 0.5f, SlideDirection direction = SlideDirection.Left)
         {
@@ -22,7 +23,7 @@ namespace GameSystem.UI.Effects
         {
             // Ensure the element is visible and interactive before animation
             uiElement.style.display = DisplayStyle.Flex;
-            uiElement.pickingMode = PickingMode.Position;  // Enable interaction
+            uiElement.pickingMode = PickingMode.Position; // Enable interaction
 
             // Start the slide-in animation
             AnimateSlide(uiElement, true, () => onComplete?.Invoke());
@@ -31,7 +32,7 @@ namespace GameSystem.UI.Effects
         public void ApplyTransitionOut(VisualElement uiElement, Action onComplete)
         {
             // Make the element non-interactive during the slide-out animation
-            uiElement.pickingMode = PickingMode.Ignore;  // Disable interaction
+            uiElement.pickingMode = PickingMode.Ignore; // Disable interaction
 
             // Start the slide-out animation
             AnimateSlide(uiElement, false, () =>
@@ -51,8 +52,8 @@ namespace GameSystem.UI.Effects
             // Perform the animation using the left and top style values
             uiElement.experimental.animation
                 .Start(new StyleValues { left = startValue.x, top = startValue.y },
-                       new StyleValues { left = endValue.x, top = endValue.y },
-                       (int)(_duration * 1000))  // Convert duration to milliseconds
+                    new StyleValues { left = endValue.x, top = endValue.y },
+                    (int)(_duration * 1000)) // Convert duration to milliseconds
                 .Ease(isIn ? Easing.OutCubic : Easing.InCubic)
                 .OnCompleted(() => onComplete?.Invoke());
         }

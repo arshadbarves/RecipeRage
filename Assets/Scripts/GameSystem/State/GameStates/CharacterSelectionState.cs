@@ -2,7 +2,7 @@ using Core;
 
 namespace GameSystem.State.GameStates
 {
-    public class CharacterSelectionState: BaseGameState
+    public class CharacterSelectionState : BaseGameState
     {
         public CharacterSelectionState(GameManager gameManager) : base(gameManager)
         {
@@ -15,7 +15,7 @@ namespace GameSystem.State.GameStates
 
         public override void Update()
         {
-            
+
         }
 
         public override void Exit()

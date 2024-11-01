@@ -40,7 +40,7 @@ namespace Brawlers
 
         protected override void PrimaryAttack()
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         protected override void SecondaryAttack()
@@ -50,7 +50,7 @@ namespace Brawlers
 
         protected override void PrimaryInteract()
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         protected override void SecondaryInteract()
@@ -60,12 +60,12 @@ namespace Brawlers
 
         public override Vector3 GetMoveDirection()
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         protected override bool ShouldUseAbility(Ability ability)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
     }
 }

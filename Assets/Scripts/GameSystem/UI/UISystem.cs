@@ -11,12 +11,12 @@ namespace GameSystem.UI
     public class UISystem : IGameSystem
     {
         private readonly Dictionary<Type, IUIPanel> _uiPanels = new Dictionary<Type, IUIPanel>();
-
-        private UIPanelConfig[] _uiPanelConfigs;
+        [Inject] private Canvas _mainCanvas;
+        [Inject] private UIDocument _uiDocument;
 
         [Inject] private IUIFactory _uiFactory;
-        [Inject] private UIDocument _uiDocument;
-        [Inject] private Canvas _mainCanvas;
+
+        private UIPanelConfig[] _uiPanelConfigs;
 
         public async Task InitializeAsync()
         {
@@ -25,6 +25,24 @@ namespace GameSystem.UI
             {
                 await CreateUIPanel(config);
             }
+        }
+
+        public void Update()
+        {
+            foreach (IUIPanel panel in _uiPanels.Values)
+            {
+                panel.UpdatePanel();
+            }
+        }
+
+        public async Task CleanupAsync()
+        {
+            foreach (IUIPanel panel in _uiPanels.Values)
+            {
+                await panel.CleanupAsync();
+            }
+
+            _uiPanels.Clear();
         }
 
         private async Task CreateUIPanel(UIPanelConfig config)
@@ -54,7 +72,7 @@ namespace GameSystem.UI
 
         public void HidePanel<T>(Action onPanelHidden = null) where T : IUIPanel
         {
-            if (_uiPanels.TryGetValue(typeof(T), out var panel))
+            if (_uiPanels.TryGetValue(typeof(T), out IUIPanel panel))
             {
                 panel.Hide(() =>
                 {
@@ -64,24 +82,6 @@ namespace GameSystem.UI
             }
         }
 
-        public void Update()
-        {
-            foreach (var panel in _uiPanels.Values)
-            {
-                panel.UpdatePanel();
-            }
-        }
-
-        public async Task CleanupAsync()
-        {
-            foreach (var panel in _uiPanels.Values)
-            {
-                await panel.CleanupAsync();
-            }
-
-            _uiPanels.Clear();
-        }
-        
         public Canvas GetCanvas()
         {
             return _mainCanvas;

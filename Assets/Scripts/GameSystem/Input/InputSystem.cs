@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Core.TouchInputSystem;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Action = Unity.Plastic.Antlr3.Runtime.Misc.Action;
 
 namespace GameSystem.Input
@@ -10,16 +11,11 @@ namespace GameSystem.Input
     {
         private TouchInputManager _inputManager;
         private PlayerInput _playerInput;
+        private Action<InputAction.CallbackContext> _primaryAttackAction;
 
-        public event Action OnPrimaryInteractAction;
-        public event Action OnSecondaryInteractAction;
-        public event Action OnPrimaryAttackAction;
-        public event Action OnSecondaryAttackAction;
-
-        private Action<UnityEngine.InputSystem.InputAction.CallbackContext> _primaryInteractAction;
-        private Action<UnityEngine.InputSystem.InputAction.CallbackContext> _secondaryInteractAction;
-        private Action<UnityEngine.InputSystem.InputAction.CallbackContext> _primaryAttackAction;
-        private Action<UnityEngine.InputSystem.InputAction.CallbackContext> _secondaryAttackAction;
+        private Action<InputAction.CallbackContext> _primaryInteractAction;
+        private Action<InputAction.CallbackContext> _secondaryAttackAction;
+        private Action<InputAction.CallbackContext> _secondaryInteractAction;
 
         public async Task InitializeAsync()
         {
@@ -51,6 +47,11 @@ namespace GameSystem.Input
 
             await Task.CompletedTask;
         }
+
+        public event Action OnPrimaryInteractAction;
+        public event Action OnSecondaryInteractAction;
+        public event Action OnPrimaryAttackAction;
+        public event Action OnSecondaryAttackAction;
 
         public Vector2 GetMovementInput()
         {
