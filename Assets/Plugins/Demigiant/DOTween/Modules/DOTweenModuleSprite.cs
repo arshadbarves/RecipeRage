@@ -8,7 +8,7 @@ using UnityEngine;
 #pragma warning disable 1591
 namespace DG.Tweening
 {
-    public static class DOTweenModuleSprite
+    public static class DoTweenModuleSprite
     {
         #region Shortcuts
 
@@ -20,7 +20,7 @@ namespace DG.Tweening
         /// </summary>
         /// <param name="endValue">The end value to reach</param>
         /// <param name="duration">The duration of the tween</param>
-        public static TweenerCore<Color, Color, ColorOptions> DOColor(this SpriteRenderer target, Color endValue, float duration)
+        public static TweenerCore<Color, Color, ColorOptions> DoColor(this SpriteRenderer target, Color endValue, float duration)
         {
             TweenerCore<Color, Color, ColorOptions> t = DOTween.To(() => target.color, x => target.color = x, endValue, duration);
             t.SetTarget(target);
@@ -33,7 +33,7 @@ namespace DG.Tweening
         /// </summary>
         /// <param name="endValue">The end value to reach</param>
         /// <param name="duration">The duration of the tween</param>
-        public static TweenerCore<Color, Color, ColorOptions> DOFade(this SpriteRenderer target, float endValue, float duration)
+        public static TweenerCore<Color, Color, ColorOptions> DoFade(this SpriteRenderer target, float endValue, float duration)
         {
             TweenerCore<Color, Color, ColorOptions> t = DOTween.ToAlpha(() => target.color, x => target.color = x, endValue, duration);
             t.SetTarget(target);
@@ -47,7 +47,7 @@ namespace DG.Tweening
         /// </summary>
         /// <param name="gradient">The gradient to use</param>
         /// <param name="duration">The duration of the tween</param>
-        public static Sequence DOGradientColor(this SpriteRenderer target, Gradient gradient, float duration)
+        public static Sequence DoGradientColor(this SpriteRenderer target, Gradient gradient, float duration)
         {
             Sequence s = DOTween.Sequence();
             GradientColorKey[] colors = gradient.colorKeys;
@@ -63,7 +63,7 @@ namespace DG.Tweening
                 float colorDuration = i == len - 1
                     ? duration - s.Duration(false) // Verifies that total duration is correct
                     : duration * (i == 0 ? c.time : c.time - colors[i - 1].time);
-                s.Append(target.DOColor(c.color, colorDuration).SetEase(Ease.Linear));
+                s.Append(target.DoColor(c.color, colorDuration).SetEase(Ease.Linear));
             }
             s.SetTarget(target);
             return s;
@@ -83,7 +83,7 @@ namespace DG.Tweening
         /// </summary>
         /// <param name="endValue">The value to tween to</param>
         /// <param name="duration">The duration of the tween</param>
-        public static Tweener DOBlendableColor(this SpriteRenderer target, Color endValue, float duration)
+        public static Tweener DoBlendableColor(this SpriteRenderer target, Color endValue, float duration)
         {
             endValue = endValue - target.color;
             Color to = new Color(0, 0, 0, 0);

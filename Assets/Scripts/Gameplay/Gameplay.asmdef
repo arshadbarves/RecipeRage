@@ -1,0 +1,22 @@
+{
+    "name": "RecipeRage.Gameplay",
+    "rootNamespace": "RecipeRage.Gameplay",
+    "references": [
+        "Unity.Netcode.Runtime",
+        "Unity.Netcode.Components",
+        "Unity.Collections",
+        "VContainer",
+        "RecipeRage.Core.Events",
+        "RecipeRage.Core.Pooling",
+        "RecipeRage.Core.SceneManagement"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

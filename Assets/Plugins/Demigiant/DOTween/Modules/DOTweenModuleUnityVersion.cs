@@ -16,7 +16,7 @@ namespace DG.Tweening
     ///     Shortcuts/functions that are not strictly related to specific Modules
     ///     but are available only on some Unity versions
     /// </summary>
-    public static class DOTweenModuleUnityVersion
+    public static class DoTweenModuleUnityVersion
     {
         #region Material
 
@@ -27,7 +27,7 @@ namespace DG.Tweening
         /// </summary>
         /// <param name="gradient">The gradient to use</param>
         /// <param name="duration">The duration of the tween</param>
-        public static Sequence DOGradientColor(this Material target, Gradient gradient, float duration)
+        public static Sequence DoGradientColor(this Material target, Gradient gradient, float duration)
         {
             Sequence s = DOTween.Sequence();
             GradientColorKey[] colors = gradient.colorKeys;
@@ -56,7 +56,7 @@ namespace DG.Tweening
         /// <param name="gradient">The gradient to use</param>
         /// <param name="property">The name of the material property to tween (like _Tint or _SpecColor)</param>
         /// <param name="duration">The duration of the tween</param>
-        public static Sequence DOGradientColor(this Material target, Gradient gradient, string property, float duration)
+        public static Sequence DoGradientColor(this Material target, Gradient gradient, string property, float duration)
         {
             Sequence s = DOTween.Sequence();
             GradientColorKey[] colors = gradient.colorKeys;
@@ -95,7 +95,7 @@ namespace DG.Tweening
                 if (Debugger.logPriority > 0) Debugger.LogInvalidTween(t);
                 return null;
             }
-            return new DOTweenCYInstruction.WaitForCompletion(t);
+            return new DoTweenCyInstruction.WaitForCompletion(t);
         }
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace DG.Tweening
                 if (Debugger.logPriority > 0) Debugger.LogInvalidTween(t);
                 return null;
             }
-            return new DOTweenCYInstruction.WaitForRewind(t);
+            return new DoTweenCyInstruction.WaitForRewind(t);
         }
 
         /// <summary>
@@ -127,7 +127,7 @@ namespace DG.Tweening
                 if (Debugger.logPriority > 0) Debugger.LogInvalidTween(t);
                 return null;
             }
-            return new DOTweenCYInstruction.WaitForKill(t);
+            return new DoTweenCyInstruction.WaitForKill(t);
         }
 
         /// <summary>
@@ -145,7 +145,7 @@ namespace DG.Tweening
                 if (Debugger.logPriority > 0) Debugger.LogInvalidTween(t);
                 return null;
             }
-            return new DOTweenCYInstruction.WaitForElapsedLoops(t, elapsedLoops);
+            return new DoTweenCyInstruction.WaitForElapsedLoops(t, elapsedLoops);
         }
 
         /// <summary>
@@ -163,7 +163,7 @@ namespace DG.Tweening
                 if (Debugger.logPriority > 0) Debugger.LogInvalidTween(t);
                 return null;
             }
-            return new DOTweenCYInstruction.WaitForPosition(t, position);
+            return new DoTweenCyInstruction.WaitForPosition(t, position);
         }
 
         /// <summary>
@@ -180,7 +180,7 @@ namespace DG.Tweening
                 if (Debugger.logPriority > 0) Debugger.LogInvalidTween(t);
                 return null;
             }
-            return new DOTweenCYInstruction.WaitForStart(t);
+            return new DoTweenCyInstruction.WaitForStart(t);
         }
 
         #endregion
@@ -197,7 +197,7 @@ namespace DG.Tweening
         /// <param name="endValue">The end value to reach</param>
         /// <param name="propertyID">The ID of the material property to tween (also called nameID in Unity's manual)</param>
         /// <param name="duration">The duration of the tween</param>
-        public static TweenerCore<Vector2, Vector2, VectorOptions> DOOffset(this Material target, Vector2 endValue, int propertyID, float duration)
+        public static TweenerCore<Vector2, Vector2, VectorOptions> DoOffset(this Material target, Vector2 endValue, int propertyID, float duration)
         {
             if (!target.HasProperty(propertyID))
             {
@@ -216,7 +216,7 @@ namespace DG.Tweening
         /// <param name="endValue">The end value to reach</param>
         /// <param name="propertyID">The ID of the material property to tween (also called nameID in Unity's manual)</param>
         /// <param name="duration">The duration of the tween</param>
-        public static TweenerCore<Vector2, Vector2, VectorOptions> DOTiling(this Material target, Vector2 endValue, int propertyID, float duration)
+        public static TweenerCore<Vector2, Vector2, VectorOptions> DoTiling(this Material target, Vector2 endValue, int propertyID, float duration)
         {
             if (!target.HasProperty(propertyID))
             {
@@ -349,70 +349,70 @@ namespace DG.Tweening
     // ███ CLASSES █████████████████████████████████████████████████████████████████████████████████████████████████████████
     // █████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
 
-    public static class DOTweenCYInstruction
+    public static class DoTweenCyInstruction
     {
         public class WaitForCompletion : CustomYieldInstruction
         {
-            private readonly Tween t;
+            private readonly Tween _t;
             public WaitForCompletion(Tween tween)
             {
-                t = tween;
+                _t = tween;
             }
-            public override bool keepWaiting => t.active && !t.IsComplete();
+            public override bool keepWaiting => _t.active && !_t.IsComplete();
         }
 
         public class WaitForRewind : CustomYieldInstruction
         {
-            private readonly Tween t;
+            private readonly Tween _t;
             public WaitForRewind(Tween tween)
             {
-                t = tween;
+                _t = tween;
             }
-            public override bool keepWaiting => t.active && (!t.playedOnce || t.position * (t.CompletedLoops() + 1) > 0);
+            public override bool keepWaiting => _t.active && (!_t.playedOnce || _t.position * (_t.CompletedLoops() + 1) > 0);
         }
 
         public class WaitForKill : CustomYieldInstruction
         {
-            private readonly Tween t;
+            private readonly Tween _t;
             public WaitForKill(Tween tween)
             {
-                t = tween;
+                _t = tween;
             }
-            public override bool keepWaiting => t.active;
+            public override bool keepWaiting => _t.active;
         }
 
         public class WaitForElapsedLoops : CustomYieldInstruction
         {
-            private readonly int elapsedLoops;
-            private readonly Tween t;
+            private readonly int _elapsedLoops;
+            private readonly Tween _t;
             public WaitForElapsedLoops(Tween tween, int elapsedLoops)
             {
-                t = tween;
-                this.elapsedLoops = elapsedLoops;
+                _t = tween;
+                _elapsedLoops = elapsedLoops;
             }
-            public override bool keepWaiting => t.active && t.CompletedLoops() < elapsedLoops;
+            public override bool keepWaiting => _t.active && _t.CompletedLoops() < _elapsedLoops;
         }
 
         public class WaitForPosition : CustomYieldInstruction
         {
-            private readonly float position;
-            private readonly Tween t;
+            private readonly float _position;
+            private readonly Tween _t;
             public WaitForPosition(Tween tween, float position)
             {
-                t = tween;
-                this.position = position;
+                _t = tween;
+                _position = position;
             }
-            public override bool keepWaiting => t.active && t.position * (t.CompletedLoops() + 1) < position;
+            public override bool keepWaiting => _t.active && _t.position * (_t.CompletedLoops() + 1) < _position;
         }
 
         public class WaitForStart : CustomYieldInstruction
         {
-            private readonly Tween t;
+            private readonly Tween _t;
             public WaitForStart(Tween tween)
             {
-                t = tween;
+                _t = tween;
             }
-            public override bool keepWaiting => t.active && !t.playedOnce;
+            public override bool keepWaiting => _t.active && !_t.playedOnce;
         }
     }
 }
