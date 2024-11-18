@@ -11,7 +11,7 @@ using UnityEngine;
 #pragma warning disable 1591
 namespace DG.Tweening
 {
-    public static class DOTweenModulePhysics
+    public static class DoTweenModulePhysics
     {
         #region Shortcuts
 
@@ -24,7 +24,7 @@ namespace DG.Tweening
         /// <param name="endValue">The end value to reach</param>
         /// <param name="duration">The duration of the tween</param>
         /// <param name="snapping">If TRUE the tween will smoothly snap all values to integers</param>
-        public static TweenerCore<Vector3, Vector3, VectorOptions> DOMove(this Rigidbody target, Vector3 endValue, float duration, bool snapping = false)
+        public static TweenerCore<Vector3, Vector3, VectorOptions> DoMove(this Rigidbody target, Vector3 endValue, float duration, bool snapping = false)
         {
             TweenerCore<Vector3, Vector3, VectorOptions> t = DOTween.To(() => target.position, target.MovePosition, endValue, duration);
             t.SetOptions(snapping).SetTarget(target);
@@ -38,7 +38,7 @@ namespace DG.Tweening
         /// <param name="endValue">The end value to reach</param>
         /// <param name="duration">The duration of the tween</param>
         /// <param name="snapping">If TRUE the tween will smoothly snap all values to integers</param>
-        public static TweenerCore<Vector3, Vector3, VectorOptions> DOMoveX(this Rigidbody target, float endValue, float duration, bool snapping = false)
+        public static TweenerCore<Vector3, Vector3, VectorOptions> DoMoveX(this Rigidbody target, float endValue, float duration, bool snapping = false)
         {
             TweenerCore<Vector3, Vector3, VectorOptions> t = DOTween.To(() => target.position, target.MovePosition, new Vector3(endValue, 0, 0), duration);
             t.SetOptions(AxisConstraint.X, snapping).SetTarget(target);
@@ -52,7 +52,7 @@ namespace DG.Tweening
         /// <param name="endValue">The end value to reach</param>
         /// <param name="duration">The duration of the tween</param>
         /// <param name="snapping">If TRUE the tween will smoothly snap all values to integers</param>
-        public static TweenerCore<Vector3, Vector3, VectorOptions> DOMoveY(this Rigidbody target, float endValue, float duration, bool snapping = false)
+        public static TweenerCore<Vector3, Vector3, VectorOptions> DoMoveY(this Rigidbody target, float endValue, float duration, bool snapping = false)
         {
             TweenerCore<Vector3, Vector3, VectorOptions> t = DOTween.To(() => target.position, target.MovePosition, new Vector3(0, endValue, 0), duration);
             t.SetOptions(AxisConstraint.Y, snapping).SetTarget(target);
@@ -66,7 +66,7 @@ namespace DG.Tweening
         /// <param name="endValue">The end value to reach</param>
         /// <param name="duration">The duration of the tween</param>
         /// <param name="snapping">If TRUE the tween will smoothly snap all values to integers</param>
-        public static TweenerCore<Vector3, Vector3, VectorOptions> DOMoveZ(this Rigidbody target, float endValue, float duration, bool snapping = false)
+        public static TweenerCore<Vector3, Vector3, VectorOptions> DoMoveZ(this Rigidbody target, float endValue, float duration, bool snapping = false)
         {
             TweenerCore<Vector3, Vector3, VectorOptions> t = DOTween.To(() => target.position, target.MovePosition, new Vector3(0, 0, endValue), duration);
             t.SetOptions(AxisConstraint.Z, snapping).SetTarget(target);
@@ -80,7 +80,7 @@ namespace DG.Tweening
         /// <param name="endValue">The end value to reach</param>
         /// <param name="duration">The duration of the tween</param>
         /// <param name="mode">Rotation mode</param>
-        public static TweenerCore<Quaternion, Vector3, QuaternionOptions> DORotate(this Rigidbody target, Vector3 endValue, float duration, RotateMode mode = RotateMode.Fast)
+        public static TweenerCore<Quaternion, Vector3, QuaternionOptions> DoRotate(this Rigidbody target, Vector3 endValue, float duration, RotateMode mode = RotateMode.Fast)
         {
             TweenerCore<Quaternion, Vector3, QuaternionOptions> t = DOTween.To(() => target.rotation, target.MoveRotation, endValue, duration);
             t.SetTarget(target);
@@ -96,7 +96,7 @@ namespace DG.Tweening
         /// <param name="duration">The duration of the tween</param>
         /// <param name="axisConstraint">Eventual axis constraint for the rotation</param>
         /// <param name="up">The vector that defines in which direction up is (default: Vector3.up)</param>
-        public static TweenerCore<Quaternion, Vector3, QuaternionOptions> DOLookAt(this Rigidbody target, Vector3 towards, float duration, AxisConstraint axisConstraint = AxisConstraint.None, Vector3? up = null)
+        public static TweenerCore<Quaternion, Vector3, QuaternionOptions> DoLookAt(this Rigidbody target, Vector3 towards, float duration, AxisConstraint axisConstraint = AxisConstraint.None, Vector3? up = null)
         {
             TweenerCore<Quaternion, Vector3, QuaternionOptions> t = DOTween.To(() => target.rotation, target.MoveRotation, towards, duration)
                 .SetTarget(target).SetSpecialStartupMode(SpecialStartupMode.SetLookAt);
@@ -117,7 +117,7 @@ namespace DG.Tweening
         /// <param name="numJumps">Total number of jumps</param>
         /// <param name="duration">The duration of the tween</param>
         /// <param name="snapping">If TRUE the tween will smoothly snap all values to integers</param>
-        public static Sequence DOJump(this Rigidbody target, Vector3 endValue, float jumpPower, int numJumps, float duration, bool snapping = false)
+        public static Sequence DoJump(this Rigidbody target, Vector3 endValue, float jumpPower, int numJumps, float duration, bool snapping = false)
         {
             if (numJumps < 1) numJumps = 1;
             float startPosY = 0;
@@ -173,7 +173,7 @@ namespace DG.Tweening
         ///     The color of the path (shown when gizmos are active in the Play panel and the tween is
         ///     running)
         /// </param>
-        public static TweenerCore<Vector3, Path, PathOptions> DOPath(
+        public static TweenerCore<Vector3, Path, PathOptions> DoPath(
             this Rigidbody target, Vector3[] path, float duration, PathType pathType = PathType.Linear,
             PathMode pathMode = PathMode.Full3D, int resolution = 10, Color? gizmoColor = null
         )
@@ -210,7 +210,7 @@ namespace DG.Tweening
         ///     The color of the path (shown when gizmos are active in the Play panel and the tween is
         ///     running)
         /// </param>
-        public static TweenerCore<Vector3, Path, PathOptions> DOLocalPath(
+        public static TweenerCore<Vector3, Path, PathOptions> DoLocalPath(
             this Rigidbody target, Vector3[] path, float duration, PathType pathType = PathType.Linear,
             PathMode pathMode = PathMode.Full3D, int resolution = 10, Color? gizmoColor = null
         )
@@ -226,7 +226,7 @@ namespace DG.Tweening
             return t;
         }
         // Used by path editor when creating the actual tween, so it can pass a pre-compiled path
-        internal static TweenerCore<Vector3, Path, PathOptions> DOPath(
+        internal static TweenerCore<Vector3, Path, PathOptions> DoPath(
             this Rigidbody target, Path path, float duration, PathMode pathMode = PathMode.Full3D
         )
         {
@@ -237,7 +237,7 @@ namespace DG.Tweening
             t.plugOptions.mode = pathMode;
             return t;
         }
-        internal static TweenerCore<Vector3, Path, PathOptions> DOLocalPath(
+        internal static TweenerCore<Vector3, Path, PathOptions> DoLocalPath(
             this Rigidbody target, Path path, float duration, PathMode pathMode = PathMode.Full3D
         )
         {

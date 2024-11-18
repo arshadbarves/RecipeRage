@@ -1,3 +1,4 @@
+#if false
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -79,3 +80,4 @@ namespace GameSystem.UI.Effects
         }
     }
 }
+#endif
