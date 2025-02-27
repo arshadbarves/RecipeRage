@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c81d758f8e47494887ec327e93ba221, type: 3}
+  m_Name: Lettuce
+  m_EditorClassIdentifier: 
+  ingredientId: lettuce
+  displayName: Lettuce
+  rawIcon: {fileID: 0}
+  cookedIcon: {fileID: 0}
+  burntIcon: {fileID: 0}
+  rawPrefab: {fileID: 0}
+  cookedPrefab: {fileID: 0}
+  burntPrefab: {fileID: 0}
+  validCookingMethods:
+  - 6 # Chop
+  baseValue: 15
+  cookingTime: 30
+  burningThreshold: 0
+  validCombinations:
+  - bun
+  - tomato
+  - onion 

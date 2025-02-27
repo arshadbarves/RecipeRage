@@ -1,0 +1,133 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Custom_MobileAnimeURP
+  m_Shader: {fileID: 4800000, guid: 7cad621714eb44981825540510213281, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords:
+  - _USE_COLOR_SHIFT
+  - _USE_OUTLINE
+  - _USE_RIM_LIGHT
+  - _USE_SPECULAR
+  - _USE_STATE_EFFECTS
+  - _USE_TOON_SHADING
+  m_InvalidKeywords:
+  - _MATCAPADDITIVE_ON
+  - _OUTLINE_SCREEN_SPACE
+  - _USEOUTLINE_ON
+  - _USERIMLIGHT_ON
+  - _USESPECULAR_ON
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BaseMap:
+        m_Texture: {fileID: 2800000, guid: 4e2dcb5e04c56454cbc3b86631b9bd35, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _HatchingTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MatCap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ToonRamp:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _AnimeSpecular: 0
+    - _ColorShiftStrength: 0.3
+    - _DisabledSaturation: 0.5
+    - _EmissionStrength: 1
+    - _EnableHatching: 0
+    - _ErrorPulseSpeed: 5
+    - _HatchingScale: 10
+    - _HatchingStrength: 0.5
+    - _HighlightIntensity: 0.5
+    - _HighlightPulseSpeed: 2
+    - _IsDisabled: 0
+    - _IsError: 0
+    - _IsHighlighted: 0
+    - _IsProcessing: 0
+    - _IsSuccess: 0
+    - _MatCapAdditive: 1
+    - _MatCapStrength: 1
+    - _MobileMode: 0
+    - _OutlineFarDistance: 5
+    - _OutlineMinWidth: 0.1
+    - _OutlineScreenSpace: 0
+    - _OutlineUseShadowColor: 0
+    - _OutlineWidth: 1
+    - _ProcessingPulseSpeed: 3
+    - _PulseMinStrength: 0.5
+    - _PulseSpeed: 1
+    - _PulsingEmission: 0
+    - _QualityLevel: 1
+    - _RimInvert: 0
+    - _RimLightmask: 0
+    - _RimPower: 10
+    - _RimSmoothness: 0
+    - _RimThreshold: 1
+    - _ShadowSmoothness: 0.05
+    - _ShadowSteps: 1
+    - _ShadowThreshold: 0.1
+    - _SoftParticleDistance: 1
+    - _SpecularSize: 0.1
+    - _SpecularSmoothness: 0.5
+    - _SpecularThreshold: 0.8
+    - _SuccessDuration: 1
+    - _UseColorShift: 1
+    - _UseEmission: 0
+    - _UseMatCap: 0
+    - _UseOutline: 1
+    - _UseRampTexture: 0
+    - _UseRimLight: 1
+    - _UseSpecular: 1
+    - _UseStateEffects: 1
+    - _UseToonShading: 1
+    m_Colors:
+    - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _BrightColor: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _DarkColor: {r: 0.9, g: 0.9, b: 1, a: 1}
+    - _DisabledColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _ErrorColor: {r: 1, g: 0, b: 0, a: 1}
+    - _HatchingDarkColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
+    - _HatchingLightColor: {r: 0.9, g: 0.9, b: 0.9, a: 1}
+    - _HighlightColor: {r: 1, g: 0.8, b: 0, a: 1}
+    - _OutlineColor: {r: 0, g: 0, b: 0, a: 1}
+    - _OutlineColorFar: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
+    - _ProcessingColor: {r: 0, g: 0.7, b: 1, a: 1}
+    - _RimColor: {r: 1, g: 1, b: 1, a: 1}
+    - _ShadowColor: {r: 0.7, g: 0.7, b: 0.7, a: 1}
+    - _ShadowColorSecond: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}
+    - _SuccessColor: {r: 0, g: 1, b: 0.19999996, a: 1}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1
