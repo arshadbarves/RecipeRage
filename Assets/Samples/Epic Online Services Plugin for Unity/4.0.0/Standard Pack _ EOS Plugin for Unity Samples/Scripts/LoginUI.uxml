@@ -1,0 +1,8 @@
+<UXML xmlns="UnityEngine.UIElements" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <VisualElement class="login-container">
+        <Label text="Login" class="login-title"/>
+        <TextField name="username" label="Username" class="login-input"/>
+        <TextField name="password" label="Password" class="login-input" isPasswordField="true"/>
+        <Button text="Login" class="login-button" />
+    </VisualElement>
+</UXML> 
