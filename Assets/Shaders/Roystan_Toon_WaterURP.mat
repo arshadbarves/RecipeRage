@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Roystan_Toon_WaterURP
+  m_Shader: {fileID: 4800000, guid: 9b7f9997972674d3288bf2170ba0324d, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _CausticsTexture:
+        m_Texture: {fileID: 2800000, guid: 7fa68784296ba4c16b19aab583854888, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SurfaceDistortion:
+        m_Texture: {fileID: 2800000, guid: d9e0dc89c54084885adbf058623adfa9, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SurfaceNoise:
+        m_Texture: {fileID: 2800000, guid: c967bba2549cc4c73823c8d8dc2e3a2e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _CausticsIntensity: 1
+    - _CausticsScale: 1
+    - _DepthMaxDistance: 1
+    - _FoamMaxDistance: 0.4
+    - _FoamMinDistance: 0.04
+    - _FresnelStrength: 0.5
+    - _NormalMapScale: 0.1
+    - _NormalMapStrength: 1
+    - _ReflectionStrength: 0.3
+    - _SpecularStrength: 1
+    - _SurfaceDistortionAmount: 1
+    - _SurfaceNoiseCutoff: 0.777
+    - _WaveHeight: 0.1
+    - _WaveScale: 1
+    - _WaveSpeed: 1
+    m_Colors:
+    - _CausticsScrollSpeed: {r: 0.1, g: 0.1, b: 0, a: 0}
+    - _DepthGradientDeep: {r: 0.08599999, g: 0.40699998, b: 1, a: 0.749}
+    - _DepthGradientShallow: {r: 0.32499996, g: 0.807, b: 0.971, a: 0.725}
+    - _FoamColor: {r: 1, g: 1, b: 1, a: 1}
+    - _ReflectionColor: {r: 1, g: 1, b: 1, a: 1}
+    - _SurfaceNoiseScroll: {r: 0.03, g: 0.03, b: 0, a: 0}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1
