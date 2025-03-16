@@ -1,203 +1,195 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
+using System.Threading.Tasks;
+using RecipeRage.Modules.Lobbies.Data;
 
-namespace RecipeRage.Lobbies
+namespace RecipeRage.Modules.Lobbies.Interfaces
 {
     /// <summary>
-    /// Interface for the lobby service
+    /// Interface for lobby service, handling lobby creation, joining, and management.
     /// </summary>
     public interface ILobbyService
     {
         /// <summary>
         /// Event triggered when a lobby is created
         /// </summary>
-        event Action<Lobby> OnLobbyCreated;
-
+        event Action<LobbyInfo> OnLobbyCreated;
+        
         /// <summary>
         /// Event triggered when a lobby is joined
         /// </summary>
-        event Action<Lobby> OnLobbyJoined;
-
+        event Action<LobbyInfo> OnLobbyJoined;
+        
         /// <summary>
         /// Event triggered when a lobby is left
         /// </summary>
         event Action<string> OnLobbyLeft;
-
+        
         /// <summary>
         /// Event triggered when a lobby is updated
         /// </summary>
-        event Action<Lobby> OnLobbyUpdated;
-
+        event Action<LobbyInfo> OnLobbyUpdated;
+        
         /// <summary>
-        /// Event triggered when a member joins a lobby
+        /// Event triggered when a member joins the lobby
         /// </summary>
-        event Action<LobbyMember, string> OnMemberJoined;
-
+        event Action<LobbyMember> OnMemberJoined;
+        
         /// <summary>
-        /// Event triggered when a member leaves a lobby
+        /// Event triggered when a member leaves the lobby
         /// </summary>
-        event Action<LobbyMember, string> OnMemberLeft;
-
+        event Action<LobbyMember> OnMemberLeft;
+        
         /// <summary>
-        /// Event triggered when a member is updated
+        /// Event triggered when a member is updated (e.g., status change)
         /// </summary>
-        event Action<LobbyMember, string> OnMemberUpdated;
-
+        event Action<LobbyMember> OnMemberUpdated;
+        
         /// <summary>
-        /// Event triggered when a lobby invitation is received
+        /// Event triggered when lobby search results are received
         /// </summary>
-        event Action<LobbyInvite> OnInviteReceived;
-
+        event Action<List<LobbySearchResult>> OnLobbySearchCompleted;
+        
         /// <summary>
-        /// Event triggered when a voice chat status changes
+        /// Event triggered when an invite is received
         /// </summary>
-        event Action<string, bool> OnVoiceChatStatusChanged;
-
+        event Action<string, string> OnInviteReceived;
+        
         /// <summary>
-        /// Event triggered when a player's voice chat status changes
+        /// Gets the currently active lobby, or null if not in a lobby
         /// </summary>
-        event Action<LobbyMember, bool, string> OnPlayerTalking;
-
+        LobbyInfo CurrentLobby { get; }
+        
         /// <summary>
-        /// Checks if the lobby service is initialized
+        /// Gets whether the service is initialized
         /// </summary>
         bool IsInitialized { get; }
-
+        
         /// <summary>
-        /// Gets the last error message
+        /// Gets the last error message from the service
         /// </summary>
         string LastError { get; }
-
+        
         /// <summary>
-        /// Initializes the lobby service
+        /// Initialize the lobby service
         /// </summary>
-        /// <param name="callback">Callback when initialization completes</param>
-        void Initialize(Action<bool> callback);
-
+        /// <param name="onComplete">Callback invoked when initialization is complete</param>
+        void Initialize(Action<bool> onComplete = null);
+        
         /// <summary>
-        /// Adds a lobby provider
+        /// Create a new lobby
+        /// </summary>
+        /// <param name="settings">Settings for the lobby</param>
+        /// <param name="onComplete">Callback invoked when creation is complete</param>
+        void CreateLobby(LobbySettings settings, Action<bool, LobbyInfo> onComplete = null);
+        
+        /// <summary>
+        /// Join an existing lobby by its ID
+        /// </summary>
+        /// <param name="lobbyId">ID of the lobby to join</param>
+        /// <param name="onComplete">Callback invoked when join is complete</param>
+        void JoinLobby(string lobbyId, Action<bool, LobbyInfo> onComplete = null);
+        
+        /// <summary>
+        /// Join an existing lobby using a join token (e.g., from an invite)
+        /// </summary>
+        /// <param name="joinToken">Token to join the lobby</param>
+        /// <param name="onComplete">Callback invoked when join is complete</param>
+        void JoinLobbyByToken(string joinToken, Action<bool, LobbyInfo> onComplete = null);
+        
+        /// <summary>
+        /// Leave the current lobby
+        /// </summary>
+        /// <param name="onComplete">Callback invoked when leave is complete</param>
+        void LeaveLobby(Action<bool> onComplete = null);
+        
+        /// <summary>
+        /// Update lobby attributes
+        /// </summary>
+        /// <param name="attributes">The attributes to update</param>
+        /// <param name="onComplete">Callback invoked when update is complete</param>
+        void UpdateLobbyAttributes(Dictionary<string, string> attributes, Action<bool> onComplete = null);
+        
+        /// <summary>
+        /// Update a player's attributes
+        /// </summary>
+        /// <param name="attributes">The attributes to update</param>
+        /// <param name="onComplete">Callback invoked when update is complete</param>
+        void UpdatePlayerAttributes(Dictionary<string, string> attributes, Action<bool> onComplete = null);
+        
+        /// <summary>
+        /// Update the lobby settings (max players, permissions, etc.)
+        /// </summary>
+        /// <param name="settings">The new settings</param>
+        /// <param name="onComplete">Callback invoked when update is complete</param>
+        void UpdateLobbySettings(LobbySettings settings, Action<bool> onComplete = null);
+        
+        /// <summary>
+        /// Kick a player from the lobby
+        /// </summary>
+        /// <param name="playerId">ID of the player to kick</param>
+        /// <param name="onComplete">Callback invoked when kick is complete</param>
+        void KickPlayer(string playerId, Action<bool> onComplete = null);
+        
+        /// <summary>
+        /// Promote a player to lobby owner
+        /// </summary>
+        /// <param name="playerId">ID of the player to promote</param>
+        /// <param name="onComplete">Callback invoked when promotion is complete</param>
+        void PromotePlayer(string playerId, Action<bool> onComplete = null);
+        
+        /// <summary>
+        /// Search for lobbies matching the given criteria
+        /// </summary>
+        /// <param name="searchOptions">Search options to use</param>
+        /// <param name="onComplete">Callback invoked when search is complete</param>
+        void SearchLobbies(LobbySearchOptions searchOptions, Action<bool, List<LobbySearchResult>> onComplete = null);
+        
+        /// <summary>
+        /// Send an invite to a player
+        /// </summary>
+        /// <param name="playerId">ID of the player to invite</param>
+        /// <param name="onComplete">Callback invoked when invitation is sent</param>
+        void SendInvite(string playerId, Action<bool> onComplete = null);
+        
+        /// <summary>
+        /// Accept an invite
+        /// </summary>
+        /// <param name="inviteId">ID of the invite to accept</param>
+        /// <param name="onComplete">Callback invoked when acceptance is complete</param>
+        void AcceptInvite(string inviteId, Action<bool, LobbyInfo> onComplete = null);
+        
+        /// <summary>
+        /// Reject an invite
+        /// </summary>
+        /// <param name="inviteId">ID of the invite to reject</param>
+        /// <param name="onComplete">Callback invoked when rejection is complete</param>
+        void RejectInvite(string inviteId, Action<bool> onComplete = null);
+        
+        /// <summary>
+        /// Get the list of pending invites
+        /// </summary>
+        /// <returns>List of pending invites</returns>
+        List<string> GetPendingInvites();
+        
+        /// <summary>
+        /// Refresh the current lobby information
+        /// </summary>
+        /// <param name="onComplete">Callback invoked when refresh is complete</param>
+        void RefreshLobby(Action<bool> onComplete = null);
+        
+        /// <summary>
+        /// Add a provider for lobby services
         /// </summary>
         /// <param name="provider">The provider to add</param>
         /// <returns>True if the provider was added successfully</returns>
         bool AddProvider(ILobbyProvider provider);
-
+        
         /// <summary>
-        /// Gets a lobby provider by name
+        /// Get a provider by name
         /// </summary>
         /// <param name="providerName">Name of the provider</param>
-        /// <returns>The provider if found, null otherwise</returns>
+        /// <returns>The provider, or null if not found</returns>
         ILobbyProvider GetProvider(string providerName);
-
-        /// <summary>
-        /// Creates a new lobby
-        /// </summary>
-        /// <param name="lobbyConfig">Configuration for the new lobby</param>
-        /// <param name="callback">Callback with the created lobby</param>
-        void CreateLobby(LobbyConfig lobbyConfig, Action<Lobby, bool> callback);
-
-        /// <summary>
-        /// Joins an existing lobby by ID
-        /// </summary>
-        /// <param name="lobbyId">ID of the lobby to join</param>
-        /// <param name="callback">Callback with the joined lobby</param>
-        void JoinLobbyById(string lobbyId, Action<Lobby, bool> callback);
-
-        /// <summary>
-        /// Joins a lobby from an invitation
-        /// </summary>
-        /// <param name="inviteId">ID of the invitation</param>
-        /// <param name="callback">Callback with the joined lobby</param>
-        void JoinLobbyByInvite(string inviteId, Action<Lobby, bool> callback);
-
-        /// <summary>
-        /// Leaves the current lobby
-        /// </summary>
-        /// <param name="lobbyId">ID of the lobby to leave</param>
-        /// <param name="callback">Callback indicating success or failure</param>
-        void LeaveLobby(string lobbyId, Action<bool> callback);
-
-        /// <summary>
-        /// Searches for lobbies with specific criteria
-        /// </summary>
-        /// <param name="searchParams">Parameters for the search</param>
-        /// <param name="callback">Callback with the search results</param>
-        void SearchLobbies(LobbySearchParams searchParams, Action<List<Lobby>, bool> callback);
-
-        /// <summary>
-        /// Updates the attributes of a lobby
-        /// </summary>
-        /// <param name="lobbyId">ID of the lobby to update</param>
-        /// <param name="attributes">Attributes to update</param>
-        /// <param name="callback">Callback indicating success or failure</param>
-        void UpdateLobbyAttributes(string lobbyId, Dictionary<string, LobbyAttribute> attributes, Action<bool> callback);
-
-        /// <summary>
-        /// Updates the attributes of the local user in a lobby
-        /// </summary>
-        /// <param name="lobbyId">ID of the lobby</param>
-        /// <param name="attributes">Attributes to update</param>
-        /// <param name="callback">Callback indicating success or failure</param>
-        void UpdateMemberAttributes(string lobbyId, Dictionary<string, LobbyAttribute> attributes, Action<bool> callback);
-
-        /// <summary>
-        /// Gets the current lobby the user is in
-        /// </summary>
-        /// <param name="callback">Callback with the current lobby</param>
-        void GetCurrentLobby(Action<Lobby> callback);
-
-        /// <summary>
-        /// Kicks a member from a lobby
-        /// </summary>
-        /// <param name="lobbyId">ID of the lobby</param>
-        /// <param name="memberId">ID of the member to kick</param>
-        /// <param name="callback">Callback indicating success or failure</param>
-        void KickMember(string lobbyId, string memberId, Action<bool> callback);
-
-        /// <summary>
-        /// Promotes a member to owner of the lobby
-        /// </summary>
-        /// <param name="lobbyId">ID of the lobby</param>
-        /// <param name="memberId">ID of the member to promote</param>
-        /// <param name="callback">Callback indicating success or failure</param>
-        void PromoteMember(string lobbyId, string memberId, Action<bool> callback);
-
-        /// <summary>
-        /// Sends an invitation to join a lobby to another user
-        /// </summary>
-        /// <param name="lobbyId">ID of the lobby</param>
-        /// <param name="userId">ID of the user to invite</param>
-        /// <param name="callback">Callback indicating success or failure</param>
-        void SendInvite(string lobbyId, string userId, Action<bool> callback);
-
-        /// <summary>
-        /// Rejects an invitation to join a lobby
-        /// </summary>
-        /// <param name="inviteId">ID of the invitation</param>
-        /// <param name="callback">Callback indicating success or failure</param>
-        void RejectInvite(string inviteId, Action<bool> callback);
-
-        /// <summary>
-        /// Queries for pending invitations
-        /// </summary>
-        /// <param name="callback">Callback with the list of invitations</param>
-        void GetInvites(Action<List<LobbyInvite>, bool> callback);
-
-        /// <summary>
-        /// Enables or disables voice chat in the lobby
-        /// </summary>
-        /// <param name="lobbyId">ID of the lobby</param>
-        /// <param name="enabled">Whether to enable or disable voice chat</param>
-        /// <param name="callback">Callback indicating success or failure</param>
-        void SetVoiceChatEnabled(string lobbyId, bool enabled, Action<bool> callback);
-
-        /// <summary>
-        /// Mutes or unmutes a user in voice chat
-        /// </summary>
-        /// <param name="lobbyId">ID of the lobby</param>
-        /// <param name="userId">ID of the user to mute or unmute</param>
-        /// <param name="mute">Whether to mute or unmute the user</param>
-        /// <param name="callback">Callback indicating success or failure</param>
-        void MutePlayer(string lobbyId, string userId, bool mute, Action<bool> callback);
     }
 } 
