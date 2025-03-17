@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
-using RecipeRage.Logging;
+using RecipeRage.Modules.Logging;
 
 namespace RecipeRage.Store
 {
@@ -11,12 +10,11 @@ namespace RecipeRage.Store
     public static class StoreHelper
     {
         private const string LOG_TAG = "StoreHelper";
-        
+
         // The store service instance
-        private static IStoreService _storeService;
-        
+        private static readonly IStoreService _storeService;
+
         // Initialization status
-        private static bool _isInitialized;
 
         /// <summary>
         /// Static constructor
@@ -33,15 +31,15 @@ namespace RecipeRage.Store
         /// <summary>
         /// Gets whether the store service is initialized
         /// </summary>
-        public static bool IsInitialized => _isInitialized;
+        public static bool IsInitialized { get; private set; }
 
         /// <summary>
         /// Initializes the store service with the default providers
         /// </summary>
-        /// <param name="callback">Callback when initialization completes</param>
+        /// <param name="callback"> Callback when initialization completes </param>
         public static void Initialize(Action<bool> callback = null)
         {
-            if (_isInitialized)
+            if (IsInitialized)
             {
                 LogHelper.Warning(LOG_TAG, "Store service already initialized");
                 callback?.Invoke(true);
@@ -54,19 +52,15 @@ namespace RecipeRage.Store
             _storeService.AddProvider(new EOSStoreProvider());
 
             // Initialize the service
-            _storeService.Initialize((success) =>
+            _storeService.Initialize(success =>
             {
-                _isInitialized = success;
+                IsInitialized = success;
 
                 if (success)
-                {
                     LogHelper.Info(LOG_TAG, "Store service initialized successfully");
-                }
                 else
-                {
                     LogHelper.Error(LOG_TAG, "Failed to initialize store service");
-                }
-                
+
                 callback?.Invoke(success);
             });
         }
@@ -74,7 +68,7 @@ namespace RecipeRage.Store
         /// <summary>
         /// Queries the catalog of available items
         /// </summary>
-        /// <param name="callback">Callback with list of catalog items</param>
+        /// <param name="callback"> Callback with list of catalog items </param>
         public static void QueryCatalog(Action<List<CatalogItem>, bool> callback)
         {
             EnsureInitialized();
@@ -84,7 +78,7 @@ namespace RecipeRage.Store
         /// <summary>
         /// Queries the player's owned items
         /// </summary>
-        /// <param name="callback">Callback with list of inventory items</param>
+        /// <param name="callback"> Callback with list of inventory items </param>
         public static void QueryInventory(Action<List<InventoryItem>, bool> callback)
         {
             EnsureInitialized();
@@ -94,7 +88,7 @@ namespace RecipeRage.Store
         /// <summary>
         /// Queries the available offers for purchasing items
         /// </summary>
-        /// <param name="callback">Callback with list of offers</param>
+        /// <param name="callback"> Callback with list of offers </param>
         public static void QueryOffers(Action<List<StoreOffer>, bool> callback)
         {
             EnsureInitialized();
@@ -104,8 +98,8 @@ namespace RecipeRage.Store
         /// <summary>
         /// Initiates a purchase for a specific offer
         /// </summary>
-        /// <param name="offerId">ID of the offer to purchase</param>
-        /// <param name="callback">Callback with purchase result</param>
+        /// <param name="offerId"> ID of the offer to purchase </param>
+        /// <param name="callback"> Callback with purchase result </param>
         public static void PurchaseOffer(string offerId, Action<PurchaseResult> callback)
         {
             EnsureInitialized();
@@ -115,9 +109,9 @@ namespace RecipeRage.Store
         /// <summary>
         /// Consumes an inventory item (for consumable items)
         /// </summary>
-        /// <param name="inventoryItemId">ID of the inventory item to consume</param>
-        /// <param name="quantity">Quantity to consume</param>
-        /// <param name="callback">Callback indicating success or failure</param>
+        /// <param name="inventoryItemId"> ID of the inventory item to consume </param>
+        /// <param name="quantity"> Quantity to consume </param>
+        /// <param name="callback"> Callback indicating success or failure </param>
         public static void ConsumeItem(string inventoryItemId, int quantity, Action<bool> callback)
         {
             EnsureInitialized();
@@ -127,8 +121,8 @@ namespace RecipeRage.Store
         /// <summary>
         /// Gets detailed information about a specific catalog item
         /// </summary>
-        /// <param name="itemId">ID of the item to query</param>
-        /// <param name="callback">Callback with catalog item details</param>
+        /// <param name="itemId"> ID of the item to query </param>
+        /// <param name="callback"> Callback with catalog item details </param>
         public static void GetCatalogItemDetails(string itemId, Action<CatalogItem, bool> callback)
         {
             EnsureInitialized();
@@ -138,7 +132,7 @@ namespace RecipeRage.Store
         /// <summary>
         /// Gets the available currencies and their balances
         /// </summary>
-        /// <param name="callback">Callback with list of currencies</param>
+        /// <param name="callback"> Callback with list of currencies </param>
         public static void GetCurrencies(Action<List<Currency>, bool> callback)
         {
             EnsureInitialized();
@@ -148,8 +142,8 @@ namespace RecipeRage.Store
         /// <summary>
         /// Opens the platform-specific store UI for a specific item (if supported)
         /// </summary>
-        /// <param name="itemId">ID of the item to display</param>
-        /// <returns>True if the UI was opened successfully</returns>
+        /// <param name="itemId"> ID of the item to display </param>
+        /// <returns> True if the UI was opened successfully </returns>
         public static bool DisplayStoreUI(string itemId = null)
         {
             EnsureInitialized();
@@ -159,7 +153,7 @@ namespace RecipeRage.Store
         /// <summary>
         /// Checks if a purchase is in progress
         /// </summary>
-        /// <returns>True if a purchase is in progress</returns>
+        /// <returns> True if a purchase is in progress </returns>
         public static bool IsPurchaseInProgress()
         {
             EnsureInitialized();
@@ -169,7 +163,7 @@ namespace RecipeRage.Store
         /// <summary>
         /// Restores previous purchases (useful for mobile platforms)
         /// </summary>
-        /// <param name="callback">Callback indicating success or failure, with restored items</param>
+        /// <param name="callback"> Callback indicating success or failure, with restored items </param>
         public static void RestorePurchases(Action<bool, List<InventoryItem>> callback)
         {
             EnsureInitialized();
@@ -179,8 +173,8 @@ namespace RecipeRage.Store
         /// <summary>
         /// Validates a purchase receipt
         /// </summary>
-        /// <param name="receipt">Receipt to validate</param>
-        /// <param name="callback">Callback indicating if the receipt is valid</param>
+        /// <param name="receipt"> Receipt to validate </param>
+        /// <param name="callback"> Callback indicating if the receipt is valid </param>
         public static void ValidateReceipt(string receipt, Action<bool> callback)
         {
             EnsureInitialized();
@@ -190,7 +184,7 @@ namespace RecipeRage.Store
         /// <summary>
         /// Registers a callback for when the catalog is queried
         /// </summary>
-        /// <param name="callback">Callback to register</param>
+        /// <param name="callback"> Callback to register </param>
         public static void RegisterCatalogQueryCallback(Action<List<CatalogItem>, bool> callback)
         {
             EnsureInitialized();
@@ -200,19 +194,16 @@ namespace RecipeRage.Store
         /// <summary>
         /// Unregisters a callback for when the catalog is queried
         /// </summary>
-        /// <param name="callback">Callback to unregister</param>
+        /// <param name="callback"> Callback to unregister </param>
         public static void UnregisterCatalogQueryCallback(Action<List<CatalogItem>, bool> callback)
         {
-            if (_isInitialized)
-            {
-                _storeService.OnCatalogQueried -= callback;
-            }
+            if (IsInitialized) _storeService.OnCatalogQueried -= callback;
         }
 
         /// <summary>
         /// Registers a callback for when the inventory is queried
         /// </summary>
-        /// <param name="callback">Callback to register</param>
+        /// <param name="callback"> Callback to register </param>
         public static void RegisterInventoryQueryCallback(Action<List<InventoryItem>, bool> callback)
         {
             EnsureInitialized();
@@ -222,19 +213,16 @@ namespace RecipeRage.Store
         /// <summary>
         /// Unregisters a callback for when the inventory is queried
         /// </summary>
-        /// <param name="callback">Callback to unregister</param>
+        /// <param name="callback"> Callback to unregister </param>
         public static void UnregisterInventoryQueryCallback(Action<List<InventoryItem>, bool> callback)
         {
-            if (_isInitialized)
-            {
-                _storeService.OnInventoryQueried -= callback;
-            }
+            if (IsInitialized) _storeService.OnInventoryQueried -= callback;
         }
 
         /// <summary>
         /// Registers a callback for when offers are queried
         /// </summary>
-        /// <param name="callback">Callback to register</param>
+        /// <param name="callback"> Callback to register </param>
         public static void RegisterOffersQueryCallback(Action<List<StoreOffer>, bool> callback)
         {
             EnsureInitialized();
@@ -244,19 +232,16 @@ namespace RecipeRage.Store
         /// <summary>
         /// Unregisters a callback for when offers are queried
         /// </summary>
-        /// <param name="callback">Callback to unregister</param>
+        /// <param name="callback"> Callback to unregister </param>
         public static void UnregisterOffersQueryCallback(Action<List<StoreOffer>, bool> callback)
         {
-            if (_isInitialized)
-            {
-                _storeService.OnOffersQueried -= callback;
-            }
+            if (IsInitialized) _storeService.OnOffersQueried -= callback;
         }
 
         /// <summary>
         /// Registers a callback for when a purchase succeeds
         /// </summary>
-        /// <param name="callback">Callback to register</param>
+        /// <param name="callback"> Callback to register </param>
         public static void RegisterPurchaseSuccessCallback(Action<PurchaseResult> callback)
         {
             EnsureInitialized();
@@ -266,19 +251,16 @@ namespace RecipeRage.Store
         /// <summary>
         /// Unregisters a callback for when a purchase succeeds
         /// </summary>
-        /// <param name="callback">Callback to unregister</param>
+        /// <param name="callback"> Callback to unregister </param>
         public static void UnregisterPurchaseSuccessCallback(Action<PurchaseResult> callback)
         {
-            if (_isInitialized)
-            {
-                _storeService.OnPurchaseSuccess -= callback;
-            }
+            if (IsInitialized) _storeService.OnPurchaseSuccess -= callback;
         }
 
         /// <summary>
         /// Registers a callback for when a purchase fails
         /// </summary>
-        /// <param name="callback">Callback to register</param>
+        /// <param name="callback"> Callback to register </param>
         public static void RegisterPurchaseFailureCallback(Action<PurchaseResult> callback)
         {
             EnsureInitialized();
@@ -288,19 +270,16 @@ namespace RecipeRage.Store
         /// <summary>
         /// Unregisters a callback for when a purchase fails
         /// </summary>
-        /// <param name="callback">Callback to unregister</param>
+        /// <param name="callback"> Callback to unregister </param>
         public static void UnregisterPurchaseFailureCallback(Action<PurchaseResult> callback)
         {
-            if (_isInitialized)
-            {
-                _storeService.OnPurchaseFailure -= callback;
-            }
+            if (IsInitialized) _storeService.OnPurchaseFailure -= callback;
         }
 
         /// <summary>
         /// Registers a callback for when an item is added to inventory
         /// </summary>
-        /// <param name="callback">Callback to register</param>
+        /// <param name="callback"> Callback to register </param>
         public static void RegisterItemAddedCallback(Action<InventoryItem> callback)
         {
             EnsureInitialized();
@@ -310,19 +289,16 @@ namespace RecipeRage.Store
         /// <summary>
         /// Unregisters a callback for when an item is added to inventory
         /// </summary>
-        /// <param name="callback">Callback to unregister</param>
+        /// <param name="callback"> Callback to unregister </param>
         public static void UnregisterItemAddedCallback(Action<InventoryItem> callback)
         {
-            if (_isInitialized)
-            {
-                _storeService.OnItemAdded -= callback;
-            }
+            if (IsInitialized) _storeService.OnItemAdded -= callback;
         }
 
         /// <summary>
         /// Registers a callback for when an item is consumed
         /// </summary>
-        /// <param name="callback">Callback to register</param>
+        /// <param name="callback"> Callback to register </param>
         public static void RegisterItemConsumedCallback(Action<string, int> callback)
         {
             EnsureInitialized();
@@ -332,19 +308,16 @@ namespace RecipeRage.Store
         /// <summary>
         /// Unregisters a callback for when an item is consumed
         /// </summary>
-        /// <param name="callback">Callback to unregister</param>
+        /// <param name="callback"> Callback to unregister </param>
         public static void UnregisterItemConsumedCallback(Action<string, int> callback)
         {
-            if (_isInitialized)
-            {
-                _storeService.OnItemConsumed -= callback;
-            }
+            if (IsInitialized) _storeService.OnItemConsumed -= callback;
         }
 
         /// <summary>
         /// Registers a callback for when currency balance changes
         /// </summary>
-        /// <param name="callback">Callback to register</param>
+        /// <param name="callback"> Callback to register </param>
         public static void RegisterCurrencyBalanceChangedCallback(Action<string, decimal> callback)
         {
             EnsureInitialized();
@@ -354,13 +327,10 @@ namespace RecipeRage.Store
         /// <summary>
         /// Unregisters a callback for when currency balance changes
         /// </summary>
-        /// <param name="callback">Callback to unregister</param>
+        /// <param name="callback"> Callback to unregister </param>
         public static void UnregisterCurrencyBalanceChangedCallback(Action<string, decimal> callback)
         {
-            if (_isInitialized)
-            {
-                _storeService.OnCurrencyBalanceChanged -= callback;
-            }
+            if (IsInitialized) _storeService.OnCurrencyBalanceChanged -= callback;
         }
 
         /// <summary>
@@ -368,11 +338,11 @@ namespace RecipeRage.Store
         /// </summary>
         private static void EnsureInitialized()
         {
-            if (!_isInitialized)
+            if (!IsInitialized)
             {
                 LogHelper.Warning(LOG_TAG, "Store service not initialized. Initializing now.");
                 Initialize();
             }
         }
     }
-} 
+}

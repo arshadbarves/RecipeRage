@@ -1,5 +1,4 @@
 using System;
-using UnityEngine;
 using RecipeRage.Core.Player;
 
 namespace RecipeRage.Core.Interaction
@@ -13,36 +12,36 @@ namespace RecipeRage.Core.Interaction
         /// Whether the object can currently be interacted with
         /// </summary>
         bool CanInteract { get; }
-        
+
         /// <summary>
         /// The type of interaction this object provides
         /// </summary>
         InteractionType InteractionType { get; }
-        
+
         /// <summary>
         /// The current state of the interaction
         /// </summary>
         InteractionState CurrentState { get; }
-        
+
         /// <summary>
         /// Start an interaction with this object
         /// </summary>
-        /// <param name="player">The player starting the interaction</param>
-        /// <param name="onComplete">Callback when interaction completes</param>
-        /// <returns>True if interaction started successfully</returns>
+        /// <param name="player"> The player starting the interaction </param>
+        /// <param name="onComplete"> Callback when interaction completes </param>
+        /// <returns> True if interaction started successfully </returns>
         bool StartInteraction(PlayerController player, Action onComplete);
-        
+
         /// <summary>
         /// Cancel the current interaction
         /// </summary>
-        /// <param name="player">The player canceling the interaction</param>
+        /// <param name="player"> The player canceling the interaction </param>
         void CancelInteraction(PlayerController player);
-        
+
         /// <summary>
         /// Continue an existing interaction
         /// </summary>
-        /// <param name="player">The player continuing the interaction</param>
-        /// <returns>True if interaction can continue</returns>
+        /// <param name="player"> The player continuing the interaction </param>
+        /// <returns> True if interaction can continue </returns>
         bool ContinueInteraction(PlayerController player);
     }
 
@@ -69,4 +68,4 @@ namespace RecipeRage.Core.Interaction
         Completed,
         Canceled
     }
-} 
+}

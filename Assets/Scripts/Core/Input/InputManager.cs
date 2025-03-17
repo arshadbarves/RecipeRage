@@ -1,6 +1,6 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using System;
 
 namespace RecipeRage.Core.Input
 {
@@ -10,21 +10,26 @@ namespace RecipeRage.Core.Input
     public class InputManager : MonoBehaviour
     {
         #region Events
+
         public event Action<Vector2> OnMovementInput;
         public event Action OnInteractionStarted;
         public event Action OnInteractionCanceled;
         public event Action OnPauseTriggered;
+
         #endregion
 
         #region Private Fields
+
         private PlayerInput _playerInput;
         private InputAction _moveAction;
         private InputAction _interactAction;
         private InputAction _pauseAction;
         private bool _isInitialized;
+
         #endregion
 
         #region Unity Lifecycle
+
         private void Awake()
         {
             _playerInput = GetComponent<PlayerInput>();
@@ -66,12 +71,14 @@ namespace RecipeRage.Core.Input
                 UnsubscribeFromActions();
             }
         }
+
         #endregion
 
         #region Input Handlers
+
         private void OnMove(InputAction.CallbackContext context)
         {
-            Vector2 input = context.ReadValue<Vector2>();
+            var input = context.ReadValue<Vector2>();
             OnMovementInput?.Invoke(input);
         }
 
@@ -89,9 +96,11 @@ namespace RecipeRage.Core.Input
         {
             OnPauseTriggered?.Invoke();
         }
+
         #endregion
 
         #region Private Methods
+
         private void InitializeActions()
         {
             try
@@ -146,6 +155,7 @@ namespace RecipeRage.Core.Input
                 _pauseAction.performed -= OnPause;
             }
         }
+
         #endregion
     }
-} 
+}

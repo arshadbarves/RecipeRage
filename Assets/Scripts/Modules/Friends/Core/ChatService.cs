@@ -3,61 +3,60 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
-using UnityEngine;
 using RecipeRage.Modules.Friends.Data;
 using RecipeRage.Modules.Friends.Interfaces;
 using RecipeRage.Modules.Friends.Network;
 using RecipeRage.Modules.Logging;
+using UnityEngine;
 
 namespace RecipeRage.Modules.Friends.Core
 {
     /// <summary>
     /// Implementation of the chat service
-    /// 
     /// Complexity Rating: 4
     /// </summary>
     public class ChatService : IChatService
     {
         private const string SAVE_PATH = "FriendsData/Chats";
         private const int MAX_CACHED_MESSAGES = 100;
-        
+
+        private readonly Dictionary<string, List<ChatMessage>> _chatHistory = new Dictionary<string, List<ChatMessage>>();
+
         private readonly IIdentityService _identityService;
         private readonly IP2PNetworkService _p2pNetworkService;
-        
-        private Dictionary<string, List<ChatMessage>> _chatHistory = new Dictionary<string, List<ChatMessage>>();
-        private Dictionary<string, int> _unreadCounts = new Dictionary<string, int>();
         private bool _isInitialized;
-        
-        /// <summary>
-        /// Event triggered when a new message is received
-        /// </summary>
-        public event Action<ChatMessage> OnMessageReceived;
-        
-        /// <summary>
-        /// Event triggered when a message is sent
-        /// </summary>
-        public event Action<ChatMessage> OnMessageSent;
-        
-        /// <summary>
-        /// Event triggered when messages are loaded from history
-        /// </summary>
-        public event Action<string, List<ChatMessage>> OnChatHistoryLoaded;
-        
+        private Dictionary<string, int> _unreadCounts = new Dictionary<string, int>();
+
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="identityService">Identity service</param>
-        /// <param name="p2pNetworkService">P2P network service</param>
+        /// <param name="identityService"> Identity service </param>
+        /// <param name="p2pNetworkService"> P2P network service </param>
         public ChatService(IIdentityService identityService, IP2PNetworkService p2pNetworkService)
         {
             _identityService = identityService ?? throw new ArgumentNullException(nameof(identityService));
             _p2pNetworkService = p2pNetworkService ?? throw new ArgumentNullException(nameof(p2pNetworkService));
         }
-        
+
+        /// <summary>
+        /// Event triggered when a new message is received
+        /// </summary>
+        public event Action<ChatMessage> OnMessageReceived;
+
+        /// <summary>
+        /// Event triggered when a message is sent
+        /// </summary>
+        public event Action<ChatMessage> OnMessageSent;
+
+        /// <summary>
+        /// Event triggered when messages are loaded from history
+        /// </summary>
+        public event Action<string, List<ChatMessage>> OnChatHistoryLoaded;
+
         /// <summary>
         /// Initialize the chat service
         /// </summary>
-        /// <param name="onComplete">Callback when initialization is complete</param>
+        /// <param name="onComplete"> Callback when initialization is complete </param>
         public void Initialize(Action<bool> onComplete = null)
         {
             if (_isInitialized)
@@ -66,23 +65,23 @@ namespace RecipeRage.Modules.Friends.Core
                 onComplete?.Invoke(true);
                 return;
             }
-            
+
             LogHelper.Info("ChatService", "Initializing...");
-            
+
             // Subscribe to network events
             _p2pNetworkService.OnMessageReceived += HandleMessageReceived;
-            
+
             // Ensure save directory exists
             EnsureSaveDirectoryExists();
-            
+
             // Load unread counts
             LoadUnreadCounts();
-            
+
             _isInitialized = true;
             LogHelper.Info("ChatService", "Initialized successfully");
             onComplete?.Invoke(true);
         }
-        
+
         /// <summary>
         /// Send a text message to a friend
         /// </summary>
@@ -94,16 +93,16 @@ namespace RecipeRage.Modules.Friends.Core
                 onComplete?.Invoke(false);
                 return;
             }
-            
+
             if (string.IsNullOrEmpty(friendId) || string.IsNullOrEmpty(message))
             {
                 LogHelper.Error("ChatService", "Invalid message parameters");
                 onComplete?.Invoke(false);
                 return;
             }
-            
+
             // Create the message
-            ChatMessage chatMessage = new ChatMessage
+            var chatMessage = new ChatMessage
             {
                 MessageId = Guid.NewGuid().ToString(),
                 SenderId = _identityService.GetCurrentUserId(),
@@ -115,29 +114,29 @@ namespace RecipeRage.Modules.Friends.Core
                 IsFromLocalUser = true,
                 MessageType = ChatMessageType.Text
             };
-            
+
             // Add to history
             AddMessageToHistory(chatMessage);
-            
+
             // Convert to JSON and send
             try
             {
                 string json = JsonConvert.SerializeObject(chatMessage);
                 byte[] packet = FriendsNetworkProtocol.CreateChatMessage(json);
-                
+
                 // Try to establish connection and send
                 _p2pNetworkService.Connect(friendId, connected =>
                 {
                     if (!connected)
                     {
                         LogHelper.Warning("ChatService", $"Could not connect to {friendId}, message will be delivered when connection is established");
-                        
+
                         // Still consider it a success, will be delivered when connection is established
                         OnMessageSent?.Invoke(chatMessage);
                         onComplete?.Invoke(true);
                         return;
                     }
-                    
+
                     _p2pNetworkService.SendMessage(friendId, packet, true, success =>
                     {
                         if (success)
@@ -149,7 +148,7 @@ namespace RecipeRage.Modules.Friends.Core
                         {
                             LogHelper.Error("ChatService", $"Failed to send message to {friendId}");
                         }
-                        
+
                         onComplete?.Invoke(success);
                     });
                 });
@@ -160,7 +159,7 @@ namespace RecipeRage.Modules.Friends.Core
                 onComplete?.Invoke(false);
             }
         }
-        
+
         /// <summary>
         /// Send a game invite to a friend
         /// </summary>
@@ -172,16 +171,16 @@ namespace RecipeRage.Modules.Friends.Core
                 onComplete?.Invoke(false);
                 return;
             }
-            
+
             if (string.IsNullOrEmpty(friendId) || string.IsNullOrEmpty(gameData))
             {
                 LogHelper.Error("ChatService", "Invalid game invite parameters");
                 onComplete?.Invoke(false);
                 return;
             }
-            
+
             // Create the invite message
-            ChatMessage chatMessage = new ChatMessage
+            var chatMessage = new ChatMessage
             {
                 MessageId = Guid.NewGuid().ToString(),
                 SenderId = _identityService.GetCurrentUserId(),
@@ -194,29 +193,29 @@ namespace RecipeRage.Modules.Friends.Core
                 MessageType = ChatMessageType.GameInvite,
                 AdditionalData = gameData
             };
-            
+
             // Add to history
             AddMessageToHistory(chatMessage);
-            
+
             // Convert to JSON and send
             try
             {
                 string json = JsonConvert.SerializeObject(chatMessage);
                 byte[] packet = FriendsNetworkProtocol.CreateGameInvite(json);
-                
+
                 // Try to establish connection and send
                 _p2pNetworkService.Connect(friendId, connected =>
                 {
                     if (!connected)
                     {
                         LogHelper.Warning("ChatService", $"Could not connect to {friendId}, invite will be delivered when connection is established");
-                        
+
                         // Still consider it a success, will be delivered when connection is established
                         OnMessageSent?.Invoke(chatMessage);
                         onComplete?.Invoke(true);
                         return;
                     }
-                    
+
                     _p2pNetworkService.SendMessage(friendId, packet, true, success =>
                     {
                         if (success)
@@ -228,7 +227,7 @@ namespace RecipeRage.Modules.Friends.Core
                         {
                             LogHelper.Error("ChatService", $"Failed to send game invite to {friendId}");
                         }
-                        
+
                         onComplete?.Invoke(success);
                     });
                 });
@@ -239,7 +238,7 @@ namespace RecipeRage.Modules.Friends.Core
                 onComplete?.Invoke(false);
             }
         }
-        
+
         /// <summary>
         /// Load chat history with a friend
         /// </summary>
@@ -251,27 +250,27 @@ namespace RecipeRage.Modules.Friends.Core
                 onComplete?.Invoke(null);
                 return;
             }
-            
+
             if (string.IsNullOrEmpty(friendId))
             {
                 LogHelper.Error("ChatService", "Invalid friend ID");
                 onComplete?.Invoke(null);
                 return;
             }
-            
+
             // Check if already loaded
             if (_chatHistory.TryGetValue(friendId, out List<ChatMessage> cachedHistory))
             {
                 // Return last 'count' messages sorted by time
-                List<ChatMessage> result = cachedHistory
+                var result = cachedHistory
                     .OrderBy(m => m.SentTime)
                     .Skip(Math.Max(0, cachedHistory.Count - count))
                     .ToList();
-                
+
                 onComplete?.Invoke(result);
                 return;
             }
-            
+
             // Load from disk
             string filePath = GetChatFilePath(friendId);
             if (!File.Exists(filePath))
@@ -282,28 +281,28 @@ namespace RecipeRage.Modules.Friends.Core
                 OnChatHistoryLoaded?.Invoke(friendId, new List<ChatMessage>());
                 return;
             }
-            
+
             try
             {
                 string json = File.ReadAllText(filePath);
                 List<ChatMessage> history = JsonConvert.DeserializeObject<List<ChatMessage>>(json);
-                
+
                 if (history == null)
                 {
                     history = new List<ChatMessage>();
                 }
-                
+
                 // Cache history
                 _chatHistory[friendId] = history;
-                
+
                 // Return last 'count' messages sorted by time
-                List<ChatMessage> result = history
+                var result = history
                     .OrderBy(m => m.SentTime)
                     .Skip(Math.Max(0, history.Count - count))
                     .ToList();
-                
+
                 LogHelper.Debug("ChatService", $"Loaded {result.Count} messages from history with {friendId}");
-                
+
                 onComplete?.Invoke(result);
                 OnChatHistoryLoaded?.Invoke(friendId, result);
             }
@@ -314,7 +313,7 @@ namespace RecipeRage.Modules.Friends.Core
                 onComplete?.Invoke(new List<ChatMessage>());
             }
         }
-        
+
         /// <summary>
         /// Get all recent conversations
         /// </summary>
@@ -325,30 +324,30 @@ namespace RecipeRage.Modules.Friends.Core
                 LogHelper.Error("ChatService", "Not initialized");
                 return new List<string>();
             }
-            
+
             // Check chat directory for files
             string directoryPath = Path.Combine(Application.persistentDataPath, SAVE_PATH);
             if (!Directory.Exists(directoryPath))
             {
                 return new List<string>();
             }
-            
+
             try
             {
-                List<string> result = new List<string>();
+                var result = new List<string>();
                 string[] files = Directory.GetFiles(directoryPath, "*.json");
-                
+
                 foreach (string file in files)
                 {
                     string fileName = Path.GetFileNameWithoutExtension(file);
-                    
+
                     // Friend ID is the filename
                     if (!string.IsNullOrEmpty(fileName) && fileName != "unread_counts")
                     {
                         result.Add(fileName);
                     }
                 }
-                
+
                 return result;
             }
             catch (Exception ex)
@@ -357,7 +356,7 @@ namespace RecipeRage.Modules.Friends.Core
                 return new List<string>();
             }
         }
-        
+
         /// <summary>
         /// Mark all messages with a friend as read
         /// </summary>
@@ -367,11 +366,11 @@ namespace RecipeRage.Modules.Friends.Core
             {
                 return;
             }
-            
+
             if (_chatHistory.TryGetValue(friendId, out List<ChatMessage> history))
             {
                 bool changed = false;
-                
+
                 foreach (var message in history)
                 {
                     if (!message.IsFromLocalUser && !message.IsRead)
@@ -380,19 +379,19 @@ namespace RecipeRage.Modules.Friends.Core
                         changed = true;
                     }
                 }
-                
+
                 if (changed)
                 {
                     // Save updated history
                     SaveChatHistory(friendId);
                 }
             }
-            
+
             // Update unread count
             _unreadCounts[friendId] = 0;
             SaveUnreadCounts();
         }
-        
+
         /// <summary>
         /// Get the number of unread messages from a friend
         /// </summary>
@@ -402,15 +401,15 @@ namespace RecipeRage.Modules.Friends.Core
             {
                 return 0;
             }
-            
+
             if (_unreadCounts.TryGetValue(friendId, out int count))
             {
                 return count;
             }
-            
+
             return 0;
         }
-        
+
         /// <summary>
         /// Get the total number of unread messages
         /// </summary>
@@ -420,16 +419,16 @@ namespace RecipeRage.Modules.Friends.Core
             {
                 return 0;
             }
-            
+
             int total = 0;
-            foreach (var count in _unreadCounts.Values)
+            foreach (int count in _unreadCounts.Values)
             {
                 total += count;
             }
-            
+
             return total;
         }
-        
+
         /// <summary>
         /// Clear chat history with a friend
         /// </summary>
@@ -440,10 +439,10 @@ namespace RecipeRage.Modules.Friends.Core
                 onComplete?.Invoke(false);
                 return;
             }
-            
+
             // Remove from memory
             _chatHistory.Remove(friendId);
-            
+
             // Remove file
             string filePath = GetChatFilePath(friendId);
             try
@@ -452,11 +451,11 @@ namespace RecipeRage.Modules.Friends.Core
                 {
                     File.Delete(filePath);
                 }
-                
+
                 // Clear unread count
                 _unreadCounts[friendId] = 0;
                 SaveUnreadCounts();
-                
+
                 LogHelper.Info("ChatService", $"Cleared chat history with {friendId}");
                 onComplete?.Invoke(true);
             }
@@ -466,7 +465,7 @@ namespace RecipeRage.Modules.Friends.Core
                 onComplete?.Invoke(false);
             }
         }
-        
+
         /// <summary>
         /// Accept a game invite
         /// </summary>
@@ -477,14 +476,14 @@ namespace RecipeRage.Modules.Friends.Core
                 onComplete?.Invoke(false);
                 return;
             }
-            
+
             // In a full implementation, we would send an acceptance message to the sender
             // and handle game joining logic
-            
+
             LogHelper.Info("ChatService", "Game invite acceptance not fully implemented");
             onComplete?.Invoke(true);
         }
-        
+
         /// <summary>
         /// Decline a game invite
         /// </summary>
@@ -495,13 +494,13 @@ namespace RecipeRage.Modules.Friends.Core
                 onComplete?.Invoke(false);
                 return;
             }
-            
+
             // In a full implementation, we would send a decline message to the sender
-            
+
             LogHelper.Info("ChatService", "Game invite decline not fully implemented");
             onComplete?.Invoke(true);
         }
-        
+
         /// <summary>
         /// Shutdown the chat service
         /// </summary>
@@ -511,27 +510,27 @@ namespace RecipeRage.Modules.Friends.Core
             {
                 return;
             }
-            
+
             LogHelper.Info("ChatService", "Shutting down...");
-            
+
             // Unsubscribe from network events
             _p2pNetworkService.OnMessageReceived -= HandleMessageReceived;
-            
+
             // Save all chat histories
-            foreach (var friendId in _chatHistory.Keys.ToList())
+            foreach (string friendId in _chatHistory.Keys.ToList())
             {
                 SaveChatHistory(friendId);
             }
-            
+
             // Save unread counts
             SaveUnreadCounts();
-            
+
             _chatHistory.Clear();
             _isInitialized = false;
-            
+
             LogHelper.Info("ChatService", "Shutdown complete");
         }
-        
+
         /// <summary>
         /// Handle an incoming network message
         /// </summary>
@@ -541,23 +540,23 @@ namespace RecipeRage.Modules.Friends.Core
             {
                 return;
             }
-            
+
             try
             {
                 // Parse the message
-                if (!FriendsNetworkProtocol.ParsePacket(data, out FriendsMessageType messageType, out byte[] payload))
+                if (!FriendsNetworkProtocol.ParsePacket(data, out var messageType, out byte[] payload))
                 {
                     LogHelper.Error("ChatService", $"Failed to parse message from {senderId}");
                     return;
                 }
-                
+
                 // Check if this is a chat message
                 if (messageType != FriendsMessageType.ChatMessage && messageType != FriendsMessageType.GameInvite)
                 {
                     // Not a chat message or game invite
                     return;
                 }
-                
+
                 // Parse the JSON
                 string json = FriendsNetworkProtocol.GetStringPayload(payload);
                 if (string.IsNullOrEmpty(json))
@@ -565,29 +564,29 @@ namespace RecipeRage.Modules.Friends.Core
                     LogHelper.Error("ChatService", $"Empty message content from {senderId}");
                     return;
                 }
-                
-                ChatMessage message = JsonConvert.DeserializeObject<ChatMessage>(json);
-                
+
+                var message = JsonConvert.DeserializeObject<ChatMessage>(json);
+
                 if (message == null)
                 {
                     LogHelper.Error("ChatService", $"Failed to deserialize message from {senderId}");
                     return;
                 }
-                
+
                 // Validate message
                 if (message.SenderId != senderId || message.ReceiverId != _identityService.GetCurrentUserId())
                 {
                     LogHelper.Error("ChatService", $"Invalid message routing from {senderId}");
                     return;
                 }
-                
+
                 // Mark as from remote user
                 message.IsFromLocalUser = false;
                 message.IsRead = false;
-                
+
                 // Add to history
                 AddMessageToHistory(message);
-                
+
                 // Update unread count
                 if (_unreadCounts.TryGetValue(senderId, out int count))
                 {
@@ -597,12 +596,12 @@ namespace RecipeRage.Modules.Friends.Core
                 {
                     _unreadCounts[senderId] = 1;
                 }
-                
+
                 SaveUnreadCounts();
-                
+
                 // Notify listeners
                 OnMessageReceived?.Invoke(message);
-                
+
                 LogHelper.Debug("ChatService", $"Received {message.MessageType} message from {message.SenderName} ({senderId})");
             }
             catch (Exception ex)
@@ -610,7 +609,7 @@ namespace RecipeRage.Modules.Friends.Core
                 LogHelper.Exception("ChatService", ex, $"Error processing message from {senderId}");
             }
         }
-        
+
         /// <summary>
         /// Add a message to the chat history
         /// </summary>
@@ -618,9 +617,9 @@ namespace RecipeRage.Modules.Friends.Core
         {
             if (message == null)
                 return;
-                
+
             string friendId = message.IsFromLocalUser ? message.ReceiverId : message.SenderId;
-            
+
             if (!_chatHistory.TryGetValue(friendId, out List<ChatMessage> history))
             {
                 // Try to load history first
@@ -630,33 +629,33 @@ namespace RecipeRage.Modules.Friends.Core
                     {
                         loadedHistory = new List<ChatMessage>();
                     }
-                    
+
                     loadedHistory.Add(message);
                     _chatHistory[friendId] = loadedHistory;
-                    
+
                     // Trim if needed
                     if (loadedHistory.Count > MAX_CACHED_MESSAGES)
                     {
                         loadedHistory.RemoveRange(0, loadedHistory.Count - MAX_CACHED_MESSAGES);
                     }
-                    
+
                     SaveChatHistory(friendId);
                 });
-                
+
                 return;
             }
-            
+
             history.Add(message);
-            
+
             // Trim if needed
             if (history.Count > MAX_CACHED_MESSAGES)
             {
                 history.RemoveRange(0, history.Count - MAX_CACHED_MESSAGES);
             }
-            
+
             SaveChatHistory(friendId);
         }
-        
+
         /// <summary>
         /// Save chat history to disk
         /// </summary>
@@ -666,14 +665,14 @@ namespace RecipeRage.Modules.Friends.Core
             {
                 return;
             }
-            
+
             try
             {
                 string filePath = GetChatFilePath(friendId);
                 string json = JsonConvert.SerializeObject(history);
-                
+
                 File.WriteAllText(filePath, json);
-                
+
                 LogHelper.Debug("ChatService", $"Saved {history.Count} messages to history with {friendId}");
             }
             catch (Exception ex)
@@ -681,7 +680,7 @@ namespace RecipeRage.Modules.Friends.Core
                 LogHelper.Exception("ChatService", ex, $"Error saving chat history with {friendId}");
             }
         }
-        
+
         /// <summary>
         /// Get the file path for a chat history
         /// </summary>
@@ -690,7 +689,7 @@ namespace RecipeRage.Modules.Friends.Core
             string directoryPath = Path.Combine(Application.persistentDataPath, SAVE_PATH);
             return Path.Combine(directoryPath, $"{friendId}.json");
         }
-        
+
         /// <summary>
         /// Ensure the save directory exists
         /// </summary>
@@ -702,7 +701,7 @@ namespace RecipeRage.Modules.Friends.Core
                 Directory.CreateDirectory(directoryPath);
             }
         }
-        
+
         /// <summary>
         /// Load unread counts from disk
         /// </summary>
@@ -715,17 +714,17 @@ namespace RecipeRage.Modules.Friends.Core
                 _unreadCounts = new Dictionary<string, int>();
                 return;
             }
-            
+
             try
             {
                 string json = File.ReadAllText(filePath);
                 _unreadCounts = JsonConvert.DeserializeObject<Dictionary<string, int>>(json);
-                
+
                 if (_unreadCounts == null)
                 {
                     _unreadCounts = new Dictionary<string, int>();
                 }
-                
+
                 LogHelper.Debug("ChatService", $"Loaded unread counts for {_unreadCounts.Count} friends");
             }
             catch (Exception ex)
@@ -734,7 +733,7 @@ namespace RecipeRage.Modules.Friends.Core
                 _unreadCounts = new Dictionary<string, int>();
             }
         }
-        
+
         /// <summary>
         /// Save unread counts to disk
         /// </summary>
@@ -744,9 +743,9 @@ namespace RecipeRage.Modules.Friends.Core
             {
                 string filePath = Path.Combine(Application.persistentDataPath, SAVE_PATH, "unread_counts.json");
                 string json = JsonConvert.SerializeObject(_unreadCounts);
-                
+
                 File.WriteAllText(filePath, json);
-                
+
                 LogHelper.Debug("ChatService", $"Saved unread counts for {_unreadCounts.Count} friends");
             }
             catch (Exception ex)
@@ -755,4 +754,4 @@ namespace RecipeRage.Modules.Friends.Core
             }
         }
     }
-} 
+}

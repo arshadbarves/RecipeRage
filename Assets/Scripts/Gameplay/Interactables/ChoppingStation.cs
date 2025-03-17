@@ -1,10 +1,9 @@
-using UnityEngine;
 using System;
-using System.Collections;
-using RecipeRage.Core.Player;
 using RecipeRage.Core.Interaction;
+using RecipeRage.Core.Player;
 using RecipeRage.Gameplay.Cooking;
 using Unity.Netcode;
+using UnityEngine;
 
 namespace RecipeRage.Gameplay.Interactables
 {
@@ -14,37 +13,46 @@ namespace RecipeRage.Gameplay.Interactables
     public class ChoppingStation : BaseStation, IInteractable
     {
         #region Properties
+
         public bool CanInteract => !_isBeingUsed.Value && !_isChopping;
         public InteractionType InteractionType => InteractionType.Cook;
         public InteractionState CurrentState { get; private set; } = InteractionState.Idle;
+
         #endregion
 
         #region Serialized Fields
-        [Header("Chopping Settings")]
-        [SerializeField] private float _baseChoppingTime = 3f;
+
+        [Header("Chopping Settings")] [SerializeField]
+        private float _baseChoppingTime = 3f;
+
         [SerializeField] private int _requiredChops = 5;
 
-        [Header("Visual Feedback")]
-        [SerializeField] private GameObject _progressBar;
+        [Header("Visual Feedback")] [SerializeField]
+        private GameObject _progressBar;
+
         [SerializeField] private Animator _knifeAnimator;
 
-        [Header("Audio")]
-        [SerializeField] private AudioClip _startChoppingSound;
+        [Header("Audio")] [SerializeField] private AudioClip _startChoppingSound;
+
         [SerializeField] private AudioClip _chopSound;
         [SerializeField] private AudioClip _finishChoppingSound;
+
         #endregion
 
         #region Private Fields
-        private NetworkVariable<bool> _isBeingUsed = new NetworkVariable<bool>();
+
+        private readonly NetworkVariable<bool> _isBeingUsed = new NetworkVariable<bool>();
         private bool _isChopping;
         private GameObject _currentIngredient;
         private Ingredient _currentIngredientComponent;
         private float _choppingProgress;
         private int _currentChops;
         private PlayerController _currentPlayer;
+
         #endregion
 
         #region Unity Lifecycle
+
         protected override void Awake()
         {
             base.Awake();
@@ -60,9 +68,11 @@ namespace RecipeRage.Gameplay.Interactables
         {
             _isBeingUsed.OnValueChanged -= OnBeingUsedChanged;
         }
+
         #endregion
 
         #region IInteractable Implementation
+
         public bool StartInteraction(PlayerController player, Action onComplete)
         {
             if (!CanInteract || !IsServer)
@@ -83,10 +93,7 @@ namespace RecipeRage.Gameplay.Interactables
 
         public void CancelInteraction(PlayerController player)
         {
-            if (_currentPlayer == player)
-            {
-                CancelChoppingServerRpc();
-            }
+            if (_currentPlayer == player) CancelChoppingServerRpc();
         }
 
         public bool ContinueInteraction(PlayerController player)
@@ -97,9 +104,11 @@ namespace RecipeRage.Gameplay.Interactables
             ContinueChoppingServerRpc();
             return true;
         }
+
         #endregion
 
         #region Server RPCs
+
         [ServerRpc(RequireOwnership = false)]
         private void StartChoppingServerRpc(ulong playerId)
         {
@@ -120,13 +129,9 @@ namespace RecipeRage.Gameplay.Interactables
             _choppingProgress = Mathf.Min(1f, (float)_currentChops / _requiredChops);
 
             if (_currentChops >= _requiredChops)
-            {
                 CompleteChopping();
-            }
             else
-            {
                 ContinueChoppingClientRpc(_choppingProgress);
-            }
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -138,21 +143,23 @@ namespace RecipeRage.Gameplay.Interactables
             _isBeingUsed.Value = false;
             CancelChoppingClientRpc();
         }
+
         #endregion
 
         #region Client RPCs
+
         [ClientRpc]
         private void StartChoppingClientRpc(ulong playerId)
         {
             var playerObject = NetworkManager.Singleton.SpawnManager.SpawnedObjects[playerId];
             var player = playerObject.GetComponent<PlayerController>();
-            
+
             if (player != null)
             {
                 _currentPlayer = player;
                 _currentIngredient = player.HeldItem;
                 _currentIngredientComponent = _currentIngredient.GetComponent<Ingredient>();
-                
+
                 InitializeChopping();
             }
         }
@@ -176,9 +183,11 @@ namespace RecipeRage.Gameplay.Interactables
         {
             StopChopping(true);
         }
+
         #endregion
 
         #region Private Methods
+
         private void InitializeChopping()
         {
             _isChopping = true;
@@ -192,12 +201,9 @@ namespace RecipeRage.Gameplay.Interactables
             _currentIngredient.transform.localRotation = Quaternion.identity;
 
             // Start effects
-            PlayParticles(true);
+            PlayParticles();
 
-            if (_knifeAnimator != null)
-            {
-                _knifeAnimator.SetBool("IsChopping", true);
-            }
+            if (_knifeAnimator != null) _knifeAnimator.SetBool("IsChopping", true);
 
             PlayStartSound();
             UpdateProgressBar();
@@ -205,10 +211,7 @@ namespace RecipeRage.Gameplay.Interactables
 
         private void CompleteChopping()
         {
-            if (_currentIngredientComponent != null)
-            {
-                _currentIngredientComponent.OnChopped();
-            }
+            if (_currentIngredientComponent != null) _currentIngredientComponent.OnChopped();
 
             CompleteChoppingClientRpc();
             _isBeingUsed.Value = false;
@@ -221,15 +224,9 @@ namespace RecipeRage.Gameplay.Interactables
 
             PlayParticles(false);
 
-            if (_knifeAnimator != null)
-            {
-                _knifeAnimator.SetBool("IsChopping", false);
-            }
+            if (_knifeAnimator != null) _knifeAnimator.SetBool("IsChopping", false);
 
-            if (completed)
-            {
-                PlayFinishSound();
-            }
+            if (completed) PlayFinishSound();
 
             _currentIngredient = null;
             _currentIngredientComponent = null;
@@ -263,10 +260,7 @@ namespace RecipeRage.Gameplay.Interactables
 
         private void PlayChopEffect()
         {
-            if (_knifeAnimator != null)
-            {
-                _knifeAnimator.SetTrigger("Chop");
-            }
+            if (_knifeAnimator != null) _knifeAnimator.SetTrigger("Chop");
 
             PlayChopSound();
         }
@@ -285,6 +279,7 @@ namespace RecipeRage.Gameplay.Interactables
         {
             PlaySound(_finishChoppingSound);
         }
+
         #endregion
     }
-} 
+}

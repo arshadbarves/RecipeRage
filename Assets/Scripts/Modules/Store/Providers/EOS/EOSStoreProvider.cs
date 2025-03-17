@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 using Epic.OnlineServices;
 using Epic.OnlineServices.Ecom;
-using RecipeRage.Logging;
 using PlayEveryWare.EpicOnlineServices;
+using RecipeRage.Modules.Logging;
 
 namespace RecipeRage.Store
 {
@@ -16,6 +15,32 @@ namespace RecipeRage.Store
     {
         private const string PROVIDER_NAME = "EOSStore";
         private const string LOG_TAG = "EOSStoreProvider";
+
+        // Cache for catalog items
+        private readonly Dictionary<string, CatalogItem> _catalogCache = new Dictionary<string, CatalogItem>();
+
+        // Cache for inventory items
+        private readonly Dictionary<string, InventoryItem> _inventoryCache = new Dictionary<string, InventoryItem>();
+
+        // Cache for offers
+        private readonly Dictionary<string, StoreOffer> _offersCache = new Dictionary<string, StoreOffer>();
+
+        // EOS ECOM interface
+        private EcomInterface _ecomInterface;
+
+        // Initialization status
+        private bool _isInitialized;
+
+        // Flag to track if a purchase is in progress
+        private bool _purchaseInProgress;
+
+        /// <summary>
+        /// Creates a new EOS store provider
+        /// </summary>
+        public EOSStoreProvider()
+        {
+            LogHelper.Debug(LOG_TAG, "EOSStoreProvider created");
+        }
 
         /// <summary>
         /// Gets the name of the provider
@@ -32,36 +57,10 @@ namespace RecipeRage.Store
         /// </summary>
         public string LastError { get; private set; }
 
-        // EOS ECOM interface
-        private EcomInterface _ecomInterface;
-        
-        // Initialization status
-        private bool _isInitialized;
-        
-        // Flag to track if a purchase is in progress
-        private bool _purchaseInProgress = false;
-        
-        // Cache for catalog items
-        private readonly Dictionary<string, CatalogItem> _catalogCache = new Dictionary<string, CatalogItem>();
-        
-        // Cache for offers
-        private readonly Dictionary<string, StoreOffer> _offersCache = new Dictionary<string, StoreOffer>();
-        
-        // Cache for inventory items
-        private readonly Dictionary<string, InventoryItem> _inventoryCache = new Dictionary<string, InventoryItem>();
-
-        /// <summary>
-        /// Creates a new EOS store provider
-        /// </summary>
-        public EOSStoreProvider()
-        {
-            LogHelper.Debug(LOG_TAG, "EOSStoreProvider created");
-        }
-
         /// <summary>
         /// Initializes the store provider
         /// </summary>
-        /// <param name="callback">Callback when initialization completes</param>
+        /// <param name="callback"> Callback when initialization completes </param>
         public void Initialize(Action<bool> callback)
         {
             if (_isInitialized)
@@ -120,7 +119,7 @@ namespace RecipeRage.Store
         /// <summary>
         /// Queries the catalog of available items from the provider
         /// </summary>
-        /// <param name="callback">Callback with the list of catalog items</param>
+        /// <param name="callback"> Callback with the list of catalog items </param>
         public void QueryCatalog(Action<List<CatalogItem>, bool> callback)
         {
             if (!CheckAvailability())
@@ -143,19 +142,19 @@ namespace RecipeRage.Store
                     if (callbackInfo.ResultCode == Result.Success)
                     {
                         LogHelper.Info(LOG_TAG, "Successfully queried offers from EOS");
-                        
+
                         // Get the number of offers
                         var countOptions = new GetOfferCountOptions
                         {
                             LocalUserId = EOSManager.Instance.GetEpicAccountId()
                         };
-                        
+
                         uint offerCount = _ecomInterface.GetOfferCount(ref countOptions);
-                        
+
                         LogHelper.Debug(LOG_TAG, $"Found {offerCount} offers");
-                        
+
                         var catalogItems = new List<CatalogItem>();
-                        
+
                         // Convert each offer to a catalog item
                         for (uint i = 0; i < offerCount; i++)
                         {
@@ -164,9 +163,9 @@ namespace RecipeRage.Store
                                 LocalUserId = EOSManager.Instance.GetEpicAccountId(),
                                 OfferIndex = i
                             };
-                            
-                            Result result = _ecomInterface.CopyOfferByIndex(ref offerOptions, out CatalogOffer offer);
-                            
+
+                            var result = _ecomInterface.CopyOfferByIndex(ref offerOptions, out CatalogOffer offer);
+
                             if (result == Result.Success)
                             {
                                 // Convert to our catalog item model
@@ -174,16 +173,13 @@ namespace RecipeRage.Store
                                 if (catalogItem != null)
                                 {
                                     catalogItems.Add(catalogItem);
-                                    
+
                                     // Cache the item
                                     _catalogCache[catalogItem.ItemId] = catalogItem;
-                                    
+
                                     // Also create and cache a store offer
                                     var storeOffer = ConvertEOSOfferToStoreOffer(offer);
-                                    if (storeOffer != null)
-                                    {
-                                        _offersCache[storeOffer.OfferId] = storeOffer;
-                                    }
+                                    if (storeOffer != null) _offersCache[storeOffer.OfferId] = storeOffer;
                                 }
                             }
                             else
@@ -191,7 +187,7 @@ namespace RecipeRage.Store
                                 LogHelper.Warning(LOG_TAG, $"Failed to copy offer at index {i}: {result}");
                             }
                         }
-                        
+
                         callback?.Invoke(catalogItems, true);
                     }
                     else
@@ -213,7 +209,7 @@ namespace RecipeRage.Store
         /// <summary>
         /// Queries the player's owned items (inventory)
         /// </summary>
-        /// <param name="callback">Callback with the list of owned items</param>
+        /// <param name="callback"> Callback with the list of owned items </param>
         public void QueryInventory(Action<List<InventoryItem>, bool> callback)
         {
             if (!CheckAvailability())
@@ -238,18 +234,17 @@ namespace RecipeRage.Store
                     if (callbackInfo.ResultCode == Result.Success)
                     {
                         LogHelper.Info(LOG_TAG, "Successfully queried ownership from EOS");
-                        
+
                         var inventoryItems = new List<InventoryItem>();
-                        
+
                         // Convert each ownership result to an inventory item
                         foreach (var item in callbackInfo.Items)
-                        {
                             if (item.OwnershipStatus == OwnershipStatus.Owned)
                             {
                                 // Create an inventory item for this owned item
                                 CatalogItem catalogItem = null;
                                 _catalogCache.TryGetValue(item.Id, out catalogItem);
-                                
+
                                 var inventoryItem = new InventoryItem
                                 {
                                     InventoryItemId = Guid.NewGuid().ToString(), // Generate a unique ID
@@ -260,14 +255,13 @@ namespace RecipeRage.Store
                                     ProviderName = PROVIDER_NAME,
                                     ProviderData = item
                                 };
-                                
+
                                 inventoryItems.Add(inventoryItem);
-                                
+
                                 // Cache the item
                                 _inventoryCache[inventoryItem.InventoryItemId] = inventoryItem;
                             }
-                        }
-                        
+
                         callback?.Invoke(inventoryItems, true);
                     }
                     else
@@ -289,7 +283,7 @@ namespace RecipeRage.Store
         /// <summary>
         /// Queries the available offers for purchasing items
         /// </summary>
-        /// <param name="callback">Callback with the list of offers</param>
+        /// <param name="callback"> Callback with the list of offers </param>
         public void QueryOffers(Action<List<StoreOffer>, bool> callback)
         {
             if (!CheckAvailability())
@@ -312,19 +306,19 @@ namespace RecipeRage.Store
                     if (callbackInfo.ResultCode == Result.Success)
                     {
                         LogHelper.Info(LOG_TAG, "Successfully queried offers from EOS");
-                        
+
                         // Get the number of offers
                         var countOptions = new GetOfferCountOptions
                         {
                             LocalUserId = EOSManager.Instance.GetEpicAccountId()
                         };
-                        
+
                         uint offerCount = _ecomInterface.GetOfferCount(ref countOptions);
-                        
+
                         LogHelper.Debug(LOG_TAG, $"Found {offerCount} offers");
-                        
+
                         var storeOffers = new List<StoreOffer>();
-                        
+
                         // Convert each offer to a store offer
                         for (uint i = 0; i < offerCount; i++)
                         {
@@ -333,9 +327,9 @@ namespace RecipeRage.Store
                                 LocalUserId = EOSManager.Instance.GetEpicAccountId(),
                                 OfferIndex = i
                             };
-                            
-                            Result result = _ecomInterface.CopyOfferByIndex(ref offerOptions, out CatalogOffer offer);
-                            
+
+                            var result = _ecomInterface.CopyOfferByIndex(ref offerOptions, out CatalogOffer offer);
+
                             if (result == Result.Success)
                             {
                                 // Convert to our store offer model
@@ -343,7 +337,7 @@ namespace RecipeRage.Store
                                 if (storeOffer != null)
                                 {
                                     storeOffers.Add(storeOffer);
-                                    
+
                                     // Cache the offer
                                     _offersCache[storeOffer.OfferId] = storeOffer;
                                 }
@@ -353,7 +347,7 @@ namespace RecipeRage.Store
                                 LogHelper.Warning(LOG_TAG, $"Failed to copy offer at index {i}: {result}");
                             }
                         }
-                        
+
                         callback?.Invoke(storeOffers, true);
                     }
                     else
@@ -375,8 +369,8 @@ namespace RecipeRage.Store
         /// <summary>
         /// Initiates a purchase for a specific offer
         /// </summary>
-        /// <param name="offerId">ID of the offer to purchase</param>
-        /// <param name="callback">Callback with the purchase result</param>
+        /// <param name="offerId"> ID of the offer to purchase </param>
+        /// <param name="callback"> Callback with the purchase result </param>
         public void PurchaseOffer(string offerId, Action<PurchaseResult> callback)
         {
             if (!CheckAvailability())
@@ -424,105 +418,110 @@ namespace RecipeRage.Store
                     CatalogNamespace = null // Use default namespace
                 };
 
-                _ecomInterface.QueryOwnership(ref queryOptions, null, (ref QueryOwnershipCallbackInfo queryCallbackInfo) =>
-                {
-                    if (queryCallbackInfo.ResultCode == Result.Success)
+                _ecomInterface.QueryOwnership(ref queryOptions, null,
+                    (ref QueryOwnershipCallbackInfo queryCallbackInfo) =>
                     {
-                        // Check if we already own all items in this offer
-                        bool allOwned = queryCallbackInfo.Items.All(item => item.OwnershipStatus == OwnershipStatus.Owned);
-                        
-                        if (allOwned)
+                        if (queryCallbackInfo.ResultCode == Result.Success)
                         {
-                            _purchaseInProgress = false;
-                            LastError = "All items in this offer are already owned";
-                            LogHelper.Warning(LOG_TAG, LastError);
-                            
-                            var ownedResult = PurchaseResult.CreateFailedResult(offerId, LastError, PROVIDER_NAME);
-                            ownedResult.Offer = offer;
-                            callback?.Invoke(ownedResult);
-                            return;
-                        }
-                        
-                        // Proceed with purchase
-                        var checkoutOptions = new CheckoutOptions
-                        {
-                            LocalUserId = EOSManager.Instance.GetEpicAccountId(),
-                            OverrideCatalogNamespace = null, // Use default namespace
-                            Entries = new CheckoutEntry[]
+                            // Check if we already own all items in this offer
+                            bool allOwned =
+                                queryCallbackInfo.Items.All(item => item.OwnershipStatus == OwnershipStatus.Owned);
+
+                            if (allOwned)
                             {
-                                new CheckoutEntry
-                                {
-                                    OfferId = offerId
-                                }
+                                _purchaseInProgress = false;
+                                LastError = "All items in this offer are already owned";
+                                LogHelper.Warning(LOG_TAG, LastError);
+
+                                var ownedResult = PurchaseResult.CreateFailedResult(offerId, LastError, PROVIDER_NAME);
+                                ownedResult.Offer = offer;
+                                callback?.Invoke(ownedResult);
+                                return;
                             }
-                        };
-                        
-                        _ecomInterface.Checkout(ref checkoutOptions, null, (ref CheckoutCallbackInfo checkoutCallbackInfo) =>
-                        {
-                            _purchaseInProgress = false;
-                            
-                            if (checkoutCallbackInfo.ResultCode == Result.Success)
+
+                            // Proceed with purchase
+                            var checkoutOptions = new CheckoutOptions
                             {
-                                LogHelper.Info(LOG_TAG, $"Checkout successful for offer {offerId}");
-                                
-                                // Create success result
-                                var result = PurchaseResult.CreateSuccessResult(offerId, checkoutCallbackInfo.TransactionId, PROVIDER_NAME);
-                                result.Offer = offer;
-                                
-                                // Create inventory items for purchased items
-                                foreach (var offerItem in offer.Items)
+                                LocalUserId = EOSManager.Instance.GetEpicAccountId(),
+                                OverrideCatalogNamespace = null, // Use default namespace
+                                Entries = new[]
                                 {
-                                    CatalogItem catalogItem = null;
-                                    _catalogCache.TryGetValue(offerItem.ItemId, out catalogItem);
-                                    
-                                    var inventoryItem = new InventoryItem
+                                    new CheckoutEntry
                                     {
-                                        InventoryItemId = Guid.NewGuid().ToString(), // Generate a unique ID
-                                        CatalogItemId = offerItem.ItemId,
-                                        CatalogItem = catalogItem,
-                                        Quantity = offerItem.Quantity,
-                                        AcquisitionDate = DateTime.UtcNow,
-                                        TransactionId = checkoutCallbackInfo.TransactionId,
-                                        ProviderName = PROVIDER_NAME
-                                    };
-                                    
-                                    result.GrantedItems.Add(inventoryItem);
-                                    
-                                    // Cache the item
-                                    _inventoryCache[inventoryItem.InventoryItemId] = inventoryItem;
+                                        OfferId = offerId
+                                    }
                                 }
-                                
-                                callback?.Invoke(result);
-                            }
-                            else
-                            {
-                                LastError = $"Checkout failed: {checkoutCallbackInfo.ResultCode}";
-                                LogHelper.Error(LOG_TAG, LastError);
-                                
-                                var failedResult = PurchaseResult.CreateFailedResult(offerId, LastError, PROVIDER_NAME);
-                                failedResult.Offer = offer;
-                                callback?.Invoke(failedResult);
-                            }
-                        });
-                    }
-                    else
-                    {
-                        _purchaseInProgress = false;
-                        LastError = $"Failed to check ownership: {queryCallbackInfo.ResultCode}";
-                        LogHelper.Error(LOG_TAG, LastError);
-                        
-                        var failedResult = PurchaseResult.CreateFailedResult(offerId, LastError, PROVIDER_NAME);
-                        failedResult.Offer = offer;
-                        callback?.Invoke(failedResult);
-                    }
-                });
+                            };
+
+                            _ecomInterface.Checkout(ref checkoutOptions, null,
+                                (ref CheckoutCallbackInfo checkoutCallbackInfo) =>
+                                {
+                                    _purchaseInProgress = false;
+
+                                    if (checkoutCallbackInfo.ResultCode == Result.Success)
+                                    {
+                                        LogHelper.Info(LOG_TAG, $"Checkout successful for offer {offerId}");
+
+                                        // Create success result
+                                        var result = PurchaseResult.CreateSuccessResult(offerId,
+                                            checkoutCallbackInfo.TransactionId, PROVIDER_NAME);
+                                        result.Offer = offer;
+
+                                        // Create inventory items for purchased items
+                                        foreach (var offerItem in offer.Items)
+                                        {
+                                            CatalogItem catalogItem = null;
+                                            _catalogCache.TryGetValue(offerItem.ItemId, out catalogItem);
+
+                                            var inventoryItem = new InventoryItem
+                                            {
+                                                InventoryItemId = Guid.NewGuid().ToString(), // Generate a unique ID
+                                                CatalogItemId = offerItem.ItemId,
+                                                CatalogItem = catalogItem,
+                                                Quantity = offerItem.Quantity,
+                                                AcquisitionDate = DateTime.UtcNow,
+                                                TransactionId = checkoutCallbackInfo.TransactionId,
+                                                ProviderName = PROVIDER_NAME
+                                            };
+
+                                            result.GrantedItems.Add(inventoryItem);
+
+                                            // Cache the item
+                                            _inventoryCache[inventoryItem.InventoryItemId] = inventoryItem;
+                                        }
+
+                                        callback?.Invoke(result);
+                                    }
+                                    else
+                                    {
+                                        LastError = $"Checkout failed: {checkoutCallbackInfo.ResultCode}";
+                                        LogHelper.Error(LOG_TAG, LastError);
+
+                                        var failedResult =
+                                            PurchaseResult.CreateFailedResult(offerId, LastError, PROVIDER_NAME);
+                                        failedResult.Offer = offer;
+                                        callback?.Invoke(failedResult);
+                                    }
+                                });
+                        }
+                        else
+                        {
+                            _purchaseInProgress = false;
+                            LastError = $"Failed to check ownership: {queryCallbackInfo.ResultCode}";
+                            LogHelper.Error(LOG_TAG, LastError);
+
+                            var failedResult = PurchaseResult.CreateFailedResult(offerId, LastError, PROVIDER_NAME);
+                            failedResult.Offer = offer;
+                            callback?.Invoke(failedResult);
+                        }
+                    });
             }
             catch (Exception ex)
             {
                 _purchaseInProgress = false;
                 LastError = $"Error during purchase: {ex.Message}";
                 LogHelper.Exception(LOG_TAG, ex, "Failed to purchase offer");
-                
+
                 var failedResult = PurchaseResult.CreateFailedResult(offerId, LastError, PROVIDER_NAME);
                 failedResult.Offer = offer;
                 callback?.Invoke(failedResult);
@@ -532,9 +531,9 @@ namespace RecipeRage.Store
         /// <summary>
         /// Consumes an inventory item (for consumable items)
         /// </summary>
-        /// <param name="inventoryItemId">ID of the inventory item to consume</param>
-        /// <param name="quantity">Quantity to consume</param>
-        /// <param name="callback">Callback indicating success or failure</param>
+        /// <param name="inventoryItemId"> ID of the inventory item to consume </param>
+        /// <param name="quantity"> Quantity to consume </param>
+        /// <param name="callback"> Callback indicating success or failure </param>
         public void ConsumeItem(string inventoryItemId, int quantity, Action<bool> callback)
         {
             if (!CheckAvailability())
@@ -570,10 +569,7 @@ namespace RecipeRage.Store
                 item.Quantity -= quantity;
 
                 // Remove the item if quantity is 0
-                if (item.Quantity <= 0)
-                {
-                    _inventoryCache.Remove(inventoryItemId);
-                }
+                if (item.Quantity <= 0) _inventoryCache.Remove(inventoryItemId);
 
                 LogHelper.Info(LOG_TAG, $"Successfully consumed {quantity} of item {inventoryItemId}");
                 callback?.Invoke(true);
@@ -589,8 +585,8 @@ namespace RecipeRage.Store
         /// <summary>
         /// Validates a purchase receipt
         /// </summary>
-        /// <param name="receipt">Receipt to validate</param>
-        /// <param name="callback">Callback indicating if the receipt is valid</param>
+        /// <param name="receipt"> Receipt to validate </param>
+        /// <param name="callback"> Callback indicating if the receipt is valid </param>
         public void ValidateReceipt(string receipt, Action<bool> callback)
         {
             if (!CheckAvailability())
@@ -608,8 +604,8 @@ namespace RecipeRage.Store
         /// <summary>
         /// Gets detailed information about a specific catalog item
         /// </summary>
-        /// <param name="itemId">ID of the item to query</param>
-        /// <param name="callback">Callback with the catalog item details</param>
+        /// <param name="itemId"> ID of the item to query </param>
+        /// <param name="callback"> Callback with the catalog item details </param>
         public void GetCatalogItemDetails(string itemId, Action<CatalogItem, bool> callback)
         {
             if (!CheckAvailability())
@@ -655,7 +651,7 @@ namespace RecipeRage.Store
         /// <summary>
         /// Gets the available currencies and their balances
         /// </summary>
-        /// <param name="callback">Callback with the list of currencies</param>
+        /// <param name="callback"> Callback with the list of currencies </param>
         public void GetCurrencies(Action<List<Currency>, bool> callback)
         {
             if (!CheckAvailability())
@@ -673,14 +669,11 @@ namespace RecipeRage.Store
         /// <summary>
         /// Opens the platform-specific store UI for a specific item (if supported)
         /// </summary>
-        /// <param name="itemId">ID of the item to display</param>
-        /// <returns>True if the UI was opened successfully</returns>
+        /// <param name="itemId"> ID of the item to display </param>
+        /// <returns> True if the UI was opened successfully </returns>
         public bool DisplayStoreUI(string itemId = null)
         {
-            if (!CheckAvailability())
-            {
-                return false;
-            }
+            if (!CheckAvailability()) return false;
 
             // EOS doesn't have a built-in store UI that we can open
             LogHelper.Warning(LOG_TAG, "Store UI not implemented in EOS provider");
@@ -691,7 +684,7 @@ namespace RecipeRage.Store
         /// <summary>
         /// Checks if a purchase is in progress
         /// </summary>
-        /// <returns>True if a purchase is in progress</returns>
+        /// <returns> True if a purchase is in progress </returns>
         public bool IsPurchaseInProgress()
         {
             return _purchaseInProgress;
@@ -700,7 +693,7 @@ namespace RecipeRage.Store
         /// <summary>
         /// Restores previous purchases (useful for mobile platforms)
         /// </summary>
-        /// <param name="callback">Callback indicating success or failure, with restored items</param>
+        /// <param name="callback"> Callback indicating success or failure, with restored items </param>
         public void RestorePurchases(Action<bool, List<InventoryItem>> callback)
         {
             if (!CheckAvailability())
@@ -712,17 +705,14 @@ namespace RecipeRage.Store
             // For EOS, restoring purchases is the same as querying ownership
             LogHelper.Info(LOG_TAG, "Restoring purchases through EOS ownership query");
 
-            QueryInventory((items, success) =>
-            {
-                callback?.Invoke(success, items);
-            });
+            QueryInventory((items, success) => { callback?.Invoke(success, items); });
         }
 
         /// <summary>
         /// Converts an EOS catalog offer to a catalog item
         /// </summary>
-        /// <param name="offer">EOS catalog offer</param>
-        /// <returns>Converted catalog item</returns>
+        /// <param name="offer"> EOS catalog offer </param>
+        /// <returns> Converted catalog item </returns>
         private CatalogItem ConvertEOSOfferToCatalogItem(CatalogOffer offer)
         {
             if (offer == null)
@@ -743,7 +733,6 @@ namespace RecipeRage.Store
 
             // Add tag from categories
             if (offer.ItemOffers != null)
-            {
                 foreach (var itemOffer in offer.ItemOffers)
                 {
                     // Add bundle items if this is a bundle
@@ -754,23 +743,16 @@ namespace RecipeRage.Store
                             ItemId = itemOffer.Id,
                             Quantity = 1 // EOS doesn't have a quantity field
                         };
-                        
+
                         catalogItem.BundleItems.Add(bundleItem);
                     }
-                    
+
                     // Add categories as tags
                     if (itemOffer.Categories != null)
-                    {
                         foreach (var category in itemOffer.Categories)
-                        {
                             if (!catalogItem.Tags.Contains(category.Path))
-                            {
                                 catalogItem.Tags.Add(category.Path);
-                            }
-                        }
-                    }
                 }
-            }
 
             return catalogItem;
         }
@@ -778,15 +760,15 @@ namespace RecipeRage.Store
         /// <summary>
         /// Converts an EOS catalog offer to a store offer
         /// </summary>
-        /// <param name="offer">EOS catalog offer</param>
-        /// <returns>Converted store offer</returns>
+        /// <param name="offer"> EOS catalog offer </param>
+        /// <returns> Converted store offer </returns>
         private StoreOffer ConvertEOSOfferToStoreOffer(CatalogOffer offer)
         {
             if (offer == null)
                 return null;
 
-            PaymentMethod paymentMethod = PaymentMethod.Unknown;
-            
+            var paymentMethod = PaymentMethod.Unknown;
+
             switch (offer.PriceResult)
             {
                 case Result.Success:
@@ -807,7 +789,7 @@ namespace RecipeRage.Store
                 Description = offer.Description,
                 LongDescription = offer.LongDescription,
                 RegularPrice = offer.OriginalPrice / 100.0m, // Convert cents to dollars
-                CurrentPrice = offer.CurrentPrice / 100.0m,  // Convert cents to dollars
+                CurrentPrice = offer.CurrentPrice / 100.0m, // Convert cents to dollars
                 CurrencyCode = offer.CurrencyCode,
                 PaymentMethod = paymentMethod,
                 ProviderName = PROVIDER_NAME,
@@ -817,7 +799,6 @@ namespace RecipeRage.Store
 
             // Add items to the offer
             if (offer.ItemOffers != null)
-            {
                 foreach (var itemOffer in offer.ItemOffers)
                 {
                     var offerItem = new OfferItem
@@ -825,28 +806,18 @@ namespace RecipeRage.Store
                         ItemId = itemOffer.Id,
                         Quantity = 1 // EOS doesn't have a quantity field
                     };
-                    
+
                     storeOffer.Items.Add(offerItem);
-                    
+
                     // Add categories as tags
                     if (itemOffer.Categories != null)
-                    {
                         foreach (var category in itemOffer.Categories)
-                        {
                             if (!storeOffer.Tags.Contains(category.Path))
-                            {
                                 storeOffer.Tags.Add(category.Path);
-                            }
-                        }
-                    }
                 }
-            }
 
             // Set external ID if available
-            if (!string.IsNullOrEmpty(offer.ExternalId))
-            {
-                storeOffer.ExternalId = offer.ExternalId;
-            }
+            if (!string.IsNullOrEmpty(offer.ExternalId)) storeOffer.ExternalId = offer.ExternalId;
 
             return storeOffer;
         }
@@ -854,42 +825,37 @@ namespace RecipeRage.Store
         /// <summary>
         /// Gets an item type from an EOS offer
         /// </summary>
-        /// <param name="offer">EOS catalog offer</param>
-        /// <returns>Item type</returns>
+        /// <param name="offer"> EOS catalog offer </param>
+        /// <returns> Item type </returns>
         private ItemType GetItemTypeFromOffer(CatalogOffer offer)
         {
             // EOS doesn't have a direct item type field, so we'll try to infer from other data
-            if (offer.ItemOffers != null && offer.ItemOffers.Length > 1)
-            {
-                return ItemType.Bundle;
-            }
+            if (offer.ItemOffers != null && offer.ItemOffers.Length > 1) return ItemType.Bundle;
 
             // Check tags for item type hints
             if (offer.ItemOffers != null && offer.ItemOffers.Length > 0 && offer.ItemOffers[0].Categories != null)
-            {
                 foreach (var category in offer.ItemOffers[0].Categories)
                 {
                     string path = category.Path.ToLower();
-                    
+
                     if (path.Contains("consumable"))
                         return ItemType.Consumable;
-                    
+
                     if (path.Contains("durable"))
                         return ItemType.Durable;
-                    
+
                     if (path.Contains("currency"))
                         return ItemType.Currency;
-                    
+
                     if (path.Contains("subscription"))
                         return ItemType.Subscription;
-                    
+
                     if (path.Contains("cosmetic"))
                         return ItemType.Cosmetic;
-                    
+
                     if (path.Contains("booster"))
                         return ItemType.Booster;
                 }
-            }
 
             // Default to durable if we can't determine
             return ItemType.Durable;
@@ -898,18 +864,18 @@ namespace RecipeRage.Store
         /// <summary>
         /// Checks if a user is currently logged in to EOS
         /// </summary>
-        /// <returns>True if a user is logged in</returns>
+        /// <returns> True if a user is logged in </returns>
         private bool IsUserLoggedIn()
         {
-            return EOSManager.Instance != null && 
-                   EOSManager.Instance.GetEOSPlatformInterface() != null && 
+            return EOSManager.Instance != null &&
+                   EOSManager.Instance.GetEOSPlatformInterface() != null &&
                    EOSManager.Instance.GetEpicAccountId() != null;
         }
 
         /// <summary>
         /// Checks if the provider is available for use
         /// </summary>
-        /// <returns>True if the provider is available</returns>
+        /// <returns> True if the provider is available </returns>
         private bool CheckAvailability()
         {
             if (!_isInitialized)
@@ -936,4 +902,4 @@ namespace RecipeRage.Store
             return true;
         }
     }
-} 
+}

@@ -9,6 +9,39 @@ namespace RecipeRage.Modules.Lobbies.Data
     [Serializable]
     public class LobbySettings
     {
+
+        /// <summary>
+        /// Create a new LobbySettings object with default values
+        /// </summary>
+        public LobbySettings()
+        {
+            // Default constructor - all properties have default values
+        }
+
+        /// <summary>
+        /// Create a copy of another lobby settings instance
+        /// </summary>
+        /// <param name="other"> The settings to copy </param>
+        public LobbySettings(LobbySettings other)
+        {
+            if (other == null)
+                throw new ArgumentNullException(nameof(other));
+
+            Name = other.Name;
+            MaxPlayers = other.MaxPlayers;
+            IsPublic = other.IsPublic;
+            AllowsJoinInProgress = other.AllowsJoinInProgress;
+            JoinPermission = other.JoinPermission;
+            UsesPresence = other.UsesPresence;
+            VoiceChatEnabled = other.VoiceChatEnabled;
+            IsMatchmakingLobby = other.IsMatchmakingLobby;
+            BucketId = other.BucketId;
+            Region = other.Region;
+
+            // Deep copy attributes
+            Attributes = new Dictionary<string, string>(other.Attributes);
+        }
+
         /// <summary>
         /// Name of the lobby
         /// </summary>
@@ -52,7 +85,7 @@ namespace RecipeRage.Modules.Lobbies.Data
         /// <summary>
         /// Whether this is a matchmaking lobby
         /// </summary>
-        public bool IsMatchmakingLobby { get; set; } = false;
+        public bool IsMatchmakingLobby { get; set; }
 
         /// <summary>
         /// Bucket ID for matchmaking
@@ -65,42 +98,10 @@ namespace RecipeRage.Modules.Lobbies.Data
         public string Region { get; set; } = "any";
 
         /// <summary>
-        /// Create a new LobbySettings object with default values
-        /// </summary>
-        public LobbySettings()
-        {
-            // Default constructor - all properties have default values
-        }
-
-        /// <summary>
-        /// Create a copy of another lobby settings instance
-        /// </summary>
-        /// <param name="other">The settings to copy</param>
-        public LobbySettings(LobbySettings other)
-        {
-            if (other == null)
-                throw new ArgumentNullException(nameof(other));
-
-            Name = other.Name;
-            MaxPlayers = other.MaxPlayers;
-            IsPublic = other.IsPublic;
-            AllowsJoinInProgress = other.AllowsJoinInProgress;
-            JoinPermission = other.JoinPermission;
-            UsesPresence = other.UsesPresence;
-            VoiceChatEnabled = other.VoiceChatEnabled;
-            IsMatchmakingLobby = other.IsMatchmakingLobby;
-            BucketId = other.BucketId;
-            Region = other.Region;
-            
-            // Deep copy attributes
-            Attributes = new Dictionary<string, string>(other.Attributes);
-        }
-
-        /// <summary>
         /// Create a LobbySettings object from matchmaking options
         /// </summary>
-        /// <param name="options">The matchmaking options to use</param>
-        /// <returns>A new LobbySettings object configured for matchmaking</returns>
+        /// <param name="options"> The matchmaking options to use </param>
+        /// <returns> A new LobbySettings object configured for matchmaking </returns>
         public static LobbySettings FromMatchmakingOptions(MatchmakingOptions options)
         {
             if (options == null)
@@ -143,27 +144,27 @@ namespace RecipeRage.Modules.Lobbies.Data
             }
 
             // Copy any custom attributes from the options
-            foreach (var kvp in options.Attributes)
+            foreach (KeyValuePair<string, string> kvp in options.Attributes)
             {
                 settings.Attributes[kvp.Key] = kvp.Value;
             }
 
             return settings;
         }
-        
+
         /// <summary>
         /// Add an attribute to the lobby settings
         /// </summary>
-        /// <param name="key">Attribute key</param>
-        /// <param name="value">Attribute value</param>
+        /// <param name="key"> Attribute key </param>
+        /// <param name="value"> Attribute value </param>
         public void AddAttribute(string key, string value)
         {
             if (string.IsNullOrEmpty(key))
                 throw new ArgumentException("Key cannot be null or empty", nameof(key));
-                
+
             Attributes[key] = value;
         }
-        
+
         /// <summary>
         /// Create a string representation of the lobby settings
         /// </summary>
@@ -172,22 +173,4 @@ namespace RecipeRage.Modules.Lobbies.Data
             return $"LobbySettings[Name={Name}, MaxPlayers={MaxPlayers}, IsPublic={IsPublic}]";
         }
     }
-    
-    /// <summary>
-    /// Permission settings for joining a lobby
-    /// </summary>
-    public enum LobbyPermission
-    {
-        /// <summary>Anyone can join</summary>
-        Public,
-        
-        /// <summary>Only friends can join</summary>
-        FriendsOnly,
-        
-        /// <summary>Only invited players can join</summary>
-        InviteOnly,
-        
-        /// <summary>No one can join (locked)</summary>
-        Locked
-    }
-} 
+}

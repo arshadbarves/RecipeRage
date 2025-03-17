@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
-using RecipeRage.Logging;
+using RecipeRage.Modules.Logging;
 
 namespace RecipeRage.Leaderboards
 {
@@ -10,7 +9,7 @@ namespace RecipeRage.Leaderboards
     /// </summary>
     public static class LeaderboardsHelper
     {
-        private static ILeaderboardsService _leaderboardsService;
+        private static readonly ILeaderboardsService _leaderboardsService;
         private static bool _isInitialized;
 
         /// <summary>
@@ -29,7 +28,7 @@ namespace RecipeRage.Leaderboards
         /// <summary>
         /// Initializes the leaderboards system
         /// </summary>
-        /// <param name="callback">Optional callback when initialization completes</param>
+        /// <param name="callback"> Optional callback when initialization completes </param>
         public static void Initialize(Action<bool> callback = null)
         {
             if (_isInitialized)
@@ -40,9 +39,9 @@ namespace RecipeRage.Leaderboards
             }
 
             LogHelper.Info("LeaderboardsHelper", "Initializing LeaderboardsHelper");
-            
+
             // Add the EOS provider
-            EOSLeaderboardsProvider eosProvider = new EOSLeaderboardsProvider();
+            var eosProvider = new EOSLeaderboardsProvider();
             _leaderboardsService.AddProvider(eosProvider);
 
             // Initialize the service
@@ -51,13 +50,10 @@ namespace RecipeRage.Leaderboards
                 _isInitialized = success;
 
                 if (success)
-                {
                     LogHelper.Info("LeaderboardsHelper", "LeaderboardsHelper initialized successfully");
-                }
                 else
-                {
-                    LogHelper.Error("LeaderboardsHelper", $"Failed to initialize LeaderboardsHelper: {_leaderboardsService.LastError}");
-                }
+                    LogHelper.Error("LeaderboardsHelper",
+                        $"Failed to initialize LeaderboardsHelper: {_leaderboardsService.LastError}");
 
                 callback?.Invoke(success);
             });
@@ -66,7 +62,7 @@ namespace RecipeRage.Leaderboards
         /// <summary>
         /// Gets all available leaderboard definitions
         /// </summary>
-        /// <param name="callback">Callback with the list of leaderboard definitions</param>
+        /// <param name="callback"> Callback with the list of leaderboard definitions </param>
         public static void GetLeaderboardDefinitions(Action<List<LeaderboardDefinition>> callback)
         {
             if (!CheckInitialized())
@@ -81,11 +77,12 @@ namespace RecipeRage.Leaderboards
         /// <summary>
         /// Gets entries for a specific leaderboard
         /// </summary>
-        /// <param name="leaderboardId">ID of the leaderboard to query</param>
-        /// <param name="startRank">Starting rank to query (1-based)</param>
-        /// <param name="count">Number of entries to retrieve</param>
-        /// <param name="callback">Callback with the list of leaderboard entries</param>
-        public static void GetLeaderboardEntries(string leaderboardId, int startRank, int count, Action<List<LeaderboardEntry>> callback)
+        /// <param name="leaderboardId"> ID of the leaderboard to query </param>
+        /// <param name="startRank"> Starting rank to query (1-based) </param>
+        /// <param name="count"> Number of entries to retrieve </param>
+        /// <param name="callback"> Callback with the list of leaderboard entries </param>
+        public static void GetLeaderboardEntries(string leaderboardId, int startRank, int count,
+            Action<List<LeaderboardEntry>> callback)
         {
             if (!CheckInitialized())
             {
@@ -99,9 +96,10 @@ namespace RecipeRage.Leaderboards
         /// <summary>
         /// Gets entries for a specific leaderboard filtered to the user's friends
         /// </summary>
-        /// <param name="leaderboardId">ID of the leaderboard to query</param>
-        /// <param name="callback">Callback with the list of leaderboard entries</param>
-        public static void GetLeaderboardEntriesForFriends(string leaderboardId, Action<List<LeaderboardEntry>> callback)
+        /// <param name="leaderboardId"> ID of the leaderboard to query </param>
+        /// <param name="callback"> Callback with the list of leaderboard entries </param>
+        public static void GetLeaderboardEntriesForFriends(string leaderboardId,
+            Action<List<LeaderboardEntry>> callback)
         {
             if (!CheckInitialized())
             {
@@ -115,10 +113,11 @@ namespace RecipeRage.Leaderboards
         /// <summary>
         /// Gets a specific user's entry in a leaderboard
         /// </summary>
-        /// <param name="leaderboardId">ID of the leaderboard to query</param>
-        /// <param name="userId">User ID to look up</param>
-        /// <param name="callback">Callback with the user's leaderboard entry (null if not found)</param>
-        public static void GetUserLeaderboardEntry(string leaderboardId, string userId, Action<LeaderboardEntry> callback)
+        /// <param name="leaderboardId"> ID of the leaderboard to query </param>
+        /// <param name="userId"> User ID to look up </param>
+        /// <param name="callback"> Callback with the user's leaderboard entry (null if not found) </param>
+        public static void GetUserLeaderboardEntry(string leaderboardId, string userId,
+            Action<LeaderboardEntry> callback)
         {
             if (!CheckInitialized())
             {
@@ -132,8 +131,8 @@ namespace RecipeRage.Leaderboards
         /// <summary>
         /// Gets the current user's entry in a leaderboard
         /// </summary>
-        /// <param name="leaderboardId">ID of the leaderboard to query</param>
-        /// <param name="callback">Callback with the user's leaderboard entry (null if not found)</param>
+        /// <param name="leaderboardId"> ID of the leaderboard to query </param>
+        /// <param name="callback"> Callback with the user's leaderboard entry (null if not found) </param>
         public static void GetCurrentUserLeaderboardEntry(string leaderboardId, Action<LeaderboardEntry> callback)
         {
             if (!CheckInitialized())
@@ -148,9 +147,9 @@ namespace RecipeRage.Leaderboards
         /// <summary>
         /// Submits a score to a leaderboard
         /// </summary>
-        /// <param name="leaderboardId">ID of the leaderboard to submit to</param>
-        /// <param name="score">Score value to submit</param>
-        /// <param name="callback">Optional callback indicating success or failure</param>
+        /// <param name="leaderboardId"> ID of the leaderboard to submit to </param>
+        /// <param name="score"> Score value to submit </param>
+        /// <param name="callback"> Optional callback indicating success or failure </param>
         public static void SubmitScore(string leaderboardId, long score, Action<bool> callback = null)
         {
             if (!CheckInitialized())
@@ -165,11 +164,12 @@ namespace RecipeRage.Leaderboards
         /// <summary>
         /// Submits a score to a leaderboard with additional metadata
         /// </summary>
-        /// <param name="leaderboardId">ID of the leaderboard to submit to</param>
-        /// <param name="score">Score value to submit</param>
-        /// <param name="metadata">Additional metadata for the score (display info, etc.)</param>
-        /// <param name="callback">Optional callback indicating success or failure</param>
-        public static void SubmitScoreWithMetadata(string leaderboardId, long score, string metadata, Action<bool> callback = null)
+        /// <param name="leaderboardId"> ID of the leaderboard to submit to </param>
+        /// <param name="score"> Score value to submit </param>
+        /// <param name="metadata"> Additional metadata for the score (display info, etc.) </param>
+        /// <param name="callback"> Optional callback indicating success or failure </param>
+        public static void SubmitScoreWithMetadata(string leaderboardId, long score, string metadata,
+            Action<bool> callback = null)
         {
             if (!CheckInitialized())
             {
@@ -183,14 +183,11 @@ namespace RecipeRage.Leaderboards
         /// <summary>
         /// Opens the platform-specific UI for viewing leaderboards (if supported)
         /// </summary>
-        /// <param name="leaderboardId">ID of the leaderboard to display</param>
-        /// <returns>True if the UI was opened successfully</returns>
+        /// <param name="leaderboardId"> ID of the leaderboard to display </param>
+        /// <returns> True if the UI was opened successfully </returns>
         public static bool DisplayLeaderboardUI(string leaderboardId)
         {
-            if (!CheckInitialized())
-            {
-                return false;
-            }
+            if (!CheckInitialized()) return false;
 
             return _leaderboardsService.DisplayLeaderboardUI(leaderboardId);
         }
@@ -198,7 +195,7 @@ namespace RecipeRage.Leaderboards
         /// <summary>
         /// Registers for leaderboard query events
         /// </summary>
-        /// <param name="callback">Callback to invoke when a leaderboard is queried</param>
+        /// <param name="callback"> Callback to invoke when a leaderboard is queried </param>
         public static void RegisterOnLeaderboardQueried(Action<string, List<LeaderboardEntry>> callback)
         {
             if (!CheckInitialized())
@@ -210,19 +207,16 @@ namespace RecipeRage.Leaderboards
         /// <summary>
         /// Unregisters from leaderboard query events
         /// </summary>
-        /// <param name="callback">Callback to remove</param>
+        /// <param name="callback"> Callback to remove </param>
         public static void UnregisterOnLeaderboardQueried(Action<string, List<LeaderboardEntry>> callback)
         {
-            if (_leaderboardsService != null)
-            {
-                _leaderboardsService.OnLeaderboardQueried -= callback;
-            }
+            if (_leaderboardsService != null) _leaderboardsService.OnLeaderboardQueried -= callback;
         }
 
         /// <summary>
         /// Registers for score submission events
         /// </summary>
-        /// <param name="callback">Callback to invoke when a score is submitted</param>
+        /// <param name="callback"> Callback to invoke when a score is submitted </param>
         public static void RegisterOnScoreSubmitted(Action<string, long, bool> callback)
         {
             if (!CheckInitialized())
@@ -234,19 +228,16 @@ namespace RecipeRage.Leaderboards
         /// <summary>
         /// Unregisters from score submission events
         /// </summary>
-        /// <param name="callback">Callback to remove</param>
+        /// <param name="callback"> Callback to remove </param>
         public static void UnregisterOnScoreSubmitted(Action<string, long, bool> callback)
         {
-            if (_leaderboardsService != null)
-            {
-                _leaderboardsService.OnScoreSubmitted -= callback;
-            }
+            if (_leaderboardsService != null) _leaderboardsService.OnScoreSubmitted -= callback;
         }
 
         /// <summary>
         /// Registers for score submission failure events
         /// </summary>
-        /// <param name="callback">Callback to invoke when a score submission fails</param>
+        /// <param name="callback"> Callback to invoke when a score submission fails </param>
         public static void RegisterOnScoreSubmissionFailed(Action<string, long, string> callback)
         {
             if (!CheckInitialized())
@@ -258,28 +249,25 @@ namespace RecipeRage.Leaderboards
         /// <summary>
         /// Unregisters from score submission failure events
         /// </summary>
-        /// <param name="callback">Callback to remove</param>
+        /// <param name="callback"> Callback to remove </param>
         public static void UnregisterOnScoreSubmissionFailed(Action<string, long, string> callback)
         {
-            if (_leaderboardsService != null)
-            {
-                _leaderboardsService.OnScoreSubmissionFailed -= callback;
-            }
+            if (_leaderboardsService != null) _leaderboardsService.OnScoreSubmissionFailed -= callback;
         }
 
         /// <summary>
         /// Associates a stat with a leaderboard for automatic score submission
         /// </summary>
-        /// <param name="statName">Name of the stat</param>
-        /// <param name="leaderboardId">ID of the leaderboard</param>
-        /// <param name="autoSubmit">Whether to automatically submit scores when the stat changes</param>
-        /// <param name="transformType">Function to apply to the stat value before submission</param>
-        /// <param name="transformValue">Value to use in the transform function</param>
+        /// <param name="statName"> Name of the stat </param>
+        /// <param name="leaderboardId"> ID of the leaderboard </param>
+        /// <param name="autoSubmit"> Whether to automatically submit scores when the stat changes </param>
+        /// <param name="transformType"> Function to apply to the stat value before submission </param>
+        /// <param name="transformValue"> Value to use in the transform function </param>
         public static void RegisterStatForLeaderboard(
-            string statName, 
-            string leaderboardId, 
-            bool autoSubmit = true, 
-            LeaderboardStatTransformType transformType = LeaderboardStatTransformType.None, 
+            string statName,
+            string leaderboardId,
+            bool autoSubmit = true,
+            LeaderboardStatTransformType transformType = LeaderboardStatTransformType.None,
             float transformValue = 1.0f)
         {
             if (!CheckInitialized())
@@ -300,8 +288,8 @@ namespace RecipeRage.Leaderboards
         /// <summary>
         /// Updates a stat value and potentially submits to associated leaderboards
         /// </summary>
-        /// <param name="statName">Name of the stat to update</param>
-        /// <param name="statValue">New value of the stat</param>
+        /// <param name="statName"> Name of the stat to update </param>
+        /// <param name="statValue"> New value of the stat </param>
         public static void UpdateStat(string statName, double statValue)
         {
             if (!CheckInitialized())
@@ -313,7 +301,7 @@ namespace RecipeRage.Leaderboards
         /// <summary>
         /// Checks if leaderboard system is initialized
         /// </summary>
-        /// <returns>True if initialized</returns>
+        /// <returns> True if initialized </returns>
         private static bool CheckInitialized()
         {
             if (!_isInitialized)
@@ -321,7 +309,8 @@ namespace RecipeRage.Leaderboards
                 LogHelper.Warning("LeaderboardsHelper", "LeaderboardsHelper is not initialized");
                 return false;
             }
+
             return true;
         }
     }
-} 
+}

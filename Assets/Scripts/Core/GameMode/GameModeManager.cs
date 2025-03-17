@@ -8,7 +8,7 @@ using UnityEngine;
 namespace RecipeRage.Core.GameMode
 {
     /// <summary>
-    ///     Manages game modes and team functionality
+    /// Manages game modes and team functionality
     /// </summary>
     public class GameModeManager : NetworkBehaviour
     {
@@ -33,8 +33,8 @@ namespace RecipeRage.Core.GameMode
 
         #region Serialized Fields
 
-        [Header("Game Mode Settings"), SerializeField]
-         private GameModeType _defaultGameMode = GameModeType.Classic;
+        [Header("Game Mode Settings")] [SerializeField]
+        private GameModeType _defaultGameMode = GameModeType.Classic;
         [SerializeField] private int _maxTeams = 2;
         [SerializeField] private int _playersPerTeam = 2;
 
@@ -78,9 +78,9 @@ namespace RecipeRage.Core.GameMode
         #region Public Methods
 
         /// <summary>
-        ///     Changes the current game mode
+        /// Changes the current game mode
         /// </summary>
-        /// <param name="newMode">New game mode to switch to</param>
+        /// <param name="newMode"> New game mode to switch to </param>
         [ServerRpc(RequireOwnership = false)]
         public void ChangeGameModeServerRpc(GameModeType newMode)
         {
@@ -104,22 +104,22 @@ namespace RecipeRage.Core.GameMode
         }
 
         /// <summary>
-        ///     Assigns a player to a team
+        /// Assigns a player to a team
         /// </summary>
-        /// <param name="playerId">Player's network ID</param>
-        /// <param name="teamId">Team ID to assign to</param>
+        /// <param name="playerId"> Player's network ID </param>
+        /// <param name="teamId"> Team ID to assign to </param>
         [ServerRpc(RequireOwnership = false)]
         public void AssignPlayerToTeamServerRpc(ulong playerId, int teamId)
         {
             if (teamId < 0 || teamId >= _teams.Count)
                 return;
 
-            Team team = _teams[teamId];
+            var team = _teams[teamId];
             if (team.Players.Count >= _playersPerTeam)
                 return;
 
             // Remove from current team if any
-            if (_playerTeams.TryGetValue(playerId, out Team currentTeam))
+            if (_playerTeams.TryGetValue(playerId, out var currentTeam))
             {
                 currentTeam.RemovePlayer(playerId);
             }
@@ -133,17 +133,17 @@ namespace RecipeRage.Core.GameMode
         }
 
         /// <summary>
-        ///     Updates a team's score
+        /// Updates a team's score
         /// </summary>
-        /// <param name="teamId">Team ID</param>
-        /// <param name="scoreToAdd">Score to add</param>
+        /// <param name="teamId"> Team ID </param>
+        /// <param name="scoreToAdd"> Score to add </param>
         [ServerRpc(RequireOwnership = false)]
         public void UpdateTeamScoreServerRpc(int teamId, int scoreToAdd)
         {
             if (teamId < 0 || teamId >= _teams.Count)
                 return;
 
-            Team team = _teams[teamId];
+            var team = _teams[teamId];
             team.AddScore(scoreToAdd);
             OnTeamScoreUpdated?.Invoke(team);
 
@@ -166,7 +166,7 @@ namespace RecipeRage.Core.GameMode
 
         private void CreateGameMode()
         {
-            GameObject gameModeObj = new GameObject($"{CurrentGameMode}GameMode");
+            var gameModeObj = new GameObject($"{CurrentGameMode}GameMode");
             gameModeObj.transform.SetParent(transform);
 
             switch (CurrentGameMode)
@@ -188,7 +188,7 @@ namespace RecipeRage.Core.GameMode
             // Auto-assign to team in team mode
             if (IsTeamMode)
             {
-                Team teamWithSpace = _teams.FirstOrDefault(t => t.Players.Count < _playersPerTeam);
+                var teamWithSpace = _teams.FirstOrDefault(t => t.Players.Count < _playersPerTeam);
                 if (teamWithSpace != null)
                 {
                     AssignPlayerToTeamServerRpc(clientId, teamWithSpace.TeamId);
@@ -199,7 +199,7 @@ namespace RecipeRage.Core.GameMode
         // TODO: We need to handle player disconnections and also allow reconnection, so we can't remove the player from the team.
         private void HandleClientDisconnected(ulong clientId)
         {
-            if (_playerTeams.TryGetValue(clientId, out Team team))
+            if (_playerTeams.TryGetValue(clientId, out var team))
             {
                 team.RemovePlayer(clientId);
                 _playerTeams.Remove(clientId);
@@ -240,7 +240,7 @@ namespace RecipeRage.Core.GameMode
     }
 
     /// <summary>
-    ///     Available game modes
+    /// Available game modes
     /// </summary>
     public enum GameModeType
     {
@@ -250,7 +250,7 @@ namespace RecipeRage.Core.GameMode
     }
 
     /// <summary>
-    ///     Represents a team in team-based game modes
+    /// Represents a team in team-based game modes
     /// </summary>
     public class Team
     {

@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
-using RecipeRage.Logging;
+using RecipeRage.Modules.Logging;
 
 namespace RecipeRage.Store
 {
@@ -11,41 +10,71 @@ namespace RecipeRage.Store
     /// </summary>
     public class StoreService : IStoreService
     {
+
+        // Cache for catalog items
+        private readonly Dictionary<string, CatalogItem> _catalogCache = new Dictionary<string, CatalogItem>();
+
+        // Cache for currencies
+        private readonly Dictionary<string, Currency> _currenciesCache = new Dictionary<string, Currency>();
+
+        // Cache for inventory items
+        private readonly Dictionary<string, InventoryItem> _inventoryCache = new Dictionary<string, InventoryItem>();
+
+        // Object for thread safety
+        private readonly object _lock = new object();
+
+        // Cache for offers
+        private readonly Dictionary<string, StoreOffer> _offersCache = new Dictionary<string, StoreOffer>();
+
+        // List of registered providers
+        private readonly List<IStoreProvider> _providers = new List<IStoreProvider>();
+
+        // Flag to track if a purchase is in progress
+        private bool _purchaseInProgress;
+
+        /// <summary>
+        /// Creates a new store service
+        /// </summary>
+        public StoreService()
+        {
+            LogHelper.Debug("StoreService", "StoreService created");
+        }
+
         /// <summary>
         /// Event triggered when the catalog is queried
         /// </summary>
         public event Action<List<CatalogItem>> OnCatalogQueried;
-        
+
         /// <summary>
         /// Event triggered when inventory is queried
         /// </summary>
         public event Action<List<InventoryItem>> OnInventoryQueried;
-        
+
         /// <summary>
         /// Event triggered when offers are queried
         /// </summary>
         public event Action<List<StoreOffer>> OnOffersQueried;
-        
+
         /// <summary>
         /// Event triggered when a purchase succeeds
         /// </summary>
         public event Action<PurchaseResult> OnPurchaseSuccess;
-        
+
         /// <summary>
         /// Event triggered when a purchase fails
         /// </summary>
         public event Action<string, string> OnPurchaseFailed;
-        
+
         /// <summary>
         /// Event triggered when an item is added to inventory
         /// </summary>
         public event Action<InventoryItem> OnItemAdded;
-        
+
         /// <summary>
         /// Event triggered when an item is consumed
         /// </summary>
         public event Action<string, int> OnItemConsumed;
-        
+
         /// <summary>
         /// Event triggered when currency balances change
         /// </summary>
@@ -61,39 +90,10 @@ namespace RecipeRage.Store
         /// </summary>
         public string LastError { get; private set; }
 
-        // List of registered providers
-        private readonly List<IStoreProvider> _providers = new List<IStoreProvider>();
-        
-        // Cache for catalog items
-        private readonly Dictionary<string, CatalogItem> _catalogCache = new Dictionary<string, CatalogItem>();
-        
-        // Cache for inventory items
-        private readonly Dictionary<string, InventoryItem> _inventoryCache = new Dictionary<string, InventoryItem>();
-        
-        // Cache for offers
-        private readonly Dictionary<string, StoreOffer> _offersCache = new Dictionary<string, StoreOffer>();
-        
-        // Cache for currencies
-        private readonly Dictionary<string, Currency> _currenciesCache = new Dictionary<string, Currency>();
-        
-        // Flag to track if a purchase is in progress
-        private bool _purchaseInProgress = false;
-        
-        // Object for thread safety
-        private readonly object _lock = new object();
-
-        /// <summary>
-        /// Creates a new store service
-        /// </summary>
-        public StoreService()
-        {
-            LogHelper.Debug("StoreService", "StoreService created");
-        }
-
         /// <summary>
         /// Initializes the store service and all available providers
         /// </summary>
-        /// <param name="callback">Callback when initialization completes</param>
+        /// <param name="callback"> Callback when initialization completes </param>
         public void Initialize(Action<bool> callback)
         {
             if (IsInitialized)
@@ -157,8 +157,8 @@ namespace RecipeRage.Store
         /// <summary>
         /// Adds a store provider to the service
         /// </summary>
-        /// <param name="provider">Provider to add</param>
-        /// <returns>True if the provider was added successfully</returns>
+        /// <param name="provider"> Provider to add </param>
+        /// <returns> True if the provider was added successfully </returns>
         public bool AddProvider(IStoreProvider provider)
         {
             if (provider == null)
@@ -185,8 +185,8 @@ namespace RecipeRage.Store
         /// <summary>
         /// Gets a store provider by name
         /// </summary>
-        /// <param name="providerName">Name of the provider to get</param>
-        /// <returns>The provider instance, or null if not found</returns>
+        /// <param name="providerName"> Name of the provider to get </param>
+        /// <returns> The provider instance, or null if not found </returns>
         public IStoreProvider GetProvider(string providerName)
         {
             lock (_lock)
@@ -198,8 +198,8 @@ namespace RecipeRage.Store
         /// <summary>
         /// Gets the catalog of available items
         /// </summary>
-        /// <param name="forceRefresh">Whether to force a refresh from the provider</param>
-        /// <param name="callback">Callback with the list of catalog items</param>
+        /// <param name="forceRefresh"> Whether to force a refresh from the provider </param>
+        /// <param name="callback"> Callback with the list of catalog items </param>
         public void GetCatalog(bool forceRefresh, Action<List<CatalogItem>> callback)
         {
             if (!CheckInitialized())
@@ -208,12 +208,11 @@ namespace RecipeRage.Store
                 return;
             }
 
-            // If we have cached catalog items and don't need to refresh, return them
+            // Return from cache if we have items and aren't forcing a refresh
             if (!forceRefresh && _catalogCache.Count > 0)
             {
-                var catalogItems = _catalogCache.Values.ToList();
-                callback?.Invoke(catalogItems);
-                OnCatalogQueried?.Invoke(catalogItems);
+                LogHelper.Debug("StoreService", $"Returning catalog from cache ({_catalogCache.Count} items)");
+                callback?.Invoke(_catalogCache.Values.ToList());
                 return;
             }
 
@@ -246,24 +245,76 @@ namespace RecipeRage.Store
                         }
                     }
 
-                    LogHelper.Info("StoreService", $"Retrieved {items.Count} catalog items");
+                    LogHelper.Debug("StoreService", $"Catalog query successful, got {items.Count} items");
                     OnCatalogQueried?.Invoke(items);
                     callback?.Invoke(items);
                 }
                 else
                 {
-                    LastError = provider.LastError;
-                    LogHelper.Error("StoreService", $"Failed to query catalog: {LastError}");
+                    LastError = $"Failed to query catalog from provider {provider.ProviderName}";
+                    LogHelper.Error("StoreService", LastError);
                     callback?.Invoke(new List<CatalogItem>());
                 }
             });
         }
 
         /// <summary>
+        /// Queries the catalog of available items directly from the provider
+        /// </summary>
+        /// <param name="callback"> Callback with the list of catalog items and success flag </param>
+        public void QueryCatalog(Action<List<CatalogItem>, bool> callback)
+        {
+            if (!CheckInitialized())
+            {
+                callback?.Invoke(new List<CatalogItem>(), false);
+                return;
+            }
+
+            // Get the first available provider
+            var provider = _providers.FirstOrDefault(p => p.IsAvailable);
+            if (provider == null)
+            {
+                LastError = "No available provider for querying catalog";
+                LogHelper.Error("StoreService", LastError);
+                callback?.Invoke(new List<CatalogItem>(), false);
+                return;
+            }
+
+            LogHelper.Info("StoreService", $"Querying catalog directly from provider {provider.ProviderName}");
+
+            // Forward the call directly to the provider
+            provider.QueryCatalog((items, success) =>
+            {
+                if (success)
+                {
+                    // Update cache with new items
+                    lock (_lock)
+                    {
+                        foreach (var item in items)
+                        {
+                            _catalogCache[item.ItemId] = item;
+                        }
+                    }
+
+                    LogHelper.Debug("StoreService", $"Catalog query successful, got {items.Count} items");
+                    OnCatalogQueried?.Invoke(items);
+                }
+                else
+                {
+                    LastError = $"Failed to query catalog from provider {provider.ProviderName}";
+                    LogHelper.Error("StoreService", LastError);
+                }
+
+                // Forward the result to the callback
+                callback?.Invoke(items, success);
+            });
+        }
+
+        /// <summary>
         /// Gets the player's owned items (inventory)
         /// </summary>
-        /// <param name="forceRefresh">Whether to force a refresh from the provider</param>
-        /// <param name="callback">Callback with the list of owned items</param>
+        /// <param name="forceRefresh"> Whether to force a refresh from the provider </param>
+        /// <param name="callback"> Callback with the list of owned items </param>
         public void GetInventory(bool forceRefresh, Action<List<InventoryItem>> callback)
         {
             if (!CheckInitialized())
@@ -326,8 +377,8 @@ namespace RecipeRage.Store
         /// <summary>
         /// Gets the available offers for purchasing items
         /// </summary>
-        /// <param name="forceRefresh">Whether to force a refresh from the provider</param>
-        /// <param name="callback">Callback with the list of offers</param>
+        /// <param name="forceRefresh"> Whether to force a refresh from the provider </param>
+        /// <param name="callback"> Callback with the list of offers </param>
         public void GetOffers(bool forceRefresh, Action<List<StoreOffer>> callback)
         {
             if (!CheckInitialized())
@@ -390,8 +441,8 @@ namespace RecipeRage.Store
         /// <summary>
         /// Initiates a purchase for a specific offer
         /// </summary>
-        /// <param name="offerId">ID of the offer to purchase</param>
-        /// <param name="callback">Callback with the purchase result</param>
+        /// <param name="offerId"> ID of the offer to purchase </param>
+        /// <param name="callback"> Callback with the purchase result </param>
         public void PurchaseOffer(string offerId, Action<PurchaseResult> callback)
         {
             if (!CheckInitialized())
@@ -441,7 +492,7 @@ namespace RecipeRage.Store
                 if (result.IsSuccess)
                 {
                     LogHelper.Info("StoreService", $"Purchase successful for offer {offerId}");
-                    
+
                     // Update inventory with granted items
                     lock (_lock)
                     {
@@ -468,9 +519,9 @@ namespace RecipeRage.Store
         /// <summary>
         /// Consumes an inventory item (for consumable items)
         /// </summary>
-        /// <param name="inventoryItemId">ID of the inventory item to consume</param>
-        /// <param name="quantity">Quantity to consume</param>
-        /// <param name="callback">Callback indicating success or failure</param>
+        /// <param name="inventoryItemId"> ID of the inventory item to consume </param>
+        /// <param name="quantity"> Quantity to consume </param>
+        /// <param name="callback"> Callback indicating success or failure </param>
         public void ConsumeItem(string inventoryItemId, int quantity, Action<bool> callback)
         {
             if (!CheckInitialized())
@@ -562,8 +613,8 @@ namespace RecipeRage.Store
         /// <summary>
         /// Gets detailed information about a specific catalog item
         /// </summary>
-        /// <param name="itemId">ID of the item to query</param>
-        /// <param name="callback">Callback with the catalog item details</param>
+        /// <param name="itemId"> ID of the item to query </param>
+        /// <param name="callback"> Callback with the catalog item details </param>
         public void GetCatalogItemDetails(string itemId, Action<CatalogItem> callback)
         {
             if (!CheckInitialized())
@@ -627,8 +678,8 @@ namespace RecipeRage.Store
         /// <summary>
         /// Gets the available currencies and their balances
         /// </summary>
-        /// <param name="forceRefresh">Whether to force a refresh from the provider</param>
-        /// <param name="callback">Callback with the list of currencies</param>
+        /// <param name="forceRefresh"> Whether to force a refresh from the provider </param>
+        /// <param name="callback"> Callback with the list of currencies </param>
         public void GetCurrencies(bool forceRefresh, Action<List<Currency>> callback)
         {
             if (!CheckInitialized())
@@ -690,8 +741,8 @@ namespace RecipeRage.Store
         /// <summary>
         /// Gets the player's owned items of a specific type
         /// </summary>
-        /// <param name="itemType">Type of items to get</param>
-        /// <param name="callback">Callback with the list of owned items</param>
+        /// <param name="itemType"> Type of items to get </param>
+        /// <param name="callback"> Callback with the list of owned items </param>
         public void GetInventoryByType(ItemType itemType, Action<List<InventoryItem>> callback)
         {
             if (!CheckInitialized())
@@ -715,8 +766,8 @@ namespace RecipeRage.Store
         /// <summary>
         /// Checks if the player owns a specific item
         /// </summary>
-        /// <param name="itemId">ID of the item to check</param>
-        /// <param name="callback">Callback with the result</param>
+        /// <param name="itemId"> ID of the item to check </param>
+        /// <param name="callback"> Callback with the result </param>
         public void OwnsItem(string itemId, Action<bool> callback)
         {
             if (!CheckInitialized())
@@ -744,8 +795,8 @@ namespace RecipeRage.Store
         /// <summary>
         /// Gets the quantity of a specific item in the player's inventory
         /// </summary>
-        /// <param name="itemId">ID of the item to check</param>
-        /// <param name="callback">Callback with the quantity</param>
+        /// <param name="itemId"> ID of the item to check </param>
+        /// <param name="callback"> Callback with the quantity </param>
         public void GetItemQuantity(string itemId, Action<int> callback)
         {
             if (!CheckInitialized())
@@ -776,8 +827,8 @@ namespace RecipeRage.Store
         /// <summary>
         /// Gets the balance of a specific currency
         /// </summary>
-        /// <param name="currencyCode">Currency code to check</param>
-        /// <param name="callback">Callback with the balance</param>
+        /// <param name="currencyCode"> Currency code to check </param>
+        /// <param name="callback"> Callback with the balance </param>
         public void GetCurrencyBalance(string currencyCode, Action<decimal> callback)
         {
             if (!CheckInitialized())
@@ -806,8 +857,8 @@ namespace RecipeRage.Store
         /// <summary>
         /// Opens the platform-specific store UI for a specific item (if supported)
         /// </summary>
-        /// <param name="itemId">ID of the item to display</param>
-        /// <returns>True if the UI was opened successfully</returns>
+        /// <param name="itemId"> ID of the item to display </param>
+        /// <returns> True if the UI was opened successfully </returns>
         public bool DisplayStoreUI(string itemId = null)
         {
             if (!CheckInitialized())
@@ -839,7 +890,7 @@ namespace RecipeRage.Store
         /// <summary>
         /// Checks if a purchase is in progress
         /// </summary>
-        /// <returns>True if a purchase is in progress</returns>
+        /// <returns> True if a purchase is in progress </returns>
         public bool IsPurchaseInProgress()
         {
             return _purchaseInProgress;
@@ -848,7 +899,7 @@ namespace RecipeRage.Store
         /// <summary>
         /// Restores previous purchases (useful for mobile platforms)
         /// </summary>
-        /// <param name="callback">Callback indicating success or failure</param>
+        /// <param name="callback"> Callback indicating success or failure </param>
         public void RestorePurchases(Action<bool> callback)
         {
             if (!CheckInitialized())
@@ -898,7 +949,7 @@ namespace RecipeRage.Store
         /// <summary>
         /// Checks if the service is initialized
         /// </summary>
-        /// <returns>True if initialized, false otherwise</returns>
+        /// <returns> True if initialized, false otherwise </returns>
         private bool CheckInitialized()
         {
             if (!IsInitialized)
@@ -910,4 +961,4 @@ namespace RecipeRage.Store
             return true;
         }
     }
-} 
+}

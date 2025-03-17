@@ -1,10 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using UnityEngine;
 using RecipeRage.Modules.Analytics.Interfaces;
 using RecipeRage.Modules.Logging;
-
 #if FIREBASE_ANALYTICS
 using Firebase;
 using Firebase.Analytics;
@@ -16,25 +13,24 @@ namespace RecipeRage.Modules.Analytics.Providers.Firebase
     /// <summary>
     /// Firebase Analytics implementation of the analytics provider.
     /// Uses Firebase SDK for Unity.
-    /// 
     /// Complexity Rating: 4
     /// </summary>
     public class FirebaseAnalyticsProvider : IAnalyticsProvider
     {
         private const string PROVIDER_NAME = "Firebase";
-        private bool _isInitialized = false;
-        private bool _isEnabled = true;
+        private bool _isInitialized;
+        private readonly bool _isEnabled = true;
         private DependencyStatus _dependencyStatus = DependencyStatus.UnavailableMissingDependency;
-        
+
 #if FIREBASE_ANALYTICS
         private FirebaseApp _firebaseApp = null;
 #endif
-        
+
         /// <summary>
         /// Initialize the Firebase provider
         /// </summary>
-        /// <param name="consentRequired">Whether user consent is required before tracking</param>
-        /// <param name="onComplete">Callback when initialization is complete</param>
+        /// <param name="consentRequired"> Whether user consent is required before tracking </param>
+        /// <param name="onComplete"> Callback when initialization is complete </param>
         public void Initialize(bool consentRequired = false, Action<bool> onComplete = null)
         {
             if (_isInitialized)
@@ -43,9 +39,9 @@ namespace RecipeRage.Modules.Analytics.Providers.Firebase
                 onComplete?.Invoke(true);
                 return;
             }
-            
+
             LogHelper.Info("Firebase Analytics", "Initializing Firebase Analytics provider");
-            
+
 #if FIREBASE_ANALYTICS
             FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
             {
@@ -72,24 +68,24 @@ namespace RecipeRage.Modules.Analytics.Providers.Firebase
                 }
             });
 #else
-            LogHelper.Warning("Firebase Analytics", "Firebase Analytics is not enabled. Add FIREBASE_ANALYTICS define to enable it.");
+            LogHelper.Warning("Firebase Analytics",
+                "Firebase Analytics is not enabled. Add FIREBASE_ANALYTICS define to enable it.");
             _isInitialized = false;
             onComplete?.Invoke(false);
 #endif
         }
-        
+
         /// <summary>
         /// Log an event with optional parameters
         /// </summary>
-        /// <param name="eventName">Name of the event to log</param>
-        /// <param name="parameters">Optional parameters for the event</param>
+        /// <param name="eventName"> Name of the event to log </param>
+        /// <param name="parameters"> Optional parameters for the event </param>
         public void LogEvent(string eventName, Dictionary<string, object> parameters = null)
         {
             if (!CheckInitialized())
             {
-                return;
             }
-            
+
 #if FIREBASE_ANALYTICS
             try
             {
@@ -113,22 +109,22 @@ namespace RecipeRage.Modules.Analytics.Providers.Firebase
             }
 #endif
         }
-        
+
         /// <summary>
         /// Log a purchase event
         /// </summary>
-        /// <param name="productId">ID of the product purchased</param>
-        /// <param name="currency">Currency code (e.g., USD)</param>
-        /// <param name="price">Price of the product</param>
-        /// <param name="source">Source of the purchase (e.g., store, offer)</param>
-        /// <param name="parameters">Additional parameters</param>
-        public void LogPurchase(string productId, string currency, double price, string source = null, Dictionary<string, object> parameters = null)
+        /// <param name="productId"> ID of the product purchased </param>
+        /// <param name="currency"> Currency code (e.g., USD) </param>
+        /// <param name="price"> Price of the product </param>
+        /// <param name="source"> Source of the purchase (e.g., store, offer) </param>
+        /// <param name="parameters"> Additional parameters </param>
+        public void LogPurchase(string productId, string currency, double price, string source = null,
+            Dictionary<string, object> parameters = null)
         {
             if (!CheckInitialized())
             {
-                return;
             }
-            
+
 #if FIREBASE_ANALYTICS
             try
             {
@@ -169,19 +165,18 @@ namespace RecipeRage.Modules.Analytics.Providers.Firebase
             }
 #endif
         }
-        
+
         /// <summary>
         /// Set a user property
         /// </summary>
-        /// <param name="propertyName">Name of the property</param>
-        /// <param name="value">Value of the property</param>
+        /// <param name="propertyName"> Name of the property </param>
+        /// <param name="value"> Value of the property </param>
         public void SetUserProperty(string propertyName, string value)
         {
             if (!CheckInitialized())
             {
-                return;
             }
-            
+
 #if FIREBASE_ANALYTICS
             try
             {
@@ -194,18 +189,17 @@ namespace RecipeRage.Modules.Analytics.Providers.Firebase
             }
 #endif
         }
-        
+
         /// <summary>
         /// Set the user ID for cross-device tracking
         /// </summary>
-        /// <param name="userId">Unique user identifier</param>
+        /// <param name="userId"> Unique user identifier </param>
         public void SetUserId(string userId)
         {
             if (!CheckInitialized())
             {
-                return;
             }
-            
+
 #if FIREBASE_ANALYTICS
             try
             {
@@ -218,19 +212,18 @@ namespace RecipeRage.Modules.Analytics.Providers.Firebase
             }
 #endif
         }
-        
+
         /// <summary>
         /// Set user consent for data collection
         /// </summary>
-        /// <param name="consentType">Type of consent</param>
-        /// <param name="granted">Whether consent is granted</param>
+        /// <param name="consentType"> Type of consent </param>
+        /// <param name="granted"> Whether consent is granted </param>
         public void SetUserConsent(AnalyticsConsentType consentType, bool granted)
         {
             if (!CheckInitialized())
             {
-                return;
             }
-            
+
 #if FIREBASE_ANALYTICS
             try
             {
@@ -249,18 +242,17 @@ namespace RecipeRage.Modules.Analytics.Providers.Firebase
             }
 #endif
         }
-        
+
         /// <summary>
         /// Enable or disable analytics collection
         /// </summary>
-        /// <param name="enabled">Whether analytics collection should be enabled</param>
+        /// <param name="enabled"> Whether analytics collection should be enabled </param>
         public void SetEnabled(bool enabled)
         {
             if (!CheckInitialized())
             {
-                return;
             }
-            
+
 #if FIREBASE_ANALYTICS
             try
             {
@@ -274,7 +266,7 @@ namespace RecipeRage.Modules.Analytics.Providers.Firebase
             }
 #endif
         }
-        
+
         /// <summary>
         /// Reset all analytics data
         /// </summary>
@@ -282,9 +274,8 @@ namespace RecipeRage.Modules.Analytics.Providers.Firebase
         {
             if (!CheckInitialized())
             {
-                return;
             }
-            
+
 #if FIREBASE_ANALYTICS
             try
             {
@@ -297,34 +288,31 @@ namespace RecipeRage.Modules.Analytics.Providers.Firebase
             }
 #endif
         }
-        
+
         /// <summary>
         /// Flush any pending analytics events
         /// </summary>
         public void Flush()
         {
             // Firebase Analytics automatically flushes events, but we could force it with additional logic if needed
-            if (!CheckInitialized())
-            {
-                return;
-            }
-            
+            if (!CheckInitialized()) return;
+
             LogHelper.Debug("Firebase Analytics", "Flushing analytics events (automatic in Firebase)");
         }
-        
+
         /// <summary>
         /// Get the provider name
         /// </summary>
-        /// <returns>Provider name</returns>
+        /// <returns> Provider name </returns>
         public string GetProviderName()
         {
             return PROVIDER_NAME;
         }
-        
+
         /// <summary>
         /// Check if the provider is initialized
         /// </summary>
-        /// <returns>True if initialized, false otherwise</returns>
+        /// <returns> True if initialized, false otherwise </returns>
         private bool CheckInitialized()
         {
             if (!_isInitialized)
@@ -332,16 +320,16 @@ namespace RecipeRage.Modules.Analytics.Providers.Firebase
                 LogHelper.Warning("Firebase Analytics", "Provider not initialized");
                 return false;
             }
-            
+
             if (!_isEnabled)
             {
                 LogHelper.Debug("Firebase Analytics", "Provider is disabled");
                 return false;
             }
-            
+
             return true;
         }
-        
+
         /// <summary>
         /// Set default user properties that will be sent with all events
         /// </summary>
@@ -369,7 +357,8 @@ namespace RecipeRage.Modules.Analytics.Providers.Firebase
             }
 #endif
         }
-        
+
+#if FIREBASE_ANALYTICS
         /// <summary>
         /// Convert a dictionary of parameters to Firebase parameters
         /// </summary>
@@ -378,8 +367,7 @@ namespace RecipeRage.Modules.Analytics.Providers.Firebase
         private List<Parameter> ConvertToFirebaseParameters(Dictionary<string, object> parameters)
         {
             List<Parameter> firebaseParams = new List<Parameter>();
-            
-#if FIREBASE_ANALYTICS
+
             foreach (var param in parameters)
             {
                 // Skip null values
@@ -420,11 +408,11 @@ namespace RecipeRage.Modules.Analytics.Providers.Firebase
                     firebaseParams.Add(new Parameter(param.Key, param.Value.ToString()));
                 }
             }
-#endif
-            
+
             return firebaseParams;
         }
-        
+#endif
+
         // Firebase enums for reference (in case FIREBASE_ANALYTICS is not defined)
         private enum DependencyStatus
         {
@@ -434,4 +422,4 @@ namespace RecipeRage.Modules.Analytics.Providers.Firebase
             UnavailableOther = 3
         }
     }
-} 
+}
