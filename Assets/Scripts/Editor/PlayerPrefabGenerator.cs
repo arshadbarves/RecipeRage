@@ -1,35 +1,22 @@
-using UnityEngine;
-using UnityEditor;
-using UnityEngine.InputSystem;
-using Unity.Netcode;
-using RecipeRage.Core.Player;
-using RecipeRage.Core.Input;
 using System.IO;
+using RecipeRage.Core.Input;
+using RecipeRage.Core.Player;
+using Unity.Netcode;
+using UnityEditor;
+using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace RecipeRage.Editor
 {
     public class PlayerPrefabGenerator : EditorWindow
     {
         private const string PREFAB_PATH = "Assets/Prefabs/Player";
-        private Material playerMaterial;
         private Material highlightMaterial;
-
-        [MenuItem("RecipeRage/Generate Player Prefab")]
-        public static void ShowWindow()
-        {
-            GetWindow<PlayerPrefabGenerator>("Player Generator");
-        }
+        private Material playerMaterial;
 
         private void OnEnable()
         {
             LoadMaterials();
-        }
-
-        private void LoadMaterials()
-        {
-            // Load the anime shader materials for the player
-            playerMaterial = AssetDatabase.LoadAssetAtPath<Material>("Assets/Shaders/Custom_MobileAnimeURP 1.mat");
-            highlightMaterial = CreateHighlightMaterial();
         }
 
         private void OnGUI()
@@ -40,6 +27,19 @@ namespace RecipeRage.Editor
             {
                 GeneratePlayerPrefab();
             }
+        }
+
+        [MenuItem("RecipeRage/Generate Player Prefab")]
+        public static void ShowWindow()
+        {
+            GetWindow<PlayerPrefabGenerator>("Player Generator");
+        }
+
+        private void LoadMaterials()
+        {
+            // Load the anime shader materials for the player
+            playerMaterial = AssetDatabase.LoadAssetAtPath<Material>("Assets/Shaders/Custom_MobileAnimeURP 1.mat");
+            highlightMaterial = CreateHighlightMaterial();
         }
 
         private void GeneratePlayerPrefab()
@@ -87,11 +87,11 @@ namespace RecipeRage.Editor
             var holdPointProp = serializedObject.FindProperty("_holdPoint");
             var interactionPointProp = serializedObject.FindProperty("_interactionPoint");
             var interactionLayerProp = serializedObject.FindProperty("_interactionLayer");
-            
+
             holdPointProp.objectReferenceValue = holdPoint.transform;
             interactionPointProp.objectReferenceValue = interactionPoint.transform;
             interactionLayerProp.intValue = LayerMask.GetMask("Interactable");
-            
+
             serializedObject.ApplyModifiedProperties();
 
             // Setup input
@@ -154,11 +154,11 @@ namespace RecipeRage.Editor
 
         private void CreateDefaultInputActions(string path)
         {
-            var inputActions = ScriptableObject.CreateInstance<InputActionAsset>();
+            var inputActions = CreateInstance<InputActionAsset>();
             var playerMap = new InputActionMap("Player");
 
             // Movement
-            var moveAction = playerMap.AddAction("Move", InputActionType.Value);
+            var moveAction = playerMap.AddAction("Move");
             moveAction.AddCompositeBinding("2DVector")
                 .With("Up", "<Keyboard>/w")
                 .With("Down", "<Keyboard>/s")
@@ -216,4 +216,4 @@ namespace RecipeRage.Editor
                 Debug.LogError($"Failed to save prefab: {path}");
         }
     }
-} 
+}

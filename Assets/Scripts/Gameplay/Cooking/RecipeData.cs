@@ -1,7 +1,7 @@
-using UnityEngine;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace RecipeRage.Gameplay.Cooking
 {
@@ -16,12 +16,12 @@ namespace RecipeRage.Gameplay.Cooking
         public string displayName;
         public Sprite icon;
         public string description;
-        
+
         [Header("Recipe Properties")]
         public List<RecipeStep> steps;
         public float baseValue;
         public float timeLimit;
-        
+
         [Header("Visual Settings")]
         public GameObject finalDishPrefab;
         public GameObject platedPrefab;
@@ -36,11 +36,11 @@ namespace RecipeRage.Gameplay.Cooking
         [Header("Ingredient")]
         public IngredientData ingredient;
         public int quantity = 1;
-        
+
         [Header("Cooking Requirements")]
         public CookingMethod requiredMethod;
         public CookingState requiredState;
-        
+
         [Header("Step Properties")]
         public string stepDescription;
         public bool isOptional;
@@ -52,22 +52,22 @@ namespace RecipeRage.Gameplay.Cooking
     /// </summary>
     public class RecipeProgress
     {
-        public RecipeData Recipe { get; private set; }
-        public Dictionary<RecipeStep, StepProgress> StepProgress { get; private set; }
-        public float TimeRemaining { get; set; }
-        public bool IsCompleted => StepProgress.Values.All(step => step.IsCompleted);
 
         public RecipeProgress(RecipeData recipe)
         {
             Recipe = recipe;
             TimeRemaining = recipe.timeLimit;
             StepProgress = new Dictionary<RecipeStep, StepProgress>();
-            
+
             foreach (var step in recipe.steps)
             {
                 StepProgress[step] = new StepProgress();
             }
         }
+        public RecipeData Recipe { get; private set; }
+        public Dictionary<RecipeStep, StepProgress> StepProgress { get; }
+        public float TimeRemaining { get; set; }
+        public bool IsCompleted => StepProgress.Values.All(step => step.IsCompleted);
     }
 
     /// <summary>
@@ -80,4 +80,4 @@ namespace RecipeRage.Gameplay.Cooking
         public float Progress { get; set; }
         public CookingState CurrentState { get; set; }
     }
-} 
+}

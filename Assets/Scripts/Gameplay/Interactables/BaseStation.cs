@@ -1,6 +1,6 @@
-using UnityEngine;
-using Unity.Netcode;
 using System.Collections;
+using Unity.Netcode;
+using UnityEngine;
 
 namespace RecipeRage.Gameplay.Interactables
 {
@@ -10,6 +10,7 @@ namespace RecipeRage.Gameplay.Interactables
     public abstract class BaseStation : NetworkBehaviour
     {
         #region Enums
+
         /// <summary>
         /// Visual state of the station material
         /// </summary>
@@ -22,21 +23,26 @@ namespace RecipeRage.Gameplay.Interactables
             Success,
             Error
         }
+
         #endregion
 
         #region Serialized Fields
-        [Header("Base Station Settings")]
-        [SerializeField] protected Transform interactionPoint;
+
+        [Header("Base Station Settings")] [SerializeField]
+        protected Transform interactionPoint;
+
         [SerializeField] protected float interactionRadius = 1f;
         [SerializeField] protected LayerMask interactionLayer;
 
-        [Header("Visual Settings")]
-        [SerializeField] protected GameObject modelContainer;
+        [Header("Visual Settings")] [SerializeField]
+        protected GameObject modelContainer;
+
         [SerializeField] protected Material stationMaterial;
         [SerializeField] protected ParticleSystem particleEffect;
 
-        [Header("Shader Effect Settings")]
-        [SerializeField] protected Color highlightColor = new Color(1f, 0.8f, 0f, 1f);
+        [Header("Shader Effect Settings")] [SerializeField]
+        protected Color highlightColor = new Color(1f, 0.8f, 0f, 1f);
+
         [SerializeField] protected float highlightIntensity = 0.5f;
         [SerializeField] protected float highlightPulseSpeed = 2f;
         [SerializeField] protected Color disabledColor = new Color(0.5f, 0.5f, 0.5f, 1f);
@@ -48,12 +54,14 @@ namespace RecipeRage.Gameplay.Interactables
         [SerializeField] protected Color errorColor = new Color(1f, 0f, 0f, 1f);
         [SerializeField] protected float errorPulseSpeed = 5f;
 
-        [Header("Mobile Optimization")]
-        [SerializeField] protected bool mobileOptimization = false;
-        [SerializeField, Range(0, 1)] protected float qualityLevel = 1f;
+        [Header("Mobile Optimization")] [SerializeField]
+        protected bool mobileOptimization;
 
-        [Header("Audio Settings")]
-        [SerializeField] protected AudioSource audioSource;
+        [SerializeField] [Range(0, 1)] protected float qualityLevel = 1f;
+
+        [Header("Audio Settings")] [SerializeField]
+        protected AudioSource audioSource;
+
         [SerializeField] protected float minPitch = 0.9f;
         [SerializeField] protected float maxPitch = 1.1f;
 
@@ -78,9 +86,11 @@ namespace RecipeRage.Gameplay.Interactables
         private static readonly int QualityLevelID = Shader.PropertyToID("_QualityLevel");
 
         private Material[] instancedMaterials;
+
         #endregion
 
         #region Unity Lifecycle
+
         protected virtual void OnValidate()
         {
             // Auto-setup if components are missing
@@ -121,7 +131,7 @@ namespace RecipeRage.Gameplay.Interactables
                 SetupMaterialInstances();
                 UpdateShaderProperties();
             }
-            
+
             // Auto-detect mobile platform and set optimization
             AutoDetectMobilePlatform();
         }
@@ -134,9 +144,11 @@ namespace RecipeRage.Gameplay.Interactables
                 Gizmos.DrawWireSphere(interactionPoint.position, interactionRadius);
             }
         }
+
         #endregion
 
         #region Protected Methods
+
         protected void PlaySound(AudioClip clip, float volumeMultiplier = 1f)
         {
             if (audioSource != null && clip != null)
@@ -149,29 +161,17 @@ namespace RecipeRage.Gameplay.Interactables
         protected void SetHighlight(bool active)
         {
             if (instancedMaterials != null)
-            {
                 foreach (var material in instancedMaterials)
-                {
                     if (material != null)
-                    {
                         material.SetFloat(IsHighlightedID, active ? 1f : 0f);
-                    }
-                }
-            }
         }
 
         protected void SetDisabled(bool disabled)
         {
             if (instancedMaterials != null)
-            {
                 foreach (var material in instancedMaterials)
-                {
                     if (material != null)
-                    {
                         material.SetFloat(IsDisabledID, disabled ? 1f : 0f);
-                    }
-                }
-            }
         }
 
         protected void PlayParticles(bool play = true)
@@ -188,7 +188,7 @@ namespace RecipeRage.Gameplay.Interactables
         /// <summary>
         /// Sets the station's material to active or inactive state.
         /// </summary>
-        /// <param name="active">True to set the station to active state, false for inactive state</param>
+        /// <param name="active"> True to set the station to active state, false for inactive state </param>
         /// <remarks>
         /// This method controls the visual appearance of the station to indicate whether
         /// it's in a usable/active state. It uses the shader's disabled property to create
@@ -197,14 +197,14 @@ namespace RecipeRage.Gameplay.Interactables
         protected void SetMaterial(bool active)
         {
             if (instancedMaterials == null || instancedMaterials.Length == 0) return;
-            
+
             SetDisabled(!active);
         }
 
         /// <summary>
         /// Sets the station's material to a specific visual state.
         /// </summary>
-        /// <param name="state">The visual state to apply to the station</param>
+        /// <param name="state"> The visual state to apply to the station </param>
         /// <remarks>
         /// This enhanced method provides more control over the station's visual appearance
         /// by supporting multiple states like active, processing, success, and error states.
@@ -212,123 +212,97 @@ namespace RecipeRage.Gameplay.Interactables
         protected void SetStationMaterial(StationMaterialState state)
         {
             if (instancedMaterials == null || instancedMaterials.Length == 0) return;
-            
+
             // Reset all states first
             ResetAllStates();
-            
+
             // Apply the requested state
             switch (state)
             {
                 case StationMaterialState.Normal:
                     // Normal state has all effects disabled
                     break;
-                    
+
                 case StationMaterialState.Highlighted:
                     SetHighlight(true);
                     break;
-                    
+
                 case StationMaterialState.Disabled:
                     SetDisabled(true);
                     break;
-                    
+
                 case StationMaterialState.Processing:
                     SetProcessing(true);
                     break;
-                    
+
                 case StationMaterialState.Success:
                     SetSuccess(true);
-                    
+
                     // Auto-reset success state after duration
-                    if (IsClient)
-                    {
-                        StartCoroutine(AutoResetState(successDuration));
-                    }
+                    if (IsClient) StartCoroutine(AutoResetState(successDuration));
                     break;
-                    
+
                 case StationMaterialState.Error:
                     SetError(true);
-                    
+
                     // Auto-reset error state after duration
-                    if (IsClient)
-                    {
-                        StartCoroutine(AutoResetState(2f));
-                    }
+                    if (IsClient) StartCoroutine(AutoResetState(2f));
                     break;
             }
         }
-        
+
         /// <summary>
         /// Automatically resets the station material state after a delay
         /// </summary>
-        private System.Collections.IEnumerator AutoResetState(float delay)
+        private IEnumerator AutoResetState(float delay)
         {
             yield return new WaitForSeconds(delay);
             ResetAllStates();
         }
-        
+
         /// <summary>
         /// Sets the processing visual state of the station.
         /// </summary>
-        /// <param name="isProcessing">Whether the station is in processing state</param>
+        /// <param name="isProcessing"> Whether the station is in processing state </param>
         protected void SetProcessing(bool isProcessing)
         {
             if (instancedMaterials != null)
-            {
                 foreach (var material in instancedMaterials)
-                {
                     if (material != null)
-                    {
                         material.SetFloat(IsProcessingID, isProcessing ? 1f : 0f);
-                    }
-                }
-            }
         }
-        
+
         /// <summary>
         /// Sets the success visual state of the station.
         /// </summary>
-        /// <param name="isSuccess">Whether the station is in success state</param>
+        /// <param name="isSuccess"> Whether the station is in success state </param>
         protected void SetSuccess(bool isSuccess)
         {
             if (instancedMaterials != null)
-            {
                 foreach (var material in instancedMaterials)
-                {
                     if (material != null)
-                    {
                         material.SetFloat(IsSuccessID, isSuccess ? 1f : 0f);
-                    }
-                }
-            }
         }
-        
+
         /// <summary>
         /// Sets the error visual state of the station.
         /// </summary>
-        /// <param name="isError">Whether the station is in error state</param>
+        /// <param name="isError"> Whether the station is in error state </param>
         protected void SetError(bool isError)
         {
             if (instancedMaterials != null)
-            {
                 foreach (var material in instancedMaterials)
-                {
                     if (material != null)
-                    {
                         material.SetFloat(IsErrorID, isError ? 1f : 0f);
-                    }
-                }
-            }
         }
-        
+
         /// <summary>
         /// Resets all visual states to their default values.
         /// </summary>
         protected void ResetAllStates()
         {
             if (instancedMaterials != null)
-            {
                 foreach (var material in instancedMaterials)
-                {
                     if (material != null)
                     {
                         material.SetFloat(IsHighlightedID, 0f);
@@ -337,39 +311,32 @@ namespace RecipeRage.Gameplay.Interactables
                         material.SetFloat(IsSuccessID, 0f);
                         material.SetFloat(IsErrorID, 0f);
                     }
-                }
-            }
         }
-        
+
         /// <summary>
         /// Sets the mobile optimization mode for the station materials.
         /// </summary>
-        /// <param name="enableMobileMode">Whether to enable mobile optimization</param>
-        /// <param name="quality">Quality level between 0 and 1</param>
+        /// <param name="enableMobileMode"> Whether to enable mobile optimization </param>
+        /// <param name="quality"> Quality level between 0 and 1 </param>
         protected void SetMobileOptimization(bool enableMobileMode, float quality = 1f)
         {
             if (instancedMaterials != null)
-            {
                 foreach (var material in instancedMaterials)
-                {
                     if (material != null)
                     {
                         material.SetFloat(MobileModeID, enableMobileMode ? 1f : 0f);
                         material.SetFloat(QualityLevelID, Mathf.Clamp01(quality));
                     }
-                }
-            }
         }
+
         #endregion
 
         #region Private Methods
+
         private void SetupComponents()
         {
             // Ensure we have a NetworkObject
-            if (GetComponent<NetworkObject>() == null)
-            {
-                gameObject.AddComponent<NetworkObject>();
-            }
+            if (GetComponent<NetworkObject>() == null) gameObject.AddComponent<NetworkObject>();
 
             // Setup audio source defaults if needed
             if (audioSource != null)
@@ -392,7 +359,7 @@ namespace RecipeRage.Gameplay.Interactables
 
         private void SetupMaterialInstances()
         {
-            var renderers = modelContainer.GetComponentsInChildren<Renderer>();
+            Renderer[] renderers = modelContainer.GetComponentsInChildren<Renderer>();
             instancedMaterials = new Material[renderers.Length];
 
             for (int i = 0; i < renderers.Length; i++)
@@ -405,19 +372,19 @@ namespace RecipeRage.Gameplay.Interactables
 
         private void UpdateShaderProperties()
         {
-            if (instancedMaterials == null || instancedMaterials.Length == 0) 
+            if (instancedMaterials == null || instancedMaterials.Length == 0)
                 return;
-                
+
             // Use MaterialPropertyBlock for more efficient property updates
-            MaterialPropertyBlock propertyBlock = new MaterialPropertyBlock();
-            
+            var propertyBlock = new MaterialPropertyBlock();
+
             // Set all properties in the block
             propertyBlock.SetColor(HighlightColorID, highlightColor);
             propertyBlock.SetFloat(HighlightIntensityID, highlightIntensity);
             propertyBlock.SetFloat(HighlightPulseSpeedID, highlightPulseSpeed);
             propertyBlock.SetColor(DisabledColorID, disabledColor);
             propertyBlock.SetFloat(DisabledSaturationID, disabledSaturation);
-            
+
             // Advanced state properties
             propertyBlock.SetColor(ProcessingColorID, processingColor);
             propertyBlock.SetFloat(ProcessingPulseSpeedID, processingPulseSpeed);
@@ -425,24 +392,19 @@ namespace RecipeRage.Gameplay.Interactables
             propertyBlock.SetFloat(SuccessDurationID, successDuration);
             propertyBlock.SetColor(ErrorColorID, errorColor);
             propertyBlock.SetFloat(ErrorPulseSpeedID, errorPulseSpeed);
-            
+
             // Mobile optimization
             propertyBlock.SetFloat(MobileModeID, mobileOptimization ? 1f : 0f);
             propertyBlock.SetFloat(QualityLevelID, qualityLevel);
-            
+
             // Find all renderers and apply the property block
-            var renderers = modelContainer.GetComponentsInChildren<Renderer>();
+            Renderer[] renderers = modelContainer.GetComponentsInChildren<Renderer>();
             foreach (var renderer in renderers)
-            {
                 if (renderer != null)
-                {
                     renderer.SetPropertyBlock(propertyBlock);
-                }
-            }
-            
+
             // Also update the instanced materials for compatibility
             foreach (var material in instancedMaterials)
-            {
                 if (material != null)
                 {
                     // Basic properties
@@ -451,7 +413,7 @@ namespace RecipeRage.Gameplay.Interactables
                     material.SetFloat(HighlightPulseSpeedID, highlightPulseSpeed);
                     material.SetColor(DisabledColorID, disabledColor);
                     material.SetFloat(DisabledSaturationID, disabledSaturation);
-                    
+
                     // Advanced state properties
                     material.SetColor(ProcessingColorID, processingColor);
                     material.SetFloat(ProcessingPulseSpeedID, processingPulseSpeed);
@@ -459,27 +421,20 @@ namespace RecipeRage.Gameplay.Interactables
                     material.SetFloat(SuccessDurationID, successDuration);
                     material.SetColor(ErrorColorID, errorColor);
                     material.SetFloat(ErrorPulseSpeedID, errorPulseSpeed);
-                    
+
                     // Mobile optimization
                     material.SetFloat(MobileModeID, mobileOptimization ? 1f : 0f);
                     material.SetFloat(QualityLevelID, qualityLevel);
                 }
-            }
         }
 
         private void OnDestroy()
         {
             // Clean up instanced materials
             if (instancedMaterials != null)
-            {
                 foreach (var material in instancedMaterials)
-                {
                     if (material != null)
-                    {
                         Destroy(material);
-                    }
-                }
-            }
         }
 
         /// <summary>
@@ -502,6 +457,7 @@ namespace RecipeRage.Gameplay.Interactables
             }
 #endif
         }
+
         #endregion
     }
-} 
+}

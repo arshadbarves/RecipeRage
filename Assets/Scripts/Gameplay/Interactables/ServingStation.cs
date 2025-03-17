@@ -1,10 +1,9 @@
-using UnityEngine;
 using System;
-using System.Linq;
-using RecipeRage.Core.Player;
 using RecipeRage.Core.Interaction;
+using RecipeRage.Core.Player;
 using RecipeRage.Gameplay.Cooking;
 using Unity.Netcode;
+using UnityEngine;
 
 namespace RecipeRage.Gameplay.Interactables
 {
@@ -13,30 +12,79 @@ namespace RecipeRage.Gameplay.Interactables
     /// </summary>
     public class ServingStation : BaseStation, IInteractable
     {
-        #region Properties
-        public bool CanInteract => !_isBeingUsed.Value;
-        public InteractionType InteractionType => InteractionType.Serve;
-        public InteractionState CurrentState { get; private set; } = InteractionState.Idle;
+        #region Private Fields
+
+        private readonly NetworkVariable<bool> _isBeingUsed = new NetworkVariable<bool>();
+
         #endregion
 
         #region Events
+
         public event Action<RecipeData, float> OnRecipeServed;
+
+        #endregion
+
+        #region Server RPCs
+
+        [ServerRpc(RequireOwnership = false)]
+        private void ServeItemServerRpc(ulong playerId)
+        {
+            if (_isBeingUsed.Value)
+                return;
+
+            _isBeingUsed.Value = true;
+
+            var playerObject = NetworkManager.Singleton.SpawnManager.SpawnedObjects[playerId];
+            var player = playerObject.GetComponent<PlayerController>();
+            if (player != null && player.HeldItem != null)
+            {
+                var plate = player.HeldItem.GetComponent<Plate>();
+                if (ValidateRecipe(plate, out var recipe, out float score))
+                {
+                    // Destroy the plate and its contents
+                    var item = player.HeldItem;
+                    player.HeldItem = null;
+
+                    if (item.TryGetComponent<NetworkObject>(out var networkObj)) networkObj.Despawn();
+                    Destroy(item);
+
+                    // Notify success
+                    ServeSuccessClientRpc(recipe.recipeId, score);
+                    OnRecipeServed?.Invoke(recipe, score);
+                }
+                else
+                {
+                    // Return the plate to the player
+                    ServeFailClientRpc();
+                }
+            }
+
+            _isBeingUsed.Value = false;
+        }
+
+        #endregion
+
+        #region Properties
+
+        public bool CanInteract => !_isBeingUsed.Value;
+        public InteractionType InteractionType => InteractionType.Serve;
+        public InteractionState CurrentState { get; } = InteractionState.Idle;
+
         #endregion
 
         #region Serialized Fields
-        [Header("Serving Settings")]
-        [SerializeField] private float _scoreMultiplier = 1f;
 
-        [Header("Audio")]
-        [SerializeField] private AudioClip _serveSuccessSound;
+        [Header("Serving Settings")] [SerializeField]
+        private float _scoreMultiplier = 1f;
+
+        [Header("Audio")] [SerializeField] private AudioClip _serveSuccessSound;
+
         [SerializeField] private AudioClip _serveFailSound;
-        #endregion
 
-        #region Private Fields
-        private NetworkVariable<bool> _isBeingUsed = new NetworkVariable<bool>();
         #endregion
 
         #region Unity Lifecycle
+
         protected override void Awake()
         {
             base.Awake();
@@ -52,9 +100,11 @@ namespace RecipeRage.Gameplay.Interactables
         {
             _isBeingUsed.OnValueChanged -= OnBeingUsedChanged;
         }
+
         #endregion
 
         #region IInteractable Implementation
+
         public bool StartInteraction(PlayerController player, Action onComplete)
         {
             if (!CanInteract || !IsServer)
@@ -84,50 +134,11 @@ namespace RecipeRage.Gameplay.Interactables
             // Serving interactions are instant, no need to continue
             return false;
         }
-        #endregion
 
-        #region Server RPCs
-        [ServerRpc(RequireOwnership = false)]
-        private void ServeItemServerRpc(ulong playerId)
-        {
-            if (_isBeingUsed.Value)
-                return;
-
-            _isBeingUsed.Value = true;
-
-            var playerObject = NetworkManager.Singleton.SpawnManager.SpawnedObjects[playerId];
-            var player = playerObject.GetComponent<PlayerController>();
-            if (player != null && player.HeldItem != null)
-            {
-                var plate = player.HeldItem.GetComponent<Plate>();
-                if (ValidateRecipe(plate, out RecipeData recipe, out float score))
-                {
-                    // Destroy the plate and its contents
-                    var item = player.HeldItem;
-                    player.HeldItem = null;
-                    
-                    if (item.TryGetComponent<NetworkObject>(out var networkObj))
-                    {
-                        networkObj.Despawn();
-                    }
-                    Destroy(item);
-
-                    // Notify success
-                    ServeSuccessClientRpc(recipe.recipeId, score);
-                    OnRecipeServed?.Invoke(recipe, score);
-                }
-                else
-                {
-                    // Return the plate to the player
-                    ServeFailClientRpc();
-                }
-            }
-
-            _isBeingUsed.Value = false;
-        }
         #endregion
 
         #region Client RPCs
+
         [ClientRpc]
         private void ServeSuccessClientRpc(string recipeId, float score)
         {
@@ -139,9 +150,11 @@ namespace RecipeRage.Gameplay.Interactables
         {
             PlayFailEffect();
         }
+
         #endregion
 
         #region Private Methods
+
         private bool ValidateRecipe(Plate plate, out RecipeData recipe, out float score)
         {
             recipe = null;
@@ -179,6 +192,7 @@ namespace RecipeRage.Gameplay.Interactables
             PlaySound(_serveFailSound);
             SetStationMaterial(StationMaterialState.Error);
         }
+
         #endregion
     }
-} 
+}

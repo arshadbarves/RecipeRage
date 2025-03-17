@@ -1,24 +1,39 @@
-using System;
 using System.Collections.Generic;
+using RecipeRage.Modules.Logging;
 using UnityEngine;
 using UnityEngine.UIElements;
-using RecipeRage.Modules.Logging;
 
 namespace RecipeRage.Modules.Friends.UI.Components
 {
     /// <summary>
     /// Base class for all Friends UI components
-    /// 
     /// Complexity Rating: 2
     /// </summary>
     public abstract class FriendsUIComponent : MonoBehaviour
     {
         [SerializeField] protected UIDocument _document;
         [SerializeField] protected VisualTreeAsset _templateAsset;
-        
-        protected VisualElement _root;
         protected bool _isInitialized;
-        
+
+        protected VisualElement _root;
+
+        /// <summary>
+        /// Called when the component is enabled
+        /// </summary>
+        protected virtual void OnEnable()
+        {
+            if (!_isInitialized)
+                Initialize();
+        }
+
+        /// <summary>
+        /// Called when the component is disabled
+        /// </summary>
+        protected virtual void OnDisable()
+        {
+            // Override in derived classes
+        }
+
         /// <summary>
         /// Initialize the component
         /// </summary>
@@ -26,32 +41,32 @@ namespace RecipeRage.Modules.Friends.UI.Components
         {
             if (_isInitialized)
                 return;
-                
+
             if (_document == null)
             {
                 _document = GetComponent<UIDocument>();
-                
+
                 if (_document == null)
                 {
                     LogHelper.Error("FriendsUI", $"No UIDocument found on {gameObject.name}");
                     return;
                 }
             }
-            
+
             _root = _document.rootVisualElement;
-            
+
             if (_root == null)
             {
                 LogHelper.Error("FriendsUI", $"No root visual element found on {gameObject.name}");
                 return;
             }
-            
+
             RegisterCallbacks();
-            
+
             _isInitialized = true;
             LogHelper.Debug("FriendsUI", $"Initialized {GetType().Name}");
         }
-        
+
         /// <summary>
         /// Register UI callbacks
         /// </summary>
@@ -59,7 +74,7 @@ namespace RecipeRage.Modules.Friends.UI.Components
         {
             // Override in derived classes
         }
-        
+
         /// <summary>
         /// Show the UI component
         /// </summary>
@@ -67,14 +82,14 @@ namespace RecipeRage.Modules.Friends.UI.Components
         {
             if (!_isInitialized)
                 Initialize();
-                
+
             if (_root != null)
             {
                 _root.style.display = DisplayStyle.Flex;
                 OnShow();
             }
         }
-        
+
         /// <summary>
         /// Hide the UI component
         /// </summary>
@@ -86,7 +101,7 @@ namespace RecipeRage.Modules.Friends.UI.Components
                 OnHide();
             }
         }
-        
+
         /// <summary>
         /// Called when the component is shown
         /// </summary>
@@ -94,7 +109,7 @@ namespace RecipeRage.Modules.Friends.UI.Components
         {
             // Override in derived classes
         }
-        
+
         /// <summary>
         /// Called when the component is hidden
         /// </summary>
@@ -102,7 +117,7 @@ namespace RecipeRage.Modules.Friends.UI.Components
         {
             // Override in derived classes
         }
-        
+
         /// <summary>
         /// Find a child element by name
         /// </summary>
@@ -110,7 +125,7 @@ namespace RecipeRage.Modules.Friends.UI.Components
         {
             return _root?.Q<T>(name);
         }
-        
+
         /// <summary>
         /// Find child elements by class
         /// </summary>
@@ -118,7 +133,7 @@ namespace RecipeRage.Modules.Friends.UI.Components
         {
             return _root?.Query<T>(className: className).ToList();
         }
-        
+
         /// <summary>
         /// Create a visual element from a template
         /// </summary>
@@ -129,25 +144,8 @@ namespace RecipeRage.Modules.Friends.UI.Components
                 LogHelper.Error("FriendsUI", $"No template asset assigned for {GetType().Name}");
                 return null;
             }
-            
+
             return _templateAsset.Instantiate();
         }
-        
-        /// <summary>
-        /// Called when the component is enabled
-        /// </summary>
-        protected virtual void OnEnable()
-        {
-            if (!_isInitialized)
-                Initialize();
-        }
-        
-        /// <summary>
-        /// Called when the component is disabled
-        /// </summary>
-        protected virtual void OnDisable()
-        {
-            // Override in derived classes
-        }
     }
-} 
+}
