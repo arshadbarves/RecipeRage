@@ -1,5 +1,3 @@
-using UnityEngine;
-using System;
 using System.Collections.Generic;
 
 namespace RecipeRage.Gameplay.Cooking
@@ -19,10 +17,7 @@ namespace RecipeRage.Gameplay.Cooking
         private void InitializeLookup(IEnumerable<IngredientData> ingredients)
         {
             _ingredientLookup.Clear();
-            foreach (var ingredient in ingredients)
-            {
-                _ingredientLookup[ingredient.ingredientId] = ingredient;
-            }
+            foreach (var ingredient in ingredients) _ingredientLookup[ingredient.ingredientId] = ingredient;
         }
 
         /// <summary>
@@ -30,7 +25,7 @@ namespace RecipeRage.Gameplay.Cooking
         /// </summary>
         public bool ValidateIngredient(string ingredientId, CookingMethod method)
         {
-            if (!_ingredientLookup.TryGetValue(ingredientId, out IngredientData data))
+            if (!_ingredientLookup.TryGetValue(ingredientId, out var data))
                 return false;
 
             return data.validCookingMethods.Contains(method);
@@ -41,15 +36,15 @@ namespace RecipeRage.Gameplay.Cooking
         /// </summary>
         public CookingState GetCookingState(string ingredientId, float currentCookingTime)
         {
-            if (!_ingredientLookup.TryGetValue(ingredientId, out IngredientData data))
+            if (!_ingredientLookup.TryGetValue(ingredientId, out var data))
                 return CookingState.Raw;
 
             if (currentCookingTime < data.cookingTime * 0.5f)
                 return CookingState.Raw;
-            
+
             if (currentCookingTime > data.cookingTime + data.burningThreshold)
                 return CookingState.Burnt;
-            
+
             return CookingState.Cooked;
         }
 
@@ -58,8 +53,8 @@ namespace RecipeRage.Gameplay.Cooking
         /// </summary>
         public float GetCookingTime(string ingredientId)
         {
-            return _ingredientLookup.TryGetValue(ingredientId, out IngredientData data) 
-                ? data.cookingTime 
+            return _ingredientLookup.TryGetValue(ingredientId, out var data)
+                ? data.cookingTime
                 : 0f;
         }
 
@@ -68,8 +63,8 @@ namespace RecipeRage.Gameplay.Cooking
         /// </summary>
         public float GetBurningThreshold(string ingredientId)
         {
-            return _ingredientLookup.TryGetValue(ingredientId, out IngredientData data) 
-                ? data.burningThreshold 
+            return _ingredientLookup.TryGetValue(ingredientId, out var data)
+                ? data.burningThreshold
                 : 0f;
         }
     }
@@ -97,4 +92,4 @@ namespace RecipeRage.Gameplay.Cooking
         Steam,
         Chop
     }
-} 
+}

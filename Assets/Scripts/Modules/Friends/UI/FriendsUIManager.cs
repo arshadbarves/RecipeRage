@@ -1,49 +1,67 @@
-using System;
-using UnityEngine;
-using UnityEngine.UIElements;
 using RecipeRage.Modules.Friends.Data;
 using RecipeRage.Modules.Friends.UI.Components;
 using RecipeRage.Modules.Logging;
+using RecipeRage.Modules.Logging.Interfaces;
+using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace RecipeRage.Modules.Friends.UI
 {
     /// <summary>
     /// Manager for the friends system UI components
     /// Coordinates interactions between different UI components
-    /// 
     /// Complexity Rating: 3
     /// </summary>
     public class FriendsUIManager : MonoBehaviour
     {
         [SerializeField] private UIDocument _document;
-        
-        [Header("UI Components")]
-        [SerializeField] private FriendsListComponent _friendsListComponent;
+
+        [Header("UI Components")] [SerializeField]
+        private FriendsListComponent _friendsListComponent;
+
         [SerializeField] private FriendRequestsComponent _friendRequestsComponent;
         [SerializeField] private AddFriendComponent _addFriendComponent;
         [SerializeField] private FriendProfileComponent _friendProfileComponent;
         [SerializeField] private ChatComponent _chatComponent;
-        
-        private VisualElement _root;
         private Button _closeButton;
-        private Button _toggleRequestsButton;
-        private Label _requestsCountLabel;
-        private VisualElement _mainContainer;
-        
-        private bool _isInitialized;
         private string _currentScreen = "friends"; // friends, requests, add, profile, chat
-        
+
+        private bool _isInitialized;
+        private VisualElement _mainContainer;
+        private Label _requestsCountLabel;
+
+        private VisualElement _root;
+        private Button _toggleRequestsButton;
+
         private void Awake()
         {
             // Initialize systems
             InitializeModules();
         }
-        
+
         private void OnEnable()
         {
             Initialize();
         }
-        
+
+        private void OnDisable()
+        {
+            // Unregister event handlers
+            FriendsHelper.UnregisterEvents(
+                onFriendRequestReceived: OnFriendRequestReceived
+            );
+
+            ChatHelper.UnregisterEventHandlers(
+                OnMessageReceived
+            );
+        }
+
+        private void OnDestroy()
+        {
+            // Shutdown systems
+            ChatHelper.Shutdown();
+        }
+
         /// <summary>
         /// Initialize modules
         /// </summary>
@@ -52,19 +70,15 @@ namespace RecipeRage.Modules.Friends.UI
             // Initialize logging first
             LogHelper.SetConsoleOutput(true);
             LogHelper.SetFileOutput(true);
-            LogHelper.SetLogLevel(RecipeRage.Modules.Logging.Interfaces.LogLevel.Debug);
-            
+            LogHelper.SetLogLevel(LogLevel.Debug);
+
             // Make sure Friends system is initialized
             if (!FriendsHelper.IsInitialized)
-            {
                 FriendsHelper.Initialize(OnFriendsInitialized);
-            }
             else
-            {
                 OnFriendsInitialized(true);
-            }
         }
-        
+
         /// <summary>
         /// Callback when friends system is initialized
         /// </summary>
@@ -75,17 +89,17 @@ namespace RecipeRage.Modules.Friends.UI
                 LogHelper.Error("FriendsUI", "Failed to initialize Friends system");
                 return;
             }
-            
+
             // Initialize chat system
             if (!FriendsHelper.IsInitialized)
             {
                 LogHelper.Error("FriendsUI", "Cannot initialize Chat system: Friends system not initialized");
                 return;
             }
-            
+
             ChatHelper.Initialize(OnChatInitialized);
         }
-        
+
         /// <summary>
         /// Callback when chat system is initialized
         /// </summary>
@@ -96,17 +110,14 @@ namespace RecipeRage.Modules.Friends.UI
                 LogHelper.Error("FriendsUI", "Failed to initialize Chat system");
                 return;
             }
-            
+
             // Now we can proceed with UI initialization
-            if (!_isInitialized)
-            {
-                Initialize();
-            }
-            
+            if (!_isInitialized) Initialize();
+
             // Refresh data
             RefreshUI();
         }
-        
+
         /// <summary>
         /// Initialize the UI
         /// </summary>
@@ -114,7 +125,7 @@ namespace RecipeRage.Modules.Friends.UI
         {
             if (_isInitialized)
                 return;
-                
+
             if (_document == null)
             {
                 _document = GetComponent<UIDocument>();
@@ -124,33 +135,33 @@ namespace RecipeRage.Modules.Friends.UI
                     return;
                 }
             }
-            
+
             _root = _document.rootVisualElement;
             if (_root == null)
             {
                 LogHelper.Error("FriendsUI", "Root visual element not found");
                 return;
             }
-            
+
             // Find UI elements
             _closeButton = _root.Q<Button>("close-button");
             _toggleRequestsButton = _root.Q<Button>("toggle-requests-button");
             _requestsCountLabel = _root.Q<Label>("requests-count");
             _mainContainer = _root.Q<VisualElement>("main-container");
-            
+
             // Initialize components
             InitializeComponents();
-            
+
             // Register event handlers
             RegisterEventHandlers();
-            
+
             // Show initial screen
             ShowScreen("friends");
-            
+
             _isInitialized = true;
             LogHelper.Debug("FriendsUI", "Initialized FriendsUIManager");
         }
-        
+
         /// <summary>
         /// Initialize UI components
         /// </summary>
@@ -164,7 +175,7 @@ namespace RecipeRage.Modules.Friends.UI
                 _friendsListComponent.OnFriendClicked += OnFriendClicked;
                 _friendsListComponent.OnRemoveFriendClicked += OnRemoveFriendClicked;
             }
-            
+
             // Initialize friend requests component
             if (_friendRequestsComponent != null)
             {
@@ -172,14 +183,14 @@ namespace RecipeRage.Modules.Friends.UI
                 _friendRequestsComponent.OnAcceptRequest += OnAcceptFriendRequest;
                 _friendRequestsComponent.OnRejectRequest += OnRejectFriendRequest;
             }
-            
+
             // Initialize add friend component
             if (_addFriendComponent != null)
             {
                 _addFriendComponent.Initialize();
                 _addFriendComponent.OnCancelClicked += () => ShowScreen("friends");
             }
-            
+
             // Initialize friend profile component
             if (_friendProfileComponent != null)
             {
@@ -188,7 +199,7 @@ namespace RecipeRage.Modules.Friends.UI
                 _friendProfileComponent.OnRemoveFriendClicked += OnRemoveFriendClicked;
                 _friendProfileComponent.OnSendMessageClicked += OnOpenChat;
             }
-            
+
             // Initialize chat component
             if (_chatComponent != null)
             {
@@ -196,89 +207,83 @@ namespace RecipeRage.Modules.Friends.UI
                 _chatComponent.OnCloseClicked += () => ShowScreen("friends");
             }
         }
-        
+
         /// <summary>
         /// Register event handlers
         /// </summary>
         private void RegisterEventHandlers()
         {
-            if (_closeButton != null)
-            {
-                _closeButton.clicked += () => Hide();
-            }
-            
+            if (_closeButton != null) _closeButton.clicked += () => Hide();
+
             if (_toggleRequestsButton != null)
-            {
-                _toggleRequestsButton.clicked += () => ShowScreen(_currentScreen == "requests" ? "friends" : "requests");
-            }
-            
+                _toggleRequestsButton.clicked +=
+                    () => ShowScreen(_currentScreen == "requests" ? "friends" : "requests");
+
             // Register for friends system events
             FriendsHelper.RegisterEvents(
                 onFriendRequestReceived: OnFriendRequestReceived
             );
-            
+
             // Register for chat system events
             ChatHelper.RegisterEventHandlers(
-                onMessageReceived: OnMessageReceived
+                OnMessageReceived
             );
         }
-        
+
         /// <summary>
         /// Show a specific screen
         /// </summary>
         private void ShowScreen(string screen)
         {
             _currentScreen = screen;
-            
+
             // Hide all components
             if (_friendsListComponent != null) _friendsListComponent.Hide();
             if (_friendRequestsComponent != null) _friendRequestsComponent.Hide();
             if (_addFriendComponent != null) _addFriendComponent.Hide();
             if (_friendProfileComponent != null) _friendProfileComponent.Hide();
             if (_chatComponent != null) _chatComponent.Hide();
-            
+
             // Show the appropriate component
             switch (screen)
             {
                 case "friends":
                     if (_friendsListComponent != null) _friendsListComponent.Show();
                     break;
-                    
+
                 case "requests":
                     if (_friendRequestsComponent != null) _friendRequestsComponent.Show();
                     break;
-                    
+
                 case "add":
                     if (_addFriendComponent != null) _addFriendComponent.Show();
                     break;
-                    
+
                 case "profile":
                     if (_friendProfileComponent != null) _friendProfileComponent.Show();
                     break;
-                    
+
                 case "chat":
                     if (_chatComponent != null) _chatComponent.Show();
                     break;
             }
-            
+
             // Update UI state
             UpdateUIState();
         }
-        
+
         /// <summary>
         /// Update UI state based on current screen
         /// </summary>
         private void UpdateUIState()
         {
             if (_toggleRequestsButton != null)
-            {
                 _toggleRequestsButton.text = _currentScreen == "requests" ? "Show Friends" : "Show Requests";
-            }
-            
+
             // Update requests count
             UpdateRequestsCount();
         }
-        
+
         /// <summary>
         /// Update the requests count label
         /// </summary>
@@ -286,19 +291,15 @@ namespace RecipeRage.Modules.Friends.UI
         {
             if (_requestsCountLabel == null)
                 return;
-                
+
             // Count pending friend requests
             int count = 0;
             List<FriendRequest> requests = FriendsHelper.GetPendingFriendRequests();
-            
+
             foreach (var request in requests)
-            {
                 if (request.Type == FriendRequestType.Received)
-                {
                     count++;
-                }
-            }
-            
+
             // Update label
             if (count > 0)
             {
@@ -310,7 +311,7 @@ namespace RecipeRage.Modules.Friends.UI
                 _requestsCountLabel.style.display = DisplayStyle.None;
             }
         }
-        
+
         /// <summary>
         /// Refresh the UI
         /// </summary>
@@ -319,38 +320,32 @@ namespace RecipeRage.Modules.Friends.UI
             // Refresh all components
             if (_friendsListComponent != null) _friendsListComponent.RefreshFriendsList();
             if (_friendRequestsComponent != null) _friendRequestsComponent.RefreshRequestsList();
-            
+
             // Update UI state
             UpdateUIState();
         }
-        
+
         /// <summary>
         /// Show the UI
         /// </summary>
         public void Show()
         {
-            if (_mainContainer != null)
-            {
-                _mainContainer.style.display = DisplayStyle.Flex;
-            }
-            
+            if (_mainContainer != null) _mainContainer.style.display = DisplayStyle.Flex;
+
             // Refresh data
             RefreshUI();
         }
-        
+
         /// <summary>
         /// Hide the UI
         /// </summary>
         public void Hide()
         {
-            if (_mainContainer != null)
-            {
-                _mainContainer.style.display = DisplayStyle.None;
-            }
+            if (_mainContainer != null) _mainContainer.style.display = DisplayStyle.None;
         }
-        
+
         #region Event Handlers
-        
+
         /// <summary>
         /// Handle friend click
         /// </summary>
@@ -358,7 +353,7 @@ namespace RecipeRage.Modules.Friends.UI
         {
             List<FriendData> friends = FriendsHelper.GetFriends();
             FriendData friend = friends.Find(f => f.UserId == friendId);
-            
+
             if (friend != null)
             {
                 // Check if there are unread messages
@@ -378,7 +373,7 @@ namespace RecipeRage.Modules.Friends.UI
                 }
             }
         }
-        
+
         /// <summary>
         /// Handle removing a friend
         /// </summary>
@@ -387,13 +382,11 @@ namespace RecipeRage.Modules.Friends.UI
             FriendsHelper.RemoveFriend(friendId, success =>
             {
                 if (success)
-                {
                     // Go back to friends list
                     ShowScreen("friends");
-                }
             });
         }
-        
+
         /// <summary>
         /// Handle accepting a friend request
         /// </summary>
@@ -404,23 +397,17 @@ namespace RecipeRage.Modules.Friends.UI
                 if (success)
                 {
                     // Refresh friends list
-                    if (_friendsListComponent != null)
-                    {
-                        _friendsListComponent.RefreshFriendsList();
-                    }
-                    
+                    if (_friendsListComponent != null) _friendsListComponent.RefreshFriendsList();
+
                     // Refresh requests list
-                    if (_friendRequestsComponent != null)
-                    {
-                        _friendRequestsComponent.RefreshRequestsList();
-                    }
-                    
+                    if (_friendRequestsComponent != null) _friendRequestsComponent.RefreshRequestsList();
+
                     // Update UI state
                     UpdateUIState();
                 }
             });
         }
-        
+
         /// <summary>
         /// Handle rejecting a friend request
         /// </summary>
@@ -431,17 +418,14 @@ namespace RecipeRage.Modules.Friends.UI
                 if (success)
                 {
                     // Refresh requests list
-                    if (_friendRequestsComponent != null)
-                    {
-                        _friendRequestsComponent.RefreshRequestsList();
-                    }
-                    
+                    if (_friendRequestsComponent != null) _friendRequestsComponent.RefreshRequestsList();
+
                     // Update UI state
                     UpdateUIState();
                 }
             });
         }
-        
+
         /// <summary>
         /// Handle opening a chat
         /// </summary>
@@ -450,14 +434,14 @@ namespace RecipeRage.Modules.Friends.UI
             // Find friend data
             List<FriendData> friends = FriendsHelper.GetFriends();
             FriendData friend = friends.Find(f => f.UserId == friendId);
-            
+
             if (friend != null && _chatComponent != null)
             {
                 _chatComponent.OpenChat(friendId, friend.DisplayName);
                 ShowScreen("chat");
             }
         }
-        
+
         /// <summary>
         /// Handle friend request received
         /// </summary>
@@ -466,7 +450,7 @@ namespace RecipeRage.Modules.Friends.UI
             // Update requests count
             UpdateRequestsCount();
         }
-        
+
         /// <summary>
         /// Handle message received
         /// </summary>
@@ -476,25 +460,7 @@ namespace RecipeRage.Modules.Friends.UI
             // This could show a notification or highlight the friends list
             UpdateUIState();
         }
-        
+
         #endregion
-        
-        private void OnDisable()
-        {
-            // Unregister event handlers
-            FriendsHelper.UnregisterEvents(
-                onFriendRequestReceived: OnFriendRequestReceived
-            );
-            
-            ChatHelper.UnregisterEventHandlers(
-                onMessageReceived: OnMessageReceived
-            );
-        }
-        
-        private void OnDestroy()
-        {
-            // Shutdown systems
-            ChatHelper.Shutdown();
-        }
     }
-} 
+}

@@ -8,7 +8,7 @@ using Random = UnityEngine.Random;
 namespace RecipeRage.Core.GameMode
 {
     /// <summary>
-    ///     Classic game mode implementation where players compete to complete orders
+    /// Classic game mode implementation where players compete to complete orders
     /// </summary>
     public class ClassicGameMode : GameModeBase
     {
@@ -23,8 +23,8 @@ namespace RecipeRage.Core.GameMode
 
         #region Serialized Fields
 
-        [Header("Classic Mode Settings"), SerializeField]
-         private int _maxActiveOrders = 3;
+        [Header("Classic Mode Settings")] [SerializeField]
+        private int _maxActiveOrders = 3;
         [SerializeField] private float _orderSpawnInterval = 15f;
         [SerializeField] private float _orderTimeLimit = 120f;
         [SerializeField] private int _pointsPerOrder = 100;
@@ -32,8 +32,8 @@ namespace RecipeRage.Core.GameMode
         [SerializeField] private int _failPenalty = 50;
         [SerializeField] private float _timePenaltyPerSecond = 10;
 
-        [Header("Recipe Settings"), SerializeField]
-         private List<RecipeData> _availableRecipes;
+        [Header("Recipe Settings")] [SerializeField]
+        private List<RecipeData> _availableRecipes;
 
         #endregion
 
@@ -75,7 +75,7 @@ namespace RecipeRage.Core.GameMode
 
             // Initialize player scores
             _playerScores.Clear();
-            foreach (PlayerController player in Players)
+            foreach (var player in Players)
             {
                 _playerScores[player] = new PlayerScore();
             }
@@ -104,11 +104,11 @@ namespace RecipeRage.Core.GameMode
         }
 
         /// <summary>
-        ///     Called when a player completes an order
+        /// Called when a player completes an order
         /// </summary>
-        /// <param name="player">Player who completed the order</param>
-        /// <param name="order">Completed order</param>
-        /// <param name="isPerfect">Whether the order was completed perfectly</param>
+        /// <param name="player"> Player who completed the order </param>
+        /// <param name="order"> Completed order </param>
+        /// <param name="isPerfect"> Whether the order was completed perfectly </param>
         public void CompleteOrder(PlayerController player, Order order, bool isPerfect)
         {
             if (!_activeOrders.Contains(order))
@@ -126,7 +126,7 @@ namespace RecipeRage.Core.GameMode
             }
 
             // Update player score
-            if (_playerScores.TryGetValue(player, out PlayerScore playerScore))
+            if (_playerScores.TryGetValue(player, out var playerScore))
             {
                 playerScore.OrdersCompleted++;
                 playerScore.TotalScore += score;
@@ -139,9 +139,9 @@ namespace RecipeRage.Core.GameMode
         }
 
         /// <summary>
-        ///     Called when an order fails (times out)
+        /// Called when an order fails (times out)
         /// </summary>
-        /// <param name="order">Failed order</param>
+        /// <param name="order"> Failed order </param>
         public void FailOrder(Order order)
         {
             if (!_activeOrders.Contains(order))
@@ -159,7 +159,7 @@ namespace RecipeRage.Core.GameMode
         {
             for (int i = _activeOrders.Count - 1; i >= 0; i--)
             {
-                Order order = _activeOrders[i];
+                var order = _activeOrders[i];
                 order.TimeRemaining -= Time.deltaTime;
 
                 if (order.TimeRemaining <= 0)
@@ -185,8 +185,9 @@ namespace RecipeRage.Core.GameMode
                 return;
 
             // Create new order
-            RecipeData recipe = _availableRecipes[Random.Range(0, _availableRecipes.Count)];
-            Order order = new Order {
+            var recipe = _availableRecipes[Random.Range(0, _availableRecipes.Count)];
+            var order = new Order
+            {
                 Recipe = recipe, TimeRemaining = _orderTimeLimit, TimeLimit = _orderTimeLimit
             };
 
@@ -198,7 +199,7 @@ namespace RecipeRage.Core.GameMode
     }
 
     /// <summary>
-    ///     Represents a player's score in the game
+    /// Represents a player's score in the game
     /// </summary>
     public class PlayerScore
     {
@@ -209,7 +210,7 @@ namespace RecipeRage.Core.GameMode
     }
 
     /// <summary>
-    ///     Represents an active order in the game
+    /// Represents an active order in the game
     /// </summary>
     public class Order
     {
@@ -220,7 +221,7 @@ namespace RecipeRage.Core.GameMode
     }
 
     /// <summary>
-    ///     Scriptable Object containing recipe data
+    /// Scriptable Object containing recipe data
     /// </summary>
     [CreateAssetMenu(fileName = "New Recipe", menuName = "RecipeRage/Recipe Data")]
     public class RecipeData : ScriptableObject
@@ -233,7 +234,7 @@ namespace RecipeRage.Core.GameMode
     }
 
     /// <summary>
-    ///     Represents a step in a recipe
+    /// Represents a step in a recipe
     /// </summary>
     [Serializable]
     public class IngredientStep
@@ -245,7 +246,7 @@ namespace RecipeRage.Core.GameMode
     }
 
     /// <summary>
-    ///     Available cooking methods
+    /// Available cooking methods
     /// </summary>
     public enum CookingMethod
     {

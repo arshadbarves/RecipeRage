@@ -6,7 +6,7 @@ using UnityEngine.UI;
 namespace RecipeRage.Gameplay.Cooking
 {
     /// <summary>
-    ///     Represents a cookable ingredient in the game
+    /// Represents a cookable ingredient in the game
     /// </summary>
     public class Ingredient : NetworkBehaviour, IPickupable
     {
@@ -23,18 +23,18 @@ namespace RecipeRage.Gameplay.Cooking
 
         #region Serialized Fields
 
-        [Header("Ingredient Settings"), SerializeField]
-         private IngredientData _ingredientData;
+        [Header("Ingredient Settings")] [SerializeField]
+        private IngredientData _ingredientData;
 
-        [Header("Visual Settings"), SerializeField]
-         private Image _iconImage;
+        [Header("Visual Settings")] [SerializeField]
+        private Image _iconImage;
         [SerializeField] private GameObject _rawVisual;
         [SerializeField] private GameObject _cookedVisual;
         [SerializeField] private GameObject _burntVisual;
         [SerializeField] private ParticleSystem _cookingEffect;
 
-        [Header("Audio"), SerializeField]
-         private AudioClip _pickupSound;
+        [Header("Audio")] [SerializeField]
+        private AudioClip _pickupSound;
         [SerializeField] private AudioClip _dropSound;
 
         #endregion
@@ -70,7 +70,7 @@ namespace RecipeRage.Gameplay.Cooking
         #region Public Methods
 
         /// <summary>
-        ///     Updates the cooking state of the ingredient
+        /// Updates the cooking state of the ingredient
         /// </summary>
         [ServerRpc(RequireOwnership = false)]
         public void UpdateStateServerRpc(CookingState newState)
@@ -79,7 +79,7 @@ namespace RecipeRage.Gameplay.Cooking
         }
 
         /// <summary>
-        ///     Checks if this ingredient can be combined with another
+        /// Checks if this ingredient can be combined with another
         /// </summary>
         public bool CanCombineWith(Ingredient other)
         {
@@ -90,7 +90,7 @@ namespace RecipeRage.Gameplay.Cooking
         }
 
         /// <summary>
-        ///     Gets the GameObject for pickup functionality
+        /// Gets the GameObject for pickup functionality
         /// </summary>
         public GameObject GetGameObject()
         {
@@ -98,7 +98,7 @@ namespace RecipeRage.Gameplay.Cooking
         }
 
         /// <summary>
-        ///     Called when the ingredient has been chopped
+        /// Called when the ingredient has been chopped
         /// </summary>
         public void OnChopped()
         {

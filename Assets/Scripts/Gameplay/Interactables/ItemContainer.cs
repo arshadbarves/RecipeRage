@@ -1,10 +1,9 @@
-using UnityEngine;
 using System;
-using System.Collections.Generic;
-using RecipeRage.Core.Player;
 using RecipeRage.Core.Interaction;
+using RecipeRage.Core.Player;
 using RecipeRage.Gameplay.Cooking;
 using Unity.Netcode;
+using UnityEngine;
 
 namespace RecipeRage.Gameplay.Interactables
 {
@@ -14,33 +13,42 @@ namespace RecipeRage.Gameplay.Interactables
     public class ItemContainer : NetworkBehaviour, IInteractable
     {
         #region Properties
+
         public bool CanInteract => !_isBeingUsed.Value;
         public InteractionType InteractionType => InteractionType.Container;
-        public InteractionState CurrentState { get; private set; } = InteractionState.Idle;
+        public InteractionState CurrentState { get; } = InteractionState.Idle;
+
         #endregion
 
         #region Serialized Fields
-        [Header("Container Settings")]
-        [SerializeField] private Transform _itemSlot;
+
+        [Header("Container Settings")] [SerializeField]
+        private Transform _itemSlot;
+
         [SerializeField] private bool _acceptPlatesOnly;
 
-        [Header("Visual Feedback")]
-        [SerializeField] private GameObject _highlightEffect;
+        [Header("Visual Feedback")] [SerializeField]
+        private GameObject _highlightEffect;
+
         [SerializeField] private GameObject _occupiedEffect;
 
-        [Header("Audio")]
-        [SerializeField] private AudioClip _placeItemSound;
+        [Header("Audio")] [SerializeField] private AudioClip _placeItemSound;
+
         [SerializeField] private AudioClip _takeItemSound;
         [SerializeField] private AudioClip _invalidItemSound;
+
         #endregion
 
         #region Private Fields
+
         private AudioSource _audioSource;
-        private NetworkVariable<bool> _isBeingUsed = new NetworkVariable<bool>();
+        private readonly NetworkVariable<bool> _isBeingUsed = new NetworkVariable<bool>();
         private GameObject _storedItem;
+
         #endregion
 
         #region Unity Lifecycle
+
         private void Awake()
         {
             _audioSource = GetComponent<AudioSource>();
@@ -64,9 +72,11 @@ namespace RecipeRage.Gameplay.Interactables
         {
             _isBeingUsed.OnValueChanged -= OnBeingUsedChanged;
         }
+
         #endregion
 
         #region IInteractable Implementation
+
         public bool StartInteraction(PlayerController player, Action onComplete)
         {
             if (!CanInteract || !IsServer)
@@ -90,7 +100,8 @@ namespace RecipeRage.Gameplay.Interactables
                 PlaceItemServerRpc(player.NetworkObjectId);
                 return true;
             }
-            else if (_storedItem != null)
+
+            if (_storedItem != null)
             {
                 // Try to take item
                 TakeItemServerRpc(player.NetworkObjectId);
@@ -110,9 +121,11 @@ namespace RecipeRage.Gameplay.Interactables
             // Container interactions are instant, no need to continue
             return false;
         }
+
         #endregion
 
         #region Server RPCs
+
         [ServerRpc(RequireOwnership = false)]
         private void PlaceItemServerRpc(ulong playerId)
         {
@@ -156,9 +169,11 @@ namespace RecipeRage.Gameplay.Interactables
             TakeItemClientRpc();
             _isBeingUsed.Value = false;
         }
+
         #endregion
 
         #region Client RPCs
+
         [ClientRpc]
         private void PlaceItemClientRpc()
         {
@@ -172,9 +187,11 @@ namespace RecipeRage.Gameplay.Interactables
             PlayTakeSound();
             UpdateVisuals();
         }
+
         #endregion
 
         #region Private Methods
+
         private void OnBeingUsedChanged(bool previousValue, bool newValue)
         {
             UpdateVisuals();
@@ -182,40 +199,26 @@ namespace RecipeRage.Gameplay.Interactables
 
         private void UpdateVisuals()
         {
-            if (_highlightEffect != null)
-            {
-                _highlightEffect.SetActive(CanInteract && _storedItem == null);
-            }
+            if (_highlightEffect != null) _highlightEffect.SetActive(CanInteract && _storedItem == null);
 
-            if (_occupiedEffect != null)
-            {
-                _occupiedEffect.SetActive(_storedItem != null);
-            }
+            if (_occupiedEffect != null) _occupiedEffect.SetActive(_storedItem != null);
         }
 
         private void PlayPlaceSound()
         {
-            if (_audioSource != null && _placeItemSound != null)
-            {
-                _audioSource.PlayOneShot(_placeItemSound);
-            }
+            if (_audioSource != null && _placeItemSound != null) _audioSource.PlayOneShot(_placeItemSound);
         }
 
         private void PlayTakeSound()
         {
-            if (_audioSource != null && _takeItemSound != null)
-            {
-                _audioSource.PlayOneShot(_takeItemSound);
-            }
+            if (_audioSource != null && _takeItemSound != null) _audioSource.PlayOneShot(_takeItemSound);
         }
 
         private void PlayInvalidSound()
         {
-            if (_audioSource != null && _invalidItemSound != null)
-            {
-                _audioSource.PlayOneShot(_invalidItemSound);
-            }
+            if (_audioSource != null && _invalidItemSound != null) _audioSource.PlayOneShot(_invalidItemSound);
         }
+
         #endregion
     }
-} 
+}

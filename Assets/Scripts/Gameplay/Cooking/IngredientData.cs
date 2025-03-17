@@ -1,6 +1,5 @@
-using UnityEngine;
-using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace RecipeRage.Gameplay.Cooking
 {
@@ -10,26 +9,25 @@ namespace RecipeRage.Gameplay.Cooking
     [CreateAssetMenu(fileName = "New Ingredient", menuName = "RecipeRage/Ingredient Data")]
     public class IngredientData : ScriptableObject
     {
-        [Header("Basic Info")]
-        public string ingredientId;
+        [Header("Basic Info")] public string ingredientId;
+
         public string displayName;
-        
-        [Header("Visual States")]
-        public Sprite rawIcon;
+
+        [Header("Visual States")] public Sprite rawIcon;
+
         public Sprite cookedIcon;
         public Sprite burntIcon;
         public GameObject rawPrefab;
         public GameObject cookedPrefab;
         public GameObject burntPrefab;
-        
-        [Header("Cooking Properties")]
-        public List<CookingMethod> validCookingMethods;
+
+        [Header("Cooking Properties")] public List<CookingMethod> validCookingMethods;
+
         public float baseValue;
         public float cookingTime;
         public float burningThreshold;
-        
-        [Header("Combinations")]
-        public List<string> validCombinations;
+
+        [Header("Combinations")] public List<string> validCombinations;
 
         /// <summary>
         /// Gets the appropriate icon for the current cooking state
@@ -59,4 +57,4 @@ namespace RecipeRage.Gameplay.Cooking
             };
         }
     }
-} 
+}

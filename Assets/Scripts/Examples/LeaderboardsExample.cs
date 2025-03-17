@@ -1,10 +1,8 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
+using RecipeRage.Leaderboards;
+using RecipeRage.Modules.Logging;
 using UnityEngine;
 using UnityEngine.UI;
-using RecipeRage.Leaderboards;
-using RecipeRage.Logging;
 
 namespace RecipeRage.Examples
 {
@@ -13,17 +11,20 @@ namespace RecipeRage.Examples
     /// </summary>
     public class LeaderboardsExample : MonoBehaviour
     {
-        [Header("Leaderboard Settings")]
-        [SerializeField] private string _leaderboardId = "reciperage_highscores";
-        [SerializeField] private int _pageSize = 10;
-        [SerializeField] private bool _includeFriends = false;
+        [Header("Leaderboard Settings")] [SerializeField]
+        private string _leaderboardId = "reciperage_highscores";
 
-        [Header("Score Settings")]
-        [SerializeField] private int _scoreIncrement = 100;
+        [SerializeField] private int _pageSize = 10;
+        [SerializeField] private bool _includeFriends;
+
+        [Header("Score Settings")] [SerializeField]
+        private int _scoreIncrement = 100;
+
         [SerializeField] private int _startRank = 1;
 
-        [Header("UI Elements")]
-        [SerializeField] private InputField _leaderboardIdInput;
+        [Header("UI Elements")] [SerializeField]
+        private InputField _leaderboardIdInput;
+
         [SerializeField] private InputField _scoreInput;
         [SerializeField] private Button _initializeButton;
         [SerializeField] private Button _queryLeaderboardButton;
@@ -37,14 +38,14 @@ namespace RecipeRage.Examples
         [SerializeField] private Transform _leaderboardContentTransform;
         [SerializeField] private GameObject _leaderboardEntryPrefab;
 
-        // Track if the system is initialized
-        private bool _isInitialized = false;
+        // Reference to the cached leaderboard definition (if any)
+        private LeaderboardDefinition _currentDefinition;
 
         // Current leaderboard entries
         private List<LeaderboardEntry> _currentEntries = new List<LeaderboardEntry>();
 
-        // Reference to the cached leaderboard definition (if any)
-        private LeaderboardDefinition _currentDefinition;
+        // Track if the system is initialized
+        private bool _isInitialized;
 
         private void OnEnable()
         {
@@ -125,14 +126,11 @@ namespace RecipeRage.Examples
         /// <summary>
         /// Handles page size dropdown change
         /// </summary>
-        /// <param name="index">Selected index</param>
+        /// <param name="index"> Selected index </param>
         private void OnPageSizeChanged(int index)
         {
             int[] sizes = { 5, 10, 25, 50, 100 };
-            if (index >= 0 && index < sizes.Length)
-            {
-                _pageSize = sizes[index];
-            }
+            if (index >= 0 && index < sizes.Length) _pageSize = sizes[index];
         }
 
         /// <summary>
@@ -172,9 +170,8 @@ namespace RecipeRage.Examples
                     LogHelper.Debug("LeaderboardsExample", $"Found {definitions.Count} leaderboard definitions");
 
                     foreach (var def in definitions)
-                    {
-                        LogHelper.Debug("LeaderboardsExample", $"Leaderboard: {def.LeaderboardId}, Stat: {def.StatName}");
-                    }
+                        LogHelper.Debug("LeaderboardsExample",
+                            $"Leaderboard: {def.LeaderboardId}, Stat: {def.StatName}");
 
                     // Find the definition for our leaderboard
                     _currentDefinition = definitions.Find(d => d.LeaderboardId == _leaderboardId);
@@ -289,8 +286,9 @@ namespace RecipeRage.Examples
             {
                 if (entry != null)
                 {
-                    SetStatus($"Current user is ranked {entry.Rank} with score {entry.Score} on leaderboard {_leaderboardId}");
-                    
+                    SetStatus(
+                        $"Current user is ranked {entry.Rank} with score {entry.Score} on leaderboard {_leaderboardId}");
+
                     // Display the entry
                     _currentEntries = new List<LeaderboardEntry> { entry };
                     DisplayLeaderboardEntries(_currentEntries);
@@ -326,13 +324,11 @@ namespace RecipeRage.Examples
             // Get the score from the input field
             long score = _scoreIncrement;
             if (_scoreInput != null)
-            {
                 if (!long.TryParse(_scoreInput.text, out score))
                 {
                     SetStatus("Invalid score value!");
                     return;
                 }
-            }
 
             SetStatus($"Submitting score {score} to leaderboard {_leaderboardId}...");
 
@@ -341,7 +337,7 @@ namespace RecipeRage.Examples
                 if (success)
                 {
                     SetStatus($"Successfully submitted score {score} to leaderboard {_leaderboardId}");
-                    
+
                     // Refresh the leaderboard
                     OnQueryLeaderboardButtonClicked();
                 }
@@ -355,24 +351,21 @@ namespace RecipeRage.Examples
         /// <summary>
         /// Displays leaderboard entries in the UI
         /// </summary>
-        /// <param name="entries">Entries to display</param>
+        /// <param name="entries"> Entries to display </param>
         private void DisplayLeaderboardEntries(List<LeaderboardEntry> entries)
         {
             if (_leaderboardContentTransform == null || _leaderboardEntryPrefab == null)
                 return;
 
             // Clear existing entries
-            foreach (Transform child in _leaderboardContentTransform)
-            {
-                Destroy(child.gameObject);
-            }
+            foreach (Transform child in _leaderboardContentTransform) Destroy(child.gameObject);
 
             // Display new entries
             foreach (var entry in entries)
             {
-                GameObject entryObj = Instantiate(_leaderboardEntryPrefab, _leaderboardContentTransform);
-                LeaderboardEntryUI entryUI = entryObj.GetComponent<LeaderboardEntryUI>();
-                
+                var entryObj = Instantiate(_leaderboardEntryPrefab, _leaderboardContentTransform);
+                var entryUI = entryObj.GetComponent<LeaderboardEntryUI>();
+
                 if (entryUI != null)
                 {
                     entryUI.SetEntry(entry, _currentDefinition);
@@ -387,15 +380,12 @@ namespace RecipeRage.Examples
                         texts[1].text = entry.DisplayName;
                         texts[2].text = entry.GetFormattedScore(_currentDefinition);
                     }
-                    
+
                     // Highlight current user
                     if (entry.IsCurrentUser)
                     {
-                        Image background = entryObj.GetComponent<Image>();
-                        if (background != null)
-                        {
-                            background.color = new Color(0.8f, 0.9f, 1f);
-                        }
+                        var background = entryObj.GetComponent<Image>();
+                        if (background != null) background.color = new Color(0.8f, 0.9f, 1f);
                     }
                 }
             }
@@ -404,46 +394,46 @@ namespace RecipeRage.Examples
         /// <summary>
         /// Handles leaderboard queried event
         /// </summary>
-        /// <param name="leaderboardId">ID of the leaderboard</param>
-        /// <param name="entries">Entries that were retrieved</param>
+        /// <param name="leaderboardId"> ID of the leaderboard </param>
+        /// <param name="entries"> Entries that were retrieved </param>
         private void OnLeaderboardQueried(string leaderboardId, List<LeaderboardEntry> entries)
         {
-            LogHelper.Debug("LeaderboardsExample", $"Leaderboard queried event: {leaderboardId}, {entries.Count} entries");
+            LogHelper.Debug("LeaderboardsExample",
+                $"Leaderboard queried event: {leaderboardId}, {entries.Count} entries");
         }
 
         /// <summary>
         /// Handles score submitted event
         /// </summary>
-        /// <param name="leaderboardId">ID of the leaderboard</param>
-        /// <param name="score">Score that was submitted</param>
-        /// <param name="success">Whether the submission was successful</param>
+        /// <param name="leaderboardId"> ID of the leaderboard </param>
+        /// <param name="score"> Score that was submitted </param>
+        /// <param name="success"> Whether the submission was successful </param>
         private void OnScoreSubmitted(string leaderboardId, long score, bool success)
         {
-            LogHelper.Debug("LeaderboardsExample", $"Score submitted event: {leaderboardId}, Score: {score}, Success: {success}");
+            LogHelper.Debug("LeaderboardsExample",
+                $"Score submitted event: {leaderboardId}, Score: {score}, Success: {success}");
         }
 
         /// <summary>
         /// Handles score submission failed event
         /// </summary>
-        /// <param name="leaderboardId">ID of the leaderboard</param>
-        /// <param name="score">Score that failed to submit</param>
-        /// <param name="error">Error message</param>
+        /// <param name="leaderboardId"> ID of the leaderboard </param>
+        /// <param name="score"> Score that failed to submit </param>
+        /// <param name="error"> Error message </param>
         private void OnScoreSubmissionFailed(string leaderboardId, long score, string error)
         {
-            LogHelper.Warning("LeaderboardsExample", $"Score submission failed event: {leaderboardId}, Score: {score}, Error: {error}");
+            LogHelper.Warning("LeaderboardsExample",
+                $"Score submission failed event: {leaderboardId}, Score: {score}, Error: {error}");
         }
 
         /// <summary>
         /// Sets the status text
         /// </summary>
-        /// <param name="message">Message to display</param>
+        /// <param name="message"> Message to display </param>
         private void SetStatus(string message)
         {
-            if (_statusText != null)
-            {
-                _statusText.text = message;
-            }
-            
+            if (_statusText != null) _statusText.text = message;
+
             LogHelper.Info("LeaderboardsExample", message);
         }
 
@@ -500,8 +490,8 @@ namespace RecipeRage.Examples
         /// <summary>
         /// Sets the entry data and updates the UI
         /// </summary>
-        /// <param name="entry">Leaderboard entry to display</param>
-        /// <param name="definition">Optional leaderboard definition for formatting</param>
+        /// <param name="entry"> Leaderboard entry to display </param>
+        /// <param name="definition"> Optional leaderboard definition for formatting </param>
         public void SetEntry(LeaderboardEntry entry, LeaderboardDefinition definition = null)
         {
             if (entry == null)
@@ -533,4 +523,4 @@ namespace RecipeRage.Examples
             }
         }
     }
-} 
+}
