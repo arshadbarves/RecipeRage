@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
-using RecipeRage.Modules.Friends.Core;
 using RecipeRage.Modules.Friends.Data;
 using RecipeRage.Modules.Friends.Interfaces;
+using RecipeRage.Modules.Friends.Core;
+using RecipeRage.Modules.Friends.Network;
 using RecipeRage.Modules.Logging;
+using UnityEngine;
 
 namespace RecipeRage.Modules.Friends
 {
@@ -16,7 +18,7 @@ namespace RecipeRage.Modules.Friends
     {
         private static IChatService _chatService;
         private static bool _isInitialized;
-        
+
         /// <summary>
         /// Initialize the chat system
         /// </summary>
@@ -29,22 +31,22 @@ namespace RecipeRage.Modules.Friends
                 onComplete?.Invoke(true);
                 return;
             }
-            
+
             if (!FriendsHelper.IsInitialized)
             {
                 LogHelper.Error("ChatHelper", "Friends system not initialized");
                 onComplete?.Invoke(false);
                 return;
             }
-            
+
             LogHelper.Info("ChatHelper", "Initializing chat system...");
-            
+
             // Create the chat service
             _chatService = new ChatService(
                 new IdentityService(),
                 new EOSP2PNetworkService()
             );
-            
+
             // Initialize the service
             _chatService.Initialize(success =>
             {
@@ -57,11 +59,11 @@ namespace RecipeRage.Modules.Friends
                 {
                     LogHelper.Error("ChatHelper", "Failed to initialize chat system");
                 }
-                
+
                 onComplete?.Invoke(success);
             });
         }
-        
+
         /// <summary>
         /// Shutdown the chat system
         /// </summary>
@@ -69,16 +71,16 @@ namespace RecipeRage.Modules.Friends
         {
             if (!_isInitialized)
                 return;
-                
+
             LogHelper.Info("ChatHelper", "Shutting down chat system...");
-            
+
             _chatService.Shutdown();
             _chatService = null;
             _isInitialized = false;
-            
+
             LogHelper.Info("ChatHelper", "Chat system shutdown complete");
         }
-        
+
         /// <summary>
         /// Send a text message to a friend
         /// </summary>
@@ -92,10 +94,10 @@ namespace RecipeRage.Modules.Friends
                 onComplete?.Invoke(false);
                 return;
             }
-            
+
             _chatService.SendTextMessage(friendId, message, onComplete);
         }
-        
+
         /// <summary>
         /// Send a game invite to a friend
         /// </summary>
@@ -110,10 +112,10 @@ namespace RecipeRage.Modules.Friends
                 onComplete?.Invoke(false);
                 return;
             }
-            
+
             _chatService.SendGameInvite(friendId, gameData, message, onComplete);
         }
-        
+
         /// <summary>
         /// Load chat history with a friend
         /// </summary>
@@ -127,10 +129,10 @@ namespace RecipeRage.Modules.Friends
                 onComplete?.Invoke(null);
                 return;
             }
-            
+
             _chatService.LoadChatHistory(friendId, count, onComplete);
         }
-        
+
         /// <summary>
         /// Get all recent conversations
         /// </summary>
@@ -141,10 +143,10 @@ namespace RecipeRage.Modules.Friends
             {
                 return new List<string>();
             }
-            
+
             return _chatService.GetRecentConversations();
         }
-        
+
         /// <summary>
         /// Mark messages with a friend as read
         /// </summary>
@@ -155,10 +157,10 @@ namespace RecipeRage.Modules.Friends
             {
                 return;
             }
-            
+
             _chatService.MarkAsRead(friendId);
         }
-        
+
         /// <summary>
         /// Get the number of unread messages from a friend
         /// </summary>
@@ -170,10 +172,10 @@ namespace RecipeRage.Modules.Friends
             {
                 return 0;
             }
-            
+
             return _chatService.GetUnreadCount(friendId);
         }
-        
+
         /// <summary>
         /// Get the total number of unread messages
         /// </summary>
@@ -184,10 +186,10 @@ namespace RecipeRage.Modules.Friends
             {
                 return 0;
             }
-            
+
             return _chatService.GetTotalUnreadCount();
         }
-        
+
         /// <summary>
         /// Clear chat history with a friend
         /// </summary>
@@ -200,10 +202,10 @@ namespace RecipeRage.Modules.Friends
                 onComplete?.Invoke(false);
                 return;
             }
-            
+
             _chatService.ClearChatHistory(friendId, onComplete);
         }
-        
+
         /// <summary>
         /// Accept a game invite
         /// </summary>
@@ -216,10 +218,10 @@ namespace RecipeRage.Modules.Friends
                 onComplete?.Invoke(false);
                 return;
             }
-            
+
             _chatService.AcceptGameInvite(message, onComplete);
         }
-        
+
         /// <summary>
         /// Decline a game invite
         /// </summary>
@@ -232,10 +234,10 @@ namespace RecipeRage.Modules.Friends
                 onComplete?.Invoke(false);
                 return;
             }
-            
+
             _chatService.DeclineGameInvite(message, onComplete);
         }
-        
+
         /// <summary>
         /// Register event handlers for chat events
         /// </summary>
@@ -251,23 +253,23 @@ namespace RecipeRage.Modules.Friends
             {
                 return;
             }
-            
+
             if (onMessageReceived != null)
             {
                 _chatService.OnMessageReceived += onMessageReceived;
             }
-            
+
             if (onMessageSent != null)
             {
                 _chatService.OnMessageSent += onMessageSent;
             }
-            
+
             if (onChatHistoryLoaded != null)
             {
                 _chatService.OnChatHistoryLoaded += onChatHistoryLoaded;
             }
         }
-        
+
         /// <summary>
         /// Unregister event handlers for chat events
         /// </summary>
@@ -283,23 +285,23 @@ namespace RecipeRage.Modules.Friends
             {
                 return;
             }
-            
+
             if (onMessageReceived != null)
             {
                 _chatService.OnMessageReceived -= onMessageReceived;
             }
-            
+
             if (onMessageSent != null)
             {
                 _chatService.OnMessageSent -= onMessageSent;
             }
-            
+
             if (onChatHistoryLoaded != null)
             {
                 _chatService.OnChatHistoryLoaded -= onChatHistoryLoaded;
             }
         }
-        
+
         /// <summary>
         /// Ensure the chat system is initialized
         /// </summary>
@@ -311,8 +313,8 @@ namespace RecipeRage.Modules.Friends
                 LogHelper.Error("ChatHelper", "Chat system not initialized");
                 return false;
             }
-            
+
             return true;
         }
     }
-} 
+}

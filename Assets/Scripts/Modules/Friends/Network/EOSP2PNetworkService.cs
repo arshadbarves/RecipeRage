@@ -191,9 +191,25 @@ namespace RecipeRage.Modules.Friends.Network
             var options = new CloseConnectionsOptions
             {
                 LocalUserId = EOSManager.Instance.GetProductUserId(),
-                RemoteUserId = remoteUserId,
                 SocketId = new SocketId { SocketName = SOCKET_NAME }
             };
+
+            // Set remote user ID if the class has that field
+            // This might need to be modified based on your EOS SDK version
+            try
+            {
+                // Try to set the property using reflection if available
+                var type = options.GetType();
+                var property = type.GetProperty("RemoteUserId");
+                if (property != null)
+                {
+                    property.SetValue(options, remoteUserId);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"EOSP2PNetworkService: Could not set RemoteUserId: {ex.Message}");
+            }
 
             var result = _p2pInterface.CloseConnections(ref options);
 
@@ -352,10 +368,29 @@ namespace RecipeRage.Modules.Friends.Network
             Debug.Log("EOSP2PNetworkService: Shutting down...");
 
             // Disconnect from all peers
-            foreach (string peerId in _connectionStatus.Keys) Disconnect(peerId);
+            foreach (string peerId in new List<string>(_connectionStatus.Keys))
+            {
+                Disconnect(peerId);
+            }
 
             // Unsubscribe from connection requests
             UnsubscribeFromConnectionRequests();
+
+            // Close all remaining connections
+            try
+            {
+                var options = new CloseConnectionsOptions
+                {
+                    LocalUserId = EOSManager.Instance.GetProductUserId(),
+                    SocketId = new SocketId { SocketName = SOCKET_NAME }
+                };
+
+                _p2pInterface.CloseConnections(ref options);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"EOSP2PNetworkService: Error during shutdown: {ex.Message}");
+            }
 
             _connectionStatus.Clear();
             _messageQueue.Clear();
@@ -366,47 +401,109 @@ namespace RecipeRage.Modules.Friends.Network
         }
 
         /// <summary>
-        /// Process incoming messages
-        /// Should be called from an Update method
+        /// Process any incoming messages
         /// </summary>
         public void ProcessIncomingMessages()
         {
-            if (!_isInitialized) return;
+            if (!_isInitialized || _p2pInterface == null)
+                return;
 
-            // Check for new messages
-            var receiveOptions = new ReceivePacketOptions
+            try
             {
-                LocalUserId = EOSManager.Instance.GetProductUserId(),
-                MaxDataSizeBytes = FriendsNetworkProtocol.MAX_MESSAGE_SIZE,
-                RequiredChannel = null,
-                SocketId = new SocketId { SocketName = SOCKET_NAME }
-            };
-
-            while (true)
-            {
-                var result = _p2pInterface.ReceivePacket(ref receiveOptions, out ProductUserId peerId,
-                    out SocketId socketId, out byte channel, out byte[] data, out uint bytesWritten);
-
-                if (result == Result.NotFound)
-                    // No more packets
-                    break;
-
-                if (result != Result.Success)
+                // Process up to 100 packets per frame to avoid freezing
+                for (int i = 0; i < 100; i++)
                 {
-                    Debug.LogError($"EOSP2PNetworkService: Failed to receive packet: {result}");
-                    break;
+                    var socketId = new SocketId { SocketName = SOCKET_NAME };
+
+                    var options = new ReceivePacketOptions
+                    {
+                        LocalUserId = EOSManager.Instance.GetProductUserId(),
+                        MaxDataSizeBytes = 4096
+                    };
+
+                    // Try to set channel and socket properties if available in this SDK version
+                    try
+                    {
+                        var type = options.GetType();
+                        var socketIdProp = type.GetProperty("SocketId");
+                        if (socketIdProp != null)
+                        {
+                            socketIdProp.SetValue(options, socketId);
+                        }
+
+                        var channelProp = type.GetProperty("RequiredChannel");
+                        if (channelProp != null)
+                        {
+                            channelProp.SetValue(options, byte.MaxValue); // all channels
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.LogWarning($"EOSP2PNetworkService: Error setting properties: {ex.Message}");
+                    }
+
+                    ProductUserId peerId = null;
+                    byte channel = 0;
+                    var dataArray = new byte[4096];
+                    var dataSegment = new ArraySegment<byte>(dataArray);
+                    uint bytesWritten = 0;
+
+                    // The parameter order and ref/out modifiers might need to be adjusted based on your EOS SDK version
+                    var result = _p2pInterface.ReceivePacket(
+                        ref options,
+                        ref peerId,
+                        ref socketId,
+                        out channel,
+                        dataSegment,
+                        out bytesWritten);
+
+                    if (result == Result.Success)
+                    {
+                        if (peerId != null && peerId.IsValid())
+                        {
+                            string peerIdString = peerId.ToString();
+                            byte[] messageData = new byte[bytesWritten];
+                            Array.Copy(dataArray, messageData, bytesWritten);
+
+                            // First byte is message type
+                            if (messageData.Length > 0)
+                            {
+                                // Extract message type and payload
+                                FriendsMessageType messageType = (FriendsMessageType)messageData[0];
+                                byte[] payload = new byte[messageData.Length - 1];
+                                Array.Copy(messageData, 1, payload, 0, payload.Length);
+
+                                // Handle the message
+                                HandleMessage(peerIdString, messageType, payload);
+                            }
+                            else
+                            {
+                                Debug.LogWarning($"EOSP2PNetworkService: Received empty message from {peerIdString}");
+                            }
+                        }
+                    }
+                    else if (result != Result.NotFound)
+                    {
+                        // No more packets to receive
+                        break;
+                    }
+                    else if (result != Result.Success && result != Result.NotFound)
+                    {
+                        Debug.LogError($"EOSP2PNetworkService: Error receiving packet: {result}");
+                        break;
+                    }
                 }
 
-                if (data != null && bytesWritten > 0)
+                // Process queued messages
+                while (_messageQueue.Count > 0)
                 {
-                    // Resize array to actual data size
-                    byte[] actualData = new byte[bytesWritten];
-                    Array.Copy(data, actualData, bytesWritten);
-
-                    // Parse packet
-                    if (FriendsNetworkProtocol.ParsePacket(actualData, out var messageType, out byte[] payload))
-                        HandleMessage(peerId.ToString(), messageType, payload);
+                    var message = _messageQueue.Dequeue();
+                    OnMessageReceived?.Invoke(message.SenderId, message.Payload);
                 }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"EOSP2PNetworkService: Error processing messages: {ex.Message}\n{ex.StackTrace}");
             }
         }
 

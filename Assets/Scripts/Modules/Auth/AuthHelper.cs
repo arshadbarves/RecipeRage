@@ -3,8 +3,8 @@ using RecipeRage.Core.Patterns;
 using RecipeRage.Modules.Auth.Core;
 using RecipeRage.Modules.Auth.Interfaces;
 using RecipeRage.Modules.Auth.UI;
+using RecipeRage.Modules.Logging;
 using UnityEngine;
-using Logger = RecipeRage.Core.Services.Logger;
 
 namespace RecipeRage.Modules.Auth
 {
@@ -92,14 +92,14 @@ namespace RecipeRage.Modules.Auth
             var authService = GetAuthService();
             if (authService == null)
             {
-                Logger.Error("AuthHelper", "Auth service not available");
+                LogHelper.Error("AuthHelper", "Auth service not available");
                 onFailure?.Invoke("Auth service not available");
                 return false;
             }
 
             if (authService.GetProviderByName(providerName) == null)
             {
-                Logger.Error("AuthHelper", $"Provider '{providerName}' not available");
+                LogHelper.Error("AuthHelper", $"Provider '{providerName}' not available");
                 onFailure?.Invoke($"Provider '{providerName}' not available");
                 return false;
             }
@@ -153,14 +153,14 @@ namespace RecipeRage.Modules.Auth
             var authService = GetAuthService();
             if (authService == null)
             {
-                Logger.Error("AuthHelper", "Auth service not available");
+                LogHelper.Error("AuthHelper", "Auth service not available");
                 onComplete?.Invoke();
                 return false;
             }
 
             if (authService.CurrentUser == null)
             {
-                Logger.Warning("AuthHelper", "No user is currently signed in");
+                LogHelper.Warning("AuthHelper", "No user is currently signed in");
                 onComplete?.Invoke();
                 return false;
             }
@@ -210,7 +210,7 @@ namespace RecipeRage.Modules.Auth
         {
             if (!ServiceLocator.Instance.TryGet<IAuthService>(out var authService))
             {
-                Logger.Error("AuthHelper", "Failed to get auth service from service locator");
+                LogHelper.Error("AuthHelper", "Failed to get auth service from service locator");
                 return null;
             }
 

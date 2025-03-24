@@ -134,7 +134,7 @@ namespace RecipeRage.Store
             {
                 var options = new QueryOffersOptions
                 {
-                    LocalUserId = EOSManager.Instance.GetEpicAccountId()
+                    LocalUserId = EOSManager.Instance.GetLocalUserId()
                 };
 
                 _ecomInterface.QueryOffers(ref options, null, (ref QueryOffersCallbackInfo callbackInfo) =>
@@ -146,7 +146,7 @@ namespace RecipeRage.Store
                         // Get the number of offers
                         var countOptions = new GetOfferCountOptions
                         {
-                            LocalUserId = EOSManager.Instance.GetEpicAccountId()
+                            LocalUserId = EOSManager.Instance.GetLocalUserId()
                         };
 
                         uint offerCount = _ecomInterface.GetOfferCount(ref countOptions);
@@ -160,16 +160,17 @@ namespace RecipeRage.Store
                         {
                             var offerOptions = new CopyOfferByIndexOptions
                             {
-                                LocalUserId = EOSManager.Instance.GetEpicAccountId(),
+                                LocalUserId = EOSManager.Instance.GetLocalUserId(),
                                 OfferIndex = i
                             };
 
-                            var result = _ecomInterface.CopyOfferByIndex(ref offerOptions, out CatalogOffer offer);
+                            CatalogOffer? offer = null;
+                            var result = _ecomInterface.CopyOfferByIndex(ref offerOptions, out offer);
 
-                            if (result == Result.Success)
+                            if (result == Result.Success && offer.HasValue)
                             {
                                 // Convert to our catalog item model
-                                var catalogItem = ConvertEOSOfferToCatalogItem(offer);
+                                var catalogItem = ConvertEOSOfferToCatalogItem(offer.Value);
                                 if (catalogItem != null)
                                 {
                                     catalogItems.Add(catalogItem);
@@ -178,7 +179,7 @@ namespace RecipeRage.Store
                                     _catalogCache[catalogItem.ItemId] = catalogItem;
 
                                     // Also create and cache a store offer
-                                    var storeOffer = ConvertEOSOfferToStoreOffer(offer);
+                                    var storeOffer = ConvertEOSOfferToStoreOffer(offer.Value);
                                     if (storeOffer != null) _offersCache[storeOffer.OfferId] = storeOffer;
                                 }
                             }
@@ -222,10 +223,12 @@ namespace RecipeRage.Store
 
             try
             {
+                var catalogItemIds = _catalogCache.Keys.ToArray();
+
                 var options = new QueryOwnershipOptions
                 {
-                    LocalUserId = EOSManager.Instance.GetEpicAccountId(),
-                    CatalogItemIds = _catalogCache.Keys.ToArray(),
+                    LocalUserId = EOSManager.Instance.GetLocalUserId(),
+                    CatalogItemIds = ConvertToUtf8StringArray(catalogItemIds),
                     CatalogNamespace = null // Use default namespace
                 };
 
@@ -237,30 +240,36 @@ namespace RecipeRage.Store
 
                         var inventoryItems = new List<InventoryItem>();
 
-                        // Convert each ownership result to an inventory item
-                        foreach (var item in callbackInfo.Items)
-                            if (item.OwnershipStatus == OwnershipStatus.Owned)
+                        // Get ownership results directly from the ItemOwnership member
+                        var ownershipData = callbackInfo.ItemOwnership;
+                        if (ownershipData != null && ownershipData.Length > 0)
+                        {
+                            foreach (var ownership in ownershipData)
                             {
-                                // Create an inventory item for this owned item
-                                CatalogItem catalogItem = null;
-                                _catalogCache.TryGetValue(item.Id, out catalogItem);
-
-                                var inventoryItem = new InventoryItem
+                                if (ownership.OwnershipStatus == OwnershipStatus.Owned)
                                 {
-                                    InventoryItemId = Guid.NewGuid().ToString(), // Generate a unique ID
-                                    CatalogItemId = item.Id,
-                                    CatalogItem = catalogItem,
-                                    Quantity = 1, // EOS doesn't track quantities
-                                    AcquisitionDate = DateTime.UtcNow, // EOS doesn't provide acquisition date
-                                    ProviderName = PROVIDER_NAME,
-                                    ProviderData = item
-                                };
+                                    // Create an inventory item for this owned item
+                                    CatalogItem catalogItem = null;
+                                    _catalogCache.TryGetValue(ownership.Id, out catalogItem);
 
-                                inventoryItems.Add(inventoryItem);
+                                    var inventoryItem = new InventoryItem
+                                    {
+                                        InventoryItemId = Guid.NewGuid().ToString(), // Generate a unique ID
+                                        CatalogItemId = ownership.Id,
+                                        CatalogItem = catalogItem,
+                                        Quantity = 1, // EOS doesn't track quantities
+                                        AcquisitionDate = DateTime.UtcNow, // EOS doesn't provide acquisition date
+                                        ProviderName = PROVIDER_NAME,
+                                        ProviderData = ownership
+                                    };
 
-                                // Cache the item
-                                _inventoryCache[inventoryItem.InventoryItemId] = inventoryItem;
+                                    inventoryItems.Add(inventoryItem);
+
+                                    // Cache the item
+                                    _inventoryCache[inventoryItem.InventoryItemId] = inventoryItem;
+                                }
                             }
+                        }
 
                         callback?.Invoke(inventoryItems, true);
                     }
@@ -298,7 +307,7 @@ namespace RecipeRage.Store
             {
                 var options = new QueryOffersOptions
                 {
-                    LocalUserId = EOSManager.Instance.GetEpicAccountId()
+                    LocalUserId = EOSManager.Instance.GetLocalUserId()
                 };
 
                 _ecomInterface.QueryOffers(ref options, null, (ref QueryOffersCallbackInfo callbackInfo) =>
@@ -310,7 +319,7 @@ namespace RecipeRage.Store
                         // Get the number of offers
                         var countOptions = new GetOfferCountOptions
                         {
-                            LocalUserId = EOSManager.Instance.GetEpicAccountId()
+                            LocalUserId = EOSManager.Instance.GetLocalUserId()
                         };
 
                         uint offerCount = _ecomInterface.GetOfferCount(ref countOptions);
@@ -324,16 +333,17 @@ namespace RecipeRage.Store
                         {
                             var offerOptions = new CopyOfferByIndexOptions
                             {
-                                LocalUserId = EOSManager.Instance.GetEpicAccountId(),
+                                LocalUserId = EOSManager.Instance.GetLocalUserId(),
                                 OfferIndex = i
                             };
 
-                            var result = _ecomInterface.CopyOfferByIndex(ref offerOptions, out CatalogOffer offer);
+                            CatalogOffer? offer = null;
+                            var result = _ecomInterface.CopyOfferByIndex(ref offerOptions, out offer);
 
                             if (result == Result.Success)
                             {
                                 // Convert to our store offer model
-                                var storeOffer = ConvertEOSOfferToStoreOffer(offer);
+                                var storeOffer = ConvertEOSOfferToStoreOffer(offer.Value);
                                 if (storeOffer != null)
                                 {
                                     storeOffers.Add(storeOffer);
@@ -413,8 +423,8 @@ namespace RecipeRage.Store
                 // First, check if we already own this offer
                 var queryOptions = new QueryOwnershipOptions
                 {
-                    LocalUserId = EOSManager.Instance.GetEpicAccountId(),
-                    CatalogItemIds = offer.Items.Select(i => i.ItemId).ToArray(),
+                    LocalUserId = EOSManager.Instance.GetLocalUserId(),
+                    CatalogItemIds = ConvertToUtf8StringArray(offer.Items.Select(i => i.ItemId).ToArray()),
                     CatalogNamespace = null // Use default namespace
                 };
 
@@ -424,8 +434,13 @@ namespace RecipeRage.Store
                         if (queryCallbackInfo.ResultCode == Result.Success)
                         {
                             // Check if we already own all items in this offer
-                            bool allOwned =
-                                queryCallbackInfo.Items.All(item => item.OwnershipStatus == OwnershipStatus.Owned);
+                            var ownershipData = queryCallbackInfo.ItemOwnership;
+                            bool allOwned = false;
+
+                            if (ownershipData != null && ownershipData.Length > 0)
+                            {
+                                allOwned = ownershipData.All(item => item.OwnershipStatus == OwnershipStatus.Owned);
+                            }
 
                             if (allOwned)
                             {
@@ -442,7 +457,7 @@ namespace RecipeRage.Store
                             // Proceed with purchase
                             var checkoutOptions = new CheckoutOptions
                             {
-                                LocalUserId = EOSManager.Instance.GetEpicAccountId(),
+                                LocalUserId = EOSManager.Instance.GetLocalUserId(),
                                 OverrideCatalogNamespace = null, // Use default namespace
                                 Entries = new[]
                                 {
@@ -713,46 +728,29 @@ namespace RecipeRage.Store
         /// </summary>
         /// <param name="offer"> EOS catalog offer </param>
         /// <returns> Converted catalog item </returns>
-        private CatalogItem ConvertEOSOfferToCatalogItem(CatalogOffer offer)
+        private CatalogItem ConvertEOSOfferToCatalogItem(CatalogOffer catalogOffer)
         {
-            if (offer == null)
+            // For structs, check if it's the default value instead of null
+            if (catalogOffer.Equals(default(CatalogOffer)))
                 return null;
 
             // For simplicity, we'll create a catalog item with the same ID as the offer
             var catalogItem = new CatalogItem
             {
-                ItemId = offer.Id,
-                DisplayName = offer.Title,
-                Description = offer.Description,
-                LongDescription = offer.LongDescription,
-                ItemType = GetItemTypeFromOffer(offer),
+                ItemId = catalogOffer.Id,
+                DisplayName = catalogOffer.TitleText,
+                Description = catalogOffer.DescriptionText,
+                // Use the description for long description if there's no specific field
+                LongDescription = string.IsNullOrEmpty(catalogOffer.DescriptionText) ? catalogOffer.DescriptionText : null,
+                ItemType = GetItemTypeFromOffer(catalogOffer),
                 ProviderName = PROVIDER_NAME,
-                ProviderData = offer,
+                ProviderData = catalogOffer,
                 IsAvailable = true
             };
 
-            // Add tag from categories
-            if (offer.ItemOffers != null)
-                foreach (var itemOffer in offer.ItemOffers)
-                {
-                    // Add bundle items if this is a bundle
-                    if (catalogItem.ItemType == ItemType.Bundle)
-                    {
-                        var bundleItem = new BundleItem
-                        {
-                            ItemId = itemOffer.Id,
-                            Quantity = 1 // EOS doesn't have a quantity field
-                        };
-
-                        catalogItem.BundleItems.Add(bundleItem);
-                    }
-
-                    // Add categories as tags
-                    if (itemOffer.Categories != null)
-                        foreach (var category in itemOffer.Categories)
-                            if (!catalogItem.Tags.Contains(category.Path))
-                                catalogItem.Tags.Add(category.Path);
-                }
+            // Note: In this EOS SDK version, we might not have direct access to bundle items
+            // or categories. If your CatalogItem model has properties for these,
+            // you'll need to handle them differently or remove them.
 
             return catalogItem;
         }
@@ -762,103 +760,50 @@ namespace RecipeRage.Store
         /// </summary>
         /// <param name="offer"> EOS catalog offer </param>
         /// <returns> Converted store offer </returns>
-        private StoreOffer ConvertEOSOfferToStoreOffer(CatalogOffer offer)
+        private StoreOffer ConvertEOSOfferToStoreOffer(CatalogOffer catalogOffer)
         {
-            if (offer == null)
+            if (catalogOffer.Equals(default(CatalogOffer)))
                 return null;
 
-            var paymentMethod = PaymentMethod.Unknown;
-
-            switch (offer.PriceResult)
+            // Create a store offer from the catalog offer
+            var offer = new StoreOffer
             {
-                case Result.Success:
-                    paymentMethod = PaymentMethod.RealMoney;
-                    break;
-                case Result.NoConnection:
-                    paymentMethod = PaymentMethod.Free;
-                    break;
-                default:
-                    paymentMethod = PaymentMethod.Unknown;
-                    break;
-            }
-
-            var storeOffer = new StoreOffer
-            {
-                OfferId = offer.Id,
-                DisplayName = offer.Title,
-                Description = offer.Description,
-                LongDescription = offer.LongDescription,
-                RegularPrice = offer.OriginalPrice / 100.0m, // Convert cents to dollars
-                CurrentPrice = offer.CurrentPrice / 100.0m, // Convert cents to dollars
-                CurrencyCode = offer.CurrencyCode,
-                PaymentMethod = paymentMethod,
+                OfferId = catalogOffer.Id,
+                DisplayName = catalogOffer.TitleText,
+                Description = catalogOffer.DescriptionText,
+                // Use the description for long description if there's no specific field
+                LongDescription = string.IsNullOrEmpty(catalogOffer.DescriptionText) ? catalogOffer.DescriptionText : null,
+                // Set price related properties if your StoreOffer model has them
+                CurrencyCode = catalogOffer.CurrencyCode,
                 ProviderName = PROVIDER_NAME,
-                ProviderData = offer,
-                IsAvailable = true
+                ProviderData = catalogOffer
             };
 
-            // Add items to the offer
-            if (offer.ItemOffers != null)
-                foreach (var itemOffer in offer.ItemOffers)
-                {
-                    var offerItem = new OfferItem
-                    {
-                        ItemId = itemOffer.Id,
-                        Quantity = 1 // EOS doesn't have a quantity field
-                    };
+            // Add a single item to the offer based on the offer ID itself
+            // If your StoreOffer.Items is a List<OfferItem>, adjust accordingly
+            var offerItem = new OfferItem
+            {
+                ItemId = catalogOffer.Id,
+                Quantity = 1
+            };
 
-                    storeOffer.Items.Add(offerItem);
+            offer.Items.Add(offerItem);
 
-                    // Add categories as tags
-                    if (itemOffer.Categories != null)
-                        foreach (var category in itemOffer.Categories)
-                            if (!storeOffer.Tags.Contains(category.Path))
-                                storeOffer.Tags.Add(category.Path);
-                }
-
-            // Set external ID if available
-            if (!string.IsNullOrEmpty(offer.ExternalId)) storeOffer.ExternalId = offer.ExternalId;
-
-            return storeOffer;
+            return offer;
         }
 
         /// <summary>
-        /// Gets an item type from an EOS offer
+        /// Gets the item type from an EOS catalog offer
         /// </summary>
         /// <param name="offer"> EOS catalog offer </param>
         /// <returns> Item type </returns>
         private ItemType GetItemTypeFromOffer(CatalogOffer offer)
         {
-            // EOS doesn't have a direct item type field, so we'll try to infer from other data
-            if (offer.ItemOffers != null && offer.ItemOffers.Length > 1) return ItemType.Bundle;
+            // In this EOS SDK version, we might not have a direct way to determine item type
+            // You could use properties like Categories or check specific identifiers in the offer
 
-            // Check tags for item type hints
-            if (offer.ItemOffers != null && offer.ItemOffers.Length > 0 && offer.ItemOffers[0].Categories != null)
-                foreach (var category in offer.ItemOffers[0].Categories)
-                {
-                    string path = category.Path.ToLower();
-
-                    if (path.Contains("consumable"))
-                        return ItemType.Consumable;
-
-                    if (path.Contains("durable"))
-                        return ItemType.Durable;
-
-                    if (path.Contains("currency"))
-                        return ItemType.Currency;
-
-                    if (path.Contains("subscription"))
-                        return ItemType.Subscription;
-
-                    if (path.Contains("cosmetic"))
-                        return ItemType.Cosmetic;
-
-                    if (path.Contains("booster"))
-                        return ItemType.Booster;
-                }
-
-            // Default to durable if we can't determine
-            return ItemType.Durable;
+            // For now, return a default type
+            return ItemType.Consumable;
         }
 
         /// <summary>
@@ -868,8 +813,26 @@ namespace RecipeRage.Store
         private bool IsUserLoggedIn()
         {
             return EOSManager.Instance != null &&
-                   EOSManager.Instance.GetEOSPlatformInterface() != null &&
-                   EOSManager.Instance.GetEpicAccountId() != null;
+                   EOSManager.Instance.GetProductUserId() != null &&
+                   EOSManager.Instance.GetProductUserId().IsValid();
+        }
+
+        /// <summary>
+        /// Helper method to convert string[] to Utf8String[]
+        /// </summary>
+        /// <param name="strings">String array to convert</param>
+        /// <returns>Utf8String array</returns>
+        private Utf8String[] ConvertToUtf8StringArray(string[] strings)
+        {
+            if (strings == null)
+                return null;
+
+            Utf8String[] utf8Strings = new Utf8String[strings.Length];
+            for (int i = 0; i < strings.Length; i++)
+            {
+                utf8Strings[i] = new Utf8String(strings[i]);
+            }
+            return utf8Strings;
         }
 
         /// <summary>

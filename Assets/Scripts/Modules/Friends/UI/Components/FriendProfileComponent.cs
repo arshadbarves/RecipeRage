@@ -1,7 +1,8 @@
+using RecipeRage.Modules.Friends.Data;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
-using RecipeRage.Modules.Friends.Data;
 using RecipeRage.Modules.Logging;
 
 namespace RecipeRage.Modules.Friends.UI.Components
@@ -16,7 +17,7 @@ namespace RecipeRage.Modules.Friends.UI.Components
         private string _currentFriendId;
         private FriendData _currentFriend;
         private PresenceData _currentPresence;
-        
+
         private Label _nameLabel;
         private Label _friendCodeLabel;
         private Label _statusLabel;
@@ -30,22 +31,22 @@ namespace RecipeRage.Modules.Friends.UI.Components
         private VisualElement _statusIndicator;
         private VisualElement _contentContainer;
         private VisualElement _loadingContainer;
-        
+
         public event Action<string> OnRemoveFriendClicked;
         public event Action<string> OnSendMessageClicked;
         public event Action<string, string> OnJoinActivityClicked;
         public event Action OnCloseClicked;
-        
+
         /// <summary>
         /// Initialize the component
         /// </summary>
         public override void Initialize()
         {
             base.Initialize();
-            
+
             if (!_isInitialized)
                 return;
-                
+
             // Find UI elements
             _nameLabel = FindElement<Label>("friend-name");
             _friendCodeLabel = FindElement<Label>("friend-code");
@@ -60,56 +61,56 @@ namespace RecipeRage.Modules.Friends.UI.Components
             _statusIndicator = FindElement<VisualElement>("status-indicator");
             _contentContainer = FindElement<VisualElement>("content-container");
             _loadingContainer = FindElement<VisualElement>("loading-container");
-            
+
             if (_contentContainer == null || _closeButton == null)
             {
                 LogHelper.Error("FriendsUI", "Required UI elements not found for FriendProfileComponent");
                 return;
             }
-            
+
             // Initially show loading
             if (_loadingContainer != null)
             {
                 _loadingContainer.style.display = DisplayStyle.Flex;
             }
-            
+
             if (_contentContainer != null)
             {
                 _contentContainer.style.display = DisplayStyle.None;
             }
-            
+
             // Register for presence changes
             FriendsHelper.RegisterEvents(
                 onFriendRemoved: OnFriendRemoved,
                 onFriendPresenceChanged: OnFriendPresenceChanged
             );
         }
-        
+
         /// <summary>
         /// Register UI callbacks
         /// </summary>
         protected override void RegisterCallbacks()
         {
             base.RegisterCallbacks();
-            
+
             if (_saveNotesButton != null)
             {
                 _saveNotesButton.clicked += OnSaveNotesClicked;
             }
-            
+
             if (_removeFriendButton != null)
             {
                 _removeFriendButton.clicked += () => OnRemoveFriendClicked?.Invoke(_currentFriendId);
             }
-            
+
             if (_sendMessageButton != null)
             {
                 _sendMessageButton.clicked += () => OnSendMessageClicked?.Invoke(_currentFriendId);
             }
-            
+
             if (_joinActivityButton != null)
             {
-                _joinActivityButton.clicked += () => 
+                _joinActivityButton.clicked += () =>
                 {
                     if (_currentPresence != null && _currentPresence.IsJoinable)
                     {
@@ -117,13 +118,13 @@ namespace RecipeRage.Modules.Friends.UI.Components
                     }
                 };
             }
-            
+
             if (_closeButton != null)
             {
                 _closeButton.clicked += () => OnCloseClicked?.Invoke();
             }
         }
-        
+
         /// <summary>
         /// Load a friend's profile
         /// </summary>
@@ -134,23 +135,23 @@ namespace RecipeRage.Modules.Friends.UI.Components
                 LogHelper.Error("FriendsUI", "Cannot load friend profile: friend ID is empty");
                 return;
             }
-            
+
             _currentFriendId = friendId;
-            
+
             // Show loading state
             if (_loadingContainer != null)
             {
                 _loadingContainer.style.display = DisplayStyle.Flex;
             }
-            
+
             if (_contentContainer != null)
             {
                 _contentContainer.style.display = DisplayStyle.None;
             }
-            
+
             // Get friend data
             List<FriendData> friends = FriendsHelper.GetFriends();
-            
+
             foreach (var friend in friends)
             {
                 if (friend.UserId == friendId)
@@ -159,31 +160,31 @@ namespace RecipeRage.Modules.Friends.UI.Components
                     break;
                 }
             }
-            
+
             if (_currentFriend == null)
             {
                 LogHelper.Error("FriendsUI", $"Friend not found with ID: {friendId}");
                 return;
             }
-            
+
             // Get presence data
             _currentPresence = FriendsHelper.GetFriendPresence(friendId);
-            
+
             // Update UI
             UpdateUI();
-            
+
             // Show content
             if (_loadingContainer != null)
             {
                 _loadingContainer.style.display = DisplayStyle.None;
             }
-            
+
             if (_contentContainer != null)
             {
                 _contentContainer.style.display = DisplayStyle.Flex;
             }
         }
-        
+
         /// <summary>
         /// Update the UI with current friend data
         /// </summary>
@@ -191,29 +192,29 @@ namespace RecipeRage.Modules.Friends.UI.Components
         {
             if (_currentFriend == null)
                 return;
-                
+
             // Set name
             if (_nameLabel != null)
             {
                 _nameLabel.text = _currentFriend.DisplayName;
             }
-            
+
             // Set friend code
             if (_friendCodeLabel != null)
             {
                 _friendCodeLabel.text = _currentFriend.FriendCode;
             }
-            
+
             // Set notes
             if (_notesInput != null)
             {
                 _notesInput.value = _currentFriend.Notes ?? "";
             }
-            
+
             // Update presence information
             UpdatePresenceUI();
         }
-        
+
         /// <summary>
         /// Update the presence UI elements
         /// </summary>
@@ -225,31 +226,31 @@ namespace RecipeRage.Modules.Friends.UI.Components
                 {
                     _statusLabel.text = "Offline";
                 }
-                
+
                 if (_statusIndicator != null)
                 {
                     _statusIndicator.style.backgroundColor = new Color(0.6f, 0.6f, 0.6f); // Gray
                 }
-                
+
                 if (_activityLabel != null)
                 {
                     _activityLabel.style.display = DisplayStyle.None;
                 }
-                
+
                 if (_joinActivityButton != null)
                 {
                     _joinActivityButton.style.display = DisplayStyle.None;
                 }
-                
+
                 return;
             }
-            
+
             // Set status
             if (_statusLabel != null)
             {
                 _statusLabel.text = _currentPresence.Status.ToString();
             }
-            
+
             // Set status color
             if (_statusIndicator != null)
             {
@@ -275,7 +276,7 @@ namespace RecipeRage.Modules.Friends.UI.Components
                             statusColor = new Color(0.6f, 0.6f, 0.6f); // Gray
                             break;
                     }
-                    
+
                     _statusIndicator.style.backgroundColor = statusColor;
                 }
                 else
@@ -284,7 +285,7 @@ namespace RecipeRage.Modules.Friends.UI.Components
                     _statusIndicator.style.backgroundColor = new Color(0.6f, 0.6f, 0.6f); // Gray
                 }
             }
-            
+
             // Set activity
             if (_activityLabel != null)
             {
@@ -298,7 +299,7 @@ namespace RecipeRage.Modules.Friends.UI.Components
                     _activityLabel.style.display = DisplayStyle.None;
                 }
             }
-            
+
             // Set join button
             if (_joinActivityButton != null)
             {
@@ -312,7 +313,7 @@ namespace RecipeRage.Modules.Friends.UI.Components
                 }
             }
         }
-        
+
         /// <summary>
         /// Handle save notes button click
         /// </summary>
@@ -320,17 +321,17 @@ namespace RecipeRage.Modules.Friends.UI.Components
         {
             if (_currentFriend == null || _notesInput == null)
                 return;
-                
+
             // Update notes
             _currentFriend.Notes = _notesInput.value;
-            
+
             // TODO: Save notes persistently
-            
+
             LogHelper.Info("FriendsUI", $"Saved notes for {_currentFriend.DisplayName}");
         }
-        
+
         #region Event Handlers
-        
+
         /// <summary>
         /// Called when a friend is removed
         /// </summary>
@@ -342,7 +343,7 @@ namespace RecipeRage.Modules.Friends.UI.Components
                 OnCloseClicked?.Invoke();
             }
         }
-        
+
         /// <summary>
         /// Called when a friend's presence changes
         /// </summary>
@@ -354,16 +355,16 @@ namespace RecipeRage.Modules.Friends.UI.Components
                 UpdatePresenceUI();
             }
         }
-        
+
         #endregion
-        
+
         /// <summary>
         /// Called when the component is disabled
         /// </summary>
         protected override void OnDisable()
         {
             base.OnDisable();
-            
+
             // Unregister from events
             FriendsHelper.UnregisterEvents(
                 onFriendRemoved: OnFriendRemoved,
@@ -371,4 +372,4 @@ namespace RecipeRage.Modules.Friends.UI.Components
             );
         }
     }
-} 
+}

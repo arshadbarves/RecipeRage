@@ -69,30 +69,60 @@ namespace RecipeRage.Store
         /// Queries the catalog of available items
         /// </summary>
         /// <param name="callback"> Callback with list of catalog items </param>
-        public static void QueryCatalog(Action<List<CatalogItem>, bool> callback)
+        public static void QueryCatalog(Action<List<CatalogItem>> callback)
         {
             EnsureInitialized();
-            _storeService.QueryCatalog(callback);
+            _storeService.QueryCatalog((items, success) =>
+            {
+                if (success)
+                {
+                    callback?.Invoke(items);
+                }
+                else
+                {
+                    callback?.Invoke(new List<CatalogItem>());
+                }
+            });
         }
 
         /// <summary>
         /// Queries the player's owned items
         /// </summary>
         /// <param name="callback"> Callback with list of inventory items </param>
-        public static void QueryInventory(Action<List<InventoryItem>, bool> callback)
+        public static void QueryInventory(Action<List<InventoryItem>> callback)
         {
             EnsureInitialized();
-            _storeService.QueryInventory(callback);
+            _storeService.QueryInventory((items, success) =>
+            {
+                if (success)
+                {
+                    callback?.Invoke(items);
+                }
+                else
+                {
+                    callback?.Invoke(new List<InventoryItem>());
+                }
+            });
         }
 
         /// <summary>
         /// Queries the available offers for purchasing items
         /// </summary>
         /// <param name="callback"> Callback with list of offers </param>
-        public static void QueryOffers(Action<List<StoreOffer>, bool> callback)
+        public static void QueryOffers(Action<List<StoreOffer>> callback)
         {
             EnsureInitialized();
-            _storeService.QueryOffers(callback);
+            _storeService.QueryOffers((offers, success) =>
+            {
+                if (success)
+                {
+                    callback?.Invoke(offers);
+                }
+                else
+                {
+                    callback?.Invoke(new List<StoreOffer>());
+                }
+            });
         }
 
         /// <summary>
@@ -123,20 +153,23 @@ namespace RecipeRage.Store
         /// </summary>
         /// <param name="itemId"> ID of the item to query </param>
         /// <param name="callback"> Callback with catalog item details </param>
-        public static void GetCatalogItemDetails(string itemId, Action<CatalogItem, bool> callback)
+        public static void GetCatalogItemDetails(string itemId, Action<CatalogItem> callback)
         {
             EnsureInitialized();
-            _storeService.GetCatalogItemDetails(itemId, callback);
+            _storeService.GetCatalogItemDetails(itemId, (item) =>
+            {
+                callback?.Invoke(item);
+            });
         }
 
         /// <summary>
         /// Gets the available currencies and their balances
         /// </summary>
         /// <param name="callback"> Callback with list of currencies </param>
-        public static void GetCurrencies(Action<List<Currency>, bool> callback)
+        public static void GetCurrencies(Action<List<Currency>> callback)
         {
             EnsureInitialized();
-            _storeService.GetCurrencies(callback);
+            _storeService.GetCurrencies(false, callback);
         }
 
         /// <summary>
@@ -164,28 +197,17 @@ namespace RecipeRage.Store
         /// Restores previous purchases (useful for mobile platforms)
         /// </summary>
         /// <param name="callback"> Callback indicating success or failure, with restored items </param>
-        public static void RestorePurchases(Action<bool, List<InventoryItem>> callback)
+        public static void RestorePurchases(Action<bool> callback)
         {
             EnsureInitialized();
             _storeService.RestorePurchases(callback);
         }
 
         /// <summary>
-        /// Validates a purchase receipt
-        /// </summary>
-        /// <param name="receipt"> Receipt to validate </param>
-        /// <param name="callback"> Callback indicating if the receipt is valid </param>
-        public static void ValidateReceipt(string receipt, Action<bool> callback)
-        {
-            EnsureInitialized();
-            _storeService.ValidateReceipt(receipt, callback);
-        }
-
-        /// <summary>
         /// Registers a callback for when the catalog is queried
         /// </summary>
         /// <param name="callback"> Callback to register </param>
-        public static void RegisterCatalogQueryCallback(Action<List<CatalogItem>, bool> callback)
+        public static void RegisterCatalogQueryCallback(Action<List<CatalogItem>> callback)
         {
             EnsureInitialized();
             _storeService.OnCatalogQueried += callback;
@@ -195,7 +217,7 @@ namespace RecipeRage.Store
         /// Unregisters a callback for when the catalog is queried
         /// </summary>
         /// <param name="callback"> Callback to unregister </param>
-        public static void UnregisterCatalogQueryCallback(Action<List<CatalogItem>, bool> callback)
+        public static void UnregisterCatalogQueryCallback(Action<List<CatalogItem>> callback)
         {
             if (IsInitialized) _storeService.OnCatalogQueried -= callback;
         }
@@ -204,7 +226,7 @@ namespace RecipeRage.Store
         /// Registers a callback for when the inventory is queried
         /// </summary>
         /// <param name="callback"> Callback to register </param>
-        public static void RegisterInventoryQueryCallback(Action<List<InventoryItem>, bool> callback)
+        public static void RegisterInventoryQueryCallback(Action<List<InventoryItem>> callback)
         {
             EnsureInitialized();
             _storeService.OnInventoryQueried += callback;
@@ -214,7 +236,7 @@ namespace RecipeRage.Store
         /// Unregisters a callback for when the inventory is queried
         /// </summary>
         /// <param name="callback"> Callback to unregister </param>
-        public static void UnregisterInventoryQueryCallback(Action<List<InventoryItem>, bool> callback)
+        public static void UnregisterInventoryQueryCallback(Action<List<InventoryItem>> callback)
         {
             if (IsInitialized) _storeService.OnInventoryQueried -= callback;
         }
@@ -223,7 +245,7 @@ namespace RecipeRage.Store
         /// Registers a callback for when offers are queried
         /// </summary>
         /// <param name="callback"> Callback to register </param>
-        public static void RegisterOffersQueryCallback(Action<List<StoreOffer>, bool> callback)
+        public static void RegisterOffersQueryCallback(Action<List<StoreOffer>> callback)
         {
             EnsureInitialized();
             _storeService.OnOffersQueried += callback;
@@ -233,7 +255,7 @@ namespace RecipeRage.Store
         /// Unregisters a callback for when offers are queried
         /// </summary>
         /// <param name="callback"> Callback to unregister </param>
-        public static void UnregisterOffersQueryCallback(Action<List<StoreOffer>, bool> callback)
+        public static void UnregisterOffersQueryCallback(Action<List<StoreOffer>> callback)
         {
             if (IsInitialized) _storeService.OnOffersQueried -= callback;
         }
@@ -261,19 +283,19 @@ namespace RecipeRage.Store
         /// Registers a callback for when a purchase fails
         /// </summary>
         /// <param name="callback"> Callback to register </param>
-        public static void RegisterPurchaseFailureCallback(Action<PurchaseResult> callback)
+        public static void RegisterPurchaseFailedCallback(Action<string, string> callback)
         {
             EnsureInitialized();
-            _storeService.OnPurchaseFailure += callback;
+            _storeService.OnPurchaseFailed += callback;
         }
 
         /// <summary>
         /// Unregisters a callback for when a purchase fails
         /// </summary>
         /// <param name="callback"> Callback to unregister </param>
-        public static void UnregisterPurchaseFailureCallback(Action<PurchaseResult> callback)
+        public static void UnregisterPurchaseFailedCallback(Action<string, string> callback)
         {
-            if (IsInitialized) _storeService.OnPurchaseFailure -= callback;
+            if (IsInitialized) _storeService.OnPurchaseFailed -= callback;
         }
 
         /// <summary>
@@ -315,20 +337,20 @@ namespace RecipeRage.Store
         }
 
         /// <summary>
-        /// Registers a callback for when currency balance changes
+        /// Registers a callback for when currency balances change
         /// </summary>
         /// <param name="callback"> Callback to register </param>
-        public static void RegisterCurrencyBalanceChangedCallback(Action<string, decimal> callback)
+        public static void RegisterCurrencyBalanceChangedCallback(Action<List<Currency>> callback)
         {
             EnsureInitialized();
             _storeService.OnCurrencyBalanceChanged += callback;
         }
 
         /// <summary>
-        /// Unregisters a callback for when currency balance changes
+        /// Unregisters a callback for when currency balances change
         /// </summary>
         /// <param name="callback"> Callback to unregister </param>
-        public static void UnregisterCurrencyBalanceChangedCallback(Action<string, decimal> callback)
+        public static void UnregisterCurrencyBalanceChangedCallback(Action<List<Currency>> callback)
         {
             if (IsInitialized) _storeService.OnCurrencyBalanceChanged -= callback;
         }

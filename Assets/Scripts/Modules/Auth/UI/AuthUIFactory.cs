@@ -1,9 +1,9 @@
 using System;
 using RecipeRage.Core.Patterns;
 using RecipeRage.Modules.Auth.Interfaces;
+using RecipeRage.Modules.Logging;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Logger = RecipeRage.Core.Services.Logger;
 
 namespace RecipeRage.Modules.Auth.UI
 {
@@ -44,7 +44,7 @@ namespace RecipeRage.Modules.Auth.UI
                 _cachedLoginUIAsset = Resources.Load<VisualTreeAsset>("UI/Auth/AuthLoginUI");
 
                 if (_cachedLoginUIAsset == null)
-                    Logger.Error("AuthUIFactory",
+                    LogHelper.Error("AuthUIFactory",
                         "Could not load AuthLoginUI asset from Resources. Make sure it's in a Resources folder.");
             }
 
@@ -148,7 +148,7 @@ namespace RecipeRage.Modules.Auth.UI
             // Get auth service from service locator
             if (!ServiceLocator.Instance.TryGet<IAuthService>(out var authService))
             {
-                Logger.Error("AuthLoginController", "Failed to get auth service from service locator");
+                LogHelper.Error("AuthLoginController", "Failed to get auth service from service locator");
                 return;
             }
 
@@ -166,7 +166,7 @@ namespace RecipeRage.Modules.Auth.UI
         {
             if (_document == null || _document.rootVisualElement == null)
             {
-                Logger.Error("AuthLoginController", "UI Document or root visual element is null");
+                LogHelper.Error("AuthLoginController", "UI Document or root visual element is null");
                 return;
             }
 
@@ -175,7 +175,7 @@ namespace RecipeRage.Modules.Auth.UI
 
             if (_root == null)
             {
-                Logger.Error("AuthLoginController", "Root element 'Root' not found in UI Document");
+                LogHelper.Error("AuthLoginController", "Root element 'Root' not found in UI Document");
                 return;
             }
 
@@ -248,7 +248,7 @@ namespace RecipeRage.Modules.Auth.UI
             // Check if user is already logged in
             if (_authService.CurrentUser != null)
             {
-                Logger.Info("AuthLoginController", $"User {_authService.CurrentUser.DisplayName} is already logged in");
+                LogHelper.Info("AuthLoginController", $"User {_authService.CurrentUser.DisplayName} is already logged in");
                 _onAuthComplete?.Invoke(true);
                 return;
             }
@@ -330,11 +330,11 @@ namespace RecipeRage.Modules.Auth.UI
         {
             if (_authService == null)
             {
-                Logger.Error("AuthLoginController", "Cannot handle button click, auth service is null");
+                LogHelper.Error("AuthLoginController", "Cannot handle button click, auth service is null");
                 return;
             }
 
-            Logger.Info("AuthLoginController", $"Login button clicked for provider '{providerName}'");
+            LogHelper.Info("AuthLoginController", $"Login button clicked for provider '{providerName}'");
 
             // Show loading panel
             ShowLoadingPanel(true, $"Signing in with {providerName}...");
@@ -344,7 +344,7 @@ namespace RecipeRage.Modules.Auth.UI
                 providerName,
                 user =>
                 {
-                    Logger.Info("AuthLoginController", $"Authentication successful for user {user.DisplayName}");
+                    LogHelper.Info("AuthLoginController", $"Authentication successful for user {user.DisplayName}");
 
                     // Hide UI
                     HideLoginUI();
@@ -357,7 +357,7 @@ namespace RecipeRage.Modules.Auth.UI
                 },
                 error =>
                 {
-                    Logger.Error("AuthLoginController", $"Authentication failed - {error}");
+                    LogHelper.Error("AuthLoginController", $"Authentication failed - {error}");
 
                     ShowErrorPanel(true, error);
 

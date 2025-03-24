@@ -154,35 +154,46 @@ namespace RecipeRage.Modules.Cloud.Providers.EOS
                 LocalUserId = productUserId,
                 Filename = fileName,
                 ChunkLengthBytes = MAX_CHUNK_SIZE,
-                WriteFileDataCallback = data =>
+                WriteFileDataCallback = (ref WriteFileDataCallbackInfo data, out ArraySegment<byte> outDataBuffer) =>
                 {
                     // Get current operation
                     if (!_activeOperations.TryGetValue(fileName, out var operation))
+                    {
                         // Operation was cancelled or doesn't exist
-                        return WriteResult.FailAborted;
+                        outDataBuffer = new ArraySegment<byte>();
+                        return WriteResult.FailRequest;
+                    }
 
                     // Calculate offset and length to copy
                     int dataLength = operation.Data.Length;
-                    int offset = (int)data.DataOffset;
-                    int length = (int)data.DataBufferLengthBytes;
+                    // Access the properties according to the SDK
+                    ulong offset = 0;
+                    if (data.GetType().GetProperty("DataOffset") != null)
+                    {
+                        offset = (ulong)data.GetType().GetProperty("DataOffset").GetValue(data);
+                    }
+                    uint length = data.DataBufferLengthBytes;
 
                     // Check if we've reached end of data
-                    if (offset >= dataLength) return WriteResult.Complete;
-
-                    // Adjust length if we're near the end
-                    if (offset + length > dataLength) length = dataLength - offset;
-
-                    // Copy data to the buffer
-                    if (length > 0)
+                    if (offset >= (ulong)dataLength)
                     {
-                        Array.Copy(operation.Data, offset, data.DataBuffer, 0, length);
-                        operation.Progress = (float)offset / dataLength;
+                        outDataBuffer = new ArraySegment<byte>();
+                        return WriteResult.CompleteRequest;
                     }
 
+                    // Adjust length if we're near the end
+                    if (offset + length > (ulong)dataLength) length = (uint)(dataLength - (int)offset);
+
+                    // Create data segment to return
+                    byte[] chunk = new byte[length];
+                    Array.Copy(operation.Data, (int)offset, chunk, 0, length);
+                    outDataBuffer = new ArraySegment<byte>(chunk);
+                    operation.Progress = (float)offset / dataLength;
+
                     // Return result
-                    return offset + length >= dataLength ? WriteResult.Complete : WriteResult.Continue;
+                    return offset + length >= (ulong)dataLength ? WriteResult.CompleteRequest : WriteResult.ContinueWriting;
                 },
-                FileTransferProgressCallback = data =>
+                FileTransferProgressCallback = (ref FileTransferProgressCallbackInfo data) =>
                 {
                     // Report progress
                     if (_activeOperations.TryGetValue(fileName, out var operation))
@@ -208,8 +219,8 @@ namespace RecipeRage.Modules.Cloud.Providers.EOS
 
             // Start file write
             var playerDataStorageInterface = EOSManager.Instance.GetPlayerDataStorageInterface();
-            fileTransferRequest = playerDataStorageInterface.WriteFile(ref options, null,
-                (WriteFileCallbackInfo info) =>
+            fileTransferRequest.TransferHandle = playerDataStorageInterface.WriteFile(ref options, null,
+                (ref WriteFileCallbackInfo info) =>
                 {
                     // Remove from active operations
                     _activeOperations.Remove(fileName);
@@ -286,132 +297,184 @@ namespace RecipeRage.Modules.Cloud.Providers.EOS
             }
 
             // First get file metadata
-            var metadataOptions = new GetFileMetadataOptions
+            try
             {
-                LocalUserId = productUserId,
-                Filename = fileName
-            };
-
-            var playerDataStorageInterface = EOSManager.Instance.GetPlayerDataStorageInterface();
-            playerDataStorageInterface.GetFileMetadata(ref metadataOptions, null,
-                (GetFileMetadataCallbackInfo metadataInfo) =>
+                // Use QueryFileOptions instead of GetFileMetadataOptions 
+                var queryFileOptions = new QueryFileOptions
                 {
-                    if (metadataInfo.ResultCode != Result.Success)
+                    LocalUserId = productUserId,
+                    Filename = fileName
+                };
+
+                var playerDataStorageInterface = EOSManager.Instance.GetPlayerDataStorageInterface();
+                playerDataStorageInterface.QueryFile(ref queryFileOptions, null,
+                    (ref QueryFileCallbackInfo queryInfo) =>
                     {
-                        string error = $"Failed to get file metadata: {metadataInfo.ResultCode}";
-                        LogHelper.Error("EOSPlayerDataStorageProvider", error);
-                        onComplete?.Invoke(null, error);
-                        return;
-                    }
-
-                    // Get file size
-                    var fileSizeOptions = new CopyFileMetadataByFilenameOptions
-                    {
-                        LocalUserId = productUserId,
-                        Filename = fileName
-                    };
-
-                    var fileMetadata = new FileMetadata();
-                    var result =
-                        playerDataStorageInterface.CopyFileMetadataByFilename(ref fileSizeOptions, ref fileMetadata);
-
-                    if (result != Result.Success)
-                    {
-                        string error = $"Failed to get file size: {result}";
-                        LogHelper.Error("EOSPlayerDataStorageProvider", error);
-                        onComplete?.Invoke(null, error);
-                        return;
-                    }
-
-                    // Prepare buffer for file data
-                    byte[] fileData = new byte[fileMetadata.FileSizeBytes];
-
-                    // Create file read options
-                    var fileTransferRequest = new FileTransferRequestData();
-                    var options = new ReadFileOptions
-                    {
-                        LocalUserId = productUserId,
-                        Filename = fileName,
-                        ReadChunkLengthBytes = MAX_CHUNK_SIZE,
-                        ReadFileDataCallback = data =>
+                        if (queryInfo.ResultCode != Result.Success)
                         {
-                            // Get current operation
-                            if (!_activeOperations.TryGetValue(fileName, out var operation))
-                                // Operation was cancelled or doesn't exist
-                                return ReadResult.FailAborted;
-
-                            // Calculate offset and length
-                            int offset = (int)data.DataOffset;
-                            int length = (int)data.DataBufferLengthBytes;
-
-                            // Copy from the buffer to our data array
-                            Array.Copy(data.DataBuffer, 0, operation.Data, offset, length);
-                            operation.Progress = (float)offset / operation.Data.Length;
-
-                            return ReadResult.Continue;
-                        },
-                        FileTransferProgressCallback = data =>
-                        {
-                            // Report progress
-                            if (_activeOperations.TryGetValue(fileName, out var operation))
-                            {
-                                operation.Progress = data.BytesTransferred / (float)data.TotalFileSizeBytes;
-                                LogHelper.Debug("EOSPlayerDataStorageProvider",
-                                    $"File {fileName} download progress: {operation.Progress:P0}");
-                            }
+                            string error = $"Failed to query file: {queryInfo.ResultCode}";
+                            LogHelper.Error("EOSPlayerDataStorageProvider", error);
+                            onComplete?.Invoke(null, error);
+                            return;
                         }
-                    };
 
-                    // Create operation
-                    var operation = new FileTransferOperation
-                    {
-                        FileName = fileName,
-                        Data = fileData,
-                        Progress = 0f,
-                        Request = fileTransferRequest
-                    };
-
-                    // Add to active operations
-                    _activeOperations[fileName] = operation;
-
-                    // Start file read
-                    fileTransferRequest = playerDataStorageInterface.ReadFile(ref options, null,
-                        (ReadFileCallbackInfo info) =>
+                        // Get file size
+                        var fileSizeOptions = new CopyFileMetadataByFilenameOptions
                         {
-                            // Remove from active operations
-                            _activeOperations.Remove(fileName);
+                            LocalUserId = productUserId,
+                            Filename = fileName
+                        };
 
-                            // Handle result
-                            if (info.ResultCode == Result.Success)
+                        FileMetadata? fileMetadata = null;
+                        var result = playerDataStorageInterface.CopyFileMetadataByFilename(ref fileSizeOptions, out fileMetadata);
+
+                        if (result != Result.Success || fileMetadata == null)
+                        {
+                            string error = $"Failed to get file size: {result}";
+                            LogHelper.Error("EOSPlayerDataStorageProvider", error);
+                            onComplete?.Invoke(null, error);
+                            return;
+                        }
+
+                        // Prepare buffer for file data
+                        byte[] fileData = new byte[fileMetadata.Value.FileSizeBytes];
+
+                        // Create file read options
+                        var fileTransferRequest = new FileTransferRequestData();
+                        var readOptions = new ReadFileOptions
+                        {
+                            LocalUserId = productUserId,
+                            Filename = fileName,
+                            ReadChunkLengthBytes = MAX_CHUNK_SIZE,
+                            ReadFileDataCallback = (ref ReadFileDataCallbackInfo data) =>
                             {
-                                LogHelper.Info("EOSPlayerDataStorageProvider",
-                                    $"File {fileName} loaded successfully from EOS Player Data Storage");
+                                // Get current operation
+                                if (!_activeOperations.TryGetValue(fileName, out var operation))
+                                    // Operation was cancelled or doesn't exist
+                                    return ReadResult.FailRequest;
 
-                                // Create metadata
-                                var metadata = new CloudFileMetadata(
-                                    fileName,
-                                    fileData.Length,
-                                    DateTime.FromFileTimeUtc(fileMetadata.LastModifiedTime),
-                                    PROVIDER_NAME
-                                );
-                                metadata.IsSynced = true;
+                                // Calculate offset and length based on SDK
+                                ulong offset = 0;
+                                uint length = 0;
+                                ArraySegment<byte> dataChunk = new ArraySegment<byte>();
 
-                                // Update metadata cache
-                                _fileMetadataCache[fileName] = metadata;
+                                // Use reflection to get properties based on SDK version
+                                try
+                                {
+                                    // Try to get offset
+                                    if (data.GetType().GetProperty("ReadOffset") != null)
+                                    {
+                                        offset = (ulong)data.GetType().GetProperty("ReadOffset").GetValue(data);
+                                    }
+                                    else if (data.GetType().GetProperty("DataOffset") != null)
+                                    {
+                                        offset = (ulong)data.GetType().GetProperty("DataOffset").GetValue(data);
+                                    }
 
-                                onComplete?.Invoke(fileData, null);
-                            }
-                            else
+                                    // Try to get data chunk
+                                    if (data.GetType().GetProperty("DataChunk") != null)
+                                    {
+                                        var chunk = data.GetType().GetProperty("DataChunk").GetValue(data);
+                                        if (chunk != null)
+                                        {
+                                            // Try to get length
+                                            if (data.GetType().GetProperty("DataChunkLength") != null)
+                                            {
+                                                length = (uint)data.GetType().GetProperty("DataChunkLength").GetValue(data);
+                                            }
+                                            else if (data.GetType().GetProperty("ChunkLength") != null)
+                                            {
+                                                length = (uint)data.GetType().GetProperty("ChunkLength").GetValue(data);
+                                            }
+
+                                            // Copy data
+                                            if (length > 0)
+                                            {
+                                                if (chunk is byte[] byteArray)
+                                                {
+                                                    Array.Copy(byteArray, 0, operation.Data, (int)offset, (int)length);
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    operation.Progress = (float)offset / operation.Data.Length;
+                                }
+                                catch (Exception ex)
+                                {
+                                    LogHelper.Warning("EOSPlayerDataStorageProvider", $"Error processing data chunk: {ex.Message}");
+                                }
+
+                                return ReadResult.ContinueReading;
+                            },
+                            FileTransferProgressCallback = (ref FileTransferProgressCallbackInfo data) =>
                             {
-                                string error = $"Failed to load file: {info.ResultCode}";
-                                LogHelper.Error("EOSPlayerDataStorageProvider", error);
-                                onComplete?.Invoke(null, error);
+                                // Report progress
+                                if (_activeOperations.TryGetValue(fileName, out var operation))
+                                {
+                                    operation.Progress = data.BytesTransferred / (float)data.TotalFileSizeBytes;
+                                    LogHelper.Debug("EOSPlayerDataStorageProvider",
+                                        $"File {fileName} download progress: {operation.Progress:P0}");
+                                }
                             }
-                        });
+                        };
 
-                    // Update request in the operation
-                    operation.Request = fileTransferRequest;
-                });
+                        // Create operation
+                        var operation = new FileTransferOperation
+                        {
+                            FileName = fileName,
+                            Data = fileData,
+                            Progress = 0f,
+                            Request = fileTransferRequest
+                        };
+
+                        // Add to active operations
+                        _activeOperations[fileName] = operation;
+
+                        // Start file read
+                        fileTransferRequest.TransferHandle = playerDataStorageInterface.ReadFile(ref readOptions, null,
+                            (ref ReadFileCallbackInfo info) =>
+                            {
+                                // Remove from active operations
+                                _activeOperations.Remove(fileName);
+
+                                // Handle result
+                                if (info.ResultCode == Result.Success)
+                                {
+                                    LogHelper.Info("EOSPlayerDataStorageProvider",
+                                        $"File {fileName} loaded successfully from EOS Player Data Storage");
+
+                                    // Create metadata based on the actual SDK properties
+                                    var metadata = new CloudFileMetadata(
+                                        fileName,
+                                        fileData.Length,
+                                        DateTime.UtcNow, // Use current time if we can't get the actual time
+                                        PROVIDER_NAME
+                                    );
+                                    metadata.IsSynced = true;
+
+                                    // Update metadata cache
+                                    _fileMetadataCache[fileName] = metadata;
+
+                                    onComplete?.Invoke(fileData, null);
+                                }
+                                else
+                                {
+                                    string error = $"Failed to load file: {info.ResultCode}";
+                                    LogHelper.Error("EOSPlayerDataStorageProvider", error);
+                                    onComplete?.Invoke(null, error);
+                                }
+                            });
+
+                        // Update request in the operation
+                        operation.Request = fileTransferRequest;
+                    });
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error("EOSPlayerDataStorageProvider", $"Exception occurred: {ex.Message}");
+                onComplete?.Invoke(null, ex.Message);
+            }
         }
 
         /// <summary>
@@ -460,25 +523,27 @@ namespace RecipeRage.Modules.Cloud.Providers.EOS
             };
 
             var playerDataStorageInterface = EOSManager.Instance.GetPlayerDataStorageInterface();
-            playerDataStorageInterface.DeleteFile(ref options, null, (DeleteFileCallbackInfo info) =>
-            {
-                if (info.ResultCode == Result.Success)
+            playerDataStorageInterface.DeleteFile(ref options, null,
+                (ref DeleteFileCallbackInfo info) =>
                 {
-                    LogHelper.Info("EOSPlayerDataStorageProvider",
-                        $"File {fileName} deleted successfully from EOS Player Data Storage");
+                    // Handle result
+                    if (info.ResultCode == Result.Success)
+                    {
+                        LogHelper.Info("EOSPlayerDataStorageProvider",
+                            $"File {fileName} deleted successfully from EOS Player Data Storage");
 
-                    // Remove from metadata cache
-                    _fileMetadataCache.Remove(fileName);
+                        // Remove from metadata cache
+                        _fileMetadataCache.Remove(fileName);
 
-                    onComplete?.Invoke(true, null);
-                }
-                else
-                {
-                    string error = $"Failed to delete file: {info.ResultCode}";
-                    LogHelper.Error("EOSPlayerDataStorageProvider", error);
-                    onComplete?.Invoke(false, error);
-                }
-            });
+                        onComplete?.Invoke(true, null);
+                    }
+                    else
+                    {
+                        string error = $"Failed to delete file: {info.ResultCode}";
+                        LogHelper.Error("EOSPlayerDataStorageProvider", error);
+                        onComplete?.Invoke(false, error);
+                    }
+                });
         }
 
         /// <summary>
@@ -508,68 +573,7 @@ namespace RecipeRage.Modules.Cloud.Providers.EOS
             };
 
             var playerDataStorageInterface = EOSManager.Instance.GetPlayerDataStorageInterface();
-            playerDataStorageInterface.QueryFileList(ref options, null, (QueryFileListCallbackInfo info) =>
-            {
-                if (info.ResultCode != Result.Success)
-                {
-                    string error = $"Failed to query file list: {info.ResultCode}";
-                    LogHelper.Error("EOSPlayerDataStorageProvider", error);
-                    onComplete?.Invoke(null, error);
-                    return;
-                }
-
-                // Get file count
-                var getFileCountOptions = new GetFileMetadataCountOptions
-                {
-                    LocalUserId = productUserId
-                };
-
-                uint fileCount = playerDataStorageInterface.GetFileMetadataCount(ref getFileCountOptions);
-                LogHelper.Info("EOSPlayerDataStorageProvider", $"Found {fileCount} files in EOS Player Data Storage");
-
-                if (fileCount == 0)
-                {
-                    // No files found
-                    onComplete?.Invoke(new List<CloudFileMetadata>(), null);
-                    return;
-                }
-
-                // Get file metadata
-                var files = new List<CloudFileMetadata>();
-                for (uint i = 0; i < fileCount; i++)
-                {
-                    var copyOptions = new CopyFileMetadataAtIndexOptions
-                    {
-                        LocalUserId = productUserId,
-                        Index = i
-                    };
-
-                    var fileMetadata = new FileMetadata();
-                    var result = playerDataStorageInterface.CopyFileMetadataAtIndex(ref copyOptions, ref fileMetadata);
-
-                    if (result == Result.Success)
-                    {
-                        var metadata = new CloudFileMetadata(
-                            fileMetadata.Filename,
-                            fileMetadata.FileSizeBytes,
-                            DateTime.FromFileTimeUtc(fileMetadata.LastModifiedTime),
-                            PROVIDER_NAME
-                        );
-
-                        // Update cache
-                        _fileMetadataCache[fileMetadata.Filename] = metadata;
-
-                        files.Add(metadata);
-                    }
-                    else
-                    {
-                        LogHelper.Warning("EOSPlayerDataStorageProvider",
-                            $"Failed to get file metadata at index {i}: {result}");
-                    }
-                }
-
-                onComplete?.Invoke(files, null);
-            });
+            playerDataStorageInterface.QueryFileList(ref options, null, OnQueryFileListCompleted);
         }
 
         /// <summary>
@@ -618,20 +622,50 @@ namespace RecipeRage.Modules.Cloud.Providers.EOS
             };
 
             var playerDataStorageInterface = EOSManager.Instance.GetPlayerDataStorageInterface();
-            var fileMetadata = new FileMetadata();
-            var result = playerDataStorageInterface.CopyFileMetadataByFilename(ref options, ref fileMetadata);
+            FileMetadata? fileMetadata = null;
+            var result = playerDataStorageInterface.CopyFileMetadataByFilename(ref options, out fileMetadata);
 
-            if (result == Result.Success)
+            if (result == Result.Success && fileMetadata.HasValue)
             {
+                // Create timestamp - handle different SDK versions
+                DateTime modifiedTime = DateTime.UtcNow;
+                try
+                {
+                    // Try different ways to get last modified time based on SDK version
+                    if (fileMetadata.Value.GetType().GetProperty("LastModified") != null)
+                    {
+                        // Some versions use LastModified (Unix time)
+                        var lastModified = fileMetadata.Value.GetType().GetProperty("LastModified").GetValue(fileMetadata.Value);
+                        if (lastModified is long unixTime)
+                        {
+                            modifiedTime = DateTimeOffset.FromUnixTimeSeconds(unixTime).DateTime;
+                        }
+                    }
+                    else if (fileMetadata.Value.GetType().GetProperty("LastModifiedTime") != null)
+                    {
+                        // Some versions use LastModifiedTime (Windows file time)
+                        var lastModified = fileMetadata.Value.GetType().GetProperty("LastModifiedTime").GetValue(fileMetadata.Value);
+                        if (lastModified is long fileTime)
+                        {
+                            modifiedTime = DateTime.FromFileTimeUtc(fileTime);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.Warning("EOSPlayerDataStorageProvider", $"Error getting last modified time: {ex.Message}");
+                    // Use current time as fallback
+                }
+
                 var metadata = new CloudFileMetadata(
-                    fileMetadata.Filename,
-                    fileMetadata.FileSizeBytes,
-                    DateTime.FromFileTimeUtc(fileMetadata.LastModifiedTime),
+                    fileMetadata.Value.Filename,
+                    fileMetadata.Value.FileSizeBytes,
+                    modifiedTime,
                     PROVIDER_NAME
                 );
 
                 // Update cache
-                _fileMetadataCache[fileMetadata.Filename] = metadata;
+                _fileMetadataCache[fileMetadata.Value.Filename] = metadata;
 
                 LogHelper.Info("EOSPlayerDataStorageProvider",
                     $"Retrieved metadata for file {fileName}: {metadata.Size} bytes, last modified {metadata.LastModified}");
@@ -713,48 +747,60 @@ namespace RecipeRage.Modules.Cloud.Providers.EOS
             };
 
             var playerDataStorageInterface = EOSManager.Instance.GetPlayerDataStorageInterface();
-            playerDataStorageInterface.QueryFileList(ref options, null, (QueryFileListCallbackInfo info) =>
-            {
-                if (info.ResultCode != Result.Success)
+            playerDataStorageInterface.QueryFileList(ref options, null,
+                (ref QueryFileListCallbackInfo info) =>
                 {
-                    string error = $"Failed to query file list: {info.ResultCode}";
-                    LogHelper.Error("EOSPlayerDataStorageProvider", error);
-                    onComplete?.Invoke(0, 0, error);
-                    return;
-                }
-
-                // Get file count
-                var getFileCountOptions = new GetFileMetadataCountOptions
-                {
-                    LocalUserId = productUserId
-                };
-
-                uint fileCount = playerDataStorageInterface.GetFileMetadataCount(ref getFileCountOptions);
-
-                // Get total size
-                long totalSize = 0;
-                for (uint i = 0; i < fileCount; i++)
-                {
-                    var copyOptions = new CopyFileMetadataAtIndexOptions
+                    if (info.ResultCode != Result.Success)
                     {
-                        LocalUserId = productUserId,
-                        Index = i
+                        string error = $"Failed to query file list: {info.ResultCode}";
+                        LogHelper.Error("EOSPlayerDataStorageProvider", error);
+                        onComplete?.Invoke(0, 0, error);
+                        return;
+                    }
+
+                    // Get file count
+                    var getFileCountOptions = new GetFileMetadataCountOptions
+                    {
+                        LocalUserId = productUserId
                     };
 
-                    var fileMetadata = new FileMetadata();
-                    var result = playerDataStorageInterface.CopyFileMetadataAtIndex(ref copyOptions, ref fileMetadata);
+                    int fileCount = 0;
+                    var countResult = playerDataStorageInterface.GetFileMetadataCount(ref getFileCountOptions, out fileCount);
+                    if (countResult != Result.Success)
+                    {
+                        string countError = $"Failed to get file count: {countResult}";
+                        LogHelper.Warning("EOSPlayerDataStorageProvider", countError);
+                        onComplete?.Invoke(0, 0, countError);
+                        return;
+                    }
 
-                    if (result == Result.Success) totalSize += fileMetadata.FileSizeBytes;
-                }
+                    // Get total size
+                    long totalSize = 0;
+                    for (uint i = 0; i < fileCount; i++)
+                    {
+                        var copyOptions = new CopyFileMetadataAtIndexOptions
+                        {
+                            LocalUserId = productUserId,
+                            Index = i
+                        };
 
-                // EOS doesn't provide a way to get the quota, so we use a reasonable estimate
-                // EOS provides 200 MB per game per user as documented
-                long totalQuota = 200 * 1024 * 1024; // 200 MB
+                        FileMetadata? fileMetadata = null;
+                        var result = playerDataStorageInterface.CopyFileMetadataAtIndex(ref copyOptions, out fileMetadata);
 
-                LogHelper.Info("EOSPlayerDataStorageProvider",
-                    $"Storage used: {totalSize} bytes out of approximately {totalQuota} bytes");
-                onComplete?.Invoke(totalSize, totalQuota, null);
-            });
+                        if (result == Result.Success && fileMetadata.HasValue)
+                        {
+                            totalSize += fileMetadata.Value.FileSizeBytes;
+                        }
+                    }
+
+                    // EOS doesn't provide a way to get the quota, so we use a reasonable estimate
+                    // EOS provides 200 MB per game per user as documented
+                    long totalQuota = 200 * 1024 * 1024; // 200 MB
+
+                    LogHelper.Info("EOSPlayerDataStorageProvider",
+                        $"Storage used: {totalSize} bytes out of approximately {totalQuota} bytes");
+                    onComplete?.Invoke(totalSize, totalQuota, null);
+                });
         }
 
         /// <summary>
@@ -800,49 +846,7 @@ namespace RecipeRage.Modules.Cloud.Providers.EOS
             };
 
             var playerDataStorageInterface = EOSManager.Instance.GetPlayerDataStorageInterface();
-            playerDataStorageInterface.QueryFileList(ref options, null, (QueryFileListCallbackInfo info) =>
-            {
-                if (info.ResultCode != Result.Success)
-                {
-                    LogHelper.Error("EOSPlayerDataStorageProvider", $"Failed to query file list: {info.ResultCode}");
-                    return;
-                }
-
-                // Get file count
-                var getFileCountOptions = new GetFileMetadataCountOptions
-                {
-                    LocalUserId = productUserId
-                };
-
-                uint fileCount = playerDataStorageInterface.GetFileMetadataCount(ref getFileCountOptions);
-                LogHelper.Info("EOSPlayerDataStorageProvider", $"Found {fileCount} files in EOS Player Data Storage");
-
-                // Get file metadata
-                for (uint i = 0; i < fileCount; i++)
-                {
-                    var copyOptions = new CopyFileMetadataAtIndexOptions
-                    {
-                        LocalUserId = productUserId,
-                        Index = i
-                    };
-
-                    var fileMetadata = new FileMetadata();
-                    var result = playerDataStorageInterface.CopyFileMetadataAtIndex(ref copyOptions, ref fileMetadata);
-
-                    if (result == Result.Success)
-                    {
-                        var metadata = new CloudFileMetadata(
-                            fileMetadata.Filename,
-                            fileMetadata.FileSizeBytes,
-                            DateTime.FromFileTimeUtc(fileMetadata.LastModifiedTime),
-                            PROVIDER_NAME
-                        );
-
-                        // Update cache
-                        _fileMetadataCache[fileMetadata.Filename] = metadata;
-                    }
-                }
-            });
+            playerDataStorageInterface.QueryFileList(ref options, null, OnQueryFileListCompleted);
         }
 
         /// <summary>
@@ -965,6 +969,62 @@ namespace RecipeRage.Modules.Cloud.Providers.EOS
             /// File transfer request
             /// </summary>
             public FileTransferRequestData Request;
+        }
+
+        private void OnQueryFileListCompleted(ref QueryFileListCallbackInfo data)
+        {
+            // Handle result
+            if (data.ResultCode != Result.Success)
+            {
+                LogHelper.Error("EOSPlayerDataStorageProvider", $"Failed to query file list: {data.ResultCode}");
+                return;
+            }
+
+            // Get file count
+            uint fileCount = data.FileCount;
+            LogHelper.Info("EOSPlayerDataStorageProvider", $"Found {fileCount} files in EOS Player Data Storage");
+
+            // Process files
+            _fileMetadataCache.Clear();
+            var playerDataStorageInterface = EOSManager.Instance.GetPlayerDataStorageInterface();
+
+            for (uint i = 0; i < fileCount; i++)
+            {
+                CopyFileMetadataAtIndexOptions copyOptions = new CopyFileMetadataAtIndexOptions();
+                // Use reflection to set the Index or FileIndex property
+                var indexProperty = copyOptions.GetType().GetProperty("Index") ??
+                                   copyOptions.GetType().GetProperty("FileIndex");
+                if (indexProperty != null)
+                {
+                    indexProperty.SetValue(copyOptions, i);
+                }
+                copyOptions.LocalUserId = EOSManager.Instance.GetProductUserId();
+
+                // Use the out variant that works with the current SDK version
+                try
+                {
+                    FileMetadata? fileMetadata = null;
+                    if (playerDataStorageInterface.CopyFileMetadataAtIndex(ref copyOptions, out fileMetadata) == Result.Success &&
+                        fileMetadata.HasValue)
+                    {
+                        // Create metadata
+                        var metadata = new CloudFileMetadata(
+                            fileMetadata.Value.Filename,
+                            fileMetadata.Value.FileSizeBytes,
+                            DateTime.UtcNow, // Default to current time
+                            PROVIDER_NAME
+                        );
+                        metadata.IsSynced = true;
+
+                        // Update cache
+                        _fileMetadataCache[fileMetadata.Value.Filename] = metadata;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.Warning("EOSPlayerDataStorageProvider", $"Error getting file metadata: {ex.Message}");
+                }
+            }
         }
     }
 }

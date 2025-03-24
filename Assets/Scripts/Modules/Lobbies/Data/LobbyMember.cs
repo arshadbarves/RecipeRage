@@ -42,6 +42,11 @@ namespace RecipeRage.Modules.Lobbies.Data
         public string PlayerId { get; set; }
 
         /// <summary>
+        /// Alias for PlayerId, to maintain compatibility with some APIs
+        /// </summary>
+        public string UserId { get => PlayerId; set => PlayerId = value; }
+
+        /// <summary>
         /// Display name of the player
         /// </summary>
         public string DisplayName { get; set; }

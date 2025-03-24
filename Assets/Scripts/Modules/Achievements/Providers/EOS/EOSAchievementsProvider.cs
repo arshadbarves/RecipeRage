@@ -13,8 +13,8 @@ using RecipeRage.Modules.Auth;
 namespace RecipeRage.Modules.Achievements.Providers.EOS
 {
     /// <summary>
-    /// Epic Online Services implementation of the achievements provider
-    /// Uses EOS Achievements and Stats services
+    /// EOS implementation of the achievements provider.
+    /// This provider uses the Epic Online Services SDK to manage achievements.
     /// 
     /// Complexity Rating: 4
     /// </summary>
@@ -24,27 +24,84 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
         /// Provider name
         /// </summary>
         private const string PROVIDER_NAME = "EOSAchievements";
-        
+
         /// <summary>
         /// Whether the provider is initialized
         /// </summary>
         private bool _isInitialized = false;
-        
+
         /// <summary>
         /// Cache of achievement definitions
         /// </summary>
         private Dictionary<string, AchievementDefinition> _achievementDefinitions = new Dictionary<string, AchievementDefinition>();
-        
+
         /// <summary>
         /// Cache of stat definitions
         /// </summary>
         private Dictionary<string, StatDefinition> _statDefinitions = new Dictionary<string, StatDefinition>();
-        
+
         /// <summary>
         /// Last error message
         /// </summary>
         private string _lastError = string.Empty;
-        
+
+        /// <summary>
+        /// Gets the EOS Achievements interface from the platform
+        /// </summary>
+        /// <returns>The achievements interface</returns>
+        private AchievementsInterface GetEOSAchievementsInterface()
+        {
+            return EOSManager.Instance.GetEOSPlatformInterface().GetAchievementsInterface();
+        }
+
+        /// <summary>
+        /// Gets the EOS Stats interface from the platform
+        /// </summary>
+        /// <returns>The stats interface</returns>
+        private StatsInterface GetEOSStatsInterface()
+        {
+            return EOSManager.Instance.GetEOSPlatformInterface().GetStatsInterface();
+        }
+
+        /// <summary>
+        /// Helper method to convert string[] to Utf8String[]
+        /// </summary>
+        /// <param name="strings">String array to convert</param>
+        /// <returns>Utf8String array</returns>
+        private Utf8String[] ConvertToUtf8StringArray(string[] strings)
+        {
+            if (strings == null)
+                return null;
+
+            Utf8String[] utf8Strings = new Utf8String[strings.Length];
+            for (int i = 0; i < strings.Length; i++)
+            {
+                utf8Strings[i] = new Utf8String(strings[i]);
+            }
+            return utf8Strings;
+        }
+
+        /// <summary>
+        /// Helper method to check if a DateTimeOffset has a specific value
+        /// </summary>
+        /// <param name="dateTime">DateTimeOffset to check</param>
+        /// <param name="value">Value to compare against</param>
+        /// <returns>True if the dateTime is greater than value</returns>
+        private bool IsDateTimeGreaterThan(DateTimeOffset? dateTime, int value)
+        {
+            return dateTime.HasValue && dateTime.Value.ToUnixTimeSeconds() > value;
+        }
+
+        /// <summary>
+        /// Helper method to convert DateTimeOffset to double (seconds)
+        /// </summary>
+        /// <param name="dateTime">DateTimeOffset to convert</param>
+        /// <returns>Double value representing seconds</returns>
+        private double DateTimeToSeconds(DateTimeOffset? dateTime)
+        {
+            return dateTime.HasValue ? dateTime.Value.ToUnixTimeSeconds() : 0;
+        }
+
         /// <summary>
         /// Initialize the provider
         /// </summary>
@@ -53,22 +110,22 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
         {
             if (_isInitialized)
             {
-                LogHelper.Warning("EOSAchievementsProvider", "Provider is already initialized");
+                LogHelper.Debug("EOSAchievementsProvider", "Already initialized");
                 onComplete?.Invoke(true);
                 return;
             }
-            
+
             LogHelper.Info("EOSAchievementsProvider", "Initializing EOS Achievements provider");
-            
+
             // Check if EOSManager is available
-            if (EOSManager.Instance == null || EOSManager.Instance.GetAchievementsInterface() == null)
+            if (EOSManager.Instance == null || GetEOSAchievementsInterface() == null)
             {
                 _lastError = "EOS Manager or Achievements interface is not available";
                 LogHelper.Error("EOSAchievementsProvider", _lastError);
                 onComplete?.Invoke(false);
                 return;
             }
-            
+
             // Check if user is logged in to EOS
             if (!AuthHelper.IsSignedIn() || string.IsNullOrEmpty(AuthHelper.CurrentUser?.UserId))
             {
@@ -77,12 +134,12 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
                 onComplete?.Invoke(false);
                 return;
             }
-            
+
             // Init is successful at this point
             _isInitialized = true;
-            
+
             LogHelper.Info("EOSAchievementsProvider", "EOS Achievements provider initialized successfully");
-            
+
             // Load achievement definitions
             QueryAchievementDefinitions((definitions, error) =>
             {
@@ -90,7 +147,7 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
                 {
                     LogHelper.Warning("EOSAchievementsProvider", $"Failed to load achievement definitions: {error}");
                 }
-                
+
                 // Load stat definitions
                 QueryStatDefinitions((statDefs, statError) =>
                 {
@@ -98,12 +155,12 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
                     {
                         LogHelper.Warning("EOSAchievementsProvider", $"Failed to load stat definitions: {statError}");
                     }
-                    
+
                     onComplete?.Invoke(_isInitialized);
                 });
             });
         }
-        
+
         /// <summary>
         /// Query player achievements from EOS
         /// </summary>
@@ -114,9 +171,9 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
             {
                 return;
             }
-            
+
             LogHelper.Info("EOSAchievementsProvider", "Querying player achievements from EOS");
-            
+
             // Get the product user ID
             ProductUserId productUserId = GetCurrentProductUserId();
             if (productUserId == null)
@@ -126,16 +183,16 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
                 onComplete?.Invoke(null, error);
                 return;
             }
-            
+
             // Query player achievements
-            var achievementsInterface = EOSManager.Instance.GetAchievementsInterface();
-            
+            var achievementsInterface = GetEOSAchievementsInterface();
+
             var options = new QueryPlayerAchievementsOptions
             {
                 LocalUserId = productUserId
             };
-            
-            achievementsInterface.QueryPlayerAchievements(ref options, null, (QueryPlayerAchievementsCallbackInfo info) =>
+
+            achievementsInterface.QueryPlayerAchievements(ref options, null, (ref OnQueryPlayerAchievementsCompleteCallbackInfo info) =>
             {
                 if (info.ResultCode != Result.Success)
                 {
@@ -144,85 +201,67 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
                     onComplete?.Invoke(null, error);
                     return;
                 }
-                
-                LogHelper.Info("EOSAchievementsProvider", "Player achievements query successful");
-                
-                // Get achievement count
-                var getCountOptions = new GetPlayerAchievementCountOptions
+
+                LogHelper.Debug("EOSAchievementsProvider", "QueryPlayerAchievements successful");
+
+                // Get count of achievements
+                var countOptions = new GetPlayerAchievementCountOptions
                 {
                     UserId = productUserId
                 };
-                
-                uint achievementCount = achievementsInterface.GetPlayerAchievementCount(ref getCountOptions);
-                LogHelper.Info("EOSAchievementsProvider", $"Found {achievementCount} player achievements");
-                
+
+                uint count = achievementsInterface.GetPlayerAchievementCount(ref countOptions);
+                LogHelper.Debug("EOSAchievementsProvider", $"Player has {count} achievements");
+
+                // Process achievements
                 var achievements = new List<Achievement>();
-                
-                // If no achievements, return empty list
-                if (achievementCount == 0)
+
+                // Get each achievement
+                for (uint i = 0; i < count; i++)
                 {
-                    onComplete?.Invoke(achievements, null);
-                    return;
-                }
-                
-                // Query each achievement
-                for (uint i = 0; i < achievementCount; i++)
-                {
-                    var copyOptions = new CopyPlayerAchievementByIndexOptions
+                    var achievementOptions = new CopyPlayerAchievementByIndexOptions
                     {
                         LocalUserId = productUserId,
                         AchievementIndex = i
                     };
-                    
-                    PlayerAchievement playerAchievement = new PlayerAchievement();
-                    Result result = achievementsInterface.CopyPlayerAchievementByIndex(ref copyOptions, ref playerAchievement);
-                    
-                    if (result == Result.Success)
+
+                    PlayerAchievement? playerAchievement = null;
+                    Result result = achievementsInterface.CopyPlayerAchievementByIndex(ref achievementOptions, out playerAchievement);
+
+                    if (result == Result.Success && playerAchievement.HasValue)
                     {
                         // Get definition from cache if available
-                        if (_achievementDefinitions.TryGetValue(playerAchievement.AchievementId, out AchievementDefinition definition))
+                        if (_achievementDefinitions.TryGetValue(playerAchievement.Value.AchievementId, out AchievementDefinition definition))
                         {
                             var achievement = definition.CreateAchievement();
-                            
+
                             // Update from player achievement
-                            achievement.Progress = playerAchievement.Progress / 100.0f; // EOS uses 0-100
-                            achievement.IsUnlocked = playerAchievement.Progress >= 100.0;
-                            achievement.UnlockTime = playerAchievement.UnlockTime > 0 ? 
-                                new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(playerAchievement.UnlockTime) : 
+                            achievement.Progress = (float)(playerAchievement.Value.Progress / 100.0); // EOS uses 0-100
+                            achievement.IsUnlocked = playerAchievement.Value.Progress >= 100.0;
+
+                            // Handle DateTimeOffset conversion
+                            achievement.UnlockTime = IsDateTimeGreaterThan(playerAchievement.Value.UnlockTime, 0) ?
+                                new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(playerAchievement.Value.UnlockTime.Value.ToUnixTimeSeconds()) :
                                 null;
-                            
-                            achievements.Add(achievement);
-                        }
-                        else
-                        {
-                            // Create basic achievement if definition not found
-                            var achievement = new Achievement(
-                                playerAchievement.AchievementId,
-                                playerAchievement.DisplayName,
-                                playerAchievement.Description,
-                                PROVIDER_NAME
-                            );
-                            
-                            achievement.Progress = playerAchievement.Progress / 100.0f;
-                            achievement.IsUnlocked = playerAchievement.Progress >= 100.0;
-                            achievement.UnlockTime = playerAchievement.UnlockTime > 0 ? 
-                                new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(playerAchievement.UnlockTime) : 
-                                null;
-                            achievement.IsHidden = playerAchievement.DisplayName.Contains("???") || playerAchievement.Description.Contains("???");
-                            
+
+                            // Check if achievement is hidden by checking for ??? in name or description
+                            achievement.IsHidden =
+                                (playerAchievement.Value.DisplayName != null && playerAchievement.Value.DisplayName.ToString().Contains("???")) ||
+                                (playerAchievement.Value.Description != null && playerAchievement.Value.Description.ToString().Contains("???"));
+
                             achievements.Add(achievement);
                         }
                     }
                     else
                     {
-                        LogHelper.Warning("EOSAchievementsProvider", $"Failed to copy player achievement at index {i}: {result}");
+                        LogHelper.Warning("EOSAchievementsProvider", $"Failed to copy player achievement at index {i}, result: {result}");
                     }
                 }
-                
+
                 onComplete?.Invoke(achievements, null);
             });
         }
-        
+
         /// <summary>
         /// Query player stats from EOS
         /// </summary>
@@ -233,9 +272,9 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
             {
                 return;
             }
-            
+
             LogHelper.Info("EOSAchievementsProvider", "Querying player stats from EOS");
-            
+
             // Get the product user ID
             ProductUserId productUserId = GetCurrentProductUserId();
             if (productUserId == null)
@@ -245,26 +284,27 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
                 onComplete?.Invoke(null, error);
                 return;
             }
-            
+
             // Query player stats
-            var statsInterface = EOSManager.Instance.GetStatsInterface();
-            
+            var statsInterface = GetEOSStatsInterface();
+
             // Get stat names from definitions
             var statNames = _statDefinitions.Keys.ToArray();
-            
+
             if (statNames.Length == 0)
             {
                 LogHelper.Warning("EOSAchievementsProvider", "No stat definitions found, querying with empty stats array");
             }
-            
+
+            // Fix QueryStats callback and array conversion
             var options = new QueryStatsOptions
             {
                 LocalUserId = productUserId,
                 TargetUserId = productUserId,
-                StatNames = statNames
+                StatNames = ConvertToUtf8StringArray(statNames)
             };
-            
-            statsInterface.QueryStats(ref options, null, (QueryStatsCallbackInfo info) =>
+
+            statsInterface.QueryStats(ref options, null, (ref OnQueryStatsCompleteCallbackInfo info) =>
             {
                 if (info.ResultCode != Result.Success)
                 {
@@ -273,27 +313,27 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
                     onComplete?.Invoke(null, error);
                     return;
                 }
-                
+
                 LogHelper.Info("EOSAchievementsProvider", "Player stats query successful");
-                
+
                 // Get stats
                 var getStatsOptions = new GetStatCountOptions
                 {
                     TargetUserId = productUserId
                 };
-                
+
                 uint statCount = statsInterface.GetStatsCount(ref getStatsOptions);
                 LogHelper.Info("EOSAchievementsProvider", $"Found {statCount} player stats");
-                
+
                 var stats = new List<PlayerStat>();
-                
+
                 // If no stats, return empty list
                 if (statCount == 0)
                 {
                     onComplete?.Invoke(stats, null);
                     return;
                 }
-                
+
                 // Copy each stat
                 for (uint i = 0; i < statCount; i++)
                 {
@@ -302,29 +342,29 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
                         TargetUserId = productUserId,
                         StatIndex = i
                     };
-                    
-                    Stat stat = new Stat();
-                    Result result = statsInterface.CopyStatByIndex(ref copyOptions, ref stat);
-                    
+
+                    Stat? stat = null;
+                    Result result = statsInterface.CopyStatByIndex(ref copyOptions, out stat);
+
                     if (result == Result.Success)
                     {
                         // Create player stat
-                        string statName = stat.Name;
-                        
+                        string statName = stat.Value.Name;
+
                         // Try to get display name from definition
                         string displayName = statName;
                         if (_statDefinitions.TryGetValue(statName, out StatDefinition definition))
                         {
                             displayName = definition.DisplayName;
                         }
-                        
+
                         var playerStat = new PlayerStat(
                             statName,
                             displayName,
-                            stat.Value,
+                            stat.Value.Value,
                             PROVIDER_NAME
                         );
-                        
+
                         stats.Add(playerStat);
                     }
                     else
@@ -332,11 +372,11 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
                         LogHelper.Warning("EOSAchievementsProvider", $"Failed to copy stat at index {i}: {result}");
                     }
                 }
-                
+
                 onComplete?.Invoke(stats, null);
             });
         }
-        
+
         /// <summary>
         /// Unlock achievement
         /// </summary>
@@ -348,9 +388,9 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
             {
                 return;
             }
-            
+
             LogHelper.Info("EOSAchievementsProvider", $"Unlocking achievement {achievementId}");
-            
+
             // Get the product user ID
             ProductUserId productUserId = GetCurrentProductUserId();
             if (productUserId == null)
@@ -360,17 +400,17 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
                 onComplete?.Invoke(false, error);
                 return;
             }
-            
+
             // Unlock achievement
-            var achievementsInterface = EOSManager.Instance.GetAchievementsInterface();
-            
+            var achievementsInterface = GetEOSAchievementsInterface();
+
             var options = new UnlockAchievementsOptions
             {
                 UserId = productUserId,
-                AchievementIds = new[] { achievementId }
+                AchievementIds = ConvertToUtf8StringArray(new[] { achievementId })
             };
-            
-            achievementsInterface.UnlockAchievements(ref options, null, (UnlockAchievementsCallbackInfo info) =>
+
+            achievementsInterface.UnlockAchievements(ref options, null, (ref OnUnlockAchievementsCompleteCallbackInfo info) =>
             {
                 if (info.ResultCode != Result.Success)
                 {
@@ -379,12 +419,12 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
                     onComplete?.Invoke(false, error);
                     return;
                 }
-                
+
                 LogHelper.Info("EOSAchievementsProvider", $"Achievement {achievementId} unlocked successfully");
                 onComplete?.Invoke(true, null);
             });
         }
-        
+
         /// <summary>
         /// Update achievement progress
         /// </summary>
@@ -397,27 +437,27 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
             {
                 return;
             }
-            
+
             LogHelper.Info("EOSAchievementsProvider", $"Updating achievement {achievementId} progress to {progress:P0}");
-            
+
             // Convert to EOS progress (0-100)
             uint eosProgress = (uint)Mathf.RoundToInt(progress * 100);
-            
+
             // If progress is 100%, use UnlockAchievement instead
             if (eosProgress >= 100)
             {
                 UnlockAchievement(achievementId, onComplete);
                 return;
             }
-            
+
             // EOS doesn't have a direct API for updating achievement progress
             // It's tracked through stats, so this is a no-op
             // We'll return success and let the achievement progress be updated through the normal stat tracking
-            
+
             LogHelper.Info("EOSAchievementsProvider", $"Achievement {achievementId} progress updated to {progress:P0} (no-op in EOS)");
             onComplete?.Invoke(true, null);
         }
-        
+
         /// <summary>
         /// Get definition of all achievements
         /// </summary>
@@ -428,13 +468,13 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
             {
                 return;
             }
-            
+
             LogHelper.Info("EOSAchievementsProvider", "Getting achievement definitions from EOS");
-            
+
             // Query achievement definitions
             QueryAchievementDefinitions(onComplete);
         }
-        
+
         /// <summary>
         /// Update player stat
         /// </summary>
@@ -447,9 +487,9 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
             {
                 return;
             }
-            
+
             LogHelper.Info("EOSAchievementsProvider", $"Updating stat {statName} to {value}");
-            
+
             // Get the product user ID
             ProductUserId productUserId = GetCurrentProductUserId();
             if (productUserId == null)
@@ -459,25 +499,25 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
                 onComplete?.Invoke(false, error);
                 return;
             }
-            
+
             // Create ingest data
             var ingestData = new IngestData
             {
                 StatName = statName,
-                IngestAmount = value
+                IngestAmount = (int)value
             };
-            
+
             // Ingest stat
-            var statsInterface = EOSManager.Instance.GetStatsInterface();
-            
+            var statsInterface = GetEOSStatsInterface();
+
             var options = new IngestStatOptions
             {
                 LocalUserId = productUserId,
                 Stats = new[] { ingestData },
                 TargetUserId = productUserId
             };
-            
-            statsInterface.IngestStat(ref options, null, (IngestStatCallbackInfo info) =>
+
+            statsInterface.IngestStat(ref options, null, (ref IngestStatCompleteCallbackInfo info) =>
             {
                 if (info.ResultCode != Result.Success)
                 {
@@ -486,12 +526,12 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
                     onComplete?.Invoke(false, error);
                     return;
                 }
-                
+
                 LogHelper.Info("EOSAchievementsProvider", $"Stat {statName} updated successfully to {value}");
                 onComplete?.Invoke(true, null);
             });
         }
-        
+
         /// <summary>
         /// Increment player stat
         /// </summary>
@@ -504,9 +544,9 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
             {
                 return;
             }
-            
+
             LogHelper.Info("EOSAchievementsProvider", $"Incrementing stat {statName} by {amount}");
-            
+
             // Get the product user ID
             ProductUserId productUserId = GetCurrentProductUserId();
             if (productUserId == null)
@@ -516,25 +556,25 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
                 onComplete?.Invoke(false, error);
                 return;
             }
-            
+
             // Create ingest data
             var ingestData = new IngestData
             {
                 StatName = statName,
-                IngestAmount = amount
+                IngestAmount = (int)amount
             };
-            
+
             // Ingest stat
-            var statsInterface = EOSManager.Instance.GetStatsInterface();
-            
+            var statsInterface = GetEOSStatsInterface();
+
             var options = new IngestStatOptions
             {
                 LocalUserId = productUserId,
                 Stats = new[] { ingestData },
                 TargetUserId = productUserId
             };
-            
-            statsInterface.IngestStat(ref options, null, (IngestStatCallbackInfo info) =>
+
+            statsInterface.IngestStat(ref options, null, (ref IngestStatCompleteCallbackInfo info) =>
             {
                 if (info.ResultCode != Result.Success)
                 {
@@ -543,12 +583,12 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
                     onComplete?.Invoke(false, error);
                     return;
                 }
-                
+
                 LogHelper.Info("EOSAchievementsProvider", $"Stat {statName} incremented successfully by {amount}");
                 onComplete?.Invoke(true, null);
             });
         }
-        
+
         /// <summary>
         /// Get stat definitions
         /// </summary>
@@ -559,13 +599,13 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
             {
                 return;
             }
-            
+
             LogHelper.Info("EOSAchievementsProvider", "Getting stat definitions from EOS");
-            
+
             // Query stat definitions
             QueryStatDefinitions(onComplete);
         }
-        
+
         /// <summary>
         /// Display achievement UI (if supported)
         /// </summary>
@@ -576,11 +616,11 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
             {
                 return;
             }
-            
+
             LogHelper.Warning("EOSAchievementsProvider", "DisplayAchievementUI is not directly supported by EOS SDK");
             onComplete?.Invoke(false);
         }
-        
+
         /// <summary>
         /// Reset all achievements (if supported)
         /// </summary>
@@ -591,12 +631,12 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
             {
                 return;
             }
-            
+
             LogHelper.Warning("EOSAchievementsProvider", "ResetAchievements is not supported by EOS SDK");
             string error = "Reset achievements is not supported by EOS SDK";
             onComplete?.Invoke(false, error);
         }
-        
+
         /// <summary>
         /// Reset all stats (if supported)
         /// </summary>
@@ -607,36 +647,70 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
             {
                 return;
             }
-            
+
             LogHelper.Warning("EOSAchievementsProvider", "ResetStats is not supported by EOS SDK");
             string error = "Reset stats is not supported by EOS SDK";
             onComplete?.Invoke(false, error);
         }
-        
+
         /// <summary>
-        /// Get the provider name
+        /// Gets whether the provider is available
+        /// </summary>
+        /// <returns>True if the provider is available</returns>
+        public bool IsAvailable()
+        {
+            // Check if everything is set up correctly
+            bool eosManagerAvailable = EOSManager.Instance != null &&
+                                      EOSManager.Instance.GetEOSPlatformInterface() != null;
+            bool userLoggedIn = AuthHelper.IsSignedIn() && !string.IsNullOrEmpty(AuthHelper.CurrentUser?.UserId);
+
+            return eosManagerAvailable && userLoggedIn;
+        }
+
+        /// <summary>
+        /// Gets the provider name
         /// </summary>
         /// <returns>Provider name</returns>
         public string GetProviderName()
         {
             return PROVIDER_NAME;
         }
-        
+
         /// <summary>
-        /// Check if the provider is available
+        /// Checks if the provider is initialized
         /// </summary>
-        /// <returns>True if available, false otherwise</returns>
-        public bool IsAvailable()
+        /// <param name="methodName">Name of the method being called</param>
+        /// <param name="onComplete">Optional callback for error handling</param>
+        /// <returns>True if initialized</returns>
+        private bool CheckInitialized(string methodName, Action<bool, string> onComplete = null)
         {
-            // Check if everything is set up correctly
-            bool eosManagerAvailable = EOSManager.Instance != null && 
-                                       EOSManager.Instance.GetAchievementsInterface() != null && 
-                                       EOSManager.Instance.GetStatsInterface() != null;
-            bool userLoggedIn = AuthHelper.IsSignedIn() && !string.IsNullOrEmpty(AuthHelper.CurrentUser?.UserId);
-            
-            return _isInitialized && eosManagerAvailable && userLoggedIn;
+            if (!_isInitialized)
+            {
+                _lastError = "Provider is not initialized";
+                LogHelper.Error("EOSAchievementsProvider", $"{methodName}: {_lastError}");
+                onComplete?.Invoke(false, _lastError);
+                return false;
+            }
+
+            if (EOSManager.Instance == null || GetEOSAchievementsInterface() == null)
+            {
+                string error = "EOS Manager or Achievements interface is not available";
+                LogHelper.Error("EOSAchievementsProvider", $"{methodName}: {error}");
+                onComplete?.Invoke(false, error);
+                return false;
+            }
+
+            if (!AuthHelper.IsSignedIn() || string.IsNullOrEmpty(AuthHelper.CurrentUser?.UserId))
+            {
+                string error = "User is not signed in to EOS";
+                LogHelper.Error("EOSAchievementsProvider", $"{methodName}: {error}");
+                onComplete?.Invoke(false, error);
+                return false;
+            }
+
+            return true;
         }
-        
+
         /// <summary>
         /// Query achievement definitions from EOS
         /// </summary>
@@ -644,13 +718,14 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
         private void QueryAchievementDefinitions(Action<List<AchievementDefinition>, string> onComplete)
         {
             LogHelper.Info("EOSAchievementsProvider", "Querying achievement definitions from EOS");
-            
+
             // Query achievements definitions
-            var achievementsInterface = EOSManager.Instance.GetAchievementsInterface();
-            
+            var achievementsInterface = GetEOSAchievementsInterface();
+
             var options = new QueryDefinitionsOptions();
-            
-            achievementsInterface.QueryDefinitions(ref options, null, (QueryDefinitionsCallbackInfo info) =>
+            options.LocalUserId = GetCurrentProductUserId();
+
+            achievementsInterface.QueryDefinitions(ref options, null, (ref OnQueryDefinitionsCompleteCallbackInfo info) =>
             {
                 if (info.ResultCode != Result.Success)
                 {
@@ -659,16 +734,16 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
                     onComplete?.Invoke(null, error);
                     return;
                 }
-                
+
                 LogHelper.Info("EOSAchievementsProvider", "Achievement definitions query successful");
-                
+
                 // Get achievement definitions count
                 var getCountOptions = new GetAchievementDefinitionCountOptions();
                 uint definitionCount = achievementsInterface.GetAchievementDefinitionCount(ref getCountOptions);
                 LogHelper.Info("EOSAchievementsProvider", $"Found {definitionCount} achievement definitions");
-                
+
                 var definitions = new List<AchievementDefinition>();
-                
+
                 // If no definitions, return empty list
                 if (definitionCount == 0)
                 {
@@ -676,7 +751,7 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
                     onComplete?.Invoke(definitions, null);
                     return;
                 }
-                
+
                 // Copy each definition
                 for (uint i = 0; i < definitionCount; i++)
                 {
@@ -684,31 +759,31 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
                     {
                         AchievementIndex = i
                     };
-                    
-                    Definition eosDefinition = new Definition();
-                    Result result = achievementsInterface.CopyAchievementDefinitionByIndex(ref copyOptions, ref eosDefinition);
-                    
+
+                    Definition? eosDefinition = null;
+                    Result result = achievementsInterface.CopyAchievementDefinitionByIndex(ref copyOptions, out eosDefinition);
+
                     if (result == Result.Success)
                     {
                         // Convert to our format
                         var definition = new AchievementDefinition(
-                            eosDefinition.AchievementId,
-                            eosDefinition.DisplayName,
-                            eosDefinition.Description,
+                            eosDefinition.Value.AchievementId,
+                            eosDefinition.Value.DisplayName,
+                            eosDefinition.Value.Description,
                             PROVIDER_NAME
                         );
-                        
-                        definition.LockedDescription = eosDefinition.LockedDescription ?? "This achievement is locked";
-                        definition.IsHidden = eosDefinition.IsHidden;
-                        
+
+                        definition.LockedDescription = eosDefinition.Value.LockedDescription ?? "This achievement is locked";
+                        definition.IsHidden = eosDefinition.Value.IsHidden;
+
                         // Check if it's stat-based by looking at the first threshold
-                        if (eosDefinition.StatThresholds != null && eosDefinition.StatThresholds.Length > 0)
+                        if (eosDefinition.Value.StatThresholds != null && eosDefinition.Value.StatThresholds.Length > 0)
                         {
                             definition.IsStatBased = true;
-                            definition.StatName = eosDefinition.StatThresholds[0].Name;
-                            definition.ThresholdValue = eosDefinition.StatThresholds[0].Threshold;
+                            definition.StatName = eosDefinition.Value.StatThresholds[0].Name;
+                            definition.ThresholdValue = eosDefinition.Value.StatThresholds[0].Threshold;
                         }
-                        
+
                         // Store in dictionary and list
                         _achievementDefinitions[definition.Id] = definition;
                         definitions.Add(definition);
@@ -718,11 +793,11 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
                         LogHelper.Warning("EOSAchievementsProvider", $"Failed to copy achievement definition at index {i}: {result}");
                     }
                 }
-                
+
                 onComplete?.Invoke(definitions, null);
             });
         }
-        
+
         /// <summary>
         /// Query stat definitions from EOS
         /// </summary>
@@ -730,13 +805,13 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
         private void QueryStatDefinitions(Action<List<StatDefinition>, string> onComplete)
         {
             LogHelper.Info("EOSAchievementsProvider", "Creating stat definitions from EOS achievements");
-            
+
             // EOS doesn't have a direct API for getting stat definitions
             // We'll derive them from achievement definitions, and add some common ones
-            
+
             // Extract stat thresholds from achievement definitions
             var statDefs = new Dictionary<string, StatDefinition>();
-            
+
             foreach (var achievementDef in _achievementDefinitions.Values)
             {
                 if (achievementDef.IsStatBased)
@@ -749,15 +824,15 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
                             GetDisplayNameFromStatName(achievementDef.StatName),
                             PROVIDER_NAME
                         );
-                        
+
                         // Set aggregation based on stat name
                         statDef.Aggregation = GetAggregationFromStatName(achievementDef.StatName);
-                        
+
                         statDefs[achievementDef.StatName] = statDef;
                     }
                 }
             }
-            
+
             // Add common stats if not already defined
             AddCommonStatDefinition(statDefs, "Kills", "Kills", StatDefinition.AggregationMethod.Sum);
             AddCommonStatDefinition(statDefs, "Deaths", "Deaths", StatDefinition.AggregationMethod.Sum);
@@ -766,14 +841,14 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
             AddCommonStatDefinition(statDefs, "Score", "Score", StatDefinition.AggregationMethod.Sum);
             AddCommonStatDefinition(statDefs, "HighScore", "High Score", StatDefinition.AggregationMethod.Max);
             AddCommonStatDefinition(statDefs, "TimePlayed", "Time Played", StatDefinition.AggregationMethod.Sum);
-            
+
             // Save to cache
             _statDefinitions = statDefs;
-            
+
             LogHelper.Info("EOSAchievementsProvider", $"Created {statDefs.Count} stat definitions");
             onComplete?.Invoke(statDefs.Values.ToList(), null);
         }
-        
+
         /// <summary>
         /// Add a common stat definition if not already defined
         /// </summary>
@@ -782,9 +857,9 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
         /// <param name="displayName">Display name</param>
         /// <param name="aggregation">Aggregation method</param>
         private void AddCommonStatDefinition(
-            Dictionary<string, StatDefinition> statDefs, 
-            string name, 
-            string displayName, 
+            Dictionary<string, StatDefinition> statDefs,
+            string name,
+            string displayName,
             StatDefinition.AggregationMethod aggregation)
         {
             if (!statDefs.ContainsKey(name))
@@ -793,11 +868,11 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
                 {
                     Aggregation = aggregation
                 };
-                
+
                 statDefs[name] = statDef;
             }
         }
-        
+
         /// <summary>
         /// Get a display name from a stat name
         /// </summary>
@@ -807,16 +882,16 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
         {
             // Add spaces before uppercase letters
             string displayName = System.Text.RegularExpressions.Regex.Replace(statName, "([a-z])([A-Z])", "$1 $2");
-            
+
             // Capitalize first letter
             if (!string.IsNullOrEmpty(displayName))
             {
                 displayName = char.ToUpper(displayName[0]) + displayName.Substring(1);
             }
-            
+
             return displayName;
         }
-        
+
         /// <summary>
         /// Get aggregation method based on stat name
         /// </summary>
@@ -825,34 +900,34 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
         private StatDefinition.AggregationMethod GetAggregationFromStatName(string statName)
         {
             // Check for common aggregation patterns
-            if (statName.StartsWith("Total") || statName.EndsWith("Count") || 
-                statName.Contains("Kills") || statName.Contains("Deaths") || 
+            if (statName.StartsWith("Total") || statName.EndsWith("Count") ||
+                statName.Contains("Kills") || statName.Contains("Deaths") ||
                 statName.Contains("Wins") || statName.Contains("Losses"))
             {
                 return StatDefinition.AggregationMethod.Sum;
             }
-            
-            if (statName.StartsWith("Max") || statName.StartsWith("High") || 
+
+            if (statName.StartsWith("Max") || statName.StartsWith("High") ||
                 statName.Contains("Best") || statName.Contains("Longest"))
             {
                 return StatDefinition.AggregationMethod.Max;
             }
-            
-            if (statName.StartsWith("Min") || statName.Contains("Shortest") || 
+
+            if (statName.StartsWith("Min") || statName.Contains("Shortest") ||
                 statName.Contains("Fastest"))
             {
                 return StatDefinition.AggregationMethod.Min;
             }
-            
+
             if (statName.StartsWith("Avg") || statName.Contains("Average"))
             {
                 return StatDefinition.AggregationMethod.Average;
             }
-            
+
             // Default to sum for most stats
             return StatDefinition.AggregationMethod.Sum;
         }
-        
+
         /// <summary>
         /// Get the current EOS product user ID
         /// </summary>
@@ -866,7 +941,7 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
                 LogHelper.Error("EOSAchievementsProvider", "No user ID available");
                 return null;
             }
-            
+
             // Try to convert to product user ID
             ProductUserId productUserId = ProductUserId.FromString(userId);
             if (productUserId == null || !productUserId.IsValid())
@@ -874,43 +949,8 @@ namespace RecipeRage.Modules.Achievements.Providers.EOS
                 LogHelper.Error("EOSAchievementsProvider", $"Invalid product user ID: {userId}");
                 return null;
             }
-            
+
             return productUserId;
         }
-        
-        /// <summary>
-        /// Check if the provider is initialized
-        /// </summary>
-        /// <param name="methodName">Name of the calling method</param>
-        /// <param name="onComplete">Callback for reporting error</param>
-        /// <returns>True if initialized, false otherwise</returns>
-        private bool CheckInitialized(string methodName, Action<bool, string> onComplete = null)
-        {
-            if (!_isInitialized)
-            {
-                string error = "Provider is not initialized";
-                LogHelper.Error("EOSAchievementsProvider", $"{methodName}: {error}");
-                onComplete?.Invoke(false, error);
-                return false;
-            }
-            
-            if (EOSManager.Instance == null || EOSManager.Instance.GetAchievementsInterface() == null)
-            {
-                string error = "EOS Manager or Achievements interface is not available";
-                LogHelper.Error("EOSAchievementsProvider", $"{methodName}: {error}");
-                onComplete?.Invoke(false, error);
-                return false;
-            }
-            
-            if (!AuthHelper.IsSignedIn() || string.IsNullOrEmpty(AuthHelper.CurrentUser?.UserId))
-            {
-                string error = "User is not signed in to EOS";
-                LogHelper.Error("EOSAchievementsProvider", $"{methodName}: {error}");
-                onComplete?.Invoke(false, error);
-                return false;
-            }
-            
-            return true;
-        }
     }
-} 
+}
