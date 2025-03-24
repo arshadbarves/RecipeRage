@@ -1,9 +1,9 @@
 using PlayEveryWare.EpicOnlineServices;
 using RecipeRage.Core.Patterns;
-using RecipeRage.Core.Services;
 using RecipeRage.Modules.Auth;
+using RecipeRage.Modules.Logging;
+using RecipeRage.Modules.Logging.Interfaces;
 using UnityEngine;
-using Logger = RecipeRage.Core.Services.Logger;
 
 namespace RecipeRage.Core
 {
@@ -16,11 +16,9 @@ namespace RecipeRage.Core
     public class GameBootstrap : MonoBehaviourSingleton<GameBootstrap>
     {
         [Header("Logging Settings")]
-        [SerializeField] private LogSeverity _consoleLogLevel = LogSeverity.Debug;
-        [SerializeField] private LogSeverity _fileLogLevel = LogSeverity.Info;
-        [SerializeField] private LogSeverity _remoteLogLevel = LogSeverity.Error;
+        [SerializeField] private LogLevel _consoleLogLevel = LogLevel.Debug;
+        [SerializeField] private LogLevel _fileLogLevel = LogLevel.Info;
         [SerializeField] private bool _enableFileLogging = true;
-        [SerializeField] private bool _enableRemoteLogging;
 
         [Header("Auth Settings")]
         [SerializeField] private bool _initializeAuth = true;
@@ -45,7 +43,7 @@ namespace RecipeRage.Core
             // Initialize logging first so we can log initialization of other systems
             InitializeLogging();
 
-            Logger.Info("GameBootstrap", "Game bootstrap initialized");
+            LogHelper.Info("GameBootstrap", "Game bootstrap initialized");
         }
 
         /// <summary>
@@ -71,11 +69,11 @@ namespace RecipeRage.Core
                     {
                         if (success)
                         {
-                            Logger.Info("GameBootstrap", "Authentication system auto-login successful");
+                            LogHelper.Info("GameBootstrap", "Authentication system auto-login successful");
                         }
                         else
                         {
-                            Logger.Info("GameBootstrap", "Authentication system initialized, no auto-login");
+                            LogHelper.Info("GameBootstrap", "Authentication system initialized, no auto-login");
                         }
                     }
                 );
@@ -83,7 +81,7 @@ namespace RecipeRage.Core
 
             // Add more subsystem initializations here as needed
 
-            Logger.Info("GameBootstrap", "All systems initialized");
+            LogHelper.Info("GameBootstrap", "All systems initialized");
         }
 
         /// <summary>
@@ -95,13 +93,6 @@ namespace RecipeRage.Core
 
             // Unregister application quit handler
             Application.quitting -= OnApplicationQuit;
-
-            // Shut down if not already done by OnApplicationQuit
-            if (_logServiceInitialized)
-            {
-                LogService.Instance.Shutdown();
-                _logServiceInitialized = false;
-            }
         }
 
         /// <summary>
@@ -109,21 +100,12 @@ namespace RecipeRage.Core
         /// </summary>
         private void OnApplicationQuit()
         {
-            Logger.Info("GameBootstrap", "Application quitting, shutting down services");
-
-            // Shut down subsystems in reverse order of initialization
+            LogHelper.Info("GameBootstrap", "Application quitting, shutting down services");
 
             // Sign out the current user if any
             if (AuthHelper.IsSignedIn())
             {
                 AuthHelper.SignOut();
-            }
-
-            // Shut down logging last so we can log the shutdown of other systems
-            if (_logServiceInitialized)
-            {
-                LogService.Instance.Shutdown();
-                _logServiceInitialized = false;
             }
         }
 
@@ -138,13 +120,9 @@ namespace RecipeRage.Core
             }
 
             // Initialize the log service
-            LogService.Instance.Initialize(
-                _consoleLogLevel,
-                _fileLogLevel,
-                _remoteLogLevel,
-                _enableRemoteLogging,
-                _enableFileLogging
-            );
+            LogHelper.SetConsoleOutput(true);
+            LogHelper.SetFileOutput(_enableFileLogging);
+            LogHelper.SetLogLevel(_consoleLogLevel);
 
             _logServiceInitialized = true;
 
@@ -162,17 +140,17 @@ namespace RecipeRage.Core
                 return;
             }
 
-            Logger.Info("GameBootstrap", "Initializing Epic Online Services");
+            LogHelper.Info("GameBootstrap", "Initializing Epic Online Services");
 
             // Check if EOS is available (we expect the EOS Manager to be initialized elsewhere)
             if (EOSManager.Instance == null)
             {
-                Logger.Error("GameBootstrap", "EOSManager instance not found. Make sure EOS is properly set up.");
+                LogHelper.Error("GameBootstrap", "EOSManager instance not found. Make sure EOS is properly set up.");
                 return;
             }
 
             _eosInitialized = true;
-            Logger.Info("GameBootstrap", "Epic Online Services initialized");
+            LogHelper.Info("GameBootstrap", "Epic Online Services initialized");
         }
     }
 }

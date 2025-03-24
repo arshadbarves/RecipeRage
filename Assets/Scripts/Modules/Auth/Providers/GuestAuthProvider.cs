@@ -3,8 +3,8 @@ using System.Security.Cryptography;
 using System.Text;
 using RecipeRage.Modules.Auth.Core;
 using RecipeRage.Modules.Auth.Interfaces;
+using RecipeRage.Modules.Logging;
 using UnityEngine;
-using Logger = RecipeRage.Core.Services.Logger;
 using Random = UnityEngine.Random;
 
 namespace RecipeRage.Modules.Auth.Providers
@@ -56,11 +56,11 @@ namespace RecipeRage.Modules.Auth.Providers
                     SaveToPlayerPrefs(KEY_GUEST_ID, guestId);
                     SaveToPlayerPrefs(KEY_GUEST_DISPLAY_NAME, displayName);
 
-                    Logger.Info("GuestAuthProvider", $"Created new guest ID '{guestId}'");
+                    LogHelper.Info("GuestAuthProvider", $"Created new guest ID '{guestId}'");
                 }
                 else
                 {
-                    Logger.Info("GuestAuthProvider", $"Using existing guest ID '{guestId}'");
+                    LogHelper.Info("GuestAuthProvider", $"Using existing guest ID '{guestId}'");
                 }
 
                 // Create the user object
@@ -77,7 +77,7 @@ namespace RecipeRage.Modules.Auth.Providers
             }
             catch (Exception ex)
             {
-                Logger.Error("GuestAuthProvider", $"Failed to authenticate: {ex.Message}", ex);
+                LogHelper.Exception("GuestAuthProvider", ex, "Failed to authenticate as guest");
                 onFailure?.Invoke($"Failed to authenticate as guest: {ex.Message}");
             }
         }
@@ -98,7 +98,7 @@ namespace RecipeRage.Modules.Auth.Providers
         {
             DeleteFromPlayerPrefs(KEY_GUEST_ID);
             DeleteFromPlayerPrefs(KEY_GUEST_DISPLAY_NAME);
-            Logger.Info("GuestAuthProvider", "Cleared cached credentials");
+            LogHelper.Info("GuestAuthProvider", "Cleared cached credentials");
         }
 
         /// <summary>

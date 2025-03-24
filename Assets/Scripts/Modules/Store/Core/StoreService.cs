@@ -261,7 +261,7 @@ namespace RecipeRage.Store
         /// <summary>
         /// Queries the catalog of available items directly from the provider
         /// </summary>
-        /// <param name="callback"> Callback with the list of catalog items and success flag </param>
+        /// <param name="callback">Callback with the list of catalog items and success flag</param>
         public void QueryCatalog(Action<List<CatalogItem>, bool> callback)
         {
             if (!CheckInitialized())
@@ -375,6 +375,58 @@ namespace RecipeRage.Store
         }
 
         /// <summary>
+        /// Queries the player's owned items directly from the provider
+        /// </summary>
+        /// <param name="callback">Callback with the list of inventory items and success flag</param>
+        public void QueryInventory(Action<List<InventoryItem>, bool> callback)
+        {
+            if (!CheckInitialized())
+            {
+                callback?.Invoke(new List<InventoryItem>(), false);
+                return;
+            }
+
+            // Get the first available provider
+            var provider = _providers.FirstOrDefault(p => p.IsAvailable);
+            if (provider == null)
+            {
+                LastError = "No available provider for querying inventory";
+                LogHelper.Error("StoreService", LastError);
+                callback?.Invoke(new List<InventoryItem>(), false);
+                return;
+            }
+
+            LogHelper.Info("StoreService", $"Querying inventory directly from provider {provider.ProviderName}");
+
+            // Forward the call directly to the provider
+            provider.QueryInventory((items, success) =>
+            {
+                if (success)
+                {
+                    // Update cache with new items
+                    lock (_lock)
+                    {
+                        foreach (var item in items)
+                        {
+                            _inventoryCache[item.InventoryItemId] = item;
+                        }
+                    }
+
+                    LogHelper.Debug("StoreService", $"Inventory query successful, got {items.Count} items");
+                    OnInventoryQueried?.Invoke(items);
+                }
+                else
+                {
+                    LastError = $"Failed to query inventory from provider {provider.ProviderName}";
+                    LogHelper.Error("StoreService", LastError);
+                }
+
+                // Forward the result to the callback
+                callback?.Invoke(items, success);
+            });
+        }
+
+        /// <summary>
         /// Gets the available offers for purchasing items
         /// </summary>
         /// <param name="forceRefresh"> Whether to force a refresh from the provider </param>
@@ -435,6 +487,58 @@ namespace RecipeRage.Store
                     LogHelper.Error("StoreService", $"Failed to query offers: {LastError}");
                     callback?.Invoke(new List<StoreOffer>());
                 }
+            });
+        }
+
+        /// <summary>
+        /// Queries the available offers for purchasing items directly from the provider
+        /// </summary>
+        /// <param name="callback">Callback with the list of offers and success flag</param>
+        public void QueryOffers(Action<List<StoreOffer>, bool> callback)
+        {
+            if (!CheckInitialized())
+            {
+                callback?.Invoke(new List<StoreOffer>(), false);
+                return;
+            }
+
+            // Get the first available provider
+            var provider = _providers.FirstOrDefault(p => p.IsAvailable);
+            if (provider == null)
+            {
+                LastError = "No available provider for querying offers";
+                LogHelper.Error("StoreService", LastError);
+                callback?.Invoke(new List<StoreOffer>(), false);
+                return;
+            }
+
+            LogHelper.Info("StoreService", $"Querying offers directly from provider {provider.ProviderName}");
+
+            // Forward the call directly to the provider
+            provider.QueryOffers((offers, success) =>
+            {
+                if (success)
+                {
+                    // Update cache with new offers
+                    lock (_lock)
+                    {
+                        foreach (var offer in offers)
+                        {
+                            _offersCache[offer.OfferId] = offer;
+                        }
+                    }
+
+                    LogHelper.Debug("StoreService", $"Offers query successful, got {offers.Count} offers");
+                    OnOffersQueried?.Invoke(offers);
+                }
+                else
+                {
+                    LastError = $"Failed to query offers from provider {provider.ProviderName}";
+                    LogHelper.Error("StoreService", LastError);
+                }
+
+                // Forward the result to the callback
+                callback?.Invoke(offers, success);
             });
         }
 

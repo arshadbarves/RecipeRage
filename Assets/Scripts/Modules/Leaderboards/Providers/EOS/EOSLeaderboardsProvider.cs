@@ -139,64 +139,67 @@ namespace RecipeRage.Leaderboards
                 }
 
                 _leaderboardsInterface.QueryLeaderboardDefinitions(ref options, null,
-                    (ref QueryLeaderboardDefinitionsCallbackInfo callbackInfo) =>
+                    (ref OnQueryLeaderboardDefinitionsCompleteCallbackInfo data) =>
                     {
-                        if (callbackInfo.ResultCode == Result.Success)
+                        try
                         {
-                            LogHelper.Info(LOG_TAG, "Successfully queried leaderboard definitions");
-
-                            // Get the count of definitions
-                            var countOptions = new GetLeaderboardDefinitionCountOptions();
-                            uint count = _leaderboardsInterface.GetLeaderboardDefinitionCount(ref countOptions);
-
-                            LogHelper.Debug(LOG_TAG, $"Found {count} leaderboard definitions");
-
-                            var definitions = new List<LeaderboardDefinition>();
-
-                            // Retrieve each definition
-                            for (uint i = 0; i < count; i++)
+                            if (data.ResultCode == Result.Success)
                             {
-                                var defOptions = new CopyLeaderboardDefinitionByIndexOptions { LeaderboardIndex = i };
-                                var result =
-                                    _leaderboardsInterface.CopyLeaderboardDefinitionByIndex(ref defOptions,
-                                        out Definition eosDefinition);
+                                LogHelper.Info(LOG_TAG, "Successfully queried leaderboard definitions");
 
-                                if (result == Result.Success)
+                                // Get the count of definitions
+                                var countOptions = new GetLeaderboardDefinitionCountOptions();
+                                uint count = _leaderboardsInterface.GetLeaderboardDefinitionCount(ref countOptions);
+
+                                LogHelper.Debug(LOG_TAG, $"Found {count} leaderboard definitions");
+
+                                var definitions = new List<LeaderboardDefinition>();
+
+                                // Retrieve each definition
+                                for (uint i = 0; i < count; i++)
                                 {
-                                    // Convert EOS definition to our model
-                                    var definition = new LeaderboardDefinition
+                                    var defOptions = new CopyLeaderboardDefinitionByIndexOptions { LeaderboardIndex = i };
+                                    Definition? eosDefinition = null;
+                                    var copyResult = _leaderboardsInterface.CopyLeaderboardDefinitionByIndex(ref defOptions, out eosDefinition);
+
+                                    if (copyResult == Result.Success && eosDefinition.HasValue)
                                     {
-                                        LeaderboardId = eosDefinition.LeaderboardId,
-                                        StatName = eosDefinition.StatName,
-                                        DisplayName =
-                                            eosDefinition.LeaderboardId, // EOS doesn't provide a separate display name
-                                        ProviderName = PROVIDER_NAME,
-                                        IsActive = true,
-                                        OrderingType = eosDefinition.StartTime == null
-                                            ? LeaderboardOrderingType.Descending
-                                            : LeaderboardOrderingType.Ascending // Guess based on stat type
-                                    };
+                                        // Convert EOS definition to our model
+                                        var definition = new LeaderboardDefinition
+                                        {
+                                            LeaderboardId = eosDefinition.Value.LeaderboardId,
+                                            StatName = eosDefinition.Value.StatName,
+                                            DisplayName = eosDefinition.Value.LeaderboardId, // EOS doesn't provide a separate display name
+                                            ProviderName = PROVIDER_NAME,
+                                            IsActive = true,
+                                            OrderingType = LeaderboardOrderingType.Descending // Default to descending
+                                        };
 
-                                    definitions.Add(definition);
+                                        definitions.Add(definition);
 
-                                    // Cache the definition
-                                    _leaderboardDefinitions[definition.LeaderboardId] = definition;
+                                        // Cache the definition
+                                        _leaderboardDefinitions[definition.LeaderboardId] = definition;
 
-                                    LogHelper.Debug(LOG_TAG,
-                                        $"Added leaderboard definition: {definition.LeaderboardId}, Stat: {definition.StatName}");
+                                        LogHelper.Debug(LOG_TAG, $"Added leaderboard definition: {definition.LeaderboardId}, Stat: {definition.StatName}");
+                                    }
+                                    else
+                                    {
+                                        LogHelper.Warning(LOG_TAG, $"Failed to copy leaderboard definition at index {i}: {copyResult}");
+                                    }
                                 }
-                                else
-                                {
-                                    LogHelper.Warning(LOG_TAG,
-                                        $"Failed to copy leaderboard definition at index {i}: {result}");
-                                }
+
+                                callback?.Invoke(definitions, true);
                             }
-
-                            callback?.Invoke(definitions, true);
+                            else
+                            {
+                                LastError = $"Failed to query leaderboard definitions: {data.ResultCode}";
+                                LogHelper.Error(LOG_TAG, LastError);
+                                callback?.Invoke(new List<LeaderboardDefinition>(), false);
+                            }
                         }
-                        else
+                        catch (Exception ex)
                         {
-                            LastError = $"Failed to query leaderboard definitions: {callbackInfo.ResultCode}";
+                            LastError = $"Error processing leaderboard definitions: {ex.Message}";
                             LogHelper.Error(LOG_TAG, LastError);
                             callback?.Invoke(new List<LeaderboardDefinition>(), false);
                         }
@@ -246,71 +249,51 @@ namespace RecipeRage.Leaderboards
                 };
 
                 _leaderboardsInterface.QueryLeaderboardRanks(ref options, null,
-                    (ref QueryLeaderboardRanksCallbackInfo callbackInfo) =>
+                    (ref OnQueryLeaderboardRanksCompleteCallbackInfo data) =>
                     {
-                        if (callbackInfo.ResultCode == Result.Success)
+                        try
                         {
-                            LogHelper.Info(LOG_TAG, $"Successfully queried leaderboard ranks for {leaderboardId}");
-
-                            // Get the count of ranks/records
-                            var countOptions = new GetLeaderboardRecordCountOptions();
-                            uint recordCount = _leaderboardsInterface.GetLeaderboardRecordCount(ref countOptions);
-
-                            LogHelper.Debug(LOG_TAG, $"Found {recordCount} leaderboard records");
-
-                            var entries = new List<LeaderboardEntry>();
-
-                            // Apply paging (EOS gives us all records, we need to filter)
-                            uint startIndex = (uint)Math.Max(0, startRank - 1); // Convert 1-based to 0-based
-                            uint endIndex = Math.Min(startIndex + (uint)count, recordCount);
-
-                            // Get the definition for this leaderboard (if available)
-                            LeaderboardDefinition definition = null;
-                            _leaderboardDefinitions.TryGetValue(leaderboardId, out definition);
-
-                            // Retrieve records within the requested range
-                            for (uint i = startIndex; i < endIndex; i++)
+                            if (data.ResultCode == Result.Success)
                             {
-                                var recordOptions = new CopyLeaderboardRecordByIndexOptions
-                                {
-                                    LeaderboardRecordIndex = i
-                                };
+                                LogHelper.Info(LOG_TAG, $"Successfully queried leaderboard ranks for {leaderboardId}");
 
-                                var result = _leaderboardsInterface.CopyLeaderboardRecordByIndex(ref recordOptions,
-                                    out LeaderboardRecord record);
+                                // Get the count of records
+                                var recordCountOptions = new GetLeaderboardRecordCountOptions();
+                                uint recordCount = _leaderboardsInterface.GetLeaderboardRecordCount(ref recordCountOptions);
 
-                                if (result == Result.Success)
+                                LogHelper.Debug(LOG_TAG, $"Found {recordCount} leaderboard records");
+
+                                var entries = new List<LeaderboardEntry>();
+
+                                // Retrieve each record
+                                for (uint i = 0; i < recordCount; i++)
                                 {
-                                    var entry = new LeaderboardEntry
+                                    var recordOptions = new CopyLeaderboardRecordByIndexOptions { LeaderboardRecordIndex = i };
+                                    LeaderboardRecord? record = null;
+                                    var copyResult = _leaderboardsInterface.CopyLeaderboardRecordByIndex(ref recordOptions, out record);
+
+                                    if (copyResult == Result.Success && record.HasValue)
                                     {
-                                        LeaderboardId = leaderboardId,
-                                        UserId = record.UserId.ToString(),
-                                        DisplayName = GetDisplayNameFromUserId(record.UserId),
-                                        Rank = (int)record.Rank + 1, // EOS ranks are 0-based, we use 1-based
-                                        Score = record.Score,
-                                        ProviderName = PROVIDER_NAME,
-                                        Timestamp = DateTime.UtcNow, // EOS doesn't provide a timestamp
-                                        IsCurrentUser = record.UserId.ToString() ==
-                                                        EOSManager.Instance.GetProductUserId().ToString()
-                                    };
-
-                                    entries.Add(entry);
-
-                                    LogHelper.Debug(LOG_TAG,
-                                        $"Added leaderboard entry: User: {entry.UserId}, Rank: {entry.Rank}, Score: {entry.Score}");
+                                        entries.Add(ConvertRecordToEntry(leaderboardId, record.Value));
+                                    }
+                                    else
+                                    {
+                                        LogHelper.Warning(LOG_TAG, $"Failed to copy leaderboard record at index {i}: {copyResult}");
+                                    }
                                 }
-                                else
-                                {
-                                    LogHelper.Warning(LOG_TAG,
-                                        $"Failed to copy leaderboard record at index {i}: {result}");
-                                }
+
+                                callback?.Invoke(entries, true);
                             }
-
-                            callback?.Invoke(entries, true);
+                            else
+                            {
+                                LastError = $"Failed to query leaderboard ranks: {data.ResultCode}";
+                                LogHelper.Error(LOG_TAG, LastError);
+                                callback?.Invoke(new List<LeaderboardEntry>(), false);
+                            }
                         }
-                        else
+                        catch (Exception ex)
                         {
-                            LastError = $"Failed to query leaderboard ranks: {callbackInfo.ResultCode}";
+                            LastError = $"Error processing leaderboard ranks: {ex.Message}";
                             LogHelper.Error(LOG_TAG, LastError);
                             callback?.Invoke(new List<LeaderboardEntry>(), false);
                         }
@@ -354,8 +337,30 @@ namespace RecipeRage.Leaderboards
                 {
                     LocalUserId = EOSManager.Instance.GetProductUserId(),
                     UserIds = new[] { EOSManager.Instance.GetProductUserId() }, // We'll need to expand this
-                    LeaderboardIds = new[] { leaderboardId }
                 };
+
+                // Try to set LeaderboardId using reflection to handle different SDK versions
+                try
+                {
+                    var prop = typeof(QueryLeaderboardUserScoresOptions).GetProperty("LeaderboardIds");
+                    if (prop != null)
+                    {
+                        prop.SetValue(options, new[] { leaderboardId });
+                    }
+                    else
+                    {
+                        // Try setting a single LeaderboardId property if available
+                        var singleProp = typeof(QueryLeaderboardUserScoresOptions).GetProperty("LeaderboardId");
+                        if (singleProp != null)
+                        {
+                            singleProp.SetValue(options, leaderboardId);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.Warning(LOG_TAG, $"Could not set leaderboard ID: {ex.Message}");
+                }
 
                 // We need to get the friend list from EOS
                 // For now, just query the full leaderboard and mark friends if possible
@@ -421,66 +426,109 @@ namespace RecipeRage.Leaderboards
 
             try
             {
-                ProductUserId productUserId;
-                if (!ProductUserId.TryParse(userId, out productUserId))
+                ProductUserId productUserId = ProductUserId.FromString(userId);
+                if (productUserId == null || !productUserId.IsValid())
                 {
-                    LastError = "Invalid user ID format";
+                    LastError = $"Invalid user ID format: {userId}";
                     LogHelper.Error(LOG_TAG, LastError);
                     callback?.Invoke(null, false);
                     return;
                 }
 
+                // Create query user scores options
                 var options = new QueryLeaderboardUserScoresOptions
                 {
                     LocalUserId = EOSManager.Instance.GetProductUserId(),
-                    UserIds = new[] { productUserId },
-                    LeaderboardIds = new[] { leaderboardId }
+                    UserIds = new[] { productUserId }
                 };
 
-                _leaderboardsInterface.QueryLeaderboardUserScores(ref options, null,
-                    (ref QueryLeaderboardUserScoresCallbackInfo callbackInfo) =>
+                // Try to set LeaderboardId using reflection to handle different SDK versions
+                try
+                {
+                    var prop = typeof(QueryLeaderboardUserScoresOptions).GetProperty("LeaderboardIds");
+                    if (prop != null)
                     {
-                        if (callbackInfo.ResultCode == Result.Success)
+                        prop.SetValue(options, new[] { leaderboardId });
+                    }
+                    else
+                    {
+                        // Try setting a single LeaderboardId property if available
+                        var singleProp = typeof(QueryLeaderboardUserScoresOptions).GetProperty("LeaderboardId");
+                        if (singleProp != null)
                         {
-                            LogHelper.Info(LOG_TAG,
-                                $"Successfully queried leaderboard user score for {userId} in {leaderboardId}");
+                            singleProp.SetValue(options, leaderboardId);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.Warning(LOG_TAG, $"Could not set leaderboard ID: {ex.Message}");
+                }
 
-                            var userScoreOptions = new CopyLeaderboardUserScoreByUserIdOptions
+                _leaderboardsInterface.QueryLeaderboardUserScores(ref options, null,
+                    (ref OnQueryLeaderboardUserScoresCompleteCallbackInfo data) =>
+                    {
+                        try
+                        {
+                            if (data.ResultCode == Result.Success)
                             {
-                                UserId = productUserId,
-                                LeaderboardId = leaderboardId,
-                                StatName = null // We don't know the stat name, EOS will figure it out
-                            };
+                                LogHelper.Info(LOG_TAG, $"Successfully queried leaderboard user score for {userId} in {leaderboardId}");
 
-                            var result = _leaderboardsInterface.CopyLeaderboardUserScoreByUserId(ref userScoreOptions,
-                                out LeaderboardUserScore userScore);
-
-                            if (result == Result.Success)
-                            {
-                                var entry = new LeaderboardEntry
+                                // Create user score copy options
+                                var scoreOptions = new CopyLeaderboardUserScoreByUserIdOptions
                                 {
-                                    LeaderboardId = leaderboardId,
-                                    UserId = userId,
-                                    DisplayName = GetDisplayNameFromUserId(productUserId),
-                                    Score = userScore.Score,
-                                    ProviderName = PROVIDER_NAME,
-                                    Timestamp = DateTime.UtcNow, // EOS doesn't provide a timestamp
-                                    IsCurrentUser = userId == EOSManager.Instance.GetProductUserId().ToString()
+                                    UserId = productUserId
                                 };
 
-                                LogHelper.Debug(LOG_TAG, $"Found user entry: Score: {entry.Score}");
-                                callback?.Invoke(entry, true);
+                                // If the SDK version supports it, add the leaderboard ID and/or stat name
+                                try
+                                {
+                                    var leaderboardIdProperty = typeof(CopyLeaderboardUserScoreByUserIdOptions).GetProperty("LeaderboardId");
+                                    if (leaderboardIdProperty != null)
+                                    {
+                                        leaderboardIdProperty.SetValue(scoreOptions, leaderboardId);
+                                    }
+
+                                    // Some SDK versions might use StatName instead
+                                    var statNameProperty = typeof(CopyLeaderboardUserScoreByUserIdOptions).GetProperty("StatName");
+                                    if (statNameProperty != null && _leaderboardDefinitions.TryGetValue(leaderboardId, out var definition))
+                                    {
+                                        statNameProperty.SetValue(scoreOptions, definition.StatName);
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    // Log but continue - the SDK might work without these properties
+                                    LogHelper.Warning(LOG_TAG, $"Error setting properties on CopyLeaderboardUserScoreByUserIdOptions: {ex.Message}");
+                                }
+
+                                // Copy the user score
+                                LeaderboardUserScore? userScore = null;
+                                var copyResult = _leaderboardsInterface.CopyLeaderboardUserScoreByUserId(ref scoreOptions, out userScore);
+
+                                if (copyResult == Result.Success && userScore.HasValue)
+                                {
+                                    // Convert to LeaderboardEntry
+                                    var entry = ConvertUserScoreToEntry(leaderboardId, userScore.Value);
+                                    callback?.Invoke(entry, true);
+                                }
+                                else
+                                {
+                                    LastError = $"Failed to copy user score: {copyResult}";
+                                    LogHelper.Error(LOG_TAG, LastError);
+                                    callback?.Invoke(null, false);
+                                }
                             }
                             else
                             {
-                                LastError = $"User not found on leaderboard: {result}";
-                                LogHelper.Warning(LOG_TAG, LastError);
+                                LastError = $"Failed to query user scores: {data.ResultCode}";
+                                LogHelper.Error(LOG_TAG, LastError);
                                 callback?.Invoke(null, false);
                             }
                         }
-                        else
+                        catch (Exception ex)
                         {
-                            LastError = $"Failed to query leaderboard user score: {callbackInfo.ResultCode}";
+                            LastError = $"Error processing user scores: {ex.Message}";
                             LogHelper.Error(LOG_TAG, LastError);
                             callback?.Invoke(null, false);
                         }
@@ -533,44 +581,39 @@ namespace RecipeRage.Leaderboards
                 return;
             }
 
-            LogHelper.Debug(LOG_TAG, $"Submitting score {score} to leaderboard {leaderboardId}");
-
-            // Find the stat name for this leaderboard
-            string statName = null;
-
-            if (_leaderboardDefinitions.TryGetValue(leaderboardId, out var definition))
+            // Find the leaderboard definition to get the stat name
+            if (!_leaderboardDefinitions.TryGetValue(leaderboardId, out var definition))
             {
-                statName = definition.StatName;
-            }
-            else
-            {
-                // Query leaderboard definitions first
+                // Query definitions first to get the stat name
                 QueryLeaderboardDefinitions((definitions, success) =>
                 {
-                    if (success)
+                    if (success && definitions.Count > 0)
                     {
                         // Try to find the definition again
                         if (_leaderboardDefinitions.TryGetValue(leaderboardId, out definition))
                         {
-                            statName = definition.StatName;
-                            SubmitScoreInternal(leaderboardId, statName, score, callback);
+                            // Now we have the stat name, submit the score
+                            SubmitScoreInternal(leaderboardId, definition.StatName, score, callback);
                         }
                         else
                         {
-                            LastError = $"Leaderboard definition not found for {leaderboardId}";
+                            LastError = $"Leaderboard definition not found: {leaderboardId}";
                             LogHelper.Error(LOG_TAG, LastError);
                             callback?.Invoke(false);
                         }
                     }
                     else
                     {
+                        LastError = $"Failed to query leaderboard definitions";
+                        LogHelper.Error(LOG_TAG, LastError);
                         callback?.Invoke(false);
                     }
                 });
                 return;
             }
 
-            SubmitScoreInternal(leaderboardId, statName, score, callback);
+            // We already have the stat name, submit the score
+            SubmitScoreInternal(leaderboardId, definition.StatName, score, callback);
         }
 
         /// <summary>
@@ -612,24 +655,15 @@ namespace RecipeRage.Leaderboards
         /// <param name="callback"> Callback indicating success or failure </param>
         private void SubmitScoreInternal(string leaderboardId, string statName, long score, Action<bool> callback)
         {
-            if (string.IsNullOrEmpty(statName))
-            {
-                LastError = $"No stat name found for leaderboard {leaderboardId}";
-                LogHelper.Error(LOG_TAG, LastError);
-                callback?.Invoke(false);
-                return;
-            }
+            LogHelper.Debug(LOG_TAG, $"Submitting score {score} for leaderboard {leaderboardId}, stat {statName}");
 
             try
             {
-                // EOS doesn't have a direct "submit score" method
-                // Instead, we need to update the stat for the leaderboard
-
                 // Get the Stats interface
                 var statsInterface = EOSManager.Instance.GetEOSPlatformInterface().GetStatsInterface();
                 if (statsInterface == null)
                 {
-                    LastError = "Failed to get EOS Stats interface";
+                    LastError = "Stats interface is not available";
                     LogHelper.Error(LOG_TAG, LastError);
                     callback?.Invoke(false);
                     return;
@@ -639,16 +673,29 @@ namespace RecipeRage.Leaderboards
                 var stat = new IngestData
                 {
                     StatName = statName,
-                    IngestAmount = score
+                    IngestAmount = (int)score // Safe cast with potential data loss for very large scores
                 };
+
+                // If score is outside int range, clamp it
+                if (score > int.MaxValue || score < int.MinValue)
+                {
+                    LogHelper.Warning(LOG_TAG, $"Score {score} exceeds int range, will be clamped");
+                    stat.IngestAmount = score > int.MaxValue ? int.MaxValue : (score < int.MinValue ? int.MinValue : (int)score);
+                }
 
                 var options = new IngestStatOptions
                 {
                     LocalUserId = EOSManager.Instance.GetProductUserId(),
-                    Stats = new[] { stat },
-                    TargetUserId = EOSManager.Instance.GetProductUserId()
+                    Stats = new[] { stat }
                 };
 
+                // Add target user ID if the property exists
+                if (options.GetType().GetProperty("TargetUserId") != null)
+                {
+                    options.TargetUserId = EOSManager.Instance.GetProductUserId();
+                }
+
+                // Call the stats interface to ingest the stat
                 statsInterface.IngestStat(ref options, null, (ref IngestStatCompleteCallbackInfo callbackInfo) =>
                 {
                     if (callbackInfo.ResultCode == Result.Success)
@@ -727,6 +774,36 @@ namespace RecipeRage.Leaderboards
             // This would be implemented with EOS Connect interface to get display names
             // For now, just use the user ID as the display name
             return userId.ToString();
+        }
+
+        private LeaderboardEntry ConvertRecordToEntry(string leaderboardId, LeaderboardRecord record)
+        {
+            return new LeaderboardEntry
+            {
+                LeaderboardId = leaderboardId,
+                UserId = record.UserId.ToString(),
+                DisplayName = GetDisplayNameFromUserId(record.UserId),
+                Rank = (int)record.Rank + 1, // EOS ranks are 0-based, we use 1-based
+                Score = record.Score,
+                ProviderName = PROVIDER_NAME,
+                Timestamp = DateTime.UtcNow, // EOS doesn't provide a timestamp
+                IsCurrentUser = record.UserId.ToString() ==
+                                EOSManager.Instance.GetProductUserId().ToString()
+            };
+        }
+
+        private LeaderboardEntry ConvertUserScoreToEntry(string leaderboardId, LeaderboardUserScore userScore)
+        {
+            return new LeaderboardEntry
+            {
+                LeaderboardId = leaderboardId,
+                UserId = EOSManager.Instance.GetProductUserId().ToString(),
+                DisplayName = GetDisplayNameFromUserId(EOSManager.Instance.GetProductUserId()),
+                Score = userScore.Score,
+                ProviderName = PROVIDER_NAME,
+                Timestamp = DateTime.UtcNow, // EOS doesn't provide a timestamp
+                IsCurrentUser = true
+            };
         }
     }
 }

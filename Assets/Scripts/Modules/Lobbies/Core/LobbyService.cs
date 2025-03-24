@@ -64,9 +64,9 @@ namespace RecipeRage.Modules.Lobbies.Core
                 provider.OnMemberUpdated += HandleMemberUpdated;
                 provider.OnInviteReceived += HandleInviteReceived;
 
-                provider.Initialize(success =>
+                provider.Initialize(initResult =>
                 {
-                    if (success)
+                    if (initResult)
                     {
                         LogHelper.Info("LobbyService", $"Provider {provider.ProviderName} initialized successfully");
                         providersInitialized++;
@@ -80,10 +80,10 @@ namespace RecipeRage.Modules.Lobbies.Core
                     // If all providers are initialized or failed, complete initialization
                     if (providersInitialized + (totalProviders - providersInitialized) == totalProviders)
                     {
-                        bool success = providersInitialized > 0;
-                        IsInitialized = success;
+                        bool serviceInitialized = providersInitialized > 0;
+                        IsInitialized = serviceInitialized;
 
-                        if (success)
+                        if (serviceInitialized)
                         {
                             LogHelper.Info("LobbyService",
                                 $"LobbyService initialized with {providersInitialized} providers");
@@ -107,7 +107,7 @@ namespace RecipeRage.Modules.Lobbies.Core
                             LogHelper.Error("LobbyService", LastError);
                         }
 
-                        onComplete?.Invoke(success);
+                        onComplete?.Invoke(serviceInitialized);
                     }
                 });
             }

@@ -13,13 +13,15 @@ namespace RecipeRage.Examples
     {
         private const string LOG_TAG = "StoreExample";
 
-        [Header("Store Settings")] [SerializeField]
+        [Header("Store Settings")]
+        [SerializeField]
         private string _defaultOfferId = "example_offer";
 
         [SerializeField] private string _defaultItemId = "example_item";
         [SerializeField] private int _consumeQuantity = 1;
 
-        [Header("UI Components")] [SerializeField]
+        [Header("UI Components")]
+        [SerializeField]
         private InputField _offerIdInput;
 
         [SerializeField] private InputField _itemIdInput;
@@ -54,14 +56,15 @@ namespace RecipeRage.Examples
 
         private void OnEnable()
         {
-            // Register event handlers
-            StoreHelper.RegisterCatalogQueryCallback(OnCatalogQueried);
-            StoreHelper.RegisterInventoryQueryCallback(OnInventoryQueried);
-            StoreHelper.RegisterOffersQueryCallback(OnOffersQueried);
+            // Register event handlers with wrapper methods to match new signatures
+            StoreHelper.RegisterCatalogQueryCallback(items => OnCatalogQueried(items, true));
+            StoreHelper.RegisterInventoryQueryCallback(items => OnInventoryQueried(items, true));
+            StoreHelper.RegisterOffersQueryCallback(offers => OnOffersQueried(offers, true));
             StoreHelper.RegisterPurchaseSuccessCallback(OnPurchaseSuccess);
-            StoreHelper.RegisterPurchaseFailureCallback(OnPurchaseFailure);
+            StoreHelper.RegisterPurchaseFailedCallback((offerId, error) => OnPurchaseFailure(new PurchaseResult { OfferId = offerId, ErrorMessage = error }));
             StoreHelper.RegisterItemAddedCallback(OnItemAdded);
             StoreHelper.RegisterItemConsumedCallback(OnItemConsumed);
+            StoreHelper.RegisterCurrencyBalanceChangedCallback(currencies => { }); // Empty handler
 
             // Initialize UI
             SetupUI();
@@ -69,14 +72,15 @@ namespace RecipeRage.Examples
 
         private void OnDisable()
         {
-            // Unregister event handlers
-            StoreHelper.UnregisterCatalogQueryCallback(OnCatalogQueried);
-            StoreHelper.UnregisterInventoryQueryCallback(OnInventoryQueried);
-            StoreHelper.UnregisterOffersQueryCallback(OnOffersQueried);
+            // Unregister event handlers with matching wrapper methods
+            StoreHelper.UnregisterCatalogQueryCallback(items => OnCatalogQueried(items, true));
+            StoreHelper.UnregisterInventoryQueryCallback(items => OnInventoryQueried(items, true));
+            StoreHelper.UnregisterOffersQueryCallback(offers => OnOffersQueried(offers, true));
             StoreHelper.UnregisterPurchaseSuccessCallback(OnPurchaseSuccess);
-            StoreHelper.UnregisterPurchaseFailureCallback(OnPurchaseFailure);
+            StoreHelper.UnregisterPurchaseFailedCallback((offerId, error) => OnPurchaseFailure(new PurchaseResult { OfferId = offerId, ErrorMessage = error }));
             StoreHelper.UnregisterItemAddedCallback(OnItemAdded);
             StoreHelper.UnregisterItemConsumedCallback(OnItemConsumed);
+            StoreHelper.UnregisterCurrencyBalanceChangedCallback(currencies => { }); // Empty handler
         }
 
         private void SetupUI()
@@ -172,19 +176,11 @@ namespace RecipeRage.Examples
             _statusText.text = "Querying catalog...";
             _resultText.text = "";
 
-            StoreHelper.QueryCatalog((items, success) =>
+            StoreHelper.QueryCatalog(items =>
             {
-                if (success)
-                {
-                    LogHelper.Info(LOG_TAG, $"Successfully queried catalog. Found {items.Count} items.");
-                    _statusText.text = $"Catalog query successful. Found {items.Count} items.";
-                }
-                else
-                {
-                    LogHelper.Error(LOG_TAG, "Failed to query catalog");
-                    _statusText.text = "Failed to query catalog";
-                }
-
+                LogHelper.Info(LOG_TAG, $"Successfully queried catalog. Found {items.Count} items.");
+                _statusText.text = $"Catalog query successful. Found {items.Count} items.";
+                OnCatalogQueried(items, true);
                 UpdateUIState();
             });
         }
@@ -201,19 +197,11 @@ namespace RecipeRage.Examples
             _statusText.text = "Querying inventory...";
             _resultText.text = "";
 
-            StoreHelper.QueryInventory((items, success) =>
+            StoreHelper.QueryInventory(items =>
             {
-                if (success)
-                {
-                    LogHelper.Info(LOG_TAG, $"Successfully queried inventory. Found {items.Count} items.");
-                    _statusText.text = $"Inventory query successful. Found {items.Count} items.";
-                }
-                else
-                {
-                    LogHelper.Error(LOG_TAG, "Failed to query inventory");
-                    _statusText.text = "Failed to query inventory";
-                }
-
+                LogHelper.Info(LOG_TAG, $"Successfully queried inventory. Found {items.Count} items.");
+                _statusText.text = $"Inventory query successful. Found {items.Count} items.";
+                OnInventoryQueried(items, true);
                 UpdateUIState();
             });
         }
@@ -230,19 +218,11 @@ namespace RecipeRage.Examples
             _statusText.text = "Querying offers...";
             _resultText.text = "";
 
-            StoreHelper.QueryOffers((offers, success) =>
+            StoreHelper.QueryOffers(offers =>
             {
-                if (success)
-                {
-                    LogHelper.Info(LOG_TAG, $"Successfully queried offers. Found {offers.Count} offers.");
-                    _statusText.text = $"Offers query successful. Found {offers.Count} offers.";
-                }
-                else
-                {
-                    LogHelper.Error(LOG_TAG, "Failed to query offers");
-                    _statusText.text = "Failed to query offers";
-                }
-
+                LogHelper.Info(LOG_TAG, $"Successfully queried offers. Found {offers.Count} offers.");
+                _statusText.text = $"Offers query successful. Found {offers.Count} offers.";
+                OnOffersQueried(offers, true);
                 UpdateUIState();
             });
         }
@@ -369,14 +349,14 @@ namespace RecipeRage.Examples
             _statusText.text = "Restoring purchases...";
             _resultText.text = "";
 
-            StoreHelper.RestorePurchases((success, items) =>
+            StoreHelper.RestorePurchases(success =>
             {
                 if (success)
                 {
-                    LogHelper.Info(LOG_TAG, $"Successfully restored purchases. Found {items.Count} items.");
-                    _statusText.text = $"Purchases restored successfully. Found {items.Count} items.";
+                    LogHelper.Info(LOG_TAG, "Purchases restored successfully");
+                    _statusText.text = "Purchases restored successfully";
 
-                    // Update inventory
+                    // Refresh inventory
                     QueryInventory();
                 }
                 else
@@ -387,6 +367,14 @@ namespace RecipeRage.Examples
 
                 UpdateUIState();
             });
+        }
+
+        private void OnItemConsumed(string itemId, int quantity)
+        {
+            LogHelper.Info(LOG_TAG, $"Item consumed event: {itemId}, quantity: {quantity}");
+
+            // Update inventory
+            QueryInventory();
         }
 
         // Event handlers
@@ -440,14 +428,6 @@ namespace RecipeRage.Examples
         private void OnItemAdded(InventoryItem item)
         {
             LogHelper.Info(LOG_TAG, $"Item added event: {item.InventoryItemId}");
-
-            // Update inventory
-            QueryInventory();
-        }
-
-        private void OnItemConsumed(string itemId, int quantity)
-        {
-            LogHelper.Info(LOG_TAG, $"Item consumed event: {itemId}, quantity: {quantity}");
 
             // Update inventory
             QueryInventory();

@@ -6,8 +6,8 @@ using PlayEveryWare.EpicOnlineServices;
 using RecipeRage.Core.Patterns;
 using RecipeRage.Modules.Auth.Interfaces;
 using RecipeRage.Modules.Auth.Providers;
+using RecipeRage.Modules.Logging;
 using UnityEngine;
-using Logger = RecipeRage.Core.Services.Logger;
 
 namespace RecipeRage.Modules.Auth.Core
 {
@@ -47,7 +47,7 @@ namespace RecipeRage.Modules.Auth.Core
         public AuthService()
         {
             // This will be called when the singleton is first accessed
-            Logger.Info("AuthService", "Initializing");
+            LogHelper.Info("AuthService", "Initializing");
 
             // Register itself with the ServiceLocator
             ServiceLocator.Instance.Register<IAuthService>(this);
@@ -101,19 +101,19 @@ namespace RecipeRage.Modules.Auth.Core
         {
             if (provider == null)
             {
-                Logger.Error("AuthService", "Cannot register null provider");
+                LogHelper.Error("AuthService", "Cannot register null provider");
                 return;
             }
 
             // Check if provider with the same name already exists
             if (_providers.Any(p => p.ProviderName.Equals(provider.ProviderName, StringComparison.OrdinalIgnoreCase)))
             {
-                Logger.Warning("AuthService", $"Provider with name '{provider.ProviderName}' is already registered");
+                LogHelper.Warning("AuthService", $"Provider with name '{provider.ProviderName}' is already registered");
                 return;
             }
 
             _providers.Add(provider);
-            Logger.Info("AuthService", $"Registered provider '{provider.ProviderName}'");
+            LogHelper.Info("AuthService", $"Registered provider '{provider.ProviderName}'");
         }
 
         /// <summary>
@@ -124,12 +124,12 @@ namespace RecipeRage.Modules.Auth.Core
         {
             if (_isInitialized)
             {
-                Logger.Warning("AuthService", "Already initialized");
+                LogHelper.Warning("AuthService", "Already initialized");
                 onComplete?.Invoke(true);
                 return;
             }
 
-            Logger.Info("AuthService", "Initializing auth service");
+            LogHelper.Info("AuthService", "Initializing auth service");
 
             // Check for auto-login ability
             string lastProviderName = GetLastUsedProviderName();
@@ -139,7 +139,7 @@ namespace RecipeRage.Modules.Auth.Core
 
                 if (lastProvider != null && lastProvider.HasCachedCredentials())
                 {
-                    Logger.Info("AuthService", $"Attempting auto-login with provider '{lastProviderName}'");
+                    LogHelper.Info("AuthService", $"Attempting auto-login with provider '{lastProviderName}'");
                     SignInWithProvider(lastProviderName,
                         user =>
                         {
@@ -148,7 +148,7 @@ namespace RecipeRage.Modules.Auth.Core
                         },
                         error =>
                         {
-                            Logger.Warning("AuthService", $"Auto-login failed - {error}");
+                            LogHelper.Warning("AuthService", $"Auto-login failed - {error}");
                             _isInitialized = true;
                             onComplete?.Invoke(false);
                         });
@@ -175,7 +175,7 @@ namespace RecipeRage.Modules.Auth.Core
             if (provider == null)
             {
                 string errorMessage = $"Provider '{providerName}' not found";
-                Logger.Error("AuthService", errorMessage);
+                LogHelper.Error("AuthService", errorMessage);
                 onFailure?.Invoke(errorMessage);
                 return;
             }
@@ -186,12 +186,12 @@ namespace RecipeRage.Modules.Auth.Core
                     SetCurrentUser(user);
                     PlayerPrefs.SetString(LAST_PROVIDER_KEY, providerName);
                     PlayerPrefs.Save();
-                    Logger.Info("AuthService", $"Successfully authenticated with provider '{providerName}'");
+                    LogHelper.Info("AuthService", $"Successfully authenticated with provider '{providerName}'");
                     onSuccess?.Invoke(user);
                 },
                 error =>
                 {
-                    Logger.Error("AuthService", $"Failed to authenticate with provider '{providerName}': {error}");
+                    LogHelper.Error("AuthService", $"Failed to authenticate with provider '{providerName}': {error}");
                     onFailure?.Invoke(error);
                 }
             );
@@ -209,7 +209,7 @@ namespace RecipeRage.Modules.Auth.Core
             if (provider == null)
             {
                 string errorMessage = $"Provider '{providerName}' not found";
-                Logger.Error("AuthService", errorMessage);
+                LogHelper.Error("AuthService", errorMessage);
                 throw new ArgumentException(errorMessage);
             }
 
@@ -219,12 +219,12 @@ namespace RecipeRage.Modules.Auth.Core
                 SetCurrentUser(user);
                 PlayerPrefs.SetString(LAST_PROVIDER_KEY, providerName);
                 PlayerPrefs.Save();
-                Logger.Info("AuthService", $"Successfully authenticated with provider '{providerName}'");
+                LogHelper.Info("AuthService", $"Successfully authenticated with provider '{providerName}'");
                 return user;
             }
             catch (Exception ex)
             {
-                Logger.Error("AuthService", $"Failed to authenticate with provider '{providerName}': {ex.Message}", ex);
+                LogHelper.Exception("AuthService", ex, $"Failed to authenticate with provider '{providerName}'");
                 throw;
             }
         }
@@ -237,12 +237,12 @@ namespace RecipeRage.Modules.Auth.Core
         {
             if (CurrentUser == null)
             {
-                Logger.Warning("AuthService", "Cannot sign out - no user is signed in");
+                LogHelper.Warning("AuthService", "Cannot sign out - no user is signed in");
                 onComplete?.Invoke();
                 return;
             }
 
-            Logger.Info("AuthService", $"Signing out user from provider '{CurrentUser.Provider.ProviderName}'");
+            LogHelper.Info("AuthService", $"Signing out user from provider '{CurrentUser.Provider.ProviderName}'");
 
             CurrentUser.Provider.SignOut(() =>
             {
@@ -267,13 +267,13 @@ namespace RecipeRage.Modules.Auth.Core
         {
             if (CurrentUser == null || CurrentUser.Provider == null)
             {
-                Logger.Warning("AuthService", "Cannot save preferred provider - no user is signed in");
+                LogHelper.Warning("AuthService", "Cannot save preferred provider - no user is signed in");
                 return;
             }
 
             PlayerPrefs.SetString(LAST_PROVIDER_KEY, CurrentUser.Provider.ProviderName);
             PlayerPrefs.Save();
-            Logger.Info("AuthService", $"Saved '{CurrentUser.Provider.ProviderName}' as preferred provider");
+            LogHelper.Info("AuthService", $"Saved '{CurrentUser.Provider.ProviderName}' as preferred provider");
         }
 
         /// <summary>
@@ -300,13 +300,13 @@ namespace RecipeRage.Modules.Auth.Core
             if (enableGuest)
             {
                 instance.RegisterProvider(new GuestAuthProvider());
-                Logger.Info("AuthService", "Registered Guest auth provider");
+                LogHelper.Info("AuthService", "Registered Guest auth provider");
             }
 
             if (enableFacebook)
             {
                 instance.RegisterProvider(new FacebookAuthProvider());
-                Logger.Info("AuthService", "Registered Facebook auth provider");
+                LogHelper.Info("AuthService", "Registered Facebook auth provider");
             }
 
             if (enableEOS)
@@ -315,11 +315,11 @@ namespace RecipeRage.Modules.Auth.Core
                 if (EOSManager.Instance != null)
                 {
                     instance.RegisterProvider(new EOSDeviceAuthProvider());
-                    Logger.Info("AuthService", "Registered EOS Device auth provider");
+                    LogHelper.Info("AuthService", "Registered EOS Device auth provider");
                 }
                 else
                 {
-                    Logger.Warning("AuthService", "EOS Manager not found, EOS Device auth provider not registered");
+                    LogHelper.Warning("AuthService", "EOS Manager not found, EOS Device auth provider not registered");
                 }
             }
 
