@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using RecipeRage.Modules.Auth.Core;
 using RecipeRage.Modules.Auth.Interfaces;
-using Logger = RecipeRage.Core.Services.Logger;
+using RecipeRage.Modules.Logging;
 
 namespace RecipeRage.Modules.Auth.Providers
 {
@@ -56,7 +56,7 @@ namespace RecipeRage.Modules.Auth.Providers
         {
             if (_isInitialized) return;
 
-            Logger.Info("FacebookAuthProvider", "Initializing Facebook SDK");
+            LogHelper.Info("FacebookAuthProvider", "Initializing Facebook SDK");
 
             // Check if Facebook SDK is available
 #if UNITY_FACEBOOK
@@ -67,13 +67,13 @@ namespace RecipeRage.Modules.Auth.Providers
                     () => {
                         if (FB.IsInitialized)
                         {
-                            Logger.Info("FacebookAuthProvider", "Facebook SDK initialized");
+                            LogHelper.Info("FacebookAuthProvider", "Facebook SDK initialized");
                             FB.ActivateApp();
                             _isInitialized = true;
                         }
                         else
                         {
-                            Logger.Error("FacebookAuthProvider", "Failed to initialize Facebook SDK");
+                            LogHelper.Error("FacebookAuthProvider", "Failed to initialize Facebook SDK");
                         }
                     },
                     isGameShown => {
@@ -92,12 +92,12 @@ namespace RecipeRage.Modules.Auth.Providers
             }
             else
             {
-                Logger.Info("FacebookAuthProvider", "Facebook SDK already initialized");
+                LogHelper.Info("FacebookAuthProvider", "Facebook SDK already initialized");
                 FB.ActivateApp();
                 _isInitialized = true;
             }
 #else
-            Logger.Warning("FacebookAuthProvider",
+            LogHelper.Warning("FacebookAuthProvider",
                 "Facebook SDK is not available. Please import the Facebook SDK for Unity.");
 #endif
 
@@ -124,12 +124,12 @@ namespace RecipeRage.Modules.Auth.Providers
 
             // Check if Facebook SDK is available
 #if UNITY_FACEBOOK
-            Logger.Info("FacebookAuthProvider", "Starting Facebook login");
+            LogHelper.Info("FacebookAuthProvider", "Starting Facebook login");
             
             // Check if the user is already logged in
             if (FB.IsLoggedIn)
             {
-                Logger.Info("FacebookAuthProvider", "User is already logged in, getting profile info");
+                LogHelper.Info("FacebookAuthProvider", "User is already logged in, getting profile info");
                 GetFacebookProfileInfo(onSuccess, onFailure);
                 return;
             }
@@ -140,31 +140,31 @@ namespace RecipeRage.Modules.Auth.Providers
                 {
                     _authInProgress = false;
                     string error = "Facebook login was cancelled by the user";
-                    Logger.Warning("FacebookAuthProvider", error);
+                    LogHelper.Warning("FacebookAuthProvider", error);
                     onFailure?.Invoke(error);
                 }
                 else if (!string.IsNullOrEmpty(result.Error))
                 {
                     _authInProgress = false;
                     string error = $"Facebook login error: {result.Error}";
-                    Logger.Error("FacebookAuthProvider", error);
+                    LogHelper.Error("FacebookAuthProvider", error);
                     onFailure?.Invoke(error);
                 }
                 else
                 {
-                    Logger.Info("FacebookAuthProvider", "Login successful, getting profile info");
+                    LogHelper.Info("FacebookAuthProvider", "Login successful, getting profile info");
                     GetFacebookProfileInfo(onSuccess, onFailure);
                 }
             });
 #else
             _authInProgress = false;
             string error = "Facebook SDK is not available. Please import the Facebook SDK for Unity.";
-            Logger.Error("FacebookAuthProvider", error);
+            LogHelper.Error("FacebookAuthProvider", error);
             onFailure?.Invoke(error);
 
             // For development/testing without Facebook SDK, you can create a mock user
 #if UNITY_EDITOR
-            Logger.Warning("FacebookAuthProvider", "Creating mock Facebook user for testing");
+            LogHelper.Warning("FacebookAuthProvider", "Creating mock Facebook user for testing");
             CreateMockFacebookUser(onSuccess);
 #endif
 #endif
@@ -184,7 +184,7 @@ namespace RecipeRage.Modules.Auth.Providers
                 {
                     _authInProgress = false;
                     string error = $"Error retrieving Facebook profile: {result.Error}";
-                    Logger.Error("FacebookAuthProvider", error);
+                    LogHelper.Error("FacebookAuthProvider", error);
                     onFailure?.Invoke(error);
                     return;
                 }
@@ -214,7 +214,7 @@ namespace RecipeRage.Modules.Auth.Providers
                     isGuest: false
                 );
                 
-                Logger.Info("FacebookAuthProvider", $"Successfully authenticated user {name} (ID: {id})");
+                LogHelper.Info("FacebookAuthProvider", $"Successfully authenticated user {name} (ID: {id})");
                 
                 _authInProgress = false;
                 onSuccess?.Invoke(user);
@@ -248,7 +248,7 @@ namespace RecipeRage.Modules.Auth.Providers
                 accessToken
             );
 
-            Logger.Info("FacebookAuthProvider", $"Created mock Facebook user {name} (ID: {id})");
+            LogHelper.Info("FacebookAuthProvider", $"Created mock Facebook user {name} (ID: {id})");
 
             _authInProgress = false;
             onSuccess?.Invoke(user);
@@ -261,12 +261,12 @@ namespace RecipeRage.Modules.Auth.Providers
         public override void SignOut(Action onComplete = null)
         {
 #if UNITY_FACEBOOK
-            Logger.Info("FacebookAuthProvider", "Logging out from Facebook");
+            LogHelper.Info("FacebookAuthProvider", "Logging out from Facebook");
             
             if (FB.IsLoggedIn)
             {
                 FB.LogOut();
-                Logger.Info("FacebookAuthProvider", "Logged out from Facebook");
+                LogHelper.Info("FacebookAuthProvider", "Logged out from Facebook");
             }
 #endif
 
@@ -302,7 +302,7 @@ namespace RecipeRage.Modules.Auth.Providers
             DeleteFromPlayerPrefs(KEY_USER_ID);
             DeleteFromPlayerPrefs(KEY_DISPLAY_NAME);
             DeleteFromPlayerPrefs(KEY_ACCESS_TOKEN);
-            Logger.Info("FacebookAuthProvider", "Cleared cached credentials");
+            LogHelper.Info("FacebookAuthProvider", "Cleared cached credentials");
         }
     }
 }

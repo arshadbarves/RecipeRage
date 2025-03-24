@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace RecipeRage.Modules.Lobbies.Data
 {
@@ -55,6 +56,11 @@ namespace RecipeRage.Modules.Lobbies.Data
         public LobbyPlayerInfo OwnerPlayer { get; set; } = new LobbyPlayerInfo();
 
         /// <summary>
+        /// ID of the lobby owner
+        /// </summary>
+        public string OwnerId { get; set; } = string.Empty;
+
+        /// <summary>
         /// Attributes associated with the lobby
         /// </summary>
         public Dictionary<string, string> Attributes { get; set; } = new Dictionary<string, string>();
@@ -65,9 +71,19 @@ namespace RecipeRage.Modules.Lobbies.Data
         public DateTime CreationTime { get; set; } = DateTime.MinValue;
 
         /// <summary>
+        /// Time when the lobby was created (alias for CreationTime)
+        /// </summary>
+        public DateTime CreatedAt { get; set; } = DateTime.MinValue;
+
+        /// <summary>
         /// Time when the lobby was last updated
         /// </summary>
         public DateTime LastUpdated { get; set; } = DateTime.MinValue;
+
+        /// <summary>
+        /// Time when the lobby was last updated (alias for LastUpdated)
+        /// </summary>
+        public DateTime LastUpdatedAt { get; set; } = DateTime.MinValue;
 
         /// <summary>
         /// Whether the lobby connection is active
@@ -145,6 +161,21 @@ namespace RecipeRage.Modules.Lobbies.Data
         public string PreviousMatchId => GetAttributeOrDefault("PreviousMatchId", string.Empty);
 
         /// <summary>
+        /// Whether the lobby is joinable
+        /// </summary>
+        public bool IsJoinable { get; set; } = true;
+
+        /// <summary>
+        /// Provider-specific data
+        /// </summary>
+        public object ProviderData { get; set; }
+
+        /// <summary>
+        /// Collection of lobby members
+        /// </summary>
+        public List<LobbyMember> Members { get; set; } = new List<LobbyMember>();
+
+        /// <summary>
         /// Get the value of an attribute or a default if not found
         /// </summary>
         /// <param name="key">Key of the attribute</param>
@@ -218,6 +249,34 @@ namespace RecipeRage.Modules.Lobbies.Data
         }
 
         /// <summary>
+        /// Checks if the current user is the owner of the lobby
+        /// </summary>
+        /// <returns>True if the current user is the owner</returns>
+        public bool IsOwner(string userId)
+        {
+            return userId == OwnerId;
+        }
+
+        /// <summary>
+        /// Checks if the user is a member of the lobby
+        /// </summary>
+        /// <returns>True if the user is a member</returns>
+        public bool IsMember(string userId)
+        {
+            return Members.Any(m => m.UserId == userId);
+        }
+
+        /// <summary>
+        /// Gets a member by user ID
+        /// </summary>
+        /// <param name="userId">User ID to look for</param>
+        /// <returns>The lobby member or null if not found</returns>
+        public LobbyMember GetMember(string userId)
+        {
+            return Members.FirstOrDefault(m => m.UserId == userId);
+        }
+
+        /// <summary>
         /// Convert matchmaking options to lobby attributes
         /// </summary>
         /// <param name="options">Matchmaking options to convert</param>
@@ -232,28 +291,28 @@ namespace RecipeRage.Modules.Lobbies.Data
             Attributes["AllowJoinInProgress"] = options.AllowJoinInProgress.ToString();
             Attributes["IsMatchmakingLobby"] = "true";
             Attributes["MatchmakingSessionId"] = options.SessionId;
-            
+
             if (options.IsRematch)
             {
                 Attributes["IsRematch"] = "true";
                 Attributes["PreviousMatchId"] = options.PreviousMatchId;
             }
-            
+
             if (options.UseSkillBasedMatching)
             {
                 Attributes["IsSkillBasedMatch"] = "true";
                 Attributes["MaxSkillRatingDifference"] = options.MaxSkillRatingDifference.ToString();
             }
-            
+
             // Copy any custom attributes
             foreach (var kvp in options.Attributes)
             {
                 Attributes[kvp.Key] = kvp.Value;
             }
-            
+
             // Mark this as a matchmaking lobby
             IsMatchmakingLobby = true;
-            
+
             // Set region from preferred regions if available
             if (options.PreferredRegions.Count > 0)
             {
@@ -263,11 +322,12 @@ namespace RecipeRage.Modules.Lobbies.Data
         }
 
         /// <summary>
-        /// Create a string representation of the lobby info
+        /// Creates a string representation of the lobby
         /// </summary>
+        /// <returns>String representation</returns>
         public override string ToString()
         {
-            return $"LobbyInfo[ID={LobbyId}, Name={Name}, Players={CurrentPlayers}/{MaxPlayers}]";
+            return $"Lobby '{Name}' ({LobbyId}): {CurrentPlayers}/{MaxPlayers} players";
         }
     }
-} 
+}

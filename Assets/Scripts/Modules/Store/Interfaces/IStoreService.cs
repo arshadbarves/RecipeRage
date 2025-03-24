@@ -68,14 +68,26 @@ namespace RecipeRage.Store
         /// <summary>
         /// Queries the catalog of available items directly from the provider
         /// </summary>
-        /// <param name="callback"> Callback with the list of catalog items and success flag </param>
+        /// <param name="callback">Callback with the list of catalog items and success flag</param>
         void QueryCatalog(Action<List<CatalogItem>, bool> callback);
+
+        /// <summary>
+        /// Queries the player's owned items directly from the provider
+        /// </summary>
+        /// <param name="callback">Callback with the list of inventory items and success flag</param>
+        void QueryInventory(Action<List<InventoryItem>, bool> callback);
+
+        /// <summary>
+        /// Queries the available offers for purchasing items directly from the provider
+        /// </summary>
+        /// <param name="callback">Callback with the list of offers and success flag</param>
+        void QueryOffers(Action<List<StoreOffer>, bool> callback);
 
         /// <summary>
         /// Adds a store provider to the service
         /// </summary>
-        /// <param name="provider"> Provider to add </param>
-        /// <returns> True if the provider was added successfully </returns>
+        /// <param name="provider">Provider to add</param>
+        /// <returns>True if the provider was added successfully</returns>
         bool AddProvider(IStoreProvider provider);
 
         /// <summary>

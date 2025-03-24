@@ -1,7 +1,7 @@
 using RecipeRage.Modules.Auth;
 using RecipeRage.Modules.Auth.Interfaces;
+using RecipeRage.Modules.Logging;
 using UnityEngine;
-using Logger = RecipeRage.Core.Services.Logger;
 
 namespace RecipeRage.Examples
 {
@@ -21,12 +21,12 @@ namespace RecipeRage.Examples
             if (AuthHelper.IsSignedIn())
             {
                 var currentUser = AuthHelper.CurrentUser;
-                Logger.Info("AuthExample",
+                LogHelper.Info("AuthExample",
                     $"User is already signed in: {currentUser.DisplayName} (Provider: {currentUser.Provider.ProviderName})");
             }
             else
             {
-                Logger.Info("AuthExample", "No user is signed in");
+                LogHelper.Info("AuthExample", "No user is signed in");
             }
         }
 
@@ -43,10 +43,10 @@ namespace RecipeRage.Examples
         private void OnAuthStateChanged(IAuthProviderUser user)
         {
             if (user != null)
-                Logger.Info("AuthExample",
+                LogHelper.Info("AuthExample",
                     $"User signed in: {user.DisplayName} (Provider: {user.Provider.ProviderName})");
             else
-                Logger.Info("AuthExample", "User signed out");
+                LogHelper.Info("AuthExample", "User signed out");
         }
 
         /// <summary>
@@ -54,11 +54,11 @@ namespace RecipeRage.Examples
         /// </summary>
         public void SignInAsGuest()
         {
-            Logger.Info("AuthExample", "Signing in as guest...");
+            LogHelper.Info("AuthExample", "Signing in as guest...");
 
             AuthHelper.SignInAsGuest(
-                user => { Logger.Info("AuthExample", $"Guest sign-in successful: {user.DisplayName}"); },
-                error => { Logger.Error("AuthExample", $"Guest sign-in failed: {error}"); }
+                user => { LogHelper.Info("AuthExample", $"Guest sign-in successful: {user.DisplayName}"); },
+                error => { LogHelper.Error("AuthExample", $"Guest sign-in failed: {error}"); }
             );
         }
 
@@ -67,11 +67,11 @@ namespace RecipeRage.Examples
         /// </summary>
         public void SignInWithFacebook()
         {
-            Logger.Info("AuthExample", "Signing in with Facebook...");
+            LogHelper.Info("AuthExample", "Signing in with Facebook...");
 
             AuthHelper.SignInWithFacebook(
-                user => { Logger.Info("AuthExample", $"Facebook sign-in successful: {user.DisplayName}"); },
-                error => { Logger.Error("AuthExample", $"Facebook sign-in failed: {error}"); }
+                user => { LogHelper.Info("AuthExample", $"Facebook sign-in successful: {user.DisplayName}"); },
+                error => { LogHelper.Error("AuthExample", $"Facebook sign-in failed: {error}"); }
             );
         }
 
@@ -82,13 +82,13 @@ namespace RecipeRage.Examples
         {
             if (AuthHelper.IsSignedIn())
             {
-                Logger.Info("AuthExample", "Signing out...");
+                LogHelper.Info("AuthExample", "Signing out...");
 
-                AuthHelper.SignOut(() => { Logger.Info("AuthExample", "Sign-out complete"); });
+                AuthHelper.SignOut(() => { LogHelper.Info("AuthExample", "Sign-out complete"); });
             }
             else
             {
-                Logger.Warning("AuthExample", "Cannot sign out - no user is signed in");
+                LogHelper.Warning("AuthExample", "Cannot sign out - no user is signed in");
             }
         }
 
@@ -97,16 +97,16 @@ namespace RecipeRage.Examples
         /// </summary>
         public void ShowLoginUI()
         {
-            Logger.Info("AuthExample", "Showing login UI...");
+            LogHelper.Info("AuthExample", "Showing login UI...");
 
             AuthHelper.ShowLoginUI(
                 transform,
                 success =>
                 {
                     if (success)
-                        Logger.Info("AuthExample", "Login successful");
+                        LogHelper.Info("AuthExample", "Login successful");
                     else
-                        Logger.Warning("AuthExample", "Login canceled or failed");
+                        LogHelper.Warning("AuthExample", "Login canceled or failed");
                 }
             );
         }
@@ -119,11 +119,11 @@ namespace RecipeRage.Examples
             // This uses the UI factory to create a login UI without any MonoBehaviour dependencies
             // The UI will be created, shown, and managed without the need for a MonoBehaviour component
 
-            Logger.Info("AuthExample", "Showing login UI without MonoBehaviours...");
+            LogHelper.Info("AuthExample", "Showing login UI without MonoBehaviours...");
 
             // The UI Document will be created dynamically
             AuthHelper.ShowLoginUI(
-                onComplete: success => { Logger.Info("AuthExample", $"Login {(success ? "successful" : "failed")}"); }
+                onComplete: success => { LogHelper.Info("AuthExample", $"Login {(success ? "successful" : "failed")}"); }
             );
         }
     }

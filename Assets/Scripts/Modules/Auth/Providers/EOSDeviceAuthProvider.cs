@@ -1,11 +1,11 @@
 using System;
 using Epic.OnlineServices;
-using Epic.OnlineServices.Connect;
+using Connect = Epic.OnlineServices.Connect;
 using PlayEveryWare.EpicOnlineServices;
 using RecipeRage.Modules.Auth.Core;
 using RecipeRage.Modules.Auth.Interfaces;
+using RecipeRage.Modules.Logging;
 using UnityEngine;
-using Logger = RecipeRage.Core.Services.Logger;
 using Random = UnityEngine.Random;
 
 namespace RecipeRage.Modules.Auth.Providers
@@ -53,7 +53,7 @@ namespace RecipeRage.Modules.Auth.Providers
             }
 
             _authInProgress = true;
-            Logger.Info("EOSDeviceAuthProvider", "Starting device authentication");
+            LogHelper.Info("EOSDeviceAuthProvider", "Starting device authentication");
 
             // Get the Connect interface from EOS Manager
             var connectInterface = EOSManager.Instance.GetEOSConnectInterface();
@@ -61,20 +61,20 @@ namespace RecipeRage.Modules.Auth.Providers
             {
                 _authInProgress = false;
                 string error = "EOS Connect interface is not available";
-                Logger.Error("EOSDeviceAuthProvider", error);
+                LogHelper.Error("EOSDeviceAuthProvider", error);
                 onFailure?.Invoke(error);
                 return;
             }
 
             // Create options for device ID creation
-            var createDeviceOptions = new CreateDeviceIdOptions
+            var createDeviceOptions = new Connect.CreateDeviceIdOptions
             {
                 DeviceModel = SystemInfo.deviceModel
             };
 
             // Start the device creation/authentication flow
             connectInterface.CreateDeviceId(ref createDeviceOptions, null,
-                (ref CreateDeviceIdCallbackInfo callbackInfo) =>
+                (ref Connect.CreateDeviceIdCallbackInfo callbackInfo) =>
                 {
                     if (callbackInfo.ResultCode == Result.Success ||
                         callbackInfo.ResultCode == Result.DuplicateNotAllowed)
@@ -84,7 +84,7 @@ namespace RecipeRage.Modules.Auth.Providers
                         if (string.IsNullOrEmpty(displayName) || displayName == "Unknown")
                             displayName = $"Player{Random.Range(1000, 9999)}";
 
-                        Logger.Info("EOSDeviceAuthProvider", $"Device ID created, logging in as {displayName}");
+                        LogHelper.Info("EOSDeviceAuthProvider", $"Device ID created, logging in as {displayName}");
 
                         // Login with the device credentials
                         EOSManager.Instance.StartConnectLoginWithOptions(
@@ -98,7 +98,7 @@ namespace RecipeRage.Modules.Auth.Providers
                     {
                         _authInProgress = false;
                         string error = $"Failed to create Device ID: {callbackInfo.ResultCode}";
-                        Logger.Error("EOSDeviceAuthProvider", error);
+                        LogHelper.Error("EOSDeviceAuthProvider", error);
                         onFailure?.Invoke(error);
                     }
                 });
@@ -110,13 +110,13 @@ namespace RecipeRage.Modules.Auth.Providers
         /// <param name="loginCallbackInfo"> Login callback info </param>
         /// <param name="onSuccess"> Success callback </param>
         /// <param name="onFailure"> Failure callback </param>
-        private void HandleLoginCallback(LoginCallbackInfo loginCallbackInfo, Action<IAuthProviderUser> onSuccess,
+        private void HandleLoginCallback(Connect.LoginCallbackInfo loginCallbackInfo, Action<IAuthProviderUser> onSuccess,
             Action<string> onFailure)
         {
             if (loginCallbackInfo.ResultCode == Result.Success)
             {
                 // Login successful
-                Logger.Info("EOSDeviceAuthProvider",
+                LogHelper.Info("EOSDeviceAuthProvider",
                     $"Login successful, ProductUserId: {loginCallbackInfo.LocalUserId}");
 
                 // Save the product user ID
@@ -142,7 +142,7 @@ namespace RecipeRage.Modules.Auth.Providers
             else if (loginCallbackInfo.ResultCode == Result.InvalidUser)
             {
                 // New user needs to be created
-                Logger.Info("EOSDeviceAuthProvider", "New user needs to be created");
+                LogHelper.Info("EOSDeviceAuthProvider", "New user needs to be created");
 
                 // Create a new connect user with the continuance token
                 EOSManager.Instance.CreateConnectUserWithContinuanceToken(
@@ -151,7 +151,7 @@ namespace RecipeRage.Modules.Auth.Providers
                     {
                         if (createUserCallbackInfo.ResultCode == Result.Success)
                         {
-                            Logger.Info("EOSDeviceAuthProvider", "New user created, trying to login again");
+                            LogHelper.Info("EOSDeviceAuthProvider", "New user created, trying to login again");
 
                             // Try to login again after creating the user
                             Authenticate(onSuccess, onFailure);
@@ -160,7 +160,7 @@ namespace RecipeRage.Modules.Auth.Providers
                         {
                             _authInProgress = false;
                             string error = $"Failed to create user: {createUserCallbackInfo.ResultCode}";
-                            Logger.Error("EOSDeviceAuthProvider", error);
+                            LogHelper.Error("EOSDeviceAuthProvider", error);
                             onFailure?.Invoke(error);
                         }
                     }
@@ -171,7 +171,7 @@ namespace RecipeRage.Modules.Auth.Providers
                 // Login failed
                 _authInProgress = false;
                 string error = $"Login failed: {loginCallbackInfo.ResultCode}";
-                Logger.Error("EOSDeviceAuthProvider", error);
+                LogHelper.Error("EOSDeviceAuthProvider", error);
                 onFailure?.Invoke(error);
             }
         }
@@ -183,17 +183,46 @@ namespace RecipeRage.Modules.Auth.Providers
         /// <param name="callback"> Callback with display name </param>
         private void GetUserDisplayName(ProductUserId productUserId, Action<string> callback)
         {
-            // Try to get display name from user info manager
-            var userInfoManager = EOSManager.Instance.GetOrCreateManager<EOSUserInfoManager>();
-            if (userInfoManager != null)
+            try
             {
-                // Request user info
-                var userInfo = userInfoManager.GetUserInfo(productUserId);
-                if (userInfo != null && !string.IsNullOrEmpty(userInfo.DisplayName))
+                // Try to get display name from user info manager
+                // Use Type.GetType to locate the EOSUserInfoManager class at runtime from the sample plugin
+                Type userInfoManagerType = Type.GetType("EOSUserInfoManager, Assembly-CSharp");
+                if (userInfoManagerType != null)
                 {
-                    callback(userInfo.DisplayName);
-                    return;
+                    var getOrCreateMethod = typeof(EOSManager).GetMethod("GetOrCreateManager")?.MakeGenericMethod(userInfoManagerType);
+                    if (getOrCreateMethod != null)
+                    {
+                        var userInfoManager = getOrCreateMethod.Invoke(EOSManager.Instance, null);
+                        if (userInfoManager != null)
+                        {
+                            // Try to get user info using reflection
+                            var getUserInfoMethod = userInfoManagerType.GetMethod("GetUserInfo", new[] { typeof(ProductUserId) });
+                            if (getUserInfoMethod != null)
+                            {
+                                var userInfo = getUserInfoMethod.Invoke(userInfoManager, new object[] { productUserId });
+                                if (userInfo != null)
+                                {
+                                    var displayNameProperty = userInfo.GetType().GetProperty("DisplayName");
+                                    if (displayNameProperty != null)
+                                    {
+                                        string displayName = displayNameProperty.GetValue(userInfo) as string;
+                                        if (!string.IsNullOrEmpty(displayName))
+                                        {
+                                            callback(displayName);
+                                            return;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Warning("EOSDeviceAuthProvider", $"Error getting display name: {ex.Message}");
+                // Continue to fallback
             }
 
             // Fall back to a generic name if no display name is available
@@ -219,7 +248,7 @@ namespace RecipeRage.Modules.Auth.Providers
         {
             DeleteFromPlayerPrefs(KEY_PRODUCT_USER_ID);
             DeleteFromPlayerPrefs(KEY_DISPLAY_NAME);
-            Logger.Info("EOSDeviceAuthProvider", "Cleared cached credentials");
+            LogHelper.Info("EOSDeviceAuthProvider", "Cleared cached credentials");
         }
 
         /// <summary>
@@ -228,52 +257,50 @@ namespace RecipeRage.Modules.Auth.Providers
         /// <param name="onComplete"> Callback when sign out is complete </param>
         public override void SignOut(Action onComplete = null)
         {
-            // Check if we have cached credentials
-            if (HasCachedCredentials())
+            LogHelper.Info("EOSDeviceAuthProvider", "Signing out");
+
+            // Clear cached credentials
+            ClearCachedCredentials();
+
+            var connectInterface = EOSManager.Instance.GetEOSConnectInterface();
+            if (connectInterface != null)
             {
-                string productUserIdStr = LoadFromPlayerPrefs(KEY_PRODUCT_USER_ID);
-
-                // Try to sign out from EOS if we have a valid product user ID
-                if (!string.IsNullOrEmpty(productUserIdStr))
+                var productUserId = EOSManager.Instance.GetProductUserId();
+                if (productUserId != null && productUserId.IsValid())
                 {
-                    Logger.Info("EOSDeviceAuthProvider", $"Signing out user {productUserIdStr}");
-
-                    // Attempt to logout from EOS Connect
-                    var connectInterface = EOSManager.Instance.GetEOSConnectInterface();
-                    if (connectInterface != null)
+                    // Log out of EOS Connect
+                    var connectLogoutOptions = new Connect.LogoutOptions
                     {
-                        // Parse the product user ID
-                        var productUserId = ProductUserId.FromString(productUserIdStr);
-                        if (productUserId != null && productUserId.IsValid())
+                        LocalUserId = productUserId
+                    };
+
+                    connectInterface.Logout(ref connectLogoutOptions, null,
+                        (ref Connect.LogoutCallbackInfo logoutCallbackInfo) =>
                         {
-                            var logoutOptions = new LogoutOptions
+                            if (logoutCallbackInfo.ResultCode == Result.Success)
                             {
-                                LocalUserId = productUserId
-                            };
+                                LogHelper.Info("EOSDeviceAuthProvider", "Successfully logged out of EOS Connect");
+                            }
+                            else
+                            {
+                                LogHelper.Warning("EOSDeviceAuthProvider",
+                                    $"Failed to log out of EOS Connect: {logoutCallbackInfo.ResultCode}");
+                            }
 
-                            connectInterface.Logout(ref logoutOptions, null,
-                                (ref LogoutCallbackInfo logoutCallbackInfo) =>
-                                {
-                                    if (logoutCallbackInfo.ResultCode == Result.Success)
-                                        Logger.Info("EOSDeviceAuthProvider", "Logout successful");
-                                    else
-                                        Logger.Warning("EOSDeviceAuthProvider",
-                                            $"Logout returned {logoutCallbackInfo.ResultCode}");
-
-                                    // Clear credentials even if logout fails
-                                    ClearCachedCredentials();
-                                    onComplete?.Invoke();
-                                });
-
-                            return;
-                        }
-                    }
+                            onComplete?.Invoke();
+                        });
+                }
+                else
+                {
+                    LogHelper.Warning("EOSDeviceAuthProvider", "No valid product user ID to log out");
+                    onComplete?.Invoke();
                 }
             }
-
-            // If we can't sign out properly, just clear credentials
-            ClearCachedCredentials();
-            onComplete?.Invoke();
+            else
+            {
+                LogHelper.Warning("EOSDeviceAuthProvider", "EOS Connect interface is not available");
+                onComplete?.Invoke();
+            }
         }
     }
 }

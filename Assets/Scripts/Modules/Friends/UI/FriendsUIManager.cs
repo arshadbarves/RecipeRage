@@ -2,6 +2,7 @@ using RecipeRage.Modules.Friends.Data;
 using RecipeRage.Modules.Friends.UI.Components;
 using RecipeRage.Modules.Logging;
 using RecipeRage.Modules.Logging.Interfaces;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -16,7 +17,8 @@ namespace RecipeRage.Modules.Friends.UI
     {
         [SerializeField] private UIDocument _document;
 
-        [Header("UI Components")] [SerializeField]
+        [Header("UI Components")]
+        [SerializeField]
         private FriendsListComponent _friendsListComponent;
 
         [SerializeField] private FriendRequestsComponent _friendRequestsComponent;
@@ -74,7 +76,7 @@ namespace RecipeRage.Modules.Friends.UI
 
             // Make sure Friends system is initialized
             if (!FriendsHelper.IsInitialized)
-                FriendsHelper.Initialize(OnFriendsInitialized);
+                FriendsHelper.Initialize(true, OnFriendsInitialized);
             else
                 OnFriendsInitialized(true);
         }
