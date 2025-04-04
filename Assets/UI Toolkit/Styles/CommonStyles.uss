@@ -1,0 +1,115 @@
+:root {
+    /* --- Color Palette (Example - Adjust to your liking!) --- */
+    --color-primary: rgb(255, 120, 0); /* Bright Orange */
+    --color-primary-dark: rgb(210, 90, 0);
+    --color-secondary: rgb(0, 180, 210); /* Bright Teal */
+    --color-accent: rgb(255, 210, 0); /* Bright Yellow */
+    --color-background-light: rgb(250, 245, 235); /* Light Cream */
+    --color-background-dark: rgb(40, 45, 55); /* Dark contrast */
+    --color-text-light: rgb(255, 255, 255);
+    --color-text-dark: rgb(50, 50, 50);
+    --color-text-muted: rgb(150, 150, 150);
+
+    /* --- Typography (Placeholder - Use your imported font!) --- */
+    /* --font-family-bold: resource("Fonts/YourBoldGameFont-Bold"); */
+    /* --font-family-regular: resource("Fonts/YourBoldGameFont-Regular"); */
+    --font-size-large: 48px;
+    --font-size-medium: 30px;
+    --font-size-normal: 24px;
+    --font-size-small: 18px;
+
+    /* --- UI Elements --- */
+    --corner-radius: 15px;
+    --button-padding: 15px 30px;
+    --element-spacing: 10px;
+    --transition-duration: 0.1s;
+}
+
+/* ========= Common Styles ========= */
+
+/* Default font settings */
+* {
+    /* font-family: var(--font-family-regular); */
+    color: var(--color-text-dark);
+}
+
+.screen-root {
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+    padding: 20px; /* Add some base padding */
+}
+
+.title-label {
+    /* font-family: var(--font-family-bold); */
+    font-size: var(--font-size-large);
+    -unity-font-style: bold; /* Keep bold for now */
+    color: var(--color-text-light); 
+    margin-bottom: var(--element-spacing);
+    -unity-text-align: middle-center;
+    /* Add a subtle shadow for depth */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.status-label {
+    /* font-family: var(--font-family-regular); */
+    font-size: var(--font-size-normal);
+    color: var(--color-text-muted);
+    -unity-text-align: middle-center;
+    margin-top: var(--element-spacing);
+}
+
+.button {
+    min-width: 180px;
+    min-height: 60px;
+    padding: var(--button-padding);
+    margin: var(--element-spacing);
+    /* font-family: var(--font-family-bold); */
+    font-size: var(--font-size-medium);
+    -unity-font-style: bold; /* Keep bold for now */
+    color: var(--color-text-light);
+    background-color: var(--color-primary);
+    border-color: var(--color-primary-dark);
+    border-width: 0 0 4px 0; /* Bottom border for 3D effect */
+    border-radius: var(--corner-radius);
+    -unity-text-align: middle-center;
+    cursor: pointer;
+    /* Transitions for hover/active effects */
+    transition-property: scale, background-color, border-color;
+    transition-duration: var(--transition-duration);
+    transition-timing-function: ease-out;
+}
+
+.button:hover {
+    background-color: var(--color-primary-dark);
+    scale: 1.05 1.05;
+}
+
+.button:active {
+    background-color: var(--color-primary-dark);
+    scale: 0.98 0.98;
+    border-width: 0; /* Flatten on press */
+    margin-top: calc(var(--element-spacing) + 4px); /* Adjust margin to simulate press */
+    margin-bottom: calc(var(--element-spacing) - 4px);
+}
+
+.button .icon {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+    -unity-background-scale-mode: scale-to-fit;
+    -unity-tint-color: var(--color-text-light); /* Tint icon */
+}
+
+/* Common Panel Style */
+.panel {
+    background-color: rgba(0, 0, 0, 0.3); /* Semi-transparent dark panel */
+    padding: 20px;
+    border-radius: var(--corner-radius);
+    border-width: 2px;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Remove old specific styles */
+/* .loading-spinner { ... } */
+/* .main-content { ... } */
