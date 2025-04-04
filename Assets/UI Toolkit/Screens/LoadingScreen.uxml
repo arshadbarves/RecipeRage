@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI%20Toolkit/Styles/CommonStyles.uss?fileID=7433441132597879392&amp;guid=4351ee8aa783a46feabac4907d962796&amp;type=3#CommonStyles" />
+    <ui:VisualElement name="LoadingScreenRoot" class="screen-root" style="background-color: rgb(50, 50, 80);">
+        <ui:Label text="Initializing Systems" name="TitleLabel" class="title-label" />
+        <ui:VisualElement name="Spinner" />
+        <ui:Label text="Authenticating..." name="StatusLabel" class="status-label" />
+    </ui:VisualElement>
+</ui:UXML>

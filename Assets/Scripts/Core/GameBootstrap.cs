@@ -4,6 +4,7 @@ using RecipeRage.Modules.Auth;
 using RecipeRage.Modules.Logging;
 using RecipeRage.Modules.Logging.Interfaces;
 using UnityEngine;
+using RecipeRage.UI.Core;
 
 namespace RecipeRage.Core
 {
@@ -32,6 +33,7 @@ namespace RecipeRage.Core
 
         // Tracks whether subsystems have been initialized
         private bool _logServiceInitialized;
+        private bool _authInitializationRequested = false;
 
         /// <summary>
         /// Initialize core systems on Awake
@@ -60,28 +62,64 @@ namespace RecipeRage.Core
             // Initialize authentication system
             if (_initializeAuth)
             {
-                // Use the self-initializing AuthHelper instead of direct initialization
-                AuthHelper.Initialize(
-                    _enableGuestLogin,
-                    _enableFacebookLogin,
-                    _enableEOSDeviceLogin && _eosInitialized,
-                    success =>
-                    {
-                        if (success)
-                        {
-                            LogHelper.Info("GameBootstrap", "Authentication system auto-login successful");
-                        }
-                        else
-                        {
-                            LogHelper.Info("GameBootstrap", "Authentication system initialized, no auto-login");
-                        }
-                    }
-                );
+                RequestAuthInitialization();
+            }
+            else
+            {
+                _authInitializationRequested = true;
             }
 
             // Add more subsystem initializations here as needed
 
-            LogHelper.Info("GameBootstrap", "All systems initialized");
+            // Now that core bootstrap is done, start the UI flow
+            StartUI();
+
+            LogHelper.Info("GameBootstrap", "All core systems initialization requested.");
+        }
+
+        private void RequestAuthInitialization()
+        {
+            if (_authInitializationRequested) return;
+
+            // Use the self-initializing AuthHelper instead of direct initialization
+            AuthHelper.Initialize(
+                _enableGuestLogin,
+                _enableFacebookLogin,
+                _enableEOSDeviceLogin && _eosInitialized,
+                success =>
+                {
+                    if (success)
+                    {
+                        LogHelper.Info("GameBootstrap", "Authentication system auto-login successful");
+                    }
+                    else
+                    {
+                        LogHelper.Info("GameBootstrap", "Authentication system initialized, no auto-login or pending.");
+                    }
+                    // Mark auth init as requested/handled AFTER the callback fires or immediately if sync
+                    _authInitializationRequested = true;
+                    // Note: The actual sign-in might still be async, Loading screen handles waiting
+                }
+            );
+            // If AuthHelper.Initialize was synchronous, mark immediately.
+            // If it's purely async via callback, this might be slightly premature,
+            // but the Loading screen waits for IsSignedIn anyway.
+            // _authInitializationRequested = true; // Moved inside callback for safety if Initialize itself is async
+        }
+
+        private void StartUI()
+        {
+            // Ensure the UI Manager exists and let it start its flow
+            if (UIScreenManager.Instance != null)
+            {
+                LogHelper.Info("GameBootstrap", "Triggering UI Manager to show initial screen.");
+                // Explicitly call the startup method on UIScreenManager
+                UIScreenManager.Instance.StartUIManager();
+            }
+            else
+            {
+                LogHelper.Error("GameBootstrap", "UIScreenManager instance not found. UI cannot be started.");
+            }
         }
 
         /// <summary>

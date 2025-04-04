@@ -56,10 +56,8 @@ namespace RecipeRage.UI.Animation
         public void AddValueAnimation(IValueAnimation animation)
         {
             _valueAnimations.Add(animation);
-
-            // Register for animation completion via Unity's animation system
-            // Since there's no direct event in IValueAnimation, we'll check for completion in Update
-            _element.schedule.Execute(() => CheckAnimationCompletion());
+            // We need to trigger the check manually when starting
+            // (The internal check will reschedule itself)
         }
 
         /// <summary>
@@ -98,7 +96,7 @@ namespace RecipeRage.UI.Animation
 
             _isPlaying = true;
             _currentSequenceIndex = 0;
-            _completedAnimationsCount = 0;
+            _completedAnimationsCount = 0; // Reset completion count
 
             if (_sequenceActions.Count > 0)
             {
@@ -108,18 +106,33 @@ namespace RecipeRage.UI.Animation
             {
                 PlayAllAnimations();
             }
+            // Start the completion check after starting animations
+            if (_valueAnimations.Count > 0 && _isPlaying)
+            {
+                _element.schedule.Execute(CheckAnimationCompletion).StartingIn(16); // Start check shortly after Play
+            }
         }
 
         /// <summary>
-        /// Stop all animations
+        /// Stop all value animations associated with this UIAnimation instance.
         /// </summary>
         public void Stop()
         {
-            _isPlaying = false;
+            _isPlaying = false; // Mark our wrapper as stopped
 
             foreach (var animation in _valueAnimations)
             {
-                animation.Stop();
+                if (animation != null && animation.isRunning)
+                {
+                    try
+                    {
+                        animation.Stop();
+                    }
+                    catch (InvalidOperationException ex)
+                    {
+                        Modules.Logging.LogHelper.Warning("UIAnimation.Stop", $"Caught exception stopping animation (likely already recycled): {ex.Message}");
+                    }
+                }
             }
         }
 
@@ -135,31 +148,43 @@ namespace RecipeRage.UI.Animation
             {
                 animation.Start();
             }
+            // Start the completion check after starting animations
+            // Moved to Play() method to handle both sequence and direct play
         }
 
-        // Uses the schedule system to check for animation completion
+        // Use the schedule system to check for animation completion
         private void CheckAnimationCompletion()
         {
-            if (!_isPlaying) return;
+            if (!_isPlaying) return; // Stop checking if Stop() was called
 
             int runningCount = 0;
             foreach (var anim in _valueAnimations)
             {
-                if (anim.isRunning)
+                // Check if animation is valid and running
+                if (anim != null && anim.isRunning)
                 {
                     runningCount++;
                 }
             }
 
-            // If no animations are running, consider the sequence complete
-            if (runningCount == 0 && _valueAnimations.Count > 0)
+            // If no animations are running, consider the step complete
+            if (runningCount == 0)
             {
-                HandleAnimationComplete();
+                if (_sequenceActions.Count > 0 && _currentSequenceIndex < _sequenceActions.Count)
+                {
+                    // If in a sequence, play the next step
+                    PlayNextInSequence();
+                }
+                else
+                {
+                    // Otherwise, the entire animation is complete
+                    HandleAnimationComplete();
+                }
             }
-            else if (_isPlaying)
+            else if (_isPlaying) // Only reschedule if still playing
             {
                 // Continue checking until animations complete
-                _element.schedule.Execute(() => CheckAnimationCompletion()).StartingIn(16); // Check roughly every frame
+                _element.schedule.Execute(CheckAnimationCompletion).StartingIn(16); // Check roughly every frame
             }
         }
 
@@ -167,16 +192,26 @@ namespace RecipeRage.UI.Animation
         {
             if (_currentSequenceIndex >= _sequenceActions.Count)
             {
+                // Should not happen if called from CheckAnimationCompletion, but safe fallback
                 HandleAnimationComplete();
                 return;
             }
 
+            // Execute the action which should create and play the next animation(s)
             _sequenceActions[_currentSequenceIndex].Invoke();
             _currentSequenceIndex++;
+
+            // Immediately start checking for the completion of this new step
+            if (_isPlaying)
+            {
+                _element.schedule.Execute(CheckAnimationCompletion).StartingIn(16);
+            }
         }
 
         private void HandleAnimationComplete()
         {
+            if (!_isPlaying) return; // Don't run completion logic if Stop() was called
+
             if (_isLooping)
             {
                 Play(); // Restart from beginning
@@ -184,6 +219,8 @@ namespace RecipeRage.UI.Animation
             else
             {
                 _isPlaying = false;
+                // Unregister from controller? Need reference for that.
+                // UIAnimationController.Instance?.UnregisterAnimation(this);
                 _onComplete?.Invoke();
             }
         }
