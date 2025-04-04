@@ -1,5 +1,6 @@
 using RecipeRage.Core.GameFramework.State;
 using RecipeRage.Core.GameFramework.State.States;
+using RecipeRage.Core.Input;
 using RecipeRage.Core.Patterns;
 using UnityEngine;
 
@@ -22,9 +23,9 @@ namespace RecipeRage.Core
         protected override void Awake()
         {
             base.Awake();
-            
+
             Debug.Log("[GameBootstrap] Initializing game bootstrap");
-            
+
             // Initialize core systems
             InitializeCoreSystems();
         }
@@ -39,10 +40,10 @@ namespace RecipeRage.Core
             {
                 InitializeEOS();
             }
-            
+
             // Initialize game state manager
             InitializeGameStateManager();
-            
+
             Debug.Log("[GameBootstrap] All core systems initialized");
         }
 
@@ -52,7 +53,7 @@ namespace RecipeRage.Core
         protected override void OnDestroy()
         {
             base.OnDestroy();
-            
+
             // Unregister application quit handler
             Application.quitting -= OnApplicationQuit;
         }
@@ -63,7 +64,7 @@ namespace RecipeRage.Core
         private void OnApplicationQuit()
         {
             Debug.Log("[GameBootstrap] Application quitting, shutting down services");
-            
+
             // Clean up any resources here
         }
 
@@ -73,14 +74,15 @@ namespace RecipeRage.Core
         private void InitializeCoreSystems()
         {
             Debug.Log("[GameBootstrap] Initializing core systems");
-            
+
             // Register for application quit to properly shut down
             Application.quitting += OnApplicationQuit;
-            
+
             // Initialize service locator
             ServiceLocator.Instance.Clear();
-            
-            // TODO: Initialize other core systems (logging, input, etc.)
+
+            // Initialize input manager
+            InitializeInputManager();
         }
 
         /// <summary>
@@ -92,13 +94,29 @@ namespace RecipeRage.Core
             {
                 return;
             }
-            
+
             Debug.Log("[GameBootstrap] Initializing Epic Online Services");
-            
+
             // TODO: Initialize EOS SDK
-            
+
             _eosInitialized = true;
             Debug.Log("[GameBootstrap] Epic Online Services initialized");
+        }
+
+        /// <summary>
+        /// Initialize the input manager
+        /// </summary>
+        private void InitializeInputManager()
+        {
+            Debug.Log("[GameBootstrap] Initializing input manager");
+
+            // Ensure the input manager exists
+            InputManager inputManager = InputManager.Instance;
+
+            // Register the input manager with the service locator
+            ServiceLocator.Instance.Register<InputManager>(inputManager);
+
+            Debug.Log("[GameBootstrap] Input manager initialized");
         }
 
         /// <summary>
@@ -107,19 +125,22 @@ namespace RecipeRage.Core
         private void InitializeGameStateManager()
         {
             Debug.Log("[GameBootstrap] Initializing game state manager");
-            
+
             // Ensure the game state manager exists
             GameStateManager gameStateManager = GameStateManager.Instance;
-            
+
+            // Register the game state manager with the service locator
+            ServiceLocator.Instance.Register<GameStateManager>(gameStateManager);
+
             // Create initial state (loading state)
             LoadingState loadingState = new LoadingState();
-            
+
             // Subscribe to loading complete event
             loadingState.OnLoadingComplete += HandleLoadingComplete;
-            
+
             // Initialize the game state manager with the loading state
             gameStateManager.Initialize(loadingState);
-            
+
             Debug.Log("[GameBootstrap] Game state manager initialized");
         }
 
@@ -129,10 +150,10 @@ namespace RecipeRage.Core
         private void HandleLoadingComplete()
         {
             Debug.Log("[GameBootstrap] Loading complete, transitioning to main menu");
-            
+
             // Create main menu state
             MainMenuState mainMenuState = new MainMenuState();
-            
+
             // Transition to main menu
             GameStateManager.Instance.ChangeState(mainMenuState);
         }
