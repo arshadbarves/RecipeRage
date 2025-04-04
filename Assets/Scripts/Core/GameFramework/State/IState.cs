@@ -1,0 +1,28 @@
+namespace RecipeRage.Core.GameFramework.State
+{
+    /// <summary>
+    /// Interface for game states in the state machine pattern.
+    /// </summary>
+    public interface IState
+    {
+        /// <summary>
+        /// Called when the state is entered.
+        /// </summary>
+        void Enter();
+        
+        /// <summary>
+        /// Called when the state is exited.
+        /// </summary>
+        void Exit();
+        
+        /// <summary>
+        /// Called every frame to update the state.
+        /// </summary>
+        void Update();
+        
+        /// <summary>
+        /// Called at fixed intervals for physics updates.
+        /// </summary>
+        void FixedUpdate();
+    }
+}
