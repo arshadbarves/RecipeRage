@@ -37,14 +37,13 @@ namespace RecipeRage.Core.Patterns
         {
             Type type = typeof(T);
             
-            if (_services.ContainsKey(type))
+            if (!_services.TryAdd(type, service))
             {
                 Debug.LogWarning($"[ServiceLocator] Service of type {type.Name} already registered. Overwriting.");
                 _services[type] = service;
             }
             else
             {
-                _services.Add(type, service);
                 Debug.Log($"[ServiceLocator] Service of type {type.Name} registered.");
             }
         }
