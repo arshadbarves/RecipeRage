@@ -19,13 +19,14 @@ RecipeRage is a mobile multiplayer cooking game similar to Overcooked using Epic
 - Implemented state management system (StateMachine, GameState, GameStateManager)
 - Created basic game states (LoadingState, MainMenuState, MatchmakingState, GameplayState)
 - Implemented GameBootstrap for game initialization
+- Implemented input management system with support for touch and keyboard input
+- Implemented player controller system with movement and interaction capabilities
+- Created interaction system with base classes for interactable objects
 
 ## In Progress
-- Player controller system
-- Input management system
+- Basic networking foundation with EOS
 
 ## Next Steps
-- Basic networking foundation with EOS
 - Task system for recipes and orders
 - Object interaction system
 - Complete Core Framework (Phase 1)
