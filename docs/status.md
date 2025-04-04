@@ -4,7 +4,7 @@
 RecipeRage is a mobile multiplayer cooking game similar to Overcooked using Epic Online Services (EOS) for networking. The game features multiple game modes (Classic, Time Attack, Team Battle), character classes with unique abilities, lobby/matchmaking system, shop with currencies (coins/gems), power-ups, and monetization through ads and IAPs.
 
 ## Current Status
-- **Phase**: Clean Start & Core Framework Implementation (Phase 1)
+- **Phase**: Core Framework Implementation (Phase 1)
 - **Last Updated**: July 10, 2024
 - **Decision**: Starting completely fresh implementation based on the architecture roadmap
 
@@ -15,13 +15,16 @@ RecipeRage is a mobile multiplayer cooking game similar to Overcooked using Epic
 - Created clean-start branch for fresh implementation
 - Project cleanup and reorganization (removed old implementation code)
 - Created directory structure for new implementation
+- Implemented core patterns (Singleton, MonoBehaviourSingleton, ServiceLocator)
+- Implemented state management system (StateMachine, GameState, GameStateManager)
+- Created basic game states (LoadingState, MainMenuState, MatchmakingState, GameplayState)
+- Implemented GameBootstrap for game initialization
 
 ## In Progress
-- Core framework implementation
-- Game state management system
+- Player controller system
+- Input management system
 
 ## Next Steps
-- Player controller system
 - Basic networking foundation with EOS
 - Task system for recipes and orders
 - Object interaction system
