@@ -7,6 +7,16 @@
       "dependencies": {},
       "hash": "f057abff0f4ea52e4c9699c2831808d6c0a27bcc"
     },
+    "com.justinpbarnett.unity-mcp": {
+      "version": "https://github.com/justinpbarnett/unity-mcp.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.nuget.newtonsoft-json": "3.0.2",
+        "com.unity.render-pipelines.universal": "12.1.7"
+      },
+      "hash": "13508f2e56e7ac0868489d97132b901b4f74d161"
+    },
     "com.playeveryware.eos": {
       "version": "git@github.com:PlayEveryWare/eos_plugin_for_unity_upm.git",
       "depth": 0,
