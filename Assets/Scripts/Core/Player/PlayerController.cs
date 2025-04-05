@@ -180,7 +180,7 @@ namespace RecipeRage.Core.Player
                 _velocity = Vector3.Lerp(_velocity, Vector3.zero, Time.fixedDeltaTime * 10f);
                 
                 // Apply velocity
-                _rigidbody.velocity = _velocity;
+                _rigidbody.linearVelocity = _velocity;
                 return;
             }
             
@@ -194,7 +194,7 @@ namespace RecipeRage.Core.Player
             _velocity = Vector3.Lerp(_velocity, targetVelocity, Time.fixedDeltaTime * 10f);
             
             // Apply velocity
-            _rigidbody.velocity = _velocity;
+            _rigidbody.linearVelocity = _velocity;
             
             // Update facing direction if moving
             if (movement.sqrMagnitude > 0.01f)
