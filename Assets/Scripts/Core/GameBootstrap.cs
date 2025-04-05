@@ -1,6 +1,7 @@
 using RecipeRage.Core.GameFramework.State;
 using RecipeRage.Core.GameFramework.State.States;
 using RecipeRage.Core.Input;
+using RecipeRage.Core.Networking;
 using RecipeRage.Core.Patterns;
 using UnityEngine;
 
@@ -83,6 +84,9 @@ namespace RecipeRage.Core
 
             // Initialize input manager
             InitializeInputManager();
+
+            // Initialize network manager
+            InitializeNetworkManager();
         }
 
         /// <summary>
@@ -117,6 +121,22 @@ namespace RecipeRage.Core
             ServiceLocator.Instance.Register<InputManager>(inputManager);
 
             Debug.Log("[GameBootstrap] Input manager initialized");
+        }
+
+        /// <summary>
+        /// Initialize the network manager
+        /// </summary>
+        private void InitializeNetworkManager()
+        {
+            Debug.Log("[GameBootstrap] Initializing network manager");
+
+            // Ensure the network manager exists
+            NetworkManager networkManager = NetworkManager.Instance;
+
+            // Register the network manager with the service locator
+            ServiceLocator.Instance.Register<NetworkManager>(networkManager);
+
+            Debug.Log("[GameBootstrap] Network manager initialized");
         }
 
         /// <summary>
