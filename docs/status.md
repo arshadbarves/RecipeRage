@@ -22,13 +22,17 @@ RecipeRage is a mobile multiplayer cooking game similar to Overcooked using Epic
 - Implemented input management system with support for touch and keyboard input
 - Implemented player controller system with movement and interaction capabilities
 - Created interaction system with base classes for interactable objects
+- Implemented basic networking foundation with EOS (interfaces, data structures, and placeholder implementations)
 
 ## In Progress
-- Basic networking foundation with EOS
-
-## Next Steps
 - Task system for recipes and orders
 - Object interaction system
+
+## Next Steps
+- Complete Task system for recipes and orders
+- Complete Object interaction system
+- Implement Time system
+- Implement Power-up system
 - Complete Core Framework (Phase 1)
 - Implement Gameplay Systems (Phase 2)
 - Develop Multiplayer Features (Phase 3)
@@ -54,6 +58,17 @@ The following components have placeholder implementations that will need to be u
 - **EOS Integration**
   - Initialize EOS SDK in GameBootstrap.cs
   - Implement authentication with EOS
+
+### Networking System
+- **EOSNetworkService**
+  - Implement actual session creation with EOS
+  - Implement actual session joining with EOS
+  - Implement actual session finding with EOS
+  - Implement actual data sending with EOS
+  - Implement P2P event registration and handling
+  - Implement session event registration and handling
+- **NetworkManager**
+  - Implement actual reconnection logic
 
 ### Input System
 - **TouchInputProvider**
