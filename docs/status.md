@@ -46,3 +46,41 @@ RecipeRage is a mobile multiplayer cooking game similar to Overcooked using Epic
 - Following a component-based design pattern
 - Focusing on mobile-first development with EOS integration
 - Maintaining documentation throughout development
+
+## Future Implementation Tasks
+The following components have placeholder implementations that will need to be updated with real functionality:
+
+### Core Framework
+- **EOS Integration**
+  - Initialize EOS SDK in GameBootstrap.cs
+  - Implement authentication with EOS
+
+### Input System
+- **TouchInputProvider**
+  - Implement actual joystick area reference
+  - Implement UI button area detection (interaction, special ability, pause)
+
+### UI System
+- **Main Menu UI**
+  - Implement UI activation/deactivation
+  - Implement input handling and menu logic
+- **Gameplay UI**
+  - Implement UI activation/deactivation
+  - Implement interaction prompts
+
+### Game States
+- **LoadingState**
+  - Implement actual asset loading and system initialization
+- **MatchmakingState**
+  - Implement matchmaking UI activation/deactivation
+  - Implement actual matchmaking with EOS
+  - Implement matchmaking progress tracking and cancellation
+- **GameplayState**
+  - Implement game systems initialization/cleanup
+  - Implement game systems update
+  - Implement game end UI
+
+### Player System
+- **PlayerController**
+  - Implement interaction prompts
+  - Implement special ability logic
