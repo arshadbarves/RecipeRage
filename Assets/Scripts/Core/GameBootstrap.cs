@@ -101,10 +101,152 @@ namespace RecipeRage.Core
 
             Debug.Log("[GameBootstrap] Initializing Epic Online Services");
 
-            // TODO: Initialize EOS SDK
+            try
+            {
+                // Check if EOS Manager exists
+                if (PlayEveryWare.EpicOnlineServices.EOSManager.Instance == null)
+                {
+                    Debug.LogError("[GameBootstrap] EOS Manager instance not found. Make sure EOSManager prefab is in the scene.");
+                    return;
+                }
 
-            _eosInitialized = true;
-            Debug.Log("[GameBootstrap] Epic Online Services initialized");
+                // Initialize EOS SDK
+                PlayEveryWare.EpicOnlineServices.EOSManager.Instance.Initialize((success) =>
+                {
+                    if (success)
+                    {
+                        Debug.Log("[GameBootstrap] EOS SDK initialized successfully");
+
+                        // Initialize EOS Platform
+                        InitializeEOSPlatform();
+                    }
+                    else
+                    {
+                        Debug.LogError("[GameBootstrap] Failed to initialize EOS SDK");
+                    }
+                });
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[GameBootstrap] Error initializing EOS: {e.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Initialize the EOS Platform
+        /// </summary>
+        private void InitializeEOSPlatform()
+        {
+            Debug.Log("[GameBootstrap] Initializing EOS Platform");
+
+            try
+            {
+                // Get the EOS platform interface
+                var eosPlatform = PlayEveryWare.EpicOnlineServices.EOSManager.Instance.GetEOSPlatformInterface();
+
+                if (eosPlatform == null)
+                {
+                    Debug.LogError("[GameBootstrap] EOS platform interface not found");
+                    return;
+                }
+
+                // Initialize auth with device ID for guest login
+                InitializeAuth();
+
+                _eosInitialized = true;
+                Debug.Log("[GameBootstrap] Epic Online Services initialized");
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[GameBootstrap] Error initializing EOS Platform: {e.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Initialize authentication for EOS
+        /// </summary>
+        private void InitializeAuth()
+        {
+            Debug.Log("[GameBootstrap] Initializing EOS Authentication");
+
+            // Get the EOS manager
+            var eosManager = PlayEveryWare.EpicOnlineServices.EOSManager.Instance;
+
+            // Check if already logged in
+            if (eosManager.IsLoggedIn())
+            {
+                Debug.Log("[GameBootstrap] Already logged in to EOS");
+                return;
+            }
+
+            // Set up auth login callback
+            eosManager.SetLoggedInCallback((success, userId, error) =>
+            {
+                if (success)
+                {
+                    Debug.Log($"[GameBootstrap] Successfully logged in to EOS with user ID: {userId}");
+
+                    // Initialize other EOS services after successful login
+                    InitializeEOSServices();
+                }
+                else
+                {
+                    Debug.LogError($"[GameBootstrap] Failed to log in to EOS: {error}");
+                }
+            });
+
+            // Login with device ID (for guest users)
+            eosManager.StartLoginWithDeviceID("RecipeRage Guest", (success, error) =>
+            {
+                if (!success)
+                {
+                    Debug.LogError($"[GameBootstrap] Failed to start device ID login: {error}");
+                }
+            });
+        }
+
+        /// <summary>
+        /// Initialize other EOS services after authentication
+        /// </summary>
+        private void InitializeEOSServices()
+        {
+            Debug.Log("[GameBootstrap] Initializing EOS Services");
+
+            // Get the EOS manager
+            var eosManager = PlayEveryWare.EpicOnlineServices.EOSManager.Instance;
+
+            // Initialize P2P networking
+            var p2pInterface = eosManager.GetEOSPlatformInterface().GetP2PInterface();
+            if (p2pInterface != null)
+            {
+                Debug.Log("[GameBootstrap] EOS P2P interface initialized");
+            }
+            else
+            {
+                Debug.LogError("[GameBootstrap] Failed to initialize EOS P2P interface");
+            }
+
+            // Initialize sessions
+            var sessionsInterface = eosManager.GetEOSPlatformInterface().GetSessionsInterface();
+            if (sessionsInterface != null)
+            {
+                Debug.Log("[GameBootstrap] EOS Sessions interface initialized");
+            }
+            else
+            {
+                Debug.LogError("[GameBootstrap] Failed to initialize EOS Sessions interface");
+            }
+
+            // Initialize presence (for custom friend system)
+            var presenceInterface = eosManager.GetEOSPlatformInterface().GetPresenceInterface();
+            if (presenceInterface != null)
+            {
+                Debug.Log("[GameBootstrap] EOS Presence interface initialized");
+            }
+            else
+            {
+                Debug.LogError("[GameBootstrap] Failed to initialize EOS Presence interface");
+            }
         }
 
         /// <summary>
