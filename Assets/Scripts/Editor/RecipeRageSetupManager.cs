@@ -16,25 +16,28 @@ namespace RecipeRage.Editor
         private RecipeGenerator _recipeGenerator;
         private PrefabGenerator _prefabGenerator;
         private SceneSetupGenerator _sceneSetupGenerator;
-        
+        private GameModeGenerator _gameModeGenerator;
+
         // Setup options
         private bool _generateIngredients = true;
         private bool _generateRecipes = true;
         private bool _generatePrefabs = true;
+        private bool _generateGameModes = true;
         private bool _setupScene = true;
-        
+
         // Paths
         private const string INGREDIENTS_PATH = "Assets/ScriptableObjects/Ingredients";
         private const string RECIPES_PATH = "Assets/ScriptableObjects/Recipes";
+        private const string GAME_MODES_PATH = "Assets/ScriptableObjects/GameModes";
         private const string PREFABS_PATH = "Assets/Prefabs";
         private const string SCENES_PATH = "Assets/Scenes";
-        
+
         [MenuItem("RecipeRage/Setup Manager")]
         public static void ShowWindow()
         {
             GetWindow<RecipeRageSetupManager>("RecipeRage Setup");
         }
-        
+
         private void OnEnable()
         {
             // Initialize generators
@@ -42,64 +45,75 @@ namespace RecipeRage.Editor
             _recipeGenerator = new RecipeGenerator();
             _prefabGenerator = new PrefabGenerator();
             _sceneSetupGenerator = new SceneSetupGenerator();
+            _gameModeGenerator = new GameModeGenerator();
         }
-        
+
         private void OnGUI()
         {
             GUILayout.Label("RecipeRage Setup Manager", EditorStyles.boldLabel);
             EditorGUILayout.Space();
-            
+
             EditorGUILayout.HelpBox("This tool will generate all necessary assets for the RecipeRage game. " +
                                    "You can choose which components to generate.", MessageType.Info);
-            
+
             EditorGUILayout.Space();
-            
+
             // Setup options
             _generateIngredients = EditorGUILayout.Toggle("Generate Ingredients", _generateIngredients);
             _generateRecipes = EditorGUILayout.Toggle("Generate Recipes", _generateRecipes);
             _generatePrefabs = EditorGUILayout.Toggle("Generate Prefabs", _generatePrefabs);
+            _generateGameModes = EditorGUILayout.Toggle("Generate Game Modes", _generateGameModes);
             _setupScene = EditorGUILayout.Toggle("Setup Scene", _setupScene);
-            
+
             EditorGUILayout.Space();
-            
+
             // Generate button
             if (GUILayout.Button("Generate All"))
             {
                 GenerateAll();
             }
-            
+
             EditorGUILayout.Space();
-            
+
             // Individual generation buttons
             EditorGUILayout.BeginHorizontal();
-            
+
             if (GUILayout.Button("Generate Ingredients"))
             {
                 GenerateIngredients();
             }
-            
+
             if (GUILayout.Button("Generate Recipes"))
             {
                 GenerateRecipes();
             }
-            
+
             EditorGUILayout.EndHorizontal();
-            
+
             EditorGUILayout.BeginHorizontal();
-            
+
             if (GUILayout.Button("Generate Prefabs"))
             {
                 GeneratePrefabs();
             }
-            
+
+            if (GUILayout.Button("Generate Game Modes"))
+            {
+                GenerateGameModes();
+            }
+
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.BeginHorizontal();
+
             if (GUILayout.Button("Setup Scene"))
             {
                 SetupScene();
             }
-            
+
             EditorGUILayout.EndHorizontal();
         }
-        
+
         /// <summary>
         /// Generate all selected components.
         /// </summary>
@@ -107,34 +121,39 @@ namespace RecipeRage.Editor
         {
             // Create necessary directories
             CreateDirectories();
-            
+
             // Generate in sequence
             if (_generateIngredients)
             {
                 GenerateIngredients();
             }
-            
+
             if (_generateRecipes)
             {
                 GenerateRecipes();
             }
-            
+
             if (_generatePrefabs)
             {
                 GeneratePrefabs();
             }
-            
+
+            if (_generateGameModes)
+            {
+                GenerateGameModes();
+            }
+
             if (_setupScene)
             {
                 SetupScene();
             }
-            
+
             // Refresh the asset database
             AssetDatabase.Refresh();
-            
+
             Debug.Log("RecipeRage setup completed successfully!");
         }
-        
+
         /// <summary>
         /// Create necessary directories for assets.
         /// </summary>
@@ -142,16 +161,17 @@ namespace RecipeRage.Editor
         {
             CreateDirectoryIfNotExists(INGREDIENTS_PATH);
             CreateDirectoryIfNotExists(RECIPES_PATH);
+            CreateDirectoryIfNotExists(GAME_MODES_PATH);
             CreateDirectoryIfNotExists(PREFABS_PATH);
             CreateDirectoryIfNotExists(SCENES_PATH);
-            
+
             // Create subdirectories for prefabs
             CreateDirectoryIfNotExists(Path.Combine(PREFABS_PATH, "Ingredients"));
             CreateDirectoryIfNotExists(Path.Combine(PREFABS_PATH, "Stations"));
             CreateDirectoryIfNotExists(Path.Combine(PREFABS_PATH, "UI"));
             CreateDirectoryIfNotExists(Path.Combine(PREFABS_PATH, "Player"));
         }
-        
+
         /// <summary>
         /// Create a directory if it doesn't exist.
         /// </summary>
@@ -164,7 +184,7 @@ namespace RecipeRage.Editor
                 Debug.Log($"Created directory: {path}");
             }
         }
-        
+
         /// <summary>
         /// Generate ingredient scriptable objects.
         /// </summary>
@@ -172,7 +192,7 @@ namespace RecipeRage.Editor
         {
             _ingredientGenerator.GenerateIngredients(INGREDIENTS_PATH);
         }
-        
+
         /// <summary>
         /// Generate recipe scriptable objects.
         /// </summary>
@@ -180,7 +200,7 @@ namespace RecipeRage.Editor
         {
             _recipeGenerator.GenerateRecipes(RECIPES_PATH, INGREDIENTS_PATH);
         }
-        
+
         /// <summary>
         /// Generate prefabs for the game.
         /// </summary>
@@ -188,7 +208,15 @@ namespace RecipeRage.Editor
         {
             _prefabGenerator.GeneratePrefabs(PREFABS_PATH, INGREDIENTS_PATH);
         }
-        
+
+        /// <summary>
+        /// Generate game mode scriptable objects.
+        /// </summary>
+        private void GenerateGameModes()
+        {
+            _gameModeGenerator.GenerateGameModes(GAME_MODES_PATH);
+        }
+
         /// <summary>
         /// Setup the game scene.
         /// </summary>
