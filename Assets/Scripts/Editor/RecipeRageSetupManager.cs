@@ -18,6 +18,7 @@ namespace RecipeRage.Editor
         private SceneSetupGenerator _sceneSetupGenerator;
         private GameModeGenerator _gameModeGenerator;
         private CharacterClassGenerator _characterClassGenerator;
+        private StationGenerator _stationGenerator;
 
         // Setup options
         private bool _generateIngredients = true;
@@ -25,6 +26,7 @@ namespace RecipeRage.Editor
         private bool _generatePrefabs = true;
         private bool _generateGameModes = true;
         private bool _generateCharacterClasses = true;
+        private bool _generateStations = true;
         private bool _setupScene = true;
 
         // Paths
@@ -33,6 +35,7 @@ namespace RecipeRage.Editor
         private const string GAME_MODES_PATH = "Assets/ScriptableObjects/GameModes";
         private const string CHARACTER_CLASSES_PATH = "Assets/ScriptableObjects/CharacterClasses";
         private const string PREFABS_PATH = "Assets/Prefabs";
+        private const string STATIONS_PATH = "Assets/Prefabs/Stations";
         private const string SCENES_PATH = "Assets/Scenes";
 
         [MenuItem("RecipeRage/Setup Manager")]
@@ -50,6 +53,7 @@ namespace RecipeRage.Editor
             _sceneSetupGenerator = new SceneSetupGenerator();
             _gameModeGenerator = new GameModeGenerator();
             _characterClassGenerator = new CharacterClassGenerator();
+            _stationGenerator = new StationGenerator();
         }
 
         private void OnGUI()
@@ -68,6 +72,7 @@ namespace RecipeRage.Editor
             _generatePrefabs = EditorGUILayout.Toggle("Generate Prefabs", _generatePrefabs);
             _generateGameModes = EditorGUILayout.Toggle("Generate Game Modes", _generateGameModes);
             _generateCharacterClasses = EditorGUILayout.Toggle("Generate Character Classes", _generateCharacterClasses);
+            _generateStations = EditorGUILayout.Toggle("Generate Stations", _generateStations);
             _setupScene = EditorGUILayout.Toggle("Setup Scene", _setupScene);
 
             EditorGUILayout.Space();
@@ -110,6 +115,11 @@ namespace RecipeRage.Editor
             if (GUILayout.Button("Generate Character Classes"))
             {
                 GenerateCharacterClasses();
+            }
+
+            if (GUILayout.Button("Generate Stations"))
+            {
+                GenerateStations();
             }
 
             EditorGUILayout.EndHorizontal();
@@ -158,6 +168,11 @@ namespace RecipeRage.Editor
                 GenerateCharacterClasses();
             }
 
+            if (_generateStations)
+            {
+                GenerateStations();
+            }
+
             if (_setupScene)
             {
                 SetupScene();
@@ -179,6 +194,7 @@ namespace RecipeRage.Editor
             CreateDirectoryIfNotExists(GAME_MODES_PATH);
             CreateDirectoryIfNotExists(CHARACTER_CLASSES_PATH);
             CreateDirectoryIfNotExists(PREFABS_PATH);
+            CreateDirectoryIfNotExists(STATIONS_PATH);
             CreateDirectoryIfNotExists(SCENES_PATH);
 
             // Create subdirectories for prefabs
@@ -242,6 +258,14 @@ namespace RecipeRage.Editor
         }
 
         /// <summary>
+        /// Generate cooking station prefabs.
+        /// </summary>
+        private void GenerateStations()
+        {
+            _stationGenerator.GenerateStations(STATIONS_PATH);
+        }
+
+        /// <summary>
         /// Setup the game scene.
         /// </summary>
         private void SetupScene()
@@ -252,8 +276,8 @@ namespace RecipeRage.Editor
                 GenerateGameModes();
             }
 
-            // Setup the scene with references to game modes and character classes
-            _sceneSetupGenerator.SetupScene(SCENES_PATH, PREFABS_PATH, GAME_MODES_PATH, CHARACTER_CLASSES_PATH);
+            // Setup the scene with references to game modes, character classes, and stations
+            _sceneSetupGenerator.SetupScene(SCENES_PATH, PREFABS_PATH, GAME_MODES_PATH, CHARACTER_CLASSES_PATH, STATIONS_PATH);
         }
     }
 }
