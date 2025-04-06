@@ -1,4 +1,0 @@
-<engine:UXML xmlns:engine="UnityEngine.UIElements"
-             noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/Scripts/GameSystem/UI/Components/common.uss?fileID=7433441132597879392&amp;guid=05030349be0b4462b6c60673c8b94f2a&amp;type=3#common"/>
-</engine:UXML>
