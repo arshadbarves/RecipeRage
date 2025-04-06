@@ -406,7 +406,7 @@ namespace RecipeRage.Gameplay.Stations
         /// </summary>
         /// <param name="playerNetworkObject">The player's network object</param>
         [ServerRpc(RequireOwnership = false)]
-        private void InteractServerRpc(NetworkObjectReference playerNetworkObject)
+        protected void InteractServerRpc(NetworkObjectReference playerNetworkObject)
         {
             // Get the player controller
             if (playerNetworkObject.TryGet(out NetworkObject networkObject))
