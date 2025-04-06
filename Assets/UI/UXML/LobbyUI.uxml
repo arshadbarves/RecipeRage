@@ -1,27 +1,16 @@
-<?xml version="1.0" encoding="utf-8"?>
-<engine:UXML
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:engine="UnityEngine.UIElements"
-    xmlns:editor="UnityEditor.UIElements"
-    xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd">
-    
-    <!-- Main Container -->
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/USS/LobbyUI.uss?fileID=7433441132597879392&amp;guid=2a6ca999ddca541329c87b6418558a5a&amp;type=3#LobbyUI" />
+    <Style src="project://database/Assets/UI/USS/Common.uss?fileID=7433441132597879392&amp;guid=e49c7ac1dcc4c4d849d7474224cbe79e&amp;type=3#Common" />
     <engine:VisualElement name="main-container" class="full-screen">
-        
-        <!-- Lobby Panel -->
         <engine:VisualElement name="lobby-panel" class="panel">
             <engine:Label name="lobby-title" text="Game Lobby" class="panel-title" />
             <engine:Label name="lobby-code" text="Lobby Code: ABCDEF" class="lobby-code" />
             <engine:Label name="lobby-status" text="Players: 1 | Ready: 0/1" class="lobby-status" />
-            
-            <!-- Game Mode Selection -->
             <engine:VisualElement name="game-mode-selection" class="game-mode-container">
                 <engine:Label text="Game Mode:" class="section-title" />
                 <engine:Label name="selected-game-mode" text="Classic" class="selected-game-mode" />
                 <engine:Button name="change-game-mode-button" text="Change" class="small-button" />
             </engine:VisualElement>
-            
-            <!-- Team Selection -->
             <engine:VisualElement name="team-selection" class="team-selection-container">
                 <engine:Label text="Team:" class="section-title" />
                 <engine:RadioButtonGroup name="team-toggle">
@@ -29,33 +18,19 @@
                     <engine:RadioButton name="team2-radio" label="Team 2" value="false" />
                 </engine:RadioButtonGroup>
             </engine:VisualElement>
-            
-            <!-- Player List -->
             <engine:VisualElement name="player-list-container" class="player-list-container">
                 <engine:Label text="Players" class="section-title" />
-                <engine:ScrollView name="player-list" class="player-list">
-                    <!-- Player entries will be added here dynamically -->
-                </engine:ScrollView>
+                <engine:ScrollView name="player-list" class="player-list" />
             </engine:VisualElement>
-            
-            <!-- Lobby Buttons -->
             <engine:VisualElement name="lobby-buttons" class="button-container">
                 <engine:Button name="ready-button" text="Ready" class="lobby-button" />
                 <engine:Button name="leave-button" text="Leave" class="lobby-button" />
             </engine:VisualElement>
         </engine:VisualElement>
-        
-        <!-- Game Mode Panel -->
         <engine:VisualElement name="game-mode-panel" class="panel hidden">
             <engine:Label text="Select Game Mode" class="panel-title" />
-            
-            <!-- Game Mode List -->
-            <engine:ScrollView name="game-mode-list" class="game-mode-list">
-                <!-- Game mode entries will be added here dynamically -->
-            </engine:ScrollView>
-            
+            <engine:ScrollView name="game-mode-list" class="game-mode-list" />
             <engine:Button name="game-mode-back-button" text="Back" class="back-button" />
         </engine:VisualElement>
-        
     </engine:VisualElement>
 </engine:UXML>
