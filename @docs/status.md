@@ -16,7 +16,8 @@
 - ✅ Interaction System (IInteractable interface)
 - ✅ Ingredient System (scriptable objects)
 - ✅ Recipe System (scriptable objects)
-- ✅ Cooking Stations (Cutting, Cooking, Assembly)
+- ✅ Cooking Stations (Cutting, Cooking, Assembly, Serving)
+- ✅ Order System
 
 ### Multiplayer
 - ✅ Advanced Lobby System
@@ -36,7 +37,6 @@
 ## In Progress
 
 ### Gameplay
-- 🔄 Order System
 - 🔄 Scoring System
 - 🔄 Timer System
 
@@ -77,7 +77,7 @@
 - ⚠️ Need to add more unit tests
 
 ## Next Steps
-1. Implement order system and scoring
+1. Implement scoring system and UI
 2. Create UI for main menu and lobby
 3. Design character models and animations
 4. Implement visual effects for abilities
