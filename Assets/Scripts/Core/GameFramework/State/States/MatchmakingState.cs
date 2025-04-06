@@ -1,4 +1,6 @@
 using System;
+using RecipeRage.Core.Networking;
+using RecipeRage.UI;
 using UnityEngine;
 
 namespace RecipeRage.Core.GameFramework.State.States
@@ -12,108 +14,181 @@ namespace RecipeRage.Core.GameFramework.State.States
         /// Event triggered when matchmaking is complete.
         /// </summary>
         public event Action<bool> OnMatchmakingComplete;
-        
+
+        /// <summary>
+        /// Reference to the lobby UI prefab.
+        /// </summary>
+        private GameObject _lobbyUIPrefab;
+
+        /// <summary>
+        /// Reference to the instantiated lobby UI.
+        /// </summary>
+        private GameObject _lobbyUIInstance;
+
+        /// <summary>
+        /// Reference to the network lobby manager.
+        /// </summary>
+        private NetworkLobbyManager _lobbyManager;
+
         /// <summary>
         /// Flag to track if matchmaking is in progress.
         /// </summary>
         private bool _isMatchmakingInProgress;
-        
-        /// <summary>
-        /// Simulated matchmaking progress (0-1).
-        /// </summary>
-        private float _matchmakingProgress;
-        
-        /// <summary>
-        /// Timeout for matchmaking in seconds.
-        /// </summary>
-        private float _matchmakingTimeout = 30f;
-        
-        /// <summary>
-        /// Timer for matchmaking timeout.
-        /// </summary>
-        private float _matchmakingTimer;
-        
+
         /// <summary>
         /// Called when the state is entered.
         /// </summary>
         public override void Enter()
         {
             base.Enter();
-            
+
+            // Get reference to the network lobby manager
+            _lobbyManager = NetworkLobbyManager.Instance;
+
             // Reset matchmaking state
             _isMatchmakingInProgress = true;
-            _matchmakingProgress = 0f;
-            _matchmakingTimer = 0f;
-            
+
             // Start matchmaking process
             Debug.Log("[MatchmakingState] Starting matchmaking process");
-            
-            // Show matchmaking UI
-            // TODO: Implement matchmaking UI activation
-            
-            // In a real implementation, you would start the matchmaking service here
-            // For now, we'll simulate matchmaking with a delay
-            
-            // TODO: Implement actual matchmaking with EOS
+
+            // Show lobby UI
+            ShowLobbyUI();
+
+            // Subscribe to lobby events
+            if (_lobbyManager != null)
+            {
+                _lobbyManager.OnLobbyJoined += HandleLobbyJoined;
+                _lobbyManager.OnLobbyLeft += HandleLobbyLeft;
+                _lobbyManager.OnGameStarted += HandleGameStarted;
+
+                // Start or join a lobby
+                if (_lobbyManager.HasLobbyCode())
+                {
+                    // Join an existing lobby with the saved code
+                    _lobbyManager.JoinLobby(_lobbyManager.GetLobbyCode());
+                }
+                else
+                {
+                    // Create a new lobby
+                    _lobbyManager.CreateLobby();
+                }
+            }
+            else
+            {
+                Debug.LogError("[MatchmakingState] NetworkLobbyManager instance not found");
+                CompleteMatchmaking(false);
+            }
         }
-        
+
         /// <summary>
         /// Called when the state is exited.
         /// </summary>
         public override void Exit()
         {
             base.Exit();
-            
+
+            // Unsubscribe from lobby events
+            if (_lobbyManager != null)
+            {
+                _lobbyManager.OnLobbyJoined -= HandleLobbyJoined;
+                _lobbyManager.OnLobbyLeft -= HandleLobbyLeft;
+                _lobbyManager.OnGameStarted -= HandleGameStarted;
+            }
+
             // Cancel matchmaking if still in progress
             if (_isMatchmakingInProgress)
             {
                 CancelMatchmaking();
             }
-            
-            // Hide matchmaking UI
-            // TODO: Implement matchmaking UI deactivation
+
+            // Hide lobby UI
+            HideLobbyUI();
         }
-        
+
         /// <summary>
         /// Called every frame to update the state.
         /// </summary>
         public override void Update()
         {
-            // If matchmaking is not in progress, do nothing
-            if (!_isMatchmakingInProgress)
-            {
-                return;
-            }
-            
-            // Update matchmaking timer
-            _matchmakingTimer += Time.deltaTime;
-            
-            // Check for timeout
-            if (_matchmakingTimer >= _matchmakingTimeout)
-            {
-                Debug.Log("[MatchmakingState] Matchmaking timed out");
-                CancelMatchmaking();
-                return;
-            }
-            
-            // Simulate matchmaking progress
-            _matchmakingProgress = _matchmakingTimer / _matchmakingTimeout;
-            
-            // Log progress occasionally
-            if (Mathf.Approximately(_matchmakingProgress * 10, Mathf.Floor(_matchmakingProgress * 10)))
-            {
-                Debug.Log($"[MatchmakingState] Matchmaking progress: {_matchmakingProgress * 100:F0}%");
-            }
-            
-            // Simulate finding a match with some probability
-            if (UnityEngine.Random.value < 0.005f) // Adjust probability as needed
-            {
-                CompleteMatchmaking(true);
-            }
-            
-            // TODO: Implement actual matchmaking progress tracking with EOS
+            // Matchmaking logic is now handled by the NetworkLobbyManager
         }
-        
+
+        /// <summary>
+        /// Show the lobby UI.
+        /// </summary>
+        private void ShowLobbyUI()
+        {
+            // Load the lobby UI prefab if not already loaded
+            if (_lobbyUIPrefab == null)
+            {
+                _lobbyUIPrefab = Resources.Load<GameObject>("UI/LobbyUI");
+
+                if (_lobbyUIPrefab == null)
+                {
+                    Debug.LogError("[MatchmakingState] Failed to load LobbyUI prefab from Resources/UI/LobbyUI");
+                    return;
+                }
+            }
+
+            // Instantiate the lobby UI
+            _lobbyUIInstance = GameObject.Instantiate(_lobbyUIPrefab);
+
+            // Make sure it persists across scene loads
+            GameObject.DontDestroyOnLoad(_lobbyUIInstance);
+        }
+
+        /// <summary>
+        /// Hide the lobby UI.
+        /// </summary>
+        private void HideLobbyUI()
+        {
+            // Destroy the lobby UI instance
+            if (_lobbyUIInstance != null)
+            {
+                GameObject.Destroy(_lobbyUIInstance);
+                _lobbyUIInstance = null;
+            }
+        }
+
+        /// <summary>
+        /// Handle lobby joined event.
+        /// </summary>
+        /// <param name="success">Whether joining the lobby was successful</param>
+        private void HandleLobbyJoined(bool success)
+        {
+            Debug.Log($"[MatchmakingState] Lobby joined. Success: {success}");
+
+            if (!success)
+            {
+                CompleteMatchmaking(false);
+            }
+        }
+
+        /// <summary>
+        /// Handle lobby left event.
+        /// </summary>
+        private void HandleLobbyLeft()
+        {
+            Debug.Log("[MatchmakingState] Lobby left");
+
+            // Return to main menu state
+            GameStateManager.Instance.ChangeState(new MainMenuState());
+        }
+
+        /// <summary>
+        /// Handle game started event.
+        /// </summary>
+        private void HandleGameStarted()
+        {
+            Debug.Log("[MatchmakingState] Game started");
+
+            // Complete matchmaking successfully
+            CompleteMatchmaking(true);
+
+            // Transition to gameplay state
+            GameStateManager.Instance.ChangeState(new GameplayState());
+        }
+
         /// <summary>
         /// Called when matchmaking is complete.
         /// </summary>
@@ -124,14 +199,14 @@ namespace RecipeRage.Core.GameFramework.State.States
             {
                 return;
             }
-            
+
             _isMatchmakingInProgress = false;
             Debug.Log($"[MatchmakingState] Matchmaking complete. Success: {success}");
-            
+
             // Trigger the matchmaking complete event
             OnMatchmakingComplete?.Invoke(success);
         }
-        
+
         /// <summary>
         /// Cancels the matchmaking process.
         /// </summary>
@@ -141,23 +216,18 @@ namespace RecipeRage.Core.GameFramework.State.States
             {
                 return;
             }
-            
+
             _isMatchmakingInProgress = false;
             Debug.Log("[MatchmakingState] Matchmaking canceled");
-            
+
+            // Leave the lobby if we're in one
+            if (_lobbyManager != null && _lobbyManager.IsInLobby)
+            {
+                _lobbyManager.LeaveLobby();
+            }
+
             // Trigger the matchmaking complete event with failure
             OnMatchmakingComplete?.Invoke(false);
-            
-            // TODO: Implement actual matchmaking cancellation with EOS
-        }
-        
-        /// <summary>
-        /// Gets the current matchmaking progress (0-1).
-        /// </summary>
-        /// <returns>Matchmaking progress between 0 and 1</returns>
-        public float GetMatchmakingProgress()
-        {
-            return _matchmakingProgress;
         }
     }
 }
