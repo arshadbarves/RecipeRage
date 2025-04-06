@@ -13,48 +13,11 @@ MonoBehaviour:
   m_Name: Default Local Group
   m_EditorClassIdentifier: 
   m_GroupName: Default Local Group
-  m_Data:
-    m_SerializedData: []
   m_GUID: a7a2b1499ef9e4ab5aec7c3234c3c6f4
-  m_SerializeEntries:
-  - m_GUID: d080a25b1653d454b81be62873033d1c
-    m_Address: SplashScreenUXML
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 61843fe957f2245f48832ef4f800548e
-    m_Address: MainMenuScreenUXML
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 790a6eddfd6c34e85b4a6c04c80deb52
-    m_Address: LoadingScreenUXML
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 598ef6c81aae04e9ea8fbf58be7baf18
-    m_Address: MatchmakingScreenUXML
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: d4f6c40cd7e6d40099ba2f13a643a843
-    m_Address: ShopScreenUXML
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 7dd529997e1c0487285e7248704d51de
-    m_Address: GamplayScreenUXML
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: ccd6f839b67dc42318755eec17b75e10
-    m_Address: MapSelectionScreen
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
+  m_SerializeEntries: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 7aa9660f928de4ecba96885604e19bf1, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: 8311e713e84434bd4b119b2769fb8d29, type: 2}
     - {fileID: 11400000, guid: 55f3cb9e2e74e4ba884f7153fdbc5d5c, type: 2}
+    - {fileID: 11400000, guid: 8311e713e84434bd4b119b2769fb8d29, type: 2}
