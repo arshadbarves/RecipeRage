@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" 
+      xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd"
+      xsi:schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd">
+    
+    <VisualElement name="character-card" class="character-card">
+        <VisualElement name="card-background" class="card-background">
+            <VisualElement name="character-portrait" class="character-portrait" />
+            <VisualElement name="character-frame" class="character-frame" />
+            <Label name="character-card-name" text="CHEF GORDON" class="character-card-name" />
+            <VisualElement name="character-level-badge" class="character-level-badge">
+                <Label name="character-card-level" text="10" class="character-card-level" />
+            </VisualElement>
+            <VisualElement name="character-rarity" class="character-rarity" />
+            <VisualElement name="locked-overlay" class="locked-overlay hidden">
+                <VisualElement name="lock-icon" class="lock-icon" />
+                <Label name="unlock-text" text="UNLOCK" class="unlock-text" />
+                <VisualElement name="unlock-cost" class="unlock-cost">
+                    <VisualElement name="gem-icon-small" class="gem-icon-small" />
+                    <Label name="unlock-cost-text" text="80" class="unlock-cost-text" />
+                </VisualElement>
+            </VisualElement>
+        </VisualElement>
+    </VisualElement>
+    
+</UXML>

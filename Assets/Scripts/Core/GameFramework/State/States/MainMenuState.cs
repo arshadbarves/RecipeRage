@@ -9,15 +9,7 @@ namespace RecipeRage.Core.GameFramework.State.States
     /// </summary>
     public class MainMenuState : GameState
     {
-        /// <summary>
-        /// Reference to the main menu UI prefab.
-        /// </summary>
-        private GameObject _mainMenuUIPrefab;
-
-        /// <summary>
-        /// Reference to the instantiated main menu UI.
-        /// </summary>
-        private GameObject _mainMenuUIInstance;
+        // No need to store references to UI elements anymore as they're managed by the UIManager
 
         /// <summary>
         /// Called when the state is entered.
@@ -29,43 +21,8 @@ namespace RecipeRage.Core.GameFramework.State.States
             // Show main menu UI
             Debug.Log("[MainMenuState] Showing main menu UI");
 
-            // Create a UI Document GameObject
-            _mainMenuUIInstance = new GameObject("MainMenuUI");
-
-            // Add UIDocument component
-            UIDocument uiDocument = _mainMenuUIInstance.AddComponent<UIDocument>();
-
-            // Load the UXML asset
-            var uxmlAsset = Resources.Load<VisualTreeAsset>("UI/MainMenuUI");
-            if (uxmlAsset == null)
-            {
-                Debug.LogError("[MainMenuState] Failed to load MainMenuUI UXML from Resources/UI/MainMenuUI");
-                return;
-            }
-
-            // Assign the UXML asset to the UIDocument
-            uiDocument.visualTreeAsset = uxmlAsset;
-
-            // Load the USS assets
-            var commonStyleSheet = Resources.Load<StyleSheet>("UI/Common");
-            var mainMenuStyleSheet = Resources.Load<StyleSheet>("UI/MainMenuUI");
-
-            if (commonStyleSheet != null && mainMenuStyleSheet != null)
-            {
-                // Add style sheets to the UIDocument
-                uiDocument.styleSheets.Add(commonStyleSheet);
-                uiDocument.styleSheets.Add(mainMenuStyleSheet);
-            }
-            else
-            {
-                Debug.LogWarning("[MainMenuState] Failed to load one or more style sheets");
-            }
-
-            // Add MainMenuUI component
-            _mainMenuUIInstance.AddComponent<UI.MainMenuUI>();
-
-            // Make sure it persists across scene loads
-            GameObject.DontDestroyOnLoad(_mainMenuUIInstance);
+            // Show the main menu screen using the UI Manager
+            UI.UIManager.Instance.ShowScreen<UI.Screens.MainMenuScreen>(true);
         }
 
         /// <summary>
@@ -78,12 +35,8 @@ namespace RecipeRage.Core.GameFramework.State.States
             // Hide main menu UI
             Debug.Log("[MainMenuState] Hiding main menu UI");
 
-            // Destroy the main menu UI instance
-            if (_mainMenuUIInstance != null)
-            {
-                GameObject.Destroy(_mainMenuUIInstance);
-                _mainMenuUIInstance = null;
-            }
+            // Hide the main menu screen
+            UI.UIManager.Instance.GetScreen<UI.Screens.MainMenuScreen>()?.Hide(true);
         }
 
         /// <summary>
