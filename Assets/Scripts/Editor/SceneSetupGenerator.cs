@@ -52,7 +52,8 @@ namespace RecipeRage.Editor
         /// <param name="prefabsPath"> The path to the prefabs. </param>
         /// <param name="gameModesPath"> The path to the game modes. </param>
         /// <param name="characterClassesPath"> The path to the character classes. </param>
-        public void SetupScene(string scenesPath, string prefabsPath, string gameModesPath = null, string characterClassesPath = null)
+        /// <param name="stationsPath"> The path to the cooking stations. </param>
+        public void SetupScene(string scenesPath, string prefabsPath, string gameModesPath = null, string characterClassesPath = null, string stationsPath = null)
         {
             // Create a new scene
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
@@ -552,6 +553,54 @@ namespace RecipeRage.Editor
                 else
                 {
                     Debug.LogWarning("No character classes found. Make sure to generate character classes first.");
+                }
+            }
+
+            // Add cooking stations to the scene if path is provided
+            if (!string.IsNullOrEmpty(stationsPath))
+            {
+                // Find all station prefabs
+                var stationGuids = AssetDatabase.FindAssets("t:Prefab", new[] { stationsPath });
+                var stations = new List<GameObject>();
+
+                foreach (var guid in stationGuids)
+                {
+                    var path = AssetDatabase.GUIDToAssetPath(guid);
+                    var stationPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+
+                    if (stationPrefab != null)
+                    {
+                        stations.Add(stationPrefab);
+                    }
+                }
+
+                // Add stations to the scene
+                if (stations.Count > 0)
+                {
+                    // Create a stations parent object
+                    var stationsParent = new GameObject("Stations");
+
+                    // Position stations in a grid layout
+                    float spacing = 2.0f;
+                    int columns = Mathf.CeilToInt(Mathf.Sqrt(stations.Count));
+
+                    for (int i = 0; i < stations.Count; i++)
+                    {
+                        int row = i / columns;
+                        int col = i % columns;
+
+                        Vector3 position = new Vector3(col * spacing, 0, row * spacing);
+
+                        var stationInstance = PrefabUtility.InstantiatePrefab(stations[i]) as GameObject;
+                        stationInstance.transform.SetParent(stationsParent.transform);
+                        stationInstance.transform.position = position;
+                    }
+
+                    Debug.Log($"Added {stations.Count} cooking stations to the scene");
+                }
+                else
+                {
+                    Debug.LogWarning("No station prefabs found. Make sure to generate stations first.");
                 }
             }
 
