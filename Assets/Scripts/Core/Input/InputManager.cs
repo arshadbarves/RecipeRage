@@ -13,57 +13,63 @@ namespace RecipeRage.Core.Input
         /// Event triggered when movement input changes.
         /// </summary>
         public event Action<Vector2> OnMovementInput;
-        
+
         /// <summary>
         /// Event triggered when interaction input is detected.
         /// </summary>
         public event Action OnInteractionInput;
-        
+
         /// <summary>
         /// Event triggered when special ability input is detected.
         /// </summary>
         public event Action OnSpecialAbilityInput;
-        
+
         /// <summary>
         /// Event triggered when pause input is detected.
         /// </summary>
         public event Action OnPauseInput;
-        
+
         [Header("Input Settings")]
         [SerializeField] private bool _useKeyboardInput = true;
         [SerializeField] private bool _useTouchInput = true;
-        
+        [SerializeField] private bool _useInputSystem = true;
+
         /// <summary>
         /// The active input provider.
         /// </summary>
         private IInputProvider _activeInputProvider;
-        
+
         /// <summary>
         /// The keyboard input provider.
         /// </summary>
         private KeyboardInputProvider _keyboardInputProvider;
-        
+
         /// <summary>
         /// The touch input provider.
         /// </summary>
         private TouchInputProvider _touchInputProvider;
-        
+
+        /// <summary>
+        /// The input system provider.
+        /// </summary>
+        private InputSystemProvider _inputSystemProvider;
+
         /// <summary>
         /// Flag to track if the input manager is initialized.
         /// </summary>
         private bool _isInitialized = false;
-        
+
         /// <summary>
         /// Initialize the input manager.
         /// </summary>
         protected override void Awake()
         {
             base.Awake();
-            
+
             // Initialize input providers
             InitializeInputProviders();
         }
-        
+
         /// <summary>
         /// Update the active input provider.
         /// </summary>
@@ -72,19 +78,20 @@ namespace RecipeRage.Core.Input
             // Update the active input provider
             _activeInputProvider?.Update();
         }
-        
+
         /// <summary>
         /// Clean up when the object is destroyed.
         /// </summary>
         protected override void OnDestroy()
         {
             base.OnDestroy();
-            
+
             // Unsubscribe from input provider events
             UnsubscribeFromInputProviderEvents(_keyboardInputProvider);
             UnsubscribeFromInputProviderEvents(_touchInputProvider);
+            UnsubscribeFromInputProviderEvents(_inputSystemProvider);
         }
-        
+
         /// <summary>
         /// Initialize input providers.
         /// </summary>
@@ -94,28 +101,31 @@ namespace RecipeRage.Core.Input
             {
                 return;
             }
-            
+
             Debug.Log("[InputManager] Initializing input providers");
-            
+
             // Create input providers
             _keyboardInputProvider = new KeyboardInputProvider();
             _touchInputProvider = new TouchInputProvider();
-            
+            _inputSystemProvider = new InputSystemProvider();
+
             // Initialize input providers
             _keyboardInputProvider.Initialize();
             _touchInputProvider.Initialize();
-            
+            _inputSystemProvider.Initialize();
+
             // Subscribe to input provider events
             SubscribeToInputProviderEvents(_keyboardInputProvider);
             SubscribeToInputProviderEvents(_touchInputProvider);
-            
+            SubscribeToInputProviderEvents(_inputSystemProvider);
+
             // Set the active input provider based on platform and settings
             SetActiveInputProvider();
-            
+
             _isInitialized = true;
             Debug.Log("[InputManager] Input providers initialized");
         }
-        
+
         /// <summary>
         /// Set the active input provider based on platform and settings.
         /// </summary>
@@ -124,10 +134,17 @@ namespace RecipeRage.Core.Input
             // Disable all input providers first
             _keyboardInputProvider?.Disable();
             _touchInputProvider?.Disable();
-            
+            _inputSystemProvider?.Disable();
+
             // Set the active input provider based on platform and settings
-            #if UNITY_EDITOR || UNITY_STANDALONE
-            if (_useKeyboardInput)
+            if (_useInputSystem)
+            {
+                _activeInputProvider = _inputSystemProvider;
+                _activeInputProvider.Enable();
+                Debug.Log("[InputManager] Using input system provider");
+            }
+#if UNITY_EDITOR || UNITY_STANDALONE
+            else if (_useKeyboardInput)
             {
                 _activeInputProvider = _keyboardInputProvider;
                 _activeInputProvider.Enable();
@@ -139,8 +156,8 @@ namespace RecipeRage.Core.Input
                 _activeInputProvider.Enable();
                 Debug.Log("[InputManager] Using touch input provider");
             }
-            #elif UNITY_IOS || UNITY_ANDROID
-            if (_useTouchInput)
+#elif UNITY_IOS || UNITY_ANDROID
+            else if (_useTouchInput)
             {
                 _activeInputProvider = _touchInputProvider;
                 _activeInputProvider.Enable();
@@ -152,14 +169,14 @@ namespace RecipeRage.Core.Input
                 _activeInputProvider.Enable();
                 Debug.Log("[InputManager] Using keyboard input provider");
             }
-            #endif
-            
+#endif
+
             if (_activeInputProvider == null)
             {
                 Debug.LogWarning("[InputManager] No input provider enabled. Input will not work.");
             }
         }
-        
+
         /// <summary>
         /// Subscribe to input provider events.
         /// </summary>
@@ -170,13 +187,13 @@ namespace RecipeRage.Core.Input
             {
                 return;
             }
-            
+
             inputProvider.OnMovementInput += HandleMovementInput;
             inputProvider.OnInteractionInput += HandleInteractionInput;
             inputProvider.OnSpecialAbilityInput += HandleSpecialAbilityInput;
             inputProvider.OnPauseInput += HandlePauseInput;
         }
-        
+
         /// <summary>
         /// Unsubscribe from input provider events.
         /// </summary>
@@ -187,13 +204,13 @@ namespace RecipeRage.Core.Input
             {
                 return;
             }
-            
+
             inputProvider.OnMovementInput -= HandleMovementInput;
             inputProvider.OnInteractionInput -= HandleInteractionInput;
             inputProvider.OnSpecialAbilityInput -= HandleSpecialAbilityInput;
             inputProvider.OnPauseInput -= HandlePauseInput;
         }
-        
+
         /// <summary>
         /// Handle movement input from the input provider.
         /// </summary>
@@ -203,7 +220,7 @@ namespace RecipeRage.Core.Input
             // Forward the event
             OnMovementInput?.Invoke(movementInput);
         }
-        
+
         /// <summary>
         /// Handle interaction input from the input provider.
         /// </summary>
@@ -212,7 +229,7 @@ namespace RecipeRage.Core.Input
             // Forward the event
             OnInteractionInput?.Invoke();
         }
-        
+
         /// <summary>
         /// Handle special ability input from the input provider.
         /// </summary>
@@ -221,7 +238,7 @@ namespace RecipeRage.Core.Input
             // Forward the event
             OnSpecialAbilityInput?.Invoke();
         }
-        
+
         /// <summary>
         /// Handle pause input from the input provider.
         /// </summary>
@@ -230,7 +247,7 @@ namespace RecipeRage.Core.Input
             // Forward the event
             OnPauseInput?.Invoke();
         }
-        
+
         /// <summary>
         /// Get the current movement input.
         /// </summary>
@@ -239,7 +256,7 @@ namespace RecipeRage.Core.Input
         {
             return _activeInputProvider?.GetMovementInput() ?? Vector2.zero;
         }
-        
+
         /// <summary>
         /// Check if interaction input is active.
         /// </summary>
@@ -248,7 +265,7 @@ namespace RecipeRage.Core.Input
         {
             return _activeInputProvider?.IsInteractionActive() ?? false;
         }
-        
+
         /// <summary>
         /// Check if special ability input is active.
         /// </summary>
@@ -257,7 +274,7 @@ namespace RecipeRage.Core.Input
         {
             return _activeInputProvider?.IsSpecialAbilityActive() ?? false;
         }
-        
+
         /// <summary>
         /// Enable input.
         /// </summary>
@@ -265,7 +282,7 @@ namespace RecipeRage.Core.Input
         {
             _activeInputProvider?.Enable();
         }
-        
+
         /// <summary>
         /// Disable input.
         /// </summary>
@@ -273,7 +290,7 @@ namespace RecipeRage.Core.Input
         {
             _activeInputProvider?.Disable();
         }
-        
+
         /// <summary>
         /// Switch to keyboard input.
         /// </summary>
@@ -283,14 +300,14 @@ namespace RecipeRage.Core.Input
             {
                 return;
             }
-            
+
             _activeInputProvider?.Disable();
             _activeInputProvider = _keyboardInputProvider;
             _activeInputProvider.Enable();
-            
+
             Debug.Log("[InputManager] Switched to keyboard input provider");
         }
-        
+
         /// <summary>
         /// Switch to touch input.
         /// </summary>
@@ -300,12 +317,29 @@ namespace RecipeRage.Core.Input
             {
                 return;
             }
-            
+
             _activeInputProvider?.Disable();
             _activeInputProvider = _touchInputProvider;
             _activeInputProvider.Enable();
-            
+
             Debug.Log("[InputManager] Switched to touch input provider");
+        }
+
+        /// <summary>
+        /// Switch to input system.
+        /// </summary>
+        public void SwitchToInputSystem()
+        {
+            if (_inputSystemProvider == null || !_useInputSystem)
+            {
+                return;
+            }
+
+            _activeInputProvider?.Disable();
+            _activeInputProvider = _inputSystemProvider;
+            _activeInputProvider.Enable();
+
+            Debug.Log("[InputManager] Switched to input system provider");
         }
     }
 }
