@@ -1,0 +1,365 @@
+using System.Collections.Generic;
+using RecipeRage.Gameplay.Cooking;
+using RecipeRage.Gameplay.Interactables;
+using RecipeRage.Core.Player;
+using UnityEditor;
+using UnityEngine;
+using Unity.Netcode;
+
+namespace RecipeRage.Editor
+{
+    /// <summary>
+    /// Generates prefabs for the RecipeRage game.
+    /// </summary>
+    public class PrefabGenerator
+    {
+        /// <summary>
+        /// Generate prefabs for the game.
+        /// </summary>
+        /// <param name="outputPath">The output path for the generated prefabs.</param>
+        /// <param name="ingredientsPath">The path to the ingredient assets.</param>
+        public void GeneratePrefabs(string outputPath, string ingredientsPath)
+        {
+            // Generate station prefabs
+            GenerateStationPrefabs(outputPath);
+            
+            // Generate player prefab
+            GeneratePlayerPrefab(outputPath);
+            
+            // Generate UI prefabs
+            GenerateUIPrefabs(outputPath);
+            
+            // Generate order manager prefab
+            GenerateOrderManagerPrefab(outputPath);
+            
+            Debug.Log("Generated all prefabs successfully.");
+        }
+        
+        /// <summary>
+        /// Generate station prefabs.
+        /// </summary>
+        /// <param name="outputPath">The output path for the generated prefabs.</param>
+        private void GenerateStationPrefabs(string outputPath)
+        {
+            string stationsPath = $"{outputPath}/Stations";
+            
+            // Generate cooking station
+            GameObject cookingStation = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            cookingStation.name = "CookingStation";
+            cookingStation.transform.localScale = new Vector3(1.2f, 0.8f, 1.2f);
+            
+            // Add required components
+            CookingStation cookingStationComponent = cookingStation.AddComponent<CookingStation>();
+            cookingStation.AddComponent<NetworkObject>();
+            
+            // Create a placement point for ingredients
+            GameObject cookingPlacementPoint = new GameObject("IngredientPlacementPoint");
+            cookingPlacementPoint.transform.SetParent(cookingStation.transform);
+            cookingPlacementPoint.transform.localPosition = new Vector3(0, 0.5f, 0);
+            
+            // Create visual feedback objects
+            GameObject activeVisual = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            activeVisual.name = "ActiveVisual";
+            activeVisual.transform.SetParent(cookingStation.transform);
+            activeVisual.transform.localPosition = new Vector3(0, 0.6f, 0);
+            activeVisual.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+            activeVisual.GetComponent<Renderer>().material.color = Color.red;
+            activeVisual.SetActive(false);
+            
+            // Create a particle system for cooking
+            GameObject particleObj = new GameObject("CookingParticles");
+            particleObj.transform.SetParent(cookingStation.transform);
+            particleObj.transform.localPosition = new Vector3(0, 0.6f, 0);
+            ParticleSystem particles = particleObj.AddComponent<ParticleSystem>();
+            
+            // Configure the particle system
+            var main = particles.main;
+            main.startColor = new ParticleSystem.MinMaxGradient(Color.gray);
+            main.startSize = 0.1f;
+            main.startLifetime = 1.0f;
+            main.startSpeed = 0.5f;
+            
+            var emission = particles.emission;
+            emission.rateOverTime = 10;
+            
+            var shape = particles.shape;
+            shape.shapeType = ParticleSystemShapeType.Cone;
+            shape.angle = 15;
+            
+            // Set references
+            SerializedObject serializedObject = new SerializedObject(cookingStationComponent);
+            serializedObject.FindProperty("_ingredientPlacementPoint").objectReferenceValue = cookingPlacementPoint.transform;
+            serializedObject.FindProperty("_activeVisual").objectReferenceValue = activeVisual;
+            serializedObject.FindProperty("_cookingParticles").objectReferenceValue = particles;
+            serializedObject.ApplyModifiedProperties();
+            
+            // Save the prefab
+            string cookingStationPath = $"{stationsPath}/CookingStation.prefab";
+            PrefabUtility.SaveAsPrefabAsset(cookingStation, cookingStationPath);
+            GameObject.DestroyImmediate(cookingStation);
+            
+            // Generate cutting station
+            GameObject cuttingStation = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            cuttingStation.name = "CuttingStation";
+            cuttingStation.transform.localScale = new Vector3(1.2f, 0.5f, 1.2f);
+            
+            // Add required components
+            CuttingStation cuttingStationComponent = cuttingStation.AddComponent<CuttingStation>();
+            cuttingStation.AddComponent<NetworkObject>();
+            
+            // Create a placement point for ingredients
+            GameObject cuttingPlacementPoint = new GameObject("IngredientPlacementPoint");
+            cuttingPlacementPoint.transform.SetParent(cuttingStation.transform);
+            cuttingPlacementPoint.transform.localPosition = new Vector3(0, 0.3f, 0);
+            
+            // Create visual feedback objects
+            GameObject cuttingActiveVisual = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            cuttingActiveVisual.name = "ActiveVisual";
+            cuttingActiveVisual.transform.SetParent(cuttingStation.transform);
+            cuttingActiveVisual.transform.localPosition = new Vector3(0, 0.3f, 0);
+            cuttingActiveVisual.transform.localScale = new Vector3(0.8f, 0.1f, 0.1f);
+            cuttingActiveVisual.GetComponent<Renderer>().material.color = Color.blue;
+            cuttingActiveVisual.SetActive(false);
+            
+            // Add audio source for cutting sound
+            AudioSource cuttingSound = cuttingStation.AddComponent<AudioSource>();
+            cuttingSound.playOnAwake = false;
+            cuttingSound.loop = true;
+            
+            // Set references
+            SerializedObject cuttingSerializedObject = new SerializedObject(cuttingStationComponent);
+            cuttingSerializedObject.FindProperty("_ingredientPlacementPoint").objectReferenceValue = cuttingPlacementPoint.transform;
+            cuttingSerializedObject.FindProperty("_activeVisual").objectReferenceValue = cuttingActiveVisual;
+            cuttingSerializedObject.FindProperty("_cuttingSound").objectReferenceValue = cuttingSound;
+            cuttingSerializedObject.ApplyModifiedProperties();
+            
+            // Save the prefab
+            string cuttingStationPath = $"{stationsPath}/CuttingStation.prefab";
+            PrefabUtility.SaveAsPrefabAsset(cuttingStation, cuttingStationPath);
+            GameObject.DestroyImmediate(cuttingStation);
+            
+            // Generate serving station
+            GameObject servingStation = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            servingStation.name = "ServingStation";
+            servingStation.transform.localScale = new Vector3(1.5f, 0.3f, 1.5f);
+            
+            // Add required components
+            ServingStation servingStationComponent = servingStation.AddComponent<ServingStation>();
+            servingStation.AddComponent<NetworkObject>();
+            
+            // Create a placement area for ingredients
+            GameObject servingPlacementArea = new GameObject("IngredientPlacementArea");
+            servingPlacementArea.transform.SetParent(servingStation.transform);
+            servingPlacementArea.transform.localPosition = new Vector3(0, 0.2f, 0);
+            
+            // Create visual feedback objects
+            GameObject successVisual = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            successVisual.name = "SuccessVisual";
+            successVisual.transform.SetParent(servingStation.transform);
+            successVisual.transform.localPosition = new Vector3(0, 0.5f, 0);
+            successVisual.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
+            successVisual.GetComponent<Renderer>().material.color = Color.green;
+            successVisual.SetActive(false);
+            
+            GameObject failureVisual = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            failureVisual.name = "FailureVisual";
+            failureVisual.transform.SetParent(servingStation.transform);
+            failureVisual.transform.localPosition = new Vector3(0, 0.5f, 0);
+            failureVisual.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
+            failureVisual.GetComponent<Renderer>().material.color = Color.red;
+            failureVisual.SetActive(false);
+            
+            // Set references
+            SerializedObject servingSerializedObject = new SerializedObject(servingStationComponent);
+            servingSerializedObject.FindProperty("_ingredientPlacementArea").objectReferenceValue = servingPlacementArea.transform;
+            servingSerializedObject.FindProperty("_successVisual").objectReferenceValue = successVisual;
+            servingSerializedObject.FindProperty("_failureVisual").objectReferenceValue = failureVisual;
+            servingSerializedObject.ApplyModifiedProperties();
+            
+            // Save the prefab
+            string servingStationPath = $"{stationsPath}/ServingStation.prefab";
+            PrefabUtility.SaveAsPrefabAsset(servingStation, servingStationPath);
+            GameObject.DestroyImmediate(servingStation);
+            
+            // Generate ingredient spawner
+            GameObject ingredientSpawner = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            ingredientSpawner.name = "IngredientSpawner";
+            ingredientSpawner.transform.localScale = new Vector3(0.8f, 0.2f, 0.8f);
+            
+            // Add required components
+            IngredientSpawner spawnerComponent = ingredientSpawner.AddComponent<IngredientSpawner>();
+            ingredientSpawner.AddComponent<NetworkObject>();
+            
+            // Create a spawn point for ingredients
+            GameObject spawnPoint = new GameObject("SpawnPoint");
+            spawnPoint.transform.SetParent(ingredientSpawner.transform);
+            spawnPoint.transform.localPosition = new Vector3(0, 0.5f, 0);
+            
+            // Create visual feedback objects
+            GameObject availableVisual = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            availableVisual.name = "AvailableVisual";
+            availableVisual.transform.SetParent(ingredientSpawner.transform);
+            availableVisual.transform.localPosition = new Vector3(0, 0.3f, 0);
+            availableVisual.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+            availableVisual.GetComponent<Renderer>().material.color = Color.green;
+            
+            GameObject cooldownVisual = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            cooldownVisual.name = "CooldownVisual";
+            cooldownVisual.transform.SetParent(ingredientSpawner.transform);
+            cooldownVisual.transform.localPosition = new Vector3(0, 0.3f, 0);
+            cooldownVisual.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+            cooldownVisual.GetComponent<Renderer>().material.color = Color.red;
+            cooldownVisual.SetActive(false);
+            
+            // Set references
+            SerializedObject spawnerSerializedObject = new SerializedObject(spawnerComponent);
+            spawnerSerializedObject.FindProperty("_spawnPoint").objectReferenceValue = spawnPoint.transform;
+            spawnerSerializedObject.FindProperty("_availableVisual").objectReferenceValue = availableVisual;
+            spawnerSerializedObject.FindProperty("_cooldownVisual").objectReferenceValue = cooldownVisual;
+            spawnerSerializedObject.ApplyModifiedProperties();
+            
+            // Save the prefab
+            string spawnerPath = $"{stationsPath}/IngredientSpawner.prefab";
+            PrefabUtility.SaveAsPrefabAsset(ingredientSpawner, spawnerPath);
+            GameObject.DestroyImmediate(ingredientSpawner);
+            
+            // Generate trash bin
+            GameObject trashBin = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            trashBin.name = "TrashBin";
+            trashBin.transform.localScale = new Vector3(0.7f, 0.8f, 0.7f);
+            
+            // Add required components
+            TrashBin trashBinComponent = trashBin.AddComponent<TrashBin>();
+            trashBin.AddComponent<NetworkObject>();
+            
+            // Create a particle system for trash effects
+            GameObject trashParticleObj = new GameObject("TrashParticles");
+            trashParticleObj.transform.SetParent(trashBin.transform);
+            trashParticleObj.transform.localPosition = new Vector3(0, 0.5f, 0);
+            ParticleSystem trashParticles = trashParticleObj.AddComponent<ParticleSystem>();
+            
+            // Configure the particle system
+            var trashMain = trashParticles.main;
+            trashMain.startColor = new ParticleSystem.MinMaxGradient(Color.gray);
+            trashMain.startSize = 0.1f;
+            trashMain.startLifetime = 1.0f;
+            trashMain.startSpeed = 0.5f;
+            
+            var trashEmission = trashParticles.emission;
+            trashEmission.rateOverTime = 0;
+            trashEmission.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0, 20) });
+            
+            var trashShape = trashParticles.shape;
+            trashShape.shapeType = ParticleSystemShapeType.Sphere;
+            trashShape.radius = 0.2f;
+            
+            // Add audio source for trash sound
+            AudioSource trashSound = trashBin.AddComponent<AudioSource>();
+            trashSound.playOnAwake = false;
+            
+            // Set references
+            SerializedObject trashSerializedObject = new SerializedObject(trashBinComponent);
+            trashSerializedObject.FindProperty("_trashParticles").objectReferenceValue = trashParticles;
+            trashSerializedObject.FindProperty("_trashSound").objectReferenceValue = trashSound;
+            trashSerializedObject.ApplyModifiedProperties();
+            
+            // Save the prefab
+            string trashBinPath = $"{stationsPath}/TrashBin.prefab";
+            PrefabUtility.SaveAsPrefabAsset(trashBin, trashBinPath);
+            GameObject.DestroyImmediate(trashBin);
+            
+            Debug.Log("Generated station prefabs.");
+        }
+        
+        /// <summary>
+        /// Generate player prefab.
+        /// </summary>
+        /// <param name="outputPath">The output path for the generated prefabs.</param>
+        private void GeneratePlayerPrefab(string outputPath)
+        {
+            string playerPath = $"{outputPath}/Player";
+            
+            // Create player object
+            GameObject player = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            player.name = "Player";
+            
+            // Add required components
+            PlayerController playerController = player.AddComponent<PlayerController>();
+            player.AddComponent<NetworkObject>();
+            
+            // Add rigidbody
+            Rigidbody rigidbody = player.GetComponent<Rigidbody>();
+            if (rigidbody == null)
+            {
+                rigidbody = player.AddComponent<Rigidbody>();
+            }
+            rigidbody.constraints = RigidbodyConstraints.FreezeRotation;
+            rigidbody.collisionDetectionMode = CollisionDetectionMode.Continuous;
+            
+            // Create model object
+            GameObject model = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            model.name = "Model";
+            model.transform.SetParent(player.transform);
+            model.transform.localPosition = new Vector3(0, 0, 0.3f);
+            model.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+            
+            // Create item hold point
+            GameObject holdPoint = new GameObject("ItemHoldPoint");
+            holdPoint.transform.SetParent(player.transform);
+            holdPoint.transform.localPosition = new Vector3(0, 0.5f, 0.8f);
+            
+            // Set references
+            SerializedObject serializedObject = new SerializedObject(playerController);
+            serializedObject.FindProperty("_modelTransform").objectReferenceValue = model.transform;
+            serializedObject.FindProperty("_itemHoldPoint").objectReferenceValue = holdPoint.transform;
+            serializedObject.ApplyModifiedProperties();
+            
+            // Save the prefab
+            string playerPrefabPath = $"{playerPath}/Player.prefab";
+            PrefabUtility.SaveAsPrefabAsset(player, playerPrefabPath);
+            GameObject.DestroyImmediate(player);
+            
+            Debug.Log("Generated player prefab.");
+        }
+        
+        /// <summary>
+        /// Generate UI prefabs.
+        /// </summary>
+        /// <param name="outputPath">The output path for the generated prefabs.</param>
+        private void GenerateUIPrefabs(string outputPath)
+        {
+            string uiPath = $"{outputPath}/UI";
+            
+            // Create order item prefab
+            GameObject orderItem = new GameObject("OrderItem");
+            orderItem.AddComponent<RectTransform>();
+            orderItem.AddComponent<RecipeRage.UI.OrderUIItem>();
+            
+            // Save the prefab
+            string orderItemPath = $"{uiPath}/OrderItem.prefab";
+            PrefabUtility.SaveAsPrefabAsset(orderItem, orderItemPath);
+            GameObject.DestroyImmediate(orderItem);
+            
+            Debug.Log("Generated UI prefabs.");
+        }
+        
+        /// <summary>
+        /// Generate order manager prefab.
+        /// </summary>
+        /// <param name="outputPath">The output path for the generated prefabs.</param>
+        private void GenerateOrderManagerPrefab(string outputPath)
+        {
+            // Create order manager object
+            GameObject orderManager = new GameObject("OrderManager");
+            orderManager.AddComponent<OrderManager>();
+            orderManager.AddComponent<NetworkObject>();
+            
+            // Save the prefab
+            string orderManagerPath = $"{outputPath}/OrderManager.prefab";
+            PrefabUtility.SaveAsPrefabAsset(orderManager, orderManagerPath);
+            GameObject.DestroyImmediate(orderManager);
+            
+            Debug.Log("Generated order manager prefab.");
+        }
+    }
+}
