@@ -25,7 +25,7 @@ namespace RecipeRage.Editor
                 ModelPath = "Assets/Models/Stations/CuttingBoard.fbx",
                 SoundPath = "Assets/Audio/Stations/Cutting.wav"
             },
-            
+
             // Cooking Pot
             new StationDefinition
             {
@@ -38,7 +38,7 @@ namespace RecipeRage.Editor
                 ModelPath = "Assets/Models/Stations/Pot.fbx",
                 SoundPath = "Assets/Audio/Stations/Boiling.wav"
             },
-            
+
             // Assembly Station
             new StationDefinition
             {
@@ -50,9 +50,22 @@ namespace RecipeRage.Editor
                 PrefabPath = "Assets/Prefabs/Stations/AssemblyStation.prefab",
                 ModelPath = "Assets/Models/Stations/Counter.fbx",
                 SoundPath = "Assets/Audio/Stations/Place.wav"
+            },
+
+            // Serving Station
+            new StationDefinition
+            {
+                Name = "ServingStation",
+                DisplayName = "Serving Station",
+                StationType = typeof(ServingStation),
+                BaseColor = new Color(0.9f, 0.8f, 0.2f), // Gold
+                ProcessingTime = 0f,
+                PrefabPath = "Assets/Prefabs/Stations/ServingStation.prefab",
+                ModelPath = "Assets/Models/Stations/Counter.fbx",
+                SoundPath = "Assets/Audio/Stations/Bell.wav"
             }
         };
-        
+
         /// <summary>
         /// Generate cooking station prefabs.
         /// </summary>
@@ -61,39 +74,39 @@ namespace RecipeRage.Editor
         {
             // Create the output directory if it doesn't exist
             System.IO.Directory.CreateDirectory(outputPath);
-            
+
             // Generate each station
             foreach (StationDefinition definition in _stationDefinitions)
             {
                 // Create the station game object
                 GameObject stationObject = new GameObject(definition.Name);
-                
+
                 // Add the station component
                 CookingStation stationComponent = (CookingStation)stationObject.AddComponent(definition.StationType);
-                
+
                 // Add a box collider
                 BoxCollider collider = stationObject.AddComponent<BoxCollider>();
                 collider.size = new Vector3(1f, 1f, 1f);
                 collider.center = new Vector3(0f, 0.5f, 0f);
-                
+
                 // Add a rigidbody
                 Rigidbody rigidbody = stationObject.AddComponent<Rigidbody>();
                 rigidbody.isKinematic = true;
-                
+
                 // Add an audio source
                 AudioSource audioSource = stationObject.AddComponent<AudioSource>();
                 audioSource.playOnAwake = false;
                 audioSource.spatialBlend = 1f;
                 audioSource.minDistance = 1f;
                 audioSource.maxDistance = 10f;
-                
+
                 // Create a visual representation
                 GameObject visualObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 visualObject.name = "Visual";
                 visualObject.transform.SetParent(stationObject.transform);
                 visualObject.transform.localPosition = new Vector3(0f, 0.5f, 0f);
                 visualObject.transform.localScale = new Vector3(1f, 1f, 1f);
-                
+
                 // Set the material color
                 MeshRenderer renderer = visualObject.GetComponent<MeshRenderer>();
                 if (renderer != null)
@@ -102,50 +115,50 @@ namespace RecipeRage.Editor
                     material.color = definition.BaseColor;
                     renderer.material = material;
                 }
-                
+
                 // Create an ingredient placement point
                 GameObject placementPoint = new GameObject("IngredientPlacementPoint");
                 placementPoint.transform.SetParent(stationObject.transform);
                 placementPoint.transform.localPosition = new Vector3(0f, 1.1f, 0f);
-                
+
                 // Create a progress bar
                 GameObject progressBar = new GameObject("ProgressBar");
                 progressBar.transform.SetParent(stationObject.transform);
                 progressBar.transform.localPosition = new Vector3(0f, 1.5f, 0f);
-                
+
                 // Add a sprite renderer for the progress bar
                 SpriteRenderer progressRenderer = progressBar.AddComponent<SpriteRenderer>();
                 progressRenderer.sprite = EditorGUIUtility.whiteTexture;
                 progressRenderer.color = Color.green;
                 progressRenderer.transform.localScale = new Vector3(1f, 0.1f, 1f);
-                
+
                 // Set up the station properties
                 SerializedObject serializedObject = new SerializedObject(stationComponent);
                 serializedObject.FindProperty("_stationName").stringValue = definition.DisplayName;
                 serializedObject.FindProperty("_processingTime").floatValue = definition.ProcessingTime;
                 serializedObject.FindProperty("_ingredientPlacementPoint").objectReferenceValue = placementPoint.transform;
                 serializedObject.FindProperty("_progressBarPrefab").objectReferenceValue = progressBar;
-                
+
                 // Apply the changes
                 serializedObject.ApplyModifiedProperties();
-                
+
                 // Save the prefab
                 string prefabPath = $"{outputPath}/{definition.Name}.prefab";
                 GameObject prefab = PrefabUtility.SaveAsPrefabAsset(stationObject, prefabPath);
-                
+
                 // Clean up
                 Object.DestroyImmediate(stationObject);
-                
+
                 Debug.Log($"Created station prefab: {definition.Name}");
             }
-            
+
             // Save the changes
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-            
+
             Debug.Log($"Generated {_stationDefinitions.Count} station prefabs.");
         }
-        
+
         /// <summary>
         /// Definition for a cooking station.
         /// </summary>
