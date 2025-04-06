@@ -129,7 +129,7 @@ namespace RecipeRage.Gameplay.Stations
             }
 
             // Check if the player is already holding an item
-            if (player.IsHoldingItem())
+            if (player.IsHoldingObject())
             {
                 return;
             }
@@ -184,7 +184,7 @@ namespace RecipeRage.Gameplay.Stations
                 networkObject.Spawn();
 
                 // Give the ingredient to the player
-                player.PickupItem(networkObject);
+                player.PickUpObject(ingredientObject);
             }
             else
             {
