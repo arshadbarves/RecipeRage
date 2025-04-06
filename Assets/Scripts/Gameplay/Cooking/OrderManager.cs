@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using RecipeRage.Core.GameModes;
 using RecipeRage.Core.Patterns;
 using Unity.Netcode;
 using UnityEngine;
@@ -17,9 +18,14 @@ namespace RecipeRage.Gameplay.Cooking
         [SerializeField] private float _maxTimeBetweenOrders = 15f;
         [SerializeField] private int _maxActiveOrders = 5;
         [SerializeField] private float _difficultyScalingFactor = 0.8f;
+        [SerializeField] private float _orderTimeLimit = 120f;
+        [SerializeField] private int _baseOrderPoints = 100;
+        [SerializeField] private int _timeBonus = 50;
+        [SerializeField] private int _perfectBonus = 25;
 
-        [Header("Recipes")]
+        [Header("References")]
         [SerializeField] private List<Recipe> _availableRecipes = new List<Recipe>();
+        [SerializeField] private GameModeManager _gameModeManager;
 
         /// <summary>
         /// Event triggered when a new order is created.
