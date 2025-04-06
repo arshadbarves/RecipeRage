@@ -18,6 +18,7 @@
 - ✅ Recipe System (scriptable objects)
 - ✅ Cooking Stations (Cutting, Cooking, Assembly, Serving)
 - ✅ Order System
+- ✅ Scoring System
 
 ### Multiplayer
 - ✅ Advanced Lobby System
@@ -37,7 +38,6 @@
 ## In Progress
 
 ### Gameplay
-- 🔄 Scoring System
 - 🔄 Timer System
 
 ### UI
@@ -77,8 +77,8 @@
 - ⚠️ Need to add more unit tests
 
 ## Next Steps
-1. Implement scoring system and UI
-2. Create UI for main menu and lobby
-3. Design character models and animations
-4. Implement visual effects for abilities
-5. Add power-up system
+1. Create UI for main menu and lobby
+2. Design character models and animations
+3. Implement visual effects for abilities
+4. Add power-up system
+5. Implement achievement system
