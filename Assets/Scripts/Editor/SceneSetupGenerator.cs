@@ -1,5 +1,8 @@
 using System;
 using System.Collections.Generic;
+using RecipeRage.Core.GameModes;
+using RecipeRage.Core.Networking;
+using RecipeRage.Core.Patterns;
 using RecipeRage.Gameplay.Cooking;
 using RecipeRage.Gameplay.Interactables;
 using RecipeRage.UI;
@@ -47,7 +50,8 @@ namespace RecipeRage.Editor
         /// </summary>
         /// <param name="scenesPath"> The path to save the scene. </param>
         /// <param name="prefabsPath"> The path to the prefabs. </param>
-        public void SetupScene(string scenesPath, string prefabsPath)
+        /// <param name="gameModesPath"> The path to the game modes. </param>
+        public void SetupScene(string scenesPath, string prefabsPath, string gameModesPath = null)
         {
             // Create a new scene
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
@@ -86,6 +90,39 @@ namespace RecipeRage.Editor
             // Create the network manager
             var networkManager = new GameObject("NetworkManager");
             var networkManagerComponent = networkManager.AddComponent<NetworkManager>();
+
+            // Create the game mode manager
+            var gameModeManager = new GameObject("GameModeManager");
+            var gameModeManagerComponent = gameModeManager.AddComponent<GameModeManager>();
+
+            // Create the network lobby manager
+            var networkLobbyManager = new GameObject("NetworkLobbyManager");
+            var networkLobbyManagerComponent = networkLobbyManager.AddComponent<NetworkLobbyManager>();
+
+            // Create the matchmaking manager
+            var matchmakingManager = new GameObject("MatchmakingManager");
+            var matchmakingManagerComponent = matchmakingManager.AddComponent<MatchmakingManager>();
+
+            // Create the network game manager
+            var networkGameManager = new GameObject("NetworkGameManager");
+            var networkGameManagerComponent = networkGameManager.AddComponent<NetworkGameManager>();
+
+            // Setup references between managers
+            var networkLobbyManagerSerialized = new SerializedObject(networkLobbyManagerComponent);
+            networkLobbyManagerSerialized.FindProperty("_networkManager").objectReferenceValue = networkManagerComponent;
+            networkLobbyManagerSerialized.FindProperty("_gameModeManager").objectReferenceValue = gameModeManagerComponent;
+            networkLobbyManagerSerialized.ApplyModifiedProperties();
+
+            var matchmakingManagerSerialized = new SerializedObject(matchmakingManagerComponent);
+            matchmakingManagerSerialized.FindProperty("_networkManager").objectReferenceValue = networkManagerComponent;
+            matchmakingManagerSerialized.FindProperty("_lobbyManager").objectReferenceValue = networkLobbyManagerComponent;
+            matchmakingManagerSerialized.FindProperty("_gameModeManager").objectReferenceValue = gameModeManagerComponent;
+            matchmakingManagerSerialized.ApplyModifiedProperties();
+
+            var networkGameManagerSerialized = new SerializedObject(networkGameManagerComponent);
+            networkGameManagerSerialized.FindProperty("_networkManager").objectReferenceValue = networkManagerComponent;
+            networkGameManagerSerialized.FindProperty("_lobbyManager").objectReferenceValue = networkLobbyManagerComponent;
+            networkGameManagerSerialized.ApplyModifiedProperties();
 
             // Create the spawn manager
             var spawnManager = new GameObject("SpawnManager");
@@ -422,6 +459,51 @@ namespace RecipeRage.Editor
             }
 
             uiSerializedObject.ApplyModifiedProperties();
+
+            // Load game modes if path is provided
+            if (!string.IsNullOrEmpty(gameModesPath))
+            {
+                // Find all game mode assets
+                var gameModeGuids = AssetDatabase.FindAssets("t:GameMode", new[] { gameModesPath });
+                var gameModes = new List<GameMode>();
+
+                foreach (var guid in gameModeGuids)
+                {
+                    var path = AssetDatabase.GUIDToAssetPath(guid);
+                    var gameMode = AssetDatabase.LoadAssetAtPath<GameMode>(path);
+
+                    if (gameMode != null)
+                    {
+                        gameModes.Add(gameMode);
+                    }
+                }
+
+                // Add game modes to the game mode manager
+                if (gameModes.Count > 0)
+                {
+                    var gameModeManagerSerialized = new SerializedObject(gameModeManagerComponent);
+                    var availableGameModesProperty = gameModeManagerSerialized.FindProperty("_availableGameModes");
+
+                    availableGameModesProperty.ClearArray();
+                    for (int i = 0; i < gameModes.Count; i++)
+                    {
+                        availableGameModesProperty.arraySize++;
+                        availableGameModesProperty.GetArrayElementAtIndex(i).objectReferenceValue = gameModes[i];
+                    }
+
+                    // Set the default game mode
+                    var defaultGameMode = gameModes.Find(gm => gm.Id == "classic") ?? gameModes[0];
+                    gameModeManagerSerialized.FindProperty("_defaultGameModeId").stringValue = defaultGameMode.Id;
+
+                    gameModeManagerSerialized.ApplyModifiedProperties();
+
+                    Debug.Log($"Added {gameModes.Count} game modes to the GameModeManager");
+                }
+                else
+                {
+                    Debug.LogWarning("No game modes found. Make sure to generate game modes first.");
+                }
+            }
 
             // Save the scene
             string scenePath = $"{scenesPath}/RecipeRage.unity";
