@@ -3,7 +3,6 @@ using RecipeRage.Core.GameFramework.State;
 using RecipeRage.Core.GameFramework.State.States;
 using RecipeRage.Core.GameModes;
 using RecipeRage.Core.Networking;
-using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -223,7 +222,7 @@ namespace RecipeRage.UI
             // Update button text
             if (_readyButton != null)
             {
-                _readyButton.GetComponentInChildren<TextMeshProUGUI>().text = _isReady ? "Unready" : "Ready";
+                _readyButton.text = _isReady ? "Unready" : "Ready";
             }
 
             // Notify lobby manager
@@ -309,7 +308,7 @@ namespace RecipeRage.UI
         /// Update the player list UI.
         /// </summary>
         /// <param name="players">The list of players in the lobby</param>
-        public void UpdatePlayerList(List<NetworkLobbyManager.LobbyPlayerInfo> players)
+        public void UpdatePlayerList(List<LobbyPlayerInfo> players)
         {
             // Clear existing player entries
             ClearPlayerList();
@@ -343,7 +342,7 @@ namespace RecipeRage.UI
         /// Create a player entry in the UI.
         /// </summary>
         /// <param name="player">The player info</param>
-        private void CreatePlayerEntry(NetworkLobbyManager.LobbyPlayerInfo player)
+        private void CreatePlayerEntry(LobbyPlayerInfo player)
         {
             if (_playerList == null || _playerEntryTemplate == null) return;
 
@@ -392,7 +391,7 @@ namespace RecipeRage.UI
         /// Update the lobby status text.
         /// </summary>
         /// <param name="players">The list of players in the lobby</param>
-        private void UpdateLobbyStatus(List<NetworkLobbyManager.LobbyPlayerInfo> players)
+        private void UpdateLobbyStatus(List<LobbyPlayerInfo> players)
         {
             if (_lobbyStatusText != null)
             {
