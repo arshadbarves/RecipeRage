@@ -1,8 +1,8 @@
 using System;
 using RecipeRage.Core.Networking;
 using RecipeRage.UI;
+using RecipeRage.UI.Screens;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace RecipeRage.Core.GameFramework.State.States
 {
@@ -11,10 +11,11 @@ namespace RecipeRage.Core.GameFramework.State.States
     /// </summary>
     public class MatchmakingState : GameState
     {
+
         /// <summary>
-        /// Event triggered when matchmaking is complete.
+        /// Flag to track if matchmaking is in progress.
         /// </summary>
-        public event Action<bool> OnMatchmakingComplete;
+        private bool _isMatchmakingInProgress;
 
         // No need to store references to UI elements anymore as they're managed by the UIManager
 
@@ -24,9 +25,9 @@ namespace RecipeRage.Core.GameFramework.State.States
         private NetworkLobbyManager _lobbyManager;
 
         /// <summary>
-        /// Flag to track if matchmaking is in progress.
+        /// Event triggered when matchmaking is complete.
         /// </summary>
-        private bool _isMatchmakingInProgress;
+        public event Action<bool> OnMatchmakingComplete;
 
         /// <summary>
         /// Called when the state is entered.
@@ -45,13 +46,13 @@ namespace RecipeRage.Core.GameFramework.State.States
             Debug.Log("[MatchmakingState] Starting matchmaking process");
 
             // Show game mode selection screen
-            UI.UIManager.Instance.ShowScreen<UI.Screens.GameModeSelectionScreen>(true);
+            UIManager.Instance.ShowScreen<GameModeSelectionScreen>();
 
             // Subscribe to lobby events
             if (_lobbyManager != null)
             {
-                _lobbyManager.OnLobbyJoined += HandleLobbyJoined;
-                _lobbyManager.OnLobbyLeft += HandleLobbyLeft;
+                _lobbyManager.OnPlayerJoinedLobby += HandleLobbyJoined;
+                _lobbyManager.OnPlayerLeftLobby += HandleLobbyLeft;
                 _lobbyManager.OnGameStarted += HandleGameStarted;
 
                 // Start or join a lobby
@@ -83,8 +84,8 @@ namespace RecipeRage.Core.GameFramework.State.States
             // Unsubscribe from lobby events
             if (_lobbyManager != null)
             {
-                _lobbyManager.OnLobbyJoined -= HandleLobbyJoined;
-                _lobbyManager.OnLobbyLeft -= HandleLobbyLeft;
+                _lobbyManager.OnPlayerJoinedLobby -= HandleLobbyJoined;
+                _lobbyManager.OnPlayerLeftLobby -= HandleLobbyLeft;
                 _lobbyManager.OnGameStarted -= HandleGameStarted;
             }
 
@@ -95,7 +96,7 @@ namespace RecipeRage.Core.GameFramework.State.States
             }
 
             // Hide game mode selection screen
-            UI.UIManager.Instance.GetScreen<UI.Screens.GameModeSelectionScreen>()?.Hide(true);
+            UIManager.Instance.GetScreen<GameModeSelectionScreen>()?.Hide();
         }
 
         /// <summary>
@@ -111,21 +112,18 @@ namespace RecipeRage.Core.GameFramework.State.States
         /// <summary>
         /// Handle lobby joined event.
         /// </summary>
-        /// <param name="success">Whether joining the lobby was successful</param>
-        private void HandleLobbyJoined(bool success)
+        /// <param name="networkPlayer"> </param>
+        private void HandleLobbyJoined(NetworkPlayer networkPlayer)
         {
-            Debug.Log($"[MatchmakingState] Lobby joined. Success: {success}");
+            Debug.Log($"[MatchmakingState] Lobby joined by {networkPlayer.DisplayName}");
 
-            if (!success)
-            {
-                CompleteMatchmaking(false);
-            }
+            CompleteMatchmaking(false);
         }
 
         /// <summary>
         /// Handle lobby left event.
         /// </summary>
-        private void HandleLobbyLeft()
+        private void HandleLobbyLeft(NetworkPlayer networkPlayer)
         {
             Debug.Log("[MatchmakingState] Lobby left");
 
@@ -150,7 +148,7 @@ namespace RecipeRage.Core.GameFramework.State.States
         /// <summary>
         /// Called when matchmaking is complete.
         /// </summary>
-        /// <param name="success">Whether matchmaking was successful</param>
+        /// <param name="success"> Whether matchmaking was successful </param>
         private void CompleteMatchmaking(bool success)
         {
             if (!_isMatchmakingInProgress)
