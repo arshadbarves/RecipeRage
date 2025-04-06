@@ -222,7 +222,14 @@ namespace RecipeRage.Editor
         /// </summary>
         private void SetupScene()
         {
-            _sceneSetupGenerator.SetupScene(SCENES_PATH, PREFABS_PATH);
+            // Generate game modes first if they haven't been generated yet
+            if (_generateGameModes)
+            {
+                GenerateGameModes();
+            }
+
+            // Setup the scene with references to game modes
+            _sceneSetupGenerator.SetupScene(SCENES_PATH, PREFABS_PATH, GAME_MODES_PATH);
         }
     }
 }
