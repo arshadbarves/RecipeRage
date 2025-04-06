@@ -110,21 +110,20 @@ namespace RecipeRage.Core
                     return;
                 }
 
-                // Initialize EOS SDK
-                PlayEveryWare.EpicOnlineServices.EOSManager.Instance.Initialize((success) =>
-                {
-                    if (success)
-                    {
-                        Debug.Log("[GameBootstrap] EOS SDK initialized successfully");
+                // Initialize EOS SDK using our adapter
+                bool success = RecipeRage.Core.Networking.EOSAdapter.Init();
 
-                        // Initialize EOS Platform
-                        InitializeEOSPlatform();
-                    }
-                    else
-                    {
-                        Debug.LogError("[GameBootstrap] Failed to initialize EOS SDK");
-                    }
-                });
+                if (success)
+                {
+                    Debug.Log("[GameBootstrap] EOS SDK initialized successfully");
+
+                    // Initialize EOS Platform
+                    InitializeEOSPlatform();
+                }
+                else
+                {
+                    Debug.LogError("[GameBootstrap] Failed to initialize EOS SDK");
+                }
             }
             catch (System.Exception e)
             {
@@ -142,7 +141,7 @@ namespace RecipeRage.Core
             try
             {
                 // Get the EOS platform interface
-                var eosPlatform = PlayEveryWare.EpicOnlineServices.EOSManager.Instance.GetEOSPlatformInterface();
+                var eosPlatform = RecipeRage.Core.Networking.EOSAdapter.GetEOSPlatformInterface();
 
                 if (eosPlatform == null)
                 {
@@ -169,18 +168,15 @@ namespace RecipeRage.Core
         {
             Debug.Log("[GameBootstrap] Initializing EOS Authentication");
 
-            // Get the EOS manager
-            var eosManager = PlayEveryWare.EpicOnlineServices.EOSManager.Instance;
-
             // Check if already logged in
-            if (eosManager.IsLoggedIn())
+            if (RecipeRage.Core.Networking.EOSAdapter.IsLoggedIn())
             {
                 Debug.Log("[GameBootstrap] Already logged in to EOS");
                 return;
             }
 
             // Set up auth login callback
-            eosManager.SetLoggedInCallback((success, userId, error) =>
+            RecipeRage.Core.Networking.EOSAdapter.SetLoggedInCallback((success, userId, error) =>
             {
                 if (success)
                 {
@@ -196,7 +192,7 @@ namespace RecipeRage.Core
             });
 
             // Login with device ID (for guest users)
-            eosManager.StartLoginWithDeviceID("RecipeRage Guest", (success, error) =>
+            RecipeRage.Core.Networking.EOSAdapter.StartLoginWithDeviceID("RecipeRage Guest", (success, error) =>
             {
                 if (!success)
                 {
