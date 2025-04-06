@@ -97,7 +97,7 @@ namespace RecipeRage.UI.Screens
                 _gameTitle.style.opacity = 0;
                 _gameTitle.transform.position = new Vector2(0, 50);
                 
-                _loadingBarFill.style.width = new StyleLength(0);
+                _loadingBarFill.style.width = new StyleLength(0.0);
                 
                 // Animate logo
                 UIAnimationSystem.Instance.Animate(
