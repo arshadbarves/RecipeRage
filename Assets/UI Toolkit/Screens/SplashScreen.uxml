@@ -1,9 +1,0 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
-    <ui:Style src="/Assets/UI Toolkit/Styles/CommonStyles.uss" />
-    <ui:Style src="/Assets/UI Toolkit/Styles/SplashScreen.uss" />
-    <ui:VisualElement name="SplashScreenRoot" class="screen-root">
-        <ui:Label text="Play Center" name="StudioNameLabel" />
-        <ui:Label text="RecipeRage" name="TitleLabel" class="title-label" />
-        <ui:Label text="" name="StatusLabel" class="status-label" />
-    </ui:VisualElement>
-</ui:UXML>
