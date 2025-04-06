@@ -128,7 +128,7 @@ namespace RecipeRage.Editor
 
                 // Add a sprite renderer for the progress bar
                 SpriteRenderer progressRenderer = progressBar.AddComponent<SpriteRenderer>();
-                progressRenderer.sprite = EditorGUIUtility.whiteTexture;
+                progressRenderer.sprite = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 1, 1), new Vector2(0.5f, 0.5f));
                 progressRenderer.color = Color.green;
                 progressRenderer.transform.localScale = new Vector3(1f, 0.1f, 1f);
 

@@ -1,6 +1,5 @@
 using System;
 using RecipeRage.Core.GameModes;
-using RecipeRage.Core.Patterns;
 using RecipeRage.Gameplay.Cooking;
 using Unity.Netcode;
 using UnityEngine;
@@ -18,36 +17,36 @@ namespace RecipeRage.Gameplay.Scoring
         [SerializeField] private int _perfectBonus = 25;
         [SerializeField] private int _comboBonus = 10;
         [SerializeField] private float _comboTimeWindow = 30f;
-        
+
         [Header("References")]
         [SerializeField] private OrderManager _orderManager;
         [SerializeField] private GameModeManager _gameModeManager;
-        
+
         /// <summary>
         /// Event triggered when the score changes.
         /// </summary>
         public event Action<int> OnScoreChanged;
-        
+
         /// <summary>
         /// Event triggered when a combo is achieved.
         /// </summary>
         public event Action<int> OnComboAchieved;
-        
+
         /// <summary>
         /// The current score.
         /// </summary>
         private NetworkVariable<int> _score = new NetworkVariable<int>(0);
-        
+
         /// <summary>
         /// The current combo count.
         /// </summary>
         private NetworkVariable<int> _comboCount = new NetworkVariable<int>(0);
-        
+
         /// <summary>
         /// The time of the last completed order.
         /// </summary>
         private float _lastOrderCompletionTime;
-        
+
         /// <summary>
         /// Initialize the score manager.
         /// </summary>
@@ -58,70 +57,76 @@ namespace RecipeRage.Gameplay.Scoring
             {
                 _orderManager = FindFirstObjectByType<OrderManager>();
             }
-            
+
             // Find the game mode manager if not set
             if (_gameModeManager == null)
             {
                 _gameModeManager = FindFirstObjectByType<GameModeManager>();
             }
         }
-        
+
         /// <summary>
         /// Set up network variables when the network object spawns.
         /// </summary>
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
-            
+
             // Subscribe to network variable changes
             _score.OnValueChanged += OnScoreValueChanged;
             _comboCount.OnValueChanged += OnComboValueChanged;
-            
+
             // Subscribe to order manager events
             if (_orderManager != null)
             {
                 _orderManager.OnOrderCompleted += HandleOrderCompleted;
             }
         }
-        
+
         /// <summary>
         /// Clean up when the network object despawns.
         /// </summary>
         public override void OnNetworkDespawn()
         {
             base.OnNetworkDespawn();
-            
+
             // Unsubscribe from network variable changes
             _score.OnValueChanged -= OnScoreValueChanged;
             _comboCount.OnValueChanged -= OnComboValueChanged;
-            
+
             // Unsubscribe from order manager events
             if (_orderManager != null)
             {
                 _orderManager.OnOrderCompleted -= HandleOrderCompleted;
             }
         }
-        
+
         /// <summary>
         /// Handle order completed event.
         /// </summary>
         /// <param name="order">The order that was completed</param>
-        /// <param name="basePoints">The base points for the order</param>
-        private void HandleOrderCompleted(Order order, int basePoints)
+        private void HandleOrderCompleted(RecipeOrderState order)
         {
             if (!IsServer)
             {
                 return;
             }
-            
-            // Calculate time bonus
-            float timePercentage = order.RemainingTime / order.TimeLimit;
-            int timeBonus = Mathf.RoundToInt(_timeBonus * timePercentage);
-            
+
+            // Get base points from the order
+            int basePoints = order.PointValue;
+
+            // Calculate time bonus (if order has remaining time)
+            int timeBonus = 0;
+            if (order.TimeLimit > 0)
+            {
+                float timePercentage = order.RemainingTime / order.TimeLimit;
+                timeBonus = Mathf.RoundToInt(_timeBonus * timePercentage);
+            }
+
             // Check for combo
             float timeSinceLastOrder = Time.time - _lastOrderCompletionTime;
             bool isCombo = timeSinceLastOrder <= _comboTimeWindow;
-            
+
             // Update combo count
             if (isCombo)
             {
@@ -131,23 +136,23 @@ namespace RecipeRage.Gameplay.Scoring
             {
                 _comboCount.Value = 1;
             }
-            
+
             // Calculate combo bonus
             int comboBonus = (_comboCount.Value - 1) * _comboBonus;
-            
+
             // Calculate total points
             int totalPoints = basePoints + timeBonus + comboBonus;
-            
+
             // Add points to the score
             _score.Value += totalPoints;
-            
+
             // Update last order completion time
             _lastOrderCompletionTime = Time.time;
-            
+
             // Log the score breakdown
             Debug.Log($"[ScoreManager] Order completed: Base={basePoints}, Time={timeBonus}, Combo={comboBonus}, Total={totalPoints}");
         }
-        
+
         /// <summary>
         /// Add points to the score.
         /// </summary>
@@ -160,10 +165,10 @@ namespace RecipeRage.Gameplay.Scoring
                 AddPointsServerRpc(points);
                 return;
             }
-            
+
             _score.Value += points;
         }
-        
+
         /// <summary>
         /// Get the current score.
         /// </summary>
@@ -172,7 +177,7 @@ namespace RecipeRage.Gameplay.Scoring
         {
             return _score.Value;
         }
-        
+
         /// <summary>
         /// Get the current combo count.
         /// </summary>
@@ -181,7 +186,7 @@ namespace RecipeRage.Gameplay.Scoring
         {
             return _comboCount.Value;
         }
-        
+
         /// <summary>
         /// Reset the score.
         /// </summary>
@@ -193,11 +198,11 @@ namespace RecipeRage.Gameplay.Scoring
                 ResetScoreServerRpc();
                 return;
             }
-            
+
             _score.Value = 0;
             _comboCount.Value = 0;
         }
-        
+
         /// <summary>
         /// Handle score value changed.
         /// </summary>
@@ -208,7 +213,7 @@ namespace RecipeRage.Gameplay.Scoring
             // Trigger event
             OnScoreChanged?.Invoke(newValue);
         }
-        
+
         /// <summary>
         /// Handle combo value changed.
         /// </summary>
@@ -222,7 +227,7 @@ namespace RecipeRage.Gameplay.Scoring
                 OnComboAchieved?.Invoke(newValue);
             }
         }
-        
+
         /// <summary>
         /// Request points from the server.
         /// </summary>
@@ -232,7 +237,7 @@ namespace RecipeRage.Gameplay.Scoring
         {
             AddPoints(points);
         }
-        
+
         /// <summary>
         /// Request reset from the server.
         /// </summary>

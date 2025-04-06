@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
+using RecipeRage.Core.Characters;
 using RecipeRage.Core.GameModes;
 using RecipeRage.Core.Networking;
-using RecipeRage.Core.Patterns;
 using RecipeRage.Gameplay.Cooking;
 using RecipeRage.Gameplay.Stations;
 using RecipeRage.UI;
@@ -11,6 +11,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
+using NetworkManager = Unity.Netcode.NetworkManager;
 
 namespace RecipeRage.Editor
 {

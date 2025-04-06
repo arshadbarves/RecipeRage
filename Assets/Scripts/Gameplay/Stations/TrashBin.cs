@@ -12,47 +12,50 @@ namespace RecipeRage.Gameplay.Stations
         [Header("Trash Bin Settings")]
         [SerializeField] private ParticleSystem _trashParticles;
         [SerializeField] private AudioClip _trashSound;
-        
+
         /// <summary>
         /// Initialize the trash bin.
         /// </summary>
         protected override void Awake()
         {
             base.Awake();
-            
+
             // Set station name
             _stationName = "Trash Bin";
         }
-        
+
         /// <summary>
         /// Process the ingredient.
         /// </summary>
         /// <param name="ingredientItem">The ingredient to process</param>
-        protected override void ProcessIngredient(IngredientItem ingredientItem)
+        /// <returns>True if the ingredient was processed successfully</returns>
+        protected override bool ProcessIngredient(IngredientItem ingredientItem)
         {
             if (!IsServer)
             {
-                return;
+                return false;
             }
-            
+
             // Play trash effects
             PlayTrashEffectsClientRpc();
-            
+
             // Destroy the ingredient
             ingredientItem.NetworkObject.Despawn();
+
+            return true;
         }
-        
+
         /// <summary>
-        /// Check if the ingredient can be accepted.
+        /// Check if the ingredient can be processed by this station.
         /// </summary>
         /// <param name="ingredientItem">The ingredient to check</param>
-        /// <returns>True, as trash bins accept all ingredients</returns>
-        public override bool CanAcceptIngredient(IngredientItem ingredientItem)
+        /// <returns>True if the ingredient can be processed</returns>
+        protected override bool CanProcessIngredient(IngredientItem ingredientItem)
         {
             // Trash bins accept all ingredients
             return ingredientItem != null;
         }
-        
+
         /// <summary>
         /// Play trash effects on all clients.
         /// </summary>
@@ -64,7 +67,7 @@ namespace RecipeRage.Gameplay.Stations
             {
                 _trashParticles.Play();
             }
-            
+
             // Play sound
             if (_audioSource != null && _trashSound != null)
             {
