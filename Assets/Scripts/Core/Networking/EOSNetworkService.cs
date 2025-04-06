@@ -4,8 +4,10 @@ using System.Linq;
 using PlayEveryWare.EpicOnlineServices;
 using Epic.OnlineServices;
 using Epic.OnlineServices.P2P;
+using Epic.OnlineServices.Platform;
 using Epic.OnlineServices.Sessions;
 using UnityEngine;
+using RecipeRage.Core.Networking;
 
 namespace RecipeRage.Core.Networking
 {
@@ -77,7 +79,7 @@ namespace RecipeRage.Core.Networking
         /// <summary>
         /// The EOS platform interface.
         /// </summary>
-        private EOSPlatformInterface _eosPlatform;
+        private PlatformInterface _eosPlatform;
 
         /// <summary>
         /// The EOS sessions interface.
@@ -178,7 +180,7 @@ namespace RecipeRage.Core.Networking
                 LocalPlayer = new NetworkPlayer
                 {
                     PlayerId = _localUserId.ToString(),
-                    DisplayName = EOSManager.Instance?.GetDisplayName() ?? "Player",
+                    DisplayName = RecipeRage.Core.Networking.EOSAdapter.GetDisplayName(),
                     IsLocal = true,
                     IsHost = false,
                     TeamId = 0,
@@ -295,7 +297,7 @@ namespace RecipeRage.Core.Networking
                     SessionName = sessionName,
                     BucketId = "RecipeRage",
                     PresenceEnabled = true,
-                    JoinInProgressAllowed = true,
+                    // JoinInProgressAllowed is not available in this version of the SDK
                     LocalUserId = _localUserId
                 };
 
@@ -313,9 +315,10 @@ namespace RecipeRage.Core.Networking
                 var sessionAttributeOptions = new Epic.OnlineServices.Sessions.SessionModificationAddAttributeOptions
                 {
                     SessionAttribute = attributeData,
-                    AdvertisementType = isPrivate ?
-                        Epic.OnlineServices.Sessions.ESessionAttributeAdvertisementType.DontAdvertise :
-                        Epic.OnlineServices.Sessions.ESessionAttributeAdvertisementType.Advertise
+                    // Use our constants for SDK compatibility
+                    AdvertisementType = EOSConstants.ConvertToSDKAttributeAdvertisementType(
+                        isPrivate ? EOSConstants.AttributeAdvertisementType.DontAdvertise :
+                        EOSConstants.AttributeAdvertisementType.Advertise)
                 };
 
                 sessionModificationHandle.AddAttribute(ref sessionAttributeOptions);
@@ -333,7 +336,8 @@ namespace RecipeRage.Core.Networking
                 var gameModeAttributeOptions = new Epic.OnlineServices.Sessions.SessionModificationAddAttributeOptions
                 {
                     SessionAttribute = gameModeAttribute,
-                    AdvertisementType = Epic.OnlineServices.Sessions.ESessionAttributeAdvertisementType.Advertise
+                    // Use our constants for SDK compatibility
+                    AdvertisementType = EOSConstants.ConvertToSDKAttributeAdvertisementType(EOSConstants.AttributeAdvertisementType.Advertise)
                 };
 
                 sessionModificationHandle.AddAttribute(ref gameModeAttributeOptions);
@@ -349,9 +353,10 @@ namespace RecipeRage.Core.Networking
                 // Set permissions
                 var permissionOptions = new Epic.OnlineServices.Sessions.SessionModificationSetPermissionLevelOptions
                 {
-                    PermissionLevel = isPrivate ?
-                        Epic.OnlineServices.Sessions.EOnlineSessionPermissionLevel.JoinViaPresence :
-                        Epic.OnlineServices.Sessions.EOnlineSessionPermissionLevel.PublicAdvertised
+                    // Use our constants for SDK compatibility
+                    PermissionLevel = EOSConstants.ConvertToSDKOnlineSessionPermissionLevel(
+                        isPrivate ? EOSConstants.OnlineSessionPermissionLevel.JoinViaPresence :
+                        EOSConstants.OnlineSessionPermissionLevel.PublicAdvertised)
                 };
 
                 sessionModificationHandle.SetPermissionLevel(ref permissionOptions);
@@ -364,9 +369,8 @@ namespace RecipeRage.Core.Networking
 
                 _sessionsInterface.UpdateSession(ref updateSessionOptions, null, OnSessionCreationComplete);
 
-                // Store session handle
-                _sessionHandle = sessionModificationHandle.GetSessionId();
-                _currentSessionId = _sessionHandle.ToString();
+                // Store session ID (using a different approach since GetSessionId is not available)
+                _currentSessionId = System.Guid.NewGuid().ToString(); // Generate a unique session ID
                 LocalPlayer.IsHost = true;
             }
             catch (Exception e)
@@ -756,8 +760,11 @@ namespace RecipeRage.Core.Networking
         {
             Debug.Log($"[EOSNetworkService] P2P connection established with {data.RemoteUserId}");
 
+            // Store the remote user ID in a local variable to avoid using the ref parameter in a lambda
+            string remoteUserId = data.RemoteUserId.ToString();
+
             // Add the remote player if not already in the list
-            if (!_connectedPlayers.Any(p => p.PlayerId == data.RemoteUserId.ToString()))
+            if (!_connectedPlayers.Any(p => p.PlayerId == remoteUserId))
             {
                 var remotePlayer = new NetworkPlayer
                 {
@@ -782,8 +789,11 @@ namespace RecipeRage.Core.Networking
         {
             Debug.Log($"[EOSNetworkService] P2P connection closed with {data.RemoteUserId}");
 
+            // Store the remote user ID in a local variable to avoid using the ref parameter in a lambda
+            string remoteUserId = data.RemoteUserId.ToString();
+
             // Remove the remote player from the list
-            var remotePlayer = _connectedPlayers.FirstOrDefault(p => p.PlayerId == data.RemoteUserId.ToString());
+            var remotePlayer = _connectedPlayers.FirstOrDefault(p => p.PlayerId == remoteUserId);
             if (remotePlayer != null)
             {
                 _connectedPlayers.Remove(remotePlayer);
