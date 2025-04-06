@@ -1,0 +1,138 @@
+/* Common styles for all UI elements */
+
+.full-screen {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.panel {
+    width: 80%;
+    height: 80%;
+    margin: auto;
+    padding: 20px;
+    background-color: rgba(40, 40, 40, 0.9);
+    border-radius: 10px;
+    border-width: 2px;
+    border-color: rgb(255, 180, 0);
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.hidden {
+    display: none;
+}
+
+.title {
+    font-size: 48px;
+    color: rgb(255, 180, 0);
+    -unity-font-style: bold;
+    margin-bottom: 20px;
+    -unity-text-align: middle-center;
+}
+
+.panel-title {
+    font-size: 36px;
+    color: rgb(255, 180, 0);
+    -unity-font-style: bold;
+    margin-bottom: 20px;
+    -unity-text-align: middle-center;
+}
+
+.section-title {
+    font-size: 24px;
+    color: rgb(255, 255, 255);
+    -unity-font-style: bold;
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+
+.button-container {
+    width: 60%;
+    margin-top: 20px;
+    flex-direction: column;
+    align-items: center;
+}
+
+.menu-button {
+    width: 80%;
+    height: 50px;
+    margin: 10px;
+    font-size: 24px;
+    background-color: rgb(80, 80, 80);
+    border-radius: 5px;
+    border-width: 2px;
+    border-color: rgb(255, 180, 0);
+    color: rgb(255, 255, 255);
+    -unity-font-style: bold;
+    transition-duration: 0.2s;
+}
+
+.menu-button:hover {
+    background-color: rgb(100, 100, 100);
+    scale: 1.05;
+}
+
+.menu-button:active {
+    background-color: rgb(120, 120, 120);
+    scale: 0.95;
+}
+
+.lobby-button {
+    width: 150px;
+    height: 40px;
+    margin: 10px;
+    font-size: 18px;
+    background-color: rgb(80, 80, 80);
+    border-radius: 5px;
+    border-width: 2px;
+    border-color: rgb(255, 180, 0);
+    color: rgb(255, 255, 255);
+    -unity-font-style: bold;
+}
+
+.back-button {
+    width: 120px;
+    height: 40px;
+    margin-top: 20px;
+    font-size: 18px;
+    background-color: rgb(80, 80, 80);
+    border-radius: 5px;
+    border-width: 2px;
+    border-color: rgb(255, 180, 0);
+    color: rgb(255, 255, 255);
+    -unity-font-style: bold;
+}
+
+.small-button {
+    width: 100px;
+    height: 30px;
+    margin: 5px;
+    font-size: 14px;
+    background-color: rgb(80, 80, 80);
+    border-radius: 5px;
+    border-width: 1px;
+    border-color: rgb(255, 180, 0);
+    color: rgb(255, 255, 255);
+}
+
+Label {
+    color: rgb(255, 255, 255);
+}
+
+TextField > Label {
+    min-width: 100px;
+}
+
+Slider > Label {
+    min-width: 120px;
+}
+
+Toggle > Label {
+    min-width: 120px;
+}
+
+DropdownField > Label {
+    min-width: 120px;
+}

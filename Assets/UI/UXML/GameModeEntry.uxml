@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<engine:UXML
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:engine="UnityEngine.UIElements"
+    xmlns:editor="UnityEditor.UIElements"
+    xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd">
+    
+    <engine:VisualElement name="game-mode-entry" class="game-mode-entry">
+        <engine:VisualElement name="game-mode-icon" class="game-mode-icon" />
+        <engine:VisualElement name="game-mode-info" class="game-mode-info">
+            <engine:Label name="game-mode-name" text="Game Mode Name" class="game-mode-name" />
+            <engine:Label name="game-mode-description" text="Game mode description goes here." class="game-mode-description" />
+        </engine:VisualElement>
+        <engine:Button name="select-button" text="Select" class="select-button" />
+    </engine:VisualElement>
+    
+</engine:UXML>

@@ -1,5 +1,6 @@
 using RecipeRage.UI;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace RecipeRage.Core.GameFramework.State.States
 {
@@ -28,20 +29,40 @@ namespace RecipeRage.Core.GameFramework.State.States
             // Show main menu UI
             Debug.Log("[MainMenuState] Showing main menu UI");
 
-            // Load the main menu UI prefab if not already loaded
-            if (_mainMenuUIPrefab == null)
-            {
-                _mainMenuUIPrefab = Resources.Load<GameObject>("UI/MainMenuUI");
+            // Create a UI Document GameObject
+            _mainMenuUIInstance = new GameObject("MainMenuUI");
 
-                if (_mainMenuUIPrefab == null)
-                {
-                    Debug.LogError("[MainMenuState] Failed to load MainMenuUI prefab from Resources/UI/MainMenuUI");
-                    return;
-                }
+            // Add UIDocument component
+            UIDocument uiDocument = _mainMenuUIInstance.AddComponent<UIDocument>();
+
+            // Load the UXML asset
+            var uxmlAsset = Resources.Load<VisualTreeAsset>("UI/MainMenuUI");
+            if (uxmlAsset == null)
+            {
+                Debug.LogError("[MainMenuState] Failed to load MainMenuUI UXML from Resources/UI/MainMenuUI");
+                return;
             }
 
-            // Instantiate the main menu UI
-            _mainMenuUIInstance = GameObject.Instantiate(_mainMenuUIPrefab);
+            // Assign the UXML asset to the UIDocument
+            uiDocument.visualTreeAsset = uxmlAsset;
+
+            // Load the USS assets
+            var commonStyleSheet = Resources.Load<StyleSheet>("UI/Common");
+            var mainMenuStyleSheet = Resources.Load<StyleSheet>("UI/MainMenuUI");
+
+            if (commonStyleSheet != null && mainMenuStyleSheet != null)
+            {
+                // Add style sheets to the UIDocument
+                uiDocument.styleSheets.Add(commonStyleSheet);
+                uiDocument.styleSheets.Add(mainMenuStyleSheet);
+            }
+            else
+            {
+                Debug.LogWarning("[MainMenuState] Failed to load one or more style sheets");
+            }
+
+            // Add MainMenuUI component
+            _mainMenuUIInstance.AddComponent<UI.MainMenuUI>();
 
             // Make sure it persists across scene loads
             GameObject.DontDestroyOnLoad(_mainMenuUIInstance);

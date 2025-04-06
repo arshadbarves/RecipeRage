@@ -2,6 +2,7 @@ using System;
 using RecipeRage.Core.Networking;
 using RecipeRage.UI;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace RecipeRage.Core.GameFramework.State.States
 {
@@ -118,20 +119,40 @@ namespace RecipeRage.Core.GameFramework.State.States
         /// </summary>
         private void ShowLobbyUI()
         {
-            // Load the lobby UI prefab if not already loaded
-            if (_lobbyUIPrefab == null)
-            {
-                _lobbyUIPrefab = Resources.Load<GameObject>("UI/LobbyUI");
+            // Create a UI Document GameObject
+            _lobbyUIInstance = new GameObject("LobbyUI");
 
-                if (_lobbyUIPrefab == null)
-                {
-                    Debug.LogError("[MatchmakingState] Failed to load LobbyUI prefab from Resources/UI/LobbyUI");
-                    return;
-                }
+            // Add UIDocument component
+            UIDocument uiDocument = _lobbyUIInstance.AddComponent<UIDocument>();
+
+            // Load the UXML asset
+            var uxmlAsset = Resources.Load<VisualTreeAsset>("UI/LobbyUI");
+            if (uxmlAsset == null)
+            {
+                Debug.LogError("[MatchmakingState] Failed to load LobbyUI UXML from Resources/UI/LobbyUI");
+                return;
             }
 
-            // Instantiate the lobby UI
-            _lobbyUIInstance = GameObject.Instantiate(_lobbyUIPrefab);
+            // Assign the UXML asset to the UIDocument
+            uiDocument.visualTreeAsset = uxmlAsset;
+
+            // Load the USS assets
+            var commonStyleSheet = Resources.Load<StyleSheet>("UI/Common");
+            var lobbyStyleSheet = Resources.Load<StyleSheet>("UI/LobbyUI");
+
+            if (commonStyleSheet != null && lobbyStyleSheet != null)
+            {
+                // Add style sheets to the UIDocument
+                uiDocument.styleSheets.Add(commonStyleSheet);
+                uiDocument.styleSheets.Add(lobbyStyleSheet);
+            }
+            else
+            {
+                Debug.LogWarning("[MatchmakingState] Failed to load one or more style sheets");
+            }
+
+            // Add LobbyUI component
+            _lobbyUIInstance.AddComponent<UI.LobbyUI>();
 
             // Make sure it persists across scene loads
             GameObject.DontDestroyOnLoad(_lobbyUIInstance);
