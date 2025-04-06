@@ -1,68 +1,502 @@
-/* Main Menu specific styles */
+.screen-container {
+    width: 100%;
+    height: 100%;
+    background-color: #0A84FF;
+    background-image: resource('UI/Images/main-menu-bg');
+    -unity-background-scale-mode: scale-and-crop;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: stretch;
+}
 
-.player-info-container {
-    width: 80%;
-    padding: 10px;
-    margin-bottom: 20px;
-    background-color: rgba(60, 60, 60, 0.8);
-    border-radius: 5px;
-    border-width: 1px;
-    border-color: rgb(255, 180, 0);
+/* Top Bar */
+.top-bar {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    height: 60px;
+}
+
+.player-profile {
+    flex-direction: row;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 30px;
+    padding: 5px;
+    width: 120px;
+    height: 50px;
+}
+
+.player-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    background-image: resource('UI/Images/avatar');
+    -unity-background-scale-mode: scale-to-fit;
+    border-width: 2px;
+    border-color: #FFD700;
+}
+
+.player-level {
+    color: white;
+    font-size: 14px;
+    -unity-font-style: bold;
+    margin-left: 5px;
+}
+
+.currencies {
+    flex-direction: row;
+    align-items: center;
 }
 
 .currency-container {
     flex-direction: row;
-    justify-content: space-around;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 15px;
+    padding: 5px 10px;
+    margin-right: 10px;
+    height: 30px;
+}
+
+.currency-icon {
+    width: 20px;
+    height: 20px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.trophy-icon {
+    background-image: resource('UI/Images/trophy');
+}
+
+.gem-icon {
+    background-image: resource('UI/Images/gem');
+}
+
+.coin-icon {
+    background-image: resource('UI/Images/coin');
+}
+
+.energy-icon {
+    background-image: resource('UI/Images/energy');
+}
+
+.currency-count {
+    color: white;
+    font-size: 16px;
+    -unity-font-style: bold;
+    margin-left: 5px;
+}
+
+.icon-button {
+    width: 40px;
+    height: 40px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 20px;
+    border-width: 0;
+}
+
+.settings-button {
+    background-image: resource('UI/Images/settings');
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+/* Middle Content */
+.middle-content {
+    flex-grow: 1;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 10px;
+}
+
+.rank-badge {
+    position: absolute;
+    top: 70px;
+    left: 20px;
+    width: 60px;
+    height: 60px;
+    background-color: #4B0082;
+    border-radius: 10px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-width: 2px;
+    border-color: #9370DB;
+}
+
+.rank-label {
+    color: #9370DB;
+    font-size: 12px;
+    -unity-font-style: bold;
+}
+
+.rank-number {
+    color: white;
+    font-size: 24px;
+    -unity-font-style: bold;
+}
+
+.trophy-road {
+    position: absolute;
+    top: 70px;
+    left: 90px;
+    flex-direction: row;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 15px;
+    padding: 5px 10px;
+    height: 30px;
+}
+
+.trophy-icon-small {
+    width: 20px;
+    height: 20px;
+    background-image: resource('UI/Images/trophy');
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.trophy-road-count {
+    color: white;
+    font-size: 16px;
+    -unity-font-style: bold;
+    margin-left: 5px;
+}
+
+.character-display {
+    width: 100%;
+    height: 300px;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-end;
+    margin-top: 50px;
+}
+
+.character-slot {
+    width: 150px;
+    height: 250px;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.character-slot-center {
+    width: 200px;
+    height: 300px;
+    z-index: 1;
+}
+
+.character {
+    width: 120px;
+    height: 200px;
+    background-image: resource('UI/Images/character1');
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.character-main {
+    width: 160px;
+    height: 260px;
+    background-image: resource('UI/Images/character2');
+}
+
+.character-bubble {
+    position: absolute;
+    top: 20px;
+    width: 60px;
+    height: 60px;
+    background-color: white;
+    border-radius: 30px;
+    justify-content: center;
+    align-items: center;
+    border-width: 3px;
+    border-color: #FFD700;
+}
+
+.character-icon {
+    width: 40px;
+    height: 40px;
+    background-image: resource('UI/Images/character-icon');
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.player-info {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 0 20px;
     margin-top: 10px;
 }
 
-.settings-container {
-    width: 80%;
-    padding: 10px;
-    margin-bottom: 20px;
-    background-color: rgba(60, 60, 60, 0.8);
-    border-radius: 5px;
-    border-width: 1px;
-    border-color: rgb(255, 180, 0);
-}
-
-.credits-container {
-    width: 80%;
-    height: 70%;
-    padding: 10px;
-    margin-bottom: 20px;
-    background-color: rgba(60, 60, 60, 0.8);
-    border-radius: 5px;
-    border-width: 1px;
-    border-color: rgb(255, 180, 0);
-}
-
-.credits-title {
-    font-size: 28px;
-    color: rgb(255, 180, 0);
+.player-name {
+    color: white;
+    font-size: 24px;
     -unity-font-style: bold;
-    -unity-text-align: middle-center;
-    margin-bottom: 5px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
-.credits-subtitle {
-    font-size: 18px;
-    color: rgb(200, 200, 200);
-    -unity-text-align: middle-center;
-    margin-bottom: 20px;
+.team-code-container {
+    flex-direction: row;
+    align-items: center;
 }
 
-.credits-section {
-    font-size: 20px;
-    color: rgb(255, 180, 0);
-    -unity-font-style: bold;
-    margin-top: 15px;
-    margin-bottom: 5px;
-}
-
-.credits-text {
+.team-code-label {
+    color: white;
     font-size: 16px;
-    color: rgb(200, 200, 200);
+    margin-right: 5px;
+}
+
+.team-code {
+    color: #FFD700;
+    font-size: 18px;
+    -unity-font-style: bold;
+}
+
+.event-banner {
+    width: 90%;
+    height: 80px;
+    background-color: #333333;
+    border-radius: 10px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    margin-top: 20px;
+    overflow: hidden;
+}
+
+.event-icon {
+    width: 60px;
+    height: 60px;
+    background-image: resource('UI/Images/event-icon');
+    -unity-background-scale-mode: scale-to-fit;
+    border-radius: 30px;
+}
+
+.event-info {
+    flex-grow: 1;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
     margin-left: 10px;
-    margin-bottom: 5px;
+}
+
+.event-title {
+    color: white;
+    font-size: 24px;
+    -unity-font-style: bold;
+}
+
+.event-subtitle {
+    color: #FF6B6B;
+    font-size: 18px;
+}
+
+.event-timer {
+    flex-direction: row;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 15px;
+    padding: 5px 10px;
+    height: 30px;
+}
+
+.timer-icon {
+    width: 20px;
+    height: 20px;
+    background-image: resource('UI/Images/timer');
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.timer-text {
+    color: white;
+    font-size: 16px;
+    -unity-font-style: bold;
+    margin-left: 5px;
+}
+
+/* Bottom Navigation */
+.bottom-navigation {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 10px;
+    height: 120px;
+}
+
+.nav-buttons-group {
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    width: 180px;
+    height: 100%;
+}
+
+.nav-button {
+    width: 60px;
+    height: 60px;
+    background-color: #333333;
+    border-radius: 10px;
+    border-width: 0;
+    margin: 5px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+}
+
+.nav-button-icon {
+    width: 30px;
+    height: 30px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.shop-icon {
+    background-image: resource('UI/Images/shop');
+}
+
+.brawlers-icon {
+    background-image: resource('UI/Images/brawlers');
+}
+
+.news-icon {
+    background-image: resource('UI/Images/news');
+}
+
+.friends-icon {
+    background-image: resource('UI/Images/friends');
+}
+
+.club-icon {
+    background-image: resource('UI/Images/club');
+}
+
+.chat-icon {
+    background-image: resource('UI/Images/chat');
+}
+
+.nav-button-text {
+    color: white;
+    font-size: 10px;
+    -unity-font-style: bold;
+    margin-top: 2px;
+}
+
+.nav-button-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 20px;
+    height: 20px;
+    background-color: #FF6B6B;
+    border-radius: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
+.nav-button-badge-text {
+    color: white;
+    font-size: 12px;
+    -unity-font-style: bold;
+}
+
+.play-button {
+    width: 200px;
+    height: 60px;
+    background-color: #FFD700;
+    border-radius: 30px;
+    border-width: 0;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.play-text {
+    color: #333333;
+    font-size: 24px;
+    -unity-font-style: bold;
+}
+
+/* Pass Progress */
+.pass-progress {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    width: 200px;
+    height: 40px;
+    background-color: #333333;
+    border-radius: 20px;
+    flex-direction: row;
+    align-items: center;
+    padding: 5px;
+}
+
+.pass-icon {
+    width: 30px;
+    height: 30px;
+    background-image: resource('UI/Images/pass');
+    -unity-background-scale-mode: scale-to-fit;
+    margin-right: 5px;
+}
+
+.pass-title {
+    color: white;
+    font-size: 12px;
+    -unity-font-style: bold;
+}
+
+.pass-badge {
+    width: 20px;
+    height: 20px;
+    background-color: #FF6B6B;
+    border-radius: 10px;
+    justify-content: center;
+    align-items: center;
+    margin-left: 5px;
+}
+
+.pass-badge-text {
+    color: white;
+    font-size: 12px;
+    -unity-font-style: bold;
+}
+
+.pass-progress-bar {
+    flex-grow: 1;
+    height: 15px;
+    background-color: #555555;
+    border-radius: 7.5px;
+    overflow: hidden;
+    margin: 0 5px;
+}
+
+.pass-progress-fill {
+    width: 80%;
+    height: 100%;
+    background-color: #FFD700;
+}
+
+.pass-progress-text {
+    position: absolute;
+    width: 100%;
+    color: white;
+    font-size: 10px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+}
+
+.pass-level {
+    width: 30px;
+    height: 30px;
+    background-color: #FFD700;
+    border-radius: 15px;
+    justify-content: center;
+    align-items: center;
+}
+
+.pass-level-text {
+    color: #333333;
+    font-size: 14px;
+    -unity-font-style: bold;
 }

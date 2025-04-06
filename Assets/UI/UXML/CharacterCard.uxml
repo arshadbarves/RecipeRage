@@ -1,0 +1,22 @@
+<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/USS/CharacterSelectionScreen.uss?fileID=7433441132597879392&amp;guid=550d910c9c8974bbfad00abcff9b22d8&amp;type=3#CharacterSelectionScreen" />
+    <VisualElement name="character-card" class="character-card">
+        <VisualElement name="card-background" class="card-background">
+            <VisualElement name="character-portrait" class="character-portrait" />
+            <VisualElement name="character-frame" class="character-frame" />
+            <Label name="character-card-name" text="CHEF GORDON" class="character-card-name" />
+            <VisualElement name="character-level-badge" class="character-level-badge">
+                <Label name="character-card-level" text="10" class="character-card-level" />
+            </VisualElement>
+            <VisualElement name="character-rarity" class="character-rarity" />
+            <VisualElement name="locked-overlay" class="locked-overlay hidden">
+                <VisualElement name="lock-icon" class="lock-icon" />
+                <Label name="unlock-text" text="UNLOCK" class="unlock-text" />
+                <VisualElement name="unlock-cost" class="unlock-cost">
+                    <VisualElement name="gem-icon-small" class="gem-icon-small" />
+                    <Label name="unlock-cost-text" text="80" class="unlock-cost-text" />
+                </VisualElement>
+            </VisualElement>
+        </VisualElement>
+    </VisualElement>
+</UXML>

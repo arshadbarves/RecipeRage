@@ -16,15 +16,7 @@ namespace RecipeRage.Core.GameFramework.State.States
         /// </summary>
         public event Action<bool> OnMatchmakingComplete;
 
-        /// <summary>
-        /// Reference to the lobby UI prefab.
-        /// </summary>
-        private GameObject _lobbyUIPrefab;
-
-        /// <summary>
-        /// Reference to the instantiated lobby UI.
-        /// </summary>
-        private GameObject _lobbyUIInstance;
+        // No need to store references to UI elements anymore as they're managed by the UIManager
 
         /// <summary>
         /// Reference to the network lobby manager.
@@ -52,8 +44,8 @@ namespace RecipeRage.Core.GameFramework.State.States
             // Start matchmaking process
             Debug.Log("[MatchmakingState] Starting matchmaking process");
 
-            // Show lobby UI
-            ShowLobbyUI();
+            // Show game mode selection screen
+            UI.UIManager.Instance.ShowScreen<UI.Screens.GameModeSelectionScreen>(true);
 
             // Subscribe to lobby events
             if (_lobbyManager != null)
@@ -102,8 +94,8 @@ namespace RecipeRage.Core.GameFramework.State.States
                 CancelMatchmaking();
             }
 
-            // Hide lobby UI
-            HideLobbyUI();
+            // Hide game mode selection screen
+            UI.UIManager.Instance.GetScreen<UI.Screens.GameModeSelectionScreen>()?.Hide(true);
         }
 
         /// <summary>
@@ -114,62 +106,7 @@ namespace RecipeRage.Core.GameFramework.State.States
             // Matchmaking logic is now handled by the NetworkLobbyManager
         }
 
-        /// <summary>
-        /// Show the lobby UI.
-        /// </summary>
-        private void ShowLobbyUI()
-        {
-            // Create a UI Document GameObject
-            _lobbyUIInstance = new GameObject("LobbyUI");
-
-            // Add UIDocument component
-            UIDocument uiDocument = _lobbyUIInstance.AddComponent<UIDocument>();
-
-            // Load the UXML asset
-            var uxmlAsset = Resources.Load<VisualTreeAsset>("UI/LobbyUI");
-            if (uxmlAsset == null)
-            {
-                Debug.LogError("[MatchmakingState] Failed to load LobbyUI UXML from Resources/UI/LobbyUI");
-                return;
-            }
-
-            // Assign the UXML asset to the UIDocument
-            uiDocument.visualTreeAsset = uxmlAsset;
-
-            // Load the USS assets
-            var commonStyleSheet = Resources.Load<StyleSheet>("UI/Common");
-            var lobbyStyleSheet = Resources.Load<StyleSheet>("UI/LobbyUI");
-
-            if (commonStyleSheet != null && lobbyStyleSheet != null)
-            {
-                // Add style sheets to the UIDocument
-                uiDocument.styleSheets.Add(commonStyleSheet);
-                uiDocument.styleSheets.Add(lobbyStyleSheet);
-            }
-            else
-            {
-                Debug.LogWarning("[MatchmakingState] Failed to load one or more style sheets");
-            }
-
-            // Add LobbyUI component
-            _lobbyUIInstance.AddComponent<UI.LobbyUI>();
-
-            // Make sure it persists across scene loads
-            GameObject.DontDestroyOnLoad(_lobbyUIInstance);
-        }
-
-        /// <summary>
-        /// Hide the lobby UI.
-        /// </summary>
-        private void HideLobbyUI()
-        {
-            // Destroy the lobby UI instance
-            if (_lobbyUIInstance != null)
-            {
-                GameObject.Destroy(_lobbyUIInstance);
-                _lobbyUIInstance = null;
-            }
-        }
+        // UI is now managed by the UIManager
 
         /// <summary>
         /// Handle lobby joined event.

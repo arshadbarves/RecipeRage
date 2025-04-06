@@ -1,0 +1,132 @@
+<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/USS/SettingsScreen.uss?fileID=7433441132597879392&amp;guid=7284ff461787649909526ccf9209df9d&amp;type=3#SettingsScreen" />
+    <VisualElement name="screen-container" class="screen-container">
+        <VisualElement name="header" class="header">
+            <Button name="back-button" class="back-button" />
+            <Label name="screen-title" text="SETTINGS" class="screen-title" />
+            <VisualElement name="header-spacer" class="header-spacer" />
+        </VisualElement>
+        <ScrollView name="settings-scroll" class="settings-scroll">
+            <VisualElement name="settings-container" class="settings-container">
+                <VisualElement name="settings-section" class="settings-section">
+                    <Label name="section-title" text="AUDIO" class="section-title" />
+                    <VisualElement name="setting-row" class="setting-row">
+                        <Label name="setting-label" text="Master Volume" class="setting-label" />
+                        <Slider name="master-volume-slider" value="80" high-value="100" class="setting-slider" />
+                        <Label name="setting-value" text="80%" class="setting-value" />
+                    </VisualElement>
+                    <VisualElement name="setting-row" class="setting-row">
+                        <Label name="setting-label" text="Music Volume" class="setting-label" />
+                        <Slider name="music-volume-slider" value="70" high-value="100" class="setting-slider" />
+                        <Label name="setting-value" text="70%" class="setting-value" />
+                    </VisualElement>
+                    <VisualElement name="setting-row" class="setting-row">
+                        <Label name="setting-label" text="SFX Volume" class="setting-label" />
+                        <Slider name="sfx-volume-slider" value="90" high-value="100" class="setting-slider" />
+                        <Label name="setting-value" text="90%" class="setting-value" />
+                    </VisualElement>
+                    <VisualElement name="setting-row" class="setting-row">
+                        <Label name="setting-label" text="Voice Volume" class="setting-label" />
+                        <Slider name="voice-volume-slider" value="85" high-value="100" class="setting-slider" />
+                        <Label name="setting-value" text="85%" class="setting-value" />
+                    </VisualElement>
+                    <VisualElement name="setting-row" class="setting-row">
+                        <Label name="setting-label" text="Mute All" class="setting-label" />
+                        <Toggle name="mute-toggle" class="setting-toggle" />
+                    </VisualElement>
+                </VisualElement>
+                <VisualElement name="settings-section" class="settings-section">
+                    <Label name="section-title" text="GRAPHICS" class="section-title" />
+                    <VisualElement name="setting-row" class="setting-row">
+                        <Label name="setting-label" text="Quality" class="setting-label" />
+                        <DropdownField name="quality-dropdown" class="setting-dropdown" />
+                    </VisualElement>
+                    <VisualElement name="setting-row" class="setting-row">
+                        <Label name="setting-label" text="Resolution" class="setting-label" />
+                        <DropdownField name="resolution-dropdown" class="setting-dropdown" />
+                    </VisualElement>
+                    <VisualElement name="setting-row" class="setting-row">
+                        <Label name="setting-label" text="Fullscreen" class="setting-label" />
+                        <Toggle name="fullscreen-toggle" value="true" class="setting-toggle" />
+                    </VisualElement>
+                    <VisualElement name="setting-row" class="setting-row">
+                        <Label name="setting-label" text="VSync" class="setting-label" />
+                        <Toggle name="vsync-toggle" value="true" class="setting-toggle" />
+                    </VisualElement>
+                    <VisualElement name="setting-row" class="setting-row">
+                        <Label name="setting-label" text="Brightness" class="setting-label" />
+                        <Slider name="brightness-slider" value="50" high-value="100" class="setting-slider" />
+                        <Label name="setting-value" text="50%" class="setting-value" />
+                    </VisualElement>
+                </VisualElement>
+                <VisualElement name="settings-section" class="settings-section">
+                    <Label name="section-title" text="GAMEPLAY" class="section-title" />
+                    <VisualElement name="setting-row" class="setting-row">
+                        <Label name="setting-label" text="Tutorial Tips" class="setting-label" />
+                        <Toggle name="tutorial-toggle" value="true" class="setting-toggle" />
+                    </VisualElement>
+                    <VisualElement name="setting-row" class="setting-row">
+                        <Label name="setting-label" text="Camera Shake" class="setting-label" />
+                        <Toggle name="camera-shake-toggle" value="true" class="setting-toggle" />
+                    </VisualElement>
+                    <VisualElement name="setting-row" class="setting-row">
+                        <Label name="setting-label" text="Auto-Pickup" class="setting-label" />
+                        <Toggle name="auto-pickup-toggle" value="false" class="setting-toggle" />
+                    </VisualElement>
+                    <VisualElement name="setting-row" class="setting-row">
+                        <Label name="setting-label" text="Difficulty" class="setting-label" />
+                        <DropdownField name="difficulty-dropdown" class="setting-dropdown" />
+                    </VisualElement>
+                </VisualElement>
+                <VisualElement name="settings-section" class="settings-section">
+                    <Label name="section-title" text="CONTROLS" class="section-title" />
+                    <VisualElement name="setting-row" class="setting-row">
+                        <Label name="setting-label" text="Invert Y-Axis" class="setting-label" />
+                        <Toggle name="invert-y-toggle" value="false" class="setting-toggle" />
+                    </VisualElement>
+                    <VisualElement name="setting-row" class="setting-row">
+                        <Label name="setting-label" text="Sensitivity" class="setting-label" />
+                        <Slider name="sensitivity-slider" value="65" high-value="100" class="setting-slider" />
+                        <Label name="setting-value" text="65%" class="setting-value" />
+                    </VisualElement>
+                    <VisualElement name="setting-row" class="setting-row">
+                        <Label name="setting-label" text="Vibration" class="setting-label" />
+                        <Toggle name="vibration-toggle" value="true" class="setting-toggle" />
+                    </VisualElement>
+                    <Button name="reset-controls-button" class="settings-button">
+                        <Label name="reset-controls-text" text="RESET TO DEFAULT" class="settings-button-text" />
+                    </Button>
+                </VisualElement>
+                <VisualElement name="settings-section" class="settings-section">
+                    <Label name="section-title" text="ACCOUNT" class="section-title" />
+                    <VisualElement name="setting-row" class="setting-row">
+                        <Label name="setting-label" text="Username" class="setting-label" />
+                        <TextField name="username-field" value="Chef123" class="setting-text-field" />
+                    </VisualElement>
+                    <VisualElement name="setting-row" class="setting-row">
+                        <Label name="setting-label" text="Email" class="setting-label" />
+                        <TextField name="email-field" value="chef123@example.com" class="setting-text-field" />
+                    </VisualElement>
+                    <VisualElement name="setting-row" class="setting-row">
+                        <Label name="setting-label" text="Notifications" class="setting-label" />
+                        <Toggle name="notifications-toggle" value="true" class="setting-toggle" />
+                    </VisualElement>
+                    <Button name="change-password-button" class="settings-button">
+                        <Label name="change-password-text" text="CHANGE PASSWORD" class="settings-button-text" />
+                    </Button>
+                    <Button name="logout-button" class="settings-button logout-button">
+                        <Label name="logout-text" text="LOG OUT" class="settings-button-text" />
+                    </Button>
+                </VisualElement>
+            </VisualElement>
+        </ScrollView>
+        <VisualElement name="bottom-buttons" class="bottom-buttons">
+            <Button name="reset-all-button" class="action-button reset-button">
+                <Label name="reset-all-text" text="RESET ALL" class="action-button-text" />
+            </Button>
+            <Button name="apply-button" class="action-button apply-button">
+                <Label name="apply-text" text="APPLY" class="action-button-text" />
+            </Button>
+        </VisualElement>
+    </VisualElement>
+</UXML>
