@@ -6,7 +6,8 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 0
-    path: Assets/Scenes/SampleScene.unity
+    path: Assets/Samples/Epic Online Services Plugin for Unity/4.0.0/Standard Pack
+      _ EOS Plugin for Unity Samples/Scenes/AuthAndFriends.unity
     guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 0
     path: Assets/Scenes/Prototype.unity
