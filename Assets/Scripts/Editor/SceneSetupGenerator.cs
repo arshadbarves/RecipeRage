@@ -26,25 +26,19 @@ namespace RecipeRage.Editor
             if (networkManager == null || prefab == null)
                 return;
 
-            // Get the list of prefabs from the NetworkManager
-            var prefabsList = networkManager.NetworkConfig.Prefabs;
-            bool prefabFound = false;
+            // Create a new NetworkPrefab entry
+            var prefabEntry = new Unity.Netcode.NetworkPrefab { Prefab = prefab };
 
-            // Check if the prefab is already in the list
-            foreach (var existingPrefab in prefabsList.PrefabList)
+            // Add the prefab to the NetworkManager's prefab list
+            // The NetworkManager will handle duplicate entries
+            try
             {
-                if (existingPrefab.Prefab == prefab)
-                {
-                    prefabFound = true;
-                    break;
-                }
+                networkManager.NetworkConfig.Prefabs.Add(prefabEntry);
+                Debug.Log($"Registered network prefab: {prefab.name}");
             }
-
-            // Add the prefab if not found
-            if (!prefabFound)
+            catch (System.Exception e)
             {
-                var prefabEntry = new Unity.Netcode.NetworkPrefab { Prefab = prefab };
-                prefabsList.Add(prefabEntry);
+                Debug.LogWarning($"Failed to register network prefab {prefab.name}: {e.Message}");
             }
         }
 
