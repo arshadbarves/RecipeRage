@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1234567890abcdef1234567890abcdef, type: 3}
+  m_Name: ClassicMode
+  m_EditorClassIdentifier: 
+  _id: classic
+  _displayName: Classic
+  _description: Work together to complete as many orders as possible before time runs
+    out. The team with the most points wins!
+  _icon: {fileID: 0}
+  _teamCount: 2
+  _playersPerTeam: 2
+  _friendlyFire: 0
+  _gameTime: 300
+  _targetScore: 1000
+  _hasTimeLimit: 1
+  _hasScoreLimit: 1
+  _allowJoinInProgress: 0
+  _availableMaps:
+  - Kitchen
+  - Restaurant
+  - Diner
+  _defaultMap: Kitchen
+  _recipeDifficultyMultiplier: 1
+  _orderFrequency: 30
+  _maxActiveOrders: 5
+  _baseCoinsReward: 50
+  _winBonusCoins: 25
+  _coinsPerOrder: 10
+  _experienceReward: 100
+  _powerUpsEnabled: 1
+  _specialAbilitiesEnabled: 1
+  _restrictCharacterClasses: 0
+  _allowedCharacterClasses: []
+  _customParameters: 
