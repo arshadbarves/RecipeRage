@@ -4,7 +4,7 @@ using RecipeRage.Core.GameModes;
 using RecipeRage.Core.Networking;
 using RecipeRage.Core.Patterns;
 using RecipeRage.Gameplay.Cooking;
-using RecipeRage.Gameplay.Interactables;
+using RecipeRage.Gameplay.Stations;
 using RecipeRage.UI;
 using Unity.Netcode;
 using UnityEditor;
