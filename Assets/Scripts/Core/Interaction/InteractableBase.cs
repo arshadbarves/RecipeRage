@@ -1,27 +1,28 @@
 using UnityEngine;
+using RecipeRage.Core.Characters;
 
 namespace RecipeRage.Core.Interaction
 {
     /// <summary>
     /// Base class for objects that can be interacted with by the player.
     /// </summary>
-    public abstract class InteractableBase : MonoBehaviour, IInteractable
+    public abstract class InteractableBase : MonoBehaviour, RecipeRage.Core.Characters.IInteractable
     {
         [Header("Interaction Settings")]
         [SerializeField] protected string _interactionPrompt = "Interact";
         [SerializeField] protected bool _isInteractable = true;
         [SerializeField] protected float _interactionCooldown = 0.5f;
-        
+
         /// <summary>
         /// Timer for interaction cooldown.
         /// </summary>
         protected float _interactionCooldownTimer = 0f;
-        
+
         /// <summary>
         /// Flag to track if the object is currently being interacted with.
         /// </summary>
         protected bool _isBeingInteractedWith = false;
-        
+
         /// <summary>
         /// Update the interaction cooldown timer.
         /// </summary>
@@ -33,29 +34,29 @@ namespace RecipeRage.Core.Interaction
                 _interactionCooldownTimer -= Time.deltaTime;
             }
         }
-        
+
         /// <summary>
         /// Called when the player interacts with this object.
         /// </summary>
-        /// <param name="interactor">The GameObject that is interacting with this object</param>
-        public virtual void Interact(GameObject interactor)
+        /// <param name="player">The player that is interacting with this object</param>
+        public virtual void Interact(PlayerController player)
         {
-            if (!CanInteract(interactor))
+            if (!CanInteract(player))
             {
                 return;
             }
-            
+
             // Set interaction flags
             _isBeingInteractedWith = true;
             _interactionCooldownTimer = _interactionCooldown;
-            
+
             // Perform interaction
-            OnInteract(interactor);
-            
+            OnInteract(player);
+
             // Reset interaction flag
             _isBeingInteractedWith = false;
         }
-        
+
         /// <summary>
         /// Get the interaction prompt text for this object.
         /// </summary>
@@ -64,24 +65,24 @@ namespace RecipeRage.Core.Interaction
         {
             return _interactionPrompt;
         }
-        
+
         /// <summary>
         /// Check if this object can be interacted with.
         /// </summary>
-        /// <param name="interactor">The GameObject that is trying to interact with this object</param>
+        /// <param name="player">The player that is trying to interact with this object</param>
         /// <returns>True if the object can be interacted with</returns>
-        public virtual bool CanInteract(GameObject interactor)
+        public virtual bool CanInteract(PlayerController player)
         {
             return _isInteractable && !_isBeingInteractedWith && _interactionCooldownTimer <= 0f;
         }
-        
+
         /// <summary>
         /// Called when the object is interacted with.
         /// Override this method to implement specific interaction behavior.
         /// </summary>
-        /// <param name="interactor">The GameObject that is interacting with this object</param>
-        protected abstract void OnInteract(GameObject interactor);
-        
+        /// <param name="player">The player that is interacting with this object</param>
+        protected abstract void OnInteract(PlayerController player);
+
         /// <summary>
         /// Set whether this object is interactable.
         /// </summary>
