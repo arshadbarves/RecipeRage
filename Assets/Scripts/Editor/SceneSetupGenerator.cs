@@ -51,7 +51,8 @@ namespace RecipeRage.Editor
         /// <param name="scenesPath"> The path to save the scene. </param>
         /// <param name="prefabsPath"> The path to the prefabs. </param>
         /// <param name="gameModesPath"> The path to the game modes. </param>
-        public void SetupScene(string scenesPath, string prefabsPath, string gameModesPath = null)
+        /// <param name="characterClassesPath"> The path to the character classes. </param>
+        public void SetupScene(string scenesPath, string prefabsPath, string gameModesPath = null, string characterClassesPath = null)
         {
             // Create a new scene
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
@@ -94,6 +95,10 @@ namespace RecipeRage.Editor
             // Create the game mode manager
             var gameModeManager = new GameObject("GameModeManager");
             var gameModeManagerComponent = gameModeManager.AddComponent<GameModeManager>();
+
+            // Create the character manager
+            var characterManager = new GameObject("CharacterManager");
+            var characterManagerComponent = characterManager.AddComponent<CharacterManager>();
 
             // Create the network lobby manager
             var networkLobbyManager = new GameObject("NetworkLobbyManager");
@@ -502,6 +507,51 @@ namespace RecipeRage.Editor
                 else
                 {
                     Debug.LogWarning("No game modes found. Make sure to generate game modes first.");
+                }
+            }
+
+            // Load character classes if path is provided
+            if (!string.IsNullOrEmpty(characterClassesPath))
+            {
+                // Find all character class assets
+                var characterClassGuids = AssetDatabase.FindAssets("t:CharacterClass", new[] { characterClassesPath });
+                var characterClasses = new List<CharacterClass>();
+
+                foreach (var guid in characterClassGuids)
+                {
+                    var path = AssetDatabase.GUIDToAssetPath(guid);
+                    var characterClass = AssetDatabase.LoadAssetAtPath<CharacterClass>(path);
+
+                    if (characterClass != null)
+                    {
+                        characterClasses.Add(characterClass);
+                    }
+                }
+
+                // Add character classes to the character manager
+                if (characterClasses.Count > 0)
+                {
+                    var characterManagerSerialized = new SerializedObject(characterManagerComponent);
+                    var availableCharacterClassesProperty = characterManagerSerialized.FindProperty("_availableCharacterClasses");
+
+                    availableCharacterClassesProperty.ClearArray();
+                    for (int i = 0; i < characterClasses.Count; i++)
+                    {
+                        availableCharacterClassesProperty.arraySize++;
+                        availableCharacterClassesProperty.GetArrayElementAtIndex(i).objectReferenceValue = characterClasses[i];
+                    }
+
+                    // Set the default character class
+                    var defaultCharacterClass = characterClasses.Find(cc => cc.Id == 1) ?? characterClasses[0];
+                    characterManagerSerialized.FindProperty("_defaultCharacterClassId").intValue = defaultCharacterClass.Id;
+
+                    characterManagerSerialized.ApplyModifiedProperties();
+
+                    Debug.Log($"Added {characterClasses.Count} character classes to the CharacterManager");
+                }
+                else
+                {
+                    Debug.LogWarning("No character classes found. Make sure to generate character classes first.");
                 }
             }
 
