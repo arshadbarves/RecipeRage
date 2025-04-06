@@ -1,0 +1,162 @@
+/* Lobby UI specific styles */
+
+.lobby-code {
+    font-size: 18px;
+    color: rgb(200, 200, 200);
+    margin-bottom: 5px;
+}
+
+.lobby-status {
+    font-size: 16px;
+    color: rgb(200, 200, 200);
+    margin-bottom: 15px;
+}
+
+.game-mode-container {
+    width: 80%;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: rgba(60, 60, 60, 0.8);
+    border-radius: 5px;
+    border-width: 1px;
+    border-color: rgb(255, 180, 0);
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.selected-game-mode {
+    font-size: 18px;
+    color: rgb(255, 180, 0);
+    -unity-font-style: bold;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.team-selection-container {
+    width: 80%;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: rgba(60, 60, 60, 0.8);
+    border-radius: 5px;
+    border-width: 1px;
+    border-color: rgb(255, 180, 0);
+}
+
+.player-list-container {
+    width: 80%;
+    height: 40%;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: rgba(60, 60, 60, 0.8);
+    border-radius: 5px;
+    border-width: 1px;
+    border-color: rgb(255, 180, 0);
+}
+
+.player-list {
+    width: 100%;
+    height: 100%;
+}
+
+.player-entry {
+    width: 100%;
+    height: 50px;
+    padding: 5px;
+    margin-bottom: 5px;
+    background-color: rgba(80, 80, 80, 0.8);
+    border-radius: 5px;
+    flex-direction: row;
+    align-items: center;
+}
+
+.player-icon {
+    width: 40px;
+    height: 40px;
+    background-color: rgb(150, 150, 150);
+    border-radius: 20px;
+    margin-right: 10px;
+}
+
+.player-name {
+    flex-grow: 1;
+    font-size: 16px;
+    color: rgb(255, 255, 255);
+}
+
+.player-level {
+    width: 50px;
+    font-size: 14px;
+    color: rgb(200, 200, 200);
+    margin-right: 10px;
+}
+
+.ready-status {
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    margin-right: 5px;
+}
+
+.ready {
+    background-color: rgb(0, 200, 0);
+}
+
+.not-ready {
+    background-color: rgb(200, 0, 0);
+}
+
+.game-mode-list {
+    width: 80%;
+    height: 70%;
+    margin-bottom: 10px;
+}
+
+.game-mode-entry {
+    width: 100%;
+    height: 80px;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: rgba(80, 80, 80, 0.8);
+    border-radius: 5px;
+    flex-direction: row;
+    align-items: center;
+}
+
+.game-mode-icon {
+    width: 60px;
+    height: 60px;
+    background-color: rgb(150, 150, 150);
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.game-mode-info {
+    flex-grow: 1;
+    height: 100%;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.game-mode-name {
+    font-size: 18px;
+    color: rgb(255, 180, 0);
+    -unity-font-style: bold;
+}
+
+.game-mode-description {
+    font-size: 14px;
+    color: rgb(200, 200, 200);
+    white-space: normal;
+}
+
+.select-button {
+    width: 80px;
+    height: 30px;
+    font-size: 14px;
+    background-color: rgb(80, 80, 80);
+    border-radius: 5px;
+    border-width: 1px;
+    border-color: rgb(255, 180, 0);
+    color: rgb(255, 255, 255);
+}

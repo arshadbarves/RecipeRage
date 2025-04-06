@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<engine:UXML
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:engine="UnityEngine.UIElements"
+    xmlns:editor="UnityEditor.UIElements"
+    xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd">
+    
+    <!-- Main Container -->
+    <engine:VisualElement name="main-container" class="full-screen">
+        
+        <!-- Main Panel -->
+        <engine:VisualElement name="main-panel" class="panel">
+            <engine:Label name="game-title" text="Recipe Rage" class="title" />
+            
+            <!-- Player Info Section -->
+            <engine:VisualElement name="player-info" class="player-info-container">
+                <engine:TextField name="player-name" label="Player Name" value="Player" />
+                <engine:Label name="player-level" text="Level: 1" />
+                <engine:VisualElement name="currency-container" class="currency-container">
+                    <engine:Label name="player-coins" text="Coins: 0" />
+                    <engine:Label name="player-gems" text="Gems: 0" />
+                </engine:VisualElement>
+            </engine:VisualElement>
+            
+            <!-- Main Menu Buttons -->
+            <engine:VisualElement name="menu-buttons" class="button-container">
+                <engine:Button name="play-button" text="Play" class="menu-button" />
+                <engine:Button name="settings-button" text="Settings" class="menu-button" />
+                <engine:Button name="credits-button" text="Credits" class="menu-button" />
+                <engine:Button name="quit-button" text="Quit" class="menu-button" />
+            </engine:VisualElement>
+        </engine:VisualElement>
+        
+        <!-- Settings Panel -->
+        <engine:VisualElement name="settings-panel" class="panel hidden">
+            <engine:Label text="Settings" class="panel-title" />
+            
+            <!-- Settings Controls -->
+            <engine:VisualElement class="settings-container">
+                <engine:Slider name="music-volume" label="Music Volume" low-value="0" high-value="1" value="0.75" />
+                <engine:Slider name="sfx-volume" label="SFX Volume" low-value="0" high-value="1" value="0.75" />
+                <engine:Toggle name="fullscreen-toggle" label="Fullscreen" value="true" />
+                <engine:DropdownField name="resolution-dropdown" label="Resolution" />
+                <engine:DropdownField name="quality-dropdown" label="Quality" />
+            </engine:VisualElement>
+            
+            <engine:Button name="settings-back-button" text="Back" class="back-button" />
+        </engine:VisualElement>
+        
+        <!-- Credits Panel -->
+        <engine:VisualElement name="credits-panel" class="panel hidden">
+            <engine:Label text="Credits" class="panel-title" />
+            
+            <!-- Credits Content -->
+            <engine:ScrollView class="credits-container">
+                <engine:Label text="Recipe Rage" class="credits-title" />
+                <engine:Label text="A multiplayer cooking game" class="credits-subtitle" />
+                <engine:Label text="Developed by:" class="credits-section" />
+                <engine:Label text="Your Name" class="credits-text" />
+                <engine:Label text="Special Thanks:" class="credits-section" />
+                <engine:Label text="Unity Technologies" class="credits-text" />
+                <engine:Label text="All the testers" class="credits-text" />
+            </engine:ScrollView>
+            
+            <engine:Button name="credits-back-button" text="Back" class="back-button" />
+        </engine:VisualElement>
+        
+    </engine:VisualElement>
+</engine:UXML>

@@ -2,55 +2,64 @@ using System;
 using RecipeRage.Core.GameFramework.State;
 using RecipeRage.Core.GameFramework.State.States;
 using RecipeRage.Core.Networking;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 namespace RecipeRage.UI
 {
     /// <summary>
-    /// Manages the main menu UI.
+    /// Manages the main menu UI using UI Toolkit.
     /// </summary>
     public class MainMenuUI : MonoBehaviour
     {
-        [Header("Panels")]
-        [SerializeField] private GameObject _mainPanel;
-        [SerializeField] private GameObject _settingsPanel;
-        [SerializeField] private GameObject _creditsPanel;
-        
-        [Header("Main Menu Buttons")]
-        [SerializeField] private Button _playButton;
-        [SerializeField] private Button _settingsButton;
-        [SerializeField] private Button _creditsButton;
-        [SerializeField] private Button _quitButton;
-        
-        [Header("Settings Panel")]
-        [SerializeField] private Slider _musicVolumeSlider;
-        [SerializeField] private Slider _sfxVolumeSlider;
-        [SerializeField] private Toggle _fullscreenToggle;
-        [SerializeField] private TMP_Dropdown _resolutionDropdown;
-        [SerializeField] private TMP_Dropdown _qualityDropdown;
-        [SerializeField] private Button _settingsBackButton;
-        
-        [Header("Credits Panel")]
-        [SerializeField] private Button _creditsBackButton;
-        
-        [Header("Player Info")]
-        [SerializeField] private TMP_InputField _playerNameInput;
-        [SerializeField] private TextMeshProUGUI _playerLevelText;
-        [SerializeField] private TextMeshProUGUI _playerCoinsText;
-        [SerializeField] private TextMeshProUGUI _playerGemsText;
-        
+        /// <summary>
+        /// The UI document component.
+        /// </summary>
+        private UIDocument _uiDocument;
+
+        /// <summary>
+        /// The root visual element.
+        /// </summary>
+        private VisualElement _root;
+
+        // Panels
+        private VisualElement _mainPanel;
+        private VisualElement _settingsPanel;
+        private VisualElement _creditsPanel;
+
+        // Main Menu Buttons
+        private Button _playButton;
+        private Button _settingsButton;
+        private Button _creditsButton;
+        private Button _quitButton;
+
+        // Settings Panel
+        private Slider _musicVolumeSlider;
+        private Slider _sfxVolumeSlider;
+        private Toggle _fullscreenToggle;
+        private DropdownField _resolutionDropdown;
+        private DropdownField _qualityDropdown;
+        private Button _settingsBackButton;
+
+        // Credits Panel
+        private Button _creditsBackButton;
+
+        // Player Info
+        private TextField _playerNameInput;
+        private Label _playerLevelText;
+        private Label _playerCoinsText;
+        private Label _playerGemsText;
+
         /// <summary>
         /// Reference to the game state manager.
         /// </summary>
         private GameStateManager _gameStateManager;
-        
+
         /// <summary>
         /// Reference to the network manager.
         /// </summary>
         private NetworkManager _networkManager;
-        
+
         /// <summary>
         /// Initialize the main menu UI.
         /// </summary>
@@ -59,83 +68,196 @@ namespace RecipeRage.UI
             // Get references
             _gameStateManager = GameStateManager.Instance;
             _networkManager = NetworkManager.Instance;
-            
+
+            // Get UI Document component
+            _uiDocument = GetComponent<UIDocument>();
+            if (_uiDocument == null)
+            {
+                Debug.LogError("[MainMenuUI] UIDocument component not found");
+                return;
+            }
+
+            // Initialize UI when the document is ready
+            _uiDocument.rootVisualElement.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+        }
+
+        /// <summary>
+        /// Called when the UI geometry is initialized.
+        /// </summary>
+        private void OnGeometryChanged(GeometryChangedEvent evt)
+        {
+            // Unregister the callback to ensure it's only called once
+            _uiDocument.rootVisualElement.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+
+            // Get the root element
+            _root = _uiDocument.rootVisualElement;
+
+            // Get panel references
+            _mainPanel = _root.Q<VisualElement>("main-panel");
+            _settingsPanel = _root.Q<VisualElement>("settings-panel");
+            _creditsPanel = _root.Q<VisualElement>("credits-panel");
+
+            // Get button references
+            _playButton = _root.Q<Button>("play-button");
+            _settingsButton = _root.Q<Button>("settings-button");
+            _creditsButton = _root.Q<Button>("credits-button");
+            _quitButton = _root.Q<Button>("quit-button");
+
+            // Get settings panel references
+            _musicVolumeSlider = _root.Q<Slider>("music-volume");
+            _sfxVolumeSlider = _root.Q<Slider>("sfx-volume");
+            _fullscreenToggle = _root.Q<Toggle>("fullscreen-toggle");
+            _resolutionDropdown = _root.Q<DropdownField>("resolution-dropdown");
+            _qualityDropdown = _root.Q<DropdownField>("quality-dropdown");
+            _settingsBackButton = _root.Q<Button>("settings-back-button");
+
+            // Get credits panel references
+            _creditsBackButton = _root.Q<Button>("credits-back-button");
+
+            // Get player info references
+            _playerNameInput = _root.Q<TextField>("player-name");
+            _playerLevelText = _root.Q<Label>("player-level");
+            _playerCoinsText = _root.Q<Label>("player-coins");
+            _playerGemsText = _root.Q<Label>("player-gems");
+
+            // Initialize dropdown options
+            InitializeDropdowns();
+
             // Set up button listeners
             SetupButtonListeners();
-            
-            // Hide all panels except main
+
+            // Load settings and player info
+            LoadSettings();
+            LoadPlayerInfo();
+
+            // Show main panel by default
             ShowMainPanel();
         }
-        
+
+        /// <summary>
+        /// Initialize dropdown options.
+        /// </summary>
+        private void InitializeDropdowns()
+        {
+            // Initialize resolution dropdown
+            if (_resolutionDropdown != null)
+            {
+                _resolutionDropdown.choices = new System.Collections.Generic.List<string>
+                {
+                    "1280x720",
+                    "1920x1080",
+                    "2560x1440",
+                    "3840x2160"
+                };
+                _resolutionDropdown.index = 1; // Default to 1080p
+            }
+
+            // Initialize quality dropdown
+            if (_qualityDropdown != null)
+            {
+                string[] qualityNames = QualitySettings.names;
+                _qualityDropdown.choices = new System.Collections.Generic.List<string>(qualityNames);
+                _qualityDropdown.index = QualitySettings.GetQualityLevel();
+            }
+        }
+
+        /// <summary>
+        /// Load player info from PlayerPrefs.
+        /// </summary>
+        private void LoadPlayerInfo()
+        {
+            // Load player name
+            if (_playerNameInput != null)
+            {
+                _playerNameInput.value = PlayerPrefs.GetString("PlayerName", "Player");
+            }
+
+            // Load player stats (in a real game, these would come from a player data service)
+            if (_playerLevelText != null)
+            {
+                _playerLevelText.text = $"Level: {PlayerPrefs.GetInt("PlayerLevel", 1)}";
+            }
+
+            if (_playerCoinsText != null)
+            {
+                _playerCoinsText.text = $"Coins: {PlayerPrefs.GetInt("PlayerCoins", 0)}";
+            }
+
+            if (_playerGemsText != null)
+            {
+                _playerGemsText.text = $"Gems: {PlayerPrefs.GetInt("PlayerGems", 0)}";
+            }
+        }
+
         /// <summary>
         /// Set up button click listeners.
         /// </summary>
         private void SetupButtonListeners()
         {
             // Main menu buttons
-            if (_playButton != null) _playButton.onClick.AddListener(OnPlayButtonClicked);
-            if (_settingsButton != null) _settingsButton.onClick.AddListener(OnSettingsButtonClicked);
-            if (_creditsButton != null) _creditsButton.onClick.AddListener(OnCreditsButtonClicked);
-            if (_quitButton != null) _quitButton.onClick.AddListener(OnQuitButtonClicked);
-            
+            if (_playButton != null) _playButton.clicked += OnPlayButtonClicked;
+            if (_settingsButton != null) _settingsButton.clicked += OnSettingsButtonClicked;
+            if (_creditsButton != null) _creditsButton.clicked += OnCreditsButtonClicked;
+            if (_quitButton != null) _quitButton.clicked += OnQuitButtonClicked;
+
             // Settings panel
-            if (_settingsBackButton != null) _settingsBackButton.onClick.AddListener(OnSettingsBackButtonClicked);
-            
+            if (_settingsBackButton != null) _settingsBackButton.clicked += OnSettingsBackButtonClicked;
+
             // Credits panel
-            if (_creditsBackButton != null) _creditsBackButton.onClick.AddListener(OnCreditsBackButtonClicked);
+            if (_creditsBackButton != null) _creditsBackButton.clicked += OnCreditsBackButtonClicked;
         }
-        
+
         /// <summary>
         /// Show only the main panel.
         /// </summary>
         private void ShowMainPanel()
         {
-            if (_mainPanel != null) _mainPanel.SetActive(true);
-            if (_settingsPanel != null) _settingsPanel.SetActive(false);
-            if (_creditsPanel != null) _creditsPanel.SetActive(false);
+            if (_mainPanel != null) _mainPanel.RemoveFromClassList("hidden");
+            if (_settingsPanel != null) _settingsPanel.AddToClassList("hidden");
+            if (_creditsPanel != null) _creditsPanel.AddToClassList("hidden");
         }
-        
+
         /// <summary>
         /// Show only the settings panel.
         /// </summary>
         private void ShowSettingsPanel()
         {
-            if (_mainPanel != null) _mainPanel.SetActive(false);
-            if (_settingsPanel != null) _settingsPanel.SetActive(true);
-            if (_creditsPanel != null) _creditsPanel.SetActive(false);
+            if (_mainPanel != null) _mainPanel.AddToClassList("hidden");
+            if (_settingsPanel != null) _settingsPanel.RemoveFromClassList("hidden");
+            if (_creditsPanel != null) _creditsPanel.AddToClassList("hidden");
         }
-        
+
         /// <summary>
         /// Show only the credits panel.
         /// </summary>
         private void ShowCreditsPanel()
         {
-            if (_mainPanel != null) _mainPanel.SetActive(false);
-            if (_settingsPanel != null) _settingsPanel.SetActive(false);
-            if (_creditsPanel != null) _creditsPanel.SetActive(true);
+            if (_mainPanel != null) _mainPanel.AddToClassList("hidden");
+            if (_settingsPanel != null) _settingsPanel.AddToClassList("hidden");
+            if (_creditsPanel != null) _creditsPanel.RemoveFromClassList("hidden");
         }
-        
+
         /// <summary>
         /// Handle play button click.
         /// </summary>
         private void OnPlayButtonClicked()
         {
             Debug.Log("[MainMenuUI] Play button clicked");
-            
+
             // Save player name if provided
-            if (_playerNameInput != null && !string.IsNullOrEmpty(_playerNameInput.text))
+            if (_playerNameInput != null && !string.IsNullOrEmpty(_playerNameInput.value))
             {
-                PlayerPrefs.SetString("PlayerName", _playerNameInput.text);
+                PlayerPrefs.SetString("PlayerName", _playerNameInput.value);
                 PlayerPrefs.Save();
             }
-            
+
             // Transition to matchmaking state
             if (_gameStateManager != null)
             {
                 _gameStateManager.ChangeState(new MatchmakingState());
             }
         }
-        
+
         /// <summary>
         /// Handle settings button click.
         /// </summary>
@@ -144,7 +266,7 @@ namespace RecipeRage.UI
             Debug.Log("[MainMenuUI] Settings button clicked");
             ShowSettingsPanel();
         }
-        
+
         /// <summary>
         /// Handle credits button click.
         /// </summary>
@@ -153,36 +275,36 @@ namespace RecipeRage.UI
             Debug.Log("[MainMenuUI] Credits button clicked");
             ShowCreditsPanel();
         }
-        
+
         /// <summary>
         /// Handle quit button click.
         /// </summary>
         private void OnQuitButtonClicked()
         {
             Debug.Log("[MainMenuUI] Quit button clicked");
-            
+
             // Quit the application
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
-            #else
+#else
             Application.Quit();
-            #endif
+#endif
         }
-        
+
         /// <summary>
         /// Handle settings back button click.
         /// </summary>
         private void OnSettingsBackButtonClicked()
         {
             Debug.Log("[MainMenuUI] Settings back button clicked");
-            
+
             // Save settings
             SaveSettings();
-            
+
             // Return to main panel
             ShowMainPanel();
         }
-        
+
         /// <summary>
         /// Handle credits back button click.
         /// </summary>
@@ -191,7 +313,7 @@ namespace RecipeRage.UI
             Debug.Log("[MainMenuUI] Credits back button clicked");
             ShowMainPanel();
         }
-        
+
         /// <summary>
         /// Save settings to PlayerPrefs.
         /// </summary>
@@ -202,38 +324,38 @@ namespace RecipeRage.UI
             {
                 PlayerPrefs.SetFloat("MusicVolume", _musicVolumeSlider.value);
             }
-            
+
             // Save SFX volume
             if (_sfxVolumeSlider != null)
             {
                 PlayerPrefs.SetFloat("SFXVolume", _sfxVolumeSlider.value);
             }
-            
+
             // Save fullscreen setting
             if (_fullscreenToggle != null)
             {
-                PlayerPrefs.SetInt("Fullscreen", _fullscreenToggle.isOn ? 1 : 0);
-                Screen.fullScreen = _fullscreenToggle.isOn;
+                PlayerPrefs.SetInt("Fullscreen", _fullscreenToggle.value ? 1 : 0);
+                Screen.fullScreen = _fullscreenToggle.value;
             }
-            
+
             // Save resolution
             if (_resolutionDropdown != null)
             {
-                PlayerPrefs.SetInt("Resolution", _resolutionDropdown.value);
+                PlayerPrefs.SetInt("Resolution", _resolutionDropdown.index);
                 // Apply resolution (would need to map dropdown index to actual resolution)
             }
-            
+
             // Save quality
             if (_qualityDropdown != null)
             {
-                PlayerPrefs.SetInt("Quality", _qualityDropdown.value);
-                QualitySettings.SetQualityLevel(_qualityDropdown.value);
+                PlayerPrefs.SetInt("Quality", _qualityDropdown.index);
+                QualitySettings.SetQualityLevel(_qualityDropdown.index);
             }
-            
+
             // Save all settings
             PlayerPrefs.Save();
         }
-        
+
         /// <summary>
         /// Load settings from PlayerPrefs.
         /// </summary>
@@ -244,60 +366,29 @@ namespace RecipeRage.UI
             {
                 _musicVolumeSlider.value = PlayerPrefs.GetFloat("MusicVolume", 0.75f);
             }
-            
+
             // Load SFX volume
             if (_sfxVolumeSlider != null)
             {
                 _sfxVolumeSlider.value = PlayerPrefs.GetFloat("SFXVolume", 0.75f);
             }
-            
+
             // Load fullscreen setting
             if (_fullscreenToggle != null)
             {
-                _fullscreenToggle.isOn = PlayerPrefs.GetInt("Fullscreen", 1) == 1;
+                _fullscreenToggle.value = PlayerPrefs.GetInt("Fullscreen", 1) == 1;
             }
-            
+
             // Load resolution
             if (_resolutionDropdown != null)
             {
-                _resolutionDropdown.value = PlayerPrefs.GetInt("Resolution", 0);
+                _resolutionDropdown.index = PlayerPrefs.GetInt("Resolution", 1); // Default to 1080p
             }
-            
+
             // Load quality
             if (_qualityDropdown != null)
             {
-                _qualityDropdown.value = PlayerPrefs.GetInt("Quality", QualitySettings.GetQualityLevel());
-            }
-        }
-        
-        /// <summary>
-        /// Initialize the UI when enabled.
-        /// </summary>
-        private void OnEnable()
-        {
-            // Load settings
-            LoadSettings();
-            
-            // Load player name
-            if (_playerNameInput != null)
-            {
-                _playerNameInput.text = PlayerPrefs.GetString("PlayerName", "Player");
-            }
-            
-            // Load player stats (in a real game, these would come from a player data service)
-            if (_playerLevelText != null)
-            {
-                _playerLevelText.text = $"Level: {PlayerPrefs.GetInt("PlayerLevel", 1)}";
-            }
-            
-            if (_playerCoinsText != null)
-            {
-                _playerCoinsText.text = $"Coins: {PlayerPrefs.GetInt("PlayerCoins", 0)}";
-            }
-            
-            if (_playerGemsText != null)
-            {
-                _playerGemsText.text = $"Gems: {PlayerPrefs.GetInt("PlayerGems", 0)}";
+                _qualityDropdown.index = PlayerPrefs.GetInt("Quality", QualitySettings.GetQualityLevel());
             }
         }
     }

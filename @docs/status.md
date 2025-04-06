@@ -41,8 +41,8 @@
 - 🔄 Timer System
 
 ### UI
-- ✅ Main Menu
-- ✅ Lobby UI
+- ✅ Main Menu (UI Toolkit)
+- ✅ Lobby UI (UI Toolkit)
 - 🔄 HUD
 - 🔄 Character Selection UI
 
