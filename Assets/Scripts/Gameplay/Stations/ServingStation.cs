@@ -72,7 +72,7 @@ namespace RecipeRage.Gameplay.Stations
                 // For now, we'll just assume any dish can complete any order
 
                 // Complete the order
-                _orderManager.CompleteOrder(order.OrderId, true);
+                _orderManager.CompleteOrder(order.OrderId);
                 orderFound = true;
 
                 // Show success visual
