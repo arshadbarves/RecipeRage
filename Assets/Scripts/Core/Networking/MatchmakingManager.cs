@@ -15,123 +15,123 @@ namespace RecipeRage.Core.Networking
         [SerializeField] private float _matchmakingTimeout = 60f;
         [SerializeField] private float _matchFoundCountdown = 10f;
         [SerializeField] private int _maxMatchmakingAttempts = 3;
-        
+
         [Header("References")]
         [SerializeField] private NetworkManager _networkManager;
         [SerializeField] private NetworkLobbyManager _lobbyManager;
         [SerializeField] private GameModeManager _gameModeManager;
-        
+
         /// <summary>
         /// Event triggered when the matchmaking state changes.
         /// </summary>
         public event Action<MatchmakingState> OnMatchmakingStateChanged;
-        
+
         /// <summary>
         /// Event triggered when a match is found.
         /// </summary>
         public event Action<NetworkSessionInfo> OnMatchFound;
-        
+
         /// <summary>
         /// Event triggered when the match found countdown changes.
         /// </summary>
         public event Action<float> OnMatchFoundCountdownChanged;
-        
+
         /// <summary>
         /// Event triggered when matchmaking fails.
         /// </summary>
         public event Action<string> OnMatchmakingFailed;
-        
+
         /// <summary>
         /// The current matchmaking state.
         /// </summary>
         public MatchmakingState MatchmakingState { get; private set; }
-        
+
         /// <summary>
         /// The current match found countdown.
         /// </summary>
         public float MatchFoundCountdown { get; private set; }
-        
+
         /// <summary>
         /// The current matchmaking session info.
         /// </summary>
         public NetworkSessionInfo CurrentMatchInfo { get; private set; }
-        
+
         /// <summary>
         /// The current matchmaking game mode.
         /// </summary>
         public GameMode MatchmakingGameMode { get; private set; }
-        
+
         /// <summary>
         /// The current matchmaking map.
         /// </summary>
         public string MatchmakingMap { get; private set; }
-        
+
         /// <summary>
         /// Flag to track if the matchmaking manager is initialized.
         /// </summary>
         private bool _isInitialized;
-        
+
         /// <summary>
         /// Flag to track if the match found countdown is active.
         /// </summary>
         private bool _isCountingDown;
-        
+
         /// <summary>
         /// The current matchmaking timer.
         /// </summary>
         private float _matchmakingTimer;
-        
+
         /// <summary>
         /// The current matchmaking attempt.
         /// </summary>
         private int _matchmakingAttempt;
-        
+
         /// <summary>
         /// The list of available sessions for matchmaking.
         /// </summary>
         private List<NetworkSessionInfo> _availableSessions = new List<NetworkSessionInfo>();
-        
+
         /// <summary>
         /// The player's matchmaking preferences.
         /// </summary>
         private MatchmakingPreferences _preferences = new MatchmakingPreferences();
-        
+
         /// <summary>
         /// Initialize the matchmaking manager.
         /// </summary>
         protected override void Awake()
         {
             base.Awake();
-            
+
             // Find the network manager if not set
             if (_networkManager == null)
             {
                 _networkManager = FindFirstObjectByType<NetworkManager>();
             }
-            
+
             // Find the lobby manager if not set
             if (_lobbyManager == null)
             {
                 _lobbyManager = FindFirstObjectByType<NetworkLobbyManager>();
             }
-            
+
             // Find the game mode manager if not set
             if (_gameModeManager == null)
             {
                 _gameModeManager = FindFirstObjectByType<GameModeManager>();
             }
-            
+
             // Initialize values
             MatchmakingState = MatchmakingState.Inactive;
             MatchFoundCountdown = _matchFoundCountdown;
             _isCountingDown = false;
-            
+
             // Register the matchmaking manager with the service locator
             ServiceLocator.Instance.Register<MatchmakingManager>(this);
-            
+
             Debug.Log("[MatchmakingManager] Matchmaking manager initialized");
         }
-        
+
         /// <summary>
         /// Subscribe to network manager and lobby manager events.
         /// </summary>
@@ -142,10 +142,10 @@ namespace RecipeRage.Core.Networking
                 // Subscribe to network manager events
                 _networkManager.OnConnectionStateChanged += HandleConnectionStateChanged;
                 _networkManager.OnSessionJoined += HandleSessionJoined;
-                
+
                 // Subscribe to lobby manager events
                 _lobbyManager.OnLobbyStateChanged += HandleLobbyStateChanged;
-                
+
                 _isInitialized = true;
             }
             else
@@ -153,7 +153,7 @@ namespace RecipeRage.Core.Networking
                 Debug.LogError("[MatchmakingManager] Network manager, lobby manager, or game mode manager not found");
             }
         }
-        
+
         /// <summary>
         /// Update the matchmaking manager.
         /// </summary>
@@ -163,7 +163,7 @@ namespace RecipeRage.Core.Networking
             if (MatchmakingState == MatchmakingState.Searching)
             {
                 _matchmakingTimer -= Time.deltaTime;
-                
+
                 if (_matchmakingTimer <= 0f)
                 {
                     // Timeout reached, try again or fail
@@ -177,21 +177,21 @@ namespace RecipeRage.Core.Networking
                         // Try again
                         _matchmakingAttempt++;
                         _matchmakingTimer = _matchmakingTimeout;
-                        
+
                         Debug.Log($"[MatchmakingManager] Matchmaking attempt {_matchmakingAttempt}/{_maxMatchmakingAttempts}");
-                        
+
                         // Search for sessions again
                         SearchForSessions();
                     }
                 }
             }
-            
+
             // Update match found countdown
             if (_isCountingDown && MatchmakingState == MatchmakingState.MatchFound)
             {
                 MatchFoundCountdown -= Time.deltaTime;
                 OnMatchFoundCountdownChanged?.Invoke(MatchFoundCountdown);
-                
+
                 if (MatchFoundCountdown <= 0f)
                 {
                     // Countdown finished, join the match
@@ -199,30 +199,30 @@ namespace RecipeRage.Core.Networking
                 }
             }
         }
-        
+
         /// <summary>
         /// Clean up when the object is destroyed.
         /// </summary>
         protected override void OnDestroy()
         {
             base.OnDestroy();
-            
+
             if (_networkManager != null)
             {
                 // Unsubscribe from network manager events
                 _networkManager.OnConnectionStateChanged -= HandleConnectionStateChanged;
                 _networkManager.OnSessionJoined -= HandleSessionJoined;
             }
-            
+
             if (_lobbyManager != null)
             {
                 // Unsubscribe from lobby manager events
                 _lobbyManager.OnLobbyStateChanged -= HandleLobbyStateChanged;
             }
-            
+
             Debug.Log("[MatchmakingManager] Matchmaking manager destroyed");
         }
-        
+
         /// <summary>
         /// Start matchmaking with the specified preferences.
         /// </summary>
@@ -234,18 +234,18 @@ namespace RecipeRage.Core.Networking
                 Debug.LogError("[MatchmakingManager] Cannot start matchmaking: manager not initialized");
                 return;
             }
-            
+
             if (MatchmakingState != MatchmakingState.Inactive)
             {
                 Debug.LogError("[MatchmakingManager] Cannot start matchmaking: already matchmaking");
                 return;
             }
-            
+
             Debug.Log("[MatchmakingManager] Starting matchmaking");
-            
+
             // Store preferences
             _preferences = preferences ?? new MatchmakingPreferences();
-            
+
             // Set the game mode
             if (!string.IsNullOrEmpty(_preferences.GameModeId))
             {
@@ -255,9 +255,9 @@ namespace RecipeRage.Core.Networking
             {
                 MatchmakingGameMode = _gameModeManager.SelectedGameMode;
             }
-            
+
             // Set the map
-            if (!string.IsNullOrEmpty(_preferences.MapName) && MatchmakingGameMode != null && 
+            if (!string.IsNullOrEmpty(_preferences.MapName) && MatchmakingGameMode != null &&
                 MatchmakingGameMode.AvailableMaps.Contains(_preferences.MapName))
             {
                 MatchmakingMap = _preferences.MapName;
@@ -270,19 +270,19 @@ namespace RecipeRage.Core.Networking
             {
                 MatchmakingMap = "Kitchen";
             }
-            
+
             // Reset matchmaking values
             _matchmakingTimer = _matchmakingTimeout;
             _matchmakingAttempt = 1;
             _availableSessions.Clear();
-            
+
             // Set matchmaking state to searching
             SetMatchmakingState(MatchmakingState.Searching);
-            
+
             // Start searching for sessions
             SearchForSessions();
         }
-        
+
         /// <summary>
         /// Cancel matchmaking.
         /// </summary>
@@ -293,19 +293,19 @@ namespace RecipeRage.Core.Networking
                 Debug.LogError("[MatchmakingManager] Cannot cancel matchmaking: manager not initialized");
                 return;
             }
-            
+
             if (MatchmakingState == MatchmakingState.Inactive)
             {
                 Debug.LogError("[MatchmakingManager] Cannot cancel matchmaking: not matchmaking");
                 return;
             }
-            
+
             Debug.Log("[MatchmakingManager] Canceling matchmaking");
-            
+
             // Reset matchmaking
             ResetMatchmaking();
         }
-        
+
         /// <summary>
         /// Accept the found match.
         /// </summary>
@@ -316,22 +316,22 @@ namespace RecipeRage.Core.Networking
                 Debug.LogError("[MatchmakingManager] Cannot accept match: manager not initialized");
                 return;
             }
-            
+
             if (MatchmakingState != MatchmakingState.MatchFound)
             {
                 Debug.LogError("[MatchmakingManager] Cannot accept match: no match found");
                 return;
             }
-            
+
             Debug.Log("[MatchmakingManager] Accepting match");
-            
+
             // Set matchmaking state to joining
             SetMatchmakingState(MatchmakingState.Joining);
-            
+
             // Join the match
             JoinMatch();
         }
-        
+
         /// <summary>
         /// Decline the found match.
         /// </summary>
@@ -342,19 +342,19 @@ namespace RecipeRage.Core.Networking
                 Debug.LogError("[MatchmakingManager] Cannot decline match: manager not initialized");
                 return;
             }
-            
+
             if (MatchmakingState != MatchmakingState.MatchFound)
             {
                 Debug.LogError("[MatchmakingManager] Cannot decline match: no match found");
                 return;
             }
-            
+
             Debug.Log("[MatchmakingManager] Declining match");
-            
+
             // Reset matchmaking
             ResetMatchmaking();
         }
-        
+
         /// <summary>
         /// Search for available sessions.
         /// </summary>
@@ -365,23 +365,23 @@ namespace RecipeRage.Core.Networking
                 FailMatchmaking("Network manager not found");
                 return;
             }
-            
+
             Debug.Log("[MatchmakingManager] Searching for sessions");
-            
+
             // Find sessions with the network manager
             _networkManager.FindSessions(sessions =>
             {
                 _availableSessions.Clear();
-                
+
                 if (sessions == null || sessions.Count == 0)
                 {
                     Debug.Log("[MatchmakingManager] No sessions found, creating a new one");
-                    
+
                     // No sessions found, create a new one
                     CreateNewSession();
                     return;
                 }
-                
+
                 // Filter sessions based on preferences
                 foreach (var session in sessions)
                 {
@@ -391,7 +391,7 @@ namespace RecipeRage.Core.Networking
                         _availableSessions.Add(session);
                     }
                 }
-                
+
                 if (_availableSessions.Count > 0)
                 {
                     // Found matching sessions, select the best one
@@ -400,13 +400,13 @@ namespace RecipeRage.Core.Networking
                 else
                 {
                     Debug.Log("[MatchmakingManager] No matching sessions found, creating a new one");
-                    
+
                     // No matching sessions found, create a new one
                     CreateNewSession();
                 }
             });
         }
-        
+
         /// <summary>
         /// Check if a session matches our preferences.
         /// </summary>
@@ -419,30 +419,30 @@ namespace RecipeRage.Core.Networking
             {
                 return false;
             }
-            
+
             // Check if the session is private and we don't want private sessions
             if (session.IsPrivate && !_preferences.AllowPrivate)
             {
                 return false;
             }
-            
+
             // Check if the game mode matches
-            if (!string.IsNullOrEmpty(_preferences.GameModeId) && 
+            if (!string.IsNullOrEmpty(_preferences.GameModeId) &&
                 !string.Equals(session.GameMode, _preferences.GameModeId, StringComparison.OrdinalIgnoreCase))
             {
                 return false;
             }
-            
+
             // Check if the map matches
-            if (!string.IsNullOrEmpty(_preferences.MapName) && 
+            if (!string.IsNullOrEmpty(_preferences.MapName) &&
                 !string.Equals(session.MapName, _preferences.MapName, StringComparison.OrdinalIgnoreCase))
             {
                 return false;
             }
-            
+
             return true;
         }
-        
+
         /// <summary>
         /// Select the best session from the available sessions.
         /// </summary>
@@ -453,27 +453,27 @@ namespace RecipeRage.Core.Networking
                 FailMatchmaking("No available sessions");
                 return;
             }
-            
+
             // Sort sessions by player count (descending) to join the most populated session
             _availableSessions.Sort((a, b) => b.PlayerCount.CompareTo(a.PlayerCount));
-            
+
             // Select the first session
             CurrentMatchInfo = _availableSessions[0];
-            
+
             Debug.Log($"[MatchmakingManager] Selected session: {CurrentMatchInfo.SessionName} ({CurrentMatchInfo.SessionId})");
-            
+
             // Set matchmaking state to match found
             SetMatchmakingState(MatchmakingState.MatchFound);
-            
+
             // Start the countdown
             MatchFoundCountdown = _matchFoundCountdown;
             _isCountingDown = true;
             OnMatchFoundCountdownChanged?.Invoke(MatchFoundCountdown);
-            
+
             // Trigger match found event
             OnMatchFound?.Invoke(CurrentMatchInfo);
         }
-        
+
         /// <summary>
         /// Create a new session.
         /// </summary>
@@ -484,19 +484,26 @@ namespace RecipeRage.Core.Networking
                 FailMatchmaking("Lobby manager not found");
                 return;
             }
-            
+
             Debug.Log("[MatchmakingManager] Creating a new session");
-            
+
             // Generate a session name
             string sessionName = $"{MatchmakingGameMode?.DisplayName ?? "Game"} - {DateTime.Now:yyyyMMddHHmmss}";
-            
+
             // Set matchmaking state to creating
             SetMatchmakingState(MatchmakingState.Creating);
-            
+
             // Create a lobby with the lobby manager
-            _lobbyManager.CreateLobby(sessionName, false, MatchmakingGameMode?.Id, MatchmakingMap);
+            // First, set the game mode in the GameModeManager if available
+            if (MatchmakingGameMode != null && _gameModeManager != null)
+            {
+                _gameModeManager.SelectGameMode(MatchmakingGameMode);
+            }
+
+            // Then create the lobby
+            _lobbyManager.CreateLobby(sessionName, false);
         }
-        
+
         /// <summary>
         /// Join the selected match.
         /// </summary>
@@ -507,16 +514,16 @@ namespace RecipeRage.Core.Networking
                 FailMatchmaking("Lobby manager not found or no match selected");
                 return;
             }
-            
+
             Debug.Log($"[MatchmakingManager] Joining match: {CurrentMatchInfo.SessionName} ({CurrentMatchInfo.SessionId})");
-            
+
             // Set matchmaking state to joining
             SetMatchmakingState(MatchmakingState.Joining);
-            
+
             // Join the lobby with the lobby manager
             _lobbyManager.JoinLobby(CurrentMatchInfo.SessionId);
         }
-        
+
         /// <summary>
         /// Fail matchmaking with an error message.
         /// </summary>
@@ -524,17 +531,17 @@ namespace RecipeRage.Core.Networking
         private void FailMatchmaking(string errorMessage)
         {
             Debug.LogError($"[MatchmakingManager] Matchmaking failed: {errorMessage}");
-            
+
             // Set matchmaking state to failed
             SetMatchmakingState(MatchmakingState.Failed);
-            
+
             // Trigger matchmaking failed event
             OnMatchmakingFailed?.Invoke(errorMessage);
-            
+
             // Reset matchmaking after a delay
             Invoke(nameof(ResetMatchmaking), 3f);
         }
-        
+
         /// <summary>
         /// Reset matchmaking.
         /// </summary>
@@ -549,11 +556,11 @@ namespace RecipeRage.Core.Networking
             MatchmakingMap = null;
             _isCountingDown = false;
             MatchFoundCountdown = _matchFoundCountdown;
-            
+
             // Set matchmaking state to inactive
             SetMatchmakingState(MatchmakingState.Inactive);
         }
-        
+
         /// <summary>
         /// Handle connection state changed event.
         /// </summary>
@@ -561,7 +568,7 @@ namespace RecipeRage.Core.Networking
         private void HandleConnectionStateChanged(NetworkConnectionState state)
         {
             Debug.Log($"[MatchmakingManager] Connection state changed to {state}");
-            
+
             if (state == NetworkConnectionState.Failed)
             {
                 // Connection failed, fail matchmaking
@@ -573,7 +580,7 @@ namespace RecipeRage.Core.Networking
                 ResetMatchmaking();
             }
         }
-        
+
         /// <summary>
         /// Handle session joined event.
         /// </summary>
@@ -585,26 +592,26 @@ namespace RecipeRage.Core.Networking
             {
                 return;
             }
-            
+
             if (success)
             {
                 Debug.Log($"[MatchmakingManager] Session joined: {sessionId}");
-                
+
                 // Set matchmaking state to joined
                 SetMatchmakingState(MatchmakingState.Joined);
-                
+
                 // Reset matchmaking after a delay
                 Invoke(nameof(ResetMatchmaking), 3f);
             }
             else
             {
                 Debug.LogError($"[MatchmakingManager] Failed to join session: {sessionId}");
-                
+
                 // Fail matchmaking
                 FailMatchmaking($"Failed to join session: {sessionId}");
             }
         }
-        
+
         /// <summary>
         /// Handle lobby state changed event.
         /// </summary>
@@ -612,14 +619,14 @@ namespace RecipeRage.Core.Networking
         private void HandleLobbyStateChanged(LobbyState state)
         {
             Debug.Log($"[MatchmakingManager] Lobby state changed to {state}");
-            
+
             if (state == LobbyState.Inactive && MatchmakingState != MatchmakingState.Inactive)
             {
                 // Lobby inactive, reset matchmaking
                 ResetMatchmaking();
             }
         }
-        
+
         /// <summary>
         /// Set the matchmaking state and trigger the event.
         /// </summary>
@@ -633,7 +640,7 @@ namespace RecipeRage.Core.Networking
             }
         }
     }
-    
+
     /// <summary>
     /// Enum for matchmaking states.
     /// </summary>
@@ -647,7 +654,7 @@ namespace RecipeRage.Core.Networking
         Joined,
         Failed
     }
-    
+
     /// <summary>
     /// Matchmaking preferences.
     /// </summary>
@@ -658,22 +665,22 @@ namespace RecipeRage.Core.Networking
         /// The preferred game mode ID.
         /// </summary>
         public string GameModeId;
-        
+
         /// <summary>
         /// The preferred map name.
         /// </summary>
         public string MapName;
-        
+
         /// <summary>
         /// Whether to allow private sessions.
         /// </summary>
         public bool AllowPrivate;
-        
+
         /// <summary>
         /// The preferred team ID.
         /// </summary>
         public int PreferredTeam = -1;
-        
+
         /// <summary>
         /// The preferred character type.
         /// </summary>
