@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using RecipeRage.Core.Characters;
 using RecipeRage.Gameplay.Cooking;
+using RecipeRage.Gameplay.Scoring;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
@@ -16,6 +17,7 @@ namespace RecipeRage.UI
         [Header("References")]
         [SerializeField] private PlayerController _localPlayer;
         [SerializeField] private OrderManager _orderManager;
+        [SerializeField] private ScoreManager _scoreManager;
 
         [Header("Interaction UI")]
         [SerializeField] private GameObject _interactionPromptPanel;
@@ -37,6 +39,11 @@ namespace RecipeRage.UI
         /// The current score.
         /// </summary>
         private int _score;
+
+        /// <summary>
+        /// The current combo count.
+        /// </summary>
+        private int _comboCount;
 
         /// <summary>
         /// The current game time.
@@ -73,6 +80,13 @@ namespace RecipeRage.UI
                 _orderManager.OnOrderCompleted += HandleOrderCompleted;
                 _orderManager.OnOrderExpired += HandleOrderExpired;
             }
+
+            // Subscribe to score manager events
+            if (_scoreManager != null)
+            {
+                _scoreManager.OnScoreChanged += HandleScoreChanged;
+                _scoreManager.OnComboAchieved += HandleComboAchieved;
+            }
         }
 
         /// <summary>
@@ -86,6 +100,13 @@ namespace RecipeRage.UI
                 _orderManager.OnOrderCreated -= HandleOrderCreated;
                 _orderManager.OnOrderCompleted -= HandleOrderCompleted;
                 _orderManager.OnOrderExpired -= HandleOrderExpired;
+            }
+
+            // Unsubscribe from score manager events
+            if (_scoreManager != null)
+            {
+                _scoreManager.OnScoreChanged -= HandleScoreChanged;
+                _scoreManager.OnComboAchieved -= HandleComboAchieved;
             }
         }
 
@@ -231,18 +252,38 @@ namespace RecipeRage.UI
         /// <param name="order">The order that was completed.</param>
         private void HandleOrderCompleted(RecipeOrderState order)
         {
-            // Add the order's point value to the score
-            _score += order.PointValue;
-
-            // Update the score UI
-            UpdateScoreUI();
-
             // Remove the order UI item
             if (_orderUIItems.TryGetValue(order.OrderId, out GameObject orderItem))
             {
                 Destroy(orderItem);
                 _orderUIItems.Remove(order.OrderId);
             }
+        }
+
+        /// <summary>
+        /// Handle score changed event.
+        /// </summary>
+        /// <param name="newScore">The new score.</param>
+        private void HandleScoreChanged(int newScore)
+        {
+            // Update the score
+            _score = newScore;
+
+            // Update the score UI
+            UpdateScoreUI();
+        }
+
+        /// <summary>
+        /// Handle combo achieved event.
+        /// </summary>
+        /// <param name="comboCount">The combo count.</param>
+        private void HandleComboAchieved(int comboCount)
+        {
+            // Update the combo count
+            _comboCount = comboCount;
+
+            // Show combo notification
+            // TODO: Implement combo notification
         }
 
         /// <summary>
