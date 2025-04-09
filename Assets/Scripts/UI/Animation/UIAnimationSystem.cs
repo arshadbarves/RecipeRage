@@ -80,7 +80,8 @@ namespace RecipeRage.UI.Animation
             EaseInOutCubic,
             EaseInElastic,
             EaseOutElastic,
-            EaseInOutElastic
+            EaseInOutElastic,
+            EaseOutBack
         }
 
         /// <summary>
@@ -333,6 +334,11 @@ namespace RecipeRage.UI.Animation
                     return t < 0.5f
                         ? 0.5f * Mathf.Sin(13 * Mathf.PI / 2 * (2 * t)) * Mathf.Pow(2, 10 * ((2 * t) - 1))
                         : 0.5f * (Mathf.Sin(-13 * Mathf.PI / 2 * ((2 * t - 1) + 1)) * Mathf.Pow(2, -10 * (2 * t - 1)) + 2);
+
+                case EasingType.EaseOutBack:
+                    float c1 = 1.70158f;
+                    float c3 = c1 + 1;
+                    return 1 + c3 * Mathf.Pow(t - 1, 3) + c1 * Mathf.Pow(t - 1, 2);
 
                 default:
                     return t;
