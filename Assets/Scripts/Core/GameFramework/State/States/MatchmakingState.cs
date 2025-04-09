@@ -64,7 +64,7 @@ namespace RecipeRage.Core.GameFramework.State.States
                 else
                 {
                     // Create a new lobby
-                    _lobbyManager.CreateLobby();
+                    _lobbyManager.CreateLobby("RecipeRage Lobby", false);
                 }
             }
             else

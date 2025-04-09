@@ -13,38 +13,38 @@ namespace RecipeRage.Core.GameFramework.State
         /// Event triggered when a state transition occurs.
         /// </summary>
         public event Action<IState, IState> OnStateChanged;
-        
+
         /// <summary>
         /// The state machine that manages game states.
         /// </summary>
         private IStateMachine _stateMachine;
-        
+
         /// <summary>
         /// The current active state.
         /// </summary>
         public IState CurrentState => _stateMachine?.CurrentState;
-        
+
         /// <summary>
         /// The previous state before the current one.
         /// </summary>
         public IState PreviousState => _stateMachine?.PreviousState;
-        
+
         /// <summary>
         /// Initialize the game state manager.
         /// </summary>
         protected override void Awake()
         {
             base.Awake();
-            
+
             // Create the state machine
             _stateMachine = new StateMachine();
-            
+
             // Subscribe to state machine events
             _stateMachine.OnStateChanged += HandleStateChanged;
-            
+
             Debug.Log("[GameStateManager] Initialized");
         }
-        
+
         /// <summary>
         /// Update the current state.
         /// </summary>
@@ -53,7 +53,7 @@ namespace RecipeRage.Core.GameFramework.State
             // Update the state machine
             _stateMachine?.Update();
         }
-        
+
         /// <summary>
         /// Update the current state at fixed intervals for physics.
         /// </summary>
@@ -62,21 +62,21 @@ namespace RecipeRage.Core.GameFramework.State
             // Update the state machine for physics
             _stateMachine?.FixedUpdate();
         }
-        
+
         /// <summary>
         /// Clean up when the object is destroyed.
         /// </summary>
         protected override void OnDestroy()
         {
             base.OnDestroy();
-            
+
             // Unsubscribe from state machine events
             if (_stateMachine != null)
             {
                 _stateMachine.OnStateChanged -= HandleStateChanged;
             }
         }
-        
+
         /// <summary>
         /// Initialize the state machine with an initial state.
         /// </summary>
@@ -88,7 +88,7 @@ namespace RecipeRage.Core.GameFramework.State
                 _stateMachine.Initialize(initialState);
             }
         }
-        
+
         /// <summary>
         /// Change to a new state.
         /// </summary>
@@ -100,7 +100,16 @@ namespace RecipeRage.Core.GameFramework.State
                 _stateMachine.ChangeState(newState);
             }
         }
-        
+
+        /// <summary>
+        /// Change to a new state of type T.
+        /// </summary>
+        /// <typeparam name="T">The type of state to change to</typeparam>
+        public void ChangeState<T>() where T : IState, new()
+        {
+            ChangeState(new T());
+        }
+
         /// <summary>
         /// Handle state machine state changed event.
         /// </summary>
@@ -109,7 +118,7 @@ namespace RecipeRage.Core.GameFramework.State
         private void HandleStateChanged(IState previousState, IState currentState)
         {
             Debug.Log($"[GameStateManager] State changed from {(previousState != null ? previousState.GetType().Name : "null")} to {currentState.GetType().Name}");
-            
+
             // Forward the event
             OnStateChanged?.Invoke(previousState, currentState);
         }
