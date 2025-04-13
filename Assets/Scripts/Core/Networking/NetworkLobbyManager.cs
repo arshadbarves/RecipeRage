@@ -71,6 +71,16 @@ namespace RecipeRage.Core.Networking
         public event Action OnGameStarted;
 
         /// <summary>
+        /// Event triggered when the lobby players are updated.
+        /// </summary>
+        public event Action<List<LobbyPlayerInfo>> OnLobbyPlayersUpdated;
+
+        /// <summary>
+        /// Event triggered when the lobby code is updated.
+        /// </summary>
+        public event Action<string> OnLobbyCodeUpdated;
+
+        /// <summary>
         /// The current lobby state.
         /// </summary>
         public LobbyState LobbyState { get; private set; }
@@ -384,6 +394,107 @@ namespace RecipeRage.Core.Networking
         }
 
         /// <summary>
+        /// Set the player's ready status.
+        /// </summary>
+        /// <param name="isReady">Whether the player is ready</param>
+        public void SetPlayerReady(bool isReady)
+        {
+            if (!_isInitialized)
+            {
+                Debug.LogError("[NetworkLobbyManager] Cannot set ready status: manager not initialized");
+                return;
+            }
+
+            if (LobbyState != LobbyState.Ready && LobbyState != LobbyState.Waiting)
+            {
+                Debug.LogError("[NetworkLobbyManager] Cannot set ready status: lobby not ready or waiting");
+                return;
+            }
+
+            Debug.Log($"[NetworkLobbyManager] Setting ready status to {isReady}");
+
+            // Get the local player
+            var localPlayer = _networkManager.LocalPlayer;
+            if (localPlayer == null)
+            {
+                Debug.LogError("[NetworkLobbyManager] Cannot set ready status: local player not found");
+                return;
+            }
+
+            // Set the ready status
+            localPlayer.IsReady = isReady;
+
+            // Notify other players
+            // TODO: Implement network message to notify other players
+
+            // Check if all players are ready
+            CheckAllPlayersReady();
+        }
+
+        /// <summary>
+        /// Set the player's team.
+        /// </summary>
+        /// <param name="teamId">The team ID to set</param>
+        public void SetPlayerTeam(int teamId)
+        {
+            ChangeTeam(teamId);
+        }
+
+        /// <summary>
+        /// Set the game mode.
+        /// </summary>
+        /// <param name="gameModeId">The game mode ID to set</param>
+        public void SetGameMode(string gameModeId)
+        {
+            ChangeGameMode(gameModeId);
+        }
+
+        /// <summary>
+        /// Check if the local player is the host.
+        /// </summary>
+        /// <returns>True if the local player is the host</returns>
+        public bool IsHost
+        {
+            get
+            {
+                if (_networkManager == null || _networkManager.LocalPlayer == null)
+                {
+                    return false;
+                }
+                return _networkManager.LocalPlayer.IsHost;
+            }
+        }
+
+        /// <summary>
+        /// Check if all players are ready.
+        /// </summary>
+        private void CheckAllPlayersReady()
+        {
+            // If we're not in the ready state, don't check
+            if (LobbyState != LobbyState.Ready)
+            {
+                return;
+            }
+
+            // Check if all players are ready
+            bool allReady = true;
+            foreach (var player in _lobbyPlayers)
+            {
+                if (!player.IsReady)
+                {
+                    allReady = false;
+                    break;
+                }
+            }
+
+            // If all players are ready, start the countdown
+            if (allReady && _lobbyPlayers.Count >= _minPlayersToStart)
+            {
+                StartCountdown();
+            }
+        }
+
+        /// <summary>
         /// Change the player's team.
         /// </summary>
         /// <param name="teamId">The team ID to change to</param>
@@ -651,6 +762,9 @@ namespace RecipeRage.Core.Networking
 
             // Check if we have enough players to start
             CheckLobbyReadiness();
+
+            // Notify UI of player list update
+            UpdateLobbyPlayers();
         }
 
         /// <summary>
@@ -676,6 +790,28 @@ namespace RecipeRage.Core.Networking
             {
                 // This is handled by the network manager
             }
+
+            // Notify UI of player list update
+            UpdateLobbyPlayers();
+        }
+
+        /// <summary>
+        /// Update the lobby players list and notify UI.
+        /// </summary>
+        private void UpdateLobbyPlayers()
+        {
+            // Convert NetworkPlayer list to LobbyPlayerInfo list
+            List<LobbyPlayerInfo> playerInfos = new List<LobbyPlayerInfo>();
+            foreach (var player in _lobbyPlayers)
+            {
+                playerInfos.Add(LobbyPlayerInfo.FromNetworkPlayer(player));
+            }
+
+            // Notify UI
+            OnLobbyPlayersUpdated?.Invoke(playerInfos);
+
+            // Update lobby code
+            OnLobbyCodeUpdated?.Invoke(GetLobbyCode());
         }
 
         /// <summary>
@@ -689,8 +825,14 @@ namespace RecipeRage.Core.Networking
             {
                 Debug.Log($"[NetworkLobbyManager] Session created: {sessionId}");
 
+                // Set lobby code
+                _lobbyCode = sessionId;
+
                 // Set lobby state to waiting
                 SetLobbyState(LobbyState.Waiting);
+
+                // Notify UI
+                UpdateLobbyPlayers();
             }
             else
             {
@@ -712,8 +854,14 @@ namespace RecipeRage.Core.Networking
             {
                 Debug.Log($"[NetworkLobbyManager] Session joined: {sessionId}");
 
+                // Set lobby code
+                _lobbyCode = sessionId;
+
                 // Set lobby state to waiting
                 SetLobbyState(LobbyState.Waiting);
+
+                // Notify UI
+                UpdateLobbyPlayers();
             }
             else
             {
