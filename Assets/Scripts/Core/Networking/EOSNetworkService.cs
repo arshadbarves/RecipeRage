@@ -407,18 +407,58 @@ namespace RecipeRage.Core.Networking
 
             SetConnectionState(NetworkConnectionState.Connecting);
 
-            // TODO: Implement actual session joining with EOS
-            // This is a placeholder implementation
+            try
+            {
+                // For now, we'll use a simplified approach to join sessions
+                // In a real implementation, we would use the EOS SDK to join the session
+                // This implementation assumes the sessionId is valid and can be joined
 
-            // Simulate session joining
-            _currentSessionId = sessionId;
-            LocalPlayer.IsHost = false;
+                // Store session ID
+                _currentSessionId = sessionId;
+                LocalPlayer.IsHost = false;
 
-            // Simulate success
-            SetConnectionState(NetworkConnectionState.Connected);
-            OnSessionJoined?.Invoke(true, _currentSessionId);
+                // Simulate successful join
+                SetConnectionState(NetworkConnectionState.Connected);
+                OnSessionJoined?.Invoke(true, _currentSessionId);
 
-            Debug.Log($"[EOSNetworkService] Session joined: {_currentSessionId}");
+                Debug.Log($"[EOSNetworkService] Session joined: {_currentSessionId}");
+
+                // TODO: Implement actual session joining with EOS
+                // This would involve:
+                // 1. Finding the session by ID
+                // 2. Getting the session details
+                // 3. Joining the session with the session details
+                // 4. Handling the join completion callback
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[EOSNetworkService] Error joining session: {e.Message}");
+                SetConnectionState(NetworkConnectionState.Failed);
+                OnSessionJoined?.Invoke(false, e.Message);
+            }
+        }
+
+        /// <summary>
+        /// Callback for session join completion.
+        /// </summary>
+        /// <param name="data">Callback data</param>
+        private void OnSessionJoinComplete(ref Epic.OnlineServices.Sessions.JoinSessionCallbackInfo data)
+        {
+            if (data.ResultCode == Epic.OnlineServices.Result.Success)
+            {
+                Debug.Log($"[EOSNetworkService] Session joined successfully: {_currentSessionId}");
+                SetConnectionState(NetworkConnectionState.Connected);
+                OnSessionJoined?.Invoke(true, _currentSessionId);
+
+                // Register for session events
+                RegisterForSessionEvents();
+            }
+            else
+            {
+                Debug.LogError($"[EOSNetworkService] Failed to join session: {data.ResultCode}");
+                SetConnectionState(NetworkConnectionState.Failed);
+                OnSessionJoined?.Invoke(false, data.ResultCode.ToString());
+            }
         }
 
         /// <summary>
