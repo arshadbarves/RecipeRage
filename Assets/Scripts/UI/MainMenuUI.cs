@@ -254,7 +254,7 @@ namespace RecipeRage.UI
             // Transition to matchmaking state
             if (_gameStateManager != null)
             {
-                _gameStateManager.ChangeState(new MatchmakingState());
+                _gameStateManager.ChangeState(new RecipeRage.Core.GameFramework.State.States.MatchmakingState());
             }
         }
 
