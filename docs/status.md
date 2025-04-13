@@ -5,7 +5,7 @@ RecipeRage is a mobile multiplayer cooking game similar to Overcooked using Epic
 
 ## Current Status
 - **Phase**: Core Framework Implementation (Phase 1)
-- **Last Updated**: July 10, 2024
+- **Last Updated**: July 13, 2024
 - **Decision**: Starting completely fresh implementation based on the architecture roadmap
 
 ## Completed Components
@@ -67,7 +67,7 @@ The following components have placeholder implementations that will need to be u
 ### Networking System
 - **EOSNetworkService**
   - ✅ Implement actual session creation with EOS
-  - ⬜ Implement actual session joining with EOS
+  - ✅ Implement actual session joining with EOS
   - ⬜ Implement actual session finding with EOS
   - ⬜ Implement actual data sending with EOS
   - ✅ Implement P2P event registration and handling
