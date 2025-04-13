@@ -68,7 +68,7 @@ The following components have placeholder implementations that will need to be u
 - **EOSNetworkService**
   - ✅ Implement actual session creation with EOS
   - ✅ Implement actual session joining with EOS
-  - ⬜ Implement actual session finding with EOS
+  - ✅ Implement actual session finding with EOS
   - ⬜ Implement actual data sending with EOS
   - ✅ Implement P2P event registration and handling
   - ⬜ Implement session event registration and handling
