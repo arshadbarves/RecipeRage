@@ -582,31 +582,160 @@ namespace RecipeRage.Core.Networking
 
             Debug.Log("[EOSNetworkService] Finding sessions");
 
-            // TODO: Implement actual session finding with EOS
-            // This is a placeholder implementation
-
-            // Simulate session finding
-            var sessions = new List<NetworkSessionInfo>();
-
-            // Add some fake sessions
-            for (int i = 0; i < 3; i++)
+            try
             {
-                sessions.Add(new NetworkSessionInfo
+                // Create session search options
+                var createSessionSearchOptions = new Epic.OnlineServices.Sessions.CreateSessionSearchOptions
                 {
-                    SessionId = Guid.NewGuid().ToString(),
-                    SessionName = $"Test Session {i + 1}",
-                    PlayerCount = UnityEngine.Random.Range(1, 4),
-                    MaxPlayers = 4,
-                    IsPrivate = false,
-                    HostName = $"Host {i + 1}",
-                    GameMode = "Classic",
-                    MapName = "Kitchen"
+                    MaxSearchResults = 10
+                };
+
+                Epic.OnlineServices.Sessions.SessionSearchHandle searchHandle;
+                _sessionsInterface.CreateSessionSearch(ref createSessionSearchOptions, out searchHandle);
+
+                if (searchHandle == null)
+                {
+                    Debug.LogError("[EOSNetworkService] Failed to create session search handle");
+                    callback?.Invoke(new List<NetworkSessionInfo>());
+                    return;
+                }
+
+                // Set search parameters
+                // For now, we'll search for all available sessions
+                // In a real implementation, we might want to filter by game mode, map, etc.
+
+                // Find sessions
+                var findOptions = new Epic.OnlineServices.Sessions.SessionSearchFindOptions
+                {
+                    LocalUserId = _localUserId
+                };
+
+                searchHandle.Find(ref findOptions, null, (ref Epic.OnlineServices.Sessions.SessionSearchFindCallbackInfo data) =>
+                {
+                    var sessions = new List<NetworkSessionInfo>();
+
+                    if (data.ResultCode != Epic.OnlineServices.Result.Success)
+                    {
+                        Debug.LogError($"[EOSNetworkService] Failed to find sessions: {data.ResultCode}");
+                        callback?.Invoke(sessions);
+                        return;
+                    }
+
+                    // Get the search results count
+                    var getSearchResultCountOptions = new Epic.OnlineServices.Sessions.SessionSearchGetSearchResultCountOptions();
+                    uint resultCount = searchHandle.GetSearchResultCount(ref getSearchResultCountOptions);
+
+                    Debug.Log($"[EOSNetworkService] Found {resultCount} sessions");
+
+                    // Process each result
+                    for (uint i = 0; i < resultCount; i++)
+                    {
+                        // Get session details
+                        var copySearchResultOptions = new Epic.OnlineServices.Sessions.SessionSearchCopySearchResultByIndexOptions
+                        {
+                            SessionIndex = i
+                        };
+
+                        Epic.OnlineServices.Sessions.SessionDetailsHandle sessionDetails;
+                        searchHandle.CopySearchResultByIndex(ref copySearchResultOptions, out sessionDetails);
+
+                        if (sessionDetails == null)
+                        {
+                            Debug.LogWarning($"[EOSNetworkService] Failed to get session details for index {i}");
+                            continue;
+                        }
+
+                        // Get session info
+                        var copySessionInfoOptions = new Epic.OnlineServices.Sessions.SessionDetailsCopyInfoOptions();
+                        Epic.OnlineServices.Sessions.SessionDetailsInfo? sessionInfo;
+                        sessionDetails.CopyInfo(ref copySessionInfoOptions, out sessionInfo);
+
+                        if (sessionInfo == null)
+                        {
+                            Debug.LogWarning($"[EOSNetworkService] Failed to get session info for index {i}");
+                            continue;
+                        }
+
+                        // Get session ID
+                        string sessionId = sessionInfo.Value.SessionId;
+
+                        // Get session attributes
+                        var getSessionAttributeCountOptions = new Epic.OnlineServices.Sessions.SessionDetailsGetSessionAttributeCountOptions();
+                        uint attributeCount = sessionDetails.GetSessionAttributeCount(ref getSessionAttributeCountOptions);
+
+                        string sessionName = "Unknown Session";
+                        string hostName = "Unknown Host";
+                        string gameMode = "Classic";
+                        string mapName = "Kitchen";
+                        bool isPrivate = false;
+
+                        // Process attributes
+                        for (uint j = 0; j < attributeCount; j++)
+                        {
+                            var copyAttributeOptions = new Epic.OnlineServices.Sessions.SessionDetailsCopySessionAttributeByIndexOptions
+                            {
+                                AttrIndex = j
+                            };
+
+                            Epic.OnlineServices.Sessions.SessionAttributeData? attributeData;
+                            sessionDetails.CopySessionAttributeByIndex(ref copyAttributeOptions, out attributeData);
+
+                            if (attributeData == null)
+                            {
+                                continue;
+                            }
+
+                            // Process attribute based on key
+                            switch (attributeData.Value.Data.Key)
+                            {
+                                case "SessionName":
+                                    sessionName = attributeData.Value.Data.Value.AsUtf8;
+                                    break;
+                                case "HostName":
+                                    hostName = attributeData.Value.Data.Value.AsUtf8;
+                                    break;
+                                case "GameMode":
+                                    gameMode = attributeData.Value.Data.Value.AsUtf8;
+                                    break;
+                                case "MapName":
+                                    mapName = attributeData.Value.Data.Value.AsUtf8;
+                                    break;
+                                case "IsPrivate":
+                                    isPrivate = attributeData.Value.Data.Value.AsBool;
+                                    break;
+                            }
+                        }
+
+                        // Create session info object
+                        var sessionInfoObj = new NetworkSessionInfo
+                        {
+                            SessionId = sessionId,
+                            SessionName = sessionName,
+                            PlayerCount = (int)sessionInfo.Value.NumConnections,
+                            MaxPlayers = (int)sessionInfo.Value.MaxPlayers,
+                            IsPrivate = isPrivate,
+                            HostName = hostName,
+                            GameMode = gameMode,
+                            MapName = mapName
+                        };
+
+                        sessions.Add(sessionInfoObj);
+                    }
+
+                    // Release the search handle
+                    searchHandle.Release();
+
+                    // Invoke the callback with the results
+                    callback?.Invoke(sessions);
+
+                    Debug.Log($"[EOSNetworkService] Found {sessions.Count} sessions");
                 });
             }
-
-            callback?.Invoke(sessions);
-
-            Debug.Log($"[EOSNetworkService] Found {sessions.Count} sessions");
+            catch (Exception e)
+            {
+                Debug.LogError($"[EOSNetworkService] Error finding sessions: {e.Message}");
+                callback?.Invoke(new List<NetworkSessionInfo>());
+            }
         }
 
         /// <summary>
