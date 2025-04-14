@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using RecipeRage.Core.Patterns;
 using RecipeRage.Core.GameModes;
+using RecipeRage.Core.Networking.Common;
 using UnityEngine;
 
 namespace RecipeRage.Core.Networking
