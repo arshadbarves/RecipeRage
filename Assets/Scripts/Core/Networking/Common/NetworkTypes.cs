@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace RecipeRage.Core.Networking
+namespace RecipeRage.Core.Networking.Common
 {
     /// <summary>
     /// Enum for network connection states.
@@ -159,6 +159,11 @@ namespace RecipeRage.Core.Networking
         /// The timestamp when the message was sent.
         /// </summary>
         public DateTime Timestamp { get; set; }
+
+        /// <summary>
+        /// The sender of the message.
+        /// </summary>
+        public NetworkPlayer Sender { get; set; }
 
         /// <summary>
         /// Create a new network message.

@@ -8,8 +8,10 @@ using Epic.OnlineServices.P2P;
 using Epic.OnlineServices.Platform;
 using Epic.OnlineServices.Sessions;
 using UnityEngine;
+using RecipeRage.Core.Networking.Common;
+using RecipeRage.Core.Patterns;
 
-namespace RecipeRage.Core.Networking
+namespace RecipeRage.Core.Networking.EOS
 {
     /// <summary>
     /// Manager for Epic Online Services networking functionality.
@@ -19,27 +21,27 @@ namespace RecipeRage.Core.Networking
         [Header("EOS Settings")]
         [SerializeField] private bool _autoLogin = true;
         [SerializeField] private string _defaultDisplayName = "Player";
-        
+
         /// <summary>
         /// Event triggered when the user logs in.
         /// </summary>
         public event Action<bool, string> OnLoggedIn;
-        
+
         /// <summary>
         /// The network service.
         /// </summary>
         private EOSNetworkService _networkService;
-        
+
         /// <summary>
         /// Flag to track if the manager is initialized.
         /// </summary>
         private bool _isInitialized;
-        
+
         /// <summary>
         /// Flag to track if the user is logged in.
         /// </summary>
         private bool _isLoggedIn;
-        
+
         /// <summary>
         /// Initialize the EOS network manager.
         /// </summary>
@@ -47,10 +49,10 @@ namespace RecipeRage.Core.Networking
         {
             // Register the network manager with the service locator
             ServiceLocator.Instance.Register<EOSNetworkManager>(this);
-            
+
             Debug.Log("[EOSNetworkManager] EOS network manager initialized");
         }
-        
+
         /// <summary>
         /// Initialize EOS and login if auto-login is enabled.
         /// </summary>
@@ -58,14 +60,14 @@ namespace RecipeRage.Core.Networking
         {
             // Initialize EOS
             InitializeEOS();
-            
+
             // Auto-login if enabled
             if (_autoLogin && _isInitialized)
             {
                 LoginWithDeviceID(_defaultDisplayName);
             }
         }
-        
+
         /// <summary>
         /// Clean up when the object is destroyed.
         /// </summary>
@@ -73,10 +75,10 @@ namespace RecipeRage.Core.Networking
         {
             // Shutdown the network service
             _networkService?.Shutdown();
-            
+
             Debug.Log("[EOSNetworkManager] EOS network manager destroyed");
         }
-        
+
         /// <summary>
         /// Initialize EOS.
         /// </summary>
@@ -86,24 +88,24 @@ namespace RecipeRage.Core.Networking
             {
                 return;
             }
-            
+
             Debug.Log("[EOSNetworkManager] Initializing EOS");
-            
+
             // Initialize the EOS SDK
             if (!EOSAdapter.Init())
             {
                 Debug.LogError("[EOSNetworkManager] Failed to initialize EOS SDK");
                 return;
             }
-            
+
             // Create the network service
             _networkService = new EOSNetworkService();
-            
+
             // Initialize the network service
             _networkService.Initialize(success =>
             {
                 _isInitialized = success;
-                
+
                 if (success)
                 {
                     Debug.Log("[EOSNetworkManager] EOS initialized successfully");
@@ -114,7 +116,7 @@ namespace RecipeRage.Core.Networking
                 }
             });
         }
-        
+
         /// <summary>
         /// Login with device ID.
         /// </summary>
@@ -127,21 +129,21 @@ namespace RecipeRage.Core.Networking
                 OnLoggedIn?.Invoke(false, "EOS not initialized");
                 return;
             }
-            
+
             if (_isLoggedIn)
             {
                 Debug.LogWarning("[EOSNetworkManager] Already logged in");
                 OnLoggedIn?.Invoke(true, null);
                 return;
             }
-            
+
             Debug.Log($"[EOSNetworkManager] Logging in with device ID: {displayName}");
-            
+
             // Set the logged in callback
             EOSAdapter.SetLoggedInCallback((success, userId, errorMessage) =>
             {
                 _isLoggedIn = success;
-                
+
                 if (success)
                 {
                     Debug.Log($"[EOSNetworkManager] Logged in successfully: {userId}");
@@ -151,7 +153,7 @@ namespace RecipeRage.Core.Networking
                     Debug.LogError($"[EOSNetworkManager] Failed to login: {errorMessage}");
                 }
             });
-            
+
             // Login with device ID
             EOSAdapter.StartLoginWithDeviceID(displayName, (success, errorMessage) =>
             {
@@ -163,11 +165,11 @@ namespace RecipeRage.Core.Networking
                 {
                     Debug.LogError($"[EOSNetworkManager] Login failed: {errorMessage}");
                 }
-                
+
                 OnLoggedIn?.Invoke(success, errorMessage);
             });
         }
-        
+
         /// <summary>
         /// Get the network service.
         /// </summary>
@@ -176,7 +178,7 @@ namespace RecipeRage.Core.Networking
         {
             return _networkService;
         }
-        
+
         /// <summary>
         /// Check if the user is logged in.
         /// </summary>
@@ -185,7 +187,7 @@ namespace RecipeRage.Core.Networking
         {
             return _isLoggedIn;
         }
-        
+
         /// <summary>
         /// Check if EOS is initialized.
         /// </summary>
