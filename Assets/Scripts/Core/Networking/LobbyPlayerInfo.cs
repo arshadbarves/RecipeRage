@@ -1,4 +1,5 @@
 using System;
+using RecipeRage.Core.Networking.Common;
 using UnityEngine;
 
 namespace RecipeRage.Core.Networking

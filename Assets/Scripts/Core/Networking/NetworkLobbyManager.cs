@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
+using RecipeRage.Core.Networking.Common;
 using RecipeRage.Core.Patterns;
 using UnityEngine;
 using Unity.Netcode;
+using NetworkManagerUnity = Unity.Netcode.NetworkManager;
+using CommonNetworkManager = RecipeRage.Core.Networking.Common.NetworkManager;
 
 namespace RecipeRage.Core.Networking
 {
@@ -22,8 +25,13 @@ namespace RecipeRage.Core.Networking
         [SerializeField] private string _defaultMapName = "Kitchen";
 
         [Header("References")]
-        [SerializeField] private NetworkManager _networkManager;
+        [SerializeField] private NetworkManagerUnity _networkManagerUnity;
         [SerializeField] private NetworkObject _playerPrefab;
+
+        /// <summary>
+        /// Reference to the NetworkManager.
+        /// </summary>
+        private CommonNetworkManager _networkManager;
 
         /// <summary>
         /// Event triggered when the lobby state changes.
@@ -138,9 +146,16 @@ namespace RecipeRage.Core.Networking
             base.Awake();
 
             // Find the network manager if not set
+            if (_networkManagerUnity == null)
+            {
+                _networkManagerUnity = FindFirstObjectByType<NetworkManagerUnity>();
+            }
+
+            // Get the NetworkManager from the ServiceLocator
+            _networkManager = ServiceLocator.Instance.Get<CommonNetworkManager>();
             if (_networkManager == null)
             {
-                _networkManager = FindObjectOfType<NetworkManager>();
+                Debug.LogError("[NetworkLobbyManager] NetworkManager not found in ServiceLocator");
             }
 
             // Initialize values
