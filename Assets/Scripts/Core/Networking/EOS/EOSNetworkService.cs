@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using PlayEveryWare.EpicOnlineServices;
@@ -7,9 +8,10 @@ using Epic.OnlineServices.P2P;
 using Epic.OnlineServices.Platform;
 using Epic.OnlineServices.Sessions;
 using UnityEngine;
-using RecipeRage.Core.Networking;
+using RecipeRage.Core.Networking.Common;
+using RecipeRage.Core.Networking.Interfaces;
 
-namespace RecipeRage.Core.Networking
+namespace RecipeRage.Core.Networking.EOS
 {
     /// <summary>
     /// Implementation of the network service using Epic Online Services.
@@ -180,7 +182,7 @@ namespace RecipeRage.Core.Networking
                 LocalPlayer = new NetworkPlayer
                 {
                     PlayerId = _localUserId.ToString(),
-                    DisplayName = RecipeRage.Core.Networking.EOSAdapter.GetDisplayName(),
+                    DisplayName = EOSAdapter.GetDisplayName(),
                     IsLocal = true,
                     IsHost = false,
                     TeamId = 0,

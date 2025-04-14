@@ -5,7 +5,7 @@ using Epic.OnlineServices.Auth;
 using Epic.OnlineServices.Platform;
 using UnityEngine;
 
-namespace RecipeRage.Core.Networking
+namespace RecipeRage.Core.Networking.EOS
 {
     /// <summary>
     /// Adapter class to bridge the gap between our code's expected API and the actual EOS SDK API.

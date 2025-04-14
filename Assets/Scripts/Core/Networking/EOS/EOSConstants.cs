@@ -2,7 +2,7 @@ using System;
 using Epic.OnlineServices;
 using Epic.OnlineServices.Sessions;
 
-namespace RecipeRage.Core.Networking
+namespace RecipeRage.Core.Networking.EOS
 {
     /// <summary>
     /// Constants and enums for EOS SDK compatibility.
