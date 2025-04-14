@@ -759,8 +759,14 @@ namespace RecipeRage.Core.Networking
 
             Debug.Log($"[EOSNetworkService] Sending {data.Length} bytes to all players");
 
-            // TODO: Implement actual data sending with EOS
-            // This is a placeholder implementation
+            // Send to all connected players except the local player
+            foreach (var player in _connectedPlayers)
+            {
+                if (!player.IsLocal)
+                {
+                    SendToPlayer(player.PlayerId, data, reliable);
+                }
+            }
 
             Debug.Log("[EOSNetworkService] Data sent to all players");
         }
@@ -787,10 +793,44 @@ namespace RecipeRage.Core.Networking
 
             Debug.Log($"[EOSNetworkService] Sending {data.Length} bytes to player {playerId}");
 
-            // TODO: Implement actual data sending with EOS
-            // This is a placeholder implementation
+            try
+            {
+                // Convert the player ID to a ProductUserId
+                ProductUserId remoteUserId = ProductUserId.FromString(playerId);
+                if (remoteUserId == null || !remoteUserId.IsValid())
+                {
+                    Debug.LogError($"[EOSNetworkService] Invalid player ID: {playerId}");
+                    return;
+                }
 
-            Debug.Log($"[EOSNetworkService] Data sent to player {playerId}");
+                // Set up the packet options
+                var sendPacketOptions = new Epic.OnlineServices.P2P.SendPacketOptions
+                {
+                    LocalUserId = _localUserId,
+                    RemoteUserId = remoteUserId,
+                    SocketId = _socketId,
+                    Channel = 0,
+                    Data = new ArraySegment<byte>(data),
+                    AllowDelayedDelivery = true,
+                    Reliability = reliable ?
+                        Epic.OnlineServices.P2P.PacketReliability.ReliableOrdered :
+                        Epic.OnlineServices.P2P.PacketReliability.UnreliableUnordered
+                };
+
+                // Send the packet
+                var result = _p2pInterface.SendPacket(ref sendPacketOptions);
+                if (result != Result.Success)
+                {
+                    Debug.LogError($"[EOSNetworkService] Failed to send packet to player {playerId}: {result}");
+                    return;
+                }
+
+                Debug.Log($"[EOSNetworkService] Data sent to player {playerId}");
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[EOSNetworkService] Error sending data to player {playerId}: {e.Message}");
+            }
         }
 
         /// <summary>
@@ -894,11 +934,155 @@ namespace RecipeRage.Core.Networking
 
                 _p2pInterface.AddNotifyPeerConnectionClosed(ref addNotifyPeerConnectionClosedOptions, null, OnPeerConnectionClosed);
 
+                // Start the packet receiving coroutine
+                UnityEngine.Object.FindAnyObjectByType<MonoBehaviour>().StartCoroutine(ReceivePacketsCoroutine());
+
                 Debug.Log("[EOSNetworkService] Registered for P2P events");
             }
             catch (Exception e)
             {
                 Debug.LogError($"[EOSNetworkService] Error registering for P2P events: {e.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Coroutine to continuously receive packets.
+        /// </summary>
+        private System.Collections.IEnumerator ReceivePacketsCoroutine()
+        {
+            while (_isInitialized)
+            {
+                ReceivePackets();
+                yield return new WaitForSeconds(0.01f); // Check for packets every 10ms
+            }
+        }
+
+        /// <summary>
+        /// Receive and process incoming packets.
+        /// </summary>
+        private void ReceivePackets()
+        {
+            if (!_isInitialized || _p2pInterface == null || _localUserId == null)
+            {
+                return;
+            }
+
+            try
+            {
+                // Check if there are any packets to receive
+                var getNextReceivedPacketSizeOptions = new Epic.OnlineServices.P2P.GetNextReceivedPacketSizeOptions
+                {
+                    LocalUserId = _localUserId,
+                    RequestedChannel = null // Any channel
+                };
+
+                uint packetSize;
+                Result result = _p2pInterface.GetNextReceivedPacketSize(ref getNextReceivedPacketSizeOptions, out packetSize);
+
+                // Process all available packets
+                while (result == Result.Success && packetSize > 0)
+                {
+                    // Allocate buffer for the packet
+                    byte[] packetData = new byte[packetSize];
+                    var packetDataSegment = new ArraySegment<byte>(packetData);
+
+                    // Receive the packet
+                    var receivePacketOptions = new Epic.OnlineServices.P2P.ReceivePacketOptions
+                    {
+                        LocalUserId = _localUserId,
+                        MaxDataSizeBytes = packetSize,
+                        RequestedChannel = null // Any channel
+                    };
+
+                    ProductUserId remoteUserId = null;
+                    SocketId socketId = new SocketId();
+                    byte channel;
+                    uint bytesWritten;
+
+                    result = _p2pInterface.ReceivePacket(ref receivePacketOptions, ref remoteUserId, ref socketId, out channel, packetDataSegment, out bytesWritten);
+
+                    if (result == Result.Success && remoteUserId != null && remoteUserId.IsValid())
+                    {
+                        // Process the packet
+                        ProcessReceivedPacket(remoteUserId, packetData, bytesWritten, channel);
+                    }
+
+                    // Check if there are more packets
+                    result = _p2pInterface.GetNextReceivedPacketSize(ref getNextReceivedPacketSizeOptions, out packetSize);
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[EOSNetworkService] Error receiving packets: {e.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Process a received packet.
+        /// </summary>
+        /// <param name="remoteUserId">The user ID of the sender</param>
+        /// <param name="packetData">The packet data</param>
+        /// <param name="bytesWritten">The number of bytes in the packet</param>
+        /// <param name="channel">The channel the packet was received on</param>
+        private void ProcessReceivedPacket(ProductUserId remoteUserId, byte[] packetData, uint bytesWritten, byte channel)
+        {
+            if (bytesWritten == 0 || packetData.Length == 0)
+            {
+                return;
+            }
+
+            try
+            {
+                // Extract the message type (first byte)
+                byte messageType = packetData[0];
+
+                // Extract the message data (remaining bytes)
+                byte[] messageData = new byte[bytesWritten - 1];
+                Array.Copy(packetData, 1, messageData, 0, messageData.Length);
+
+                // Find the sender in the connected players list
+                string senderId = remoteUserId.ToString();
+                NetworkPlayer sender = _connectedPlayers.FirstOrDefault(p => p.PlayerId == senderId);
+
+                // If we don't know this player yet, add them to the list
+                if (sender == null)
+                {
+                    sender = new NetworkPlayer
+                    {
+                        PlayerId = senderId,
+                        DisplayName = "Player", // Will be updated when player info is received
+                        IsLocal = false,
+                        IsHost = false,
+                        TeamId = 0,
+                        CharacterType = 0
+                    };
+
+                    _connectedPlayers.Add(sender);
+                    OnPlayerJoined?.Invoke(sender);
+                }
+
+                // Create a network message
+                var message = new NetworkMessage
+                {
+                    MessageType = messageType,
+                    Data = messageData,
+                    SenderId = senderId,
+                    Sender = sender
+                };
+
+                // Invoke the appropriate message handler
+                if (_messageHandlers.TryGetValue(messageType, out var handler))
+                {
+                    handler?.Invoke(message);
+                }
+                else
+                {
+                    Debug.LogWarning($"[EOSNetworkService] No handler registered for message type {messageType}");
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[EOSNetworkService] Error processing packet: {e.Message}");
             }
         }
 
