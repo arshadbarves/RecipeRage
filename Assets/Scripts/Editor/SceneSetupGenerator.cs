@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using RecipeRage.Core.Characters;
 using RecipeRage.Core.GameModes;
 using RecipeRage.Core.Networking;
+using RecipeRage.Core.Networking.EOS;
 using RecipeRage.Gameplay.Cooking;
 using RecipeRage.Gameplay.Stations;
 using RecipeRage.UI;
@@ -102,34 +103,29 @@ namespace RecipeRage.Editor
             var characterManager = new GameObject("CharacterManager");
             var characterManagerComponent = characterManager.AddComponent<CharacterManager>();
 
-            // Create the network lobby manager
-            var networkLobbyManager = new GameObject("NetworkLobbyManager");
-            var networkLobbyManagerComponent = networkLobbyManager.AddComponent<NetworkLobbyManager>();
+            // Create the EOS managers
+            var eosManager = new GameObject("EOSManager");
+            var eosManagerComponent = eosManager.AddComponent<PlayEveryWare.EpicOnlineServices.EOSManager>();
 
-            // Create the matchmaking manager
-            var matchmakingManager = new GameObject("MatchmakingManager");
-            var matchmakingManagerComponent = matchmakingManager.AddComponent<MatchmakingManager>();
+            // Create the RecipeRage session manager
+            var sessionManager = new GameObject("RecipeRageSessionManager");
+            var sessionManagerComponent = sessionManager.AddComponent<RecipeRageSessionManager>();
 
-            // Create the network game manager
-            var networkGameManager = new GameObject("NetworkGameManager");
-            var networkGameManagerComponent = networkGameManager.AddComponent<NetworkGameManager>();
+            // Create the RecipeRage lobby manager
+            var lobbyManager = new GameObject("RecipeRageLobbyManager");
+            var lobbyManagerComponent = lobbyManager.AddComponent<RecipeRageLobbyManager>();
+
+            // Create the RecipeRage P2P manager
+            var p2pManager = new GameObject("RecipeRageP2PManager");
+            var p2pManagerComponent = p2pManager.AddComponent<RecipeRageP2PManager>();
+
+            // Initialize the EOS managers
+            sessionManagerComponent.Initialize();
+            lobbyManagerComponent.Initialize();
+            p2pManagerComponent.Initialize();
 
             // Setup references between managers
-            var networkLobbyManagerSerialized = new SerializedObject(networkLobbyManagerComponent);
-            networkLobbyManagerSerialized.FindProperty("_networkManager").objectReferenceValue = networkManagerComponent;
-            networkLobbyManagerSerialized.FindProperty("_gameModeManager").objectReferenceValue = gameModeManagerComponent;
-            networkLobbyManagerSerialized.ApplyModifiedProperties();
-
-            var matchmakingManagerSerialized = new SerializedObject(matchmakingManagerComponent);
-            matchmakingManagerSerialized.FindProperty("_networkManager").objectReferenceValue = networkManagerComponent;
-            matchmakingManagerSerialized.FindProperty("_lobbyManager").objectReferenceValue = networkLobbyManagerComponent;
-            matchmakingManagerSerialized.FindProperty("_gameModeManager").objectReferenceValue = gameModeManagerComponent;
-            matchmakingManagerSerialized.ApplyModifiedProperties();
-
-            var networkGameManagerSerialized = new SerializedObject(networkGameManagerComponent);
-            networkGameManagerSerialized.FindProperty("_networkManager").objectReferenceValue = networkManagerComponent;
-            networkGameManagerSerialized.FindProperty("_lobbyManager").objectReferenceValue = networkLobbyManagerComponent;
-            networkGameManagerSerialized.ApplyModifiedProperties();
+            // No need to set references as each manager initializes itself
 
             // Create the spawn manager
             var spawnManager = new GameObject("SpawnManager");
