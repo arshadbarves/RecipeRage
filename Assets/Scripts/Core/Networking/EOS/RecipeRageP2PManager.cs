@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using Epic.OnlineServices;
+using PlayEveryWare.EpicOnlineServices;
 using PlayEveryWare.EpicOnlineServices.Samples;
 using RecipeRage.Core.Networking.Common;
 using UnityEngine;
@@ -16,19 +17,19 @@ namespace RecipeRage.Core.Networking.EOS
     {
         // Reference to the EOS P2P Manager
         private EOSPeer2PeerManager _eosP2PManager;
-        
+
         // Socket name for game communication
         private const string SOCKET_NAME = "RECIPERAGEP2P";
-        
+
         // Message processing
         private Queue<P2PMessage> _messageQueue = new Queue<P2PMessage>();
         private bool _isProcessingMessages = false;
-        
+
         // Events
         public event Action<PlayerInfo, PlayerAction> OnPlayerActionReceived;
         public event Action<PlayerInfo, string> OnChatMessageReceived;
         public event Action<PlayerInfo, int> OnEmoteReceived;
-        
+
         /// <summary>
         /// Class representing a P2P message.
         /// </summary>
@@ -38,27 +39,27 @@ namespace RecipeRage.Core.Networking.EOS
             public byte MessageType { get; set; }
             public byte[] Data { get; set; }
         }
-        
+
         /// <summary>
         /// Initialize the P2P manager.
         /// </summary>
         public void Initialize()
         {
-            // Get the EOS P2P Manager from the EOSManager
-            _eosP2PManager = EOSManager.Instance.GetComponent<EOSPeer2PeerManager>();
-            
+            // Get the EOS P2P Manager
+            _eosP2PManager = EOSManager.Instance.GetOrCreateManager<EOSPeer2PeerManager>();
+
             if (_eosP2PManager == null)
             {
                 Debug.LogError("[RecipeRageP2PManager] EOSPeer2PeerManager not found on EOSManager");
                 return;
             }
-            
+
             // Start processing messages
             StartCoroutine(ProcessMessagesCoroutine());
-            
+
             Debug.Log("[RecipeRageP2PManager] Initialized");
         }
-        
+
         /// <summary>
         /// Send a player action to all players.
         /// </summary>
@@ -68,11 +69,11 @@ namespace RecipeRage.Core.Networking.EOS
             // Serialize the action to JSON
             string actionJson = JsonUtility.ToJson(action);
             byte[] actionData = Encoding.UTF8.GetBytes(actionJson);
-            
+
             // Send to all players
             SendToAll(NetworkMessageType.PlayerAction, actionData);
         }
-        
+
         /// <summary>
         /// Send a chat message to all players.
         /// </summary>
@@ -81,11 +82,11 @@ namespace RecipeRage.Core.Networking.EOS
         {
             // Encode the message
             byte[] messageData = Encoding.UTF8.GetBytes(message);
-            
+
             // Send to all players
             SendToAll(NetworkMessageType.ChatMessage, messageData);
         }
-        
+
         /// <summary>
         /// Send an emote to all players.
         /// </summary>
@@ -94,11 +95,11 @@ namespace RecipeRage.Core.Networking.EOS
         {
             // Encode the emote ID
             byte[] emoteData = BitConverter.GetBytes(emoteId);
-            
+
             // Send to all players
             SendToAll(NetworkMessageType.Emote, emoteData);
         }
-        
+
         /// <summary>
         /// Send a message to a specific player.
         /// </summary>
@@ -112,25 +113,25 @@ namespace RecipeRage.Core.Networking.EOS
                 Debug.LogError("[RecipeRageP2PManager] Invalid target player");
                 return;
             }
-            
+
             // Create the message packet
             byte[] packet = new byte[data.Length + 1];
             packet[0] = messageType;
             Array.Copy(data, 0, packet, 1, data.Length);
-            
+
             // Create the message data
-            messageData message = new messageData
-            {
-                type = messageType.textMessage,
-                textData = Convert.ToBase64String(packet)
-            };
-            
+            PlayEveryWare.EpicOnlineServices.Samples.messageData message;
+            message.type = PlayEveryWare.EpicOnlineServices.Samples.messageType.textMessage;
+            message.textData = Convert.ToBase64String(packet);
+            message.xPos = 0;
+            message.yPos = 0;
+
             // Send the message
             _eosP2PManager.SendMessage(targetPlayer.ProductUserId, message);
-            
+
             Debug.Log($"[RecipeRageP2PManager] Sent message to player {targetPlayer.DisplayName}, Type: {messageType}, Size: {data.Length}");
         }
-        
+
         /// <summary>
         /// Send a message to all players.
         /// </summary>
@@ -140,7 +141,7 @@ namespace RecipeRage.Core.Networking.EOS
         {
             // Get all players
             List<PlayerInfo> allPlayers = GetAllPlayers();
-            
+
             foreach (PlayerInfo player in allPlayers)
             {
                 if (!player.IsLocal)
@@ -148,22 +149,22 @@ namespace RecipeRage.Core.Networking.EOS
                     SendToPlayer(player, messageType, data);
                 }
             }
-            
+
             Debug.Log($"[RecipeRageP2PManager] Sent message to all players, Type: {messageType}, Size: {data.Length}");
         }
-        
+
         /// <summary>
         /// Process received messages.
         /// </summary>
         private IEnumerator ProcessMessagesCoroutine()
         {
             _isProcessingMessages = true;
-            
+
             while (_isProcessingMessages)
             {
                 // Check for new messages
                 ProductUserId senderId = _eosP2PManager.HandleReceivedMessages();
-                
+
                 if (senderId != null)
                 {
                     // Get the message from the chat cache
@@ -182,18 +183,18 @@ namespace RecipeRage.Core.Networking.EOS
                         }
                     }
                 }
-                
+
                 // Process queued messages
                 while (_messageQueue.Count > 0)
                 {
                     P2PMessage message = _messageQueue.Dequeue();
                     HandleMessage(message);
                 }
-                
+
                 yield return null;
             }
         }
-        
+
         /// <summary>
         /// Process a received message.
         /// </summary>
@@ -205,16 +206,16 @@ namespace RecipeRage.Core.Networking.EOS
             {
                 // Decode the message
                 byte[] data = Convert.FromBase64String(message);
-                
+
                 if (data.Length > 0)
                 {
                     // Extract the message type
                     byte messageType = data[0];
-                    
+
                     // Extract the message data
                     byte[] messageData = new byte[data.Length - 1];
                     Array.Copy(data, 1, messageData, 0, messageData.Length);
-                    
+
                     // Queue the message for processing
                     _messageQueue.Enqueue(new P2PMessage
                     {
@@ -229,7 +230,7 @@ namespace RecipeRage.Core.Networking.EOS
                 Debug.LogError($"[RecipeRageP2PManager] Error processing message: {e.Message}");
             }
         }
-        
+
         /// <summary>
         /// Handle a processed message.
         /// </summary>
@@ -238,13 +239,13 @@ namespace RecipeRage.Core.Networking.EOS
         {
             // Find the sender
             PlayerInfo sender = FindPlayerById(message.SenderId.ToString());
-            
+
             if (sender == null)
             {
                 Debug.LogWarning($"[RecipeRageP2PManager] Received message from unknown player: {message.SenderId}");
                 return;
             }
-            
+
             // Handle based on message type
             switch (message.MessageType)
             {
@@ -262,7 +263,7 @@ namespace RecipeRage.Core.Networking.EOS
                     break;
             }
         }
-        
+
         /// <summary>
         /// Handle a player action message.
         /// </summary>
@@ -275,10 +276,10 @@ namespace RecipeRage.Core.Networking.EOS
                 // Deserialize the action
                 string actionJson = Encoding.UTF8.GetString(data);
                 PlayerAction action = JsonUtility.FromJson<PlayerAction>(actionJson);
-                
+
                 // Notify listeners
                 OnPlayerActionReceived?.Invoke(sender, action);
-                
+
                 Debug.Log($"[RecipeRageP2PManager] Received player action from {sender.DisplayName}, Type: {action.ActionType}");
             }
             catch (Exception e)
@@ -286,7 +287,7 @@ namespace RecipeRage.Core.Networking.EOS
                 Debug.LogError($"[RecipeRageP2PManager] Error handling player action: {e.Message}");
             }
         }
-        
+
         /// <summary>
         /// Handle a chat message.
         /// </summary>
@@ -298,10 +299,10 @@ namespace RecipeRage.Core.Networking.EOS
             {
                 // Decode the message
                 string message = Encoding.UTF8.GetString(data);
-                
+
                 // Notify listeners
                 OnChatMessageReceived?.Invoke(sender, message);
-                
+
                 Debug.Log($"[RecipeRageP2PManager] Received chat message from {sender.DisplayName}: {message}");
             }
             catch (Exception e)
@@ -309,7 +310,7 @@ namespace RecipeRage.Core.Networking.EOS
                 Debug.LogError($"[RecipeRageP2PManager] Error handling chat message: {e.Message}");
             }
         }
-        
+
         /// <summary>
         /// Handle an emote message.
         /// </summary>
@@ -321,10 +322,10 @@ namespace RecipeRage.Core.Networking.EOS
             {
                 // Decode the emote ID
                 int emoteId = BitConverter.ToInt32(data, 0);
-                
+
                 // Notify listeners
                 OnEmoteReceived?.Invoke(sender, emoteId);
-                
+
                 Debug.Log($"[RecipeRageP2PManager] Received emote from {sender.DisplayName}: {emoteId}");
             }
             catch (Exception e)
@@ -332,7 +333,7 @@ namespace RecipeRage.Core.Networking.EOS
                 Debug.LogError($"[RecipeRageP2PManager] Error handling emote: {e.Message}");
             }
         }
-        
+
         /// <summary>
         /// Find a player by ID.
         /// </summary>
@@ -342,7 +343,7 @@ namespace RecipeRage.Core.Networking.EOS
         {
             // Get all players
             List<PlayerInfo> allPlayers = GetAllPlayers();
-            
+
             foreach (PlayerInfo player in allPlayers)
             {
                 if (player.PlayerId == playerId)
@@ -350,10 +351,10 @@ namespace RecipeRage.Core.Networking.EOS
                     return player;
                 }
             }
-            
+
             return null;
         }
-        
+
         /// <summary>
         /// Get all players.
         /// </summary>
@@ -362,7 +363,7 @@ namespace RecipeRage.Core.Networking.EOS
         {
             // Get the lobby manager
             RecipeRageLobbyManager lobbyManager = GetComponent<RecipeRageLobbyManager>();
-            
+
             if (lobbyManager != null)
             {
                 // Combine both teams
@@ -371,10 +372,10 @@ namespace RecipeRage.Core.Networking.EOS
                 allPlayers.AddRange(lobbyManager.TeamB);
                 return allPlayers;
             }
-            
+
             return new List<PlayerInfo>();
         }
-        
+
         /// <summary>
         /// Clean up when destroyed.
         /// </summary>
