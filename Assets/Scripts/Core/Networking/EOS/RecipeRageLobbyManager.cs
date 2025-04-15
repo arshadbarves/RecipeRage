@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using Epic.OnlineServices;
 using Epic.OnlineServices.Lobby;
+using Epic.OnlineServices.Sessions;
 using PlayEveryWare.EpicOnlineServices;
 using PlayEveryWare.EpicOnlineServices.Samples;
 using RecipeRage.Core.Networking.Common;
 using UnityEngine;
-using AttributeAdvertisementType = Epic.OnlineServices.Lobby.LobbyAttributeAdvertisementType;
 
 namespace RecipeRage.Core.Networking.EOS
 {
@@ -53,7 +53,7 @@ namespace RecipeRage.Core.Networking.EOS
         public void Initialize()
         {
             // Get the EOS Lobby Manager from the EOSManager
-            _eosLobbyManager = EOSManager.Instance.GetComponent<EOSLobbyManager>();
+            _eosLobbyManager = EOSManager.Instance.GetOrCreateManager<EOSLobbyManager>();
 
             if (_eosLobbyManager == null)
             {
@@ -86,9 +86,9 @@ namespace RecipeRage.Core.Networking.EOS
             lobby.RTCRoomEnabled = true;
 
             // Add game-specific attributes
-            AddLobbyAttribute(lobby, "LobbyName", lobbyName, AttributeAdvertisementType.Advertise);
-            AddLobbyAttribute(lobby, "GameMode", _currentGameMode.ToString(), AttributeAdvertisementType.Advertise);
-            AddLobbyAttribute(lobby, "MapName", _currentMapName, AttributeAdvertisementType.Advertise);
+            AddLobbyAttribute(lobby, "LobbyName", lobbyName, SessionAttributeAdvertisementType.Advertise);
+            AddLobbyAttribute(lobby, "GameMode", _currentGameMode.ToString(), SessionAttributeAdvertisementType.Advertise);
+            AddLobbyAttribute(lobby, "MapName", _currentMapName, SessionAttributeAdvertisementType.Advertise);
 
             // Create the lobby
             _eosLobbyManager.CreateLobby(lobby, OnLobbyCreationComplete);
@@ -173,7 +173,7 @@ namespace RecipeRage.Core.Networking.EOS
                     if (member.ProductId == localUserId)
                     {
                         // Update the ready state
-                        AddMemberAttribute(_currentLobby, "IsReady", isReady.ToString(), AttributeAdvertisementType.Advertise);
+                        AddMemberAttribute(_currentLobby, "IsReady", isReady.ToString(), SessionAttributeAdvertisementType.Advertise);
 
                         Debug.Log($"[RecipeRageLobbyManager] Setting player ready: {isReady}");
                         return;
@@ -204,7 +204,7 @@ namespace RecipeRage.Core.Networking.EOS
                     if (member.ProductId == localUserId)
                     {
                         // Update the team
-                        AddMemberAttribute(_currentLobby, "TeamId", ((int)teamId).ToString(), AttributeAdvertisementType.Advertise);
+                        AddMemberAttribute(_currentLobby, "TeamId", ((int)teamId).ToString(), SessionAttributeAdvertisementType.Advertise);
 
                         Debug.Log($"[RecipeRageLobbyManager] Setting player team: {teamId}");
                         return;
@@ -235,7 +235,7 @@ namespace RecipeRage.Core.Networking.EOS
                     if (member.ProductId == localUserId)
                     {
                         // Update the character class
-                        AddMemberAttribute(_currentLobby, "CharacterClass", ((int)characterClass).ToString(), AttributeAdvertisementType.Advertise);
+                        AddMemberAttribute(_currentLobby, "CharacterClass", ((int)characterClass).ToString(), SessionAttributeAdvertisementType.Advertise);
 
                         Debug.Log($"[RecipeRageLobbyManager] Setting player character class: {characterClass}");
                         return;
@@ -259,7 +259,7 @@ namespace RecipeRage.Core.Networking.EOS
             if (_currentLobby != null && IsLobbyOwner)
             {
                 // Update the game mode
-                AddLobbyAttribute(_currentLobby, "GameMode", gameMode.ToString(), AttributeAdvertisementType.Advertise);
+                AddLobbyAttribute(_currentLobby, "GameMode", gameMode.ToString(), SessionAttributeAdvertisementType.Advertise);
 
                 // Update local state
                 _currentGameMode = gameMode;
@@ -281,7 +281,7 @@ namespace RecipeRage.Core.Networking.EOS
             if (_currentLobby != null && IsLobbyOwner)
             {
                 // Update the map name
-                AddLobbyAttribute(_currentLobby, "MapName", mapName, AttributeAdvertisementType.Advertise);
+                AddLobbyAttribute(_currentLobby, "MapName", mapName, SessionAttributeAdvertisementType.Advertise);
 
                 // Update local state
                 _currentMapName = mapName;
@@ -326,7 +326,7 @@ namespace RecipeRage.Core.Networking.EOS
         /// <param name="key">The attribute key</param>
         /// <param name="value">The attribute value</param>
         /// <param name="visibility">The attribute visibility</param>
-        private void AddLobbyAttribute(Lobby lobby, string key, string value, AttributeAdvertisementType visibility)
+        private void AddLobbyAttribute(Lobby lobby, string key, string value, SessionAttributeAdvertisementType visibility)
         {
             // Create the attribute
             LobbyAttribute attribute = new LobbyAttribute
@@ -348,7 +348,7 @@ namespace RecipeRage.Core.Networking.EOS
         /// <param name="key">The attribute key</param>
         /// <param name="value">The attribute value</param>
         /// <param name="visibility">The attribute visibility</param>
-        private void AddMemberAttribute(Lobby lobby, string key, string value, AttributeAdvertisementType visibility)
+        private void AddMemberAttribute(Lobby lobby, string key, string value, SessionAttributeAdvertisementType visibility)
         {
             // Create the attribute
             LobbyAttribute attribute = new LobbyAttribute
