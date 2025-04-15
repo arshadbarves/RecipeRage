@@ -1,5 +1,7 @@
 using System;
 using RecipeRage.Core.Networking;
+using RecipeRage.Core.Networking.Common;
+using RecipeRage.Core.Networking.EOS;
 using RecipeRage.UI;
 using RecipeRage.UI.Screens;
 using UnityEngine;
@@ -20,9 +22,14 @@ namespace RecipeRage.Core.GameFramework.State.States
         // No need to store references to UI elements anymore as they're managed by the UIManager
 
         /// <summary>
-        /// Reference to the network lobby manager.
+        /// Reference to the network manager.
         /// </summary>
-        private NetworkLobbyManager _lobbyManager;
+        private RecipeRageNetworkManager _networkManager;
+
+        /// <summary>
+        /// Reference to the lobby manager.
+        /// </summary>
+        private RecipeRageLobbyManager _lobbyManager;
 
         /// <summary>
         /// Event triggered when matchmaking is complete.
@@ -36,8 +43,9 @@ namespace RecipeRage.Core.GameFramework.State.States
         {
             base.Enter();
 
-            // Get reference to the network lobby manager
-            _lobbyManager = NetworkLobbyManager.Instance;
+            // Get reference to the network manager and lobby manager
+            _networkManager = RecipeRageNetworkManager.Instance;
+            _lobbyManager = _networkManager?.LobbyManager;
 
             // Reset matchmaking state
             _isMatchmakingInProgress = true;
@@ -51,25 +59,16 @@ namespace RecipeRage.Core.GameFramework.State.States
             // Subscribe to lobby events
             if (_lobbyManager != null)
             {
-                _lobbyManager.OnPlayerJoinedLobby += HandleLobbyJoined;
-                _lobbyManager.OnPlayerLeftLobby += HandleLobbyLeft;
-                _lobbyManager.OnGameStarted += HandleGameStarted;
+                _lobbyManager.OnLobbyUpdated += HandleLobbyUpdated;
+                _networkManager.OnGameStarted += HandleGameStarted;
 
-                // Start or join a lobby
-                if (_lobbyManager.HasLobbyCode())
-                {
-                    // Join an existing lobby with the saved code
-                    _lobbyManager.JoinLobby(_lobbyManager.GetLobbyCode());
-                }
-                else
-                {
-                    // Create a new lobby
-                    _lobbyManager.CreateLobby("RecipeRage Lobby", false);
-                }
+                // Create a new lobby by default
+                string sessionName = $"RecipeRage_{DateTime.Now.Ticks}";
+                _networkManager.CreateGame(sessionName, GameMode.Classic, "Kitchen", 4, false);
             }
             else
             {
-                Debug.LogError("[MatchmakingState] NetworkLobbyManager instance not found");
+                Debug.LogError("[MatchmakingState] RecipeRageNetworkManager or LobbyManager instance not found");
                 CompleteMatchmaking(false);
             }
         }
@@ -84,9 +83,12 @@ namespace RecipeRage.Core.GameFramework.State.States
             // Unsubscribe from lobby events
             if (_lobbyManager != null)
             {
-                _lobbyManager.OnPlayerJoinedLobby -= HandleLobbyJoined;
-                _lobbyManager.OnPlayerLeftLobby -= HandleLobbyLeft;
-                _lobbyManager.OnGameStarted -= HandleGameStarted;
+                _lobbyManager.OnLobbyUpdated -= HandleLobbyUpdated;
+            }
+
+            if (_networkManager != null)
+            {
+                _networkManager.OnGameStarted -= HandleGameStarted;
             }
 
             // Cancel matchmaking if still in progress
@@ -110,25 +112,22 @@ namespace RecipeRage.Core.GameFramework.State.States
         // UI is now managed by the UIManager
 
         /// <summary>
-        /// Handle lobby joined event.
+        /// Handle lobby updated event.
         /// </summary>
-        /// <param name="networkPlayer"> </param>
-        private void HandleLobbyJoined(NetworkPlayer networkPlayer)
+        private void HandleLobbyUpdated()
         {
-            Debug.Log($"[MatchmakingState] Lobby joined by {networkPlayer.DisplayName}");
+            Debug.Log("[MatchmakingState] Lobby updated");
 
-            CompleteMatchmaking(false);
-        }
+            // If this is the first update, transition to the lobby screen
+            if (_isMatchmakingInProgress)
+            {
+                // Show the lobby screen
+                // Note: We're using the existing GameModeSelectionScreen for now
+                // UIManager.Instance.ShowScreen<LobbyScreen>();
 
-        /// <summary>
-        /// Handle lobby left event.
-        /// </summary>
-        private void HandleLobbyLeft(NetworkPlayer networkPlayer)
-        {
-            Debug.Log("[MatchmakingState] Lobby left");
-
-            // Return to main menu state
-            GameStateManager.Instance.ChangeState(new MainMenuState());
+                // Mark matchmaking as complete
+                CompleteMatchmaking(true);
+            }
         }
 
         /// <summary>
@@ -138,8 +137,11 @@ namespace RecipeRage.Core.GameFramework.State.States
         {
             Debug.Log("[MatchmakingState] Game started");
 
-            // Complete matchmaking successfully
-            CompleteMatchmaking(true);
+            // Complete matchmaking successfully if not already done
+            if (_isMatchmakingInProgress)
+            {
+                CompleteMatchmaking(true);
+            }
 
             // Transition to gameplay state
             GameStateManager.Instance.ChangeState(new GameplayState());
@@ -176,10 +178,10 @@ namespace RecipeRage.Core.GameFramework.State.States
             _isMatchmakingInProgress = false;
             Debug.Log("[MatchmakingState] Matchmaking canceled");
 
-            // Leave the lobby if we're in one
-            if (_lobbyManager != null && _lobbyManager.IsInLobby)
+            // Leave the game if we're in one
+            if (_networkManager != null)
             {
-                _lobbyManager.LeaveLobby();
+                _networkManager.LeaveGame();
             }
 
             // Trigger the matchmaking complete event with failure
