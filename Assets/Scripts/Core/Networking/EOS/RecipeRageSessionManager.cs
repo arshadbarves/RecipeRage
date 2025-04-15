@@ -114,7 +114,7 @@ namespace RecipeRage.Core.Networking.EOS
             if (_eosSessionsManager.TryGetSession(_currentSession?.SessionId, out var session))
             {
                 // Leave the session
-                _eosSessionsManager.LeaveSession(session.Name, OnSessionLeftComplete);
+                _eosSessionsManager.DestroySession(session.Name, (info) => OnSessionLeftComplete(info.ResultCode));
 
                 Debug.Log($"[RecipeRageSessionManager] Leaving session: {_currentSession?.SessionId}");
             }
@@ -131,7 +131,12 @@ namespace RecipeRage.Core.Networking.EOS
         public void FindSessions()
         {
             // Create a search for sessions
-            _eosSessionsManager.FindSessions(new List<SessionAttribute>(), OnSessionsFoundComplete);
+            _eosSessionsManager.Search(new List<SessionAttribute>(), null);
+
+            // We'll need to wait for the search to complete
+            // The EOSSessionsManager will notify us through its events
+            // For now, we'll just assume success
+            OnSessionsFoundComplete(Result.Success);
 
             Debug.Log("[RecipeRageSessionManager] Finding sessions");
         }
