@@ -6,6 +6,7 @@ using PlayEveryWare.EpicOnlineServices;
 using PlayEveryWare.EpicOnlineServices.Samples;
 using RecipeRage.Core.Networking.Common;
 using UnityEngine;
+using AttributeAdvertisementType = Epic.OnlineServices.Lobby.LobbyAttributeAdvertisementType;
 
 namespace RecipeRage.Core.Networking.EOS
 {
@@ -14,25 +15,21 @@ namespace RecipeRage.Core.Networking.EOS
     /// </summary>
     public class RecipeRageLobbyManager : MonoBehaviour
     {
-        private readonly Dictionary<string, PlayerInfo> _playerInfoCache = new Dictionary<string, PlayerInfo>();
-
-        // Game settings
-
-        // Current lobby information
-        private Lobby _currentLobby;
         // Reference to the EOS Lobby Manager
         private EOSLobbyManager _eosLobbyManager;
 
+        // Current lobby information
+        private Lobby _currentLobby;
+
         // Cached player information
+        private List<PlayerInfo> _teamA = new List<PlayerInfo>();
+        private List<PlayerInfo> _teamB = new List<PlayerInfo>();
+        private Dictionary<string, PlayerInfo> _playerInfoCache = new Dictionary<string, PlayerInfo>();
 
-        // Properties
-        public List<PlayerInfo> TeamA { get; } = new List<PlayerInfo>();
-        public List<PlayerInfo> TeamB { get; } = new List<PlayerInfo>();
-        public GameMode CurrentGameMode { get; private set; } = GameMode.Classic;
-        public string CurrentMapName { get; private set; } = "Kitchen";
-        public bool IsPrivate { get; private set; }
-
-        public bool IsLobbyOwner => _currentLobby?.IsOwner(EOSManager.Instance.GetProductUserId()) ?? false;
+        // Game settings
+        private GameMode _currentGameMode = GameMode.Classic;
+        private string _currentMapName = "Kitchen";
+        private bool _isPrivate = false;
 
         // Events
         public event Action<Result> OnLobbyCreated;
@@ -42,13 +39,21 @@ namespace RecipeRage.Core.Networking.EOS
         public event Action<PlayerInfo> OnPlayerJoined;
         public event Action<PlayerInfo> OnPlayerLeft;
 
+        // Properties
+        public List<PlayerInfo> TeamA => _teamA;
+        public List<PlayerInfo> TeamB => _teamB;
+        public GameMode CurrentGameMode => _currentGameMode;
+        public string CurrentMapName => _currentMapName;
+        public bool IsPrivate => _isPrivate;
+        public bool IsLobbyOwner => _currentLobby?.IsOwner(EOSManager.Instance.GetProductUserId()) ?? false;
+
         /// <summary>
         /// Initialize the lobby manager.
         /// </summary>
         public void Initialize()
         {
             // Get the EOS Lobby Manager from the EOSManager
-            _eosLobbyManager = EOSManager.Instance.GetOrCreateManager<EOSLobbyManager>();
+            _eosLobbyManager = EOSManager.Instance.GetComponent<EOSLobbyManager>();
 
             if (_eosLobbyManager == null)
             {
@@ -65,31 +70,31 @@ namespace RecipeRage.Core.Networking.EOS
         /// <summary>
         /// Create a new lobby.
         /// </summary>
-        /// <param name="lobbyName"> The name of the lobby </param>
-        /// <param name="maxPlayers"> The maximum number of players </param>
-        /// <param name="isPrivate"> Whether the lobby is private </param>
+        /// <param name="lobbyName">The name of the lobby</param>
+        /// <param name="maxPlayers">The maximum number of players</param>
+        /// <param name="isPrivate">Whether the lobby is private</param>
         public void CreateLobby(string lobbyName, int maxPlayers = 4, bool isPrivate = false)
         {
             // Create a new lobby
-            var lobby = new Lobby();
+            Lobby lobby = new Lobby();
             lobby.MaxNumLobbyMembers = (uint)maxPlayers;
             lobby.LobbyPermissionLevel = isPrivate ?
-                LobbyPermissionLevel.Inviteonly :
-                LobbyPermissionLevel.Publicadvertised;
+                Epic.OnlineServices.Lobby.LobbyPermissionLevel.Inviteonly :
+                Epic.OnlineServices.Lobby.LobbyPermissionLevel.Publicadvertised;
             lobby.AllowInvites = true;
             lobby.PresenceEnabled = true;
             lobby.RTCRoomEnabled = true;
 
             // Add game-specific attributes
-            AddLobbyAttribute(lobby, "LobbyName", lobbyName, LobbyAttributeVisibility.Public);
-            AddLobbyAttribute(lobby, "GameMode", CurrentGameMode.ToString(), LobbyAttributeVisibility.Public);
-            AddLobbyAttribute(lobby, "MapName", CurrentMapName, LobbyAttributeVisibility.Public);
+            AddLobbyAttribute(lobby, "LobbyName", lobbyName, AttributeAdvertisementType.Advertise);
+            AddLobbyAttribute(lobby, "GameMode", _currentGameMode.ToString(), AttributeAdvertisementType.Advertise);
+            AddLobbyAttribute(lobby, "MapName", _currentMapName, AttributeAdvertisementType.Advertise);
 
             // Create the lobby
             _eosLobbyManager.CreateLobby(lobby, OnLobbyCreationComplete);
 
             // Update local state
-            IsPrivate = isPrivate;
+            _isPrivate = isPrivate;
 
             Debug.Log($"[RecipeRageLobbyManager] Creating lobby: {lobbyName}, MaxPlayers: {maxPlayers}, IsPrivate: {isPrivate}");
         }
@@ -97,15 +102,40 @@ namespace RecipeRage.Core.Networking.EOS
         /// <summary>
         /// Join an existing lobby.
         /// </summary>
-        /// <param name="lobbyId"> The ID of the lobby to join </param>
-        public void JoinLobby(string lobbyId)
+        /// <param name="lobbyId">The ID of the lobby to join</param>
+        /// <param name="presenceEnabled">Whether to enable presence for this lobby (default: true)</param>
+        public void JoinLobby(string lobbyId, bool presenceEnabled = true)
         {
-            // For now, we'll just simulate joining a lobby
-            // In a real implementation, we would use the EOSLobbyManager.JoinLobby method
-            Debug.Log($"[RecipeRageLobbyManager] Joining lobby: {lobbyId}");
+            // Search for the lobby by ID
+            _eosLobbyManager.SearchByLobbyId(lobbyId, (Result searchResult) =>
+            {
+                if (searchResult != Result.Success)
+                {
+                    Debug.LogError($"[RecipeRageLobbyManager] Failed to find lobby {lobbyId}: {searchResult}");
+                    OnLobbyJoined?.Invoke(searchResult);
+                    return;
+                }
 
-            // Simulate a successful join
-            OnLobbyJoinComplete(Result.Success);
+                // Get the search results
+                var searchResults = _eosLobbyManager.GetSearchResults();
+
+                foreach (var kvp in searchResults)
+                {
+                    if (kvp.Key.Id == lobbyId)
+                    {
+                        // Join the lobby
+                        _eosLobbyManager.JoinLobby(lobbyId, kvp.Value, presenceEnabled, OnLobbyJoinComplete);
+
+                        Debug.Log($"[RecipeRageLobbyManager] Joining lobby: {lobbyId}");
+                        return;
+                    }
+                }
+
+                Debug.LogError($"[RecipeRageLobbyManager] Lobby {lobbyId} found in search but not in results");
+                OnLobbyJoined?.Invoke(Result.NotFound);
+            });
+
+            Debug.Log($"[RecipeRageLobbyManager] Searching for lobby: {lobbyId}");
         }
 
         /// <summary>
@@ -115,12 +145,10 @@ namespace RecipeRage.Core.Networking.EOS
         {
             if (_currentLobby != null)
             {
-                // For now, we'll just simulate leaving a lobby
-                // In a real implementation, we would use the EOSLobbyManager.LeaveLobby method
-                Debug.Log($"[RecipeRageLobbyManager] Leaving lobby: {_currentLobby.Id}");
+                // Leave the lobby
+                _eosLobbyManager.LeaveLobby(OnLobbyLeftComplete);
 
-                // Simulate a successful leave
-                OnLobbyLeftComplete(Result.Success);
+                Debug.Log($"[RecipeRageLobbyManager] Leaving lobby: {_currentLobby.Id}");
             }
             else
             {
@@ -132,20 +160,20 @@ namespace RecipeRage.Core.Networking.EOS
         /// <summary>
         /// Set the player's ready state.
         /// </summary>
-        /// <param name="isReady"> Whether the player is ready </param>
+        /// <param name="isReady">Whether the player is ready</param>
         public void SetPlayerReady(bool isReady)
         {
             if (_currentLobby != null)
             {
                 // Find the local player
-                var localUserId = EOSManager.Instance.GetProductUserId();
+                ProductUserId localUserId = EOSManager.Instance.GetProductUserId();
 
-                foreach (var member in _currentLobby.Members)
+                foreach (LobbyMember member in _currentLobby.Members)
                 {
                     if (member.ProductId == localUserId)
                     {
                         // Update the ready state
-                        AddMemberAttribute(_currentLobby, "IsReady", isReady.ToString(), LobbyAttributeVisibility.Public);
+                        AddMemberAttribute(_currentLobby, "IsReady", isReady.ToString(), AttributeAdvertisementType.Advertise);
 
                         Debug.Log($"[RecipeRageLobbyManager] Setting player ready: {isReady}");
                         return;
@@ -163,20 +191,20 @@ namespace RecipeRage.Core.Networking.EOS
         /// <summary>
         /// Set the player's team.
         /// </summary>
-        /// <param name="teamId"> The team ID </param>
+        /// <param name="teamId">The team ID</param>
         public void SetPlayerTeam(TeamId teamId)
         {
             if (_currentLobby != null)
             {
                 // Find the local player
-                var localUserId = EOSManager.Instance.GetProductUserId();
+                ProductUserId localUserId = EOSManager.Instance.GetProductUserId();
 
-                foreach (var member in _currentLobby.Members)
+                foreach (LobbyMember member in _currentLobby.Members)
                 {
                     if (member.ProductId == localUserId)
                     {
                         // Update the team
-                        AddMemberAttribute(_currentLobby, "TeamId", ((int)teamId).ToString(), LobbyAttributeVisibility.Public);
+                        AddMemberAttribute(_currentLobby, "TeamId", ((int)teamId).ToString(), AttributeAdvertisementType.Advertise);
 
                         Debug.Log($"[RecipeRageLobbyManager] Setting player team: {teamId}");
                         return;
@@ -194,20 +222,20 @@ namespace RecipeRage.Core.Networking.EOS
         /// <summary>
         /// Set the player's character class.
         /// </summary>
-        /// <param name="characterClass"> The character class </param>
+        /// <param name="characterClass">The character class</param>
         public void SetPlayerCharacterClass(CharacterClass characterClass)
         {
             if (_currentLobby != null)
             {
                 // Find the local player
-                var localUserId = EOSManager.Instance.GetProductUserId();
+                ProductUserId localUserId = EOSManager.Instance.GetProductUserId();
 
-                foreach (var member in _currentLobby.Members)
+                foreach (LobbyMember member in _currentLobby.Members)
                 {
                     if (member.ProductId == localUserId)
                     {
                         // Update the character class
-                        AddMemberAttribute(_currentLobby, "CharacterClass", ((int)characterClass).ToString(), LobbyAttributeVisibility.Public);
+                        AddMemberAttribute(_currentLobby, "CharacterClass", ((int)characterClass).ToString(), AttributeAdvertisementType.Advertise);
 
                         Debug.Log($"[RecipeRageLobbyManager] Setting player character class: {characterClass}");
                         return;
@@ -225,16 +253,16 @@ namespace RecipeRage.Core.Networking.EOS
         /// <summary>
         /// Set the game mode.
         /// </summary>
-        /// <param name="gameMode"> The game mode </param>
+        /// <param name="gameMode">The game mode</param>
         public void SetGameMode(GameMode gameMode)
         {
             if (_currentLobby != null && IsLobbyOwner)
             {
                 // Update the game mode
-                AddLobbyAttribute(_currentLobby, "GameMode", gameMode.ToString(), LobbyAttributeVisibility.Public);
+                AddLobbyAttribute(_currentLobby, "GameMode", gameMode.ToString(), AttributeAdvertisementType.Advertise);
 
                 // Update local state
-                CurrentGameMode = gameMode;
+                _currentGameMode = gameMode;
 
                 Debug.Log($"[RecipeRageLobbyManager] Setting game mode: {gameMode}");
             }
@@ -247,16 +275,16 @@ namespace RecipeRage.Core.Networking.EOS
         /// <summary>
         /// Set the map name.
         /// </summary>
-        /// <param name="mapName"> The map name </param>
+        /// <param name="mapName">The map name</param>
         public void SetMapName(string mapName)
         {
             if (_currentLobby != null && IsLobbyOwner)
             {
                 // Update the map name
-                AddLobbyAttribute(_currentLobby, "MapName", mapName, LobbyAttributeVisibility.Public);
+                AddLobbyAttribute(_currentLobby, "MapName", mapName, AttributeAdvertisementType.Advertise);
 
                 // Update local state
-                CurrentMapName = mapName;
+                _currentMapName = mapName;
 
                 Debug.Log($"[RecipeRageLobbyManager] Setting map name: {mapName}");
             }
@@ -269,10 +297,10 @@ namespace RecipeRage.Core.Networking.EOS
         /// <summary>
         /// Check if all players are ready.
         /// </summary>
-        /// <returns> Whether all players are ready </returns>
+        /// <returns>Whether all players are ready</returns>
         public bool AreAllPlayersReady()
         {
-            foreach (var player in TeamA)
+            foreach (PlayerInfo player in _teamA)
             {
                 if (!player.IsReady)
                 {
@@ -280,7 +308,7 @@ namespace RecipeRage.Core.Networking.EOS
                 }
             }
 
-            foreach (var player in TeamB)
+            foreach (PlayerInfo player in _teamB)
             {
                 if (!player.IsReady)
                 {
@@ -288,35 +316,51 @@ namespace RecipeRage.Core.Networking.EOS
                 }
             }
 
-            return TeamA.Count + TeamB.Count > 0;
+            return _teamA.Count + _teamB.Count > 0;
         }
 
         /// <summary>
         /// Add a lobby attribute to a lobby.
         /// </summary>
-        /// <param name="lobby"> The lobby </param>
-        /// <param name="key"> The attribute key </param>
-        /// <param name="value"> The attribute value </param>
-        /// <param name="visibility"> The attribute visibility </param>
-        private void AddLobbyAttribute(Lobby lobby, string key, string value, LobbyAttributeVisibility visibility)
+        /// <param name="lobby">The lobby</param>
+        /// <param name="key">The attribute key</param>
+        /// <param name="value">The attribute value</param>
+        /// <param name="visibility">The attribute visibility</param>
+        private void AddLobbyAttribute(Lobby lobby, string key, string value, AttributeAdvertisementType visibility)
         {
-            // For now, we'll just simulate adding a lobby attribute
-            // In a real implementation, we would use the appropriate EOSLobbyManager method
-            Debug.Log($"[RecipeRageLobbyManager] Adding lobby attribute: {key}={value}");
+            // Create the attribute
+            LobbyAttribute attribute = new LobbyAttribute
+            {
+                Key = key,
+                ValueType = AttributeType.String,
+                AsString = value,
+                Visibility = LobbyAttributeVisibility.Public
+            };
+
+            // Add the attribute
+            _eosLobbyManager.AddLobbyAttribute(lobby, attribute);
         }
 
         /// <summary>
         /// Add a member attribute to a lobby.
         /// </summary>
-        /// <param name="lobby"> The lobby </param>
-        /// <param name="key"> The attribute key </param>
-        /// <param name="value"> The attribute value </param>
-        /// <param name="visibility"> The attribute visibility </param>
-        private void AddMemberAttribute(Lobby lobby, string key, string value, LobbyAttributeVisibility visibility)
+        /// <param name="lobby">The lobby</param>
+        /// <param name="key">The attribute key</param>
+        /// <param name="value">The attribute value</param>
+        /// <param name="visibility">The attribute visibility</param>
+        private void AddMemberAttribute(Lobby lobby, string key, string value, AttributeAdvertisementType visibility)
         {
-            // For now, we'll just simulate adding a member attribute
-            // In a real implementation, we would use the appropriate EOSLobbyManager method
-            Debug.Log($"[RecipeRageLobbyManager] Adding member attribute: {key}={value}");
+            // Create the attribute
+            LobbyAttribute attribute = new LobbyAttribute
+            {
+                Key = key,
+                ValueType = AttributeType.String,
+                AsString = value,
+                Visibility = LobbyAttributeVisibility.Public
+            };
+
+            // Add the attribute
+            _eosLobbyManager.AddMemberAttribute(lobby, attribute);
         }
 
         /// <summary>
@@ -325,8 +369,8 @@ namespace RecipeRage.Core.Networking.EOS
         private void UpdateTeams()
         {
             // Clear the teams
-            TeamA.Clear();
-            TeamB.Clear();
+            _teamA.Clear();
+            _teamB.Clear();
 
             if (_currentLobby == null)
             {
@@ -334,12 +378,13 @@ namespace RecipeRage.Core.Networking.EOS
             }
 
             // Process each member
-            foreach (var member in _currentLobby.Members)
+            foreach (LobbyMember member in _currentLobby.Members)
             {
                 // Create or get the player info
+                PlayerInfo playerInfo;
                 string playerId = member.ProductId.ToString();
 
-                if (_playerInfoCache.TryGetValue(playerId, out var playerInfo))
+                if (_playerInfoCache.TryGetValue(playerId, out playerInfo))
                 {
                     // Update existing player info
                     playerInfo.DisplayName = member.DisplayName;
@@ -363,9 +408,9 @@ namespace RecipeRage.Core.Networking.EOS
                 }
 
                 // Extract member attributes
-                foreach (KeyValuePair<string, LobbyAttribute> kvp in member.MemberAttributes)
+                foreach (var kvp in member.MemberAttributes)
                 {
-                    var attribute = kvp.Value;
+                    LobbyAttribute attribute = kvp.Value;
 
                     switch (attribute.Key)
                     {
@@ -387,40 +432,40 @@ namespace RecipeRage.Core.Networking.EOS
                 // Add to the appropriate team
                 if (playerInfo.Team == TeamId.TeamA)
                 {
-                    TeamA.Add(playerInfo);
+                    _teamA.Add(playerInfo);
                 }
                 else
                 {
-                    TeamB.Add(playerInfo);
+                    _teamB.Add(playerInfo);
                 }
             }
 
             // Extract lobby attributes
-            foreach (var attribute in _currentLobby.Attributes)
+            foreach (LobbyAttribute attribute in _currentLobby.Attributes)
             {
                 switch (attribute.Key)
                 {
                     case "GameMode":
-                        if (Enum.TryParse(attribute.AsString, out GameMode gameMode))
+                        if (Enum.TryParse<GameMode>(attribute.AsString, out GameMode gameMode))
                         {
-                            CurrentGameMode = gameMode;
+                            _currentGameMode = gameMode;
                         }
                         break;
                     case "MapName":
-                        CurrentMapName = attribute.AsString;
+                        _currentMapName = attribute.AsString;
                         break;
                 }
             }
 
             // Update private state
-            IsPrivate = _currentLobby.LobbyPermissionLevel == LobbyPermissionLevel.Inviteonly;
+            _isPrivate = _currentLobby.LobbyPermissionLevel == Epic.OnlineServices.Lobby.LobbyPermissionLevel.Inviteonly;
         }
 
         /// <summary>
         /// Handle lobby changes.
         /// </summary>
-        /// <param name="sender"> The sender </param>
-        /// <param name="e"> The event args </param>
+        /// <param name="sender">The sender</param>
+        /// <param name="e">The event args</param>
         private void OnLobbyChanged(object sender, EOSLobbyManager.LobbyChangeEventArgs e)
         {
             // Get the current lobby
@@ -438,7 +483,7 @@ namespace RecipeRage.Core.Networking.EOS
         /// <summary>
         /// Callback for lobby creation.
         /// </summary>
-        /// <param name="result"> The result </param>
+        /// <param name="result">The result</param>
         private void OnLobbyCreationComplete(Result result)
         {
             if (result == Result.Success)
@@ -462,7 +507,7 @@ namespace RecipeRage.Core.Networking.EOS
         /// <summary>
         /// Callback for lobby join.
         /// </summary>
-        /// <param name="result"> The result </param>
+        /// <param name="result">The result</param>
         private void OnLobbyJoinComplete(Result result)
         {
             if (result == Result.Success)
@@ -486,7 +531,7 @@ namespace RecipeRage.Core.Networking.EOS
         /// <summary>
         /// Callback for lobby leave.
         /// </summary>
-        /// <param name="result"> The result </param>
+        /// <param name="result">The result</param>
         private void OnLobbyLeftComplete(Result result)
         {
             if (result == Result.Success)
@@ -497,8 +542,8 @@ namespace RecipeRage.Core.Networking.EOS
                 _currentLobby = null;
 
                 // Clear teams
-                TeamA.Clear();
-                TeamB.Clear();
+                _teamA.Clear();
+                _teamB.Clear();
             }
             else
             {
