@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Epic.OnlineServices;
+using PlayEveryWare.EpicOnlineServices;
 using PlayEveryWare.EpicOnlineServices.Samples;
 using RecipeRage.Core.Networking.Common;
 using RecipeRage.Core.Networking.EOS;
@@ -16,30 +17,30 @@ namespace RecipeRage.Core.Networking
     {
         // Singleton instance
         public static RecipeRageNetworkManager Instance { get; private set; }
-        
+
         // Component references
         [SerializeField] private RecipeRageSessionManager _sessionManager;
         [SerializeField] private RecipeRageLobbyManager _lobbyManager;
         [SerializeField] private RecipeRageP2PManager _p2pManager;
-        
+
         // Network state
         private bool _isConnected = false;
         private bool _isHost = false;
-        
+
         // Properties
         public RecipeRageSessionManager SessionManager => _sessionManager;
         public RecipeRageLobbyManager LobbyManager => _lobbyManager;
         public RecipeRageP2PManager P2PManager => _p2pManager;
         public bool IsConnected => _isConnected;
         public bool IsHost => _isHost;
-        
+
         // Events
         public event Action OnNetworkStateChanged;
         public event Action<Result> OnGameCreated;
         public event Action<Result> OnGameJoined;
         public event Action<Result> OnGameLeft;
         public event Action OnGameStarted;
-        
+
         /// <summary>
         /// Awake is called when the script instance is being loaded.
         /// </summary>
@@ -56,24 +57,24 @@ namespace RecipeRage.Core.Networking
                 Destroy(gameObject);
                 return;
             }
-            
+
             // Create components if not assigned
             if (_sessionManager == null)
             {
                 _sessionManager = gameObject.AddComponent<RecipeRageSessionManager>();
             }
-            
+
             if (_lobbyManager == null)
             {
                 _lobbyManager = gameObject.AddComponent<RecipeRageLobbyManager>();
             }
-            
+
             if (_p2pManager == null)
             {
                 _p2pManager = gameObject.AddComponent<RecipeRageP2PManager>();
             }
         }
-        
+
         /// <summary>
         /// Start is called before the first frame update.
         /// </summary>
@@ -82,32 +83,32 @@ namespace RecipeRage.Core.Networking
             // Initialize components
             StartCoroutine(InitializeComponents());
         }
-        
+
         /// <summary>
         /// Initialize all networking components.
         /// </summary>
         private IEnumerator InitializeComponents()
         {
             // Wait for EOSManager to initialize
-            while (EOSManager.Instance == null || !EOSManager.Instance.IsLoggedIn())
+            while (EOSManager.Instance == null || EOSManager.Instance.GetLocalUserId() == null)
             {
                 yield return new WaitForSeconds(0.1f);
             }
-            
+
             // Initialize components
             _sessionManager.Initialize();
             _lobbyManager.Initialize();
             _p2pManager.Initialize();
-            
+
             // Subscribe to events
             _sessionManager.OnSessionCreated += OnSessionCreated;
             _sessionManager.OnSessionJoined += OnSessionJoined;
             _sessionManager.OnSessionLeft += OnSessionLeft;
             _lobbyManager.OnLobbyUpdated += OnLobbyUpdated;
-            
+
             Debug.Log("[RecipeRageNetworkManager] Initialized");
         }
-        
+
         /// <summary>
         /// Create a new game.
         /// </summary>
@@ -120,13 +121,13 @@ namespace RecipeRage.Core.Networking
         {
             // Create a session
             _sessionManager.CreateGameSession(sessionName, gameMode, mapName, maxPlayers, isPrivate);
-            
+
             // Create a lobby with the same settings
             _lobbyManager.CreateLobby(sessionName, maxPlayers, isPrivate);
-            
+
             Debug.Log($"[RecipeRageNetworkManager] Creating game: {sessionName}, GameMode: {gameMode}, Map: {mapName}");
         }
-        
+
         /// <summary>
         /// Join an existing game.
         /// </summary>
@@ -135,10 +136,10 @@ namespace RecipeRage.Core.Networking
         {
             // Join the session
             _sessionManager.JoinSession(sessionId);
-            
+
             Debug.Log($"[RecipeRageNetworkManager] Joining game: {sessionId}");
         }
-        
+
         /// <summary>
         /// Leave the current game.
         /// </summary>
@@ -146,13 +147,13 @@ namespace RecipeRage.Core.Networking
         {
             // Leave the lobby first
             _lobbyManager.LeaveLobby();
-            
+
             // Then leave the session
             _sessionManager.LeaveSession();
-            
+
             Debug.Log("[RecipeRageNetworkManager] Leaving game");
         }
-        
+
         /// <summary>
         /// Start the game.
         /// </summary>
@@ -163,10 +164,10 @@ namespace RecipeRage.Core.Networking
                 // Notify all players that the game is starting
                 byte[] startData = new byte[0]; // No additional data needed
                 _p2pManager.SendToAll(NetworkMessageType.GameState, startData);
-                
+
                 // Notify local listeners
                 OnGameStarted?.Invoke();
-                
+
                 Debug.Log("[RecipeRageNetworkManager] Starting game");
             }
             else
@@ -174,7 +175,7 @@ namespace RecipeRage.Core.Networking
                 Debug.LogError("[RecipeRageNetworkManager] Only the host can start the game");
             }
         }
-        
+
         /// <summary>
         /// Check if all players are ready to start the game.
         /// </summary>
@@ -183,7 +184,7 @@ namespace RecipeRage.Core.Networking
         {
             return _lobbyManager.AreAllPlayersReady();
         }
-        
+
         /// <summary>
         /// Callback for session creation.
         /// </summary>
@@ -196,10 +197,10 @@ namespace RecipeRage.Core.Networking
                 _isHost = true;
                 OnNetworkStateChanged?.Invoke();
             }
-            
+
             OnGameCreated?.Invoke(result);
         }
-        
+
         /// <summary>
         /// Callback for session join.
         /// </summary>
@@ -211,7 +212,7 @@ namespace RecipeRage.Core.Networking
                 _isConnected = true;
                 _isHost = false;
                 OnNetworkStateChanged?.Invoke();
-                
+
                 // Join the lobby associated with the session
                 GameSessionInfo sessionInfo = _sessionManager.GetCurrentSession();
                 if (sessionInfo != null)
@@ -219,10 +220,10 @@ namespace RecipeRage.Core.Networking
                     _lobbyManager.JoinLobby(sessionInfo.SessionId);
                 }
             }
-            
+
             OnGameJoined?.Invoke(result);
         }
-        
+
         /// <summary>
         /// Callback for session leave.
         /// </summary>
@@ -235,10 +236,10 @@ namespace RecipeRage.Core.Networking
                 _isHost = false;
                 OnNetworkStateChanged?.Invoke();
             }
-            
+
             OnGameLeft?.Invoke(result);
         }
-        
+
         /// <summary>
         /// Callback for lobby updates.
         /// </summary>
@@ -252,7 +253,7 @@ namespace RecipeRage.Core.Networking
                 // StartGame();
             }
         }
-        
+
         /// <summary>
         /// Clean up when destroyed.
         /// </summary>
@@ -262,7 +263,7 @@ namespace RecipeRage.Core.Networking
             {
                 Instance = null;
             }
-            
+
             // Unsubscribe from events
             if (_sessionManager != null)
             {
@@ -270,7 +271,7 @@ namespace RecipeRage.Core.Networking
                 _sessionManager.OnSessionJoined -= OnSessionJoined;
                 _sessionManager.OnSessionLeft -= OnSessionLeft;
             }
-            
+
             if (_lobbyManager != null)
             {
                 _lobbyManager.OnLobbyUpdated -= OnLobbyUpdated;
