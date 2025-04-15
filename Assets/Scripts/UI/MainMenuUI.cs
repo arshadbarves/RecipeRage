@@ -1,7 +1,8 @@
-using System;
+using System.Collections.Generic;
 using RecipeRage.Core.GameFramework.State;
 using RecipeRage.Core.GameFramework.State.States;
 using RecipeRage.Core.Networking;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -12,53 +13,53 @@ namespace RecipeRage.UI
     /// </summary>
     public class MainMenuUI : MonoBehaviour
     {
-        /// <summary>
-        /// The UI document component.
-        /// </summary>
-        private UIDocument _uiDocument;
-
-        /// <summary>
-        /// The root visual element.
-        /// </summary>
-        private VisualElement _root;
-
-        // Panels
-        private VisualElement _mainPanel;
-        private VisualElement _settingsPanel;
-        private VisualElement _creditsPanel;
-
-        // Main Menu Buttons
-        private Button _playButton;
-        private Button _settingsButton;
-        private Button _creditsButton;
-        private Button _quitButton;
-
-        // Settings Panel
-        private Slider _musicVolumeSlider;
-        private Slider _sfxVolumeSlider;
-        private Toggle _fullscreenToggle;
-        private DropdownField _resolutionDropdown;
-        private DropdownField _qualityDropdown;
-        private Button _settingsBackButton;
 
         // Credits Panel
         private Button _creditsBackButton;
-
-        // Player Info
-        private TextField _playerNameInput;
-        private Label _playerLevelText;
-        private Label _playerCoinsText;
-        private Label _playerGemsText;
+        private Button _creditsButton;
+        private VisualElement _creditsPanel;
+        private Toggle _fullscreenToggle;
 
         /// <summary>
         /// Reference to the game state manager.
         /// </summary>
         private GameStateManager _gameStateManager;
 
+        // Panels
+        private VisualElement _mainPanel;
+
+        // Settings Panel
+        private Slider _musicVolumeSlider;
+
         /// <summary>
         /// Reference to the network manager.
         /// </summary>
-        private NetworkManager _networkManager;
+        private RecipeRageNetworkManager _networkManager;
+
+        // Main Menu Buttons
+        private Button _playButton;
+        private Label _playerCoinsText;
+        private Label _playerGemsText;
+        private Label _playerLevelText;
+
+        // Player Info
+        private TextField _playerNameInput;
+        private DropdownField _qualityDropdown;
+        private Button _quitButton;
+        private DropdownField _resolutionDropdown;
+
+        /// <summary>
+        /// The root visual element.
+        /// </summary>
+        private VisualElement _root;
+        private Button _settingsBackButton;
+        private Button _settingsButton;
+        private VisualElement _settingsPanel;
+        private Slider _sfxVolumeSlider;
+        /// <summary>
+        /// The UI document component.
+        /// </summary>
+        private UIDocument _uiDocument;
 
         /// <summary>
         /// Initialize the main menu UI.
@@ -67,7 +68,7 @@ namespace RecipeRage.UI
         {
             // Get references
             _gameStateManager = GameStateManager.Instance;
-            _networkManager = NetworkManager.Instance;
+            _networkManager = RecipeRageNetworkManager.Instance;
 
             // Get UI Document component
             _uiDocument = GetComponent<UIDocument>();
@@ -142,7 +143,7 @@ namespace RecipeRage.UI
             // Initialize resolution dropdown
             if (_resolutionDropdown != null)
             {
-                _resolutionDropdown.choices = new System.Collections.Generic.List<string>
+                _resolutionDropdown.choices = new List<string>
                 {
                     "1280x720",
                     "1920x1080",
@@ -156,7 +157,7 @@ namespace RecipeRage.UI
             if (_qualityDropdown != null)
             {
                 string[] qualityNames = QualitySettings.names;
-                _qualityDropdown.choices = new System.Collections.Generic.List<string>(qualityNames);
+                _qualityDropdown.choices = new List<string>(qualityNames);
                 _qualityDropdown.index = QualitySettings.GetQualityLevel();
             }
         }
@@ -254,7 +255,7 @@ namespace RecipeRage.UI
             // Transition to matchmaking state
             if (_gameStateManager != null)
             {
-                _gameStateManager.ChangeState(new RecipeRage.Core.GameFramework.State.States.MatchmakingState());
+                _gameStateManager.ChangeState(new MatchmakingState());
             }
         }
 
@@ -285,7 +286,7 @@ namespace RecipeRage.UI
 
             // Quit the application
 #if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
+            EditorApplication.isPlaying = false;
 #else
             Application.Quit();
 #endif
