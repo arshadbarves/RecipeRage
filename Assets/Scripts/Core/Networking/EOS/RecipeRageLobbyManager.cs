@@ -337,8 +337,17 @@ namespace RecipeRage.Core.Networking.EOS
                 Visibility = LobbyAttributeVisibility.Public
             };
 
-            // Add the attribute
-            _eosLobbyManager.AddLobbyAttribute(lobby, attribute);
+            // Add the attribute to the lobby
+            if (_eosLobbyManager.GetCurrentLobby() != null)
+            {
+                // Create a new lobby with the updated attribute
+                Lobby updatedLobby = new Lobby();
+                // Add the attribute to the lobby
+                updatedLobby.Attributes.Add(attribute);
+
+                // Modify the lobby
+                _eosLobbyManager.ModifyLobby(updatedLobby, null);
+            }
         }
 
         /// <summary>
@@ -359,8 +368,8 @@ namespace RecipeRage.Core.Networking.EOS
                 Visibility = LobbyAttributeVisibility.Public
             };
 
-            // Add the attribute
-            _eosLobbyManager.AddMemberAttribute(lobby, attribute);
+            // Add the attribute to the member
+            _eosLobbyManager.SetMemberAttribute(attribute);
         }
 
         /// <summary>
