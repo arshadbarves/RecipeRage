@@ -22,6 +22,98 @@ namespace RecipeRage.Editor
     public class SceneSetupGenerator
     {
         /// <summary>
+        /// Generate the main menu scene.
+        /// </summary>
+        public static void GenerateMainMenuScene()
+        {
+            Debug.Log("GenerateMainMenuScene: Starting...");
+
+            try
+            {
+                // Create a new scene
+                var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+                scene.name = "MainMenu";
+                Debug.Log("GenerateMainMenuScene: Created new scene");
+
+                // Create the camera
+                var mainCamera = new GameObject("Main Camera");
+                var camera = mainCamera.AddComponent<Camera>();
+                camera.clearFlags = CameraClearFlags.SolidColor;
+                camera.backgroundColor = new Color(0.1f, 0.1f, 0.1f);
+                camera.transform.position = new Vector3(0, 1, -10);
+                mainCamera.tag = "MainCamera";
+                Debug.Log("GenerateMainMenuScene: Created camera");
+
+                // Create the UI canvas
+                var canvas = new GameObject("Canvas");
+                var canvasComponent = canvas.AddComponent<Canvas>();
+                canvasComponent.renderMode = RenderMode.ScreenSpaceOverlay;
+                canvas.AddComponent<CanvasScaler>();
+                canvas.AddComponent<GraphicRaycaster>();
+                Debug.Log("GenerateMainMenuScene: Created canvas");
+
+                // Create the EOS managers
+                var eosManager = new GameObject("EOSManager");
+                var eosManagerComponent = eosManager.AddComponent<PlayEveryWare.EpicOnlineServices.EOSManager>();
+
+                // Create the RecipeRage session manager
+                var sessionManager = new GameObject("RecipeRageSessionManager");
+                var sessionManagerComponent = sessionManager.AddComponent<RecipeRageSessionManager>();
+
+                // Create the RecipeRage lobby manager
+                var lobbyManager = new GameObject("RecipeRageLobbyManager");
+                var lobbyManagerComponent = lobbyManager.AddComponent<RecipeRageLobbyManager>();
+
+                // Create the RecipeRage P2P manager
+                var p2pManager = new GameObject("RecipeRageP2PManager");
+                var p2pManagerComponent = p2pManager.AddComponent<RecipeRageP2PManager>();
+
+                // Initialize the EOS managers
+                sessionManagerComponent.Initialize();
+                lobbyManagerComponent.Initialize();
+                p2pManagerComponent.Initialize();
+
+                // Save the scene
+                string scenePath = "Assets/Scenes/MainMenu.unity";
+                EditorSceneManager.SaveScene(scene, scenePath);
+
+                Debug.Log($"Main menu scene setup complete. Saved to {scenePath}");
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"GenerateMainMenuScene: Error - {ex.Message}\n{ex.StackTrace}");
+            }
+        }
+
+        /// <summary>
+        /// Generate the game scene.
+        /// </summary>
+        public static void GenerateGameScene()
+        {
+            Debug.Log("GenerateGameScene: Starting...");
+
+            try
+            {
+                // Create a new instance of SceneSetupGenerator
+                var generator = new SceneSetupGenerator();
+
+                // Call the SetupScene method
+                generator.SetupScene(
+                    "Assets/Scenes",
+                    "Assets/Prefabs",
+                    "Assets/ScriptableObjects/GameModes",
+                    "Assets/ScriptableObjects/CharacterClasses",
+                    "Assets/Prefabs/Stations"
+                );
+
+                Debug.Log("GenerateGameScene: Completed successfully");
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"GenerateGameScene: Error - {ex.Message}\n{ex.StackTrace}");
+            }
+        }
+        /// <summary>
         /// Register a prefab with the NetworkManager.
         /// </summary>
         /// <param name="networkManager">The NetworkManager component.</param>
