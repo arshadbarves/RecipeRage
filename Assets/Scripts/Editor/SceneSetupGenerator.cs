@@ -69,9 +69,35 @@ namespace RecipeRage.Editor
                 var p2pManagerComponent = p2pManager.AddComponent<RecipeRageP2PManager>();
 
                 // Initialize the EOS managers
-                sessionManagerComponent.Initialize();
-                lobbyManagerComponent.Initialize();
-                p2pManagerComponent.Initialize();
+                try
+                {
+                    sessionManagerComponent.Initialize();
+                    Debug.Log("GenerateMainMenuScene: Initialized session manager");
+                }
+                catch (System.Exception ex)
+                {
+                    Debug.LogWarning($"Failed to initialize session manager: {ex.Message}");
+                }
+
+                try
+                {
+                    lobbyManagerComponent.Initialize();
+                    Debug.Log("GenerateMainMenuScene: Initialized lobby manager");
+                }
+                catch (System.Exception ex)
+                {
+                    Debug.LogWarning($"Failed to initialize lobby manager: {ex.Message}");
+                }
+
+                try
+                {
+                    p2pManagerComponent.Initialize();
+                    Debug.Log("GenerateMainMenuScene: Initialized P2P manager");
+                }
+                catch (System.Exception ex)
+                {
+                    Debug.LogWarning($"Failed to initialize P2P manager: {ex.Message}");
+                }
 
                 // Save the scene
                 string scenePath = "Assets/Scenes/MainMenu.unity";
