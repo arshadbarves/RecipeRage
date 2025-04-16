@@ -120,19 +120,140 @@ namespace RecipeRage.Editor
 
             try
             {
-                // Create a new instance of SceneSetupGenerator
-                var generator = new SceneSetupGenerator();
+                // Create a new scene
+                var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+                scene.name = "Game";
+                Debug.Log("GenerateGameScene: Created new scene");
 
-                // Call the SetupScene method
-                generator.SetupScene(
-                    "Assets/Scenes",
-                    "Assets/Prefabs",
-                    "Assets/ScriptableObjects/GameModes",
-                    "Assets/ScriptableObjects/CharacterClasses",
-                    "Assets/Prefabs/Stations"
-                );
+                // Create the camera
+                var mainCamera = new GameObject("Main Camera");
+                var camera = mainCamera.AddComponent<Camera>();
+                camera.clearFlags = CameraClearFlags.SolidColor;
+                camera.backgroundColor = new Color(0.1f, 0.1f, 0.1f);
+                camera.transform.position = new Vector3(0, 10, -10);
+                camera.transform.rotation = Quaternion.Euler(45, 0, 0);
+                mainCamera.tag = "MainCamera";
+                Debug.Log("GenerateGameScene: Created camera");
 
-                Debug.Log("GenerateGameScene: Completed successfully");
+                // Create a directional light
+                var directionalLight = new GameObject("Directional Light");
+                var light = directionalLight.AddComponent<Light>();
+                light.type = LightType.Directional;
+                light.intensity = 1.0f;
+                light.shadows = LightShadows.Soft;
+                directionalLight.transform.position = new Vector3(0, 10, 0);
+                directionalLight.transform.rotation = Quaternion.Euler(50, -30, 0);
+                Debug.Log("GenerateGameScene: Created light");
+
+                // Create the floor
+                var floor = GameObject.CreatePrimitive(PrimitiveType.Plane);
+                floor.name = "Floor";
+                floor.transform.position = Vector3.zero;
+                floor.transform.localScale = new Vector3(2, 1, 2);
+                Debug.Log("GenerateGameScene: Created floor");
+
+                // Create the network manager
+                var networkManager = new GameObject("NetworkManager");
+                var networkManagerComponent = networkManager.AddComponent<NetworkManager>();
+                Debug.Log("GenerateGameScene: Created network manager");
+
+                // Create the game mode manager
+                var gameModeManager = new GameObject("GameModeManager");
+                var gameModeManagerComponent = gameModeManager.AddComponent<GameModeManager>();
+                Debug.Log("GenerateGameScene: Created game mode manager");
+
+                // Create the character manager
+                var characterManager = new GameObject("CharacterManager");
+                var characterManagerComponent = characterManager.AddComponent<CharacterManager>();
+                Debug.Log("GenerateGameScene: Created character manager");
+
+                // Create the EOS managers
+                var eosManager = new GameObject("EOSManager");
+                var eosManagerComponent = eosManager.AddComponent<PlayEveryWare.EpicOnlineServices.EOSManager>();
+                Debug.Log("GenerateGameScene: Created EOS manager");
+
+                // Create the RecipeRage session manager
+                var sessionManager = new GameObject("RecipeRageSessionManager");
+                var sessionManagerComponent = sessionManager.AddComponent<RecipeRageSessionManager>();
+                Debug.Log("GenerateGameScene: Created session manager");
+
+                // Create the RecipeRage lobby manager
+                var lobbyManager = new GameObject("RecipeRageLobbyManager");
+                var lobbyManagerComponent = lobbyManager.AddComponent<RecipeRageLobbyManager>();
+                Debug.Log("GenerateGameScene: Created lobby manager");
+
+                // Create the RecipeRage P2P manager
+                var p2pManager = new GameObject("RecipeRageP2PManager");
+                var p2pManagerComponent = p2pManager.AddComponent<RecipeRageP2PManager>();
+                Debug.Log("GenerateGameScene: Created P2P manager");
+
+                // Initialize the EOS managers
+                try
+                {
+                    sessionManagerComponent.Initialize();
+                    Debug.Log("GenerateGameScene: Initialized session manager");
+                }
+                catch (System.Exception ex)
+                {
+                    Debug.LogWarning($"Failed to initialize session manager: {ex.Message}");
+                }
+
+                try
+                {
+                    lobbyManagerComponent.Initialize();
+                    Debug.Log("GenerateGameScene: Initialized lobby manager");
+                }
+                catch (System.Exception ex)
+                {
+                    Debug.LogWarning($"Failed to initialize lobby manager: {ex.Message}");
+                }
+
+                try
+                {
+                    p2pManagerComponent.Initialize();
+                    Debug.Log("GenerateGameScene: Initialized P2P manager");
+                }
+                catch (System.Exception ex)
+                {
+                    Debug.LogWarning($"Failed to initialize P2P manager: {ex.Message}");
+                }
+
+                // Create the spawn manager
+                var spawnManager = new GameObject("SpawnManager");
+                spawnManager.transform.position = new Vector3(0, 0, 0);
+                Debug.Log("GenerateGameScene: Created spawn manager");
+
+                // Create spawn points
+                for (int i = 0; i < 4; i++)
+                {
+                    var spawnPoint = new GameObject($"SpawnPoint_{i}");
+                    spawnPoint.transform.SetParent(spawnManager.transform);
+
+                    // Position the spawn points in a circle
+                    float angle = i * Mathf.PI / 2; // 90 degrees apart
+                    spawnPoint.transform.position = new Vector3(Mathf.Cos(angle) * 5, 0, Mathf.Sin(angle) * 5);
+                    spawnPoint.transform.rotation = Quaternion.Euler(0, -angle * Mathf.Rad2Deg + 180, 0); // Face center
+                }
+                Debug.Log("GenerateGameScene: Created spawn points");
+
+                // Create UI
+                var canvas = new GameObject("Canvas");
+                var canvasComponent = canvas.AddComponent<Canvas>();
+                canvasComponent.renderMode = RenderMode.ScreenSpaceOverlay;
+                canvas.AddComponent<CanvasScaler>();
+                canvas.AddComponent<GraphicRaycaster>();
+                Debug.Log("GenerateGameScene: Created canvas");
+
+                // Create UI manager
+                var uiManager = new GameObject("GameplayUIManager");
+                var uiManagerComponent = uiManager.AddComponent<GameplayUIManager>();
+                Debug.Log("GenerateGameScene: Created UI manager");
+
+                // Save the scene
+                string scenePath = "Assets/Scenes/Game.unity";
+                EditorSceneManager.SaveScene(scene, scenePath);
+
+                Debug.Log($"Game scene setup complete. Saved to {scenePath}");
             }
             catch (System.Exception ex)
             {
