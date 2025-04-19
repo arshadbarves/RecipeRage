@@ -3,12 +3,12 @@ using System;
 namespace RecipeRage.Core.GameFramework.State
 {
     /// <summary>
-    /// Interface for a state machine that manages game states.
+    /// Interface for state machines.
     /// </summary>
     public interface IStateMachine
     {
         /// <summary>
-        /// Event triggered when the state changes.
+        /// Event triggered when a state transition occurs.
         /// </summary>
         event Action<IState, IState> OnStateChanged;
         
@@ -23,24 +23,24 @@ namespace RecipeRage.Core.GameFramework.State
         IState PreviousState { get; }
         
         /// <summary>
-        /// Initializes the state machine with an initial state.
+        /// Initialize the state machine with an initial state.
         /// </summary>
         /// <param name="initialState">The initial state</param>
         void Initialize(IState initialState);
         
         /// <summary>
-        /// Changes to a new state.
+        /// Change to a new state.
         /// </summary>
         /// <param name="newState">The new state to change to</param>
         void ChangeState(IState newState);
         
         /// <summary>
-        /// Updates the current state.
+        /// Update the current state.
         /// </summary>
         void Update();
         
         /// <summary>
-        /// Updates the current state at fixed intervals for physics.
+        /// Update the current state at fixed intervals for physics.
         /// </summary>
         void FixedUpdate();
     }

@@ -3,28 +3,30 @@ using UnityEngine;
 namespace RecipeRage.Core.GameFramework.State.States
 {
     /// <summary>
-    /// State for the main menu.
+    /// State for game over.
     /// </summary>
-    public class MainMenuState : IState
+    public class GameOverState : IState
     {
         /// <summary>
         /// Called when the state is entered.
         /// </summary>
         public void Enter()
         {
-            Debug.Log("[MainMenuState] Entered");
+            Debug.Log("[GameOverState] Entered");
             
-            // Load the main menu scene if not already loaded
-            if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != "MainMenu")
-            {
-                UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
-            }
-            
-            // Show the main menu UI
+            // Show the game over UI
             var uiManager = FindFirstObjectByType<UI.UIManager>();
             if (uiManager != null)
             {
-                uiManager.ShowMainMenu();
+                uiManager.ShowGameOver();
+            }
+            
+            // Get the final scores
+            var scoreManager = FindFirstObjectByType<Gameplay.Scoring.ScoreManager>();
+            if (scoreManager != null)
+            {
+                var scores = scoreManager.GetScores();
+                Debug.Log($"[GameOverState] Final scores: {string.Join(", ", scores)}");
             }
         }
         
@@ -33,13 +35,13 @@ namespace RecipeRage.Core.GameFramework.State.States
         /// </summary>
         public void Exit()
         {
-            Debug.Log("[MainMenuState] Exited");
+            Debug.Log("[GameOverState] Exited");
             
-            // Hide the main menu UI
+            // Hide the game over UI
             var uiManager = FindFirstObjectByType<UI.UIManager>();
             if (uiManager != null)
             {
-                uiManager.HideMainMenu();
+                uiManager.HideGameOver();
             }
         }
         
@@ -48,7 +50,7 @@ namespace RecipeRage.Core.GameFramework.State.States
         /// </summary>
         public void Update()
         {
-            // Main menu update logic
+            // Game over update logic
         }
         
         /// <summary>
@@ -56,7 +58,7 @@ namespace RecipeRage.Core.GameFramework.State.States
         /// </summary>
         public void FixedUpdate()
         {
-            // Main menu physics update logic
+            // Game over physics update logic
         }
     }
 }

@@ -1,7 +1,7 @@
 namespace RecipeRage.Core.GameFramework.State
 {
     /// <summary>
-    /// Interface for game states in the state machine pattern.
+    /// Interface for game states.
     /// </summary>
     public interface IState
     {
