@@ -3,28 +3,22 @@ using UnityEngine;
 namespace RecipeRage.Core.GameFramework.State.States
 {
     /// <summary>
-    /// State for the main menu.
+    /// State for the lobby.
     /// </summary>
-    public class MainMenuState : IState
+    public class LobbyState : IState
     {
         /// <summary>
         /// Called when the state is entered.
         /// </summary>
         public void Enter()
         {
-            Debug.Log("[MainMenuState] Entered");
+            Debug.Log("[LobbyState] Entered");
             
-            // Load the main menu scene if not already loaded
-            if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != "MainMenu")
-            {
-                UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
-            }
-            
-            // Show the main menu UI
+            // Show the lobby UI
             var uiManager = FindFirstObjectByType<UI.UIManager>();
             if (uiManager != null)
             {
-                uiManager.ShowMainMenu();
+                uiManager.ShowLobby();
             }
         }
         
@@ -33,13 +27,13 @@ namespace RecipeRage.Core.GameFramework.State.States
         /// </summary>
         public void Exit()
         {
-            Debug.Log("[MainMenuState] Exited");
+            Debug.Log("[LobbyState] Exited");
             
-            // Hide the main menu UI
+            // Hide the lobby UI
             var uiManager = FindFirstObjectByType<UI.UIManager>();
             if (uiManager != null)
             {
-                uiManager.HideMainMenu();
+                uiManager.HideLobby();
             }
         }
         
@@ -48,7 +42,19 @@ namespace RecipeRage.Core.GameFramework.State.States
         /// </summary>
         public void Update()
         {
-            // Main menu update logic
+            // Lobby update logic
+            
+            // Check if all players are ready and the host has started the game
+            var networkManager = Core.Networking.RecipeRageNetworkManager.Instance;
+            if (networkManager != null && networkManager.IsHost && networkManager.AreAllPlayersReady())
+            {
+                // Transition to the game state
+                var gameStateManager = GameStateManager.Instance;
+                if (gameStateManager != null)
+                {
+                    gameStateManager.ChangeState(new GameplayState());
+                }
+            }
         }
         
         /// <summary>
@@ -56,7 +62,7 @@ namespace RecipeRage.Core.GameFramework.State.States
         /// </summary>
         public void FixedUpdate()
         {
-            // Main menu physics update logic
+            // Lobby physics update logic
         }
     }
 }

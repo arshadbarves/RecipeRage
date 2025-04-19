@@ -1,177 +1,109 @@
-using System;
 using UnityEngine;
 
 namespace RecipeRage.Core.GameFramework.State.States
 {
     /// <summary>
-    /// State for active gameplay.
+    /// State for gameplay.
     /// </summary>
-    public class GameplayState : GameState
+    public class GameplayState : IState
     {
-        /// <summary>
-        /// Event triggered when the game ends.
-        /// </summary>
-        public event Action OnGameEnded;
-        
-        /// <summary>
-        /// The current game mode.
-        /// </summary>
-        private object _gameMode; // Will be replaced with actual GameModeBase type
-        
-        /// <summary>
-        /// Flag to track if the game is active.
-        /// </summary>
-        private bool _isGameActive;
-        
-        /// <summary>
-        /// Game timer in seconds.
-        /// </summary>
-        private float _gameTimer;
-        
-        /// <summary>
-        /// Game duration in seconds.
-        /// </summary>
-        private float _gameDuration = 300f; // 5 minutes default
-        
         /// <summary>
         /// Called when the state is entered.
         /// </summary>
-        public override void Enter()
+        public void Enter()
         {
-            base.Enter();
+            Debug.Log("[GameplayState] Entered");
             
-            // Check if game mode is set
-            if (_gameMode == null)
+            // Load the game scene if not already loaded
+            if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != "Game")
             {
-                Debug.LogError("[GameplayState] Game mode not set. Cannot start gameplay.");
-                EndGame();
-                return;
+                UnityEngine.SceneManagement.SceneManager.LoadScene("Game");
             }
             
-            // Reset game state
-            _isGameActive = true;
-            _gameTimer = 0f;
+            // Show the gameplay UI
+            var uiManager = FindFirstObjectByType<UI.UIManager>();
+            if (uiManager != null)
+            {
+                uiManager.ShowGameplay();
+            }
             
-            // Start the game
-            Debug.Log("[GameplayState] Starting gameplay");
+            // Initialize the game mode
+            var gameModeManager = Core.GameModes.GameModeManager.Instance;
+            if (gameModeManager != null)
+            {
+                gameModeManager.StartCurrentGameMode();
+            }
             
-            // Show gameplay UI
-            // TODO: Implement gameplay UI activation
+            // Initialize the order system
+            var orderManager = FindFirstObjectByType<Gameplay.Cooking.OrderManager>();
+            if (orderManager != null)
+            {
+                orderManager.StartGeneratingOrders();
+            }
             
-            // Initialize game systems
-            // TODO: Implement game systems initialization
+            // Initialize the scoring system
+            var scoreManager = FindFirstObjectByType<Gameplay.Scoring.ScoreManager>();
+            if (scoreManager != null)
+            {
+                scoreManager.ResetScores();
+            }
         }
         
         /// <summary>
         /// Called when the state is exited.
         /// </summary>
-        public override void Exit()
+        public void Exit()
         {
-            base.Exit();
+            Debug.Log("[GameplayState] Exited");
             
-            // End the game if still active
-            if (_isGameActive)
+            // Hide the gameplay UI
+            var uiManager = FindFirstObjectByType<UI.UIManager>();
+            if (uiManager != null)
             {
-                _isGameActive = false;
+                uiManager.HideGameplay();
             }
             
-            // Hide gameplay UI
-            // TODO: Implement gameplay UI deactivation
+            // Stop the game mode
+            var gameModeManager = Core.GameModes.GameModeManager.Instance;
+            if (gameModeManager != null)
+            {
+                gameModeManager.StopCurrentGameMode();
+            }
             
-            // Clean up game systems
-            // TODO: Implement game systems cleanup
+            // Stop the order system
+            var orderManager = FindFirstObjectByType<Gameplay.Cooking.OrderManager>();
+            if (orderManager != null)
+            {
+                orderManager.StopGeneratingOrders();
+            }
         }
         
         /// <summary>
         /// Called every frame to update the state.
         /// </summary>
-        public override void Update()
+        public void Update()
         {
-            // If game is not active, do nothing
-            if (!_isGameActive)
+            // Gameplay update logic
+            
+            // Check if the game is over
+            var gameModeManager = Core.GameModes.GameModeManager.Instance;
+            if (gameModeManager != null && gameModeManager.IsGameOver())
             {
-                return;
+                // Transition to the game over state
+                var gameStateManager = GameStateManager.Instance;
+                if (gameStateManager != null)
+                {
+                    gameStateManager.ChangeState(new GameOverState());
+                }
             }
-            
-            // Update game timer
-            _gameTimer += Time.deltaTime;
-            
-            // Check for game end condition (time limit)
-            if (_gameTimer >= _gameDuration)
-            {
-                Debug.Log("[GameplayState] Game time limit reached");
-                EndGame();
-                return;
-            }
-            
-            // Update game systems
-            // TODO: Implement game systems update
         }
         
         /// <summary>
         /// Called at fixed intervals for physics updates.
         /// </summary>
-        public override void FixedUpdate()
+        public void FixedUpdate()
         {
-            // If game is not active, do nothing
-            if (!_isGameActive)
-            {
-                return;
-            }
-            
-            // Update physics-based game systems
-            // TODO: Implement physics-based game systems update
-        }
-        
-        /// <summary>
-        /// Sets the game mode for this gameplay session.
-        /// </summary>
-        /// <param name="gameMode">The game mode to use</param>
-        public void SetGameMode(object gameMode) // Will be replaced with actual GameModeBase type
-        {
-            _gameMode = gameMode;
-            Debug.Log($"[GameplayState] Game mode set: {_gameMode}");
-            
-            // Set game duration based on game mode
-            // TODO: Get game duration from game mode
-        }
-        
-        /// <summary>
-        /// Ends the current game.
-        /// </summary>
-        public void EndGame()
-        {
-            if (!_isGameActive)
-            {
-                return;
-            }
-            
-            _isGameActive = false;
-            Debug.Log("[GameplayState] Game ended");
-            
-            // Show game end UI
-            // TODO: Implement game end UI activation
-            
-            // Trigger the game ended event
-            OnGameEnded?.Invoke();
-        }
-        
-        /// <summary>
-        /// Gets the remaining game time in seconds.
-        /// </summary>
-        /// <returns>Remaining game time in seconds</returns>
-        public float GetRemainingTime()
-        {
-            return Mathf.Max(0, _gameDuration - _gameTimer);
-        }
-        
-        /// <summary>
-        /// Gets the elapsed game time in seconds.
-        /// </summary>
-        /// <returns>Elapsed game time in seconds</returns>
-        public float GetElapsedTime()
-        {
-            return _gameTimer;
+            // Gameplay physics update logic
         }
     }
 }

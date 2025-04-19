@@ -4,12 +4,12 @@ using UnityEngine;
 namespace RecipeRage.Core.GameFramework.State
 {
     /// <summary>
-    /// Implementation of a state machine that manages game states.
+    /// Implementation of a state machine.
     /// </summary>
     public class StateMachine : IStateMachine
     {
         /// <summary>
-        /// Event triggered when the state changes.
+        /// Event triggered when a state transition occurs.
         /// </summary>
         public event Action<IState, IState> OnStateChanged;
         
@@ -24,94 +24,67 @@ namespace RecipeRage.Core.GameFramework.State
         public IState PreviousState { get; private set; }
         
         /// <summary>
-        /// Flag to track if the state machine has been initialized.
-        /// </summary>
-        private bool _isInitialized;
-        
-        /// <summary>
-        /// Initializes the state machine with an initial state.
+        /// Initialize the state machine with an initial state.
         /// </summary>
         /// <param name="initialState">The initial state</param>
         public void Initialize(IState initialState)
         {
-            if (_isInitialized)
-            {
-                Debug.LogWarning("[StateMachine] State machine already initialized.");
-                return;
-            }
-            
             CurrentState = initialState;
-            _isInitialized = true;
+            CurrentState.Enter();
             
-            // Enter the initial state
-            CurrentState?.Enter();
-            
-            Debug.Log($"[StateMachine] Initialized with state: {initialState?.GetType().Name}");
+            Debug.Log($"[StateMachine] Initialized with state: {initialState.GetType().Name}");
         }
         
         /// <summary>
-        /// Changes to a new state.
+        /// Change to a new state.
         /// </summary>
         /// <param name="newState">The new state to change to</param>
         public void ChangeState(IState newState)
         {
-            if (!_isInitialized)
-            {
-                Debug.LogError("[StateMachine] Cannot change state before initialization. Call Initialize first.");
-                return;
-            }
-            
             if (newState == null)
             {
-                Debug.LogError("[StateMachine] Cannot change to a null state.");
+                Debug.LogError("[StateMachine] Cannot change to a null state");
                 return;
             }
             
             if (CurrentState == newState)
             {
-                Debug.LogWarning($"[StateMachine] Already in state {newState.GetType().Name}. State change ignored.");
+                Debug.LogWarning($"[StateMachine] Already in state: {newState.GetType().Name}");
                 return;
             }
             
             // Exit the current state
-            CurrentState?.Exit();
+            if (CurrentState != null)
+            {
+                CurrentState.Exit();
+            }
             
             // Store the previous state
             PreviousState = CurrentState;
             
-            // Set and enter the new state
+            // Enter the new state
             CurrentState = newState;
             CurrentState.Enter();
             
             // Trigger the state changed event
             OnStateChanged?.Invoke(PreviousState, CurrentState);
             
-            Debug.Log($"[StateMachine] State changed from {PreviousState?.GetType().Name} to {CurrentState.GetType().Name}");
+            Debug.Log($"[StateMachine] Changed state from {(PreviousState != null ? PreviousState.GetType().Name : "null")} to {CurrentState.GetType().Name}");
         }
         
         /// <summary>
-        /// Updates the current state.
+        /// Update the current state.
         /// </summary>
         public void Update()
         {
-            if (!_isInitialized)
-            {
-                return;
-            }
-            
             CurrentState?.Update();
         }
         
         /// <summary>
-        /// Updates the current state at fixed intervals for physics.
+        /// Update the current state at fixed intervals for physics.
         /// </summary>
         public void FixedUpdate()
         {
-            if (!_isInitialized)
-            {
-                return;
-            }
-            
             CurrentState?.FixedUpdate();
         }
     }
