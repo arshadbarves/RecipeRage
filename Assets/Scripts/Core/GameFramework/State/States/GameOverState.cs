@@ -1,6 +1,8 @@
+using Gameplay.Scoring;
+using UI;
 using UnityEngine;
 
-namespace RecipeRage.Core.GameFramework.State.States
+namespace Core.GameFramework.State.States
 {
     /// <summary>
     /// State for game over.
@@ -8,43 +10,47 @@ namespace RecipeRage.Core.GameFramework.State.States
     public class GameOverState : IState
     {
         /// <summary>
+        /// Name of the state for debugging.
+        /// </summary>
+        public string StateName => GetType().Name;
+        /// <summary>
         /// Called when the state is entered.
         /// </summary>
         public void Enter()
         {
-            Debug.Log("[GameOverState] Entered");
-            
+            Debug.Log($"[{StateName}] Entered");
+
             // Show the game over UI
-            var uiManager = FindFirstObjectByType<UI.UIManager>();
+            UIManager uiManager = Object.FindFirstObjectByType<UIManager>();
             if (uiManager != null)
             {
                 uiManager.ShowGameOver();
             }
-            
+
             // Get the final scores
-            var scoreManager = FindFirstObjectByType<Gameplay.Scoring.ScoreManager>();
+            ScoreManager scoreManager = Object.FindFirstObjectByType<ScoreManager>();
             if (scoreManager != null)
             {
-                var scores = scoreManager.GetScores();
-                Debug.Log($"[GameOverState] Final scores: {string.Join(", ", scores)}");
+                int scores = scoreManager.GetScore();
+                Debug.Log($"[{StateName}] Final scores: {string.Join(", ", scores)}");
             }
         }
-        
+
         /// <summary>
         /// Called when the state is exited.
         /// </summary>
         public void Exit()
         {
-            Debug.Log("[GameOverState] Exited");
-            
+            Debug.Log($"[{StateName}] Exited");
+
             // Hide the game over UI
-            var uiManager = FindFirstObjectByType<UI.UIManager>();
+            UIManager uiManager = Object.FindFirstObjectByType<UIManager>();
             if (uiManager != null)
             {
                 uiManager.HideGameOver();
             }
         }
-        
+
         /// <summary>
         /// Called every frame to update the state.
         /// </summary>
@@ -52,7 +58,7 @@ namespace RecipeRage.Core.GameFramework.State.States
         {
             // Game over update logic
         }
-        
+
         /// <summary>
         /// Called at fixed intervals for physics updates.
         /// </summary>

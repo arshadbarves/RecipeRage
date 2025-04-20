@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace RecipeRage.Core.GameFramework.State
+namespace Core.GameFramework.State
 {
     /// <summary>
     /// Implementation of a state machine.
@@ -12,17 +12,17 @@ namespace RecipeRage.Core.GameFramework.State
         /// Event triggered when a state transition occurs.
         /// </summary>
         public event Action<IState, IState> OnStateChanged;
-        
+
         /// <summary>
         /// The current active state.
         /// </summary>
         public IState CurrentState { get; private set; }
-        
+
         /// <summary>
         /// The previous state before the current one.
         /// </summary>
         public IState PreviousState { get; private set; }
-        
+
         /// <summary>
         /// Initialize the state machine with an initial state.
         /// </summary>
@@ -31,10 +31,10 @@ namespace RecipeRage.Core.GameFramework.State
         {
             CurrentState = initialState;
             CurrentState.Enter();
-            
+
             Debug.Log($"[StateMachine] Initialized with state: {initialState.GetType().Name}");
         }
-        
+
         /// <summary>
         /// Change to a new state.
         /// </summary>
@@ -46,32 +46,32 @@ namespace RecipeRage.Core.GameFramework.State
                 Debug.LogError("[StateMachine] Cannot change to a null state");
                 return;
             }
-            
+
             if (CurrentState == newState)
             {
                 Debug.LogWarning($"[StateMachine] Already in state: {newState.GetType().Name}");
                 return;
             }
-            
+
             // Exit the current state
             if (CurrentState != null)
             {
                 CurrentState.Exit();
             }
-            
+
             // Store the previous state
             PreviousState = CurrentState;
-            
+
             // Enter the new state
             CurrentState = newState;
             CurrentState.Enter();
-            
+
             // Trigger the state changed event
             OnStateChanged?.Invoke(PreviousState, CurrentState);
-            
+
             Debug.Log($"[StateMachine] Changed state from {(PreviousState != null ? PreviousState.GetType().Name : "null")} to {CurrentState.GetType().Name}");
         }
-        
+
         /// <summary>
         /// Update the current state.
         /// </summary>
@@ -79,7 +79,7 @@ namespace RecipeRage.Core.GameFramework.State
         {
             CurrentState?.Update();
         }
-        
+
         /// <summary>
         /// Update the current state at fixed intervals for physics.
         /// </summary>

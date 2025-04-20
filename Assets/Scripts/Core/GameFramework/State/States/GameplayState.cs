@@ -1,6 +1,11 @@
+using Core.GameModes;
+using Gameplay.Cooking;
+using Gameplay.Scoring;
+using UI;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-namespace RecipeRage.Core.GameFramework.State.States
+namespace Core.GameFramework.State.States
 {
     /// <summary>
     /// State for gameplay.
@@ -8,96 +13,98 @@ namespace RecipeRage.Core.GameFramework.State.States
     public class GameplayState : IState
     {
         /// <summary>
+        /// Name of the state for debugging.
+        /// </summary>
+        public string StateName => GetType().Name;
+        /// <summary>
         /// Called when the state is entered.
         /// </summary>
         public void Enter()
         {
-            Debug.Log("[GameplayState] Entered");
-            
+            Debug.Log($"[{StateName}] Entered");
+
             // Load the game scene if not already loaded
-            if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != "Game")
+            if (SceneManager.GetActiveScene().name != "Game")
             {
-                UnityEngine.SceneManagement.SceneManager.LoadScene("Game");
+                SceneManager.LoadScene("Game");
             }
-            
+
             // Show the gameplay UI
-            var uiManager = FindFirstObjectByType<UI.UIManager>();
+            UIManager uiManager = Object.FindFirstObjectByType<UIManager>();
             if (uiManager != null)
             {
                 uiManager.ShowGameplay();
             }
-            
+
             // Initialize the game mode
-            var gameModeManager = Core.GameModes.GameModeManager.Instance;
+            GameModeManager gameModeManager = GameModeManager.Instance;
             if (gameModeManager != null)
             {
                 gameModeManager.StartCurrentGameMode();
             }
-            
+
             // Initialize the order system
-            var orderManager = FindFirstObjectByType<Gameplay.Cooking.OrderManager>();
+            OrderManager orderManager = Object.FindFirstObjectByType<OrderManager>();
             if (orderManager != null)
             {
                 orderManager.StartGeneratingOrders();
             }
-            
+
             // Initialize the scoring system
-            var scoreManager = FindFirstObjectByType<Gameplay.Scoring.ScoreManager>();
+            ScoreManager scoreManager = Object.FindFirstObjectByType<ScoreManager>();
             if (scoreManager != null)
             {
                 scoreManager.ResetScores();
             }
         }
-        
+
         /// <summary>
         /// Called when the state is exited.
         /// </summary>
         public void Exit()
         {
-            Debug.Log("[GameplayState] Exited");
-            
+            Debug.Log($"[{StateName}] Exited");
+
             // Hide the gameplay UI
-            var uiManager = FindFirstObjectByType<UI.UIManager>();
+            UIManager uiManager = Object.FindFirstObjectByType<UIManager>();
             if (uiManager != null)
             {
                 uiManager.HideGameplay();
             }
-            
+
             // Stop the game mode
-            var gameModeManager = Core.GameModes.GameModeManager.Instance;
+            GameModeManager gameModeManager = GameModeManager.Instance;
             if (gameModeManager != null)
             {
                 gameModeManager.StopCurrentGameMode();
             }
-            
+
             // Stop the order system
-            var orderManager = FindFirstObjectByType<Gameplay.Cooking.OrderManager>();
+            OrderManager orderManager = Object.FindFirstObjectByType<OrderManager>();
             if (orderManager != null)
             {
                 orderManager.StopGeneratingOrders();
             }
         }
-        
+
         /// <summary>
         /// Called every frame to update the state.
         /// </summary>
         public void Update()
         {
             // Gameplay update logic
-            
+
             // Check if the game is over
-            var gameModeManager = Core.GameModes.GameModeManager.Instance;
-            if (gameModeManager != null && gameModeManager.IsGameOver())
+            GameModeManager gameModeManager = GameModeManager.Instance;
+            if (gameModeManager == null || !gameModeManager.IsGameOver()) return;
+            // Transition to the game over state
+            GameStateManager gameStateManager = GameStateManager.Instance;
+            if (gameStateManager != null)
             {
-                // Transition to the game over state
-                var gameStateManager = GameStateManager.Instance;
-                if (gameStateManager != null)
-                {
-                    gameStateManager.ChangeState(new GameOverState());
-                }
+                gameStateManager.ChangeState(new GameOverState());
             }
         }
-        
+
         /// <summary>
         /// Called at fixed intervals for physics updates.
         /// </summary>

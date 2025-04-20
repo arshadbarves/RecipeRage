@@ -1,8 +1,8 @@
 using System;
-using RecipeRage.Core.Patterns;
+using Core.Patterns;
 using UnityEngine;
 
-namespace RecipeRage.Core.GameFramework.State
+namespace Core.GameFramework.State
 {
     /// <summary>
     /// Manages game states and transitions between them.

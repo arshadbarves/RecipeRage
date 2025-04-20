@@ -1,6 +1,6 @@
 using System;
 
-namespace RecipeRage.Core.GameFramework.State
+namespace Core.GameFramework.State
 {
     /// <summary>
     /// Interface for state machines.
