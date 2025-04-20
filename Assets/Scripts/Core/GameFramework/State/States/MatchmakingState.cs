@@ -1,18 +1,22 @@
 using System;
-using RecipeRage.Core.Networking;
-using RecipeRage.Core.Networking.Common;
-using RecipeRage.Core.Networking.EOS;
-using RecipeRage.UI;
-using RecipeRage.UI.Screens;
+using Core.Networking;
+using Core.Networking.Common;
+using Core.Networking.EOS;
+using UI;
+using UI.Screens;
 using UnityEngine;
 
-namespace RecipeRage.Core.GameFramework.State.States
+namespace Core.GameFramework.State.States
 {
     /// <summary>
     /// State for matchmaking and finding players for a game.
     /// </summary>
-    public class MatchmakingState : GameState
+    public class MatchmakingState : IState
     {
+        /// <summary>
+        /// Name of the state for debugging.
+        /// </summary>
+        public string StateName => GetType().Name;
 
         /// <summary>
         /// Flag to track if matchmaking is in progress.
@@ -39,9 +43,9 @@ namespace RecipeRage.Core.GameFramework.State.States
         /// <summary>
         /// Called when the state is entered.
         /// </summary>
-        public override void Enter()
+        public void Enter()
         {
-            base.Enter();
+            Debug.Log($"[{StateName}] Entered");
 
             // Get reference to the network manager and lobby manager
             _networkManager = RecipeRageNetworkManager.Instance;
@@ -76,9 +80,9 @@ namespace RecipeRage.Core.GameFramework.State.States
         /// <summary>
         /// Called when the state is exited.
         /// </summary>
-        public override void Exit()
+        public void Exit()
         {
-            base.Exit();
+            Debug.Log($"[{StateName}] Exited");
 
             // Unsubscribe from lobby events
             if (_lobbyManager != null)
@@ -104,9 +108,17 @@ namespace RecipeRage.Core.GameFramework.State.States
         /// <summary>
         /// Called every frame to update the state.
         /// </summary>
-        public override void Update()
+        public void Update()
         {
             // Matchmaking logic is now handled by the NetworkLobbyManager
+        }
+
+        /// <summary>
+        /// Called at fixed intervals for physics updates.
+        /// </summary>
+        public void FixedUpdate()
+        {
+            // Matchmaking doesn't need physics updates
         }
 
         // UI is now managed by the UIManager
