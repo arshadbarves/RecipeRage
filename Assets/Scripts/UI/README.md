@@ -24,7 +24,6 @@ To set up the UI system:
 
 1. Run the "RecipeRage/Setup UI Resources" menu item to create placeholder images
 2. Run the "RecipeRage/Create UI Prefabs" menu item to create UI prefabs
-3. Run the "RecipeRage/Setup UI Scene" menu item to create a UI scene
 
 ## Usage
 
@@ -75,13 +74,13 @@ UIAnimationSystem.Instance.AnimateSequence(
 // Chain multiple animations on a single element
 UIAnimationSystem.Instance.ChainAnimations(
     element,
-    new List<UIAnimationSystem.AnimationType> { 
+    new List<UIAnimationSystem.AnimationType> {
         UIAnimationSystem.AnimationType.FadeIn,
         UIAnimationSystem.AnimationType.Bounce
     },
     new List<float> { 0.5f, 0.5f },
     new List<float> { 0f, 0f },
-    new List<UIAnimationSystem.EasingType> { 
+    new List<UIAnimationSystem.EasingType> {
         UIAnimationSystem.EasingType.EaseOutCubic,
         UIAnimationSystem.EasingType.EaseOutElastic
     },
