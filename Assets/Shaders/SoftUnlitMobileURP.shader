@@ -5,13 +5,6 @@ Shader "Custom/SoftFakeLitMobileURP" // Renamed slightly to reflect added lighti
         [MainTexture] _BaseMap("Texture", 2D) = "white" {}
         [MainColor] _BaseColor("Base Color Tint", Color) = (1,1,1,1)
 
-        [Header(Texture Coordinates)]
-        [Toggle(_USE_PROCEDURAL_UVS)] _UseProceduralUVs("Use Procedural UVs", Float) = 0
-        _UVScale("UV Scale", Vector) = (1, 1, 0, 0)
-        _UVOffset("UV Offset", Vector) = (0, 0, 0, 0)
-        _UVRotation("UV Rotation (Degrees)", Range(0, 360)) = 0
-        [KeywordEnum(UV1, UV2, Triplanar, Spherical)] _UVMapping("UV Mapping Mode", Float) = 0
-
         _TopColor("Top Color (Fake Light)", Color) = (1.0, 1.0, 1.0, 1.0) // Color for surfaces facing the fake light
         _BottomColor("Bottom Color (Ambient)", Color) = (0.5, 0.5, 0.5, 1.0) // Color for surfaces facing away
         _FakeLightDirection("Fake Light Direction (World)", Vector) = (50, 330, 0, 0) // Custom light direction
@@ -52,10 +45,6 @@ Shader "Custom/SoftFakeLitMobileURP" // Renamed slightly to reflect added lighti
             // Enable GPU instancing
             #pragma multi_compile_instancing
 
-            // Custom keywords for UV mapping modes
-            #pragma shader_feature_local _USE_PROCEDURAL_UVS
-            #pragma multi_compile_local _UVMAPPING_UV1 _UVMAPPING_UV2 _UVMAPPING_TRIPLANAR _UVMAPPING_SPHERICAL
-
             // URP Core Includes - provides necessary functions and variables
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             // Include Lighting for PBR helper functions/constants like unity_ColorSpaceDielectricSpec
@@ -82,10 +71,6 @@ Shader "Custom/SoftFakeLitMobileURP" // Renamed slightly to reflect added lighti
                 half _EdgeSoftening;
                 half4 _RimColor;
                 float _RimPower; // Using float for Range precision
-                // Texture coordinate parameters
-                float4 _UVScale;
-                float4 _UVOffset;
-                float _UVRotation;
             CBUFFER_END
 
             // Declare texture and sampler
@@ -96,8 +81,7 @@ Shader "Custom/SoftFakeLitMobileURP" // Renamed slightly to reflect added lighti
             struct Attributes
             {
                 float4 positionOS   : POSITION;     // Object space position
-                float2 uv           : TEXCOORD0;    // Base UV coordinates (UV1)
-                float2 uv2          : TEXCOORD1;    // Secondary UV coordinates (UV2)
+                float2 uv           : TEXCOORD0;    // Base UV coordinates
                 float3 normalOS     : NORMAL;       // Object space normal
                 UNITY_VERTEX_INPUT_INSTANCE_ID // For GPU Instancing
             };
@@ -107,7 +91,6 @@ Shader "Custom/SoftFakeLitMobileURP" // Renamed slightly to reflect added lighti
             {
                 float4 positionHCS  : SV_POSITION;  // Homogeneous clip space position
                 float2 uv           : TEXCOORD0;    // UV coordinates
-                float3 positionWS    : TEXCOORD3;    // World space position (for procedural UVs)
                 half3 normalWS     : TEXCOORD1;    // World space normal
                 half3 viewDirWS    : TEXCOORD2;    // World space view direction
                 UNITY_VERTEX_INPUT_INSTANCE_ID // For GPU Instancing
@@ -129,31 +112,7 @@ Shader "Custom/SoftFakeLitMobileURP" // Renamed slightly to reflect added lighti
                 output.viewDirWS = normalize(_WorldSpaceCameraPos.xyz - positionWS);
 
                 output.positionHCS = posInputs.positionCS;
-                // Store world position for procedural mapping
-                output.positionWS = positionWS;
-
-                // Process UVs based on selected mapping mode
-                #if defined(_USE_PROCEDURAL_UVS)
-                    // Apply custom UV transformations
-                    float2 customUV = input.uv;
-
-                    // Apply scale
-                    customUV *= _UVScale.xy;
-
-                    // Apply rotation
-                    float sinX = sin(radians(_UVRotation));
-                    float cosX = cos(radians(_UVRotation));
-                    float2x2 rotationMatrix = float2x2(cosX, -sinX, sinX, cosX);
-                    customUV = mul(customUV - 0.5, rotationMatrix) + 0.5;
-
-                    // Apply offset
-                    customUV += _UVOffset.xy;
-
-                    output.uv = customUV;
-                #else
-                    // Standard UV transformation
-                    output.uv = TRANSFORM_TEX(input.uv, _BaseMap);
-                #endif
+                output.uv = TRANSFORM_TEX(input.uv, _BaseMap);
                 output.normalWS = normalInputs.normalWS;
 
                 return output;
@@ -165,49 +124,9 @@ Shader "Custom/SoftFakeLitMobileURP" // Renamed slightly to reflect added lighti
                 UNITY_SETUP_INSTANCE_ID(input);
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
 
-                // Calculate texture coordinates based on mapping mode
-                float2 finalUV = input.uv;
-
-                #if defined(_UVMAPPING_UV2)
-                    // Use secondary UV set
-                    finalUV = input.uv2;
-                #elif defined(_UVMAPPING_TRIPLANAR)
-                    // Triplanar mapping
-                    half3 blendWeights = abs(normalize(input.normalWS));
-                    blendWeights /= (blendWeights.x + blendWeights.y + blendWeights.z);
-
-                    // Sample texture from three directions
-                    float2 uvX = input.positionWS.zy * _UVScale.xy + _UVOffset.xy;
-                    float2 uvY = input.positionWS.xz * _UVScale.xy + _UVOffset.xy;
-                    float2 uvZ = input.positionWS.xy * _UVScale.xy + _UVOffset.xy;
-
-                    half4 colorX = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, uvX);
-                    half4 colorY = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, uvY);
-                    half4 colorZ = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, uvZ);
-
-                    // Blend samples based on normal
-                    half4 baseTexColor = colorX * blendWeights.x + colorY * blendWeights.y + colorZ * blendWeights.z;
-                    half4 albedo = baseTexColor * _BaseColor;
-                #elif defined(_UVMAPPING_SPHERICAL)
-                    // Spherical mapping
-                    float3 viewVec = normalize(input.positionWS - _WorldSpaceCameraPos);
-                    float3 reflVec = reflect(viewVec, normalize(input.normalWS));
-
-                    // Convert to spherical coordinates
-                    float theta = atan2(reflVec.z, reflVec.x);
-                    float phi = acos(reflVec.y);
-
-                    // Map to UV space
-                    float2 sphericalUV = float2(theta / (2.0 * 3.14159) + 0.5, phi / 3.14159);
-                    sphericalUV = sphericalUV * _UVScale.xy + _UVOffset.xy;
-
-                    half4 baseTexColor = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, sphericalUV);
-                    half4 albedo = baseTexColor * _BaseColor;
-                #else
-                    // Standard UV mapping (UV1)
-                    half4 baseTexColor = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, finalUV);
-                    half4 albedo = baseTexColor * _BaseColor;
-                #endif
+                // Sample the base texture and apply tint
+                half4 baseTexColor = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, input.uv);
+                half4 albedo = baseTexColor * _BaseColor;
 
                 // Normalize interpolated vectors
                 half3 normalWS = normalize(input.normalWS);
