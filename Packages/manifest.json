@@ -1,7 +1,6 @@
 {
   "dependencies": {
     "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask",
-    "com.justinpbarnett.unity-mcp": "https://github.com/justinpbarnett/unity-mcp.git",
     "com.playeveryware.eos": "git@github.com:PlayEveryWare/eos_plugin_for_unity_upm.git",
     "com.unity.addressables": "2.2.2",
     "com.unity.ai.navigation": "2.0.5",
