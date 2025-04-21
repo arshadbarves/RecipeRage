@@ -12,7 +12,8 @@ The Save System provides a centralized way to save and load game data, including
 
 ## Setup
 
-1. Run the "RecipeRage/Save System/Create Save Manager Prefab" menu item to create the SaveManager prefab
+1. Run the "RecipeRage/Create/All Manager Prefabs" menu item to create all manager prefabs including the SaveManager
+   - Alternatively, run "RecipeRage/Save System/Create Save Manager Prefab" to create only the SaveManager prefab
 2. Add the SaveManager prefab to your scene or let GameBootstrap initialize it
 
 ## Usage

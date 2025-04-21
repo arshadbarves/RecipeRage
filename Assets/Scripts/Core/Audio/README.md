@@ -15,7 +15,8 @@ The Audio System provides a centralized way to manage all audio in the game, inc
 
 1. Run the "RecipeRage/Audio/Create Audio Mixer" menu item to create the audio mixer
 2. Run the "RecipeRage/Audio/Create Audio Database" menu item to create the audio database
-3. Run the "RecipeRage/Audio/Create Audio Manager Prefab" menu item to create the AudioManager prefab
+3. Run the "RecipeRage/Create/All Manager Prefabs" menu item to create all manager prefabs including the AudioManager
+   - Alternatively, run "RecipeRage/Audio/Create Audio Manager Prefab" to create only the AudioManager prefab
 4. Add the AudioManager prefab to your scene or let GameBootstrap initialize it
 
 ## Usage
