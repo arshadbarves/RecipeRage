@@ -1,7 +1,7 @@
 using System;
 using Unity.Netcode;
 
-namespace RecipeRage.Gameplay.Cooking
+namespace Gameplay.Cooking
 {
     /// <summary>
     /// Represents the state of a recipe order.

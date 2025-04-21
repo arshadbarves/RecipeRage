@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace RecipeRage.UI
+namespace UI
 {
     /// <summary>
     /// Represents a game mode entry in the lobby UI.

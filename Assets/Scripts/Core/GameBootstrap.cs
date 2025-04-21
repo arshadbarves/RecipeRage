@@ -1,17 +1,17 @@
 using System.Collections;
-using RecipeRage.Core.Characters;
-using RecipeRage.Core.GameFramework.State;
-using RecipeRage.Core.GameFramework.State.States;
-using RecipeRage.Core.GameModes;
-using RecipeRage.Core.Input;
-using RecipeRage.Core.Networking;
-using RecipeRage.Core.Patterns;
-using RecipeRage.Gameplay.Cooking;
-using RecipeRage.Gameplay.Scoring;
-using RecipeRage.UI;
+using Core.Characters;
+using Core.GameFramework.State;
+using Core.GameFramework.State.States;
+using Core.GameModes;
+using Core.Input;
+using Core.Networking;
+using Core.Patterns;
+using Gameplay.Cooking;
+using Gameplay.Scoring;
+using UI;
 using UnityEngine;
 
-namespace RecipeRage.Core
+namespace Core
 {
     /// <summary>
     /// Main bootstrap class for initializing all game systems.

@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
+using Core.Networking.Common;
 using Epic.OnlineServices;
 using Epic.OnlineServices.Sessions;
 using PlayEveryWare.EpicOnlineServices;
 using PlayEveryWare.EpicOnlineServices.Samples;
-using RecipeRage.Core.Networking.Common;
 using UnityEngine;
 
-namespace RecipeRage.Core.Networking.EOS
+namespace Core.Networking.EOS
 {
     /// <summary>
     /// Wrapper for EOSSessionsManager that provides game-specific session functionality.

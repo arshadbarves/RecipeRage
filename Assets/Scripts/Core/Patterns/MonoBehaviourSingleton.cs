@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace RecipeRage.Core.Patterns
+namespace Core.Patterns
 {
     /// <summary>
     /// Generic singleton pattern implementation for MonoBehaviour classes.

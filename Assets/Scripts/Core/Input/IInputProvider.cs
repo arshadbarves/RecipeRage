@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace RecipeRage.Core.Input
+namespace Core.Input
 {
     /// <summary>
     /// Interface for input providers that handle different input methods.

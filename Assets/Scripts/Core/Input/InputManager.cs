@@ -1,8 +1,8 @@
 using System;
-using RecipeRage.Core.Patterns;
+using Core.Patterns;
 using UnityEngine;
 
-namespace RecipeRage.Core.Input
+namespace Core.Input
 {
     /// <summary>
     /// Manages input from different input providers and provides a unified interface for game input.

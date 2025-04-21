@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using RecipeRage.Core.Patterns;
+using Core.Patterns;
 using UnityEngine;
 
-namespace RecipeRage.Core.Characters
+namespace Core.Characters
 {
     /// <summary>
     /// Manages character classes and abilities in RecipeRage.

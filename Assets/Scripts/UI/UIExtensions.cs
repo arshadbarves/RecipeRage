@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace RecipeRage.UI
+namespace UI
 {
     /// <summary>
     /// Extension methods for UI Toolkit elements

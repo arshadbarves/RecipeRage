@@ -1,0 +1,71 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5339208093046561059
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6438562735729849618}
+  - component: {fileID: 8665688608536054922}
+  m_Layer: 0
+  m_Name: GameBootstrap
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6438562735729849618
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5339208093046561059}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8665688608536054922
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5339208093046561059}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0669a740a39b946968864efa3c7725be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _initializeNetworking: 1
+  _initializeGameState: 1
+  _initializeUI: 1
+  _initializeInput: 1
+  _initializeGameMode: 1
+  _initializeCharacters: 1
+  _initializeScoring: 1
+  _initializeOrderSystem: 1
+  _initialState: 0
+  _networkManagerPrefab: {fileID: 4846826097476263611, guid: 186ce98f6ac39424780d8d169987816d,
+    type: 3}
+  _gameStateManagerPrefab: {fileID: 6807800193437461371, guid: aa138c7106e9e417d86287ff04dd8f25,
+    type: 3}
+  _uiManagerPrefab: {fileID: 5064214586945618265, guid: 9bf7a58128ba64b8098b1efd8ff83b56,
+    type: 3}
+  _inputManagerPrefab: {fileID: 2712526929684852920, guid: 4444abffede694f6a8fbfbe950495bbb,
+    type: 3}
+  _gameModeManagerPrefab: {fileID: 7072362200711467709, guid: 154f5af71c6804e3fbe599ca79fdc7a0,
+    type: 3}
+  _characterManagerPrefab: {fileID: 5593771558604228957, guid: 3c6194edd447740b29e4a64932bc051d,
+    type: 3}
+  _scoreManagerPrefab: {fileID: 5026227404347218943, guid: b41bca3c3306c4bee9abbf367861c336,
+    type: 3}
+  _orderManagerPrefab: {fileID: 246903033967312201, guid: 80b34f73062a847f9a9476bf03f17eaa,
+    type: 3}

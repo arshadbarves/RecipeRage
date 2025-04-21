@@ -10,18 +10,14 @@ namespace Core.GameFramework.State.States
     /// <summary>
     /// State for gameplay.
     /// </summary>
-    public class GameplayState : IState
+    public class GameplayState : BaseState
     {
-        /// <summary>
-        /// Name of the state for debugging.
-        /// </summary>
-        public string StateName => GetType().Name;
         /// <summary>
         /// Called when the state is entered.
         /// </summary>
-        public void Enter()
+        public override void Enter()
         {
-            Debug.Log($"[{StateName}] Entered");
+            base.Enter();
 
             // Load the game scene if not already loaded
             if (SceneManager.GetActiveScene().name != "Game")
@@ -61,9 +57,9 @@ namespace Core.GameFramework.State.States
         /// <summary>
         /// Called when the state is exited.
         /// </summary>
-        public void Exit()
+        public override void Exit()
         {
-            Debug.Log($"[{StateName}] Exited");
+            base.Exit();
 
             // Hide the gameplay UI
             UIManager uiManager = Object.FindFirstObjectByType<UIManager>();
@@ -90,7 +86,7 @@ namespace Core.GameFramework.State.States
         /// <summary>
         /// Called every frame to update the state.
         /// </summary>
-        public void Update()
+        public override void Update()
         {
             // Gameplay update logic
 
@@ -108,7 +104,7 @@ namespace Core.GameFramework.State.States
         /// <summary>
         /// Called at fixed intervals for physics updates.
         /// </summary>
-        public void FixedUpdate()
+        public override void FixedUpdate()
         {
             // Gameplay physics update logic
         }

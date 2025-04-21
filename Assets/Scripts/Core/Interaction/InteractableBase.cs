@@ -1,12 +1,12 @@
+using Core.Characters;
 using UnityEngine;
-using RecipeRage.Core.Characters;
 
-namespace RecipeRage.Core.Interaction
+namespace Core.Interaction
 {
     /// <summary>
     /// Base class for objects that can be interacted with by the player.
     /// </summary>
-    public abstract class InteractableBase : MonoBehaviour, RecipeRage.Core.Characters.IInteractable
+    public abstract class InteractableBase : MonoBehaviour, IInteractable
     {
         [Header("Interaction Settings")]
         [SerializeField] protected string _interactionPrompt = "Interact";

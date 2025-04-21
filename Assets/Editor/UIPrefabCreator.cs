@@ -1,4 +1,6 @@
 using System.IO;
+using UI;
+using UI.Screens;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -79,7 +81,7 @@ namespace RecipeRage.Editor
             }
 
             // Add SplashScreen component
-            prefab.AddComponent<RecipeRage.UI.Screens.SplashScreen>();
+            prefab.AddComponent<UI.Screens.SplashScreen>();
 
             // Save as prefab
             string prefabPath = "Assets/Prefabs/UI/SplashScreen.prefab";
@@ -127,7 +129,7 @@ namespace RecipeRage.Editor
             }
 
             // Add MainMenuScreen component
-            prefab.AddComponent<RecipeRage.UI.Screens.MainMenuScreen>();
+            prefab.AddComponent<MainMenuScreen>();
 
             // Save as prefab
             string prefabPath = "Assets/Prefabs/UI/MainMenuScreen.prefab";
@@ -175,7 +177,7 @@ namespace RecipeRage.Editor
             }
 
             // Add CharacterSelectionScreen component
-            prefab.AddComponent<RecipeRage.UI.Screens.CharacterSelectionScreen>();
+            prefab.AddComponent<CharacterSelectionScreen>();
 
             // Save as prefab
             string prefabPath = "Assets/Prefabs/UI/CharacterSelectionScreen.prefab";
@@ -223,7 +225,7 @@ namespace RecipeRage.Editor
             }
 
             // Add GameModeSelectionScreen component
-            prefab.AddComponent<RecipeRage.UI.Screens.GameModeSelectionScreen>();
+            prefab.AddComponent<GameModeSelectionScreen>();
 
             // Save as prefab
             string prefabPath = "Assets/Prefabs/UI/GameModeSelectionScreen.prefab";
@@ -271,7 +273,7 @@ namespace RecipeRage.Editor
             }
 
             // Add SettingsScreen component
-            prefab.AddComponent<RecipeRage.UI.Screens.SettingsScreen>();
+            prefab.AddComponent<SettingsScreen>();
 
             // Save as prefab
             string prefabPath = "Assets/Prefabs/UI/SettingsScreen.prefab";
@@ -292,10 +294,10 @@ namespace RecipeRage.Editor
             GameObject prefab = new GameObject("UIManager");
 
             // Add UIInitializer component
-            prefab.AddComponent<RecipeRage.UI.UIInitializer>();
+            prefab.AddComponent<UIInitializer>();
 
             // Set up references
-            RecipeRage.UI.UIInitializer initializer = prefab.GetComponent<RecipeRage.UI.UIInitializer>();
+            UIInitializer initializer = prefab.GetComponent<UIInitializer>();
 
             // Load UXML assets
             VisualTreeAsset splashScreenUXML = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/UI/UXML/SplashScreen.uxml");

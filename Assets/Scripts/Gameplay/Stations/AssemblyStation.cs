@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using RecipeRage.Gameplay.Cooking;
+using Gameplay.Cooking;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace RecipeRage.Gameplay.Stations
+namespace Gameplay.Stations
 {
     /// <summary>
     /// A station for assembling ingredients into a dish.

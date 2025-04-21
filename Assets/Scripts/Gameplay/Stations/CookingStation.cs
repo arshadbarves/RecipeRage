@@ -1,12 +1,10 @@
 using System;
-using System.Collections;
-using RecipeRage.Core.Characters;
-using RecipeRage.Core.Patterns;
-using RecipeRage.Gameplay.Cooking;
+using Core.Characters;
+using Gameplay.Cooking;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace RecipeRage.Gameplay.Stations
+namespace Gameplay.Stations
 {
     /// <summary>
     /// Base class for all cooking stations in the game.

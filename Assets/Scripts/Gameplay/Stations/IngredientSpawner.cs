@@ -1,8 +1,9 @@
-using RecipeRage.Gameplay.Cooking;
+using Core.Characters;
+using Gameplay.Cooking;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace RecipeRage.Gameplay.Stations
+namespace Gameplay.Stations
 {
     /// <summary>
     /// A station that spawns ingredients.
@@ -113,7 +114,7 @@ namespace RecipeRage.Gameplay.Stations
         /// Interact with the ingredient spawner.
         /// </summary>
         /// <param name="player">The player that is interacting</param>
-        public override void Interact(RecipeRage.Core.Characters.PlayerController player)
+        public override void Interact(PlayerController player)
         {
             if (!IsServer)
             {
@@ -146,7 +147,7 @@ namespace RecipeRage.Gameplay.Stations
         /// Spawn an ingredient.
         /// </summary>
         /// <param name="player">The player to give the ingredient to</param>
-        private void SpawnIngredient(RecipeRage.Core.Characters.PlayerController player)
+        private void SpawnIngredient(PlayerController player)
         {
             if (_ingredientToSpawn == null)
             {
@@ -234,7 +235,7 @@ namespace RecipeRage.Gameplay.Stations
         private void InteractServerRpc()
         {
             // Get the local player
-            var player = NetworkManager.Singleton.LocalClient.PlayerObject.GetComponent<RecipeRage.Core.Characters.PlayerController>();
+            var player = NetworkManager.Singleton.LocalClient.PlayerObject.GetComponent<PlayerController>();
 
             // Interact with the spawner
             Interact(player);

@@ -6,12 +6,8 @@ namespace Core.GameFramework.State.States
     /// <summary>
     /// State for loading game assets and initializing systems.
     /// </summary>
-    public class LoadingState : IState
+    public class LoadingState : BaseState
     {
-        /// <summary>
-        /// Name of the state for debugging.
-        /// </summary>
-        public string StateName => GetType().Name;
         /// <summary>
         /// Event triggered when loading is complete.
         /// </summary>
@@ -30,16 +26,16 @@ namespace Core.GameFramework.State.States
         /// <summary>
         /// Called when the state is entered.
         /// </summary>
-        public void Enter()
+        public override void Enter()
         {
-            Debug.Log($"[{StateName}] Entered");
+            base.Enter();
 
             // Reset loading state
             _isLoadingComplete = false;
             _loadingProgress = 0f;
 
             // Start loading process
-            Debug.Log("[LoadingState] Starting loading process");
+            LogMessage("Starting loading process");
 
             // In a real implementation, you would start loading assets and initializing systems here
             // For now, we'll simulate loading with a delay
@@ -50,9 +46,9 @@ namespace Core.GameFramework.State.States
         /// <summary>
         /// Called when the state is exited.
         /// </summary>
-        public void Exit()
+        public override void Exit()
         {
-            Debug.Log($"[{StateName}] Exited");
+            base.Exit();
 
             // Clean up any loading resources if needed
         }
@@ -60,7 +56,7 @@ namespace Core.GameFramework.State.States
         /// <summary>
         /// Called every frame to update the state.
         /// </summary>
-        public void Update()
+        public override void Update()
         {
             // If loading is already complete, do nothing
             if (_isLoadingComplete)
@@ -77,7 +73,7 @@ namespace Core.GameFramework.State.States
             // Log progress occasionally
             if (Mathf.Approximately(_loadingProgress * 10, Mathf.Floor(_loadingProgress * 10)))
             {
-                Debug.Log($"[LoadingState] Loading progress: {_loadingProgress * 100:F0}%");
+                LogMessage($"Loading progress: {_loadingProgress * 100:F0}%");
             }
 
             // Check if loading is complete
@@ -98,7 +94,7 @@ namespace Core.GameFramework.State.States
             }
 
             _isLoadingComplete = true;
-            Debug.Log("[LoadingState] Loading complete");
+            LogMessage("Loading complete");
 
             // Trigger the loading complete event
             OnLoadingComplete?.Invoke();
@@ -116,7 +112,7 @@ namespace Core.GameFramework.State.States
         /// <summary>
         /// Called at fixed intervals for physics updates.
         /// </summary>
-        public void FixedUpdate()
+        public override void FixedUpdate()
         {
             // Loading state doesn't need physics updates
         }

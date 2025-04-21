@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
-using RecipeRage.Core.Networking.Common;
-using RecipeRage.Core.Networking.EOS;
+using Core.Networking.Common;
 using UnityEngine;
 
-namespace RecipeRage.Core.Networking
+namespace Core.Networking
 {
     /// <summary>
     /// Handles game-specific network messages.

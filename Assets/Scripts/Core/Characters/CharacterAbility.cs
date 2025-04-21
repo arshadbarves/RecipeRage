@@ -1,8 +1,8 @@
 using System;
-using UnityEngine;
 using Newtonsoft.Json;
+using UnityEngine;
 
-namespace RecipeRage.Core.Characters
+namespace Core.Characters
 {
     /// <summary>
     /// Base class for character abilities in RecipeRage.

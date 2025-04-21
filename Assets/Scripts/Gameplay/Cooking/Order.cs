@@ -1,6 +1,6 @@
 using System;
 
-namespace RecipeRage.Gameplay.Cooking
+namespace Gameplay.Cooking
 {
     /// <summary>
     /// Represents an order in the game.

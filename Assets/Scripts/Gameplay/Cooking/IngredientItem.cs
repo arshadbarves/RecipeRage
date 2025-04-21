@@ -1,13 +1,13 @@
-using RecipeRage.Core.Characters;
+using Core.Characters;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace RecipeRage.Gameplay.Cooking
+namespace Gameplay.Cooking
 {
     /// <summary>
     /// Represents an ingredient item in the game world.
     /// </summary>
-    public class IngredientItem : NetworkBehaviour, RecipeRage.Core.Characters.IInteractable
+    public class IngredientItem : NetworkBehaviour, IInteractable
     {
         [Header("References")]
         [SerializeField] private SpriteRenderer _spriteRenderer;

@@ -1,9 +1,9 @@
-using RecipeRage.Gameplay.Scoring;
+using Gameplay.Scoring;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace RecipeRage.UI
+namespace UI
 {
     /// <summary>
     /// UI component for displaying the score and combo.

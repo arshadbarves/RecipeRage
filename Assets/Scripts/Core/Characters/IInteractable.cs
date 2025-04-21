@@ -1,4 +1,4 @@
-namespace RecipeRage.Core.Characters
+namespace Core.Characters
 {
     /// <summary>
     /// Interface for objects that can be interacted with by the player.

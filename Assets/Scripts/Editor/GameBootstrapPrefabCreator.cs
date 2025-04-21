@@ -1,14 +1,14 @@
+using Core;
+using Core.Characters;
+using Core.GameFramework.State;
+using Core.GameModes;
+using Core.Input;
+using Core.Networking;
+using Gameplay.Cooking;
+using Gameplay.Scoring;
 using UnityEngine;
 using UnityEditor;
-using RecipeRage.Core;
-using RecipeRage.Core.Networking;
-using RecipeRage.Core.GameFramework.State;
-using RecipeRage.Core.GameModes;
-using RecipeRage.Core.Characters;
-using RecipeRage.Core.Input;
-using RecipeRage.Gameplay.Cooking;
-using RecipeRage.Gameplay.Scoring;
-using RecipeRage.UI;
+using UI;
 
 namespace RecipeRage.Editor
 {
@@ -64,15 +64,17 @@ namespace RecipeRage.Editor
             orderManagerObj.AddComponent<OrderManager>();
             var orderManagerPrefab = CreatePrefab(orderManagerObj, "Assets/Prefabs/Managers/OrderManager.prefab");
             
-            // Assign the prefabs to the GameBootstrap
-            gameBootstrap._networkManagerPrefab = networkManagerPrefab;
-            gameBootstrap._gameStateManagerPrefab = gameStateManagerPrefab;
-            gameBootstrap._uiManagerPrefab = uiManagerPrefab;
-            gameBootstrap._inputManagerPrefab = inputManagerPrefab;
-            gameBootstrap._gameModeManagerPrefab = gameModeManagerPrefab;
-            gameBootstrap._characterManagerPrefab = characterManagerPrefab;
-            gameBootstrap._scoreManagerPrefab = scoreManagerPrefab;
-            gameBootstrap._orderManagerPrefab = orderManagerPrefab;
+            // Using SerializedObject to modify serialized properties in editor
+            var serializedObject = new SerializedObject(gameBootstrap);
+            serializedObject.FindProperty("_networkManagerPrefab").objectReferenceValue = networkManagerPrefab;
+            serializedObject.FindProperty("_gameStateManagerPrefab").objectReferenceValue = gameStateManagerPrefab;
+            serializedObject.FindProperty("_uiManagerPrefab").objectReferenceValue = uiManagerPrefab;
+            serializedObject.FindProperty("_inputManagerPrefab").objectReferenceValue = inputManagerPrefab;
+            serializedObject.FindProperty("_gameModeManagerPrefab").objectReferenceValue = gameModeManagerPrefab;
+            serializedObject.FindProperty("_characterManagerPrefab").objectReferenceValue = characterManagerPrefab;
+            serializedObject.FindProperty("_scoreManagerPrefab").objectReferenceValue = scoreManagerPrefab;
+            serializedObject.FindProperty("_orderManagerPrefab").objectReferenceValue = orderManagerPrefab;
+            serializedObject.ApplyModifiedProperties();
             
             // Create the GameBootstrap prefab
             var gameBootstrapPrefab = CreatePrefab(gameBootstrapObj, "Assets/Prefabs/GameBootstrap.prefab");

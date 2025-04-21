@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using RecipeRage.Core.GameModes;
+using Core.GameModes;
 using UnityEditor;
 using UnityEngine;
 

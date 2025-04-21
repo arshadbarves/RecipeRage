@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace RecipeRage.Core.Patterns
+namespace Core.Patterns
 {
     /// <summary>
     /// Service locator pattern implementation for managing game services.

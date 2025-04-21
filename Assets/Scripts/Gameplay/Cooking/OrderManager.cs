@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
-using RecipeRage.Core.GameModes;
-using RecipeRage.Core.Patterns;
+using Core.GameModes;
 using Unity.Netcode;
 using UnityEngine;
-using System.Linq;
+using Random = UnityEngine.Random;
 
-namespace RecipeRage.Gameplay.Cooking
+namespace Gameplay.Cooking
 {
     /// <summary>
     /// Manages recipe orders in the game.
@@ -28,24 +27,14 @@ namespace RecipeRage.Gameplay.Cooking
         [SerializeField] private GameModeManager _gameModeManager;
 
         /// <summary>
-        /// Event triggered when a new order is created.
-        /// </summary>
-        public event Action<RecipeOrderState> OnOrderCreated;
-
-        /// <summary>
-        /// Event triggered when an order is completed.
-        /// </summary>
-        public event Action<RecipeOrderState> OnOrderCompleted;
-
-        /// <summary>
-        /// Event triggered when an order expires.
-        /// </summary>
-        public event Action<RecipeOrderState> OnOrderExpired;
-
-        /// <summary>
         /// The list of active orders.
         /// </summary>
         private NetworkList<RecipeOrderState> _activeOrders;
+
+        /// <summary>
+        /// The next order ID to assign.
+        /// </summary>
+        private int _nextOrderId = 1;
 
         /// <summary>
         /// Timer for generating new orders.
@@ -58,41 +47,11 @@ namespace RecipeRage.Gameplay.Cooking
         private float _timeUntilNextOrder;
 
         /// <summary>
-        /// The next order ID to assign.
-        /// </summary>
-        private int _nextOrderId = 1;
-
-        /// <summary>
         /// Initialize the order manager.
         /// </summary>
         private void Awake()
         {
             _activeOrders = new NetworkList<RecipeOrderState>();
-        }
-
-        /// <summary>
-        /// Subscribe to events when the network object is spawned.
-        /// </summary>
-        public override void OnNetworkSpawn()
-        {
-            if (IsServer)
-            {
-                // Initialize the order timer
-                _orderTimer = 0f;
-                _timeUntilNextOrder = UnityEngine.Random.Range(_minTimeBetweenOrders, _maxTimeBetweenOrders);
-            }
-
-            // Subscribe to the active orders list changed event
-            _activeOrders.OnListChanged += HandleActiveOrdersChanged;
-        }
-
-        /// <summary>
-        /// Unsubscribe from events when the network object is despawned.
-        /// </summary>
-        public override void OnNetworkDespawn()
-        {
-            // Unsubscribe from the active orders list changed event
-            _activeOrders.OnListChanged -= HandleActiveOrdersChanged;
         }
 
         /// <summary>
@@ -115,11 +74,51 @@ namespace RecipeRage.Gameplay.Cooking
 
                 // Reset the order timer
                 _orderTimer = 0f;
-                _timeUntilNextOrder = UnityEngine.Random.Range(_minTimeBetweenOrders, _maxTimeBetweenOrders);
+                _timeUntilNextOrder = Random.Range(_minTimeBetweenOrders, _maxTimeBetweenOrders);
             }
 
             // Check for expired orders
             CheckForExpiredOrders();
+        }
+
+        /// <summary>
+        /// Event triggered when a new order is created.
+        /// </summary>
+        public event Action<RecipeOrderState> OnOrderCreated;
+
+        /// <summary>
+        /// Event triggered when an order is completed.
+        /// </summary>
+        public event Action<RecipeOrderState> OnOrderCompleted;
+
+        /// <summary>
+        /// Event triggered when an order expires.
+        /// </summary>
+        public event Action<RecipeOrderState> OnOrderExpired;
+
+        /// <summary>
+        /// Subscribe to events when the network object is spawned.
+        /// </summary>
+        public override void OnNetworkSpawn()
+        {
+            if (IsServer)
+            {
+                // Initialize the order timer
+                _orderTimer = 0f;
+                _timeUntilNextOrder = Random.Range(_minTimeBetweenOrders, _maxTimeBetweenOrders);
+            }
+
+            // Subscribe to the active orders list changed event
+            _activeOrders.OnListChanged += HandleActiveOrdersChanged;
+        }
+
+        /// <summary>
+        /// Unsubscribe from events when the network object is despawned.
+        /// </summary>
+        public override void OnNetworkDespawn()
+        {
+            // Unsubscribe from the active orders list changed event
+            _activeOrders.OnListChanged -= HandleActiveOrdersChanged;
         }
 
         /// <summary>
@@ -134,10 +133,10 @@ namespace RecipeRage.Gameplay.Cooking
             }
 
             // Select a random recipe
-            Recipe recipe = _availableRecipes[UnityEngine.Random.Range(0, _availableRecipes.Count)];
+            var recipe = _availableRecipes[Random.Range(0, _availableRecipes.Count)];
 
             // Create a new order state
-            RecipeOrderState orderState = new RecipeOrderState
+            var orderState = new RecipeOrderState
             {
                 RecipeId = recipe.Id,
                 OrderId = _nextOrderId++,
@@ -161,7 +160,7 @@ namespace RecipeRage.Gameplay.Cooking
         {
             for (int i = 0; i < _activeOrders.Count; i++)
             {
-                RecipeOrderState order = _activeOrders[i];
+                var order = _activeOrders[i];
 
                 // Skip completed or already expired orders
                 if (order.IsCompleted || order.IsExpired)
@@ -184,8 +183,8 @@ namespace RecipeRage.Gameplay.Cooking
         /// <summary>
         /// Complete an order.
         /// </summary>
-        /// <param name="orderId">The ID of the order to complete.</param>
-        /// <returns>True if the order was completed successfully, false otherwise.</returns>
+        /// <param name="orderId"> The ID of the order to complete. </param>
+        /// <returns> True if the order was completed successfully, false otherwise. </returns>
         public bool CompleteOrder(int orderId)
         {
             if (!IsServer)
@@ -197,7 +196,7 @@ namespace RecipeRage.Gameplay.Cooking
             // Find the order with the specified ID
             for (int i = 0; i < _activeOrders.Count; i++)
             {
-                RecipeOrderState order = _activeOrders[i];
+                var order = _activeOrders[i];
 
                 if (order.OrderId == orderId && !order.IsCompleted && !order.IsExpired)
                 {
@@ -217,19 +216,19 @@ namespace RecipeRage.Gameplay.Cooking
         /// <summary>
         /// Handle changes to the active orders list.
         /// </summary>
-        /// <param name="changeEvent">The list change event.</param>
+        /// <param name="changeEvent"> The list change event. </param>
         private void HandleActiveOrdersChanged(NetworkListEvent<RecipeOrderState> changeEvent)
         {
             if (changeEvent.Type == NetworkListEvent<RecipeOrderState>.EventType.Add)
             {
                 // A new order was added
-                RecipeOrderState newOrder = _activeOrders[changeEvent.Index];
+                var newOrder = _activeOrders[changeEvent.Index];
                 OnOrderCreated?.Invoke(newOrder);
             }
             else if (changeEvent.Type == NetworkListEvent<RecipeOrderState>.EventType.Value)
             {
                 // An order was updated
-                RecipeOrderState updatedOrder = _activeOrders[changeEvent.Index];
+                var updatedOrder = _activeOrders[changeEvent.Index];
 
                 if (updatedOrder.IsCompleted)
                 {
@@ -245,8 +244,8 @@ namespace RecipeRage.Gameplay.Cooking
         /// <summary>
         /// Get the difficulty multiplier for a recipe difficulty.
         /// </summary>
-        /// <param name="difficulty">The recipe difficulty.</param>
-        /// <returns>The difficulty multiplier.</returns>
+        /// <param name="difficulty"> The recipe difficulty. </param>
+        /// <returns> The difficulty multiplier. </returns>
         private float GetDifficultyMultiplier(RecipeDifficulty difficulty)
         {
             switch (difficulty)
@@ -267,11 +266,11 @@ namespace RecipeRage.Gameplay.Cooking
         /// <summary>
         /// Get a recipe by ID.
         /// </summary>
-        /// <param name="recipeId">The recipe ID.</param>
-        /// <returns>The recipe, or null if not found.</returns>
+        /// <param name="recipeId"> The recipe ID. </param>
+        /// <returns> The recipe, or null if not found. </returns>
         public Recipe GetRecipeById(int recipeId)
         {
-            foreach (Recipe recipe in _availableRecipes)
+            foreach (var recipe in _availableRecipes)
             {
                 if (recipe.Id == recipeId)
                 {
@@ -285,11 +284,11 @@ namespace RecipeRage.Gameplay.Cooking
         /// <summary>
         /// Get the active orders.
         /// </summary>
-        /// <returns>The list of active orders.</returns>
+        /// <returns> The list of active orders. </returns>
         public IReadOnlyList<RecipeOrderState> GetActiveOrders()
         {
             // Convert NetworkList to List to satisfy IReadOnlyList interface
-            List<RecipeOrderState> ordersList = new List<RecipeOrderState>();
+            var ordersList = new List<RecipeOrderState>();
             foreach (var order in _activeOrders)
             {
                 ordersList.Add(order);
@@ -300,7 +299,7 @@ namespace RecipeRage.Gameplay.Cooking
         /// <summary>
         /// Try to complete an order from the client.
         /// </summary>
-        /// <param name="orderId">The ID of the order to complete.</param>
+        /// <param name="orderId"> The ID of the order to complete. </param>
         [ServerRpc(RequireOwnership = false)]
         public void CompleteOrderServerRpc(int orderId, ServerRpcParams serverRpcParams = default)
         {
@@ -319,12 +318,59 @@ namespace RecipeRage.Gameplay.Cooking
         /// <summary>
         /// Notify clients of the result of an order completion attempt.
         /// </summary>
-        /// <param name="orderId">The ID of the order.</param>
-        /// <param name="success">Whether the order was completed successfully.</param>
+        /// <param name="orderId"> The ID of the order. </param>
+        /// <param name="success"> Whether the order was completed successfully. </param>
         [ClientRpc]
         private void CompleteOrderResultClientRpc(int orderId, bool success)
         {
             Debug.Log($"[OrderManager] Order completion result: ID {orderId}, Success: {success}");
+        }
+
+        /// <summary>
+        /// Start generating orders.
+        /// </summary>
+        public void StartGeneratingOrders()
+        {
+            if (!IsServer)
+            {
+                Debug.LogWarning("[OrderManager] Only the server can start generating orders.");
+                return;
+            }
+
+            Debug.Log("[OrderManager] Starting to generate orders");
+
+            // Reset the order timer
+            _orderTimer = 0f;
+            _timeUntilNextOrder = Random.Range(_minTimeBetweenOrders, _maxTimeBetweenOrders);
+
+            // Clear any existing orders
+            if (_activeOrders != null && _activeOrders.Count > 0)
+            {
+                _activeOrders.Clear();
+            }
+
+            // Reset the order ID counter
+            _nextOrderId = 1;
+        }
+
+        /// <summary>
+        /// Stop generating orders.
+        /// </summary>
+        public void StopGeneratingOrders()
+        {
+            if (!IsServer)
+            {
+                Debug.LogWarning("[OrderManager] Only the server can stop generating orders.");
+                return;
+            }
+
+            Debug.Log("[OrderManager] Stopping order generation");
+
+            // Clear any existing orders
+            if (_activeOrders != null && _activeOrders.Count > 0)
+            {
+                _activeOrders.Clear();
+            }
         }
     }
 }

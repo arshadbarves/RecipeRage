@@ -1,12 +1,12 @@
 using System.Collections.Generic;
-using RecipeRage.Core.GameFramework.State;
-using RecipeRage.Core.GameFramework.State.States;
-using RecipeRage.Core.Networking;
+using Core.GameFramework.State;
+using Core.GameFramework.State.States;
+using Core.Networking;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace RecipeRage.UI
+namespace UI
 {
     /// <summary>
     /// Manages the main menu UI using UI Toolkit.

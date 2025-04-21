@@ -1,7 +1,7 @@
-using System.Collections.Generic;
-using RecipeRage.Gameplay.Cooking;
-using RecipeRage.Gameplay.Stations;
-using RecipeRage.Core.Characters;
+using Core.Characters;
+using Gameplay.Cooking;
+using Gameplay.Stations;
+using UI;
 using UnityEditor;
 using UnityEngine;
 using Unity.Netcode;
@@ -341,7 +341,7 @@ namespace RecipeRage.Editor
             // Create order item prefab
             GameObject orderItem = new GameObject("OrderItem");
             orderItem.AddComponent<RectTransform>();
-            orderItem.AddComponent<RecipeRage.UI.OrderUIItem>();
+            orderItem.AddComponent<OrderUIItem>();
 
             // Save the prefab
             string orderItemPath = $"{uiPath}/OrderItem.prefab";
