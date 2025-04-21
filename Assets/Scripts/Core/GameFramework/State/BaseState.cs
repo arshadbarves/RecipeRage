@@ -1,5 +1,3 @@
-using UnityEngine;
-
 namespace Core.GameFramework.State
 {
     /// <summary>
@@ -11,23 +9,23 @@ namespace Core.GameFramework.State
         /// Name of the state for debugging.
         /// </summary>
         public string StateName => GetType().Name;
-        
+
         /// <summary>
         /// Called when the state is entered.
         /// </summary>
         public virtual void Enter()
         {
-            Debug.Log($"[{StateName}] Entered");
+            StateUtility.LogStateEnter(StateName);
         }
-        
+
         /// <summary>
         /// Called when the state is exited.
         /// </summary>
         public virtual void Exit()
         {
-            Debug.Log($"[{StateName}] Exited");
+            StateUtility.LogStateExit(StateName);
         }
-        
+
         /// <summary>
         /// Called every frame to update the state.
         /// </summary>
@@ -35,7 +33,7 @@ namespace Core.GameFramework.State
         {
             // Base implementation does nothing
         }
-        
+
         /// <summary>
         /// Called at fixed intervals for physics updates.
         /// </summary>
@@ -43,32 +41,32 @@ namespace Core.GameFramework.State
         {
             // Base implementation does nothing
         }
-        
+
         /// <summary>
         /// Log a message with the state name prefix.
         /// </summary>
         /// <param name="message">Message to log</param>
         protected void LogMessage(string message)
         {
-            Debug.Log($"[{StateName}] {message}");
+            StateUtility.LogStateAction(StateName, message);
         }
-        
+
         /// <summary>
         /// Log a warning with the state name prefix.
         /// </summary>
         /// <param name="message">Warning message to log</param>
         protected void LogWarning(string message)
         {
-            Debug.LogWarning($"[{StateName}] {message}");
+            StateUtility.LogStateWarning(StateName, message);
         }
-        
+
         /// <summary>
         /// Log an error with the state name prefix.
         /// </summary>
         /// <param name="message">Error message to log</param>
         protected void LogError(string message)
         {
-            Debug.LogError($"[{StateName}] {message}");
+            StateUtility.LogStateError(StateName, message);
         }
     }
 }

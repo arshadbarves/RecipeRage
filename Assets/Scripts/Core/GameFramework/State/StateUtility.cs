@@ -8,6 +8,26 @@ namespace Core.GameFramework.State
     public static class StateUtility
     {
         /// <summary>
+        /// Log a state warning message.
+        /// </summary>
+        /// <param name="stateName">Name of the state</param>
+        /// <param name="message">Warning message</param>
+        public static void LogStateWarning(string stateName, string message)
+        {
+            Debug.LogWarning($"[{stateName}] {message}");
+        }
+
+        /// <summary>
+        /// Log a state error message.
+        /// </summary>
+        /// <param name="stateName">Name of the state</param>
+        /// <param name="message">Error message</param>
+        public static void LogStateError(string stateName, string message)
+        {
+            Debug.LogError($"[{stateName}] {message}");
+        }
+
+        /// <summary>
         /// Log a state entry message.
         /// </summary>
         /// <param name="stateName">Name of the state</param>
@@ -15,7 +35,7 @@ namespace Core.GameFramework.State
         {
             Debug.Log($"[{stateName}] Entered");
         }
-        
+
         /// <summary>
         /// Log a state exit message.
         /// </summary>
@@ -24,7 +44,7 @@ namespace Core.GameFramework.State
         {
             Debug.Log($"[{stateName}] Exited");
         }
-        
+
         /// <summary>
         /// Log a state transition message.
         /// </summary>
@@ -34,7 +54,7 @@ namespace Core.GameFramework.State
         {
             Debug.Log($"State transition: {fromState} -> {toState}");
         }
-        
+
         /// <summary>
         /// Log a state action message.
         /// </summary>
