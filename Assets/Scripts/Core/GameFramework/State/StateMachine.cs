@@ -1,5 +1,4 @@
 using System;
-using UnityEngine;
 
 namespace Core.GameFramework.State
 {
@@ -32,7 +31,7 @@ namespace Core.GameFramework.State
             CurrentState = initialState;
             CurrentState.Enter();
 
-            Debug.Log($"[StateMachine] Initialized with state: {initialState.GetType().Name}");
+            StateUtility.LogStateAction("StateMachine", $"Initialized with state: {initialState.GetType().Name}");
         }
 
         /// <summary>
@@ -43,13 +42,13 @@ namespace Core.GameFramework.State
         {
             if (newState == null)
             {
-                Debug.LogError("[StateMachine] Cannot change to a null state");
+                StateUtility.LogStateError("StateMachine", "Cannot change to a null state");
                 return;
             }
 
             if (CurrentState == newState)
             {
-                Debug.LogWarning($"[StateMachine] Already in state: {newState.GetType().Name}");
+                StateUtility.LogStateWarning("StateMachine", $"Already in state: {newState.GetType().Name}");
                 return;
             }
 
@@ -69,7 +68,9 @@ namespace Core.GameFramework.State
             // Trigger the state changed event
             OnStateChanged?.Invoke(PreviousState, CurrentState);
 
-            Debug.Log($"[StateMachine] Changed state from {(PreviousState != null ? PreviousState.GetType().Name : "null")} to {CurrentState.GetType().Name}");
+            string fromState = PreviousState != null ? PreviousState.GetType().Name : "null";
+            string toState = CurrentState.GetType().Name;
+            StateUtility.LogStateTransition(fromState, toState);
         }
 
         /// <summary>
