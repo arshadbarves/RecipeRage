@@ -1,10 +1,10 @@
 using System;
-using RecipeRage.Core.GameModes;
-using RecipeRage.Gameplay.Cooking;
+using Core.GameModes;
+using Gameplay.Cooking;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace RecipeRage.Gameplay.Scoring
+namespace Gameplay.Scoring
 {
     /// <summary>
     /// Manages the scoring system for RecipeRage.
@@ -245,6 +245,26 @@ namespace RecipeRage.Gameplay.Scoring
         private void ResetScoreServerRpc()
         {
             ResetScore();
+        }
+
+        /// <summary>
+        /// Reset all scores for all players.
+        /// </summary>
+        public void ResetScores()
+        {
+            if (!IsServer)
+            {
+                Debug.LogWarning("[ScoreManager] Only the server can reset all scores.");
+                return;
+            }
+
+            Debug.Log("[ScoreManager] Resetting all scores");
+
+            // Reset the main score
+            ResetScore();
+
+            // TODO: When team or player-specific scores are implemented,
+            // reset those here as well
         }
     }
 }

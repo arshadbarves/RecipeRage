@@ -1,7 +1,7 @@
-using RecipeRage.Gameplay.Cooking;
+using Gameplay.Cooking;
 using UnityEngine;
 
-namespace RecipeRage.Gameplay.Stations
+namespace Gameplay.Stations
 {
     /// <summary>
     /// A station for cutting ingredients.

@@ -1,8 +1,7 @@
-using System;
 using System.Collections.Generic;
 using Epic.OnlineServices;
 
-namespace RecipeRage.Core.Networking.Common
+namespace Core.Networking.Common
 {
     /// <summary>
     /// Enum representing the different game modes in RecipeRage.

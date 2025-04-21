@@ -1,7 +1,6 @@
-using System.Collections.Generic;
 using UnityEngine;
 
-namespace RecipeRage.Core.Characters
+namespace Core.Characters
 {
     /// <summary>
     /// Scriptable object that defines a character class in RecipeRage.

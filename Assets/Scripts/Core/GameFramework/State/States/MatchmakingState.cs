@@ -11,12 +11,8 @@ namespace Core.GameFramework.State.States
     /// <summary>
     /// State for matchmaking and finding players for a game.
     /// </summary>
-    public class MatchmakingState : IState
+    public class MatchmakingState : BaseState
     {
-        /// <summary>
-        /// Name of the state for debugging.
-        /// </summary>
-        public string StateName => GetType().Name;
 
         /// <summary>
         /// Flag to track if matchmaking is in progress.
@@ -43,9 +39,9 @@ namespace Core.GameFramework.State.States
         /// <summary>
         /// Called when the state is entered.
         /// </summary>
-        public void Enter()
+        public override void Enter()
         {
-            Debug.Log($"[{StateName}] Entered");
+            base.Enter();
 
             // Get reference to the network manager and lobby manager
             _networkManager = RecipeRageNetworkManager.Instance;
@@ -55,7 +51,7 @@ namespace Core.GameFramework.State.States
             _isMatchmakingInProgress = true;
 
             // Start matchmaking process
-            Debug.Log("[MatchmakingState] Starting matchmaking process");
+            LogMessage("Starting matchmaking process");
 
             // Show game mode selection screen
             UIManager.Instance.ShowScreen<GameModeSelectionScreen>();
@@ -72,7 +68,7 @@ namespace Core.GameFramework.State.States
             }
             else
             {
-                Debug.LogError("[MatchmakingState] RecipeRageNetworkManager or LobbyManager instance not found");
+                LogError("RecipeRageNetworkManager or LobbyManager instance not found");
                 CompleteMatchmaking(false);
             }
         }
@@ -80,9 +76,9 @@ namespace Core.GameFramework.State.States
         /// <summary>
         /// Called when the state is exited.
         /// </summary>
-        public void Exit()
+        public override void Exit()
         {
-            Debug.Log($"[{StateName}] Exited");
+            base.Exit();
 
             // Unsubscribe from lobby events
             if (_lobbyManager != null)
@@ -108,7 +104,7 @@ namespace Core.GameFramework.State.States
         /// <summary>
         /// Called every frame to update the state.
         /// </summary>
-        public void Update()
+        public override void Update()
         {
             // Matchmaking logic is now handled by the NetworkLobbyManager
         }
@@ -116,7 +112,7 @@ namespace Core.GameFramework.State.States
         /// <summary>
         /// Called at fixed intervals for physics updates.
         /// </summary>
-        public void FixedUpdate()
+        public override void FixedUpdate()
         {
             // Matchmaking doesn't need physics updates
         }
@@ -128,7 +124,7 @@ namespace Core.GameFramework.State.States
         /// </summary>
         private void HandleLobbyUpdated()
         {
-            Debug.Log("[MatchmakingState] Lobby updated");
+            LogMessage("Lobby updated");
 
             // If this is the first update, transition to the lobby screen
             if (_isMatchmakingInProgress)
@@ -147,7 +143,7 @@ namespace Core.GameFramework.State.States
         /// </summary>
         private void HandleGameStarted()
         {
-            Debug.Log("[MatchmakingState] Game started");
+            LogMessage("Game started");
 
             // Complete matchmaking successfully if not already done
             if (_isMatchmakingInProgress)
@@ -171,7 +167,7 @@ namespace Core.GameFramework.State.States
             }
 
             _isMatchmakingInProgress = false;
-            Debug.Log($"[MatchmakingState] Matchmaking complete. Success: {success}");
+            LogMessage($"Matchmaking complete. Success: {success}");
 
             // Trigger the matchmaking complete event
             OnMatchmakingComplete?.Invoke(success);
@@ -188,7 +184,7 @@ namespace Core.GameFramework.State.States
             }
 
             _isMatchmakingInProgress = false;
-            Debug.Log("[MatchmakingState] Matchmaking canceled");
+            LogMessage("Matchmaking canceled");
 
             // Leave the game if we're in one
             if (_networkManager != null)

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace RecipeRage.UI.Animation
+namespace UI.Animation
 {
     /// <summary>
     /// A reusable animation system for UI Toolkit elements

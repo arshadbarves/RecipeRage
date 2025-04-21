@@ -1,14 +1,12 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
+using Core.Networking.Common;
+using Core.Networking.EOS;
 using Epic.OnlineServices;
 using PlayEveryWare.EpicOnlineServices;
-using PlayEveryWare.EpicOnlineServices.Samples;
-using RecipeRage.Core.Networking.Common;
-using RecipeRage.Core.Networking.EOS;
 using UnityEngine;
 
-namespace RecipeRage.Core.Networking
+namespace Core.Networking
 {
     /// <summary>
     /// Central manager for all networking functionality in RecipeRage.

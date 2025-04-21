@@ -7,18 +7,14 @@ namespace Core.GameFramework.State.States
     /// <summary>
     /// State for the main menu.
     /// </summary>
-    public class MainMenuState : IState
+    public class MainMenuState : BaseState
     {
-        /// <summary>
-        /// Name of the state for debugging.
-        /// </summary>
-        public string StateName => GetType().Name;
         /// <summary>
         /// Called when the state is entered.
         /// </summary>
-        public void Enter()
+        public override void Enter()
         {
-            Debug.Log($"[{StateName}] Entered");
+            base.Enter();
 
             // Load the main menu scene if not already loaded
             if (SceneManager.GetActiveScene().name != "MainMenu")
@@ -37,9 +33,9 @@ namespace Core.GameFramework.State.States
         /// <summary>
         /// Called when the state is exited.
         /// </summary>
-        public void Exit()
+        public override void Exit()
         {
-            Debug.Log($"[{StateName}] Exited");
+            base.Exit();
 
             // Hide the main menu UI
             UIManager uiManager = Object.FindFirstObjectByType<UIManager>();
@@ -52,7 +48,7 @@ namespace Core.GameFramework.State.States
         /// <summary>
         /// Called every frame to update the state.
         /// </summary>
-        public void Update()
+        public override void Update()
         {
             // Main menu update logic
         }
@@ -60,7 +56,7 @@ namespace Core.GameFramework.State.States
         /// <summary>
         /// Called at fixed intervals for physics updates.
         /// </summary>
-        public void FixedUpdate()
+        public override void FixedUpdate()
         {
             // Main menu physics update logic
         }

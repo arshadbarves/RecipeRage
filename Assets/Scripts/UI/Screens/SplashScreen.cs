@@ -1,12 +1,11 @@
-using System;
 using System.Collections;
-using RecipeRage.Core.GameFramework.State;
-using RecipeRage.Core.GameFramework.State.States;
-using RecipeRage.UI.Animation;
+using Core.GameFramework.State;
+using Core.GameFramework.State.States;
+using UI.Animation;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace RecipeRage.UI.Screens
+namespace UI.Screens
 {
     /// <summary>
     /// Splash screen shown when the game starts

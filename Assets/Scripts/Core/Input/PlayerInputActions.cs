@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Utilities;
 
-namespace RecipeRage.Core.Input
+namespace Core.Input
 {
     public class PlayerInputActions : IInputActionCollection, IDisposable
     {

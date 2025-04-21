@@ -7,18 +7,14 @@ namespace Core.GameFramework.State.States
     /// <summary>
     /// State for the lobby.
     /// </summary>
-    public class LobbyState : IState
+    public class LobbyState : BaseState
     {
-        /// <summary>
-        /// Name of the state for debugging.
-        /// </summary>
-        public string StateName => GetType().Name;
         /// <summary>
         /// Called when the state is entered.
         /// </summary>
-        public void Enter()
+        public override void Enter()
         {
-            Debug.Log($"[{StateName}] Entered");
+            base.Enter();
 
             // Show the lobby UI
             UIManager uiManager = Object.FindFirstObjectByType<UIManager>();
@@ -31,9 +27,9 @@ namespace Core.GameFramework.State.States
         /// <summary>
         /// Called when the state is exited.
         /// </summary>
-        public void Exit()
+        public override void Exit()
         {
-            Debug.Log($"[{StateName}] Exited");
+            base.Exit();
 
             // Hide the lobby UI
             UIManager uiManager = Object.FindFirstObjectByType<UIManager>();
@@ -46,7 +42,7 @@ namespace Core.GameFramework.State.States
         /// <summary>
         /// Called every frame to update the state.
         /// </summary>
-        public void Update()
+        public override void Update()
         {
             // Lobby update logic
 
@@ -66,7 +62,7 @@ namespace Core.GameFramework.State.States
         /// <summary>
         /// Called at fixed intervals for physics updates.
         /// </summary>
-        public void FixedUpdate()
+        public override void FixedUpdate()
         {
             // Lobby physics update logic
         }

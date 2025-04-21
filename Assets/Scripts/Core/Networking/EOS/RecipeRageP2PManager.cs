@@ -2,13 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using Core.Networking.Common;
 using Epic.OnlineServices;
 using PlayEveryWare.EpicOnlineServices;
 using PlayEveryWare.EpicOnlineServices.Samples;
-using RecipeRage.Core.Networking.Common;
 using UnityEngine;
 
-namespace RecipeRage.Core.Networking.EOS
+namespace Core.Networking.EOS
 {
     /// <summary>
     /// Wrapper for EOSPeer2PeerManager that provides game-specific P2P functionality.

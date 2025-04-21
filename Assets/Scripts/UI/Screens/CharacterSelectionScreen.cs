@@ -1,10 +1,9 @@
 using System.Collections.Generic;
-using RecipeRage.Core.Characters;
-using RecipeRage.UI.Animation;
+using UI.Animation;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace RecipeRage.UI.Screens
+namespace UI.Screens
 {
     /// <summary>
     /// Character selection screen

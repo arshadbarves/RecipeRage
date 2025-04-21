@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using RecipeRage.Core.Patterns;
+using Core.Patterns;
 using UnityEngine;
 
-namespace RecipeRage.Core.GameModes
+namespace Core.GameModes
 {
     /// <summary>
     /// Manages game modes in RecipeRage.
@@ -15,19 +15,14 @@ namespace RecipeRage.Core.GameModes
         [SerializeField] private string _defaultGameModeId = "classic";
 
         /// <summary>
-        /// Event triggered when the selected game mode changes.
+        /// Dictionary of available game modes by ID.
         /// </summary>
-        public event Action<GameMode> OnGameModeChanged;
+        private readonly Dictionary<string, GameMode> _gameModeDict = new Dictionary<string, GameMode>();
 
         /// <summary>
         /// The currently selected game mode.
         /// </summary>
         public GameMode SelectedGameMode { get; private set; }
-
-        /// <summary>
-        /// Dictionary of available game modes by ID.
-        /// </summary>
-        private Dictionary<string, GameMode> _gameModeDict = new Dictionary<string, GameMode>();
 
         /// <summary>
         /// Initialize the game mode manager.
@@ -57,16 +52,21 @@ namespace RecipeRage.Core.GameModes
             }
 
             // Register the game mode manager with the service locator
-            ServiceLocator.Instance.Register<GameModeManager>(this);
+            ServiceLocator.Instance.Register(this);
 
             Debug.Log($"[GameModeManager] Initialized with {_availableGameModes.Count} game modes, default: {_defaultGameModeId}");
         }
 
         /// <summary>
+        /// Event triggered when the selected game mode changes.
+        /// </summary>
+        public event Action<GameMode> OnGameModeChanged;
+
+        /// <summary>
         /// Get a game mode by ID.
         /// </summary>
-        /// <param name="gameModeId">The game mode ID</param>
-        /// <returns>The game mode, or null if not found</returns>
+        /// <param name="gameModeId"> The game mode ID </param>
+        /// <returns> The game mode, or null if not found </returns>
         public GameMode GetGameMode(string gameModeId)
         {
             if (string.IsNullOrEmpty(gameModeId) || !_gameModeDict.ContainsKey(gameModeId))
@@ -81,8 +81,8 @@ namespace RecipeRage.Core.GameModes
         /// <summary>
         /// Get a game mode by name.
         /// </summary>
-        /// <param name="gameModeName">The game mode name</param>
-        /// <returns>The game mode, or null if not found</returns>
+        /// <param name="gameModeName"> The game mode name </param>
+        /// <returns> The game mode, or null if not found </returns>
         public GameMode GetGameModeByName(string gameModeName)
         {
             if (string.IsNullOrEmpty(gameModeName))
@@ -93,7 +93,7 @@ namespace RecipeRage.Core.GameModes
 
             foreach (var gameMode in _availableGameModes)
             {
-                if (gameMode.DisplayName.Equals(gameModeName, System.StringComparison.OrdinalIgnoreCase))
+                if (gameMode.DisplayName.Equals(gameModeName, StringComparison.OrdinalIgnoreCase))
                 {
                     return gameMode;
                 }
@@ -106,7 +106,7 @@ namespace RecipeRage.Core.GameModes
         /// <summary>
         /// Get all available game modes.
         /// </summary>
-        /// <returns>List of available game modes</returns>
+        /// <returns> List of available game modes </returns>
         public List<GameMode> GetAllGameModes()
         {
             return new List<GameMode>(_availableGameModes);
@@ -115,7 +115,7 @@ namespace RecipeRage.Core.GameModes
         /// <summary>
         /// Get all available game modes as an array.
         /// </summary>
-        /// <returns>Array of available game modes</returns>
+        /// <returns> Array of available game modes </returns>
         public GameMode[] GetAvailableGameModes()
         {
             return _availableGameModes.ToArray();
@@ -124,8 +124,8 @@ namespace RecipeRage.Core.GameModes
         /// <summary>
         /// Select a game mode by ID.
         /// </summary>
-        /// <param name="gameModeId">The game mode ID</param>
-        /// <returns>True if the game mode was selected, false otherwise</returns>
+        /// <param name="gameModeId"> The game mode ID </param>
+        /// <returns> True if the game mode was selected, false otherwise </returns>
         public bool SelectGameMode(string gameModeId)
         {
             var gameMode = GetGameMode(gameModeId);
@@ -140,8 +140,8 @@ namespace RecipeRage.Core.GameModes
         /// <summary>
         /// Set the selected game mode.
         /// </summary>
-        /// <param name="gameMode">The game mode to select</param>
-        /// <returns>True if the game mode was selected, false otherwise</returns>
+        /// <param name="gameMode"> The game mode to select </param>
+        /// <returns> True if the game mode was selected, false otherwise </returns>
         public bool SetSelectedGameMode(GameMode gameMode)
         {
             return SelectGameMode(gameMode);
@@ -150,8 +150,8 @@ namespace RecipeRage.Core.GameModes
         /// <summary>
         /// Select a game mode.
         /// </summary>
-        /// <param name="gameMode">The game mode to select</param>
-        /// <returns>True if the game mode was selected, false otherwise</returns>
+        /// <param name="gameMode"> The game mode to select </param>
+        /// <returns> True if the game mode was selected, false otherwise </returns>
         public bool SelectGameMode(GameMode gameMode)
         {
             if (gameMode == null)
@@ -176,8 +176,8 @@ namespace RecipeRage.Core.GameModes
         /// <summary>
         /// Add a game mode to the available game modes.
         /// </summary>
-        /// <param name="gameMode">The game mode to add</param>
-        /// <returns>True if the game mode was added, false otherwise</returns>
+        /// <param name="gameMode"> The game mode to add </param>
+        /// <returns> True if the game mode was added, false otherwise </returns>
         public bool AddGameMode(GameMode gameMode)
         {
             if (gameMode == null || string.IsNullOrEmpty(gameMode.Id))
@@ -203,8 +203,8 @@ namespace RecipeRage.Core.GameModes
         /// <summary>
         /// Remove a game mode from the available game modes.
         /// </summary>
-        /// <param name="gameModeId">The game mode ID to remove</param>
-        /// <returns>True if the game mode was removed, false otherwise</returns>
+        /// <param name="gameModeId"> The game mode ID to remove </param>
+        /// <returns> True if the game mode was removed, false otherwise </returns>
         public bool RemoveGameMode(string gameModeId)
         {
             if (string.IsNullOrEmpty(gameModeId) || !_gameModeDict.ContainsKey(gameModeId))
@@ -233,6 +233,59 @@ namespace RecipeRage.Core.GameModes
             Debug.Log($"[GameModeManager] Removed game mode: {gameMode.DisplayName} ({gameMode.Id})");
 
             return true;
+        }
+
+        /// <summary>
+        /// Start the currently selected game mode.
+        /// </summary>
+        public void StartCurrentGameMode()
+        {
+            if (SelectedGameMode == null)
+            {
+                Debug.LogError("[GameModeManager] Cannot start game mode: No game mode selected");
+                return;
+            }
+
+            Debug.Log($"[GameModeManager] Starting game mode: {SelectedGameMode.DisplayName} ({SelectedGameMode.Id})");
+
+            // TODO: Implement game mode specific initialization
+            // This would include setting up the game rules, spawning players, etc.
+        }
+
+        /// <summary>
+        /// Stop the currently selected game mode.
+        /// </summary>
+        public void StopCurrentGameMode()
+        {
+            if (SelectedGameMode == null)
+            {
+                Debug.LogWarning("[GameModeManager] Cannot stop game mode: No game mode selected");
+                return;
+            }
+
+            Debug.Log($"[GameModeManager] Stopping game mode: {SelectedGameMode.DisplayName} ({SelectedGameMode.Id})");
+
+            // TODO: Implement game mode specific cleanup
+            // This would include cleaning up game resources, saving stats, etc.
+        }
+
+        /// <summary>
+        /// Check if the current game is over based on the selected game mode's rules.
+        /// </summary>
+        /// <returns>True if the game is over, false otherwise</returns>
+        public bool IsGameOver()
+        {
+            if (SelectedGameMode == null)
+            {
+                Debug.LogWarning("[GameModeManager] Cannot check if game is over: No game mode selected");
+                return false;
+            }
+
+            // TODO: Implement game mode specific game over check
+            // This would include checking time limits, score limits, etc.
+
+            // For now, return false to prevent automatic game over
+            return false;
         }
     }
 }

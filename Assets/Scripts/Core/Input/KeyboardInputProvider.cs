@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace RecipeRage.Core.Input
+namespace Core.Input
 {
     /// <summary>
     /// Input provider that handles keyboard input for development and testing.

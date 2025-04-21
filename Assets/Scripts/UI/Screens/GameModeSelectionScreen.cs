@@ -1,11 +1,11 @@
-using RecipeRage.Core.GameFramework.State;
-using RecipeRage.Core.GameFramework.State.States;
-using RecipeRage.Core.GameModes;
-using RecipeRage.UI.Animation;
+using Core.GameFramework.State;
+using Core.GameFramework.State.States;
+using Core.GameModes;
+using UI.Animation;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace RecipeRage.UI.Screens
+namespace UI.Screens
 {
     /// <summary>
     /// Game mode selection screen

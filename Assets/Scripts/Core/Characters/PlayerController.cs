@@ -1,10 +1,10 @@
 using System;
-using RecipeRage.Core.Input;
-using RecipeRage.Core.Patterns;
+using Core.Input;
+using Core.Patterns;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace RecipeRage.Core.Characters
+namespace Core.Characters
 {
     /// <summary>
     /// Controls player movement and actions in RecipeRage.

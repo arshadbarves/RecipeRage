@@ -1,13 +1,13 @@
 using System.Collections.Generic;
-using RecipeRage.Core.Characters;
-using RecipeRage.Gameplay.Cooking;
-using RecipeRage.Gameplay.Scoring;
+using Core.Characters;
+using Gameplay.Cooking;
+using Gameplay.Scoring;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace RecipeRage.UI
+namespace UI
 {
     /// <summary>
     /// Manages the gameplay UI.

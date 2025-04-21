@@ -1,9 +1,8 @@
 using System.Collections;
 using PlayEveryWare.EpicOnlineServices;
-using PlayEveryWare.EpicOnlineServices.Samples;
 using UnityEngine;
 
-namespace RecipeRage.Core.Networking
+namespace Core.Networking
 {
     /// <summary>
     /// Bootstrap class for initializing the networking system.

@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace RecipeRage.Core.Input
+namespace Core.Input
 {
     /// <summary>
     /// Input provider that uses the Unity Input System package.

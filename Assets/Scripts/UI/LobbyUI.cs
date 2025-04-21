@@ -1,16 +1,16 @@
-using System.Collections.Generic;
-using RecipeRage.Core.GameFramework.State;
-using RecipeRage.Core.GameFramework.State.States;
-using RecipeRage.Core.GameModes;
-using RecipeRage.Core.Networking;
-using RecipeRage.Core.Networking.Common;
-using RecipeRage.Core.Networking.EOS;
 using System;
-using System.Collections;
+using System.Collections.Generic;
+using Core.GameFramework.State;
+using Core.GameFramework.State.States;
+using Core.GameModes;
+using Core.Networking;
+using Core.Networking.Common;
+using Core.Networking.EOS;
 using UnityEngine;
 using UnityEngine.UIElements;
+using GameMode = Core.GameModes.GameMode;
 
-namespace RecipeRage.UI
+namespace UI
 {
     /// <summary>
     /// Manages the lobby UI using UI Toolkit.
@@ -95,7 +95,7 @@ namespace RecipeRage.UI
         /// <summary>
         /// The currently selected game mode.
         /// </summary>
-        private RecipeRage.Core.GameModes.GameMode _selectedGameMode;
+        private GameMode _selectedGameMode;
 
         /// <summary>
         /// Initialize the lobby UI.
@@ -297,7 +297,7 @@ namespace RecipeRage.UI
         /// Handle game mode selection.
         /// </summary>
         /// <param name="gameMode">The selected game mode</param>
-        private void OnGameModeSelected(RecipeRage.Core.GameModes.GameMode gameMode)
+        private void OnGameModeSelected(GameMode gameMode)
         {
             Debug.Log($"[LobbyUI] Game mode selected: {gameMode.DisplayName}");
 
@@ -313,7 +313,7 @@ namespace RecipeRage.UI
             // Notify lobby manager (if host)
             if (_lobbyManager != null && _networkManager.IsHost)
             {
-                if (Enum.TryParse<RecipeRage.Core.Networking.Common.GameMode>(gameMode.Id, out var gameModeEnum))
+                if (Enum.TryParse<Core.Networking.Common.GameMode>(gameMode.Id, out var gameModeEnum))
                 {
                     _lobbyManager.SetGameMode(gameModeEnum);
                 }
@@ -487,7 +487,7 @@ namespace RecipeRage.UI
             // Get available game modes
             if (_gameModeManager != null)
             {
-                RecipeRage.Core.GameModes.GameMode[] gameModes = _gameModeManager.GetAvailableGameModes();
+                GameMode[] gameModes = _gameModeManager.GetAvailableGameModes();
 
                 // Create game mode entries
                 foreach (var gameMode in gameModes)
@@ -516,7 +516,7 @@ namespace RecipeRage.UI
         /// Create a game mode entry in the UI.
         /// </summary>
         /// <param name="gameMode">The game mode</param>
-        private void CreateGameModeEntry(RecipeRage.Core.GameModes.GameMode gameMode)
+        private void CreateGameModeEntry(GameMode gameMode)
         {
             if (_gameModeList == null || _gameModeEntryTemplate == null) return;
 

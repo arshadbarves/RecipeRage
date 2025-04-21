@@ -1,9 +1,9 @@
-using RecipeRage.Gameplay.Cooking;
+using Gameplay.Cooking;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace RecipeRage.UI
+namespace UI
 {
     /// <summary>
     /// UI item for displaying an order.

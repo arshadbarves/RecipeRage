@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace RecipeRage.Gameplay.Cooking
+namespace Gameplay.Cooking
 {
     /// <summary>
     /// Represents a recipe that can be prepared in the game.

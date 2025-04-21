@@ -1,9 +1,9 @@
 using System;
-using RecipeRage.UI.Animation;
+using UI.Animation;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace RecipeRage.UI.Screens
+namespace UI.Screens
 {
     /// <summary>
     /// Base class for all UI screens in the game

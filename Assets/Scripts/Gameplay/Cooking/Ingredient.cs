@@ -1,9 +1,8 @@
 using System;
-using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace RecipeRage.Gameplay.Cooking
+namespace Gameplay.Cooking
 {
     /// <summary>
     /// Represents an ingredient type in the game.
