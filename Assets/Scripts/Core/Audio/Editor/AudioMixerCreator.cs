@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEditor;
-using UnityEngine.Audio;
 using System.IO;
 
 namespace Core.Audio.Editor
@@ -39,14 +38,6 @@ namespace Core.Audio.Editor
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            // We can't actually create a proper AudioMixer programmatically
-            AudioMixer mixer = null;
-            if (mixer == null)
-            {
-                Debug.LogError("[AudioMixerCreator] Failed to create audio mixer");
-                return;
-            }
-
             // We can't programmatically create groups, so we'll need to instruct the user
             Debug.Log("[AudioMixerCreator] Please manually add the following groups to the mixer:\n" +
                       "1. Music (child of Master)\n" +
@@ -54,27 +45,20 @@ namespace Core.Audio.Editor
                       "3. Voice (child of Master)\n" +
                       "4. UI (child of SFX)");
 
-            // Create volume parameters
-            // Note: These will only work after the user has manually created the groups
-            try
-            {
-                mixer.SetFloat("MasterVolume", 0f);
-                mixer.SetFloat("MusicVolume", 0f);
-                mixer.SetFloat("SFXVolume", 0f);
-                mixer.SetFloat("VoiceVolume", 0f);
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogWarning("[AudioMixerCreator] Could not set initial volume parameters: " + e.Message);
-            }
+            // Instruct the user to set up volume parameters
+            Debug.Log("[AudioMixerCreator] Please add the following parameters to the mixer:\n" +
+                      "- MasterVolume\n" +
+                      "- MusicVolume\n" +
+                      "- SFXVolume\n" +
+                      "- VoiceVolume");
 
             // Instruct the user to create a proper AudioMixer
             Debug.Log("[AudioMixerCreator] Please create a proper AudioMixer asset at " + MIXER_PATH);
 
-            Debug.Log($"[AudioMixerCreator] Created audio mixer at {MIXER_PATH}");
+            Debug.Log($"[AudioMixerCreator] Created placeholder at {MIXER_PATH}");
 
-            // Select the mixer in the Project window
-            Selection.activeObject = mixer;
+            // Select the created asset in the Project window
+            Selection.activeObject = AssetDatabase.LoadAssetAtPath<Object>(MIXER_PATH);
         }
     }
 }
