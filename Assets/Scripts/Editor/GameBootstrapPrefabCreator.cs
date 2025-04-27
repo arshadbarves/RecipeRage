@@ -8,9 +8,11 @@ using Core.Networking;
 using Core.SaveSystem;
 using Gameplay.Cooking;
 using Gameplay.Scoring;
+using System.IO;
 using UnityEngine;
 using UnityEditor;
 using UI;
+using UI.Screens;
 
 namespace RecipeRage.Editor
 {
@@ -19,10 +21,40 @@ namespace RecipeRage.Editor
     /// </summary>
     public class GameBootstrapPrefabCreator
     {
+        // Paths
+        private const string PREFABS_PATH = "Assets/Prefabs";
+        private const string MANAGERS_PATH = "Assets/Prefabs/Managers";
+        private const string UI_PREFABS_PATH = "Assets/Prefabs/UI";
+        private const string SCRIPTABLE_OBJECTS_PATH = "Assets/ScriptableObjects";
+        private const string CHARACTER_CLASSES_PATH = "Assets/ScriptableObjects/CharacterClasses";
+        private const string GAME_MODES_PATH = "Assets/ScriptableObjects/GameModes";
+        private const string PLAYER_PATH = "Assets/Prefabs/Player";
+        private const string STATIONS_PATH = "Assets/Prefabs/Stations";
         [MenuItem("RecipeRage/Create/All Manager Prefabs")]
         public static void CreateGameBootstrapPrefab()
         {
             CreateAllPrefabs();
+        }
+
+        [MenuItem("RecipeRage/Create/All Game Assets")]
+        public static void CreateAllGameAssets()
+        {
+            // Create all directories
+            CreateAllDirectories();
+
+            // Create all prefabs
+            CreateAllPrefabs();
+
+            // Create UI prefabs
+            CreateAllUIPrefabs();
+
+            // Create scriptable objects
+            CreateAllScriptableObjects();
+
+            // Set up UI resources
+            SetupUIResources();
+
+            Debug.Log("All game assets created successfully!");
         }
 
         [MenuItem("RecipeRage/Create/GameBootstrap Prefab")]
@@ -205,6 +237,76 @@ namespace RecipeRage.Editor
         }
 
         /// <summary>
+        /// Create all directories needed for the game.
+        /// </summary>
+        private static void CreateAllDirectories()
+        {
+            // Create prefab directories
+            CreateDirectoryIfNotExists(PREFABS_PATH);
+            CreateDirectoryIfNotExists(MANAGERS_PATH);
+            CreateDirectoryIfNotExists(UI_PREFABS_PATH);
+            CreateDirectoryIfNotExists(PLAYER_PATH);
+            CreateDirectoryIfNotExists(STATIONS_PATH);
+
+            // Create scriptable object directories
+            CreateDirectoryIfNotExists(SCRIPTABLE_OBJECTS_PATH);
+            CreateDirectoryIfNotExists(CHARACTER_CLASSES_PATH);
+            CreateDirectoryIfNotExists(GAME_MODES_PATH);
+
+            // Create UI resource directories
+            CreateDirectoryIfNotExists("Assets/Resources/UI/Images");
+
+            Debug.Log("All directories created successfully!");
+        }
+
+        /// <summary>
+        /// Create all UI prefabs.
+        /// </summary>
+        private static void CreateAllUIPrefabs()
+        {
+            // Call the UIPrefabCreator
+            UIPrefabCreator.CreateUIPrefabs();
+        }
+
+        /// <summary>
+        /// Create all scriptable objects.
+        /// </summary>
+        private static void CreateAllScriptableObjects()
+        {
+            // Create character classes
+            var characterClassGenerator = new CharacterClassGenerator();
+            characterClassGenerator.GenerateCharacterClasses(CHARACTER_CLASSES_PATH);
+
+            // Create game modes
+            var gameModeGenerator = new GameModeGenerator();
+            gameModeGenerator.GenerateGameModes(GAME_MODES_PATH);
+
+            Debug.Log("All scriptable objects created successfully!");
+        }
+
+        /// <summary>
+        /// Set up UI resources.
+        /// </summary>
+        private static void SetupUIResources()
+        {
+            // Call the UISetupUtility
+            UISetupUtility.SetupUIResources();
+        }
+
+        /// <summary>
+        /// Create directory if it doesn't exist.
+        /// </summary>
+        /// <param name="path">Directory path</param>
+        private static void CreateDirectoryIfNotExists(string path)
+        {
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+                Debug.Log($"Created directory: {path}");
+            }
+        }
+
+        /// <summary>
         /// Create a prefab from a GameObject.
         /// </summary>
         /// <param name="gameObject">The GameObject to create a prefab from</param>
@@ -213,10 +315,10 @@ namespace RecipeRage.Editor
         private static GameObject CreatePrefab(GameObject gameObject, string path)
         {
             // Create the directory if it doesn't exist
-            var directory = System.IO.Path.GetDirectoryName(path);
-            if (!System.IO.Directory.Exists(directory))
+            var directory = Path.GetDirectoryName(path);
+            if (!Directory.Exists(directory))
             {
-                System.IO.Directory.CreateDirectory(directory);
+                Directory.CreateDirectory(directory);
             }
 
             // Create the prefab
