@@ -1,0 +1,31 @@
+.splash-screen {
+    width: 100%;
+    height: 100%;
+    background-color: #1A1A1A;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.logo-container {
+    width: 500px;
+    height: 300px;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.logo {
+    width: 100%;
+    height: 100%;
+    background-image: url('project://database/Assets/Textures/UI/recipe_rage_logo.png');
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.game-tagline {
+    font-size: 24px;
+    color: #FF6B35;
+    -unity-font-style: bold;
+    margin-top: 20px;
+    letter-spacing: 3px;
+}

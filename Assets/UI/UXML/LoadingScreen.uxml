@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" xsi:schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd">
+    <Style src="LoadingScreen.uss" />
+    
+    <VisualElement name="loading-screen-root" class="loading-screen">
+        <VisualElement name="background" class="background" />
+        
+        <VisualElement name="logo-container" class="logo-container">
+            <VisualElement name="game-logo" class="logo" />
+        </VisualElement>
+        
+        <VisualElement name="loading-container" class="loading-container">
+            <Label name="loading-status-label" text="Initializing..." class="loading-status" />
+            <ProgressBar name="loading-progress-bar" class="loading-progress" />
+        </VisualElement>
+        
+        <VisualElement name="tip-container" class="tip-container">
+            <Label name="tip-header" text="TIP:" class="tip-header" />
+            <Label name="loading-tip-label" text="Combine ingredients to create special recipes!" class="loading-tip" />
+        </VisualElement>
+    </VisualElement>
+</UXML>

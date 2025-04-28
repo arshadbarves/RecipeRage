@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" xsi:schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd">
+    <Style src="GameLogoSplashScreen.uss" />
+    
+    <VisualElement name="game-logo-splash-root" class="splash-screen">
+        <VisualElement name="game-logo-container" class="logo-container">
+            <VisualElement name="game-logo" class="logo" />
+        </VisualElement>
+        <Label name="game-tagline" text="COOK. COMPETE. CONQUER." class="game-tagline" />
+    </VisualElement>
+</UXML>
