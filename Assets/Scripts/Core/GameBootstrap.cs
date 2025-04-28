@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Threading.Tasks;
 using Core.Audio;
 using Core.Characters;
 using Core.GameFramework.State;
@@ -8,6 +9,9 @@ using Core.Input;
 using Core.Networking;
 using Core.Patterns;
 using Core.SaveSystem;
+
+using Core.UI.SplashScreen;
+using Core.Utilities;
 using Gameplay.Cooking;
 using Gameplay.Scoring;
 using UI;
@@ -47,7 +51,11 @@ namespace Core
         [SerializeField] private GameObject _orderManagerPrefab;
         [SerializeField] private GameObject _saveManagerPrefab;
         [SerializeField] private GameObject _audioManagerPrefab;
+        [SerializeField] private GameObject _splashScreenManagerPrefab;
         [SerializeField] private AudioDatabase _audioDatabase;
+
+        [Header("Splash Screen Settings")]
+        [SerializeField] private bool _showSplashScreens = true;
 
         // Initialization status
         private bool _isInitialized = false;
@@ -57,6 +65,7 @@ namespace Core
         private GameStateManager _gameStateManager;
         private UIManager _uiManager;
         private InputManager _inputManager;
+        private Core.UI.SplashScreen.SplashScreenManager _splashScreenManager;
         private GameModeManager _gameModeManager;
         private CharacterManager _characterManager;
         private ScoreManager _scoreManager;
@@ -82,70 +91,150 @@ namespace Core
         {
             Debug.Log("[GameBootstrap] Starting game initialization...");
 
+            // Initialize splash screen manager first if we're showing splash screens
+            if (_showSplashScreens)
+            {
+                yield return StartCoroutine(InitializeSplashScreenManager());
+
+                // Show company splash screen
+                if (_splashScreenManager != null)
+                {
+                    yield return _splashScreenManager.ShowCompanySplash().AsCoroutine();
+
+                    // Show game logo splash screen
+                    yield return _splashScreenManager.ShowGameLogoSplash().AsCoroutine();
+
+                    // Show loading screen
+                    _splashScreenManager.ShowLoadingScreen();
+                }
+            }
+
             // Initialize save system first
             if (_initializeSaveSystem)
             {
+                if (_showSplashScreens && _splashScreenManager != null)
+                {
+                    _splashScreenManager.UpdateLoadingProgress("Initializing Save System...", 0.05f);
+                }
+
                 yield return StartCoroutine(InitializeSaveSystem());
             }
 
             // Initialize audio system early
             if (_initializeAudioSystem)
             {
+                if (_showSplashScreens && _splashScreenManager != null)
+                {
+                    _splashScreenManager.UpdateLoadingProgress("Initializing Audio System...", 0.1f);
+                }
+
                 yield return StartCoroutine(InitializeAudioSystem());
             }
 
             // Initialize networking
             if (_initializeNetworking)
             {
+                if (_showSplashScreens && _splashScreenManager != null)
+                {
+                    _splashScreenManager.UpdateLoadingProgress("Initializing Networking System...", 0.15f);
+                }
+
                 yield return StartCoroutine(InitializeNetworking());
             }
 
             // Initialize game state system
             if (_initializeGameState)
             {
+                if (_showSplashScreens && _splashScreenManager != null)
+                {
+                    _splashScreenManager.UpdateLoadingProgress("Initializing Game State System...", 0.25f);
+                }
+
                 yield return StartCoroutine(InitializeGameState());
             }
 
             // Initialize UI system
             if (_initializeUI)
             {
+                if (_showSplashScreens && _splashScreenManager != null)
+                {
+                    _splashScreenManager.UpdateLoadingProgress("Initializing UI System...", 0.35f);
+                }
+
                 yield return StartCoroutine(InitializeUI());
             }
 
             // Initialize input system
             if (_initializeInput)
             {
+                if (_showSplashScreens && _splashScreenManager != null)
+                {
+                    _splashScreenManager.UpdateLoadingProgress("Initializing Input System...", 0.45f);
+                }
+
                 yield return StartCoroutine(InitializeInput());
             }
 
             // Initialize game mode system
             if (_initializeGameMode)
             {
+                if (_showSplashScreens && _splashScreenManager != null)
+                {
+                    _splashScreenManager.UpdateLoadingProgress("Initializing Game Mode System...", 0.55f);
+                }
+
                 yield return StartCoroutine(InitializeGameMode());
             }
 
             // Initialize character system
             if (_initializeCharacters)
             {
+                if (_showSplashScreens && _splashScreenManager != null)
+                {
+                    _splashScreenManager.UpdateLoadingProgress("Initializing Character System...", 0.65f);
+                }
+
                 yield return StartCoroutine(InitializeCharacters());
             }
 
             // Initialize scoring system
             if (_initializeScoring)
             {
+                if (_showSplashScreens && _splashScreenManager != null)
+                {
+                    _splashScreenManager.UpdateLoadingProgress("Initializing Scoring System...", 0.75f);
+                }
+
                 yield return StartCoroutine(InitializeScoring());
             }
 
             // Initialize order system
             if (_initializeOrderSystem)
             {
+                if (_showSplashScreens && _splashScreenManager != null)
+                {
+                    _splashScreenManager.UpdateLoadingProgress("Initializing Order System...", 0.85f);
+                }
+
                 yield return StartCoroutine(InitializeOrderSystem());
+            }
+
+            // Final loading progress
+            if (_showSplashScreens && _splashScreenManager != null)
+            {
+                _splashScreenManager.UpdateLoadingProgress("Finalizing...", 0.95f);
             }
 
             // Set initial game state
             if (_initializeGameState && _gameStateManager != null)
             {
                 SetInitialGameState();
+            }
+
+            // Hide loading screen if shown
+            if (_showSplashScreens && _splashScreenManager != null)
+            {
+                yield return _splashScreenManager.HideLoadingScreen().AsCoroutine();
             }
 
             // Mark as initialized
@@ -469,6 +558,40 @@ namespace Core
             }
 
             Debug.Log("[GameBootstrap] Audio system initialized.");
+        }
+
+        /// <summary>
+        /// Initialize the splash screen manager.
+        /// </summary>
+        private IEnumerator InitializeSplashScreenManager()
+        {
+            Debug.Log("[GameBootstrap] Initializing splash screen manager...");
+
+            // Check if SplashScreenManager already exists
+            _splashScreenManager = FindFirstObjectByType<Core.UI.SplashScreen.SplashScreenManager>();
+
+            if (_splashScreenManager == null && _splashScreenManagerPrefab != null)
+            {
+                // Instantiate the splash screen manager prefab
+                var splashScreenManagerObj = Instantiate(_splashScreenManagerPrefab);
+                splashScreenManagerObj.name = "SplashScreenManager";
+
+                // Wait a frame for the singleton to initialize
+                yield return null;
+
+                _splashScreenManager = FindFirstObjectByType<Core.UI.SplashScreen.SplashScreenManager>();
+            }
+            else if (_splashScreenManager == null)
+            {
+                // Create a new GameObject for the splash screen manager
+                var splashScreenManagerObj = new GameObject("SplashScreenManager");
+                _splashScreenManager = splashScreenManagerObj.AddComponent<Core.UI.SplashScreen.SplashScreenManager>();
+
+                // Wait a frame for the singleton to initialize
+                yield return null;
+            }
+
+            Debug.Log("[GameBootstrap] Splash screen manager initialized.");
         }
 
         /// <summary>
