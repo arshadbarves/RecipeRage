@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 using System.IO;
+using Core.UI.SplashScreen;
 using UnityEngine.UIElements;
 
 namespace Core.UI.Editor
@@ -12,7 +13,7 @@ namespace Core.UI.Editor
     {
         private const string PREFAB_PATH = "Assets/Prefabs/UI/SplashScreenManager.prefab";
         private const string PREFAB_DIRECTORY = "Assets/Prefabs/UI";
-        
+
         [MenuItem("RecipeRage/UI/Create Splash Screen Manager Prefab")]
         public static void CreateSplashScreenManagerPrefab()
         {
@@ -22,41 +23,41 @@ namespace Core.UI.Editor
                 Directory.CreateDirectory(PREFAB_DIRECTORY);
                 AssetDatabase.Refresh();
             }
-            
+
             // Check if prefab already exists
             if (File.Exists(PREFAB_PATH))
             {
                 Debug.Log($"[SplashScreenManagerPrefabCreator] Splash screen manager prefab already exists at {PREFAB_PATH}");
-                
+
                 // Select the existing prefab
                 GameObject existingPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(PREFAB_PATH);
                 Selection.activeObject = existingPrefab;
-                
+
                 return;
             }
-            
+
             // Create the splash screen manager GameObject
             GameObject splashScreenManagerObj = new GameObject("SplashScreenManager");
-            
+
             // Add SplashScreenManager component
             SplashScreenManager splashScreenManager = splashScreenManagerObj.AddComponent<SplashScreenManager>();
-            
+
             // Create UI Documents for splash screens
             CreateUIDocuments(splashScreenManagerObj, splashScreenManager);
-            
+
             // Create the prefab
             PrefabUtility.SaveAsPrefabAsset(splashScreenManagerObj, PREFAB_PATH);
-            
+
             // Destroy the temporary GameObject
             Object.DestroyImmediate(splashScreenManagerObj);
-            
+
             Debug.Log($"[SplashScreenManagerPrefabCreator] Created splash screen manager prefab at {PREFAB_PATH}");
-            
+
             // Select the prefab in the Project window
             GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PREFAB_PATH);
             Selection.activeObject = prefab;
         }
-        
+
         /// <summary>
         /// Create UI Documents for splash screens.
         /// </summary>
@@ -68,7 +69,7 @@ namespace Core.UI.Editor
             GameObject companySplashObj = new GameObject("CompanySplashScreen");
             companySplashObj.transform.SetParent(parent.transform);
             UIDocument companySplashDocument = companySplashObj.AddComponent<UIDocument>();
-            
+
             // Try to find the UXML asset
             var companySplashUXML = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/UI/UXML/CompanySplashScreen.uxml");
             if (companySplashUXML != null)
@@ -79,12 +80,12 @@ namespace Core.UI.Editor
             {
                 Debug.LogWarning("[SplashScreenManagerPrefabCreator] Could not find CompanySplashScreen.uxml");
             }
-            
+
             // Create game logo splash screen
             GameObject gameLogoSplashObj = new GameObject("GameLogoSplashScreen");
             gameLogoSplashObj.transform.SetParent(parent.transform);
             UIDocument gameLogoSplashDocument = gameLogoSplashObj.AddComponent<UIDocument>();
-            
+
             // Try to find the UXML asset
             var gameLogoSplashUXML = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/UI/UXML/GameLogoSplashScreen.uxml");
             if (gameLogoSplashUXML != null)
@@ -95,12 +96,12 @@ namespace Core.UI.Editor
             {
                 Debug.LogWarning("[SplashScreenManagerPrefabCreator] Could not find GameLogoSplashScreen.uxml");
             }
-            
+
             // Create loading screen
             GameObject loadingScreenObj = new GameObject("LoadingScreen");
             loadingScreenObj.transform.SetParent(parent.transform);
             UIDocument loadingScreenDocument = loadingScreenObj.AddComponent<UIDocument>();
-            
+
             // Try to find the UXML asset
             var loadingScreenUXML = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/UI/UXML/LoadingScreen.uxml");
             if (loadingScreenUXML != null)
@@ -111,23 +112,23 @@ namespace Core.UI.Editor
             {
                 Debug.LogWarning("[SplashScreenManagerPrefabCreator] Could not find LoadingScreen.uxml");
             }
-            
+
             // Set references in SplashScreenManager
-            SerializedObject serializedManager = new SerializedObject(splashScreenManager);
-            serializedManager.FindProperty("_companySplashDocument").objectReferenceValue = companySplashDocument;
-            serializedManager.FindProperty("_gameLogoSplashDocument").objectReferenceValue = gameLogoSplashDocument;
-            serializedManager.FindProperty("_loadingScreenDocument").objectReferenceValue = loadingScreenDocument;
-            
+            splashScreenManager.SetCompanySplashDocument(companySplashDocument);
+            splashScreenManager.SetGameLogoSplashDocument(gameLogoSplashDocument);
+            splashScreenManager.SetLoadingScreenDocument(loadingScreenDocument);
+
             // Set loading tips
-            SerializedProperty loadingTipsProperty = serializedManager.FindProperty("_loadingTips");
-            loadingTipsProperty.arraySize = 5;
-            loadingTipsProperty.GetArrayElementAtIndex(0).stringValue = "Combine ingredients to create special recipes!";
-            loadingTipsProperty.GetArrayElementAtIndex(1).stringValue = "Work together with your team to complete orders faster!";
-            loadingTipsProperty.GetArrayElementAtIndex(2).stringValue = "Different character classes have unique abilities!";
-            loadingTipsProperty.GetArrayElementAtIndex(3).stringValue = "Don't let food burn or you'll lose points!";
-            loadingTipsProperty.GetArrayElementAtIndex(4).stringValue = "Complete orders quickly to earn bonus points!";
-            
-            serializedManager.ApplyModifiedProperties();
+            string[] loadingTips = new string[]
+            {
+                "Combine ingredients to create special recipes!",
+                "Work together with your team to complete orders faster!",
+                "Different character classes have unique abilities!",
+                "Don't let food burn or you'll lose points!",
+                "Complete orders quickly to earn bonus points!"
+            };
+
+            splashScreenManager.SetLoadingTips(loadingTips);
         }
     }
 }
