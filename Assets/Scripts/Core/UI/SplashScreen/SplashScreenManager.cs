@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Threading.Tasks;
 using Core.Patterns;
+using Core.UI.Animation;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -179,46 +180,24 @@ namespace Core.UI.SplashScreen
         /// <summary>
         /// Show the company splash screen.
         /// </summary>
-        public async Task ShowCompanySplash()
+        public Task ShowCompanySplash()
         {
+            var tcs = new TaskCompletionSource<bool>();
+
             try
             {
                 if (_companySplashDocument == null || _companySplashRoot == null)
                 {
                     Debug.LogWarning("[SplashScreenManager] Company splash screen not set up");
-                    return;
+                    tcs.SetResult(false);
+                    return tcs.Task;
                 }
 
                 _isSkipRequested = false;
                 _companySplashDocument.enabled = true;
 
                 // Wait a frame to ensure UI is initialized
-                await Task.Yield();
-
-                // Register skip input handler
-                if (_allowSkipping)
-                {
-                    RegisterSkipHandler();
-                }
-
-                // Fade in
-                await FadeIn(_companySplashRoot);
-
-                // Wait for duration or skip
-                await WaitForDurationOrSkip(_companySplashDuration);
-
-                // Fade out
-                await FadeOut(_companySplashRoot);
-
-                _companySplashDocument.enabled = false;
-
-                // Unregister skip input handler
-                if (_allowSkipping)
-                {
-                    UnregisterSkipHandler();
-                }
-
-                Debug.Log("[SplashScreenManager] Company splash screen completed");
+                StartCoroutine(InitializeCompanySplash(tcs));
             }
             catch (Exception e)
             {
@@ -229,52 +208,126 @@ namespace Core.UI.SplashScreen
                 {
                     _companySplashDocument.enabled = false;
                 }
+
+                tcs.SetException(e);
             }
+
+            return tcs.Task;
         }
 
         /// <summary>
-        /// Show the game logo splash screen.
+        /// Initialize the company splash screen with animations.
         /// </summary>
-        public async Task ShowGameLogoSplash()
+        private IEnumerator InitializeCompanySplash(TaskCompletionSource<bool> tcs)
         {
+            // Wait a frame to ensure UI is initialized
+            yield return null;
+
             try
             {
-                if (_gameLogoSplashDocument == null || _gameLogoSplashRoot == null)
-                {
-                    Debug.LogWarning("[SplashScreenManager] Game logo splash screen not set up");
-                    return;
-                }
-
-                _isSkipRequested = false;
-                _gameLogoSplashDocument.enabled = true;
-
-                // Wait a frame to ensure UI is initialized
-                await Task.Yield();
-
                 // Register skip input handler
                 if (_allowSkipping)
                 {
                     RegisterSkipHandler();
                 }
 
-                // Fade in
-                await FadeIn(_gameLogoSplashRoot);
+                // Get company logo element
+                var companyLogo = _companySplashRoot.Q("company-logo");
+                var companyName = _companySplashRoot.Q("company-name");
 
-                // Wait for duration or skip
-                await WaitForDurationOrSkip(_gameLogoSplashDuration);
-
-                // Fade out
-                await FadeOut(_gameLogoSplashRoot);
-
-                _gameLogoSplashDocument.enabled = false;
-
-                // Unregister skip input handler
-                if (_allowSkipping)
+                // Reset initial state
+                _companySplashRoot.style.opacity = 1;
+                if (companyLogo != null)
                 {
-                    UnregisterSkipHandler();
+                    companyLogo.style.scale = new StyleScale(new Vector3(0.8f, 0.8f, 1f));
+                }
+                if (companyName != null) companyName.style.opacity = 0;
+
+                // Create animation sequence
+                var sequence = new UIAnimationSequence();
+
+                // Add animations
+                if (companyLogo != null)
+                {
+                    sequence.Scale(companyLogo, new Vector2(0.8f, 0.8f), new Vector2(1f, 1f), _fadeTransitionDuration, 0, UIEasing.EaseOutBack);
                 }
 
-                Debug.Log("[SplashScreenManager] Game logo splash screen completed");
+                if (companyName != null)
+                {
+                    sequence.Delay(_fadeTransitionDuration * 0.5f)
+                            .Fade(companyName, 0, 1, _fadeTransitionDuration, 0, UIEasing.EaseOutCubic);
+                }
+
+                // Add wait
+                sequence.Delay(_companySplashDuration - _fadeTransitionDuration);
+
+                // Add fade out
+                sequence.Fade(_companySplashRoot, 1, 0, _fadeTransitionDuration, 0, UIEasing.EaseInCubic);
+
+                // Add completion callback
+                sequence.OnComplete(() =>
+                {
+                    try
+                    {
+                        _companySplashDocument.enabled = false;
+
+                        // Unregister skip input handler
+                        if (_allowSkipping)
+                        {
+                            UnregisterSkipHandler();
+                        }
+
+                        Debug.Log("[SplashScreenManager] Company splash screen completed");
+                        tcs.SetResult(true);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogError($"[SplashScreenManager] Error in company splash completion: {e.Message}");
+                        tcs.SetException(e);
+                    }
+                });
+
+                // Play the sequence
+                sequence.Play();
+
+                // Handle skip request
+                StartCoroutine(CheckForSkipCompanySplash(sequence, tcs));
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[SplashScreenManager] Error initializing company splash: {e.Message}");
+
+                // Ensure the document is disabled in case of error
+                if (_companySplashDocument != null)
+                {
+                    _companySplashDocument.enabled = false;
+                }
+
+                tcs.SetException(e);
+            }
+        }
+
+        /// <summary>
+        /// Show the game logo splash screen.
+        /// </summary>
+        public Task ShowGameLogoSplash()
+        {
+            var tcs = new TaskCompletionSource<bool>();
+
+            try
+            {
+                if (_gameLogoSplashDocument == null || _gameLogoSplashRoot == null)
+                {
+                    Debug.LogWarning("[SplashScreenManager] Game logo splash screen not set up");
+                    tcs.SetResult(false);
+                    return tcs.Task;
+                }
+
+                _isSkipRequested = false;
+                _gameLogoSplashDocument.enabled = true;
+
+                // Wait a frame to ensure UI is initialized
+                StartCoroutine(InitializeGameLogoSplash(tcs));
             }
             catch (Exception e)
             {
@@ -285,8 +338,172 @@ namespace Core.UI.SplashScreen
                 {
                     _gameLogoSplashDocument.enabled = false;
                 }
+
+                tcs.SetException(e);
+            }
+
+            return tcs.Task;
+        }
+
+        /// <summary>
+        /// Initialize the game logo splash screen with animations.
+        /// </summary>
+        private IEnumerator InitializeGameLogoSplash(TaskCompletionSource<bool> tcs)
+        {
+            // Wait a frame to ensure UI is initialized
+            yield return null;
+
+            try
+            {
+                // Register skip input handler
+                if (_allowSkipping)
+                {
+                    RegisterSkipHandler();
+                }
+
+                // Get game logo elements
+                var gameLogo = _gameLogoSplashRoot.Q("game-logo");
+                var gameTagline = _gameLogoSplashRoot.Q("game-tagline");
+
+                // Reset initial state
+                _gameLogoSplashRoot.style.opacity = 1;
+                if (gameLogo != null)
+                {
+                    gameLogo.style.scale = new StyleScale(new Vector3(0.7f, 0.7f, 1f));
+                    gameLogo.style.opacity = 0;
+                }
+                if (gameTagline != null)
+                {
+                    gameTagline.style.opacity = 0;
+                    gameTagline.style.translate = new StyleTranslate(new Translate(0, 30f, 0));
+                }
+
+                // Create animation sequence
+                var sequence = new UIAnimationSequence();
+
+                // Add animations
+                if (gameLogo != null)
+                {
+                    sequence.Fade(gameLogo, 0, 1, _fadeTransitionDuration, 0, UIEasing.EaseOutCubic)
+                            .Scale(gameLogo, new Vector2(0.7f, 0.7f), new Vector2(1f, 1f), _fadeTransitionDuration * 1.2f, 0, UIEasing.EaseOutBack);
+                }
+
+                if (gameTagline != null)
+                {
+                    sequence.Delay(_fadeTransitionDuration * 0.8f)
+                            .Fade(gameTagline, 0, 1, _fadeTransitionDuration, 0, UIEasing.EaseOutCubic)
+                            .Move(gameTagline,
+                                  new Vector2(gameTagline.style.left.value.value, gameTagline.style.top.value.value + 30),
+                                  new Vector2(gameTagline.style.left.value.value, gameTagline.style.top.value.value),
+                                  _fadeTransitionDuration, 0, UIEasing.EaseOutCubic);
+                }
+
+                // Add wait
+                sequence.Delay(_gameLogoSplashDuration - _fadeTransitionDuration * 2);
+
+                // Add fade out
+                sequence.Fade(_gameLogoSplashRoot, 1, 0, _fadeTransitionDuration, 0, UIEasing.EaseInCubic);
+
+                // Add completion callback
+                sequence.OnComplete(() =>
+                {
+                    try
+                    {
+                        _gameLogoSplashDocument.enabled = false;
+
+                        // Unregister skip input handler
+                        if (_allowSkipping)
+                        {
+                            UnregisterSkipHandler();
+                        }
+
+                        Debug.Log("[SplashScreenManager] Game logo splash screen completed");
+                        tcs.SetResult(true);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogError($"[SplashScreenManager] Error in game logo splash completion: {e.Message}");
+                        tcs.SetException(e);
+                    }
+                });
+
+                // Play the sequence
+                sequence.Play();
+
+                // Handle skip request
+                StartCoroutine(CheckForSkipGameLogoSplash(sequence, tcs));
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[SplashScreenManager] Error initializing game logo splash: {e.Message}");
+
+                // Ensure the document is disabled in case of error
+                if (_gameLogoSplashDocument != null)
+                {
+                    _gameLogoSplashDocument.enabled = false;
+                }
+
+                tcs.SetException(e);
             }
         }
+
+        /// <summary>
+        /// Check for skip request during game logo splash animation.
+        /// </summary>
+        private IEnumerator CheckForSkipGameLogoSplash(UIAnimationSequence sequence, TaskCompletionSource<bool> tcs)
+        {
+            while (!tcs.Task.IsCompleted)
+            {
+                if (_isSkipRequested)
+                {
+                    // Stop current animation sequence
+                    sequence.Stop();
+
+                    // Fade out immediately
+                    _gameLogoSplashRoot.style.opacity = 0;
+                    _gameLogoSplashDocument.enabled = false;
+
+                    // Unregister skip input handler
+                    UnregisterSkipHandler();
+
+                    // Complete the task
+                    tcs.TrySetResult(true);
+                    yield break;
+                }
+
+                yield return null;
+            }
+        }
+
+        /// <summary>
+        /// Check for skip request during company splash animation.
+        /// </summary>
+        private IEnumerator CheckForSkipCompanySplash(UIAnimationSequence sequence, TaskCompletionSource<bool> tcs)
+        {
+            while (!tcs.Task.IsCompleted)
+            {
+                if (_isSkipRequested)
+                {
+                    // Stop current animation sequence
+                    sequence.Stop();
+
+                    // Fade out immediately
+                    _companySplashRoot.style.opacity = 0;
+                    _companySplashDocument.enabled = false;
+
+                    // Unregister skip input handler
+                    UnregisterSkipHandler();
+
+                    // Complete the task
+                    tcs.TrySetResult(true);
+                    yield break;
+                }
+
+                yield return null;
+            }
+        }
+
+
 
         /// <summary>
         /// Show the loading screen.
@@ -381,56 +598,19 @@ namespace Core.UI.SplashScreen
         /// <summary>
         /// Hide the loading screen.
         /// </summary>
-        public async Task HideLoadingScreen()
+        public Task HideLoadingScreen()
         {
+            var tcs = new TaskCompletionSource<bool>();
+
             try
             {
                 if (_loadingScreenDocument == null || _loadingScreenRoot == null)
                 {
-                    return;
+                    tcs.SetResult(false);
+                    return tcs.Task;
                 }
 
-                // Ensure minimum display time
-                float elapsedTime = Time.time - _loadingStartTime;
-                if (elapsedTime < _minLoadingScreenDuration)
-                {
-                    await Task.Delay(Mathf.RoundToInt((_minLoadingScreenDuration - elapsedTime) * 1000));
-                }
-
-                // Set progress to 100% for visual satisfaction
-                if (_loadingProgressBar != null)
-                {
-                    _loadingProgressBar.value = 1.0f;
-                }
-
-                if (_loadingStatusLabel != null)
-                {
-                    _loadingStatusLabel.text = "Ready!";
-                }
-
-                // Wait a moment at 100%
-                await Task.Delay(500);
-
-                // Fade out
-                await FadeOut(_loadingScreenRoot);
-
-                // Stop cycling loading tips
-                if (_tipsCoroutine != null)
-                {
-                    try
-                    {
-                        StopCoroutine(_tipsCoroutine);
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.LogWarning($"[SplashScreenManager] Error stopping tips coroutine: {e.Message}");
-                    }
-                    _tipsCoroutine = null;
-                }
-
-                _loadingScreenDocument.enabled = false;
-
-                Debug.Log("[SplashScreenManager] Loading screen hidden");
+                StartCoroutine(HideLoadingScreenAnimation(tcs));
             }
             catch (Exception e)
             {
@@ -441,113 +621,150 @@ namespace Core.UI.SplashScreen
                 {
                     _loadingScreenDocument.enabled = false;
                 }
+
+                tcs.SetException(e);
             }
+
+            return tcs.Task;
         }
 
         /// <summary>
-        /// Fade in a visual element.
+        /// Hide the loading screen with animation.
         /// </summary>
-        /// <param name="element">The element to fade in</param>
-        private async Task FadeIn(VisualElement element)
+        private IEnumerator HideLoadingScreenAnimation(TaskCompletionSource<bool> tcs)
         {
+            // Ensure minimum display time
+            float elapsedTime = Time.time - _loadingStartTime;
+            if (elapsedTime < _minLoadingScreenDuration)
+            {
+                yield return new WaitForSeconds(_minLoadingScreenDuration - elapsedTime);
+            }
+
             try
             {
-                if (element == null)
+                // Set progress to 100% for visual satisfaction
+                if (_loadingProgressBar != null)
                 {
-                    Debug.LogWarning("[SplashScreenManager] Cannot fade in null element");
-                    return;
+                    // Animate progress bar to 100%
+                    float startValue = _loadingProgressBar.value;
+                    float endValue = 1.0f;
+                    float duration = 0.5f;
+                    float startTime = Time.time;
+
+                    while (Time.time - startTime < duration)
+                    {
+                        float t = (Time.time - startTime) / duration;
+                        _loadingProgressBar.value = Mathf.Lerp(startValue, endValue, UIEasing.EaseOutCubic(t));
+                        yield return null;
+                    }
+
+                    _loadingProgressBar.value = endValue;
                 }
 
-                element.style.opacity = 0;
-
-                // Wait a frame to ensure UI is updated
-                await Task.Yield();
-
-                float startTime = Time.time;
-                while (Time.time - startTime < _fadeTransitionDuration && !_isSkipRequested)
+                if (_loadingStatusLabel != null)
                 {
-                    float progress = (Time.time - startTime) / _fadeTransitionDuration;
-                    element.style.opacity = progress;
-                    await Task.Yield();
+                    _loadingStatusLabel.text = "Ready!";
                 }
-
-                element.style.opacity = 1;
             }
             catch (Exception e)
             {
-                Debug.LogWarning($"[SplashScreenManager] Error during fade in: {e.Message}");
+                Debug.LogWarning($"[SplashScreenManager] Error updating loading progress: {e.Message}");
 
-                // Ensure element is visible in case of error
-                if (element != null)
+                // Set to 100% directly if animation fails
+                if (_loadingProgressBar != null)
                 {
-                    element.style.opacity = 1;
+                    _loadingProgressBar.value = 1.0f;
                 }
             }
-        }
 
-        /// <summary>
-        /// Fade out a visual element.
-        /// </summary>
-        /// <param name="element">The element to fade out</param>
-        private async Task FadeOut(VisualElement element)
-        {
+            // Wait a moment at 100%
+            yield return new WaitForSeconds(0.5f);
+
             try
             {
-                if (element == null)
+                // Create animation sequence for fade out
+                var sequence = new UIAnimationSequence();
+
+                // Add animations - find UI elements to animate
+                var loadingIcon = _loadingScreenRoot.Q("loading-icon");
+                var loadingTitle = _loadingScreenRoot.Q("loading-title");
+                var loadingBar = _loadingScreenRoot.Q("loading-bar-container");
+                var loadingTip = _loadingScreenRoot.Q("loading-tip-container");
+
+                // Staggered fade out animations
+                if (loadingTip != null)
                 {
-                    Debug.LogWarning("[SplashScreenManager] Cannot fade out null element");
-                    return;
+                    sequence.Fade(loadingTip, 1, 0, _fadeTransitionDuration * 0.7f, 0, UIEasing.EaseInCubic);
                 }
 
-                element.style.opacity = 1;
-
-                // Wait a frame to ensure UI is updated
-                await Task.Yield();
-
-                float startTime = Time.time;
-                while (Time.time - startTime < _fadeTransitionDuration && !_isSkipRequested)
+                if (loadingBar != null)
                 {
-                    float progress = 1 - ((Time.time - startTime) / _fadeTransitionDuration);
-                    element.style.opacity = progress;
-                    await Task.Yield();
+                    sequence.Fade(loadingBar, 1, 0, _fadeTransitionDuration * 0.7f, 0.1f, UIEasing.EaseInCubic);
                 }
 
-                element.style.opacity = 0;
+                if (loadingTitle != null)
+                {
+                    sequence.Fade(loadingTitle, 1, 0, _fadeTransitionDuration * 0.7f, 0.2f, UIEasing.EaseInCubic);
+                }
+
+                if (loadingIcon != null)
+                {
+                    sequence.Fade(loadingIcon, 1, 0, _fadeTransitionDuration * 0.7f, 0.3f, UIEasing.EaseInCubic);
+                }
+
+                // Final fade out of the entire screen
+                sequence.Delay(0.1f)
+                        .Fade(_loadingScreenRoot, 1, 0, _fadeTransitionDuration, 0, UIEasing.EaseInCubic);
+
+                // Add completion callback
+                sequence.OnComplete(() =>
+                {
+                    try
+                    {
+                        // Stop cycling loading tips
+                        if (_tipsCoroutine != null)
+                        {
+                            try
+                            {
+                                StopCoroutine(_tipsCoroutine);
+                            }
+                            catch (Exception e)
+                            {
+                                Debug.LogWarning($"[SplashScreenManager] Error stopping tips coroutine: {e.Message}");
+                            }
+                            _tipsCoroutine = null;
+                        }
+
+                        _loadingScreenDocument.enabled = false;
+
+                        Debug.Log("[SplashScreenManager] Loading screen hidden");
+                        tcs.SetResult(true);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogError($"[SplashScreenManager] Error in loading screen completion: {e.Message}");
+                        tcs.SetException(e);
+                    }
+                });
+
+                // Play the sequence
+                sequence.Play();
             }
             catch (Exception e)
             {
-                Debug.LogWarning($"[SplashScreenManager] Error during fade out: {e.Message}");
+                Debug.LogError($"[SplashScreenManager] Error in loading screen animation: {e.Message}");
 
-                // Ensure element is hidden in case of error
-                if (element != null)
+                // Ensure the document is disabled in case of error
+                if (_loadingScreenDocument != null)
                 {
-                    element.style.opacity = 0;
+                    _loadingScreenDocument.enabled = false;
                 }
+
+                tcs.SetException(e);
             }
         }
 
-        /// <summary>
-        /// Wait for a duration or until skip is requested.
-        /// </summary>
-        /// <param name="duration">The duration to wait</param>
-        private async Task WaitForDurationOrSkip(float duration)
-        {
-            try
-            {
-                float startTime = Time.time;
-                while (Time.time - startTime < duration && !_isSkipRequested)
-                {
-                    await Task.Yield();
-                }
 
-                _isSkipRequested = false;
-            }
-            catch (Exception e)
-            {
-                Debug.LogWarning($"[SplashScreenManager] Error during wait: {e.Message}");
-                _isSkipRequested = false;
-            }
-        }
 
         /// <summary>
         /// Cycle through loading tips.
