@@ -181,39 +181,55 @@ namespace Core.UI.SplashScreen
         /// </summary>
         public async Task ShowCompanySplash()
         {
-            if (_companySplashDocument == null || _companySplashRoot == null)
+            try
             {
-                Debug.LogWarning("[SplashScreenManager] Company splash screen not set up");
-                return;
+                if (_companySplashDocument == null || _companySplashRoot == null)
+                {
+                    Debug.LogWarning("[SplashScreenManager] Company splash screen not set up");
+                    return;
+                }
+
+                _isSkipRequested = false;
+                _companySplashDocument.enabled = true;
+
+                // Wait a frame to ensure UI is initialized
+                await Task.Yield();
+
+                // Register skip input handler
+                if (_allowSkipping)
+                {
+                    RegisterSkipHandler();
+                }
+
+                // Fade in
+                await FadeIn(_companySplashRoot);
+
+                // Wait for duration or skip
+                await WaitForDurationOrSkip(_companySplashDuration);
+
+                // Fade out
+                await FadeOut(_companySplashRoot);
+
+                _companySplashDocument.enabled = false;
+
+                // Unregister skip input handler
+                if (_allowSkipping)
+                {
+                    UnregisterSkipHandler();
+                }
+
+                Debug.Log("[SplashScreenManager] Company splash screen completed");
             }
-
-            _isSkipRequested = false;
-            _companySplashDocument.enabled = true;
-
-            // Register skip input handler
-            if (_allowSkipping)
+            catch (Exception e)
             {
-                RegisterSkipHandler();
+                Debug.LogError($"[SplashScreenManager] Error showing company splash: {e.Message}");
+
+                // Ensure the document is disabled in case of error
+                if (_companySplashDocument != null)
+                {
+                    _companySplashDocument.enabled = false;
+                }
             }
-
-            // Fade in
-            await FadeIn(_companySplashRoot);
-
-            // Wait for duration or skip
-            await WaitForDurationOrSkip(_companySplashDuration);
-
-            // Fade out
-            await FadeOut(_companySplashRoot);
-
-            _companySplashDocument.enabled = false;
-
-            // Unregister skip input handler
-            if (_allowSkipping)
-            {
-                UnregisterSkipHandler();
-            }
-
-            Debug.Log("[SplashScreenManager] Company splash screen completed");
         }
 
         /// <summary>
@@ -221,39 +237,55 @@ namespace Core.UI.SplashScreen
         /// </summary>
         public async Task ShowGameLogoSplash()
         {
-            if (_gameLogoSplashDocument == null || _gameLogoSplashRoot == null)
+            try
             {
-                Debug.LogWarning("[SplashScreenManager] Game logo splash screen not set up");
-                return;
+                if (_gameLogoSplashDocument == null || _gameLogoSplashRoot == null)
+                {
+                    Debug.LogWarning("[SplashScreenManager] Game logo splash screen not set up");
+                    return;
+                }
+
+                _isSkipRequested = false;
+                _gameLogoSplashDocument.enabled = true;
+
+                // Wait a frame to ensure UI is initialized
+                await Task.Yield();
+
+                // Register skip input handler
+                if (_allowSkipping)
+                {
+                    RegisterSkipHandler();
+                }
+
+                // Fade in
+                await FadeIn(_gameLogoSplashRoot);
+
+                // Wait for duration or skip
+                await WaitForDurationOrSkip(_gameLogoSplashDuration);
+
+                // Fade out
+                await FadeOut(_gameLogoSplashRoot);
+
+                _gameLogoSplashDocument.enabled = false;
+
+                // Unregister skip input handler
+                if (_allowSkipping)
+                {
+                    UnregisterSkipHandler();
+                }
+
+                Debug.Log("[SplashScreenManager] Game logo splash screen completed");
             }
-
-            _isSkipRequested = false;
-            _gameLogoSplashDocument.enabled = true;
-
-            // Register skip input handler
-            if (_allowSkipping)
+            catch (Exception e)
             {
-                RegisterSkipHandler();
+                Debug.LogError($"[SplashScreenManager] Error showing game logo splash: {e.Message}");
+
+                // Ensure the document is disabled in case of error
+                if (_gameLogoSplashDocument != null)
+                {
+                    _gameLogoSplashDocument.enabled = false;
+                }
             }
-
-            // Fade in
-            await FadeIn(_gameLogoSplashRoot);
-
-            // Wait for duration or skip
-            await WaitForDurationOrSkip(_gameLogoSplashDuration);
-
-            // Fade out
-            await FadeOut(_gameLogoSplashRoot);
-
-            _gameLogoSplashDocument.enabled = false;
-
-            // Unregister skip input handler
-            if (_allowSkipping)
-            {
-                UnregisterSkipHandler();
-            }
-
-            Debug.Log("[SplashScreenManager] Game logo splash screen completed");
         }
 
         /// <summary>
@@ -261,38 +293,64 @@ namespace Core.UI.SplashScreen
         /// </summary>
         public void ShowLoadingScreen()
         {
-            if (_loadingScreenDocument == null || _loadingScreenRoot == null)
+            try
             {
-                Debug.LogWarning("[SplashScreenManager] Loading screen not set up");
-                return;
+                if (_loadingScreenDocument == null || _loadingScreenRoot == null)
+                {
+                    Debug.LogWarning("[SplashScreenManager] Loading screen not set up");
+                    return;
+                }
+
+                _loadingStartTime = Time.time;
+                _loadingScreenDocument.enabled = true;
+
+                // Wait a frame to ensure UI is initialized
+                StartCoroutine(InitializeLoadingScreen());
+
+                Debug.Log("[SplashScreenManager] Loading screen shown");
             }
-
-            _loadingStartTime = Time.time;
-            _loadingScreenDocument.enabled = true;
-
-            if (_loadingProgressBar != null)
+            catch (Exception e)
             {
-                _loadingProgressBar.value = 0;
+                Debug.LogError($"[SplashScreenManager] Error showing loading screen: {e.Message}");
             }
+        }
 
-            if (_loadingStatusLabel != null)
+        /// <summary>
+        /// Initialize the loading screen after a frame.
+        /// </summary>
+        private IEnumerator InitializeLoadingScreen()
+        {
+            // Wait a frame to ensure UI is initialized
+            yield return null;
+
+            try
             {
-                _loadingStatusLabel.text = "Initializing...";
-            }
+                if (_loadingProgressBar != null)
+                {
+                    _loadingProgressBar.value = 0;
+                }
 
-            // Start cycling loading tips
-            if (_loadingTipLabel != null && _loadingTips != null && _loadingTips.Length > 0)
+                if (_loadingStatusLabel != null)
+                {
+                    _loadingStatusLabel.text = "Initializing...";
+                }
+
+                // Start cycling loading tips
+                if (_loadingTipLabel != null && _loadingTips != null && _loadingTips.Length > 0)
+                {
+                    _tipsCoroutine = StartCoroutine(CycleLoadingTips());
+                }
+
+                // Fade in
+                if (_loadingScreenRoot != null)
+                {
+                    _loadingScreenRoot.style.opacity = 1;
+                }
+            }
+            catch (Exception e)
             {
-                _tipsCoroutine = StartCoroutine(CycleLoadingTips());
+                Debug.LogError($"[SplashScreenManager] Error initializing loading screen: {e.Message}");
             }
-
-            // Fade in
-            if (_loadingScreenRoot != null)
-            {
-                _loadingScreenRoot.style.opacity = 1;
-            }
-
-            Debug.Log("[SplashScreenManager] Loading screen shown");
         }
 
         /// <summary>
@@ -302,14 +360,21 @@ namespace Core.UI.SplashScreen
         /// <param name="progress">The loading progress (0-1)</param>
         public void UpdateLoadingProgress(string status, float progress)
         {
-            if (_loadingStatusLabel != null)
+            try
             {
-                _loadingStatusLabel.text = status;
-            }
+                if (_loadingStatusLabel != null)
+                {
+                    _loadingStatusLabel.text = status;
+                }
 
-            if (_loadingProgressBar != null)
+                if (_loadingProgressBar != null)
+                {
+                    _loadingProgressBar.value = progress;
+                }
+            }
+            catch (Exception e)
             {
-                _loadingProgressBar.value = progress;
+                Debug.LogWarning($"[SplashScreenManager] Error updating loading progress: {e.Message}");
             }
         }
 
@@ -318,45 +383,65 @@ namespace Core.UI.SplashScreen
         /// </summary>
         public async Task HideLoadingScreen()
         {
-            if (_loadingScreenDocument == null || _loadingScreenRoot == null)
+            try
             {
-                return;
-            }
+                if (_loadingScreenDocument == null || _loadingScreenRoot == null)
+                {
+                    return;
+                }
 
-            // Ensure minimum display time
-            float elapsedTime = Time.time - _loadingStartTime;
-            if (elapsedTime < _minLoadingScreenDuration)
+                // Ensure minimum display time
+                float elapsedTime = Time.time - _loadingStartTime;
+                if (elapsedTime < _minLoadingScreenDuration)
+                {
+                    await Task.Delay(Mathf.RoundToInt((_minLoadingScreenDuration - elapsedTime) * 1000));
+                }
+
+                // Set progress to 100% for visual satisfaction
+                if (_loadingProgressBar != null)
+                {
+                    _loadingProgressBar.value = 1.0f;
+                }
+
+                if (_loadingStatusLabel != null)
+                {
+                    _loadingStatusLabel.text = "Ready!";
+                }
+
+                // Wait a moment at 100%
+                await Task.Delay(500);
+
+                // Fade out
+                await FadeOut(_loadingScreenRoot);
+
+                // Stop cycling loading tips
+                if (_tipsCoroutine != null)
+                {
+                    try
+                    {
+                        StopCoroutine(_tipsCoroutine);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogWarning($"[SplashScreenManager] Error stopping tips coroutine: {e.Message}");
+                    }
+                    _tipsCoroutine = null;
+                }
+
+                _loadingScreenDocument.enabled = false;
+
+                Debug.Log("[SplashScreenManager] Loading screen hidden");
+            }
+            catch (Exception e)
             {
-                await Task.Delay(Mathf.RoundToInt((_minLoadingScreenDuration - elapsedTime) * 1000));
+                Debug.LogError($"[SplashScreenManager] Error hiding loading screen: {e.Message}");
+
+                // Ensure the document is disabled in case of error
+                if (_loadingScreenDocument != null)
+                {
+                    _loadingScreenDocument.enabled = false;
+                }
             }
-
-            // Set progress to 100% for visual satisfaction
-            if (_loadingProgressBar != null)
-            {
-                _loadingProgressBar.value = 1.0f;
-            }
-
-            if (_loadingStatusLabel != null)
-            {
-                _loadingStatusLabel.text = "Ready!";
-            }
-
-            // Wait a moment at 100%
-            await Task.Delay(500);
-
-            // Fade out
-            await FadeOut(_loadingScreenRoot);
-
-            // Stop cycling loading tips
-            if (_tipsCoroutine != null)
-            {
-                StopCoroutine(_tipsCoroutine);
-                _tipsCoroutine = null;
-            }
-
-            _loadingScreenDocument.enabled = false;
-
-            Debug.Log("[SplashScreenManager] Loading screen hidden");
         }
 
         /// <summary>
@@ -365,22 +450,39 @@ namespace Core.UI.SplashScreen
         /// <param name="element">The element to fade in</param>
         private async Task FadeIn(VisualElement element)
         {
-            if (element == null)
+            try
             {
-                return;
-            }
+                if (element == null)
+                {
+                    Debug.LogWarning("[SplashScreenManager] Cannot fade in null element");
+                    return;
+                }
 
-            element.style.opacity = 0;
+                element.style.opacity = 0;
 
-            float startTime = Time.time;
-            while (Time.time - startTime < _fadeTransitionDuration && !_isSkipRequested)
-            {
-                float progress = (Time.time - startTime) / _fadeTransitionDuration;
-                element.style.opacity = progress;
+                // Wait a frame to ensure UI is updated
                 await Task.Yield();
-            }
 
-            element.style.opacity = 1;
+                float startTime = Time.time;
+                while (Time.time - startTime < _fadeTransitionDuration && !_isSkipRequested)
+                {
+                    float progress = (Time.time - startTime) / _fadeTransitionDuration;
+                    element.style.opacity = progress;
+                    await Task.Yield();
+                }
+
+                element.style.opacity = 1;
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"[SplashScreenManager] Error during fade in: {e.Message}");
+
+                // Ensure element is visible in case of error
+                if (element != null)
+                {
+                    element.style.opacity = 1;
+                }
+            }
         }
 
         /// <summary>
@@ -389,22 +491,39 @@ namespace Core.UI.SplashScreen
         /// <param name="element">The element to fade out</param>
         private async Task FadeOut(VisualElement element)
         {
-            if (element == null)
+            try
             {
-                return;
-            }
+                if (element == null)
+                {
+                    Debug.LogWarning("[SplashScreenManager] Cannot fade out null element");
+                    return;
+                }
 
-            element.style.opacity = 1;
+                element.style.opacity = 1;
 
-            float startTime = Time.time;
-            while (Time.time - startTime < _fadeTransitionDuration && !_isSkipRequested)
-            {
-                float progress = 1 - ((Time.time - startTime) / _fadeTransitionDuration);
-                element.style.opacity = progress;
+                // Wait a frame to ensure UI is updated
                 await Task.Yield();
-            }
 
-            element.style.opacity = 0;
+                float startTime = Time.time;
+                while (Time.time - startTime < _fadeTransitionDuration && !_isSkipRequested)
+                {
+                    float progress = 1 - ((Time.time - startTime) / _fadeTransitionDuration);
+                    element.style.opacity = progress;
+                    await Task.Yield();
+                }
+
+                element.style.opacity = 0;
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"[SplashScreenManager] Error during fade out: {e.Message}");
+
+                // Ensure element is hidden in case of error
+                if (element != null)
+                {
+                    element.style.opacity = 0;
+                }
+            }
         }
 
         /// <summary>
@@ -413,13 +532,21 @@ namespace Core.UI.SplashScreen
         /// <param name="duration">The duration to wait</param>
         private async Task WaitForDurationOrSkip(float duration)
         {
-            float startTime = Time.time;
-            while (Time.time - startTime < duration && !_isSkipRequested)
+            try
             {
-                await Task.Yield();
-            }
+                float startTime = Time.time;
+                while (Time.time - startTime < duration && !_isSkipRequested)
+                {
+                    await Task.Yield();
+                }
 
-            _isSkipRequested = false;
+                _isSkipRequested = false;
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"[SplashScreenManager] Error during wait: {e.Message}");
+                _isSkipRequested = false;
+            }
         }
 
         /// <summary>
@@ -449,26 +576,34 @@ namespace Core.UI.SplashScreen
         /// </summary>
         private void RegisterSkipHandler()
         {
-            // Add mouse click handler
-            if (_companySplashDocument != null && _companySplashDocument.enabled)
+            try
             {
-                _companySplashDocument.rootVisualElement.RegisterCallback<ClickEvent>(HandleClickEvent);
-            }
+                // Add mouse click handler
+                if (_companySplashDocument != null && _companySplashDocument.enabled && _companySplashDocument.rootVisualElement != null)
+                {
+                    _companySplashDocument.rootVisualElement.RegisterCallback<ClickEvent>(HandleClickEvent);
+                }
 
-            if (_gameLogoSplashDocument != null && _gameLogoSplashDocument.enabled)
-            {
-                _gameLogoSplashDocument.rootVisualElement.RegisterCallback<ClickEvent>(HandleClickEvent);
-            }
+                if (_gameLogoSplashDocument != null && _gameLogoSplashDocument.enabled && _gameLogoSplashDocument.rootVisualElement != null)
+                {
+                    _gameLogoSplashDocument.rootVisualElement.RegisterCallback<ClickEvent>(HandleClickEvent);
+                }
 
-            // Add keyboard handler
-            if (_companySplashDocument != null && _companySplashDocument.enabled)
-            {
-                _companySplashDocument.rootVisualElement.RegisterCallback<KeyDownEvent>(HandleKeyEvent);
-            }
+                // Add keyboard handler
+                if (_companySplashDocument != null && _companySplashDocument.enabled && _companySplashDocument.rootVisualElement != null)
+                {
+                    _companySplashDocument.rootVisualElement.RegisterCallback<KeyDownEvent>(HandleKeyEvent);
+                }
 
-            if (_gameLogoSplashDocument != null && _gameLogoSplashDocument.enabled)
+                if (_gameLogoSplashDocument != null && _gameLogoSplashDocument.enabled && _gameLogoSplashDocument.rootVisualElement != null)
+                {
+                    _gameLogoSplashDocument.rootVisualElement.RegisterCallback<KeyDownEvent>(HandleKeyEvent);
+                }
+            }
+            catch (Exception e)
             {
-                _gameLogoSplashDocument.rootVisualElement.RegisterCallback<KeyDownEvent>(HandleKeyEvent);
+                // Log the error but don't let it crash the application
+                Debug.LogWarning($"[SplashScreenManager] Error registering callbacks: {e.Message}");
             }
         }
 
@@ -477,26 +612,34 @@ namespace Core.UI.SplashScreen
         /// </summary>
         private void UnregisterSkipHandler()
         {
-            // Remove mouse click handler
-            if (_companySplashDocument != null)
+            try
             {
-                _companySplashDocument.rootVisualElement.UnregisterCallback<ClickEvent>(HandleClickEvent);
-            }
+                // Remove mouse click handler
+                if (_companySplashDocument != null && _companySplashDocument.rootVisualElement != null)
+                {
+                    _companySplashDocument.rootVisualElement.UnregisterCallback<ClickEvent>(HandleClickEvent);
+                }
 
-            if (_gameLogoSplashDocument != null)
-            {
-                _gameLogoSplashDocument.rootVisualElement.UnregisterCallback<ClickEvent>(HandleClickEvent);
-            }
+                if (_gameLogoSplashDocument != null && _gameLogoSplashDocument.rootVisualElement != null)
+                {
+                    _gameLogoSplashDocument.rootVisualElement.UnregisterCallback<ClickEvent>(HandleClickEvent);
+                }
 
-            // Remove keyboard handler
-            if (_companySplashDocument != null)
-            {
-                _companySplashDocument.rootVisualElement.UnregisterCallback<KeyDownEvent>(HandleKeyEvent);
-            }
+                // Remove keyboard handler
+                if (_companySplashDocument != null && _companySplashDocument.rootVisualElement != null)
+                {
+                    _companySplashDocument.rootVisualElement.UnregisterCallback<KeyDownEvent>(HandleKeyEvent);
+                }
 
-            if (_gameLogoSplashDocument != null)
+                if (_gameLogoSplashDocument != null && _gameLogoSplashDocument.rootVisualElement != null)
+                {
+                    _gameLogoSplashDocument.rootVisualElement.UnregisterCallback<KeyDownEvent>(HandleKeyEvent);
+                }
+            }
+            catch (Exception e)
             {
-                _gameLogoSplashDocument.rootVisualElement.UnregisterCallback<KeyDownEvent>(HandleKeyEvent);
+                // Log the error but don't let it crash the application
+                Debug.LogWarning($"[SplashScreenManager] Error unregistering callbacks: {e.Message}");
             }
         }
 
@@ -523,15 +666,25 @@ namespace Core.UI.SplashScreen
         /// <summary>
         /// Clean up when destroyed.
         /// </summary>
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
+            // Call base class OnDestroy first
+            base.OnDestroy();
+
             // Ensure we unregister any callbacks
             UnregisterSkipHandler();
 
             // Stop any running coroutines
             if (_tipsCoroutine != null)
             {
-                StopCoroutine(_tipsCoroutine);
+                try
+                {
+                    StopCoroutine(_tipsCoroutine);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogWarning($"[SplashScreenManager] Error stopping coroutine: {e.Message}");
+                }
                 _tipsCoroutine = null;
             }
         }
