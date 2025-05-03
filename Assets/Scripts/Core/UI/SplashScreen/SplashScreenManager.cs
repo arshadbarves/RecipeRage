@@ -640,40 +640,52 @@ namespace Core.UI.SplashScreen
                 yield return new WaitForSeconds(_minLoadingScreenDuration - elapsedTime);
             }
 
-            try
+            // Set progress to 100% for visual satisfaction
+            // Animate progress bar to 100%
+            if (_loadingProgressBar != null)
             {
-                // Set progress to 100% for visual satisfaction
-                if (_loadingProgressBar != null)
+                // Store the initial value
+                float startValue = _loadingProgressBar.value;
+                float endValue = 1.0f;
+                float duration = 0.5f;
+                float startTime = Time.time;
+
+                // Create a separate coroutine for the animation
+                IEnumerator AnimateProgressBar()
                 {
-                    // Animate progress bar to 100%
-                    float startValue = _loadingProgressBar.value;
-                    float endValue = 1.0f;
-                    float duration = 0.5f;
-                    float startTime = Time.time;
-
-                    while (Time.time - startTime < duration)
+                    try
                     {
-                        float t = (Time.time - startTime) / duration;
-                        _loadingProgressBar.value = Mathf.Lerp(startValue, endValue, UIEasing.EaseOutCubic(t));
-                        yield return null;
-                    }
+                        while (Time.time - startTime < duration)
+                        {
+                            float t = (Time.time - startTime) / duration;
+                            _loadingProgressBar.value = Mathf.Lerp(startValue, endValue, UIEasing.EaseOutCubic(t));
+                            yield return null;
+                        }
 
-                    _loadingProgressBar.value = endValue;
+                        _loadingProgressBar.value = endValue;
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogWarning($"[SplashScreenManager] Error animating progress bar: {e.Message}");
+                        // Set to 100% directly if animation fails
+                        _loadingProgressBar.value = 1.0f;
+                    }
                 }
 
-                if (_loadingStatusLabel != null)
+                // Start and wait for the animation
+                yield return StartCoroutine(AnimateProgressBar());
+            }
+
+            // Update status label
+            if (_loadingStatusLabel != null)
+            {
+                try
                 {
                     _loadingStatusLabel.text = "Ready!";
                 }
-            }
-            catch (Exception e)
-            {
-                Debug.LogWarning($"[SplashScreenManager] Error updating loading progress: {e.Message}");
-
-                // Set to 100% directly if animation fails
-                if (_loadingProgressBar != null)
+                catch (Exception e)
                 {
-                    _loadingProgressBar.value = 1.0f;
+                    Debug.LogWarning($"[SplashScreenManager] Error updating status label: {e.Message}");
                 }
             }
 
