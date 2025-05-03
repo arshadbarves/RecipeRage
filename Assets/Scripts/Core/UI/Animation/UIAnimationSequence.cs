@@ -15,7 +15,7 @@ namespace Core.UI.Animation
         private Action _onComplete;
         private bool _isPlaying = false;
         private Coroutine _currentCoroutine;
-        
+
         /// <summary>
         /// Add a fade animation to the sequence.
         /// </summary>
@@ -39,10 +39,10 @@ namespace Core.UI.Animation
                 Delay = delay,
                 Easing = easing
             });
-            
+
             return this;
         }
-        
+
         /// <summary>
         /// Add a move animation to the sequence.
         /// </summary>
@@ -66,10 +66,10 @@ namespace Core.UI.Animation
                 Delay = delay,
                 Easing = easing
             });
-            
+
             return this;
         }
-        
+
         /// <summary>
         /// Add a scale animation to the sequence.
         /// </summary>
@@ -93,10 +93,10 @@ namespace Core.UI.Animation
                 Delay = delay,
                 Easing = easing
             });
-            
+
             return this;
         }
-        
+
         /// <summary>
         /// Add a rotation animation to the sequence.
         /// </summary>
@@ -120,10 +120,10 @@ namespace Core.UI.Animation
                 Delay = delay,
                 Easing = easing
             });
-            
+
             return this;
         }
-        
+
         /// <summary>
         /// Add a delay to the sequence.
         /// </summary>
@@ -136,10 +136,10 @@ namespace Core.UI.Animation
                 Type = AnimationType.Delay,
                 Duration = duration
             });
-            
+
             return this;
         }
-        
+
         /// <summary>
         /// Add a callback to the sequence.
         /// </summary>
@@ -152,10 +152,10 @@ namespace Core.UI.Animation
                 Type = AnimationType.Callback,
                 Callback = callback
             });
-            
+
             return this;
         }
-        
+
         /// <summary>
         /// Set a callback to be invoked when the sequence completes.
         /// </summary>
@@ -166,7 +166,7 @@ namespace Core.UI.Animation
             _onComplete = callback;
             return this;
         }
-        
+
         /// <summary>
         /// Play the animation sequence.
         /// </summary>
@@ -177,11 +177,11 @@ namespace Core.UI.Animation
                 Debug.LogWarning("[UIAnimationSequence] Sequence is already playing");
                 return;
             }
-            
+
             _isPlaying = true;
             _currentCoroutine = UIAnimationSystem.Instance.StartCoroutine(PlaySequence());
         }
-        
+
         /// <summary>
         /// Stop the animation sequence.
         /// </summary>
@@ -191,34 +191,80 @@ namespace Core.UI.Animation
             {
                 return;
             }
-            
+
             UIAnimationSystem.Instance.StopCoroutine(_currentCoroutine);
             _isPlaying = false;
             _currentCoroutine = null;
         }
-        
+
         private IEnumerator PlaySequence()
         {
+            // Play each step in sequence
+            for (int i = 0; i < _steps.Count; i++)
+            {
+                var step = _steps[i];
+
+                // Create a separate coroutine for each step to avoid try-catch issues
+                bool stepComplete = false;
+                Exception stepException = null;
+
+                UIAnimationSystem.Instance.StartCoroutine(ExecuteStep(step, () => stepComplete = true, (e) =>
+                {
+                    stepException = e;
+                    stepComplete = true;
+                }));
+
+                // Wait for the step to complete
+                while (!stepComplete)
+                {
+                    yield return null;
+                }
+
+                // Check if there was an exception
+                if (stepException != null)
+                {
+                    Debug.LogError($"[UIAnimationSequence] Error playing step: {stepException.Message}");
+                }
+            }
+
+            // Invoke completion callback
+            if (_onComplete != null)
+            {
+                try
+                {
+                    _onComplete.Invoke();
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"[UIAnimationSequence] Error in completion callback: {e.Message}");
+                }
+            }
+
+            // Clean up
+            _isPlaying = false;
+            _currentCoroutine = null;
+        }
+
+        private IEnumerator ExecuteStep(AnimationStep step, Action onComplete, Action<Exception> onError)
+        {
+            // We need to wrap the PlayStep in another coroutine to avoid try-catch issues
+            IEnumerator PlayStepWrapper()
+            {
+                yield return PlayStep(step);
+            }
+
             try
             {
-                foreach (var step in _steps)
-                {
-                    yield return PlayStep(step);
-                }
-                
-                _onComplete?.Invoke();
+                // Start the wrapper coroutine
+                yield return UIAnimationSystem.Instance.StartCoroutine(PlayStepWrapper());
+                onComplete?.Invoke();
             }
             catch (Exception e)
             {
-                Debug.LogError($"[UIAnimationSequence] Error playing sequence: {e.Message}");
-            }
-            finally
-            {
-                _isPlaying = false;
-                _currentCoroutine = null;
+                onError?.Invoke(e);
             }
         }
-        
+
         private IEnumerator PlayStep(AnimationStep step)
         {
             switch (step.Type)
@@ -226,76 +272,76 @@ namespace Core.UI.Animation
                 case AnimationType.Fade:
                     yield return FadeElement(step.Element, step.StartValue.x, step.EndValue.x, step.Duration, step.Delay, step.Easing);
                     break;
-                    
+
                 case AnimationType.Move:
-                    yield return MoveElement(step.Element, 
-                        new Vector2(step.StartValue.x, step.StartValue.y), 
-                        new Vector2(step.EndValue.x, step.EndValue.y), 
+                    yield return MoveElement(step.Element,
+                        new Vector2(step.StartValue.x, step.StartValue.y),
+                        new Vector2(step.EndValue.x, step.EndValue.y),
                         step.Duration, step.Delay, step.Easing);
                     break;
-                    
+
                 case AnimationType.Scale:
-                    yield return ScaleElement(step.Element, 
-                        new Vector2(step.StartValue.x, step.StartValue.y), 
-                        new Vector2(step.EndValue.x, step.EndValue.y), 
+                    yield return ScaleElement(step.Element,
+                        new Vector2(step.StartValue.x, step.StartValue.y),
+                        new Vector2(step.EndValue.x, step.EndValue.y),
                         step.Duration, step.Delay, step.Easing);
                     break;
-                    
+
                 case AnimationType.Rotate:
                     yield return RotateElement(step.Element, step.StartValue.x, step.EndValue.x, step.Duration, step.Delay, step.Easing);
                     break;
-                    
+
                 case AnimationType.Delay:
                     yield return new WaitForSeconds(step.Duration);
                     break;
-                    
+
                 case AnimationType.Callback:
                     step.Callback?.Invoke();
                     break;
             }
         }
-        
-        private IEnumerator FadeElement(VisualElement element, float startOpacity, float endOpacity, 
+
+        private IEnumerator FadeElement(VisualElement element, float startOpacity, float endOpacity,
             float duration, float delay, EasingFunction easing)
         {
             if (element == null)
             {
                 yield break;
             }
-            
+
             if (delay > 0)
             {
                 yield return new WaitForSeconds(delay);
             }
-            
+
             float startTime = Time.time;
             float endTime = startTime + duration;
-            
+
             // Set initial value
             element.style.opacity = startOpacity;
-            
+
             while (Time.time < endTime)
             {
                 float elapsed = Time.time - startTime;
                 float normalizedTime = Mathf.Clamp01(elapsed / duration);
-                
+
                 // Apply easing if provided
                 if (easing != null)
                 {
                     normalizedTime = easing(normalizedTime);
                 }
-                
+
                 // Interpolate value
                 float currentOpacity = Mathf.Lerp(startOpacity, endOpacity, normalizedTime);
                 element.style.opacity = currentOpacity;
-                
+
                 yield return null;
             }
-            
+
             // Ensure final value is set
             element.style.opacity = endOpacity;
         }
-        
+
         private IEnumerator MoveElement(VisualElement element, Vector2 startPosition, Vector2 endPosition,
             float duration, float delay, EasingFunction easing)
         {
@@ -303,43 +349,43 @@ namespace Core.UI.Animation
             {
                 yield break;
             }
-            
+
             if (delay > 0)
             {
                 yield return new WaitForSeconds(delay);
             }
-            
+
             float startTime = Time.time;
             float endTime = startTime + duration;
-            
+
             // Set initial position
             element.style.left = startPosition.x;
             element.style.top = startPosition.y;
-            
+
             while (Time.time < endTime)
             {
                 float elapsed = Time.time - startTime;
                 float normalizedTime = Mathf.Clamp01(elapsed / duration);
-                
+
                 // Apply easing if provided
                 if (easing != null)
                 {
                     normalizedTime = easing(normalizedTime);
                 }
-                
+
                 // Interpolate position
                 Vector2 currentPosition = Vector2.Lerp(startPosition, endPosition, normalizedTime);
                 element.style.left = currentPosition.x;
                 element.style.top = currentPosition.y;
-                
+
                 yield return null;
             }
-            
+
             // Ensure final position is set
             element.style.left = endPosition.x;
             element.style.top = endPosition.y;
         }
-        
+
         private IEnumerator ScaleElement(VisualElement element, Vector2 startScale, Vector2 endScale,
             float duration, float delay, EasingFunction easing)
         {
@@ -347,40 +393,40 @@ namespace Core.UI.Animation
             {
                 yield break;
             }
-            
+
             if (delay > 0)
             {
                 yield return new WaitForSeconds(delay);
             }
-            
+
             float startTime = Time.time;
             float endTime = startTime + duration;
-            
+
             // Set initial scale
-            element.style.scale = new Scale(startScale.x, startScale.y, 1);
-            
+            element.style.scale = new StyleScale(new Vector3(startScale.x, startScale.y, 1));
+
             while (Time.time < endTime)
             {
                 float elapsed = Time.time - startTime;
                 float normalizedTime = Mathf.Clamp01(elapsed / duration);
-                
+
                 // Apply easing if provided
                 if (easing != null)
                 {
                     normalizedTime = easing(normalizedTime);
                 }
-                
+
                 // Interpolate scale
                 Vector2 currentScale = Vector2.Lerp(startScale, endScale, normalizedTime);
-                element.style.scale = new Scale(currentScale.x, currentScale.y, 1);
-                
+                element.style.scale = new StyleScale(new Vector3(currentScale.x, currentScale.y, 1));
+
                 yield return null;
             }
-            
+
             // Ensure final scale is set
-            element.style.scale = new Scale(endScale.x, endScale.y, 1);
+            element.style.scale = new StyleScale(new Vector3(endScale.x, endScale.y, 1));
         }
-        
+
         private IEnumerator RotateElement(VisualElement element, float startRotation, float endRotation,
             float duration, float delay, EasingFunction easing)
         {
@@ -388,40 +434,40 @@ namespace Core.UI.Animation
             {
                 yield break;
             }
-            
+
             if (delay > 0)
             {
                 yield return new WaitForSeconds(delay);
             }
-            
+
             float startTime = Time.time;
             float endTime = startTime + duration;
-            
+
             // Set initial rotation
             element.style.rotate = new Rotate(startRotation);
-            
+
             while (Time.time < endTime)
             {
                 float elapsed = Time.time - startTime;
                 float normalizedTime = Mathf.Clamp01(elapsed / duration);
-                
+
                 // Apply easing if provided
                 if (easing != null)
                 {
                     normalizedTime = easing(normalizedTime);
                 }
-                
+
                 // Interpolate rotation
                 float currentRotation = Mathf.Lerp(startRotation, endRotation, normalizedTime);
                 element.style.rotate = new Rotate(currentRotation);
-                
+
                 yield return null;
             }
-            
+
             // Ensure final rotation is set
             element.style.rotate = new Rotate(endRotation);
         }
-        
+
         /// <summary>
         /// Types of animations in a sequence.
         /// </summary>
@@ -434,7 +480,7 @@ namespace Core.UI.Animation
             Delay,
             Callback
         }
-        
+
         /// <summary>
         /// Step in an animation sequence.
         /// </summary>

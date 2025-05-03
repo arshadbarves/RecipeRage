@@ -12,7 +12,7 @@ namespace Core.UI.Animation
     public class UIAnimationSystem : MonoBehaviour
     {
         private static UIAnimationSystem _instance;
-        
+
         /// <summary>
         /// Singleton instance of the animation system.
         /// </summary>
@@ -29,10 +29,10 @@ namespace Core.UI.Animation
                 return _instance;
             }
         }
-        
+
         private Dictionary<int, Coroutine> _activeAnimations = new Dictionary<int, Coroutine>();
         private int _nextAnimationId = 0;
-        
+
         private void Awake()
         {
             if (_instance != null && _instance != this)
@@ -40,11 +40,11 @@ namespace Core.UI.Animation
                 Destroy(gameObject);
                 return;
             }
-            
+
             _instance = this;
             DontDestroyOnLoad(gameObject);
         }
-        
+
         /// <summary>
         /// Play a fade animation on a UI element.
         /// </summary>
@@ -56,7 +56,7 @@ namespace Core.UI.Animation
         /// <param name="easing">Easing function to use</param>
         /// <param name="onComplete">Callback when animation completes</param>
         /// <returns>Animation ID that can be used to stop the animation</returns>
-        public int Fade(VisualElement element, float startOpacity, float endOpacity, float duration, 
+        public int Fade(VisualElement element, float startOpacity, float endOpacity, float duration,
             float delay = 0f, EasingFunction easing = null, Action onComplete = null)
         {
             if (element == null)
@@ -64,14 +64,14 @@ namespace Core.UI.Animation
                 Debug.LogWarning("[UIAnimationSystem] Cannot animate null element");
                 return -1;
             }
-            
+
             int animationId = _nextAnimationId++;
             _activeAnimations[animationId] = StartCoroutine(FadeCoroutine(
                 animationId, element, startOpacity, endOpacity, duration, delay, easing, onComplete));
-            
+
             return animationId;
         }
-        
+
         /// <summary>
         /// Play a move animation on a UI element.
         /// </summary>
@@ -91,14 +91,14 @@ namespace Core.UI.Animation
                 Debug.LogWarning("[UIAnimationSystem] Cannot animate null element");
                 return -1;
             }
-            
+
             int animationId = _nextAnimationId++;
             _activeAnimations[animationId] = StartCoroutine(MoveCoroutine(
                 animationId, element, startPosition, endPosition, duration, delay, easing, onComplete));
-            
+
             return animationId;
         }
-        
+
         /// <summary>
         /// Play a scale animation on a UI element.
         /// </summary>
@@ -118,14 +118,14 @@ namespace Core.UI.Animation
                 Debug.LogWarning("[UIAnimationSystem] Cannot animate null element");
                 return -1;
             }
-            
+
             int animationId = _nextAnimationId++;
             _activeAnimations[animationId] = StartCoroutine(ScaleCoroutine(
                 animationId, element, startScale, endScale, duration, delay, easing, onComplete));
-            
+
             return animationId;
         }
-        
+
         /// <summary>
         /// Play a rotation animation on a UI element.
         /// </summary>
@@ -145,14 +145,14 @@ namespace Core.UI.Animation
                 Debug.LogWarning("[UIAnimationSystem] Cannot animate null element");
                 return -1;
             }
-            
+
             int animationId = _nextAnimationId++;
             _activeAnimations[animationId] = StartCoroutine(RotateCoroutine(
                 animationId, element, startRotation, endRotation, duration, delay, easing, onComplete));
-            
+
             return animationId;
         }
-        
+
         /// <summary>
         /// Stop an active animation.
         /// </summary>
@@ -165,7 +165,7 @@ namespace Core.UI.Animation
                 _activeAnimations.Remove(animationId);
             }
         }
-        
+
         /// <summary>
         /// Stop all active animations.
         /// </summary>
@@ -175,53 +175,74 @@ namespace Core.UI.Animation
             {
                 StopCoroutine(coroutine);
             }
-            
+
             _activeAnimations.Clear();
         }
-        
-        private IEnumerator FadeCoroutine(int animationId, VisualElement element, float startOpacity, float endOpacity, 
+
+        private IEnumerator FadeCoroutine(int animationId, VisualElement element, float startOpacity, float endOpacity,
             float duration, float delay, EasingFunction easing, Action onComplete)
         {
+            if (delay > 0)
+            {
+                yield return new WaitForSeconds(delay);
+            }
+
             try
             {
-                if (delay > 0)
+                if (element == null)
                 {
-                    yield return new WaitForSeconds(delay);
+                    Debug.LogWarning("[UIAnimationSystem] Cannot animate null element");
+                    yield break;
                 }
-                
+
                 float startTime = Time.time;
                 float endTime = startTime + duration;
-                
+
                 // Set initial value
                 element.style.opacity = startOpacity;
-                
-                while (Time.time < endTime)
+
+                // Create a separate coroutine for the animation loop to avoid yield in try-catch
+                IEnumerator AnimationLoop()
                 {
-                    float elapsed = Time.time - startTime;
-                    float normalizedTime = Mathf.Clamp01(elapsed / duration);
-                    
-                    // Apply easing if provided
-                    if (easing != null)
+                    while (Time.time < endTime)
                     {
-                        normalizedTime = easing(normalizedTime);
+                        float elapsed = Time.time - startTime;
+                        float normalizedTime = Mathf.Clamp01(elapsed / duration);
+
+                        // Apply easing if provided
+                        if (easing != null)
+                        {
+                            normalizedTime = easing(normalizedTime);
+                        }
+
+                        // Interpolate value
+                        float currentOpacity = Mathf.Lerp(startOpacity, endOpacity, normalizedTime);
+                        element.style.opacity = currentOpacity;
+
+                        yield return null;
                     }
-                    
-                    // Interpolate value
-                    float currentOpacity = Mathf.Lerp(startOpacity, endOpacity, normalizedTime);
-                    element.style.opacity = currentOpacity;
-                    
-                    yield return null;
+                    yield break;
                 }
-                
+
+                // Run the animation loop
+                Coroutine animationCoroutine = StartCoroutine(AnimationLoop());
+                yield return animationCoroutine;
+
                 // Ensure final value is set
                 element.style.opacity = endOpacity;
-                
+
                 // Invoke completion callback
                 onComplete?.Invoke();
             }
             catch (Exception e)
             {
                 Debug.LogError($"[UIAnimationSystem] Error in fade animation: {e.Message}");
+
+                // Try to set the final value even if there was an error
+                if (element != null)
+                {
+                    element.style.opacity = endOpacity;
+                }
             }
             finally
             {
@@ -229,53 +250,75 @@ namespace Core.UI.Animation
                 _activeAnimations.Remove(animationId);
             }
         }
-        
+
         private IEnumerator MoveCoroutine(int animationId, VisualElement element, Vector2 startPosition, Vector2 endPosition,
             float duration, float delay, EasingFunction easing, Action onComplete)
         {
+            if (delay > 0)
+            {
+                yield return new WaitForSeconds(delay);
+            }
+
             try
             {
-                if (delay > 0)
+                if (element == null)
                 {
-                    yield return new WaitForSeconds(delay);
+                    Debug.LogWarning("[UIAnimationSystem] Cannot animate null element");
+                    yield break;
                 }
-                
+
                 float startTime = Time.time;
                 float endTime = startTime + duration;
-                
+
                 // Set initial position
                 element.style.left = startPosition.x;
                 element.style.top = startPosition.y;
-                
-                while (Time.time < endTime)
+
+                // Create a separate coroutine for the animation loop to avoid yield in try-catch
+                IEnumerator AnimationLoop()
                 {
-                    float elapsed = Time.time - startTime;
-                    float normalizedTime = Mathf.Clamp01(elapsed / duration);
-                    
-                    // Apply easing if provided
-                    if (easing != null)
+                    while (Time.time < endTime)
                     {
-                        normalizedTime = easing(normalizedTime);
+                        float elapsed = Time.time - startTime;
+                        float normalizedTime = Mathf.Clamp01(elapsed / duration);
+
+                        // Apply easing if provided
+                        if (easing != null)
+                        {
+                            normalizedTime = easing(normalizedTime);
+                        }
+
+                        // Interpolate position
+                        Vector2 currentPosition = Vector2.Lerp(startPosition, endPosition, normalizedTime);
+                        element.style.left = currentPosition.x;
+                        element.style.top = currentPosition.y;
+
+                        yield return null;
                     }
-                    
-                    // Interpolate position
-                    Vector2 currentPosition = Vector2.Lerp(startPosition, endPosition, normalizedTime);
-                    element.style.left = currentPosition.x;
-                    element.style.top = currentPosition.y;
-                    
-                    yield return null;
+                    yield break;
                 }
-                
+
+                // Run the animation loop
+                Coroutine animationCoroutine = StartCoroutine(AnimationLoop());
+                yield return animationCoroutine;
+
                 // Ensure final position is set
                 element.style.left = endPosition.x;
                 element.style.top = endPosition.y;
-                
+
                 // Invoke completion callback
                 onComplete?.Invoke();
             }
             catch (Exception e)
             {
                 Debug.LogError($"[UIAnimationSystem] Error in move animation: {e.Message}");
+
+                // Try to set the final position even if there was an error
+                if (element != null)
+                {
+                    element.style.left = endPosition.x;
+                    element.style.top = endPosition.y;
+                }
             }
             finally
             {
@@ -283,50 +326,70 @@ namespace Core.UI.Animation
                 _activeAnimations.Remove(animationId);
             }
         }
-        
+
         private IEnumerator ScaleCoroutine(int animationId, VisualElement element, Vector2 startScale, Vector2 endScale,
             float duration, float delay, EasingFunction easing, Action onComplete)
         {
+            if (delay > 0)
+            {
+                yield return new WaitForSeconds(delay);
+            }
+
             try
             {
-                if (delay > 0)
+                if (element == null)
                 {
-                    yield return new WaitForSeconds(delay);
+                    Debug.LogWarning("[UIAnimationSystem] Cannot animate null element");
+                    yield break;
                 }
-                
+
                 float startTime = Time.time;
                 float endTime = startTime + duration;
-                
+
                 // Set initial scale
-                element.style.scale = new Scale(startScale.x, startScale.y, 1);
-                
-                while (Time.time < endTime)
+                element.style.scale = new StyleScale(new Vector3(startScale.x, startScale.y, 1));
+
+                // Create a separate coroutine for the animation loop to avoid yield in try-catch
+                IEnumerator AnimationLoop()
                 {
-                    float elapsed = Time.time - startTime;
-                    float normalizedTime = Mathf.Clamp01(elapsed / duration);
-                    
-                    // Apply easing if provided
-                    if (easing != null)
+                    while (Time.time < endTime)
                     {
-                        normalizedTime = easing(normalizedTime);
+                        float elapsed = Time.time - startTime;
+                        float normalizedTime = Mathf.Clamp01(elapsed / duration);
+
+                        // Apply easing if provided
+                        if (easing != null)
+                        {
+                            normalizedTime = easing(normalizedTime);
+                        }
+
+                        // Interpolate scale
+                        Vector2 currentScale = Vector2.Lerp(startScale, endScale, normalizedTime);
+                        element.style.scale = new StyleScale(new Vector3(currentScale.x, currentScale.y, 1));
+
+                        yield return null;
                     }
-                    
-                    // Interpolate scale
-                    Vector2 currentScale = Vector2.Lerp(startScale, endScale, normalizedTime);
-                    element.style.scale = new Scale(currentScale.x, currentScale.y, 1);
-                    
-                    yield return null;
                 }
-                
+
+                // Run the animation loop
+                Coroutine animationCoroutine = StartCoroutine(AnimationLoop());
+                yield return animationCoroutine;
+
                 // Ensure final scale is set
-                element.style.scale = new Scale(endScale.x, endScale.y, 1);
-                
+                element.style.scale = new StyleScale(new Vector3(endScale.x, endScale.y, 1));
+
                 // Invoke completion callback
                 onComplete?.Invoke();
             }
             catch (Exception e)
             {
                 Debug.LogError($"[UIAnimationSystem] Error in scale animation: {e.Message}");
+
+                // Try to set the final scale even if there was an error
+                if (element != null)
+                {
+                    element.style.scale = new StyleScale(new Vector3(endScale.x, endScale.y, 1));
+                }
             }
             finally
             {
@@ -334,50 +397,70 @@ namespace Core.UI.Animation
                 _activeAnimations.Remove(animationId);
             }
         }
-        
+
         private IEnumerator RotateCoroutine(int animationId, VisualElement element, float startRotation, float endRotation,
             float duration, float delay, EasingFunction easing, Action onComplete)
         {
+            if (delay > 0)
+            {
+                yield return new WaitForSeconds(delay);
+            }
+
             try
             {
-                if (delay > 0)
+                if (element == null)
                 {
-                    yield return new WaitForSeconds(delay);
+                    Debug.LogWarning("[UIAnimationSystem] Cannot animate null element");
+                    yield break;
                 }
-                
+
                 float startTime = Time.time;
                 float endTime = startTime + duration;
-                
+
                 // Set initial rotation
                 element.style.rotate = new Rotate(startRotation);
-                
-                while (Time.time < endTime)
+
+                // Create a separate coroutine for the animation loop to avoid yield in try-catch
+                IEnumerator AnimationLoop()
                 {
-                    float elapsed = Time.time - startTime;
-                    float normalizedTime = Mathf.Clamp01(elapsed / duration);
-                    
-                    // Apply easing if provided
-                    if (easing != null)
+                    while (Time.time < endTime)
                     {
-                        normalizedTime = easing(normalizedTime);
+                        float elapsed = Time.time - startTime;
+                        float normalizedTime = Mathf.Clamp01(elapsed / duration);
+
+                        // Apply easing if provided
+                        if (easing != null)
+                        {
+                            normalizedTime = easing(normalizedTime);
+                        }
+
+                        // Interpolate rotation
+                        float currentRotation = Mathf.Lerp(startRotation, endRotation, normalizedTime);
+                        element.style.rotate = new Rotate(currentRotation);
+
+                        yield return null;
                     }
-                    
-                    // Interpolate rotation
-                    float currentRotation = Mathf.Lerp(startRotation, endRotation, normalizedTime);
-                    element.style.rotate = new Rotate(currentRotation);
-                    
-                    yield return null;
                 }
-                
+
+                // Run the animation loop
+                Coroutine animationCoroutine = StartCoroutine(AnimationLoop());
+                yield return animationCoroutine;
+
                 // Ensure final rotation is set
                 element.style.rotate = new Rotate(endRotation);
-                
+
                 // Invoke completion callback
                 onComplete?.Invoke();
             }
             catch (Exception e)
             {
                 Debug.LogError($"[UIAnimationSystem] Error in rotate animation: {e.Message}");
+
+                // Try to set the final rotation even if there was an error
+                if (element != null)
+                {
+                    element.style.rotate = new Rotate(endRotation);
+                }
             }
             finally
             {
@@ -386,7 +469,7 @@ namespace Core.UI.Animation
             }
         }
     }
-    
+
     /// <summary>
     /// Delegate for easing functions.
     /// </summary>
