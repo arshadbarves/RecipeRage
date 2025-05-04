@@ -640,58 +640,23 @@ namespace Core.UI.SplashScreen
                 yield return new WaitForSeconds(_minLoadingScreenDuration - elapsedTime);
             }
 
-            // Set progress to 100% for visual satisfaction
-            // Animate progress bar to 100%
+            // Set progress to 100% for visual satisfaction using the enhanced animation system
             if (_loadingProgressBar != null)
             {
-                // Store the initial value
+                // Get the current progress value
                 float startValue = _loadingProgressBar.value;
-                float endValue = 1.0f;
-                float duration = 0.5f;
-                float startTime = Time.time;
 
-                // Create a separate coroutine for the animation
-                IEnumerator AnimateProgressBar()
+                // Create a task completion source to wait for the animation to complete
+                TaskCompletionSource<bool> animationTask = new TaskCompletionSource<bool>();
+
+                // Start the animation in a separate coroutine
+                StartCoroutine(AnimateProgressBarValue(startValue, 1.0f, 0.5f, Core.UI.Animation.UIEasing.EaseOutCubic, animationTask));
+
+                // Wait for the animation to complete outside the try-catch
+                while (!animationTask.Task.IsCompleted)
                 {
-                    // Use a separate method for the animation loop to avoid try-catch with yield
-                    bool animationComplete = false;
-
-                    while (!animationComplete && Time.time - startTime < duration)
-                    {
-                        try
-                        {
-                            float t = (Time.time - startTime) / duration;
-                            _loadingProgressBar.value = Mathf.Lerp(startValue, endValue, UIEasing.EaseOutCubic(t));
-                        }
-                        catch (Exception e)
-                        {
-                            Debug.LogWarning($"[SplashScreenManager] Error animating progress bar: {e.Message}");
-                            animationComplete = true;
-
-                            // Set to 100% directly if animation fails
-                            try
-                            {
-                                _loadingProgressBar.value = 1.0f;
-                            }
-                            catch { }
-                        }
-
-                        yield return null;
-                    }
-
-                    // Set final value
-                    try
-                    {
-                        _loadingProgressBar.value = endValue;
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.LogWarning($"[SplashScreenManager] Error setting final progress value: {e.Message}");
-                    }
+                    yield return null;
                 }
-
-                // Start and wait for the animation
-                yield return StartCoroutine(AnimateProgressBar());
             }
 
             // Update status label
@@ -933,6 +898,79 @@ namespace Core.UI.SplashScreen
                     Debug.LogWarning($"[SplashScreenManager] Error stopping coroutine: {e.Message}");
                 }
                 _tipsCoroutine = null;
+            }
+        }
+
+        /// <summary>
+        /// Animate the progress bar value from start to end
+        /// </summary>
+        private IEnumerator AnimateProgressBarValue(float startValue, float endValue, float duration,
+            Core.UI.Animation.EasingFunction easing, TaskCompletionSource<bool> completionSource)
+        {
+            float startTime = Time.time;
+            float endTime = startTime + duration;
+            bool isRunning = true;
+
+            while (isRunning && Time.time < endTime)
+            {
+                try
+                {
+                    float elapsed = Time.time - startTime;
+                    float normalizedTime = Mathf.Clamp01(elapsed / duration);
+
+                    // Apply easing if provided
+                    if (easing != null)
+                    {
+                        normalizedTime = easing(normalizedTime);
+                    }
+
+                    // Interpolate value
+                    float currentValue = Mathf.Lerp(startValue, endValue, normalizedTime);
+
+                    // Update progress bar
+                    if (_loadingProgressBar != null)
+                    {
+                        _loadingProgressBar.value = currentValue;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"[SplashScreenManager] Error in progress bar animation: {e.Message}");
+                    isRunning = false;
+
+                    // Try to set the final value even if there was an error
+                    try
+                    {
+                        if (_loadingProgressBar != null)
+                        {
+                            _loadingProgressBar.value = endValue;
+                        }
+                    }
+                    catch { }
+
+                    // Signal completion with error
+                    completionSource.SetException(e);
+                    yield break;
+                }
+
+                yield return null;
+            }
+
+            try
+            {
+                // Ensure final value is set
+                if (_loadingProgressBar != null)
+                {
+                    _loadingProgressBar.value = endValue;
+                }
+
+                // Signal completion
+                completionSource.SetResult(true);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[SplashScreenManager] Error setting final progress value: {e.Message}");
+                completionSource.SetException(e);
             }
         }
     }
