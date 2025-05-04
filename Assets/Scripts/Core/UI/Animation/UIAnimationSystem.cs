@@ -183,6 +183,9 @@ namespace Core.UI.Animation
         private IEnumerator FadeCoroutine(int animationId, VisualElement element, float startOpacity, float endOpacity,
             float duration, float delay, EasingFunction easing, Action onComplete)
         {
+            // Create a task completion source outside the try-catch block
+            TaskCompletionSource<bool> fadeAnimationTask = new TaskCompletionSource<bool>();
+
             if (delay > 0)
             {
                 yield return new WaitForSeconds(delay);
@@ -226,10 +229,9 @@ namespace Core.UI.Animation
                 }
 
                 // We need to avoid yield return in try-catch
-                var animationTask = new TaskCompletionSource<bool>();
 
                 // Start the animation in a separate coroutine
-                StartCoroutine(RunAnimationSafely(AnimationLoop(), animationTask));
+                StartCoroutine(RunAnimationSafely(AnimationLoop(), fadeAnimationTask));
             }
             catch (Exception e)
             {
@@ -249,7 +251,7 @@ namespace Core.UI.Animation
             }
 
             // Wait for the animation to complete outside the try-catch
-            while (!animationTask.Task.IsCompleted)
+            while (!fadeAnimationTask.Task.IsCompleted)
             {
                 yield return null;
             }
@@ -283,6 +285,9 @@ namespace Core.UI.Animation
         private IEnumerator MoveCoroutine(int animationId, VisualElement element, Vector2 startPosition, Vector2 endPosition,
             float duration, float delay, EasingFunction easing, Action onComplete)
         {
+            // Create a task completion source outside the try-catch block
+            TaskCompletionSource<bool> moveAnimationTask = new TaskCompletionSource<bool>();
+
             if (delay > 0)
             {
                 yield return new WaitForSeconds(delay);
@@ -328,10 +333,9 @@ namespace Core.UI.Animation
                 }
 
                 // We need to avoid yield return in try-catch
-                var animationTask = new TaskCompletionSource<bool>();
 
                 // Start the animation in a separate coroutine
-                StartCoroutine(RunAnimationSafely(AnimationLoop(), animationTask));
+                StartCoroutine(RunAnimationSafely(AnimationLoop(), moveAnimationTask));
             }
             catch (Exception e)
             {
@@ -352,7 +356,7 @@ namespace Core.UI.Animation
             }
 
             // Wait for the animation to complete outside the try-catch
-            while (!animationTask.Task.IsCompleted)
+            while (!moveAnimationTask.Task.IsCompleted)
             {
                 yield return null;
             }
@@ -388,6 +392,9 @@ namespace Core.UI.Animation
         private IEnumerator ScaleCoroutine(int animationId, VisualElement element, Vector2 startScale, Vector2 endScale,
             float duration, float delay, EasingFunction easing, Action onComplete)
         {
+            // Create a task completion source outside the try-catch block
+            TaskCompletionSource<bool> scaleAnimationTask = new TaskCompletionSource<bool>();
+
             if (delay > 0)
             {
                 yield return new WaitForSeconds(delay);
@@ -430,7 +437,6 @@ namespace Core.UI.Animation
                 }
 
                 // We need to avoid yield return in try-catch
-                var scaleAnimationTask = new TaskCompletionSource<bool>();
 
                 // Start the animation in a separate coroutine
                 StartCoroutine(RunAnimationSafely(AnimationLoop(), scaleAnimationTask));
@@ -487,6 +493,9 @@ namespace Core.UI.Animation
         private IEnumerator RotateCoroutine(int animationId, VisualElement element, float startRotation, float endRotation,
             float duration, float delay, EasingFunction easing, Action onComplete)
         {
+            // Create a task completion source outside the try-catch block
+            TaskCompletionSource<bool> rotateAnimationTask = new TaskCompletionSource<bool>();
+
             if (delay > 0)
             {
                 yield return new WaitForSeconds(delay);
@@ -529,7 +538,6 @@ namespace Core.UI.Animation
                 }
 
                 // We need to avoid yield return in try-catch
-                var rotateAnimationTask = new TaskCompletionSource<bool>();
 
                 // Start the animation in a separate coroutine
                 StartCoroutine(RunAnimationSafely(AnimationLoop(), rotateAnimationTask));
@@ -594,8 +602,8 @@ namespace Core.UI.Animation
 
             while (isRunning)
             {
-                bool moveNextSuccess = false;
                 object current = null;
+                bool moveNextSuccess;
 
                 try
                 {
