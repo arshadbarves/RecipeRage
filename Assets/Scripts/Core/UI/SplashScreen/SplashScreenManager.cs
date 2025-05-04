@@ -653,22 +653,40 @@ namespace Core.UI.SplashScreen
                 // Create a separate coroutine for the animation
                 IEnumerator AnimateProgressBar()
                 {
-                    try
+                    // Use a separate method for the animation loop to avoid try-catch with yield
+                    bool animationComplete = false;
+
+                    while (!animationComplete && Time.time - startTime < duration)
                     {
-                        while (Time.time - startTime < duration)
+                        try
                         {
                             float t = (Time.time - startTime) / duration;
                             _loadingProgressBar.value = Mathf.Lerp(startValue, endValue, UIEasing.EaseOutCubic(t));
-                            yield return null;
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.LogWarning($"[SplashScreenManager] Error animating progress bar: {e.Message}");
+                            animationComplete = true;
+
+                            // Set to 100% directly if animation fails
+                            try
+                            {
+                                _loadingProgressBar.value = 1.0f;
+                            }
+                            catch { }
                         }
 
+                        yield return null;
+                    }
+
+                    // Set final value
+                    try
+                    {
                         _loadingProgressBar.value = endValue;
                     }
                     catch (Exception e)
                     {
-                        Debug.LogWarning($"[SplashScreenManager] Error animating progress bar: {e.Message}");
-                        // Set to 100% directly if animation fails
-                        _loadingProgressBar.value = 1.0f;
+                        Debug.LogWarning($"[SplashScreenManager] Error setting final progress value: {e.Message}");
                     }
                 }
 
