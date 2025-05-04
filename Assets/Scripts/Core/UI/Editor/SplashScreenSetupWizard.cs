@@ -147,22 +147,21 @@ namespace Core.UI.Editor
             // Create a new scene
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
-            // Create a SplashScreenTester GameObject
-            var testerObj = new GameObject("SplashScreenTester");
-            var tester = testerObj.AddComponent<SplashScreenTester>();
-            var splashManager = testerObj.AddComponent<SplashScreenManager>();
+            // Create a SplashScreenManager GameObject
+            var managerObj = new GameObject("SplashScreenManager");
+            var splashManager = managerObj.AddComponent<SplashScreenManager>();
 
             // Create UI Documents for splash screens
             var companySplashObj = new GameObject("CompanySplashScreen");
-            companySplashObj.transform.SetParent(testerObj.transform);
+            companySplashObj.transform.SetParent(managerObj.transform);
             var companySplashDocument = companySplashObj.AddComponent<UIDocument>();
 
             var gameLogoSplashObj = new GameObject("GameLogoSplashScreen");
-            gameLogoSplashObj.transform.SetParent(testerObj.transform);
+            gameLogoSplashObj.transform.SetParent(managerObj.transform);
             var gameLogoSplashDocument = gameLogoSplashObj.AddComponent<UIDocument>();
 
             var loadingScreenObj = new GameObject("LoadingScreen");
-            loadingScreenObj.transform.SetParent(testerObj.transform);
+            loadingScreenObj.transform.SetParent(managerObj.transform);
             var loadingScreenDocument = loadingScreenObj.AddComponent<UIDocument>();
 
             // Try to find the UXML assets
@@ -192,8 +191,7 @@ namespace Core.UI.Editor
             // Set loading tips
             splashManager.SetLoadingTips(_loadingTips);
 
-            // Set reference in SplashScreenTester
-            tester.SetSplashScreenManager(splashManager);
+            // No need to set references as we removed the tester
 
             // Add a camera
             var cameraObj = new GameObject("Main Camera");

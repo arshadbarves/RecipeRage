@@ -80,8 +80,8 @@ namespace RecipeRage.Editor
                 uiDocument.rootVisualElement.styleSheets.Add(commonUss);
             }
 
-            // Add SplashScreen component
-            prefab.AddComponent<UI.Screens.SplashScreen>();
+            // We're using Core.UI.SplashScreen.SplashScreenManager instead of a screen-specific component
+            // No need to add a component here
 
             // Save as prefab
             string prefabPath = "Assets/Prefabs/UI/SplashScreen.prefab";

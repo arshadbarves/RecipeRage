@@ -28,17 +28,17 @@ private IEnumerator InitializeGameSystems()
     if (_showSplashScreens)
     {
         yield return StartCoroutine(InitializeSplashScreenManager());
-        
+
         // Show company splash screen
         yield return _splashScreenManager.ShowCompanySplash().AsCoroutine();
-        
+
         // Show game logo splash screen
         yield return _splashScreenManager.ShowGameLogoSplash().AsCoroutine();
-        
+
         // Show loading screen
         _splashScreenManager.ShowLoadingScreen();
     }
-    
+
     // Initialize other systems with progress updates
     if (_initializeSaveSystem)
     {
@@ -46,12 +46,12 @@ private IEnumerator InitializeGameSystems()
         {
             _splashScreenManager.UpdateLoadingProgress("Initializing Save System...", 0.05f);
         }
-        
+
         yield return StartCoroutine(InitializeSaveSystem());
     }
-    
+
     // ... other systems ...
-    
+
     // Hide loading screen when done
     if (_showSplashScreens)
     {
@@ -71,16 +71,16 @@ public class SplashScreenManager : MonoBehaviourSingleton<SplashScreenManager>
 {
     // Show company splash screen
     public async Task ShowCompanySplash();
-    
+
     // Show game logo splash screen
     public async Task ShowGameLogoSplash();
-    
+
     // Show loading screen
     public void ShowLoadingScreen();
-    
+
     // Update loading progress
     public void UpdateLoadingProgress(string status, float progress);
-    
+
     // Hide loading screen
     public async Task HideLoadingScreen();
 }
@@ -101,7 +101,7 @@ public static class TaskExtensions
 {
     // Convert a Task to a coroutine
     public static IEnumerator AsCoroutine(this Task task);
-    
+
     // Convert a Task<T> to a coroutine
     public static IEnumerator AsCoroutine<T>(this Task<T> task);
 }
@@ -143,8 +143,8 @@ You can customize the splash screen system in the Inspector:
 
 ## Testing
 
-Use the SplashScreenTester to test the splash screen system:
+To test the splash screen system:
 
 1. Open the SplashScreenTest scene
 2. Press Play to see the splash screens in action
-3. Use the context menu to manually trigger the test
+3. The splash screens will automatically play in sequence
