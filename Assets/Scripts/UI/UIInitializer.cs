@@ -1,4 +1,4 @@
-using UI.Animation;
+using Core.UI.Animation;
 using UI.Screens;
 using UnityEngine;
 using UnityEngine.UIElements;

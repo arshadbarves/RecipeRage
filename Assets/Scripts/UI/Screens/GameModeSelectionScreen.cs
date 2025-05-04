@@ -1,7 +1,7 @@
 using Core.GameFramework.State;
 using Core.GameFramework.State.States;
 using Core.GameModes;
-using UI.Animation;
+using Core.UI.Animation;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -217,7 +217,7 @@ namespace UI.Screens
                     UIAnimationSystem.AnimationType.Pulse,
                     0.5f,
                     0f,
-                    UIAnimationSystem.EasingType.EaseOutElastic
+                    UIEasing.EaseOutElastic
                 );
             }
         }
@@ -271,7 +271,7 @@ namespace UI.Screens
                 UIAnimationSystem.AnimationType.FadeIn,
                 0.5f,
                 0.2f,
-                UIAnimationSystem.EasingType.EaseOutCubic
+                UIEasing.EaseOutCubic
             );
 
             // Animate game mode cards
@@ -283,7 +283,7 @@ namespace UI.Screens
                     UIAnimationSystem.AnimationType.FadeIn,
                     0.5f,
                     delay,
-                    UIAnimationSystem.EasingType.EaseOutCubic
+                    UIEasing.EaseOutCubic
                 );
 
                 UIAnimationSystem.Instance.Animate(
@@ -291,7 +291,7 @@ namespace UI.Screens
                     UIAnimationSystem.AnimationType.SlideInFromLeft,
                     0.5f,
                     delay,
-                    UIAnimationSystem.EasingType.EaseOutCubic
+                    UIEasing.EaseOutCubic
                 );
             }
 
@@ -301,7 +301,7 @@ namespace UI.Screens
                 UIAnimationSystem.AnimationType.FadeIn,
                 0.5f,
                 0.7f,
-                UIAnimationSystem.EasingType.EaseOutCubic
+                UIEasing.EaseOutCubic
             );
         }
 
