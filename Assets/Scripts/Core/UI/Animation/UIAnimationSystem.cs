@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -224,9 +225,37 @@ namespace Core.UI.Animation
                     yield break;
                 }
 
-                // Run the animation loop
-                Coroutine animationCoroutine = StartCoroutine(AnimationLoop());
-                yield return animationCoroutine;
+                // We need to avoid yield return in try-catch
+                var animationTask = new TaskCompletionSource<bool>();
+
+                // Start the animation in a separate coroutine
+                StartCoroutine(RunAnimationSafely(AnimationLoop(), animationTask));
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[UIAnimationSystem] Error in fade animation: {e.Message}");
+
+                // Try to set the final value even if there was an error
+                if (element != null)
+                {
+                    element.style.opacity = endOpacity;
+                }
+
+                // Remove from active animations
+                _activeAnimations.Remove(animationId);
+
+                // Complete the coroutine
+                yield break;
+            }
+
+            // Wait for the animation to complete outside the try-catch
+            while (!animationTask.Task.IsCompleted)
+            {
+                yield return null;
+            }
+
+            try
+            {
 
                 // Ensure final value is set
                 element.style.opacity = endOpacity;
@@ -298,9 +327,38 @@ namespace Core.UI.Animation
                     yield break;
                 }
 
-                // Run the animation loop
-                Coroutine animationCoroutine = StartCoroutine(AnimationLoop());
-                yield return animationCoroutine;
+                // We need to avoid yield return in try-catch
+                var animationTask = new TaskCompletionSource<bool>();
+
+                // Start the animation in a separate coroutine
+                StartCoroutine(RunAnimationSafely(AnimationLoop(), animationTask));
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[UIAnimationSystem] Error in move animation: {e.Message}");
+
+                // Try to set the final position even if there was an error
+                if (element != null)
+                {
+                    element.style.left = endPosition.x;
+                    element.style.top = endPosition.y;
+                }
+
+                // Remove from active animations
+                _activeAnimations.Remove(animationId);
+
+                // Complete the coroutine
+                yield break;
+            }
+
+            // Wait for the animation to complete outside the try-catch
+            while (!animationTask.Task.IsCompleted)
+            {
+                yield return null;
+            }
+
+            try
+            {
 
                 // Ensure final position is set
                 element.style.left = endPosition.x;
@@ -371,9 +429,37 @@ namespace Core.UI.Animation
                     }
                 }
 
-                // Run the animation loop
-                Coroutine animationCoroutine = StartCoroutine(AnimationLoop());
-                yield return animationCoroutine;
+                // We need to avoid yield return in try-catch
+                var scaleAnimationTask = new TaskCompletionSource<bool>();
+
+                // Start the animation in a separate coroutine
+                StartCoroutine(RunAnimationSafely(AnimationLoop(), scaleAnimationTask));
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[UIAnimationSystem] Error in scale animation: {e.Message}");
+
+                // Try to set the final scale even if there was an error
+                if (element != null)
+                {
+                    element.style.scale = new StyleScale(new Vector3(endScale.x, endScale.y, 1));
+                }
+
+                // Remove from active animations
+                _activeAnimations.Remove(animationId);
+
+                // Complete the coroutine
+                yield break;
+            }
+
+            // Wait for the animation to complete outside the try-catch
+            while (!scaleAnimationTask.Task.IsCompleted)
+            {
+                yield return null;
+            }
+
+            try
+            {
 
                 // Ensure final scale is set
                 element.style.scale = new StyleScale(new Vector3(endScale.x, endScale.y, 1));
@@ -442,9 +528,37 @@ namespace Core.UI.Animation
                     }
                 }
 
-                // Run the animation loop
-                Coroutine animationCoroutine = StartCoroutine(AnimationLoop());
-                yield return animationCoroutine;
+                // We need to avoid yield return in try-catch
+                var rotateAnimationTask = new TaskCompletionSource<bool>();
+
+                // Start the animation in a separate coroutine
+                StartCoroutine(RunAnimationSafely(AnimationLoop(), rotateAnimationTask));
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[UIAnimationSystem] Error in rotate animation: {e.Message}");
+
+                // Try to set the final rotation even if there was an error
+                if (element != null)
+                {
+                    element.style.rotate = new Rotate(endRotation);
+                }
+
+                // Remove from active animations
+                _activeAnimations.Remove(animationId);
+
+                // Complete the coroutine
+                yield break;
+            }
+
+            // Wait for the animation to complete outside the try-catch
+            while (!rotateAnimationTask.Task.IsCompleted)
+            {
+                yield return null;
+            }
+
+            try
+            {
 
                 // Ensure final rotation is set
                 element.style.rotate = new Rotate(endRotation);
@@ -467,6 +581,51 @@ namespace Core.UI.Animation
                 // Remove from active animations
                 _activeAnimations.Remove(animationId);
             }
+        }
+
+        /// <summary>
+        /// Helper method to run an animation coroutine safely and signal completion.
+        /// </summary>
+        private IEnumerator RunAnimationSafely(IEnumerator animation, TaskCompletionSource<bool> completionSource)
+        {
+            // We can't use yield in try-catch, so we'll use a different approach
+            // Run the animation step by step
+            bool isRunning = true;
+
+            while (isRunning)
+            {
+                bool moveNextSuccess = false;
+                object current = null;
+
+                try
+                {
+                    // Try to move to the next step
+                    moveNextSuccess = animation.MoveNext();
+                    if (moveNextSuccess)
+                    {
+                        current = animation.Current;
+                    }
+                    else
+                    {
+                        isRunning = false;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"[UIAnimationSystem] Error advancing animation: {e.Message}");
+                    completionSource.SetException(e);
+                    yield break;
+                }
+
+                // If we're still running, yield the current value
+                if (isRunning)
+                {
+                    yield return current;
+                }
+            }
+
+            // If we got here without errors, the animation completed successfully
+            completionSource.SetResult(true);
         }
     }
 

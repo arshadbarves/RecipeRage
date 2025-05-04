@@ -247,21 +247,54 @@ namespace Core.UI.Animation
 
         private IEnumerator ExecuteStep(AnimationStep step, Action onComplete, Action<Exception> onError)
         {
-            // We need to wrap the PlayStep in another coroutine to avoid try-catch issues
-            IEnumerator PlayStepWrapper()
+            // Create a coroutine to play the step
+            IEnumerator stepCoroutine = PlayStep(step);
+
+            // We need to avoid yield in try-catch, so we'll use a different approach
+            bool isRunning = true;
+            bool hasError = false;
+            Exception caughtException = null;
+
+            // Run the step coroutine step by step
+            while (isRunning && !hasError)
             {
-                yield return PlayStep(step);
+                bool moveNextSuccess = false;
+                object current = null;
+
+                try
+                {
+                    // Try to move to the next step
+                    moveNextSuccess = stepCoroutine.MoveNext();
+                    if (moveNextSuccess)
+                    {
+                        current = stepCoroutine.Current;
+                    }
+                    else
+                    {
+                        isRunning = false;
+                    }
+                }
+                catch (Exception e)
+                {
+                    hasError = true;
+                    caughtException = e;
+                }
+
+                // If we're still running and no error, yield the current value
+                if (isRunning && !hasError)
+                {
+                    yield return current;
+                }
             }
 
-            try
+            // Handle completion or error
+            if (hasError && caughtException != null)
             {
-                // Start the wrapper coroutine
-                yield return UIAnimationSystem.Instance.StartCoroutine(PlayStepWrapper());
-                onComplete?.Invoke();
+                onError?.Invoke(caughtException);
             }
-            catch (Exception e)
+            else
             {
-                onError?.Invoke(e);
+                onComplete?.Invoke();
             }
         }
 
