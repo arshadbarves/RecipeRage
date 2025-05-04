@@ -487,7 +487,7 @@ namespace UI.Screens
                 UIAnimationSystem.AnimationType.ScaleIn,
                 0.3f,
                 0.05f,
-                UIEasing.EaseOutBack
+                UIAnimationSystem.EasingType.EaseOutBack
             );
         }
 

@@ -726,6 +726,75 @@ namespace Core.UI.Animation
         /// <summary>
         /// Animate a sequence of elements one after another
         /// </summary>
+        /// <param name="elements">List of elements to animate</param>
+        /// <param name="animationType">Animation type to apply to all elements</param>
+        /// <param name="duration">Duration for each animation</param>
+        /// <param name="stagger">Delay between each element's animation</param>
+        /// <param name="easingType">Easing type to use</param>
+        /// <param name="onAllComplete">Callback when all animations complete</param>
+        public void AnimateSequence(List<VisualElement> elements, AnimationType animationType,
+            float duration = 0.3f, float stagger = 0.05f, EasingType easingType = EasingType.EaseOutQuad,
+            Action onAllComplete = null)
+        {
+            if (elements == null || elements.Count == 0)
+            {
+                onAllComplete?.Invoke();
+                return;
+            }
+
+            StartCoroutine(AnimateSequenceCoroutine(elements, animationType, duration, stagger, easingType, onAllComplete));
+        }
+
+        /// <summary>
+        /// Chain multiple animations on a single element
+        /// </summary>
+        /// <param name="element">Element to animate</param>
+        /// <param name="animations">List of animations to apply in sequence</param>
+        /// <param name="durations">List of durations for each animation</param>
+        /// <param name="delays">List of delays for each animation</param>
+        /// <param name="easingTypes">List of easing types for each animation</param>
+        /// <param name="onComplete">Callback when all animations complete</param>
+        public void ChainAnimations(VisualElement element, List<AnimationType> animations,
+            List<float> durations = null, List<float> delays = null, List<EasingType> easingTypes = null,
+            Action onComplete = null)
+        {
+            if (element == null || animations == null || animations.Count == 0)
+            {
+                onComplete?.Invoke();
+                return;
+            }
+
+            // Set default values if not provided
+            if (durations == null)
+            {
+                durations = new List<float>();
+                for (int i = 0; i < animations.Count; i++)
+                    durations.Add(0.3f);
+            }
+
+            if (delays == null)
+            {
+                delays = new List<float>();
+                for (int i = 0; i < animations.Count; i++)
+                    delays.Add(0f);
+            }
+
+            if (easingTypes == null)
+            {
+                easingTypes = new List<EasingType>();
+                for (int i = 0; i < animations.Count; i++)
+                    easingTypes.Add(EasingType.EaseOutQuad);
+            }
+
+            // Ensure lists have the same length
+            int count = Mathf.Min(animations.Count, durations.Count, delays.Count, easingTypes.Count);
+
+            StartCoroutine(ChainAnimationsCoroutine(element, animations, durations, delays, easingTypes, count, onComplete));
+        }
+
+        /// <summary>
+        /// Animate a sequence of elements one after another
+        /// </summary>
         private IEnumerator AnimateSequenceCoroutine(List<VisualElement> elements, AnimationType animationType,
             float duration, float stagger, EasingType easingType, Action onAllComplete)
         {
