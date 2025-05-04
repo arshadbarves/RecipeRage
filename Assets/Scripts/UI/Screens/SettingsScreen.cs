@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using UI.Animation;
+using Core.UI.Animation;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -686,7 +686,7 @@ namespace UI.Screens
                 UIAnimationSystem.AnimationType.FadeIn,
                 0.5f,
                 0.2f,
-                UIAnimationSystem.EasingType.EaseOutCubic
+                UIEasing.EaseOutCubic
             );
             
             // Animate settings container
@@ -695,7 +695,7 @@ namespace UI.Screens
                 UIAnimationSystem.AnimationType.FadeIn,
                 0.5f,
                 0.4f,
-                UIAnimationSystem.EasingType.EaseOutCubic
+                UIEasing.EaseOutCubic
             );
             
             // Animate bottom buttons
@@ -704,7 +704,7 @@ namespace UI.Screens
                 UIAnimationSystem.AnimationType.FadeIn,
                 0.5f,
                 0.6f,
-                UIAnimationSystem.EasingType.EaseOutCubic
+                UIEasing.EaseOutCubic
             );
             
             // Animate settings sections
@@ -717,7 +717,7 @@ namespace UI.Screens
                     UIAnimationSystem.AnimationType.SlideInFromLeft,
                     0.5f,
                     delay,
-                    UIAnimationSystem.EasingType.EaseOutCubic
+                    UIEasing.EaseOutCubic
                 );
             }
         }
@@ -754,7 +754,7 @@ namespace UI.Screens
                 UIAnimationSystem.AnimationType.Pulse,
                 0.5f,
                 0f,
-                UIAnimationSystem.EasingType.EaseOutElastic
+                UIEasing.EaseOutElastic
             );
         }
         
@@ -773,7 +773,7 @@ namespace UI.Screens
                 UIAnimationSystem.AnimationType.Pulse,
                 0.5f,
                 0f,
-                UIAnimationSystem.EasingType.EaseOutElastic
+                UIEasing.EaseOutElastic
             );
         }
         
@@ -792,7 +792,7 @@ namespace UI.Screens
                 UIAnimationSystem.AnimationType.Pulse,
                 0.5f,
                 0f,
-                UIAnimationSystem.EasingType.EaseOutElastic
+                UIEasing.EaseOutElastic
             );
         }
         
@@ -812,7 +812,7 @@ namespace UI.Screens
                 UIAnimationSystem.AnimationType.Pulse,
                 0.5f,
                 0f,
-                UIAnimationSystem.EasingType.EaseOutElastic
+                UIEasing.EaseOutElastic
             );
         }
         
@@ -832,7 +832,7 @@ namespace UI.Screens
                 UIAnimationSystem.AnimationType.Pulse,
                 0.5f,
                 0f,
-                UIAnimationSystem.EasingType.EaseOutElastic
+                UIEasing.EaseOutElastic
             );
         }
         

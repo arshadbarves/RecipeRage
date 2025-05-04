@@ -1,7 +1,7 @@
 using System.Collections;
 using Core.GameFramework.State;
 using Core.GameFramework.State.States;
-using UI.Animation;
+using Core.UI.Animation;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -305,7 +305,7 @@ namespace UI.Screens
                 UIAnimationSystem.AnimationType.FadeIn,
                 0.5f,
                 0.2f,
-                UIAnimationSystem.EasingType.EaseOutCubic
+                UIEasing.EaseOutCubic
             );
 
             // Animate middle content
@@ -314,7 +314,7 @@ namespace UI.Screens
                 UIAnimationSystem.AnimationType.FadeIn,
                 0.5f,
                 0.4f,
-                UIAnimationSystem.EasingType.EaseOutCubic
+                UIEasing.EaseOutCubic
             );
 
             // Animate bottom navigation
@@ -323,7 +323,7 @@ namespace UI.Screens
                 UIAnimationSystem.AnimationType.FadeIn,
                 0.5f,
                 0.6f,
-                UIAnimationSystem.EasingType.EaseOutCubic
+                UIEasing.EaseOutCubic
             );
 
             // Animate pass progress
@@ -332,7 +332,7 @@ namespace UI.Screens
                 UIAnimationSystem.AnimationType.FadeIn,
                 0.5f,
                 0.8f,
-                UIAnimationSystem.EasingType.EaseOutCubic
+                UIEasing.EaseOutCubic
             );
 
             // Animate characters
@@ -341,7 +341,7 @@ namespace UI.Screens
                 UIAnimationSystem.AnimationType.ScaleIn,
                 0.5f,
                 0.5f,
-                UIAnimationSystem.EasingType.EaseOutBack
+                UIEasing.EaseOutBack
             );
 
             UIAnimationSystem.Instance.Animate(
@@ -349,7 +349,7 @@ namespace UI.Screens
                 UIAnimationSystem.AnimationType.ScaleIn,
                 0.5f,
                 0.6f,
-                UIAnimationSystem.EasingType.EaseOutBack
+                UIEasing.EaseOutBack
             );
 
             UIAnimationSystem.Instance.Animate(
@@ -357,7 +357,7 @@ namespace UI.Screens
                 UIAnimationSystem.AnimationType.ScaleIn,
                 0.5f,
                 0.7f,
-                UIAnimationSystem.EasingType.EaseOutBack
+                UIEasing.EaseOutBack
             );
 
             // Animate play button with bounce
@@ -366,7 +366,7 @@ namespace UI.Screens
                 UIAnimationSystem.AnimationType.Bounce,
                 1.0f,
                 1.0f,
-                UIAnimationSystem.EasingType.EaseOutElastic
+                UIEasing.EaseOutElastic
             );
         }
 
@@ -489,7 +489,7 @@ namespace UI.Screens
                 UIAnimationSystem.AnimationType.Bounce,
                 0.5f,
                 0f,
-                UIAnimationSystem.EasingType.EaseOutElastic
+                UIEasing.EaseOutElastic
             );
 
             // TODO: Show character details or selection screen

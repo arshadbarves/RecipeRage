@@ -1,7 +1,7 @@
 using System.Collections;
 using Core.GameFramework.State;
 using Core.GameFramework.State.States;
-using UI.Animation;
+using Core.UI.Animation;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -104,7 +104,7 @@ namespace UI.Screens
                     UIAnimationSystem.AnimationType.FadeIn,
                     0.8f,
                     0.2f,
-                    UIAnimationSystem.EasingType.EaseOutCubic
+                    UIEasing.EaseOutCubic
                 );
                 
                 UIAnimationSystem.Instance.Animate(
@@ -112,7 +112,7 @@ namespace UI.Screens
                     UIAnimationSystem.AnimationType.ScaleIn,
                     0.8f,
                     0.2f,
-                    UIAnimationSystem.EasingType.EaseOutCubic
+                    UIEasing.EaseOutCubic
                 );
                 
                 // Animate game title
@@ -121,7 +121,7 @@ namespace UI.Screens
                     UIAnimationSystem.AnimationType.FadeIn,
                     0.8f,
                     0.6f,
-                    UIAnimationSystem.EasingType.EaseOutCubic
+                    UIEasing.EaseOutCubic
                 );
                 
                 // Start loading simulation

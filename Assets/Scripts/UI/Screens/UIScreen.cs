@@ -1,5 +1,5 @@
 using System;
-using UI.Animation;
+using Core.UI.Animation;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -14,32 +14,32 @@ namespace UI.Screens
         /// The UI Document component
         /// </summary>
         protected UIDocument _uiDocument;
-        
+
         /// <summary>
         /// The root visual element
         /// </summary>
         protected VisualElement _root;
-        
+
         /// <summary>
         /// The main container for this screen
         /// </summary>
         protected VisualElement _container;
-        
+
         /// <summary>
         /// Whether the screen is currently visible
         /// </summary>
         public bool IsVisible { get; protected set; }
-        
+
         /// <summary>
         /// Event triggered when the screen is shown
         /// </summary>
         public event Action OnScreenShown;
-        
+
         /// <summary>
         /// Event triggered when the screen is hidden
         /// </summary>
         public event Action OnScreenHidden;
-        
+
         /// <summary>
         /// Initialize the screen
         /// </summary>
@@ -52,11 +52,11 @@ namespace UI.Screens
                 Debug.LogError($"[{GetType().Name}] UIDocument component not found");
                 return;
             }
-            
+
             // Initialize UI when the document is ready
             _uiDocument.rootVisualElement.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
         }
-        
+
         /// <summary>
         /// Called when the UI geometry is initialized
         /// </summary>
@@ -64,10 +64,10 @@ namespace UI.Screens
         {
             // Unregister the callback to ensure it's only called once
             _uiDocument.rootVisualElement.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
-            
+
             // Get the root element
             _root = _uiDocument.rootVisualElement;
-            
+
             // Get the main container
             _container = _root.Q<VisualElement>("screen-container");
             if (_container == null)
@@ -75,19 +75,19 @@ namespace UI.Screens
                 Debug.LogError($"[{GetType().Name}] Container element 'screen-container' not found");
                 return;
             }
-            
+
             // Initialize the screen
             InitializeScreen();
-            
+
             // Hide the screen by default
             Hide(false);
         }
-        
+
         /// <summary>
         /// Initialize the screen elements and event handlers
         /// </summary>
         protected abstract void InitializeScreen();
-        
+
         /// <summary>
         /// Show the screen with animation
         /// </summary>
@@ -95,21 +95,22 @@ namespace UI.Screens
         public virtual void Show(bool animate = true)
         {
             if (_container == null) return;
-            
+
             if (animate)
             {
                 // Reset container state
                 _container.style.opacity = 0;
                 _container.style.display = DisplayStyle.Flex;
-                
+
                 // Animate in
                 UIAnimationSystem.Instance.Animate(
-                    _container, 
-                    UIAnimationSystem.AnimationType.FadeIn, 
-                    0.3f, 
-                    0f, 
-                    UIAnimationSystem.EasingType.EaseOutQuad,
-                    () => {
+                    _container,
+                    UIAnimationSystem.AnimationType.FadeIn,
+                    0.3f,
+                    0f,
+                    UIEasing.EaseOutQuad,
+                    () =>
+                    {
                         IsVisible = true;
                         OnScreenShown?.Invoke();
                     }
@@ -123,7 +124,7 @@ namespace UI.Screens
                 OnScreenShown?.Invoke();
             }
         }
-        
+
         /// <summary>
         /// Hide the screen with animation
         /// </summary>
@@ -131,16 +132,17 @@ namespace UI.Screens
         public virtual void Hide(bool animate = true)
         {
             if (_container == null) return;
-            
+
             if (animate)
             {
                 UIAnimationSystem.Instance.Animate(
-                    _container, 
-                    UIAnimationSystem.AnimationType.FadeOut, 
-                    0.3f, 
-                    0f, 
-                    UIAnimationSystem.EasingType.EaseOutQuad,
-                    () => {
+                    _container,
+                    UIAnimationSystem.AnimationType.FadeOut,
+                    0.3f,
+                    0f,
+                    UIEasing.EaseOutQuad,
+                    () =>
+                    {
                         _container.style.display = DisplayStyle.None;
                         IsVisible = false;
                         OnScreenHidden?.Invoke();
@@ -155,7 +157,7 @@ namespace UI.Screens
                 OnScreenHidden?.Invoke();
             }
         }
-        
+
         /// <summary>
         /// Toggle the screen visibility
         /// </summary>

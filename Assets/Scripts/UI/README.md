@@ -8,15 +8,30 @@ The UI system is designed to be modular, reusable, and easy to extend. It consis
 
 - **UIManager**: Singleton that manages all UI screens in the game
 - **UIScreen**: Base class for all UI screens
-- **UIAnimationSystem**: System for animating UI elements
 - **UIExtensions**: Extension methods for UI Toolkit elements
+- **Core.UI.Animation.UIAnimationSystem**: System for animating UI elements (shared from Core)
 
 ## Directory Structure
 
-- **Animation/**: Contains the animation system for UI elements
 - **Screens/**: Contains all UI screen implementations
 - **UXML/**: Contains UI layout definitions
 - **USS/**: Contains UI style sheets
+
+## UI Architecture
+
+The RecipeRage UI system follows a modular architecture with two main components:
+
+1. **Core UI Components** (in `Assets/Scripts/Core/UI/`):
+   - Reusable, project-agnostic components that can be shared across multiple games
+   - Includes the animation system, splash screen system, and other core utilities
+   - Designed to be stable and well-tested
+
+2. **Game-Specific UI Components** (in `Assets/Scripts/UI/`):
+   - Components tailored specifically for RecipeRage
+   - Includes game screens, UI managers, and game-specific UI elements
+   - Builds on top of the Core UI components
+
+This separation allows for better code reuse and maintainability.
 
 ## Setup
 
@@ -57,7 +72,7 @@ UIAnimationSystem.Instance.Animate(
     UIAnimationSystem.AnimationType.FadeIn,
     0.5f,
     0f,
-    UIAnimationSystem.EasingType.EaseOutCubic,
+    UIEasing.EaseOutCubic,
     () => Debug.Log("Animation complete")
 );
 
@@ -67,7 +82,7 @@ UIAnimationSystem.Instance.AnimateSequence(
     UIAnimationSystem.AnimationType.ScaleIn,
     0.3f,
     0.05f,
-    UIAnimationSystem.EasingType.EaseOutBack,
+    UIEasing.EaseOutBack,
     () => Debug.Log("All animations complete")
 );
 
@@ -80,9 +95,9 @@ UIAnimationSystem.Instance.ChainAnimations(
     },
     new List<float> { 0.5f, 0.5f },
     new List<float> { 0f, 0f },
-    new List<UIAnimationSystem.EasingType> {
-        UIAnimationSystem.EasingType.EaseOutCubic,
-        UIAnimationSystem.EasingType.EaseOutElastic
+    new List<EasingType> {
+        EasingType.EaseOutCubic,
+        EasingType.EaseOutElastic
     },
     () => Debug.Log("Chain complete")
 );
