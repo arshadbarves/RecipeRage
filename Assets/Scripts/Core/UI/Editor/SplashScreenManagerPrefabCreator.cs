@@ -14,7 +14,10 @@ namespace Core.UI.Editor
         private const string PREFAB_PATH = "Assets/Prefabs/UI/SplashScreenManager.prefab";
         private const string PREFAB_DIRECTORY = "Assets/Prefabs/UI";
 
-        [MenuItem("RecipeRage/UI/Create Splash Screen Manager Prefab (Standalone)", false, 101)]
+        /// <summary>
+        /// Creates the SplashScreenManager prefab.
+        /// This method is called by PrefabCreationManager.
+        /// </summary>
         public static void CreateSplashScreenManagerPrefab()
         {
             // Create directory if it doesn't exist
