@@ -2,8 +2,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using Core;
-using Core.UI.SplashScreen;
-using Core.UI.Loading;
+using RecipeRage.Editor.UI;
 
 namespace RecipeRage.Editor
 {
@@ -115,10 +114,10 @@ namespace RecipeRage.Editor
         public static void CreateSplashAndLoadingScreenPrefabs()
         {
             Debug.Log("Creating SplashScreenManager prefab...");
-            Core.UI.Editor.SplashScreenSetupWizard.CreateSplashScreenManagerPrefab();
+            SplashScreenSetupWizard.CreateSplashScreenManagerPrefab();
             
             Debug.Log("Creating LoadingScreenManager prefab...");
-            Core.UI.Editor.LoadingScreenManagerPrefabCreator.CreateLoadingScreenManagerPrefab();
+            LoadingScreenManagerPrefabCreator.CreateLoadingScreenManagerPrefab();
             
             Debug.Log("Splash and Loading Screen prefabs created successfully!");
         }
