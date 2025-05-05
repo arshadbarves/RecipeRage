@@ -27,6 +27,15 @@ namespace Core.UI.Editor
                 AssetDatabase.Refresh();
             }
 
+            // Delete existing prefab if it exists
+            string prefabPath = $"{PREFABS_DIRECTORY}/LoadingScreenManager.prefab";
+            if (System.IO.File.Exists(prefabPath))
+            {
+                AssetDatabase.DeleteAsset(prefabPath);
+                Debug.Log($"[LoadingScreenManagerPrefabCreator] Deleted existing LoadingScreenManager prefab at {prefabPath}");
+                AssetDatabase.Refresh();
+            }
+
             // Create the LoadingScreenManager GameObject
             var loadingScreenManagerObj = new GameObject("LoadingScreenManager");
             var loadingScreenManager = loadingScreenManagerObj.AddComponent<LoadingScreenManager>();
@@ -72,7 +81,6 @@ namespace Core.UI.Editor
             });
 
             // Save as prefab
-            string prefabPath = $"{PREFABS_DIRECTORY}/LoadingScreenManager.prefab";
             PrefabUtility.SaveAsPrefabAsset(loadingScreenManagerObj, prefabPath);
 
             // Destroy the temporary game object
