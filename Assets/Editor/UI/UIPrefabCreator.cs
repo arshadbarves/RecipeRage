@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace RecipeRage.Editor
+namespace RecipeRage.Editor.UI
 {
     /// <summary>
     /// Utility for creating UI prefabs

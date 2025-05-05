@@ -5,7 +5,7 @@ using Core.UI.SplashScreen;
 using UnityEditor.SceneManagement;
 using UnityEngine.UIElements;
 
-namespace Core.UI.Editor
+namespace RecipeRage.Editor.UI
 {
     /// <summary>
     /// Editor wizard for setting up the splash screen system.
@@ -44,7 +44,7 @@ namespace Core.UI.Editor
         /// </summary>
         public static void CreateSplashScreenManagerPrefab()
         {
-            SplashScreenManagerPrefabCreator.CreateSplashScreenManagerPrefab();
+            RecipeRage.Editor.UI.SplashScreenManagerPrefabCreator.CreateSplashScreenManagerPrefab();
         }
 
         private void OnGUI()
