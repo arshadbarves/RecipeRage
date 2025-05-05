@@ -300,10 +300,27 @@ namespace RecipeRage.Editor
                 Directory.CreateDirectory(directory);
             }
 
+            // Delete the existing prefab if it exists
+            DeletePrefabIfExists(path);
+
             // Create the prefab
             var prefab = PrefabUtility.SaveAsPrefabAsset(gameObject, path);
+            Debug.Log($"Created prefab: {path}");
 
             return prefab;
+        }
+
+        /// <summary>
+        /// Deletes a prefab if it exists at the specified path.
+        /// </summary>
+        /// <param name="path">The path to the prefab to delete</param>
+        private static void DeletePrefabIfExists(string path)
+        {
+            if (File.Exists(path))
+            {
+                AssetDatabase.DeleteAsset(path);
+                Debug.Log($"Deleted existing prefab: {path}");
+            }
         }
     }
 }

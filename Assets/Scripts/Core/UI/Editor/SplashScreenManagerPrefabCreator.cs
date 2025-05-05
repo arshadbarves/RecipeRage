@@ -24,16 +24,12 @@ namespace Core.UI.Editor
                 AssetDatabase.Refresh();
             }
 
-            // Check if prefab already exists
+            // Delete existing prefab if it exists
             if (File.Exists(PREFAB_PATH))
             {
-                Debug.Log($"[SplashScreenManagerPrefabCreator] Splash screen manager prefab already exists at {PREFAB_PATH}");
-
-                // Select the existing prefab
-                GameObject existingPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(PREFAB_PATH);
-                Selection.activeObject = existingPrefab;
-
-                return;
+                AssetDatabase.DeleteAsset(PREFAB_PATH);
+                Debug.Log($"[SplashScreenManagerPrefabCreator] Deleted existing splash screen manager prefab at {PREFAB_PATH}");
+                AssetDatabase.Refresh();
             }
 
             // Create the splash screen manager GameObject
