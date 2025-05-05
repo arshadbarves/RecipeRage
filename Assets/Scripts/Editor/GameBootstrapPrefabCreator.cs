@@ -6,16 +6,12 @@ using Core.GameModes;
 using Core.Input;
 using Core.Networking;
 using Core.SaveSystem;
-using Core.UI;
-using Core.UI.SplashScreen;
 using Gameplay.Cooking;
 using Gameplay.Scoring;
 using System.IO;
 using UnityEngine;
-using UnityEngine.UIElements;
 using UnityEditor;
 using UI;
-using UI.Screens;
 
 namespace RecipeRage.Editor
 {
@@ -33,10 +29,12 @@ namespace RecipeRage.Editor
         private const string GAME_MODES_PATH = "Assets/ScriptableObjects/GameModes";
         private const string PLAYER_PATH = "Assets/Prefabs/Player";
         private const string STATIONS_PATH = "Assets/Prefabs/Stations";
-        [MenuItem("RecipeRage/Create/All Manager Prefabs")]
+
+        [MenuItem("RecipeRage/Create/GameBootstrap Prefab")]
         public static void CreateGameBootstrapPrefab()
         {
-            CreateAllPrefabs();
+            // Create the GameBootstrap prefab with all required manager references
+            CreateGameBootstrapPrefabInternal();
         }
 
         [MenuItem("RecipeRage/Create/All Game Assets")]
@@ -45,8 +43,8 @@ namespace RecipeRage.Editor
             // Create all directories
             CreateAllDirectories();
 
-            // Create all prefabs
-            CreateAllPrefabs();
+            // Create all manager prefabs and GameBootstrap prefab
+            CreateGameBootstrapPrefabInternal();
 
             // Create UI prefabs
             CreateAllUIPrefabs();
@@ -58,12 +56,6 @@ namespace RecipeRage.Editor
             SetupUIResources();
 
             Debug.Log("All game assets created successfully!");
-        }
-
-        [MenuItem("RecipeRage/Create/GameBootstrap Prefab")]
-        public static void CreateOnlyGameBootstrapPrefab()
-        {
-            CreateAllPrefabs();
         }
 
         [MenuItem("RecipeRage/Audio/Create Audio Manager Prefab")]
@@ -121,71 +113,19 @@ namespace RecipeRage.Editor
             Debug.Log("SaveManager prefab created successfully!");
         }
 
-        [MenuItem("RecipeRage/UI/Create Splash Screen Manager Prefab")]
+        [MenuItem("RecipeRage/UI/Create Splash Screen Manager Prefab", false, 100)]
         public static void CreateSplashScreenManagerPrefab()
         {
-            // Create the SplashScreenManager prefab
-            var splashScreenManagerObj = new GameObject("SplashScreenManager");
-            var splashScreenManager = splashScreenManagerObj.AddComponent<SplashScreenManager>();
-
-            // Create UI Documents for splash screens
-            var companySplashObj = new GameObject("CompanySplashScreen");
-            companySplashObj.transform.SetParent(splashScreenManagerObj.transform);
-            var companySplashDocument = companySplashObj.AddComponent<UIDocument>();
-
-            var gameLogoSplashObj = new GameObject("GameLogoSplashScreen");
-            gameLogoSplashObj.transform.SetParent(splashScreenManagerObj.transform);
-            var gameLogoSplashDocument = gameLogoSplashObj.AddComponent<UIDocument>();
-
-            var loadingScreenObj = new GameObject("LoadingScreen");
-            loadingScreenObj.transform.SetParent(splashScreenManagerObj.transform);
-            var loadingScreenDocument = loadingScreenObj.AddComponent<UIDocument>();
-
-            // Try to find the UXML assets
-            var companySplashUXML = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/UI/UXML/CompanySplashScreen.uxml");
-            if (companySplashUXML != null)
-            {
-                companySplashDocument.visualTreeAsset = companySplashUXML;
-            }
-
-            var gameLogoSplashUXML = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/UI/UXML/GameLogoSplashScreen.uxml");
-            if (gameLogoSplashUXML != null)
-            {
-                gameLogoSplashDocument.visualTreeAsset = gameLogoSplashUXML;
-            }
-
-            var loadingScreenUXML = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/UI/UXML/LoadingScreen.uxml");
-            if (loadingScreenUXML != null)
-            {
-                loadingScreenDocument.visualTreeAsset = loadingScreenUXML;
-            }
-
-            // Set references in SplashScreenManager
-            var serializedManager = new SerializedObject(splashScreenManager);
-            serializedManager.FindProperty("_companySplashDocument").objectReferenceValue = companySplashDocument;
-            serializedManager.FindProperty("_gameLogoSplashDocument").objectReferenceValue = gameLogoSplashDocument;
-            serializedManager.FindProperty("_loadingScreenDocument").objectReferenceValue = loadingScreenDocument;
-
-            // Set loading tips
-            var loadingTipsProperty = serializedManager.FindProperty("_loadingTips");
-            loadingTipsProperty.arraySize = 5;
-            loadingTipsProperty.GetArrayElementAtIndex(0).stringValue = "Combine ingredients to create special recipes!";
-            loadingTipsProperty.GetArrayElementAtIndex(1).stringValue = "Work together with your team to complete orders faster!";
-            loadingTipsProperty.GetArrayElementAtIndex(2).stringValue = "Different character classes have unique abilities!";
-            loadingTipsProperty.GetArrayElementAtIndex(3).stringValue = "Don't let food burn or you'll lose points!";
-            loadingTipsProperty.GetArrayElementAtIndex(4).stringValue = "Complete orders quickly to earn bonus points!";
-
-            serializedManager.ApplyModifiedProperties();
-
-            CreatePrefab(splashScreenManagerObj, "Assets/Prefabs/UI/SplashScreenManager.prefab");
-
-            // Clean up the temporary GameObjects
-            Object.DestroyImmediate(splashScreenManagerObj);
-
-            Debug.Log("SplashScreenManager prefab created successfully!");
+            // Use the dedicated SplashScreenSetupWizard to create the prefab
+            Debug.Log("Delegating to specialized SplashScreenManager creator...");
+            Core.UI.Editor.SplashScreenSetupWizard.CreateSplashScreenManagerPrefab();
         }
 
-        private static void CreateAllPrefabs()
+        /// <summary>
+        /// Creates the GameBootstrap prefab with references to all required manager prefabs.
+        /// This is an internal implementation that creates all necessary manager prefabs first.
+        /// </summary>
+        private static void CreateGameBootstrapPrefabInternal()
         {
             // Create the GameBootstrap GameObject
             var gameBootstrapObj = new GameObject("GameBootstrap");
@@ -232,96 +172,16 @@ namespace RecipeRage.Editor
             var orderManagerPrefab = CreatePrefab(orderManagerObj, "Assets/Prefabs/Managers/OrderManager.prefab");
 
             // Create the SaveManager prefab
-            var saveManagerObj = new GameObject("SaveManager");
-            saveManagerObj.AddComponent<SaveManager>();
-            var saveManagerPrefab = CreatePrefab(saveManagerObj, "Assets/Prefabs/Managers/SaveManager.prefab");
+            CreateSaveManagerPrefab();
+            var saveManagerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Managers/SaveManager.prefab");
 
             // Create the AudioManager prefab
-            var audioManagerObj = new GameObject("AudioManager");
-            var audioManager = audioManagerObj.AddComponent<AudioManager>();
-
-            // Create audio source for music
-            var musicSourceObj = new GameObject("MusicSource");
-            musicSourceObj.transform.SetParent(audioManagerObj.transform);
-            var musicSource = musicSourceObj.AddComponent<AudioSource>();
-            musicSource.loop = true;
-            musicSource.playOnAwake = false;
-            musicSource.spatialBlend = 0f; // 2D sound
-
-            // Create pool container
-            var poolContainerObj = new GameObject("AudioSourcePool");
-            poolContainerObj.transform.SetParent(audioManagerObj.transform);
-
-            // Set references for AudioManager
-            var serializedAudioManager = new SerializedObject(audioManager);
-            serializedAudioManager.FindProperty("_musicSource").objectReferenceValue = musicSource;
-            serializedAudioManager.FindProperty("_poolContainer").objectReferenceValue = poolContainerObj.transform;
-
-            // Try to find and assign the audio mixer
-            var mixer = AssetDatabase.LoadAssetAtPath<Object>("Assets/Audio/RecipeRageMixer.mixer");
-            if (mixer != null)
-            {
-                serializedAudioManager.FindProperty("_audioMixer").objectReferenceValue = mixer;
-            }
-
-            serializedAudioManager.ApplyModifiedProperties();
-
-            var audioManagerPrefab = CreatePrefab(audioManagerObj, "Assets/Prefabs/Managers/AudioManager.prefab");
+            CreateAudioManagerPrefab();
+            var audioManagerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Managers/AudioManager.prefab");
 
             // Create the SplashScreenManager prefab
-            var splashScreenManagerObj = new GameObject("SplashScreenManager");
-            var splashScreenManager = splashScreenManagerObj.AddComponent<SplashScreenManager>();
-
-            // Create UI Documents for splash screens
-            var companySplashObj = new GameObject("CompanySplashScreen");
-            companySplashObj.transform.SetParent(splashScreenManagerObj.transform);
-            var companySplashDocument = companySplashObj.AddComponent<UIDocument>();
-
-            var gameLogoSplashObj = new GameObject("GameLogoSplashScreen");
-            gameLogoSplashObj.transform.SetParent(splashScreenManagerObj.transform);
-            var gameLogoSplashDocument = gameLogoSplashObj.AddComponent<UIDocument>();
-
-            var loadingScreenObj = new GameObject("LoadingScreen");
-            loadingScreenObj.transform.SetParent(splashScreenManagerObj.transform);
-            var loadingScreenDocument = loadingScreenObj.AddComponent<UIDocument>();
-
-            // Try to find the UXML assets
-            var companySplashUXML = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/UI/UXML/CompanySplashScreen.uxml");
-            if (companySplashUXML != null)
-            {
-                companySplashDocument.visualTreeAsset = companySplashUXML;
-            }
-
-            var gameLogoSplashUXML = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/UI/UXML/GameLogoSplashScreen.uxml");
-            if (gameLogoSplashUXML != null)
-            {
-                gameLogoSplashDocument.visualTreeAsset = gameLogoSplashUXML;
-            }
-
-            var loadingScreenUXML = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/UI/UXML/LoadingScreen.uxml");
-            if (loadingScreenUXML != null)
-            {
-                loadingScreenDocument.visualTreeAsset = loadingScreenUXML;
-            }
-
-            // Set references in SplashScreenManager
-            var serializedSplashManager = new SerializedObject(splashScreenManager);
-            serializedSplashManager.FindProperty("_companySplashDocument").objectReferenceValue = companySplashDocument;
-            serializedSplashManager.FindProperty("_gameLogoSplashDocument").objectReferenceValue = gameLogoSplashDocument;
-            serializedSplashManager.FindProperty("_loadingScreenDocument").objectReferenceValue = loadingScreenDocument;
-
-            // Set loading tips
-            var loadingTipsProperty = serializedSplashManager.FindProperty("_loadingTips");
-            loadingTipsProperty.arraySize = 5;
-            loadingTipsProperty.GetArrayElementAtIndex(0).stringValue = "Combine ingredients to create special recipes!";
-            loadingTipsProperty.GetArrayElementAtIndex(1).stringValue = "Work together with your team to complete orders faster!";
-            loadingTipsProperty.GetArrayElementAtIndex(2).stringValue = "Different character classes have unique abilities!";
-            loadingTipsProperty.GetArrayElementAtIndex(3).stringValue = "Don't let food burn or you'll lose points!";
-            loadingTipsProperty.GetArrayElementAtIndex(4).stringValue = "Complete orders quickly to earn bonus points!";
-
-            serializedSplashManager.ApplyModifiedProperties();
-
-            var splashScreenManagerPrefab = CreatePrefab(splashScreenManagerObj, "Assets/Prefabs/UI/SplashScreenManager.prefab");
+            CreateSplashScreenManagerPrefab();
+            var splashScreenManagerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/UI/SplashScreenManager.prefab");
 
             // Using SerializedObject to modify serialized properties in editor
             var serializedObject = new SerializedObject(gameBootstrap);
@@ -351,14 +211,6 @@ namespace RecipeRage.Editor
             Object.DestroyImmediate(characterManagerObj);
             Object.DestroyImmediate(scoreManagerObj);
             Object.DestroyImmediate(orderManagerObj);
-            Object.DestroyImmediate(saveManagerObj);
-            Object.DestroyImmediate(audioManagerObj);
-            Object.DestroyImmediate(musicSourceObj);
-            Object.DestroyImmediate(poolContainerObj);
-            Object.DestroyImmediate(splashScreenManagerObj);
-            Object.DestroyImmediate(companySplashObj);
-            Object.DestroyImmediate(gameLogoSplashObj);
-            Object.DestroyImmediate(loadingScreenObj);
 
             Debug.Log("GameBootstrap prefab created successfully!");
         }

@@ -17,7 +17,7 @@ namespace Core.UI.Editor
         /// <summary>
         /// Create the LoadingScreenManager prefab.
         /// </summary>
-        [MenuItem("RecipeRage/UI/Create LoadingScreenManager Prefab")]
+        [MenuItem("RecipeRage/UI/Create LoadingScreenManager Prefab", false, 102)]
         public static void CreateLoadingScreenManagerPrefab()
         {
             // Create directories if they don't exist
