@@ -97,38 +97,13 @@ namespace Core.UI.Editor
                 Debug.LogWarning("[SplashScreenManagerPrefabCreator] Could not find GameLogoSplashScreen.uxml");
             }
 
-            // Create loading screen
-            GameObject loadingScreenObj = new GameObject("LoadingScreen");
-            loadingScreenObj.transform.SetParent(parent.transform);
-            UIDocument loadingScreenDocument = loadingScreenObj.AddComponent<UIDocument>();
-
-            // Try to find the UXML asset
-            var loadingScreenUXML = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/UI/UXML/LoadingScreen.uxml");
-            if (loadingScreenUXML != null)
-            {
-                loadingScreenDocument.visualTreeAsset = loadingScreenUXML;
-            }
-            else
-            {
-                Debug.LogWarning("[SplashScreenManagerPrefabCreator] Could not find LoadingScreen.uxml");
-            }
+            // Note: Loading screen is now handled by LoadingScreenManager
 
             // Set references in SplashScreenManager
             splashScreenManager.SetCompanySplashDocument(companySplashDocument);
             splashScreenManager.SetGameLogoSplashDocument(gameLogoSplashDocument);
-            splashScreenManager.SetLoadingScreenDocument(loadingScreenDocument);
 
-            // Set loading tips
-            string[] loadingTips = new string[]
-            {
-                "Combine ingredients to create special recipes!",
-                "Work together with your team to complete orders faster!",
-                "Different character classes have unique abilities!",
-                "Don't let food burn or you'll lose points!",
-                "Complete orders quickly to earn bonus points!"
-            };
-
-            splashScreenManager.SetLoadingTips(loadingTips);
+            // Note: Loading tips are now handled by LoadingScreenManager
         }
     }
 }
