@@ -12,6 +12,8 @@ using Core.Networking;
 using Gameplay.Cooking;
 using Gameplay.Scoring;
 using Core;
+using Core.Characters;
+using Core.GameFramework.State;
 using UI;
 
 namespace RecipeRage.Editor
@@ -39,24 +41,24 @@ namespace RecipeRage.Editor
         public static void CreateAllGameAssets()
         {
             Debug.Log("Starting one-click setup for RecipeRage...");
-            
+
             // Create all directories
             CreateAllDirectories();
-            
+
             // Create all manager prefabs
             CreateAllManagerPrefabs();
-            
+
             // Create UI prefabs
             CreateAllUIPrefabs();
-            
+
             // Create scriptable objects
             CreateAllScriptableObjects();
-            
+
             // Set up UI resources
             SetupUIResources();
-            
+
             Debug.Log("One-click setup completed successfully!");
-            
+
             // Show a confirmation dialog
             EditorUtility.DisplayDialog(
                 "Setup Complete",
@@ -73,11 +75,10 @@ namespace RecipeRage.Editor
         /// <summary>
         /// Creates all manager prefabs including the GameBootstrap prefab.
         /// </summary>
-        [MenuItem("RecipeRage/Create/All Manager Prefabs", false, 10)]
-        public static void CreateAllManagerPrefabs()
+        private static void CreateAllManagerPrefabs()
         {
             Debug.Log("Creating all manager prefabs...");
-            
+
             // Create individual manager prefabs first
             CreateNetworkManagerPrefab();
             CreateGameStateManagerPrefab();
@@ -89,29 +90,28 @@ namespace RecipeRage.Editor
             CreateOrderManagerPrefab();
             CreateSaveManagerPrefab();
             CreateAudioManagerPrefab();
-            
+
             // Create UI manager prefabs
             CreateSplashScreenManagerPrefab();
             CreateLoadingScreenManagerPrefab();
-            
+
             // Create the GameBootstrap prefab last (references all other prefabs)
             CreateGameBootstrapPrefab();
-            
+
             Debug.Log("All manager prefabs created successfully!");
         }
 
         /// <summary>
         /// Creates the GameBootstrap prefab with references to all other manager prefabs.
         /// </summary>
-        [MenuItem("RecipeRage/Create/GameBootstrap Prefab", false, 11)]
-        public static void CreateGameBootstrapPrefab()
+        private static void CreateGameBootstrapPrefab()
         {
             Debug.Log("Creating GameBootstrap prefab...");
-            
+
             // Create the GameBootstrap GameObject
             var gameBootstrapObj = new GameObject("GameBootstrap");
             var gameBootstrap = gameBootstrapObj.AddComponent<GameBootstrap>();
-            
+
             // Load all manager prefabs
             var networkManagerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Managers/NetworkManager.prefab");
             var gameStateManagerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Managers/GameStateManager.prefab");
@@ -125,7 +125,7 @@ namespace RecipeRage.Editor
             var audioManagerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Managers/AudioManager.prefab");
             var splashScreenManagerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/UI/SplashScreenManager.prefab");
             var loadingScreenManagerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/UI/LoadingScreenManager.prefab");
-            
+
             // Using SerializedObject to modify serialized properties in editor
             var serializedObject = new SerializedObject(gameBootstrap);
             serializedObject.FindProperty("_networkManagerPrefab").objectReferenceValue = networkManagerPrefab;
@@ -141,14 +141,14 @@ namespace RecipeRage.Editor
             serializedObject.FindProperty("_splashScreenManagerPrefab").objectReferenceValue = splashScreenManagerPrefab;
             serializedObject.FindProperty("_loadingScreenManagerPrefab").objectReferenceValue = loadingScreenManagerPrefab;
             serializedObject.ApplyModifiedProperties();
-            
+
             // Create the GameBootstrap prefab
             string prefabPath = "Assets/Prefabs/GameBootstrap.prefab";
             CreatePrefab(gameBootstrapObj, prefabPath);
-            
+
             // Clean up the temporary GameObject
             Object.DestroyImmediate(gameBootstrapObj);
-            
+
             Debug.Log("GameBootstrap prefab created successfully!");
         }
 
@@ -243,30 +243,28 @@ namespace RecipeRage.Editor
         /// <summary>
         /// Creates the SaveManager prefab.
         /// </summary>
-        [MenuItem("RecipeRage/Save System/Create Save Manager Prefab", false, 20)]
-        public static void CreateSaveManagerPrefab()
+        private static void CreateSaveManagerPrefab()
         {
             // Create the SaveManager prefab
             var saveManagerObj = new GameObject("SaveManager");
             saveManagerObj.AddComponent<SaveManager>();
             CreatePrefab(saveManagerObj, "Assets/Prefabs/Managers/SaveManager.prefab");
-            
+
             // Clean up the temporary GameObject
             Object.DestroyImmediate(saveManagerObj);
-            
+
             Debug.Log("SaveManager prefab created successfully!");
         }
 
         /// <summary>
         /// Creates the AudioManager prefab.
         /// </summary>
-        [MenuItem("RecipeRage/Audio/Create Audio Manager Prefab", false, 20)]
-        public static void CreateAudioManagerPrefab()
+        private static void CreateAudioManagerPrefab()
         {
             // Create the AudioManager prefab
             var audioManagerObj = new GameObject("AudioManager");
             var audioManager = audioManagerObj.AddComponent<AudioManager>();
-            
+
             // Create audio source for music
             var musicSourceObj = new GameObject("MusicSource");
             musicSourceObj.transform.SetParent(audioManagerObj.transform);
@@ -274,89 +272,85 @@ namespace RecipeRage.Editor
             musicSource.loop = true;
             musicSource.playOnAwake = false;
             musicSource.spatialBlend = 0f; // 2D sound
-            
+
             // Create pool container
             var poolContainerObj = new GameObject("AudioSourcePool");
             poolContainerObj.transform.SetParent(audioManagerObj.transform);
-            
+
             // Set references for AudioManager
             var serializedAudioManager = new SerializedObject(audioManager);
             serializedAudioManager.FindProperty("_musicSource").objectReferenceValue = musicSource;
             serializedAudioManager.FindProperty("_poolContainer").objectReferenceValue = poolContainerObj.transform;
-            
+
             // Try to find and assign the audio mixer
             var mixer = AssetDatabase.LoadAssetAtPath<Object>("Assets/Audio/RecipeRageMixer.mixer");
             if (mixer != null)
             {
                 serializedAudioManager.FindProperty("_audioMixer").objectReferenceValue = mixer;
             }
-            
+
             serializedAudioManager.ApplyModifiedProperties();
-            
+
             CreatePrefab(audioManagerObj, "Assets/Prefabs/Managers/AudioManager.prefab");
-            
+
             // Clean up the temporary GameObjects
             Object.DestroyImmediate(audioManagerObj);
-            
+
             Debug.Log("AudioManager prefab created successfully!");
         }
 
         /// <summary>
         /// Creates the SplashScreenManager prefab.
         /// </summary>
-        [MenuItem("RecipeRage/UI/Create Splash Screen Manager Prefab", false, 20)]
-        public static void CreateSplashScreenManagerPrefab()
+        private static void CreateSplashScreenManagerPrefab()
         {
             // Delegate to the specialized creator
             Debug.Log("Creating SplashScreenManager prefab...");
-            Core.UI.Editor.SplashScreenSetupWizard.CreateSplashScreenManagerPrefab();
+            SplashScreenSetupWizard.CreateSplashScreenManagerPrefab();
         }
 
         /// <summary>
         /// Creates the LoadingScreenManager prefab.
         /// </summary>
-        [MenuItem("RecipeRage/UI/Create Loading Screen Manager Prefab", false, 21)]
-        public static void CreateLoadingScreenManagerPrefab()
+        private static void CreateLoadingScreenManagerPrefab()
         {
             // Delegate to the specialized creator
             Debug.Log("Creating LoadingScreenManager prefab...");
-            Core.UI.Editor.LoadingScreenManagerPrefabCreator.CreateLoadingScreenManagerPrefab();
+            LoadingScreenManagerPrefabCreator.CreateLoadingScreenManagerPrefab();
         }
 
         /// <summary>
         /// Creates all UI prefabs.
         /// </summary>
-        [MenuItem("RecipeRage/UI/Create All UI Prefabs", false, 10)]
-        public static void CreateAllUIPrefabs()
+        private static void CreateAllUIPrefabs()
         {
             Debug.Log("Creating all UI prefabs...");
-            
+
             // Create splash screen and loading screen prefabs
             CreateSplashScreenManagerPrefab();
             CreateLoadingScreenManagerPrefab();
-            
+
             // Call the UIPrefabCreator for other UI prefabs
             UIPrefabCreator.CreateUIPrefabs();
-            
+
             Debug.Log("All UI prefabs created successfully!");
         }
 
         /// <summary>
         /// Creates all scriptable objects.
         /// </summary>
-        [MenuItem("RecipeRage/Create/All Scriptable Objects", false, 30)]
-        public static void CreateAllScriptableObjects()
+        private static void CreateAllScriptableObjects()
         {
             Debug.Log("Creating all scriptable objects...");
-            
+
             // Create character classes
             var characterClassGenerator = new CharacterClassGenerator();
             characterClassGenerator.GenerateCharacterClasses(CHARACTER_CLASSES_PATH);
-            
+
             // Create game modes
             var gameModeGenerator = new GameModeGenerator();
             gameModeGenerator.GenerateGameModes(GAME_MODES_PATH);
-            
+
             Debug.Log("All scriptable objects created successfully!");
         }
 
@@ -366,10 +360,10 @@ namespace RecipeRage.Editor
         private static void SetupUIResources()
         {
             Debug.Log("Setting up UI resources...");
-            
+
             // Call the UISetupUtility
             UISetupUtility.SetupUIResources();
-            
+
             Debug.Log("UI resources set up successfully!");
         }
 
@@ -379,22 +373,22 @@ namespace RecipeRage.Editor
         private static void CreateAllDirectories()
         {
             Debug.Log("Creating all directories...");
-            
+
             // Create prefab directories
             CreateDirectoryIfNotExists(PREFABS_PATH);
             CreateDirectoryIfNotExists(MANAGERS_PATH);
             CreateDirectoryIfNotExists(UI_PREFABS_PATH);
             CreateDirectoryIfNotExists(PLAYER_PATH);
             CreateDirectoryIfNotExists(STATIONS_PATH);
-            
+
             // Create scriptable object directories
             CreateDirectoryIfNotExists(SCRIPTABLE_OBJECTS_PATH);
             CreateDirectoryIfNotExists(CHARACTER_CLASSES_PATH);
             CreateDirectoryIfNotExists(GAME_MODES_PATH);
-            
+
             // Create UI resource directories
             CreateDirectoryIfNotExists("Assets/Resources/UI/Images");
-            
+
             Debug.Log("All directories created successfully!");
         }
 
@@ -425,14 +419,14 @@ namespace RecipeRage.Editor
             {
                 Directory.CreateDirectory(directory);
             }
-            
+
             // Delete the existing prefab if it exists
             DeletePrefabIfExists(path);
-            
+
             // Create the prefab
             var prefab = PrefabUtility.SaveAsPrefabAsset(gameObject, path);
             Debug.Log($"Created prefab: {path}");
-            
+
             return prefab;
         }
 
