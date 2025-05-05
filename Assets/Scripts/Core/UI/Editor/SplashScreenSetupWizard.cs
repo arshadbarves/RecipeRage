@@ -38,6 +38,15 @@ namespace Core.UI.Editor
             window.minSize = new Vector2(400, 500);
         }
 
+        /// <summary>
+        /// Creates a SplashScreenManager prefab.
+        /// This is a static method that can be called from other scripts.
+        /// </summary>
+        public static void CreateSplashScreenManagerPrefab()
+        {
+            SplashScreenManagerPrefabCreator.CreateSplashScreenManagerPrefab();
+        }
+
         private void OnGUI()
         {
             GUILayout.Label("Splash Screen Setup Wizard", EditorStyles.boldLabel);
@@ -77,7 +86,7 @@ namespace Core.UI.Editor
 
             if (GUILayout.Button("Create SplashScreenManager Prefab"))
             {
-                Core.UI.Editor.SplashScreenManagerPrefabCreator.CreateSplashScreenManagerPrefab();
+                CreateSplashScreenManagerPrefab();
             }
 
             if (GUILayout.Button("Create Test Scene"))
@@ -91,7 +100,7 @@ namespace Core.UI.Editor
             {
                 CreateDirectories();
                 SaveTextures();
-                Core.UI.Editor.SplashScreenManagerPrefabCreator.CreateSplashScreenManagerPrefab();
+                CreateSplashScreenManagerPrefab();
                 CreateTestScene();
 
                 EditorUtility.DisplayDialog("Setup Complete",
@@ -160,9 +169,7 @@ namespace Core.UI.Editor
             gameLogoSplashObj.transform.SetParent(managerObj.transform);
             var gameLogoSplashDocument = gameLogoSplashObj.AddComponent<UIDocument>();
 
-            var loadingScreenObj = new GameObject("LoadingScreen");
-            loadingScreenObj.transform.SetParent(managerObj.transform);
-            var loadingScreenDocument = loadingScreenObj.AddComponent<UIDocument>();
+            // Note: Loading screen is now handled by LoadingScreenManager
 
             // Try to find the UXML assets
             var companySplashUXML = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>($"{UXML_DIRECTORY}/CompanySplashScreen.uxml");
@@ -177,19 +184,11 @@ namespace Core.UI.Editor
                 gameLogoSplashDocument.visualTreeAsset = gameLogoSplashUXML;
             }
 
-            var loadingScreenUXML = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>($"{UXML_DIRECTORY}/LoadingScreen.uxml");
-            if (loadingScreenUXML != null)
-            {
-                loadingScreenDocument.visualTreeAsset = loadingScreenUXML;
-            }
-
             // Set references in SplashScreenManager
             splashManager.SetCompanySplashDocument(companySplashDocument);
             splashManager.SetGameLogoSplashDocument(gameLogoSplashDocument);
-            splashManager.SetLoadingScreenDocument(loadingScreenDocument);
 
-            // Set loading tips
-            splashManager.SetLoadingTips(_loadingTips);
+            // Note: Loading tips are now handled by LoadingScreenManager
 
             // No need to set references as we removed the tester
 
