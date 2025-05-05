@@ -9,7 +9,7 @@ using UnityEngine.UIElements;
 namespace Core.UI.SplashScreen
 {
     /// <summary>
-    /// Manages the splash screens and loading screen for the game.
+    /// Manages the splash screens for the game.
     /// </summary>
     public class SplashScreenManager : MonoBehaviourSingleton<SplashScreenManager>
     {
@@ -17,17 +17,11 @@ namespace Core.UI.SplashScreen
         [SerializeField] private float _companySplashDuration = 2.5f;
         [SerializeField] private float _gameLogoSplashDuration = 3.0f;
         [SerializeField] private float _fadeTransitionDuration = 0.5f;
-        [SerializeField] private float _minLoadingScreenDuration = 3.0f;
         [SerializeField] private bool _allowSkipping = true;
 
         [Header("UI Documents")]
         [SerializeField] private UIDocument _companySplashDocument;
         [SerializeField] private UIDocument _gameLogoSplashDocument;
-        [SerializeField] private UIDocument _loadingScreenDocument;
-
-        [Header("Loading Tips")]
-        [SerializeField] private string[] _loadingTips;
-        [SerializeField] private float _tipChangeDuration = 5.0f;
 
         /// <summary>
         /// Set the company splash document.
@@ -47,34 +41,12 @@ namespace Core.UI.SplashScreen
             _gameLogoSplashDocument = document;
         }
 
-        /// <summary>
-        /// Set the loading screen document.
-        /// </summary>
-        /// <param name="document">The UI document for the loading screen</param>
-        public void SetLoadingScreenDocument(UIDocument document)
-        {
-            _loadingScreenDocument = document;
-        }
 
-        /// <summary>
-        /// Set the loading tips.
-        /// </summary>
-        /// <param name="tips">The loading tips to display</param>
-        public void SetLoadingTips(string[] tips)
-        {
-            _loadingTips = tips;
-        }
 
         private VisualElement _companySplashRoot;
         private VisualElement _gameLogoSplashRoot;
-        private VisualElement _loadingScreenRoot;
-        private ProgressBar _loadingProgressBar;
-        private Label _loadingStatusLabel;
-        private Label _loadingTipLabel;
 
         private bool _isSkipRequested = false;
-        private float _loadingStartTime;
-        private Coroutine _tipsCoroutine;
 
         /// <summary>
         /// Initialize the splash screen manager.
@@ -118,37 +90,6 @@ namespace Core.UI.SplashScreen
                         Debug.LogError("[SplashScreenManager] Could not find game-logo-splash-root element");
                     }
                 }
-
-                // Loading screen elements
-                if (_loadingScreenDocument != null)
-                {
-                    _loadingScreenRoot = _loadingScreenDocument.rootVisualElement.Q("loading-screen-root");
-                    if (_loadingScreenRoot == null)
-                    {
-                        Debug.LogError("[SplashScreenManager] Could not find loading-screen-root element");
-                    }
-                    else
-                    {
-                        _loadingProgressBar = _loadingScreenRoot.Q<ProgressBar>("loading-progress-bar");
-                        _loadingStatusLabel = _loadingScreenRoot.Q<Label>("loading-status-label");
-                        _loadingTipLabel = _loadingScreenRoot.Q<Label>("loading-tip-label");
-
-                        if (_loadingProgressBar == null)
-                        {
-                            Debug.LogError("[SplashScreenManager] Could not find loading-progress-bar element");
-                        }
-
-                        if (_loadingStatusLabel == null)
-                        {
-                            Debug.LogError("[SplashScreenManager] Could not find loading-status-label element");
-                        }
-
-                        if (_loadingTipLabel == null)
-                        {
-                            Debug.LogError("[SplashScreenManager] Could not find loading-tip-label element");
-                        }
-                    }
-                }
             }
             catch (Exception e)
             {
@@ -169,11 +110,6 @@ namespace Core.UI.SplashScreen
             if (_gameLogoSplashDocument != null)
             {
                 _gameLogoSplashDocument.enabled = false;
-            }
-
-            if (_loadingScreenDocument != null)
-            {
-                _loadingScreenDocument.enabled = false;
             }
         }
 
@@ -506,284 +442,6 @@ namespace Core.UI.SplashScreen
 
 
         /// <summary>
-        /// Show the loading screen.
-        /// </summary>
-        public void ShowLoadingScreen()
-        {
-            try
-            {
-                if (_loadingScreenDocument == null || _loadingScreenRoot == null)
-                {
-                    Debug.LogWarning("[SplashScreenManager] Loading screen not set up");
-                    return;
-                }
-
-                _loadingStartTime = Time.time;
-                _loadingScreenDocument.enabled = true;
-
-                // Wait a frame to ensure UI is initialized
-                StartCoroutine(InitializeLoadingScreen());
-
-                Debug.Log("[SplashScreenManager] Loading screen shown");
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"[SplashScreenManager] Error showing loading screen: {e.Message}");
-            }
-        }
-
-        /// <summary>
-        /// Initialize the loading screen after a frame.
-        /// </summary>
-        private IEnumerator InitializeLoadingScreen()
-        {
-            // Wait a frame to ensure UI is initialized
-            yield return null;
-
-            try
-            {
-                if (_loadingProgressBar != null)
-                {
-                    _loadingProgressBar.value = 0;
-                }
-
-                if (_loadingStatusLabel != null)
-                {
-                    _loadingStatusLabel.text = "Initializing...";
-                }
-
-                // Start cycling loading tips
-                if (_loadingTipLabel != null && _loadingTips != null && _loadingTips.Length > 0)
-                {
-                    _tipsCoroutine = StartCoroutine(CycleLoadingTips());
-                }
-
-                // Fade in
-                if (_loadingScreenRoot != null)
-                {
-                    _loadingScreenRoot.style.opacity = 1;
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"[SplashScreenManager] Error initializing loading screen: {e.Message}");
-            }
-        }
-
-        /// <summary>
-        /// Update the loading progress.
-        /// </summary>
-        /// <param name="status">The current loading status</param>
-        /// <param name="progress">The loading progress (0-1)</param>
-        public void UpdateLoadingProgress(string status, float progress)
-        {
-            try
-            {
-                if (_loadingStatusLabel != null)
-                {
-                    _loadingStatusLabel.text = status;
-                }
-
-                if (_loadingProgressBar != null)
-                {
-                    _loadingProgressBar.value = progress;
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.LogWarning($"[SplashScreenManager] Error updating loading progress: {e.Message}");
-            }
-        }
-
-        /// <summary>
-        /// Hide the loading screen.
-        /// </summary>
-        public Task HideLoadingScreen()
-        {
-            var tcs = new TaskCompletionSource<bool>();
-
-            try
-            {
-                if (_loadingScreenDocument == null || _loadingScreenRoot == null)
-                {
-                    tcs.SetResult(false);
-                    return tcs.Task;
-                }
-
-                StartCoroutine(HideLoadingScreenAnimation(tcs));
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"[SplashScreenManager] Error hiding loading screen: {e.Message}");
-
-                // Ensure the document is disabled in case of error
-                if (_loadingScreenDocument != null)
-                {
-                    _loadingScreenDocument.enabled = false;
-                }
-
-                tcs.SetException(e);
-            }
-
-            return tcs.Task;
-        }
-
-        /// <summary>
-        /// Hide the loading screen with animation.
-        /// </summary>
-        private IEnumerator HideLoadingScreenAnimation(TaskCompletionSource<bool> tcs)
-        {
-            // Ensure minimum display time
-            float elapsedTime = Time.time - _loadingStartTime;
-            if (elapsedTime < _minLoadingScreenDuration)
-            {
-                yield return new WaitForSeconds(_minLoadingScreenDuration - elapsedTime);
-            }
-
-            // Set progress to 100% for visual satisfaction using the enhanced animation system
-            if (_loadingProgressBar != null)
-            {
-                // Get the current progress value
-                float startValue = _loadingProgressBar.value;
-
-                // Create a task completion source to wait for the animation to complete
-                TaskCompletionSource<bool> animationTask = new TaskCompletionSource<bool>();
-
-                // Start the animation in a separate coroutine
-                StartCoroutine(AnimateProgressBarValue(startValue, 1.0f, 0.5f, Core.UI.Animation.UIEasing.EaseOutCubic, animationTask));
-
-                // Wait for the animation to complete outside the try-catch
-                while (!animationTask.Task.IsCompleted)
-                {
-                    yield return null;
-                }
-            }
-
-            // Update status label
-            if (_loadingStatusLabel != null)
-            {
-                try
-                {
-                    _loadingStatusLabel.text = "Ready!";
-                }
-                catch (Exception e)
-                {
-                    Debug.LogWarning($"[SplashScreenManager] Error updating status label: {e.Message}");
-                }
-            }
-
-            // Wait a moment at 100%
-            yield return new WaitForSeconds(0.5f);
-
-            try
-            {
-                // Create animation sequence for fade out
-                var sequence = new UIAnimationSequence();
-
-                // Add animations - find UI elements to animate
-                var loadingIcon = _loadingScreenRoot.Q("loading-icon");
-                var loadingTitle = _loadingScreenRoot.Q("loading-title");
-                var loadingBar = _loadingScreenRoot.Q("loading-bar-container");
-                var loadingTip = _loadingScreenRoot.Q("loading-tip-container");
-
-                // Staggered fade out animations
-                if (loadingTip != null)
-                {
-                    sequence.Fade(loadingTip, 1, 0, _fadeTransitionDuration * 0.7f, 0, UIEasing.EaseInCubic);
-                }
-
-                if (loadingBar != null)
-                {
-                    sequence.Fade(loadingBar, 1, 0, _fadeTransitionDuration * 0.7f, 0.1f, UIEasing.EaseInCubic);
-                }
-
-                if (loadingTitle != null)
-                {
-                    sequence.Fade(loadingTitle, 1, 0, _fadeTransitionDuration * 0.7f, 0.2f, UIEasing.EaseInCubic);
-                }
-
-                if (loadingIcon != null)
-                {
-                    sequence.Fade(loadingIcon, 1, 0, _fadeTransitionDuration * 0.7f, 0.3f, UIEasing.EaseInCubic);
-                }
-
-                // Final fade out of the entire screen
-                sequence.Delay(0.1f)
-                        .Fade(_loadingScreenRoot, 1, 0, _fadeTransitionDuration, 0, UIEasing.EaseInCubic);
-
-                // Add completion callback
-                sequence.OnComplete(() =>
-                {
-                    try
-                    {
-                        // Stop cycling loading tips
-                        if (_tipsCoroutine != null)
-                        {
-                            try
-                            {
-                                StopCoroutine(_tipsCoroutine);
-                            }
-                            catch (Exception e)
-                            {
-                                Debug.LogWarning($"[SplashScreenManager] Error stopping tips coroutine: {e.Message}");
-                            }
-                            _tipsCoroutine = null;
-                        }
-
-                        _loadingScreenDocument.enabled = false;
-
-                        Debug.Log("[SplashScreenManager] Loading screen hidden");
-                        tcs.SetResult(true);
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.LogError($"[SplashScreenManager] Error in loading screen completion: {e.Message}");
-                        tcs.SetException(e);
-                    }
-                });
-
-                // Play the sequence
-                sequence.Play();
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"[SplashScreenManager] Error in loading screen animation: {e.Message}");
-
-                // Ensure the document is disabled in case of error
-                if (_loadingScreenDocument != null)
-                {
-                    _loadingScreenDocument.enabled = false;
-                }
-
-                tcs.SetException(e);
-            }
-        }
-
-
-
-        /// <summary>
-        /// Cycle through loading tips.
-        /// </summary>
-        private IEnumerator CycleLoadingTips()
-        {
-            if (_loadingTips == null || _loadingTips.Length == 0 || _loadingTipLabel == null)
-            {
-                yield break;
-            }
-
-            int currentTipIndex = 0;
-
-            while (_loadingScreenDocument.enabled)
-            {
-                _loadingTipLabel.text = _loadingTips[currentTipIndex];
-
-                yield return new WaitForSeconds(_tipChangeDuration);
-
-                currentTipIndex = (currentTipIndex + 1) % _loadingTips.Length;
-            }
-        }
-
-        /// <summary>
         /// Register the skip input handler.
         /// </summary>
         private void RegisterSkipHandler()
@@ -885,93 +543,6 @@ namespace Core.UI.SplashScreen
 
             // Ensure we unregister any callbacks
             UnregisterSkipHandler();
-
-            // Stop any running coroutines
-            if (_tipsCoroutine != null)
-            {
-                try
-                {
-                    StopCoroutine(_tipsCoroutine);
-                }
-                catch (Exception e)
-                {
-                    Debug.LogWarning($"[SplashScreenManager] Error stopping coroutine: {e.Message}");
-                }
-                _tipsCoroutine = null;
-            }
-        }
-
-        /// <summary>
-        /// Animate the progress bar value from start to end
-        /// </summary>
-        private IEnumerator AnimateProgressBarValue(float startValue, float endValue, float duration,
-            Core.UI.Animation.EasingFunction easing, TaskCompletionSource<bool> completionSource)
-        {
-            float startTime = Time.time;
-            float endTime = startTime + duration;
-            bool isRunning = true;
-
-            while (isRunning && Time.time < endTime)
-            {
-                try
-                {
-                    float elapsed = Time.time - startTime;
-                    float normalizedTime = Mathf.Clamp01(elapsed / duration);
-
-                    // Apply easing if provided
-                    if (easing != null)
-                    {
-                        normalizedTime = easing(normalizedTime);
-                    }
-
-                    // Interpolate value
-                    float currentValue = Mathf.Lerp(startValue, endValue, normalizedTime);
-
-                    // Update progress bar
-                    if (_loadingProgressBar != null)
-                    {
-                        _loadingProgressBar.value = currentValue;
-                    }
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError($"[SplashScreenManager] Error in progress bar animation: {e.Message}");
-                    isRunning = false;
-
-                    // Try to set the final value even if there was an error
-                    try
-                    {
-                        if (_loadingProgressBar != null)
-                        {
-                            _loadingProgressBar.value = endValue;
-                        }
-                    }
-                    catch { }
-
-                    // Signal completion with error
-                    completionSource.SetException(e);
-                    yield break;
-                }
-
-                yield return null;
-            }
-
-            try
-            {
-                // Ensure final value is set
-                if (_loadingProgressBar != null)
-                {
-                    _loadingProgressBar.value = endValue;
-                }
-
-                // Signal completion
-                completionSource.SetResult(true);
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"[SplashScreenManager] Error setting final progress value: {e.Message}");
-                completionSource.SetException(e);
-            }
         }
     }
 }
