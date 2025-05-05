@@ -15,9 +15,9 @@ namespace Core.UI.Editor
         private const string USS_DIRECTORY = "Assets/UI/USS";
 
         /// <summary>
-        /// Create the LoadingScreenManager prefab.
+        /// Creates the LoadingScreenManager prefab.
+        /// This method is called by PrefabCreationManager.
         /// </summary>
-        [MenuItem("RecipeRage/UI/Create LoadingScreenManager Prefab", false, 102)]
         public static void CreateLoadingScreenManagerPrefab()
         {
             // Create directories if they don't exist
