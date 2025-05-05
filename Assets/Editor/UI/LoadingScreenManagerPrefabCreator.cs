@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine.UIElements;
 using Core.UI.Loading;
 
-namespace Core.UI.Editor
+namespace RecipeRage.Editor.UI
 {
     /// <summary>
     /// Editor utility for creating the LoadingScreenManager prefab.

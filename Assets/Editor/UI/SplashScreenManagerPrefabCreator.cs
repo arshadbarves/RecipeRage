@@ -4,7 +4,7 @@ using System.IO;
 using Core.UI.SplashScreen;
 using UnityEngine.UIElements;
 
-namespace Core.UI.Editor
+namespace RecipeRage.Editor.UI
 {
     /// <summary>
     /// Editor utility for creating the splash screen manager prefab.

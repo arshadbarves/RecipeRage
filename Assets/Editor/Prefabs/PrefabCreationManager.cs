@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEditor;
 using System.IO;
-using Core.UI.Editor;
 using Core.UI.SplashScreen;
 using Core.UI.Loading;
 using Core.Audio;
@@ -16,7 +15,7 @@ using Core.Characters;
 using Core.GameFramework.State;
 using UI;
 
-namespace RecipeRage.Editor
+namespace RecipeRage.Editor.Prefabs
 {
     /// <summary>
     /// Centralized manager for creating all prefabs in the RecipeRage project.
@@ -306,7 +305,7 @@ namespace RecipeRage.Editor
         {
             // Delegate to the specialized creator
             Debug.Log("Creating SplashScreenManager prefab...");
-            SplashScreenSetupWizard.CreateSplashScreenManagerPrefab();
+            RecipeRage.Editor.UI.SplashScreenSetupWizard.CreateSplashScreenManagerPrefab();
         }
 
         /// <summary>
@@ -316,7 +315,7 @@ namespace RecipeRage.Editor
         {
             // Delegate to the specialized creator
             Debug.Log("Creating LoadingScreenManager prefab...");
-            LoadingScreenManagerPrefabCreator.CreateLoadingScreenManagerPrefab();
+            RecipeRage.Editor.UI.LoadingScreenManagerPrefabCreator.CreateLoadingScreenManagerPrefab();
         }
 
         /// <summary>
@@ -331,7 +330,7 @@ namespace RecipeRage.Editor
             CreateLoadingScreenManagerPrefab();
 
             // Call the UIPrefabCreator for other UI prefabs
-            UIPrefabCreator.CreateUIPrefabs();
+            RecipeRage.Editor.UI.UIPrefabCreator.CreateUIPrefabs();
 
             Debug.Log("All UI prefabs created successfully!");
         }
@@ -362,7 +361,7 @@ namespace RecipeRage.Editor
             Debug.Log("Setting up UI resources...");
 
             // Call the UISetupUtility
-            UISetupUtility.SetupUIResources();
+            RecipeRage.Editor.UI.UISetupUtility.SetupUIResources();
 
             Debug.Log("UI resources set up successfully!");
         }
