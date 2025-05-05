@@ -1,8 +1,6 @@
 using UnityEngine;
 using UnityEditor;
 using System.IO;
-using Core.UI.SplashScreen;
-using Core.UI.Loading;
 using Core.Audio;
 using Core.SaveSystem;
 using Core.GameModes;
