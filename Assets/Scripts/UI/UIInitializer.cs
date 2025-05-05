@@ -1,6 +1,4 @@
 using Core.UI.Animation;
-using Core.UI.SplashScreen;
-using Core.UI.Loading;
 using UI.Screens;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -12,13 +10,6 @@ namespace UI
     /// </summary>
     public class UIInitializer : MonoBehaviour
     {
-        /// <summary>
-        /// Splash screen UXML asset - DEPRECATED
-        /// This field is no longer used as splash screen functionality is now handled by SplashScreenManager.
-        /// </summary>
-        [System.Obsolete("No longer used. Splash screen functionality is now handled by SplashScreenManager.")]
-        [SerializeField] private VisualTreeAsset _splashScreenUXML;
-
         /// <summary>
         /// Main menu screen UXML asset
         /// </summary>
@@ -43,13 +34,6 @@ namespace UI
         /// Common USS asset
         /// </summary>
         [SerializeField] private StyleSheet _commonUSS;
-
-        /// <summary>
-        /// Splash screen USS asset - DEPRECATED
-        /// This field is no longer used as splash screen functionality is now handled by SplashScreenManager.
-        /// </summary>
-        [System.Obsolete("No longer used. Splash screen functionality is now handled by SplashScreenManager.")]
-        [SerializeField] private StyleSheet _splashScreenUSS;
 
         /// <summary>
         /// Main menu screen USS asset
@@ -83,38 +67,13 @@ namespace UI
             UIManager.Instance.gameObject.name = "UIManager";
 
             // Create screens
-            // Note: SplashScreen and LoadingScreen are now handled by SplashScreenManager and LoadingScreenManager
-            // CreateSplashScreen(); // Removed as it's now handled by SplashScreenManager
             CreateMainMenuScreen();
             CreateCharacterSelectionScreen();
             CreateGameModeSelectionScreen();
             CreateSettingsScreen();
-        }
 
-        /// <summary>
-        /// Start showing the main menu screen
-        /// </summary>
-        private void Start()
-        {
-            // Note: Splash screen is now handled by SplashScreenManager in GameBootstrap
-            // Show main menu screen instead
+            // Show main menu screen
             UIManager.Instance.ShowScreen<MainMenuScreen>(true);
-        }
-
-        /// <summary>
-        /// Create the splash screen - DEPRECATED
-        /// This method is kept for reference but is no longer used.
-        /// Splash screen functionality is now handled by SplashScreenManager and LoadingScreenManager.
-        /// </summary>
-        private void CreateSplashScreen()
-        {
-            // This method is deprecated and should not be called
-            Debug.LogWarning("CreateSplashScreen is deprecated. Use SplashScreenManager and LoadingScreenManager instead.");
-
-            // The old implementation has been removed as UI.Screens.SplashScreen no longer exists
-            // Splash screen functionality is now handled by:
-            // - Core.UI.SplashScreen.SplashScreenManager (for company and game logo splash screens)
-            // - Core.UI.Loading.LoadingScreenManager (for loading screen)
         }
 
         /// <summary>
