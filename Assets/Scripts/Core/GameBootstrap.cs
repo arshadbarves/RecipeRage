@@ -52,6 +52,7 @@ namespace Core
         [SerializeField] private GameObject _saveManagerPrefab;
         [SerializeField] private GameObject _audioManagerPrefab;
         [SerializeField] private GameObject _splashScreenManagerPrefab;
+        [SerializeField] private GameObject _loadingScreenManagerPrefab;
         [SerializeField] private AudioDatabase _audioDatabase;
 
         [Header("Splash Screen Settings")]
@@ -66,6 +67,7 @@ namespace Core
         private UIManager _uiManager;
         private InputManager _inputManager;
         private Core.UI.SplashScreen.SplashScreenManager _splashScreenManager;
+        private Core.UI.Loading.LoadingScreenManager _loadingScreenManager;
         private GameModeManager _gameModeManager;
         private CharacterManager _characterManager;
         private ScoreManager _scoreManager;
@@ -95,6 +97,7 @@ namespace Core
             if (_showSplashScreens)
             {
                 yield return StartCoroutine(InitializeSplashScreenManager());
+                yield return StartCoroutine(InitializeLoadingScreenManager());
 
                 // Show company splash screen
                 if (_splashScreenManager != null)
@@ -105,16 +108,19 @@ namespace Core
                     yield return _splashScreenManager.ShowGameLogoSplash().AsCoroutine();
 
                     // Show loading screen
-                    _splashScreenManager.ShowLoadingScreen();
+                    if (_loadingScreenManager != null)
+                    {
+                        _loadingScreenManager.ShowLoadingScreen();
+                    }
                 }
             }
 
             // Initialize save system first
             if (_initializeSaveSystem)
             {
-                if (_showSplashScreens && _splashScreenManager != null)
+                if (_showSplashScreens && _loadingScreenManager != null)
                 {
-                    _splashScreenManager.UpdateLoadingProgress("Initializing Save System...", 0.05f);
+                    _loadingScreenManager.UpdateLoadingProgress("Initializing Save System...", 0.05f);
                 }
 
                 yield return StartCoroutine(InitializeSaveSystem());
@@ -123,9 +129,9 @@ namespace Core
             // Initialize audio system early
             if (_initializeAudioSystem)
             {
-                if (_showSplashScreens && _splashScreenManager != null)
+                if (_showSplashScreens && _loadingScreenManager != null)
                 {
-                    _splashScreenManager.UpdateLoadingProgress("Initializing Audio System...", 0.1f);
+                    _loadingScreenManager.UpdateLoadingProgress("Initializing Audio System...", 0.1f);
                 }
 
                 yield return StartCoroutine(InitializeAudioSystem());
@@ -134,9 +140,9 @@ namespace Core
             // Initialize networking
             if (_initializeNetworking)
             {
-                if (_showSplashScreens && _splashScreenManager != null)
+                if (_showSplashScreens && _loadingScreenManager != null)
                 {
-                    _splashScreenManager.UpdateLoadingProgress("Initializing Networking System...", 0.15f);
+                    _loadingScreenManager.UpdateLoadingProgress("Initializing Networking System...", 0.15f);
                 }
 
                 yield return StartCoroutine(InitializeNetworking());
@@ -145,9 +151,9 @@ namespace Core
             // Initialize game state system
             if (_initializeGameState)
             {
-                if (_showSplashScreens && _splashScreenManager != null)
+                if (_showSplashScreens && _loadingScreenManager != null)
                 {
-                    _splashScreenManager.UpdateLoadingProgress("Initializing Game State System...", 0.25f);
+                    _loadingScreenManager.UpdateLoadingProgress("Initializing Game State System...", 0.25f);
                 }
 
                 yield return StartCoroutine(InitializeGameState());
@@ -156,9 +162,9 @@ namespace Core
             // Initialize UI system
             if (_initializeUI)
             {
-                if (_showSplashScreens && _splashScreenManager != null)
+                if (_showSplashScreens && _loadingScreenManager != null)
                 {
-                    _splashScreenManager.UpdateLoadingProgress("Initializing UI System...", 0.35f);
+                    _loadingScreenManager.UpdateLoadingProgress("Initializing UI System...", 0.35f);
                 }
 
                 yield return StartCoroutine(InitializeUI());
@@ -167,9 +173,9 @@ namespace Core
             // Initialize input system
             if (_initializeInput)
             {
-                if (_showSplashScreens && _splashScreenManager != null)
+                if (_showSplashScreens && _loadingScreenManager != null)
                 {
-                    _splashScreenManager.UpdateLoadingProgress("Initializing Input System...", 0.45f);
+                    _loadingScreenManager.UpdateLoadingProgress("Initializing Input System...", 0.45f);
                 }
 
                 yield return StartCoroutine(InitializeInput());
@@ -178,9 +184,9 @@ namespace Core
             // Initialize game mode system
             if (_initializeGameMode)
             {
-                if (_showSplashScreens && _splashScreenManager != null)
+                if (_showSplashScreens && _loadingScreenManager != null)
                 {
-                    _splashScreenManager.UpdateLoadingProgress("Initializing Game Mode System...", 0.55f);
+                    _loadingScreenManager.UpdateLoadingProgress("Initializing Game Mode System...", 0.55f);
                 }
 
                 yield return StartCoroutine(InitializeGameMode());
@@ -189,9 +195,9 @@ namespace Core
             // Initialize character system
             if (_initializeCharacters)
             {
-                if (_showSplashScreens && _splashScreenManager != null)
+                if (_showSplashScreens && _loadingScreenManager != null)
                 {
-                    _splashScreenManager.UpdateLoadingProgress("Initializing Character System...", 0.65f);
+                    _loadingScreenManager.UpdateLoadingProgress("Initializing Character System...", 0.65f);
                 }
 
                 yield return StartCoroutine(InitializeCharacters());
@@ -200,9 +206,9 @@ namespace Core
             // Initialize scoring system
             if (_initializeScoring)
             {
-                if (_showSplashScreens && _splashScreenManager != null)
+                if (_showSplashScreens && _loadingScreenManager != null)
                 {
-                    _splashScreenManager.UpdateLoadingProgress("Initializing Scoring System...", 0.75f);
+                    _loadingScreenManager.UpdateLoadingProgress("Initializing Scoring System...", 0.75f);
                 }
 
                 yield return StartCoroutine(InitializeScoring());
@@ -211,18 +217,18 @@ namespace Core
             // Initialize order system
             if (_initializeOrderSystem)
             {
-                if (_showSplashScreens && _splashScreenManager != null)
+                if (_showSplashScreens && _loadingScreenManager != null)
                 {
-                    _splashScreenManager.UpdateLoadingProgress("Initializing Order System...", 0.85f);
+                    _loadingScreenManager.UpdateLoadingProgress("Initializing Order System...", 0.85f);
                 }
 
                 yield return StartCoroutine(InitializeOrderSystem());
             }
 
             // Final loading progress
-            if (_showSplashScreens && _splashScreenManager != null)
+            if (_showSplashScreens && _loadingScreenManager != null)
             {
-                _splashScreenManager.UpdateLoadingProgress("Finalizing...", 0.95f);
+                _loadingScreenManager.UpdateLoadingProgress("Finalizing...", 0.95f);
             }
 
             // Set initial game state
@@ -232,9 +238,9 @@ namespace Core
             }
 
             // Hide loading screen if shown
-            if (_showSplashScreens && _splashScreenManager != null)
+            if (_showSplashScreens && _loadingScreenManager != null)
             {
-                yield return _splashScreenManager.HideLoadingScreen().AsCoroutine();
+                yield return _loadingScreenManager.HideLoadingScreen().AsCoroutine();
             }
 
             // Mark as initialized
@@ -592,6 +598,40 @@ namespace Core
             }
 
             Debug.Log("[GameBootstrap] Splash screen manager initialized.");
+        }
+
+        /// <summary>
+        /// Initialize the loading screen manager.
+        /// </summary>
+        private IEnumerator InitializeLoadingScreenManager()
+        {
+            Debug.Log("[GameBootstrap] Initializing loading screen manager...");
+
+            // Check if LoadingScreenManager already exists
+            _loadingScreenManager = Core.UI.Loading.LoadingScreenManager.Instance;
+
+            if (_loadingScreenManager == null && _loadingScreenManagerPrefab != null)
+            {
+                // Instantiate the loading screen manager prefab
+                var loadingScreenManagerObj = Instantiate(_loadingScreenManagerPrefab);
+                loadingScreenManagerObj.name = "LoadingScreenManager";
+
+                // Wait a frame for the singleton to initialize
+                yield return null;
+
+                _loadingScreenManager = Core.UI.Loading.LoadingScreenManager.Instance;
+            }
+            else if (_loadingScreenManager == null)
+            {
+                // Create a new GameObject for the loading screen manager
+                var loadingScreenManagerObj = new GameObject("LoadingScreenManager");
+                _loadingScreenManager = loadingScreenManagerObj.AddComponent<Core.UI.Loading.LoadingScreenManager>();
+
+                // Wait a frame for the singleton to initialize
+                yield return null;
+            }
+
+            Debug.Log("[GameBootstrap] Loading screen manager initialized.");
         }
 
         /// <summary>
