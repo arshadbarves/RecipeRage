@@ -13,11 +13,7 @@ using Core.Characters;
 using Core.GameFramework.State;
 using UI;
 using Unity.Netcode;
-using Core.UI.SplashScreen;
-using Core.UI.Loading;
-using Gameplay.Stations;
 using RecipeRage.Editor.UI;
-using RecipeRage.Editor.Scenes;
 
 namespace RecipeRage.Editor.Prefabs
 {
