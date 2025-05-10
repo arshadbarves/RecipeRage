@@ -12,6 +12,12 @@ using Core;
 using Core.Characters;
 using Core.GameFramework.State;
 using UI;
+using Unity.Netcode;
+using Core.UI.SplashScreen;
+using Core.UI.Loading;
+using Gameplay.Stations;
+using RecipeRage.Editor.UI;
+using RecipeRage.Editor.Scenes;
 
 namespace RecipeRage.Editor.Prefabs
 {
@@ -48,11 +54,24 @@ namespace RecipeRage.Editor.Prefabs
             // Create UI prefabs
             CreateAllUIPrefabs();
 
+            // Create player prefabs
+            CreatePlayerPrefab();
+
+            // Create station prefabs
+            CreateAllStationPrefabs();
+
+            // Create audio assets
+            CreateAudioDatabase();
+            CreateAudioMixer();
+
             // Create scriptable objects
             CreateAllScriptableObjects();
 
             // Set up UI resources
             SetupUIResources();
+
+            // Set up scenes
+            SetupAllScenes();
 
             Debug.Log("One-click setup completed successfully!");
 
@@ -72,7 +91,7 @@ namespace RecipeRage.Editor.Prefabs
         /// <summary>
         /// Creates all manager prefabs including the GameBootstrap prefab.
         /// </summary>
-        private static void CreateAllManagerPrefabs()
+        public static void CreateAllManagerPrefabs()
         {
             Debug.Log("Creating all manager prefabs...");
 
@@ -303,7 +322,7 @@ namespace RecipeRage.Editor.Prefabs
         {
             // Delegate to the specialized creator
             Debug.Log("Creating SplashScreenManager prefab...");
-            RecipeRage.Editor.UI.SplashScreenSetupWizard.CreateSplashScreenManagerPrefab();
+            SplashScreenSetupWizard.CreateSplashScreenManagerPrefab();
         }
 
         /// <summary>
@@ -313,13 +332,13 @@ namespace RecipeRage.Editor.Prefabs
         {
             // Delegate to the specialized creator
             Debug.Log("Creating LoadingScreenManager prefab...");
-            RecipeRage.Editor.UI.LoadingScreenManagerPrefabCreator.CreateLoadingScreenManagerPrefab();
+            LoadingScreenManagerPrefabCreator.CreateLoadingScreenManagerPrefab();
         }
 
         /// <summary>
         /// Creates all UI prefabs.
         /// </summary>
-        private static void CreateAllUIPrefabs()
+        public static void CreateAllUIPrefabs()
         {
             Debug.Log("Creating all UI prefabs...");
 
@@ -328,7 +347,7 @@ namespace RecipeRage.Editor.Prefabs
             CreateLoadingScreenManagerPrefab();
 
             // Call the UIPrefabCreator for other UI prefabs
-            RecipeRage.Editor.UI.UIPrefabCreator.CreateUIPrefabs();
+            UIPrefabCreator.CreateUIPrefabs();
 
             Debug.Log("All UI prefabs created successfully!");
         }
@@ -336,7 +355,7 @@ namespace RecipeRage.Editor.Prefabs
         /// <summary>
         /// Creates all scriptable objects.
         /// </summary>
-        private static void CreateAllScriptableObjects()
+        public static void CreateAllScriptableObjects()
         {
             Debug.Log("Creating all scriptable objects...");
 
@@ -359,7 +378,7 @@ namespace RecipeRage.Editor.Prefabs
             Debug.Log("Setting up UI resources...");
 
             // Call the UISetupUtility
-            RecipeRage.Editor.UI.UISetupUtility.SetupUIResources();
+            UISetupUtility.SetupUIResources();
 
             Debug.Log("UI resources set up successfully!");
         }
@@ -438,6 +457,120 @@ namespace RecipeRage.Editor.Prefabs
                 AssetDatabase.DeleteAsset(path);
                 Debug.Log($"Deleted existing prefab: {path}");
             }
+        }
+
+        /// <summary>
+        /// Creates the Player prefab.
+        /// </summary>
+        public static void CreatePlayerPrefab()
+        {
+            Debug.Log("Creating Player prefab...");
+
+            // Create player object
+            GameObject player = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            player.name = "Player";
+
+            // Add required components
+            PlayerController playerController = player.AddComponent<PlayerController>();
+            player.AddComponent<NetworkObject>();
+
+            // Add rigidbody
+            Rigidbody rigidbody = player.GetComponent<Rigidbody>();
+            if (rigidbody == null)
+            {
+                rigidbody = player.AddComponent<Rigidbody>();
+            }
+            rigidbody.constraints = RigidbodyConstraints.FreezeRotation;
+            rigidbody.collisionDetectionMode = CollisionDetectionMode.Continuous;
+
+            // Create model object
+            GameObject model = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            model.name = "Model";
+            model.transform.SetParent(player.transform);
+            model.transform.localPosition = new Vector3(0, 0, 0.3f);
+            model.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+
+            // Create item hold point
+            GameObject holdPoint = new GameObject("ItemHoldPoint");
+            holdPoint.transform.SetParent(player.transform);
+            holdPoint.transform.localPosition = new Vector3(0, 0.5f, 0.8f);
+
+            // Set references
+            SerializedObject serializedObject = new SerializedObject(playerController);
+            serializedObject.FindProperty("_modelTransform").objectReferenceValue = model.transform;
+            serializedObject.FindProperty("_itemHoldPoint").objectReferenceValue = holdPoint.transform;
+            serializedObject.ApplyModifiedProperties();
+
+            // Save the prefab
+            string playerPrefabPath = "Assets/Prefabs/Player/Player.prefab";
+            CreatePrefab(player, playerPrefabPath);
+
+            // Clean up the temporary GameObject
+            Object.DestroyImmediate(player);
+
+            Debug.Log("Player prefab created successfully!");
+        }
+
+        /// <summary>
+        /// Creates all station prefabs.
+        /// </summary>
+        public static void CreateAllStationPrefabs()
+        {
+            Debug.Log("Creating station prefabs...");
+
+            // Create a StationGenerator instance and generate stations
+            var stationGenerator = new StationGenerator();
+            stationGenerator.GenerateStations(STATIONS_PATH);
+
+            Debug.Log("Station prefabs created successfully!");
+        }
+
+        /// <summary>
+        /// Creates the audio database asset.
+        /// </summary>
+        private static void CreateAudioDatabase()
+        {
+            Debug.Log("Creating audio database...");
+
+            // Delegate to the specialized creator
+            Core.Audio.Editor.AudioDatabaseCreator.CreateAudioDatabase();
+
+            Debug.Log("Audio database created successfully!");
+        }
+
+        /// <summary>
+        /// Creates the audio mixer asset.
+        /// </summary>
+        private static void CreateAudioMixer()
+        {
+            Debug.Log("Creating audio mixer...");
+
+            // Delegate to the specialized creator
+            Core.Audio.Editor.AudioMixerCreator.CreateAudioMixer();
+
+            Debug.Log("Audio mixer created successfully!");
+        }
+
+        /// <summary>
+        /// Sets up all scenes for the game.
+        /// </summary>
+        public static void SetupAllScenes()
+        {
+            Debug.Log("Setting up scenes...");
+
+            // Create startup scene
+            StartupSceneGenerator.GenerateStartupScene();
+
+            // Create main menu scene
+            SceneSetupGenerator.GenerateMainMenuScene();
+
+            // Create game scene
+            SceneSetupGenerator.GenerateGameScene();
+
+            // Add scenes to build settings
+            RecipeRageSceneSetup.AddScenesToBuildSettings();
+
+            Debug.Log("Scenes set up successfully!");
         }
     }
 }

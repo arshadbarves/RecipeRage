@@ -138,47 +138,8 @@ namespace RecipeRage.Editor
         /// </summary>
         private void GenerateAll()
         {
-            // Create necessary directories
-            CreateDirectories();
-
-            // Generate in sequence
-            if (_generateIngredients)
-            {
-                GenerateIngredients();
-            }
-
-            if (_generateRecipes)
-            {
-                GenerateRecipes();
-            }
-
-            if (_generatePrefabs)
-            {
-                GeneratePrefabs();
-            }
-
-            if (_generateGameModes)
-            {
-                GenerateGameModes();
-            }
-
-            if (_generateCharacterClasses)
-            {
-                GenerateCharacterClasses();
-            }
-
-            if (_generateStations)
-            {
-                GenerateStations();
-            }
-
-            if (_setupScene)
-            {
-                SetupScene();
-            }
-
-            // Refresh the asset database
-            AssetDatabase.Refresh();
+            // Use the centralized PrefabCreationManager for one-click setup
+            RecipeRage.Editor.Prefabs.PrefabCreationManager.CreateAllGameAssets();
 
             Debug.Log("RecipeRage setup completed successfully!");
         }
@@ -221,7 +182,9 @@ namespace RecipeRage.Editor
         /// </summary>
         private void GenerateIngredients()
         {
-            _ingredientGenerator.GenerateIngredients(INGREDIENTS_PATH);
+            // Use the centralized PrefabCreationManager
+            Debug.Log("Using centralized PrefabCreationManager for ingredient generation...");
+            RecipeRage.Editor.Prefabs.PrefabCreationManager.CreateAllScriptableObjects();
         }
 
         /// <summary>
@@ -229,7 +192,9 @@ namespace RecipeRage.Editor
         /// </summary>
         private void GenerateRecipes()
         {
-            _recipeGenerator.GenerateRecipes(RECIPES_PATH, INGREDIENTS_PATH);
+            // Use the centralized PrefabCreationManager
+            Debug.Log("Using centralized PrefabCreationManager for recipe generation...");
+            RecipeRage.Editor.Prefabs.PrefabCreationManager.CreateAllScriptableObjects();
         }
 
         /// <summary>
@@ -237,7 +202,11 @@ namespace RecipeRage.Editor
         /// </summary>
         private void GeneratePrefabs()
         {
-            _prefabGenerator.GeneratePrefabs(PREFABS_PATH, INGREDIENTS_PATH);
+            // Use the centralized PrefabCreationManager
+            Debug.Log("Using centralized PrefabCreationManager for prefab generation...");
+            RecipeRage.Editor.Prefabs.PrefabCreationManager.CreateAllManagerPrefabs();
+            RecipeRage.Editor.Prefabs.PrefabCreationManager.CreateAllUIPrefabs();
+            RecipeRage.Editor.Prefabs.PrefabCreationManager.CreatePlayerPrefab();
         }
 
         /// <summary>
@@ -245,7 +214,9 @@ namespace RecipeRage.Editor
         /// </summary>
         private void GenerateGameModes()
         {
-            _gameModeGenerator.GenerateGameModes(GAME_MODES_PATH);
+            // Use the centralized PrefabCreationManager
+            Debug.Log("Using centralized PrefabCreationManager for game mode generation...");
+            RecipeRage.Editor.Prefabs.PrefabCreationManager.CreateAllScriptableObjects();
         }
 
         /// <summary>
@@ -253,7 +224,9 @@ namespace RecipeRage.Editor
         /// </summary>
         private void GenerateCharacterClasses()
         {
-            _characterClassGenerator.GenerateCharacterClasses(CHARACTER_CLASSES_PATH);
+            // Use the centralized PrefabCreationManager
+            Debug.Log("Using centralized PrefabCreationManager for character class generation...");
+            RecipeRage.Editor.Prefabs.PrefabCreationManager.CreateAllScriptableObjects();
         }
 
         /// <summary>
@@ -261,7 +234,9 @@ namespace RecipeRage.Editor
         /// </summary>
         private void GenerateStations()
         {
-            _stationGenerator.GenerateStations(STATIONS_PATH);
+            // Use the centralized PrefabCreationManager
+            Debug.Log("Using centralized PrefabCreationManager for station generation...");
+            RecipeRage.Editor.Prefabs.PrefabCreationManager.CreateAllStationPrefabs();
         }
 
         /// <summary>
@@ -269,14 +244,9 @@ namespace RecipeRage.Editor
         /// </summary>
         private void SetupScene()
         {
-            // Generate game modes first if they haven't been generated yet
-            if (_generateGameModes)
-            {
-                GenerateGameModes();
-            }
-
-            // Setup the scene with references to game modes, character classes, and stations
-            _sceneSetupGenerator.SetupScene(SCENES_PATH, PREFABS_PATH, GAME_MODES_PATH, CHARACTER_CLASSES_PATH, STATIONS_PATH);
+            // Use the centralized PrefabCreationManager
+            Debug.Log("Using centralized PrefabCreationManager for scene setup...");
+            RecipeRage.Editor.Prefabs.PrefabCreationManager.SetupAllScenes();
         }
     }
 }
