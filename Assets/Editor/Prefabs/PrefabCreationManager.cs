@@ -551,7 +551,6 @@ namespace RecipeRage.Editor.Prefabs
         /// <summary>
         /// Sets up all scenes for the game and adds them to build settings.
         /// </summary>
-        [MenuItem("RecipeRage/Create/All Scenes", false, 1)]
         public static void SetupAllScenes()
         {
             Debug.Log("Setting up scenes...");
@@ -574,7 +573,6 @@ namespace RecipeRage.Editor.Prefabs
         /// <summary>
         /// Adds all scenes to the build settings in the correct order.
         /// </summary>
-        // No separate menu item needed as this is called from SetupAllScenes
         private static void AddScenesToBuildSettings()
         {
             Debug.Log("Adding scenes to build settings...");
