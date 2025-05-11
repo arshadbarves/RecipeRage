@@ -114,7 +114,7 @@ namespace RecipeRage.Editor
         public static void CreateSplashAndLoadingScreenPrefabs()
         {
             Debug.Log("Creating SplashScreenManager prefab...");
-            SplashScreenSetupWizard.CreateSplashScreenManagerPrefab();
+            SplashScreenManagerPrefabCreator.CreateSplashScreenManagerPrefab();
 
             Debug.Log("Creating LoadingScreenManager prefab...");
             LoadingScreenManagerPrefabCreator.CreateLoadingScreenManagerPrefab();

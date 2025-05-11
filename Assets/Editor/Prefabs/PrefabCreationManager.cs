@@ -319,7 +319,7 @@ namespace RecipeRage.Editor.Prefabs
         {
             // Delegate to the specialized creator
             Debug.Log("Creating SplashScreenManager prefab...");
-            SplashScreenSetupWizard.CreateSplashScreenManagerPrefab();
+            SplashScreenManagerPrefabCreator.CreateSplashScreenManagerPrefab();
         }
 
         /// <summary>
