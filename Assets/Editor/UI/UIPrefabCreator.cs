@@ -299,7 +299,7 @@ namespace RecipeRage.Editor.UI
             UIInitializer initializer = prefab.GetComponent<UIInitializer>();
 
             // Load UXML assets
-            VisualTreeAsset splashScreenUXML = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/UI/UXML/SplashScreen.uxml");
+            // Note: SplashScreen is handled by SplashScreenManager, not UIInitializer
             VisualTreeAsset mainMenuScreenUXML = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/UI/UXML/MainMenuUI.uxml");
             VisualTreeAsset characterSelectionScreenUXML = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/UI/UXML/CharacterSelectionScreen.uxml");
             VisualTreeAsset gameModeSelectionScreenUXML = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/UI/UXML/GameModeSelectionScreen.uxml");
@@ -307,7 +307,6 @@ namespace RecipeRage.Editor.UI
 
             // Load USS assets
             StyleSheet commonUSS = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/UI/USS/Common.uss");
-            StyleSheet splashScreenUSS = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/UI/USS/SplashScreen.uss");
             StyleSheet mainMenuScreenUSS = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/UI/USS/MainMenuUI.uss");
             StyleSheet characterSelectionScreenUSS = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/UI/USS/CharacterSelectionScreen.uss");
             StyleSheet gameModeSelectionScreenUSS = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/UI/USS/GameModeSelectionScreen.uss");
@@ -317,7 +316,6 @@ namespace RecipeRage.Editor.UI
             SerializedObject serializedObject = new SerializedObject(initializer);
 
             // Set UXML references
-            serializedObject.FindProperty("_splashScreenUXML").objectReferenceValue = splashScreenUXML;
             serializedObject.FindProperty("_mainMenuScreenUXML").objectReferenceValue = mainMenuScreenUXML;
             serializedObject.FindProperty("_characterSelectionScreenUXML").objectReferenceValue = characterSelectionScreenUXML;
             serializedObject.FindProperty("_gameModeSelectionScreenUXML").objectReferenceValue = gameModeSelectionScreenUXML;
@@ -325,7 +323,6 @@ namespace RecipeRage.Editor.UI
 
             // Set USS references
             serializedObject.FindProperty("_commonUSS").objectReferenceValue = commonUSS;
-            serializedObject.FindProperty("_splashScreenUSS").objectReferenceValue = splashScreenUSS;
             serializedObject.FindProperty("_mainMenuScreenUSS").objectReferenceValue = mainMenuScreenUSS;
             serializedObject.FindProperty("_characterSelectionScreenUSS").objectReferenceValue = characterSelectionScreenUSS;
             serializedObject.FindProperty("_gameModeSelectionScreenUSS").objectReferenceValue = gameModeSelectionScreenUSS;
