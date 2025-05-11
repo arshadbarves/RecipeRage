@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 using System.IO;
+using System.Collections.Generic;
 using Core.Audio;
 using Core.SaveSystem;
 using Core.GameModes;
@@ -14,6 +15,7 @@ using Core.GameFramework.State;
 using UI;
 using Unity.Netcode;
 using RecipeRage.Editor.UI;
+using RecipeRage.Editor.Scenes;
 
 namespace RecipeRage.Editor.Prefabs
 {
@@ -565,9 +567,62 @@ namespace RecipeRage.Editor.Prefabs
             SceneSetupGenerator.GenerateGameScene();
 
             // Add scenes to build settings
-            RecipeRageSceneSetup.AddScenesToBuildSettings();
+            AddScenesToBuildSettings();
 
             Debug.Log("Scenes set up successfully!");
+        }
+
+        /// <summary>
+        /// Adds all scenes to the build settings in the correct order.
+        /// </summary>
+        [MenuItem("RecipeRage/Create/Add Scenes to Build Settings", false, 2)]
+        public static void AddScenesToBuildSettings()
+        {
+            Debug.Log("Adding scenes to build settings...");
+
+            try
+            {
+                // Define the scenes to add in the correct order
+                string[] scenePaths = new string[]
+                {
+                    "Assets/Scenes/Startup.unity",
+                    "Assets/Scenes/MainMenu.unity",
+                    "Assets/Scenes/Game.unity"
+                };
+
+                // Create new scene list
+                var sceneList = new List<EditorBuildSettingsScene>();
+
+                // Add each scene
+                foreach (string scenePath in scenePaths)
+                {
+                    if (File.Exists(scenePath))
+                    {
+                        sceneList.Add(new EditorBuildSettingsScene(scenePath, true));
+                        Debug.Log($"Added scene to build settings: {scenePath}");
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Scene not found: {scenePath}");
+                    }
+                }
+
+                // Set the build settings
+                EditorBuildSettings.scenes = sceneList.ToArray();
+
+                Debug.Log("Scenes added to build settings successfully!");
+                EditorUtility.DisplayDialog("Build Settings Updated",
+                    "The following scenes have been added to the build settings in order:\n\n" +
+                    "1. Startup.unity\n" +
+                    "2. MainMenu.unity\n" +
+                    "3. Game.unity", "OK");
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"Error adding scenes to build settings: {ex.Message}\n{ex.StackTrace}");
+                EditorUtility.DisplayDialog("Build Settings Error",
+                    $"An error occurred while adding scenes to build settings:\n\n{ex.Message}", "OK");
+            }
         }
     }
 }
