@@ -15,7 +15,6 @@ using Core.GameFramework.State;
 using UI;
 using Unity.Netcode;
 using RecipeRage.Editor.UI;
-using RecipeRage.Editor.Scenes;
 
 namespace RecipeRage.Editor.Prefabs
 {
@@ -550,7 +549,7 @@ namespace RecipeRage.Editor.Prefabs
         }
 
         /// <summary>
-        /// Sets up all scenes for the game.
+        /// Sets up all scenes for the game and adds them to build settings.
         /// </summary>
         [MenuItem("RecipeRage/Create/All Scenes", false, 1)]
         public static void SetupAllScenes()
@@ -569,14 +568,14 @@ namespace RecipeRage.Editor.Prefabs
             // Add scenes to build settings
             AddScenesToBuildSettings();
 
-            Debug.Log("Scenes set up successfully!");
+            Debug.Log("Scenes set up and added to build settings successfully!");
         }
 
         /// <summary>
         /// Adds all scenes to the build settings in the correct order.
         /// </summary>
-        [MenuItem("RecipeRage/Create/Add Scenes to Build Settings", false, 2)]
-        public static void AddScenesToBuildSettings()
+        // No separate menu item needed as this is called from SetupAllScenes
+        private static void AddScenesToBuildSettings()
         {
             Debug.Log("Adding scenes to build settings...");
 
