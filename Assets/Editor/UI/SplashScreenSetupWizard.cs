@@ -38,14 +38,7 @@ namespace RecipeRage.Editor.UI
             window.minSize = new Vector2(400, 500);
         }
 
-        /// <summary>
-        /// Creates a SplashScreenManager prefab.
-        /// This is a static method that can be called from other scripts.
-        /// </summary>
-        public static void CreateSplashScreenManagerPrefab()
-        {
-            RecipeRage.Editor.UI.SplashScreenManagerPrefabCreator.CreateSplashScreenManagerPrefab();
-        }
+        // Removed redundant static method - call SplashScreenManagerPrefabCreator directly
 
         private void OnGUI()
         {
@@ -86,7 +79,7 @@ namespace RecipeRage.Editor.UI
 
             if (GUILayout.Button("Create SplashScreenManager Prefab"))
             {
-                CreateSplashScreenManagerPrefab();
+                SplashScreenManagerPrefabCreator.CreateSplashScreenManagerPrefab();
             }
 
             if (GUILayout.Button("Create Test Scene"))
@@ -100,7 +93,7 @@ namespace RecipeRage.Editor.UI
             {
                 CreateDirectories();
                 SaveTextures();
-                CreateSplashScreenManagerPrefab();
+                SplashScreenManagerPrefabCreator.CreateSplashScreenManagerPrefab();
                 CreateTestScene();
 
                 EditorUtility.DisplayDialog("Setup Complete",
