@@ -494,8 +494,28 @@ namespace RecipeRage.Editor.Prefabs
 
             // Set references
             SerializedObject serializedObject = new SerializedObject(playerController);
-            serializedObject.FindProperty("_modelTransform").objectReferenceValue = model.transform;
-            serializedObject.FindProperty("_itemHoldPoint").objectReferenceValue = holdPoint.transform;
+
+            // Try to set the model transform reference if it exists
+            var modelTransformProperty = serializedObject.FindProperty("_modelTransform");
+            if (modelTransformProperty != null)
+            {
+                modelTransformProperty.objectReferenceValue = model.transform;
+                Debug.Log("Set player model transform reference successfully");
+            }
+
+            // Set the hold point reference (the property is named "_holdPoint" in PlayerController)
+            var holdPointProperty = serializedObject.FindProperty("_holdPoint");
+            if (holdPointProperty != null)
+            {
+                holdPointProperty.objectReferenceValue = holdPoint.transform;
+                Debug.Log("Set player hold point reference successfully");
+            }
+            else
+            {
+                Debug.LogWarning("Could not find _holdPoint property in PlayerController");
+            }
+
+            // Apply all property modifications
             serializedObject.ApplyModifiedProperties();
 
             // Save the prefab
