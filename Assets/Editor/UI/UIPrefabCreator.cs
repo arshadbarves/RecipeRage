@@ -12,7 +12,6 @@ namespace RecipeRage.Editor.UI
     /// </summary>
     public class UIPrefabCreator : EditorWindow
     {
-        [MenuItem("RecipeRage/Create UI Prefabs")]
         public static void CreateUIPrefabs()
         {
             // Create directories if they don't exist
