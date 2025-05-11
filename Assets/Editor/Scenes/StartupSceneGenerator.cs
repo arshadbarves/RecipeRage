@@ -11,7 +11,7 @@ namespace RecipeRage.Editor
     /// </summary>
     public class StartupSceneGenerator
     {
-        [MenuItem("RecipeRage/Setup/Generate Startup Scene")]
+        // Menu item removed to avoid duplication with PrefabCreationManager
         public static void GenerateStartupScene()
         {
             Debug.Log("GenerateStartupScene: Starting...");
@@ -53,41 +53,41 @@ namespace RecipeRage.Editor
 
                 // Set references in GameBootstrap
                 var serializedObject = new SerializedObject(gameBootstrap);
-                
+
                 // Set prefab references
                 if (splashScreenManagerPrefab != null)
                     serializedObject.FindProperty("_splashScreenManagerPrefab").objectReferenceValue = splashScreenManagerPrefab;
-                
+
                 if (loadingScreenManagerPrefab != null)
                     serializedObject.FindProperty("_loadingScreenManagerPrefab").objectReferenceValue = loadingScreenManagerPrefab;
-                
+
                 if (gameStateManagerPrefab != null)
                     serializedObject.FindProperty("_gameStateManagerPrefab").objectReferenceValue = gameStateManagerPrefab;
-                
+
                 if (uiManagerPrefab != null)
                     serializedObject.FindProperty("_uiManagerPrefab").objectReferenceValue = uiManagerPrefab;
-                
+
                 if (inputManagerPrefab != null)
                     serializedObject.FindProperty("_inputManagerPrefab").objectReferenceValue = inputManagerPrefab;
-                
+
                 if (gameModeManagerPrefab != null)
                     serializedObject.FindProperty("_gameModeManagerPrefab").objectReferenceValue = gameModeManagerPrefab;
-                
+
                 if (characterManagerPrefab != null)
                     serializedObject.FindProperty("_characterManagerPrefab").objectReferenceValue = characterManagerPrefab;
-                
+
                 if (scoreManagerPrefab != null)
                     serializedObject.FindProperty("_scoreManagerPrefab").objectReferenceValue = scoreManagerPrefab;
-                
+
                 if (orderManagerPrefab != null)
                     serializedObject.FindProperty("_orderManagerPrefab").objectReferenceValue = orderManagerPrefab;
-                
+
                 if (saveManagerPrefab != null)
                     serializedObject.FindProperty("_saveManagerPrefab").objectReferenceValue = saveManagerPrefab;
-                
+
                 if (audioManagerPrefab != null)
                     serializedObject.FindProperty("_audioManagerPrefab").objectReferenceValue = audioManagerPrefab;
-                
+
                 if (networkManagerPrefab != null)
                     serializedObject.FindProperty("_networkManagerPrefab").objectReferenceValue = networkManagerPrefab;
 
@@ -110,27 +110,27 @@ namespace RecipeRage.Editor
             }
         }
 
-        [MenuItem("RecipeRage/Setup/Create Splash and Loading Screen Prefabs")]
+        // Menu item removed to avoid duplication with PrefabCreationManager
         public static void CreateSplashAndLoadingScreenPrefabs()
         {
             Debug.Log("Creating SplashScreenManager prefab...");
             SplashScreenSetupWizard.CreateSplashScreenManagerPrefab();
-            
+
             Debug.Log("Creating LoadingScreenManager prefab...");
             LoadingScreenManagerPrefabCreator.CreateLoadingScreenManagerPrefab();
-            
+
             Debug.Log("Splash and Loading Screen prefabs created successfully!");
         }
 
-        [MenuItem("RecipeRage/Setup/Setup Complete Startup")]
+        // Menu item removed to avoid duplication with PrefabCreationManager
         public static void SetupCompleteStartup()
         {
             // Create the prefabs first
             CreateSplashAndLoadingScreenPrefabs();
-            
+
             // Then generate the scene
             GenerateStartupScene();
-            
+
             Debug.Log("Complete startup setup finished successfully!");
         }
     }
