@@ -5,13 +5,15 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: Assets/Samples/Epic Online Services Plugin for Unity/4.0.0/Standard Pack
-      _ EOS Plugin for Unity Samples/Scenes/AuthAndFriends.unity
-    guid: 99c9720ab356a0642a771bea13969a05
-  - enabled: 0
-    path: Assets/Scenes/Prototype.unity
-    guid: ccd64c9b63f33426a9a699e6527b63ba
+  - enabled: 1
+    path: Assets/Scenes/Startup.unity
+    guid: f216f1fb7c8324e5bbe0af8f9acdd51c
+  - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+    guid: 1819f38dafbc7482fbe829bc4f85fa57
+  - enabled: 1
+    path: Assets/Scenes/Game.unity
+    guid: c1ff53bd56b2345fa831c4ddee15dd92
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: acadb39dda0c644fd8624425e21e877f,
       type: 2}

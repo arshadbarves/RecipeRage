@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Threading.Tasks;
 using Core.Patterns;
 using Core.UI.Animation;
 using UnityEngine;
@@ -49,6 +48,7 @@ namespace Core.UI.Loading
 
         private float _loadingStartTime;
         private Coroutine _tipsCoroutine;
+        private bool _isVisible;
 
         /// <summary>
         /// Initialize the loading screen manager.
@@ -60,8 +60,12 @@ namespace Core.UI.Loading
             // Initialize UI elements
             InitializeUIElements();
 
-            // Hide loading screen initially
-            HideLoadingScreen();
+            // Hide loading screen initially (without showing it first)
+            _isVisible = false;
+            if (_loadingScreenDocument != null)
+            {
+                _loadingScreenDocument.enabled = false;
+            }
 
             Debug.Log("[LoadingScreenManager] Initialized");
         }
@@ -71,42 +75,35 @@ namespace Core.UI.Loading
         /// </summary>
         private void InitializeUIElements()
         {
-            try
+            // Loading screen elements
+            if (_loadingScreenDocument != null)
             {
-                // Loading screen elements
-                if (_loadingScreenDocument != null)
+                _loadingScreenRoot = _loadingScreenDocument.rootVisualElement.Q("loading-screen-root");
+                if (_loadingScreenRoot == null)
                 {
-                    _loadingScreenRoot = _loadingScreenDocument.rootVisualElement.Q("loading-screen-root");
-                    if (_loadingScreenRoot == null)
+                    Debug.LogError("[LoadingScreenManager] Could not find loading-screen-root element");
+                }
+                else
+                {
+                    _loadingProgressBar = _loadingScreenRoot.Q<ProgressBar>("loading-progress-bar");
+                    _loadingStatusLabel = _loadingScreenRoot.Q<Label>("loading-status-label");
+                    _loadingTipLabel = _loadingScreenRoot.Q<Label>("loading-tip-label");
+
+                    if (_loadingProgressBar == null)
                     {
-                        Debug.LogError("[LoadingScreenManager] Could not find loading-screen-root element");
+                        Debug.LogError("[LoadingScreenManager] Could not find loading-progress-bar element");
                     }
-                    else
+
+                    if (_loadingStatusLabel == null)
                     {
-                        _loadingProgressBar = _loadingScreenRoot.Q<ProgressBar>("loading-progress-bar");
-                        _loadingStatusLabel = _loadingScreenRoot.Q<Label>("loading-status-label");
-                        _loadingTipLabel = _loadingScreenRoot.Q<Label>("loading-tip-label");
+                        Debug.LogError("[LoadingScreenManager] Could not find loading-status-label element");
+                    }
 
-                        if (_loadingProgressBar == null)
-                        {
-                            Debug.LogError("[LoadingScreenManager] Could not find loading-progress-bar element");
-                        }
-
-                        if (_loadingStatusLabel == null)
-                        {
-                            Debug.LogError("[LoadingScreenManager] Could not find loading-status-label element");
-                        }
-
-                        if (_loadingTipLabel == null)
-                        {
-                            Debug.LogError("[LoadingScreenManager] Could not find loading-tip-label element");
-                        }
+                    if (_loadingTipLabel == null)
+                    {
+                        Debug.LogError("[LoadingScreenManager] Could not find loading-tip-label element");
                     }
                 }
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"[LoadingScreenManager] Error initializing UI elements: {e.Message}");
             }
         }
 
@@ -115,129 +112,82 @@ namespace Core.UI.Loading
         /// </summary>
         public void ShowLoadingScreen()
         {
-            try
+            if (_loadingScreenDocument == null || _loadingScreenRoot == null)
             {
-                if (_loadingScreenDocument == null || _loadingScreenRoot == null)
-                {
-                    Debug.LogWarning("[LoadingScreenManager] Loading screen not set up");
-                    return;
-                }
-
-                // Enable the document
-                _loadingScreenDocument.enabled = true;
-
-                // Reset progress bar
-                if (_loadingProgressBar != null)
-                {
-                    _loadingProgressBar.value = 0f;
-                }
-
-                // Set initial status
-                if (_loadingStatusLabel != null)
-                {
-                    _loadingStatusLabel.text = "Initializing...";
-                }
-
-                // Start cycling tips
-                StartCyclingTips();
-
-                // Record start time for minimum duration
-                _loadingStartTime = Time.time;
-
-                // Fade in the loading screen
-                _loadingScreenRoot.style.opacity = 0;
-                UIAnimationSystem.Instance.Fade(_loadingScreenRoot, 0, 1, _fadeTransitionDuration, 0, UIEasing.EaseOutCubic);
-
-                Debug.Log("[LoadingScreenManager] Loading screen shown");
+                Debug.LogWarning("[LoadingScreenManager] Loading screen not set up");
+                return;
             }
-            catch (Exception e)
+
+            // Mark as visible
+            _isVisible = true;
+
+            // Enable the document
+            _loadingScreenDocument.enabled = true;
+
+            // Reset progress bar
+            if (_loadingProgressBar != null)
             {
-                Debug.LogError($"[LoadingScreenManager] Error showing loading screen: {e.Message}");
+                _loadingProgressBar.value = 0f;
             }
+
+            // Set initial status
+            if (_loadingStatusLabel != null)
+            {
+                _loadingStatusLabel.text = "Initializing...";
+            }
+
+            // Start cycling tips
+            StartCyclingTips();
+
+            // Record start time for minimum duration
+            _loadingStartTime = Time.time;
+
+            // Fade in the loading screen using Unity's native system
+            _loadingScreenRoot.style.opacity = 0;
+            UnityNativeUIAnimationSystem.AnimateOpacity(_loadingScreenRoot, 0, 1, 
+                Mathf.RoundToInt(_fadeTransitionDuration * 1000), 0);
+
+            Debug.Log("[LoadingScreenManager] Loading screen shown");
         }
 
         /// <summary>
         /// Hide the loading screen.
         /// </summary>
-        public Task HideLoadingScreen()
+        public void HideLoadingScreen()
         {
-            var tcs = new TaskCompletionSource<bool>();
-
-            try
+            if (_loadingScreenDocument == null || _loadingScreenRoot == null || !_isVisible)
             {
-                if (_loadingScreenDocument == null || _loadingScreenRoot == null)
-                {
-                    Debug.LogWarning("[LoadingScreenManager] Loading screen not set up");
-                    tcs.SetResult(false);
-                    return tcs.Task;
-                }
-
-                // Stop cycling tips
-                StopCyclingTips();
-
-                // Check if we need to wait for minimum duration
-                float elapsedTime = Time.time - _loadingStartTime;
-                float remainingTime = Mathf.Max(0, _minLoadingScreenDuration - elapsedTime);
-
-                // Wait for minimum duration and then hide
-                StartCoroutine(HideLoadingScreenAfterDelay(remainingTime, tcs));
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"[LoadingScreenManager] Error hiding loading screen: {e.Message}");
-                tcs.SetException(e);
+                Debug.LogWarning("[LoadingScreenManager] Cannot hide loading screen - not visible or not set up");
+                return;
             }
 
-            return tcs.Task;
-        }
+            // Stop cycling tips
+            StopCyclingTips();
 
-        /// <summary>
-        /// Hide the loading screen after a delay.
-        /// </summary>
-        private IEnumerator HideLoadingScreenAfterDelay(float delay, TaskCompletionSource<bool> tcs)
-        {
-            // Wait for the delay
-            if (delay > 0)
-            {
-                yield return new WaitForSeconds(delay);
-            }
+            // Calculate minimum duration delay
+            float elapsedTime = Time.time - _loadingStartTime;
+            float remainingTime = Mathf.Max(0, _minLoadingScreenDuration - elapsedTime);
+            int delayMs = Mathf.RoundToInt(remainingTime * 1000);
 
-            // Set progress to 100% for visual satisfaction using the enhanced animation system
+            Debug.Log($"[LoadingScreenManager] Hiding loading screen - elapsed: {elapsedTime:F2}s, remaining: {remainingTime:F2}s, delay: {delayMs}ms");
+
+            // Set progress to 100% first, then fade out
             if (_loadingProgressBar != null)
             {
-                // Get the current progress value
-                float startValue = _loadingProgressBar.value;
-                
-                // Create a task completion source to wait for the animation to complete
-                TaskCompletionSource<bool> animationTask = new TaskCompletionSource<bool>();
-                
-                // Start the animation in a separate coroutine
-                StartCoroutine(AnimateProgressBarValue(startValue, 1.0f, 0.5f, Core.UI.Animation.UIEasing.EaseOutCubic, animationTask));
-                
-                // Wait for the animation to complete outside the try-catch
-                while (!animationTask.Task.IsCompleted)
-                {
-                    yield return null;
-                }
+                _loadingProgressBar.value = 1.0f;
             }
 
-            // Fade out the loading screen
-            UIAnimationSystem.Instance.Fade(_loadingScreenRoot, 1, 0, _fadeTransitionDuration, 0, UIEasing.EaseInCubic, () =>
-            {
-                try
+            // Fade out with minimum duration delay
+            UnityNativeUIAnimationSystem.AnimateOpacity(_loadingScreenRoot, 1, 0, 
+                Mathf.RoundToInt(_fadeTransitionDuration * 1000), delayMs, 
+                UnityNativeUIAnimationSystem.EasingCurve.EaseOut, () =>
                 {
-                    // Disable the document
+                    Debug.Log("[LoadingScreenManager] Animation completed - hiding loading screen");
+                    _isVisible = false;
                     _loadingScreenDocument.enabled = false;
-
-                    Debug.Log("[LoadingScreenManager] Loading screen hidden");
-                    tcs.SetResult(true);
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError($"[LoadingScreenManager] Error in loading screen fade completion: {e.Message}");
-                    tcs.SetException(e);
-                }
-            });
+                    OnLoadingComplete?.Invoke();
+                    Debug.Log("[LoadingScreenManager] Loading screen hidden and event fired");
+                });
         }
 
         /// <summary>
@@ -247,21 +197,14 @@ namespace Core.UI.Loading
         /// <param name="progress">The progress value (0-1)</param>
         public void UpdateLoadingProgress(string status, float progress)
         {
-            try
+            if (_loadingStatusLabel != null)
             {
-                if (_loadingStatusLabel != null)
-                {
-                    _loadingStatusLabel.text = status;
-                }
-
-                if (_loadingProgressBar != null)
-                {
-                    _loadingProgressBar.value = progress;
-                }
+                _loadingStatusLabel.text = status;
             }
-            catch (Exception e)
+
+            if (_loadingProgressBar != null)
             {
-                Debug.LogError($"[LoadingScreenManager] Error updating loading progress: {e.Message}");
+                _loadingProgressBar.value = progress;
             }
         }
 
@@ -304,14 +247,7 @@ namespace Core.UI.Loading
                 // Set the tip
                 if (_loadingTipLabel != null)
                 {
-                    try
-                    {
-                        _loadingTipLabel.text = _loadingTips[tipIndex];
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.LogError($"[LoadingScreenManager] Error setting tip: {e.Message}");
-                    }
+                    _loadingTipLabel.text = _loadingTips[tipIndex];
                 }
 
                 // Wait for the duration
@@ -323,76 +259,8 @@ namespace Core.UI.Loading
         }
         
         /// <summary>
-        /// Animate the progress bar value from start to end
+        /// Event triggered when loading screen completes
         /// </summary>
-        private IEnumerator AnimateProgressBarValue(float startValue, float endValue, float duration, 
-            Core.UI.Animation.EasingFunction easing, TaskCompletionSource<bool> completionSource)
-        {
-            float startTime = Time.time;
-            float endTime = startTime + duration;
-            bool isRunning = true;
-            
-            while (isRunning && Time.time < endTime)
-            {
-                try
-                {
-                    float elapsed = Time.time - startTime;
-                    float normalizedTime = Mathf.Clamp01(elapsed / duration);
-
-                    // Apply easing if provided
-                    if (easing != null)
-                    {
-                        normalizedTime = easing(normalizedTime);
-                    }
-
-                    // Interpolate value
-                    float currentValue = Mathf.Lerp(startValue, endValue, normalizedTime);
-
-                    // Update progress bar
-                    if (_loadingProgressBar != null)
-                    {
-                        _loadingProgressBar.value = currentValue;
-                    }
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError($"[LoadingScreenManager] Error in progress bar animation: {e.Message}");
-                    isRunning = false;
-                    
-                    // Try to set the final value even if there was an error
-                    try
-                    {
-                        if (_loadingProgressBar != null)
-                        {
-                            _loadingProgressBar.value = endValue;
-                        }
-                    }
-                    catch { }
-                    
-                    // Signal completion with error
-                    completionSource.SetException(e);
-                    yield break;
-                }
-                
-                yield return null;
-            }
-            
-            try
-            {
-                // Ensure final value is set
-                if (_loadingProgressBar != null)
-                {
-                    _loadingProgressBar.value = endValue;
-                }
-                
-                // Signal completion
-                completionSource.SetResult(true);
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"[LoadingScreenManager] Error setting final progress value: {e.Message}");
-                completionSource.SetException(e);
-            }
-        }
+        public event Action OnLoadingComplete;
     }
 }

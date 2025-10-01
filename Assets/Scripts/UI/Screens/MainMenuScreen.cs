@@ -300,73 +300,65 @@ namespace UI.Screens
             passProgress.style.opacity = 0;
 
             // Animate top bar
-            UIAnimationSystem.Instance.Animate(
+            UnityNativeUIAnimationSystem.Animate(
                 topBar,
-                UIAnimationSystem.AnimationType.FadeIn,
-                0.5f,
-                0.2f,
-                UIEasing.EaseOutCubic
+                UnityNativeUIAnimationSystem.AnimationType.FadeIn,
+                500,
+                200
             );
 
             // Animate middle content
-            UIAnimationSystem.Instance.Animate(
+            UnityNativeUIAnimationSystem.Animate(
                 middleContent,
-                UIAnimationSystem.AnimationType.FadeIn,
-                0.5f,
-                0.4f,
-                UIEasing.EaseOutCubic
+                UnityNativeUIAnimationSystem.AnimationType.FadeIn,
+                500,
+                400
             );
 
             // Animate bottom navigation
-            UIAnimationSystem.Instance.Animate(
+            UnityNativeUIAnimationSystem.Animate(
                 bottomNavigation,
-                UIAnimationSystem.AnimationType.FadeIn,
-                0.5f,
-                0.6f,
-                UIEasing.EaseOutCubic
+                UnityNativeUIAnimationSystem.AnimationType.FadeIn,
+                500,
+                600
             );
 
             // Animate pass progress
-            UIAnimationSystem.Instance.Animate(
+            UnityNativeUIAnimationSystem.Animate(
                 passProgress,
-                UIAnimationSystem.AnimationType.FadeIn,
-                0.5f,
-                0.8f,
-                UIEasing.EaseOutCubic
+                UnityNativeUIAnimationSystem.AnimationType.FadeIn,
+                500,
+                800
             );
 
             // Animate characters
-            UIAnimationSystem.Instance.Animate(
+            UnityNativeUIAnimationSystem.Animate(
                 _character1,
-                UIAnimationSystem.AnimationType.ScaleIn,
-                0.5f,
-                0.5f,
-                UIEasing.EaseOutBack
+                UnityNativeUIAnimationSystem.AnimationType.ScaleIn,
+                500,
+                500
             );
 
-            UIAnimationSystem.Instance.Animate(
+            UnityNativeUIAnimationSystem.Animate(
                 _character2,
-                UIAnimationSystem.AnimationType.ScaleIn,
-                0.5f,
-                0.6f,
-                UIEasing.EaseOutBack
+                UnityNativeUIAnimationSystem.AnimationType.ScaleIn,
+                500,
+                600
             );
 
-            UIAnimationSystem.Instance.Animate(
+            UnityNativeUIAnimationSystem.Animate(
                 _character3,
-                UIAnimationSystem.AnimationType.ScaleIn,
-                0.5f,
-                0.7f,
-                UIEasing.EaseOutBack
+                UnityNativeUIAnimationSystem.AnimationType.ScaleIn,
+                500,
+                700
             );
 
             // Animate play button with bounce
-            UIAnimationSystem.Instance.Animate(
+            UnityNativeUIAnimationSystem.Animate(
                 _playButton,
-                UIAnimationSystem.AnimationType.Bounce,
-                1.0f,
-                1.0f,
-                UIEasing.EaseOutElastic
+                UnityNativeUIAnimationSystem.AnimationType.Bounce,
+                1000,
+                1000
             );
         }
 
@@ -484,12 +476,11 @@ namespace UI.Screens
             // Animate the clicked character
             VisualElement character = index == 0 ? _character1 : (index == 1 ? _character2 : _character3);
 
-            UIAnimationSystem.Instance.Animate(
+            UnityNativeUIAnimationSystem.Animate(
                 character,
-                UIAnimationSystem.AnimationType.Bounce,
-                0.5f,
-                0f,
-                UIEasing.EaseOutElastic
+                UnityNativeUIAnimationSystem.AnimationType.Bounce,
+                500,
+                0
             );
 
             // TODO: Show character details or selection screen

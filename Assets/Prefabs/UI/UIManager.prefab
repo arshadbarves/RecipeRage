@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &565517356836511263
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4544827413336930744}
+  - component: {fileID: 4506354803671143993}
+  m_Layer: 0
+  m_Name: UIManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4544827413336930744
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 565517356836511263}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4506354803671143993
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 565517356836511263}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a963f6b99be94c48bec6a7187124108, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _mainMenuScreenUXML: {fileID: 9197481963319205126, guid: be38780a5e1ea4ec08f66db92e8fb39e,
+    type: 3}
+  _characterSelectionScreenUXML: {fileID: 9197481963319205126, guid: a1f8f55e37d3c475ab17261bae5092c3,
+    type: 3}
+  _gameModeSelectionScreenUXML: {fileID: 9197481963319205126, guid: cbc7795ddcccc495fb633de572f1c77f,
+    type: 3}
+  _settingsScreenUXML: {fileID: 9197481963319205126, guid: 33be56c58335a40339b3361a0521ff77,
+    type: 3}
+  _commonUSS: {fileID: 7433441132597879392, guid: e49c7ac1dcc4c4d849d7474224cbe79e,
+    type: 3}
+  _mainMenuScreenUSS: {fileID: 7433441132597879392, guid: c9dfc367cc7ff48618bec19a57e60407,
+    type: 3}
+  _characterSelectionScreenUSS: {fileID: 7433441132597879392, guid: 550d910c9c8974bbfad00abcff9b22d8,
+    type: 3}
+  _gameModeSelectionScreenUSS: {fileID: 7433441132597879392, guid: 40912037de63b46eb969ce06355dbebb,
+    type: 3}
+  _settingsScreenUSS: {fileID: 7433441132597879392, guid: 7284ff461787649909526ccf9209df9d,
+    type: 3}

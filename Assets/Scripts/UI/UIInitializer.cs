@@ -60,8 +60,7 @@ namespace UI
         /// </summary>
         private void Awake()
         {
-            // Create UI Animation System
-            UIAnimationSystem.Instance.gameObject.name = "UIAnimationSystem";
+            // No need to create animation system instance - UnityNativeUIAnimationSystem is static
 
             // Create UI Manager
             UIManager.Instance.gameObject.name = "UIManager";

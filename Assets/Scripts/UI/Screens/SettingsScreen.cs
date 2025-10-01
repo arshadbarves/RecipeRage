@@ -681,43 +681,39 @@ namespace UI.Screens
             bottomButtons.transform.position = new Vector2(0, 50);
             
             // Animate header
-            UIAnimationSystem.Instance.Animate(
+            UnityNativeUIAnimationSystem.Animate(
                 header,
-                UIAnimationSystem.AnimationType.FadeIn,
-                0.5f,
-                0.2f,
-                UIEasing.EaseOutCubic
+                UnityNativeUIAnimationSystem.AnimationType.FadeIn,
+                500,
+                200
             );
             
             // Animate settings container
-            UIAnimationSystem.Instance.Animate(
+            UnityNativeUIAnimationSystem.Animate(
                 settingsContainer,
-                UIAnimationSystem.AnimationType.FadeIn,
-                0.5f,
-                0.4f,
-                UIEasing.EaseOutCubic
+                UnityNativeUIAnimationSystem.AnimationType.FadeIn,
+                500,
+                400
             );
             
             // Animate bottom buttons
-            UIAnimationSystem.Instance.Animate(
+            UnityNativeUIAnimationSystem.Animate(
                 bottomButtons,
-                UIAnimationSystem.AnimationType.FadeIn,
-                0.5f,
-                0.6f,
-                UIEasing.EaseOutCubic
+                UnityNativeUIAnimationSystem.AnimationType.FadeIn,
+                500,
+                600
             );
             
             // Animate settings sections
             var sections = _root.Query<VisualElement>("settings-section").ToList();
             for (int i = 0; i < sections.Count; i++)
             {
-                float delay = 0.5f + (i * 0.1f);
-                UIAnimationSystem.Instance.Animate(
+                int delay = 500 + (i * 100);
+                UnityNativeUIAnimationSystem.Animate(
                     sections[i],
-                    UIAnimationSystem.AnimationType.SlideInFromLeft,
-                    0.5f,
-                    delay,
-                    UIEasing.EaseOutCubic
+                    UnityNativeUIAnimationSystem.AnimationType.SlideInFromLeft,
+                    500,
+                    delay
                 );
             }
         }
@@ -749,12 +745,11 @@ namespace UI.Screens
             ResetControlSettings();
             
             // Animate button
-            UIAnimationSystem.Instance.Animate(
+            UnityNativeUIAnimationSystem.Animate(
                 _resetControlsButton,
-                UIAnimationSystem.AnimationType.Pulse,
-                0.5f,
-                0f,
-                UIEasing.EaseOutElastic
+                UnityNativeUIAnimationSystem.AnimationType.Pulse,
+                500,
+                0
             );
         }
         
@@ -768,12 +763,11 @@ namespace UI.Screens
             // TODO: Show change password dialog
             
             // Animate button
-            UIAnimationSystem.Instance.Animate(
+            UnityNativeUIAnimationSystem.Animate(
                 _changePasswordButton,
-                UIAnimationSystem.AnimationType.Pulse,
-                0.5f,
-                0f,
-                UIEasing.EaseOutElastic
+                UnityNativeUIAnimationSystem.AnimationType.Pulse,
+                500,
+                0
             );
         }
         
@@ -787,12 +781,11 @@ namespace UI.Screens
             // TODO: Implement logout logic
             
             // Animate button
-            UIAnimationSystem.Instance.Animate(
+            UnityNativeUIAnimationSystem.Animate(
                 _logoutButton,
-                UIAnimationSystem.AnimationType.Pulse,
-                0.5f,
-                0f,
-                UIEasing.EaseOutElastic
+                UnityNativeUIAnimationSystem.AnimationType.Pulse,
+                500,
+                0
             );
         }
         
@@ -807,12 +800,11 @@ namespace UI.Screens
             ResetSettings();
             
             // Animate button
-            UIAnimationSystem.Instance.Animate(
+            UnityNativeUIAnimationSystem.Animate(
                 _resetAllButton,
-                UIAnimationSystem.AnimationType.Pulse,
-                0.5f,
-                0f,
-                UIEasing.EaseOutElastic
+                UnityNativeUIAnimationSystem.AnimationType.Pulse,
+                500,
+                0
             );
         }
         
@@ -827,12 +819,11 @@ namespace UI.Screens
             SaveSettings();
             
             // Animate button
-            UIAnimationSystem.Instance.Animate(
+            UnityNativeUIAnimationSystem.Animate(
                 _applyButton,
-                UIAnimationSystem.AnimationType.Pulse,
-                0.5f,
-                0f,
-                UIEasing.EaseOutElastic
+                UnityNativeUIAnimationSystem.AnimationType.Pulse,
+                500,
+                0
             );
         }
         

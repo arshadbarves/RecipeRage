@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f4f6dd0a1a234aa89ce5c0588bfd373, type: 3}
+  m_Name: Timekeeper
+  m_EditorClassIdentifier: 
+  _id: 5
+  _displayName: Timekeeper
+  _description: A mystical chef who can temporarily freeze time for everyone else.
+  _icon: {fileID: 0}
+  _characterPrefab: {fileID: 0}
+  _movementSpeedModifier: 1
+  _interactionSpeedModifier: 1
+  _carryingCapacityModifier: 1
+  _primaryAbilityType: 2
+  _primaryAbilityCooldown: 60
+  _primaryAbilityDuration: 3
+  _primaryAbilityIcon: {fileID: 0}
+  _primaryAbilityDescription: Temporarily freeze time for everyone else.
+  _primaryAbilityParameters: 
+  _unlockedByDefault: 0
+  _unlockCost: 3000
+  _unlockLevel: 15
