@@ -1,0 +1,72 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &278132838411788017
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6887119164124692602}
+  - component: {fileID: 417808214242561093}
+  m_Layer: 0
+  m_Name: GameBootstrap
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6887119164124692602
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 278132838411788017}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &417808214242561093
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 278132838411788017}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0669a740a39b946968864efa3c7725be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _initialState: 0
+  _networkManagerPrefab: {fileID: 2594776718386978240, guid: 40c77cce3a5ad41baa118189c655d9f8,
+    type: 3}
+  _gameStateManagerPrefab: {fileID: 3944221741089729046, guid: 85632adac7d014beda8a01d0af7cbf3e,
+    type: 3}
+  _uiManagerPrefab: {fileID: 8873109318483759759, guid: 2e10a8ed9c47b4e32b20cdfcb4c8f6fa,
+    type: 3}
+  _inputManagerPrefab: {fileID: 642751688635406397, guid: 17f7cbd3bd31a4269af68199d8b16fca,
+    type: 3}
+  _gameModeManagerPrefab: {fileID: 585557305123895782, guid: ba9a5829e80fa4b0f9f86ac1d1771773,
+    type: 3}
+  _characterManagerPrefab: {fileID: 948546681456617815, guid: e75c0567795c54bac839f1da08ca4aba,
+    type: 3}
+  _scoreManagerPrefab: {fileID: 3919467403614891902, guid: 70cb6c8f5cb5a4bf1ae4421962e8892d,
+    type: 3}
+  _orderManagerPrefab: {fileID: 7977691852345876824, guid: 53f30423b353749099625049f4395a4f,
+    type: 3}
+  _saveManagerPrefab: {fileID: 3825598497515875527, guid: 9c91d245a95b840bea5545a7acd01e34,
+    type: 3}
+  _audioManagerPrefab: {fileID: 5783940906952233042, guid: f35a957944e024af5aa5b4f0dc1a718c,
+    type: 3}
+  _splashScreenManagerPrefab: {fileID: 3660244031719307646, guid: c518d32cbdbd448efbd05dae44103273,
+    type: 3}
+  _loadingScreenManagerPrefab: {fileID: 371995494698772485, guid: 9d578dd7998d849a3b7073d13b9f0a65,
+    type: 3}
+  _showSplashScreens: 1

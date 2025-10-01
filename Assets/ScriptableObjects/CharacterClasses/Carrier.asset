@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f4f6dd0a1a234aa89ce5c0588bfd373, type: 3}
+  m_Name: Carrier
+  m_EditorClassIdentifier: 
+  _id: 4
+  _displayName: Carrier
+  _description: A strong chef who can carry multiple ingredients and attract ingredients
+    to them.
+  _icon: {fileID: 0}
+  _characterPrefab: {fileID: 0}
+  _movementSpeedModifier: 0.8
+  _interactionSpeedModifier: 1
+  _carryingCapacityModifier: 2
+  _primaryAbilityType: 11
+  _primaryAbilityCooldown: 30
+  _primaryAbilityDuration: 5
+  _primaryAbilityIcon: {fileID: 0}
+  _primaryAbilityDescription: Attract nearby ingredients to you.
+  _primaryAbilityParameters: '{"MagnetRadius": 5.0, "MagnetForce": 10.0}'
+  _unlockedByDefault: 0
+  _unlockCost: 2000
+  _unlockLevel: 10

@@ -365,13 +365,12 @@ namespace UI.Screens
             _selectButton.SetEnabled(character.IsUnlocked);
             _upgradeCostText.text = character.UpgradeCost.ToString();
 
-            // Animate character model
-            UIAnimationSystem.Instance.Animate(
+            // Animate character model using Unity's native system
+            UnityNativeUIAnimationSystem.Animate(
                 _characterModel,
-                UIAnimationSystem.AnimationType.ScaleIn,
-                0.3f,
-                0f,
-                UIEasing.EaseOutBack
+                UnityNativeUIAnimationSystem.AnimationType.ScaleIn,
+                300,
+                0
             );
 
             // Highlight selected card
@@ -438,40 +437,36 @@ namespace UI.Screens
             bottomButtons.style.opacity = 0;
             bottomButtons.transform.position = new Vector2(0, 50);
 
-            // Animate header
-            UIAnimationSystem.Instance.Animate(
+            // Animate header using Unity's native system
+            UnityNativeUIAnimationSystem.Animate(
                 header,
-                UIAnimationSystem.AnimationType.FadeIn,
-                0.5f,
-                0.2f,
-                UIEasing.EaseOutCubic
+                UnityNativeUIAnimationSystem.AnimationType.FadeIn,
+                500,
+                200
             );
 
             // Animate character display
-            UIAnimationSystem.Instance.Animate(
+            UnityNativeUIAnimationSystem.Animate(
                 characterDisplay,
-                UIAnimationSystem.AnimationType.FadeIn,
-                0.5f,
-                0.4f,
-                UIEasing.EaseOutCubic
+                UnityNativeUIAnimationSystem.AnimationType.FadeIn,
+                500,
+                400
             );
 
             // Animate character selection
-            UIAnimationSystem.Instance.Animate(
+            UnityNativeUIAnimationSystem.Animate(
                 characterSelection,
-                UIAnimationSystem.AnimationType.FadeIn,
-                0.5f,
-                0.6f,
-                UIEasing.EaseOutCubic
+                UnityNativeUIAnimationSystem.AnimationType.FadeIn,
+                500,
+                600
             );
 
             // Animate bottom buttons
-            UIAnimationSystem.Instance.Animate(
+            UnityNativeUIAnimationSystem.Animate(
                 bottomButtons,
-                UIAnimationSystem.AnimationType.FadeIn,
-                0.5f,
-                0.8f,
-                UIEasing.EaseOutCubic
+                UnityNativeUIAnimationSystem.AnimationType.FadeIn,
+                500,
+                800
             );
 
             // Animate character cards
@@ -482,12 +477,11 @@ namespace UI.Screens
                 cardsList.Add(card);
             }
 
-            UIAnimationSystem.Instance.AnimateSequence(
-                cardsList,
-                UIAnimationSystem.AnimationType.ScaleIn,
-                0.3f,
-                0.05f,
-                UIAnimationSystem.EasingType.EaseOutBack
+            UnityNativeUIAnimationSystem.AnimateSequence(
+                cardsList.ToArray(),
+                UnityNativeUIAnimationSystem.AnimationType.ScaleIn,
+                300,
+                50
             );
         }
 
@@ -517,12 +511,11 @@ namespace UI.Screens
             // TODO: Implement character upgrade logic
 
             // Animate button
-            UIAnimationSystem.Instance.Animate(
+            UnityNativeUIAnimationSystem.Animate(
                 _upgradeButton,
-                UIAnimationSystem.AnimationType.Pulse,
-                0.5f,
-                0f,
-                UIEasing.EaseOutElastic
+                UnityNativeUIAnimationSystem.AnimationType.Pulse,
+                500,
+                0
             );
         }
 
@@ -536,12 +529,11 @@ namespace UI.Screens
             // TODO: Implement character selection logic
 
             // Animate button
-            UIAnimationSystem.Instance.Animate(
+            UnityNativeUIAnimationSystem.Animate(
                 _selectButton,
-                UIAnimationSystem.AnimationType.Pulse,
-                0.5f,
-                0f,
-                UIEasing.EaseOutElastic
+                UnityNativeUIAnimationSystem.AnimationType.Pulse,
+                500,
+                0
             );
 
             // Hide this screen

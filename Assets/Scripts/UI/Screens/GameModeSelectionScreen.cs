@@ -212,12 +212,11 @@ namespace UI.Screens
 
             if (selectedCard != null)
             {
-                UIAnimationSystem.Instance.Animate(
+                UnityNativeUIAnimationSystem.Animate(
                     selectedCard,
-                    UIAnimationSystem.AnimationType.Pulse,
-                    0.5f,
-                    0f,
-                    UIEasing.EaseOutElastic
+                    UnityNativeUIAnimationSystem.AnimationType.Pulse,
+                    500,
+                    0
                 );
             }
         }
@@ -266,42 +265,38 @@ namespace UI.Screens
             bottomInfo.transform.position = new Vector2(0, 50);
 
             // Animate header
-            UIAnimationSystem.Instance.Animate(
+            UnityNativeUIAnimationSystem.Animate(
                 header,
-                UIAnimationSystem.AnimationType.FadeIn,
-                0.5f,
-                0.2f,
-                UIEasing.EaseOutCubic
+                UnityNativeUIAnimationSystem.AnimationType.FadeIn,
+                500,
+                200
             );
 
             // Animate game mode cards
             for (int i = 0; i < gameModeCards.Length; i++)
             {
-                float delay = 0.3f + (i * 0.1f);
-                UIAnimationSystem.Instance.Animate(
+                int delay = 300 + (i * 100);
+                UnityNativeUIAnimationSystem.Animate(
                     gameModeCards[i],
-                    UIAnimationSystem.AnimationType.FadeIn,
-                    0.5f,
-                    delay,
-                    UIEasing.EaseOutCubic
+                    UnityNativeUIAnimationSystem.AnimationType.FadeIn,
+                    500,
+                    delay
                 );
 
-                UIAnimationSystem.Instance.Animate(
+                UnityNativeUIAnimationSystem.Animate(
                     gameModeCards[i],
-                    UIAnimationSystem.AnimationType.SlideInFromLeft,
-                    0.5f,
-                    delay,
-                    UIEasing.EaseOutCubic
+                    UnityNativeUIAnimationSystem.AnimationType.SlideInFromLeft,
+                    500,
+                    delay
                 );
             }
 
             // Animate bottom info
-            UIAnimationSystem.Instance.Animate(
+            UnityNativeUIAnimationSystem.Animate(
                 bottomInfo,
-                UIAnimationSystem.AnimationType.FadeIn,
-                0.5f,
-                0.7f,
-                UIEasing.EaseOutCubic
+                UnityNativeUIAnimationSystem.AnimationType.FadeIn,
+                500,
+                700
             );
         }
 

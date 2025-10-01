@@ -100,12 +100,14 @@ namespace Core.Audio
         /// <summary>
         /// Clean up when destroyed.
         /// </summary>
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
             if (_saveManager != null)
             {
                 _saveManager.OnSettingsChanged -= ApplyAudioSettings;
             }
+            
+            base.OnDestroy();
         }
         
         #region Public API

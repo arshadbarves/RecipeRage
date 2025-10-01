@@ -80,29 +80,8 @@ namespace RecipeRage.Editor.UI
                 Debug.LogWarning("[SplashScreenManagerPrefabCreator] Could not find CompanySplashScreen.uxml");
             }
 
-            // Create game logo splash screen
-            GameObject gameLogoSplashObj = new GameObject("GameLogoSplashScreen");
-            gameLogoSplashObj.transform.SetParent(parent.transform);
-            UIDocument gameLogoSplashDocument = gameLogoSplashObj.AddComponent<UIDocument>();
-
-            // Try to find the UXML asset
-            var gameLogoSplashUXML = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/UI/UXML/GameLogoSplashScreen.uxml");
-            if (gameLogoSplashUXML != null)
-            {
-                gameLogoSplashDocument.visualTreeAsset = gameLogoSplashUXML;
-            }
-            else
-            {
-                Debug.LogWarning("[SplashScreenManagerPrefabCreator] Could not find GameLogoSplashScreen.uxml");
-            }
-
-            // Note: Loading screen is now handled by LoadingScreenManager
-
-            // Set references in SplashScreenManager
+            // Set reference in SplashScreenManager
             splashScreenManager.SetCompanySplashDocument(companySplashDocument);
-            splashScreenManager.SetGameLogoSplashDocument(gameLogoSplashDocument);
-
-            // Note: Loading tips are now handled by LoadingScreenManager
         }
     }
 }

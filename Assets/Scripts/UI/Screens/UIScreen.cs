@@ -102,13 +102,14 @@ namespace UI.Screens
                 _container.style.opacity = 0;
                 _container.style.display = DisplayStyle.Flex;
 
-                // Animate in
-                UIAnimationSystem.Instance.Animate(
+                // Animate in using Unity's native system
+                UnityNativeUIAnimationSystem.AnimateOpacity(
                     _container,
-                    UIAnimationSystem.AnimationType.FadeIn,
-                    0.3f,
                     0f,
-                    UIEasing.EaseOutQuad,
+                    1f,
+                    300,
+                    0,
+                    UnityNativeUIAnimationSystem.EasingCurve.EaseOut,
                     () =>
                     {
                         IsVisible = true;
@@ -135,12 +136,13 @@ namespace UI.Screens
 
             if (animate)
             {
-                UIAnimationSystem.Instance.Animate(
+                UnityNativeUIAnimationSystem.AnimateOpacity(
                     _container,
-                    UIAnimationSystem.AnimationType.FadeOut,
-                    0.3f,
+                    1f,
                     0f,
-                    UIEasing.EaseOutQuad,
+                    300,
+                    0,
+                    UnityNativeUIAnimationSystem.EasingCurve.EaseOut,
                     () =>
                     {
                         _container.style.display = DisplayStyle.None;

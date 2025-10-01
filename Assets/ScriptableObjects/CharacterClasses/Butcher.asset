@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f4f6dd0a1a234aa89ce5c0588bfd373, type: 3}
+  m_Name: Butcher
+  m_EditorClassIdentifier: 
+  _id: 3
+  _displayName: Butcher
+  _description: A strong chef who can instantly chop ingredients.
+  _icon: {fileID: 0}
+  _characterPrefab: {fileID: 0}
+  _movementSpeedModifier: 0.9
+  _interactionSpeedModifier: 1.2
+  _carryingCapacityModifier: 1
+  _primaryAbilityType: 5
+  _primaryAbilityCooldown: 25
+  _primaryAbilityDuration: 0
+  _primaryAbilityIcon: {fileID: 0}
+  _primaryAbilityDescription: Instantly chop any ingredient you're holding.
+  _primaryAbilityParameters: 
+  _unlockedByDefault: 0
+  _unlockCost: 1000
+  _unlockLevel: 5
