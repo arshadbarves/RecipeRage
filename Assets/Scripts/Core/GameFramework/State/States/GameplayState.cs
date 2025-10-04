@@ -1,7 +1,7 @@
 using Core.GameModes;
 using Gameplay.Cooking;
 using Gameplay.Scoring;
-using UI;
+using UI.UISystem;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -29,7 +29,7 @@ namespace Core.GameFramework.State.States
             UIManager uiManager = Object.FindFirstObjectByType<UIManager>();
             if (uiManager != null)
             {
-                uiManager.ShowGameplay();
+                uiManager.ShowScreen(UIScreenType.Game, true, false);
             }
 
             // Initialize the game mode
@@ -65,7 +65,7 @@ namespace Core.GameFramework.State.States
             UIManager uiManager = Object.FindFirstObjectByType<UIManager>();
             if (uiManager != null)
             {
-                uiManager.HideGameplay();
+                uiManager.HideScreen(UIScreenType.Game, true);
             }
 
             // Stop the game mode

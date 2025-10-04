@@ -103,6 +103,22 @@ namespace UI
             _settingsButton = _root.Q<Button>("settings-button");
             _creditsButton = _root.Q<Button>("credits-button");
             _quitButton = _root.Q<Button>("quit-button");
+            
+            // Get navigation buttons
+            var shopButton = _root.Q<Button>("shop-button");
+            var brawlersButton = _root.Q<Button>("brawlers-button");
+            var newsButton = _root.Q<Button>("news-button");
+            var friendsButton = _root.Q<Button>("friends-button");
+            var clubButton = _root.Q<Button>("club-button");
+            var chatButton = _root.Q<Button>("chat-button");
+            
+            // Set up navigation button listeners
+            if (shopButton != null) shopButton.clicked += () => Debug.Log("Shop clicked");
+            if (brawlersButton != null) brawlersButton.clicked += () => Debug.Log("Brawlers clicked");
+            if (newsButton != null) newsButton.clicked += () => Debug.Log("News clicked");
+            if (friendsButton != null) friendsButton.clicked += () => Debug.Log("Friends clicked");
+            if (clubButton != null) clubButton.clicked += () => Debug.Log("Club clicked");
+            if (chatButton != null) chatButton.clicked += () => Debug.Log("Chat clicked");
 
             // Get settings panel references
             _musicVolumeSlider = _root.Q<Slider>("music-volume");
@@ -170,23 +186,52 @@ namespace UI
             // Load player name
             if (_playerNameInput != null)
             {
-                _playerNameInput.value = PlayerPrefs.GetString("PlayerName", "Player");
+                _playerNameInput.value = PlayerPrefs.GetString("PlayerName", "Fall Guy 2005");
             }
 
-            // Load player stats (in a real game, these would come from a player data service)
+            // Load player level in top bar
             if (_playerLevelText != null)
             {
-                _playerLevelText.text = $"Level: {PlayerPrefs.GetInt("PlayerLevel", 1)}";
+                _playerLevelText.text = PlayerPrefs.GetInt("PlayerLevel", 1).ToString();
             }
 
-            if (_playerCoinsText != null)
+            // Load currencies
+            var trophyCount = _root.Q<Label>("trophy-count");
+            if (trophyCount != null)
             {
-                _playerCoinsText.text = $"Coins: {PlayerPrefs.GetInt("PlayerCoins", 0)}";
+                trophyCount.text = PlayerPrefs.GetInt("PlayerTrophies", 22166).ToString();
             }
 
-            if (_playerGemsText != null)
+            var gemCount = _root.Q<Label>("gem-count");
+            if (gemCount != null)
             {
-                _playerGemsText.text = $"Gems: {PlayerPrefs.GetInt("PlayerGems", 0)}";
+                gemCount.text = PlayerPrefs.GetInt("PlayerGems", 1609).ToString();
+            }
+
+            var coinCount = _root.Q<Label>("coin-count");
+            if (coinCount != null)
+            {
+                coinCount.text = PlayerPrefs.GetInt("PlayerCoins", 6103).ToString();
+            }
+
+            var energyCount = _root.Q<Label>("energy-count");
+            if (energyCount != null)
+            {
+                energyCount.text = PlayerPrefs.GetInt("PlayerEnergy", 122).ToString();
+            }
+
+            // Load rank
+            var rankNumber = _root.Q<Label>("rank-number");
+            if (rankNumber != null)
+            {
+                rankNumber.text = PlayerPrefs.GetInt("PlayerRank", 6).ToString();
+            }
+
+            // Load trophy road progress
+            var trophyRoadCount = _root.Q<Label>("trophy-road-count");
+            if (trophyRoadCount != null)
+            {
+                trophyRoadCount.text = PlayerPrefs.GetInt("TrophyRoadProgress", 506).ToString();
             }
         }
 

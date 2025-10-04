@@ -1,0 +1,70 @@
+/* Base UI Screen Styles - Ensures all screens fill viewport properly */
+
+/* Base screen container - ensures full coverage */
+.ui-screen {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+/* Screen container within templates */
+.screen-container,
+[name="screen-container"] {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+/* Specific screen types */
+.ui-screen--splash,
+.ui-screen--loading,
+.ui-screen--menu,
+.ui-screen--settings,
+.ui-screen--characterselection,
+.ui-screen--gamemodeselection,
+.ui-screen--popup,
+.ui-screen--modal,
+.ui-screen--notification {
+    width: 100%;
+    height: 100%;
+}
+
+/* Ensure overlays cover full screen */
+.popup-overlay,
+.modal-overlay,
+.notification-overlay,
+.splash-screen,
+.loading-screen,
+.main-menu,
+.settings-screen,
+.character-selection-screen,
+.gamemode-selection-screen {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+/* Fix for common layout issues */
+* {
+    box-sizing: border-box;
+}
+
+/* Ensure root elements don't have margins/padding that could cause offset */
+.ui-root {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}

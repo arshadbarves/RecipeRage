@@ -1,9 +1,6 @@
 <UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/UI/USS/CompanySplashScreen.uss?fileID=7433441132597879392&amp;guid=70f2493f1cfed484aa085c1865c339c6&amp;type=3#CompanySplashScreen" />
-    <VisualElement name="company-splash-root" class="splash-screen">
-        <VisualElement name="company-logo-container" enabled="true" class="logo-container">
-            <VisualElement name="company-logo" class="logo" />
-        </VisualElement>
-        <Label name="company-name" text="Playcenter Games" class="company-name" />
+    <VisualElement name="screen-container" class="splash-screen">
+        <Label name="company-name-label" text="playcenter games" class="company-name-label" style="-unity-font-definition: url(&quot;project://database/Assets/Fonts/Comfortaa-VariableFont_wght.ttf?fileID=12800000&amp;guid=117db0856501649d4b3f3eae688e87e5&amp;type=3#Comfortaa-VariableFont_wght&quot;);" />
     </VisualElement>
 </UXML>

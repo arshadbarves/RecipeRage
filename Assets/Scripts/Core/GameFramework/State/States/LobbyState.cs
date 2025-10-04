@@ -1,5 +1,5 @@
 using Core.Networking;
-using UI;
+using UI.UISystem;
 using UnityEngine;
 
 namespace Core.GameFramework.State.States
@@ -20,7 +20,7 @@ namespace Core.GameFramework.State.States
             UIManager uiManager = Object.FindFirstObjectByType<UIManager>();
             if (uiManager != null)
             {
-                uiManager.ShowLobby();
+                uiManager.ShowScreen(UIScreenType.Lobby, true, false);
             }
         }
 
@@ -35,7 +35,7 @@ namespace Core.GameFramework.State.States
             UIManager uiManager = Object.FindFirstObjectByType<UIManager>();
             if (uiManager != null)
             {
-                uiManager.HideLobby();
+                uiManager.HideScreen(UIScreenType.Lobby, true);
             }
         }
 

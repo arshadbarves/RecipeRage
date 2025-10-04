@@ -1,4 +1,5 @@
 <UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/USS/GameModeSelectionScreen.uss?fileID=7433441132597879392&amp;guid=40912037de63b46eb969ce06355dbebb&amp;type=3#GameModeSelectionScreen" />
     <VisualElement name="screen-container" class="screen-container">
         <VisualElement name="header" class="header">
             <Button name="back-button" class="back-button" />

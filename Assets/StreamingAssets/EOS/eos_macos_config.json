@@ -1,18 +1,31 @@
 {
   "deployment": {
     "SandboxId": {
-      "Value": null
+      "Value": "19df6d3517a34ba480c2a65880c8567c"
     },
-    "DeploymentId": "00000000000000000000000000000000"
+    "DeploymentId": "70f48f125a80447688e18cd17aac17db"
   },
-  "clientCredentials": null,
+  "clientCredentials": {
+    "ClientId": "xyza7891a4duvFnuVg7ZJzUGcaf7vgHF",
+    "ClientSecret": "nrxF4ykj1gZCoEyFldcNxRVExWvaWdP8QapATwubfC4",
+    "EncryptionKey": "EC38FC726520902DBFB5A73D730D08351434940F5A141CF2539A1B963024D82E"
+  },
   "isServer": false,
   "platformOptionsFlags": "None",
-  "authScopeOptionsFlags": "BasicProfile, FriendsList, Presence",
+  "authScopeOptionsFlags": "BasicProfile",
   "integratedPlatformManagementFlags": "Disabled",
   "tickBudgetInMilliseconds": 0,
   "taskNetworkTimeoutSeconds": 0.0,
-  "threadAffinity": null,
+  "threadAffinity": {
+    "NetworkWork": 0,
+    "StorageIo": 0,
+    "WebSocketIo": 0,
+    "P2PIo": 0,
+    "HttpRequestIo": 0,
+    "RTCIo": 0,
+    "EmbeddedOverlayMainThread": 0,
+    "EmbeddedOverlayWorkerThreads": 0
+  },
   "alwaysSendInputToOverlay": false,
   "initialButtonDelayForOverlay": 0.0,
   "repeatButtonDelayForOverlay": 0.0,
