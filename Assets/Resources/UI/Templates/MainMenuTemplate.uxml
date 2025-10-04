@@ -1,0 +1,14 @@
+<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/USS/MainMenu.uss?fileID=7433441132597879392&amp;guid=15bb364f81be046f5a66a2cf721fada9&amp;type=3#MainMenu" />
+    <VisualElement name="screen-container" class="main-menu">
+        <VisualElement name="menu-content" class="menu-content">
+            <Label name="game-title" text="Recipe Rage" class="game-title" />
+            <VisualElement name="menu-buttons" class="menu-buttons">
+                <Button name="play-button" text="Play" class="menu-button menu-button--primary" />
+                <Button name="character-selection-button" text="Characters" class="menu-button" />
+                <Button name="settings-button" text="Settings" class="menu-button" />
+                <Button name="quit-button" text="Quit" class="menu-button" />
+            </VisualElement>
+        </VisualElement>
+    </VisualElement>
+</UXML>

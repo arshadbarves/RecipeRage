@@ -1,5 +1,5 @@
 using Gameplay.Scoring;
-using UI;
+using UI.UISystem;
 using UnityEngine;
 
 namespace Core.GameFramework.State.States
@@ -20,7 +20,7 @@ namespace Core.GameFramework.State.States
             UIManager uiManager = Object.FindFirstObjectByType<UIManager>();
             if (uiManager != null)
             {
-                uiManager.ShowGameOver();
+                uiManager.ShowScreen(UIScreenType.GameOver, true, false);
             }
 
             // Get the final scores
@@ -43,7 +43,7 @@ namespace Core.GameFramework.State.States
             UIManager uiManager = Object.FindFirstObjectByType<UIManager>();
             if (uiManager != null)
             {
-                uiManager.HideGameOver();
+                uiManager.HideScreen(UIScreenType.GameOver, true);
             }
         }
 

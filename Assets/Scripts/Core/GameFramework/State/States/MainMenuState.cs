@@ -1,4 +1,4 @@
-using UI;
+using UI.UISystem;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -26,7 +26,7 @@ namespace Core.GameFramework.State.States
             UIManager uiManager = Object.FindFirstObjectByType<UIManager>();
             if (uiManager != null)
             {
-                uiManager.ShowMainMenu();
+                uiManager.ShowScreen(UIScreenType.Menu, true, false);
             }
         }
 
@@ -41,7 +41,7 @@ namespace Core.GameFramework.State.States
             UIManager uiManager = Object.FindFirstObjectByType<UIManager>();
             if (uiManager != null)
             {
-                uiManager.HideMainMenu();
+                uiManager.HideScreen(UIScreenType.Menu, true);
             }
         }
 

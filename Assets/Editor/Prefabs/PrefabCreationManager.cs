@@ -14,7 +14,6 @@ using Core.Characters;
 using Core.GameFramework.State;
 using UI;
 using Unity.Netcode;
-using RecipeRage.Editor.UI;
 
 namespace RecipeRage.Editor.Prefabs
 {
@@ -48,8 +47,6 @@ namespace RecipeRage.Editor.Prefabs
             // Create all manager prefabs
             CreateAllManagerPrefabs();
 
-            // Create UI prefabs
-            CreateAllUIPrefabs();
 
             // Create player prefabs
             CreatePlayerPrefab();
@@ -64,8 +61,6 @@ namespace RecipeRage.Editor.Prefabs
             // Create scriptable objects
             CreateAllScriptableObjects();
 
-            // Set up UI resources
-            SetupUIResources();
 
             // Set up scenes
             SetupAllScenes();
@@ -95,7 +90,6 @@ namespace RecipeRage.Editor.Prefabs
             // Create individual manager prefabs first
             CreateNetworkManagerPrefab();
             CreateGameStateManagerPrefab();
-            CreateUIManagerPrefab();
             CreateInputManagerPrefab();
             CreateGameModeManagerPrefab();
             CreateCharacterManagerPrefab();
@@ -103,10 +97,6 @@ namespace RecipeRage.Editor.Prefabs
             CreateOrderManagerPrefab();
             CreateSaveManagerPrefab();
             CreateAudioManagerPrefab();
-
-            // Create UI manager prefabs
-            CreateSplashScreenManagerPrefab();
-            CreateLoadingScreenManagerPrefab();
 
             // Create the GameBootstrap prefab last (references all other prefabs)
             CreateGameBootstrapPrefab();
@@ -186,18 +176,7 @@ namespace RecipeRage.Editor.Prefabs
             CreatePrefab(gameStateManagerObj, "Assets/Prefabs/Managers/GameStateManager.prefab");
             Object.DestroyImmediate(gameStateManagerObj);
         }
-
-        /// <summary>
-        /// Creates the UIManager prefab.
-        /// </summary>
-        public static void CreateUIManagerPrefab()
-        {
-            var uiManagerObj = new GameObject("UIManager");
-            uiManagerObj.AddComponent<UIManager>();
-            CreatePrefab(uiManagerObj, "Assets/Prefabs/Managers/UIManager.prefab");
-            Object.DestroyImmediate(uiManagerObj);
-        }
-
+        
         /// <summary>
         /// Creates the InputManager prefab.
         /// </summary>
@@ -313,43 +292,6 @@ namespace RecipeRage.Editor.Prefabs
         }
 
         /// <summary>
-        /// Creates the SplashScreenManager prefab.
-        /// </summary>
-        private static void CreateSplashScreenManagerPrefab()
-        {
-            // Delegate to the specialized creator
-            Debug.Log("Creating SplashScreenManager prefab...");
-            SplashScreenManagerPrefabCreator.CreateSplashScreenManagerPrefab();
-        }
-
-        /// <summary>
-        /// Creates the LoadingScreenManager prefab.
-        /// </summary>
-        private static void CreateLoadingScreenManagerPrefab()
-        {
-            // Delegate to the specialized creator
-            Debug.Log("Creating LoadingScreenManager prefab...");
-            LoadingScreenManagerPrefabCreator.CreateLoadingScreenManagerPrefab();
-        }
-
-        /// <summary>
-        /// Creates all UI prefabs.
-        /// </summary>
-        public static void CreateAllUIPrefabs()
-        {
-            Debug.Log("Creating all UI prefabs...");
-
-            // Create splash screen and loading screen prefabs
-            CreateSplashScreenManagerPrefab();
-            CreateLoadingScreenManagerPrefab();
-
-            // Call the UIPrefabCreator for other UI prefabs
-            UIPrefabCreator.CreateUIPrefabs();
-
-            Debug.Log("All UI prefabs created successfully!");
-        }
-
-        /// <summary>
         /// Creates all scriptable objects.
         /// </summary>
         public static void CreateAllScriptableObjects()
@@ -365,19 +307,6 @@ namespace RecipeRage.Editor.Prefabs
             gameModeGenerator.GenerateGameModes(GAME_MODES_PATH);
 
             Debug.Log("All scriptable objects created successfully!");
-        }
-
-        /// <summary>
-        /// Sets up UI resources.
-        /// </summary>
-        private static void SetupUIResources()
-        {
-            Debug.Log("Setting up UI resources...");
-
-            // Call the UISetupUtility
-            UISetupUtility.SetupUIResources();
-
-            Debug.Log("UI resources set up successfully!");
         }
 
         /// <summary>

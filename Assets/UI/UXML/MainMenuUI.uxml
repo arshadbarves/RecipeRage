@@ -1,41 +1,167 @@
-<?xml version="1.0" encoding="utf-8"?>
-<engine:UXML
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:engine="UnityEngine.UIElements"
-    xmlns:editor="UnityEditor.UIElements"
-    xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd">
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/USS/MainMenuUI.uss?fileID=7433441132597879392&amp;guid=c9dfc367cc7ff48618bec19a57e60407&amp;type=3#MainMenuUI" />
+    <Style src="project://database/Assets/UI/USS/Common.uss?fileID=7433441132597879392&amp;guid=e49c7ac1dcc4c4d849d7474224cbe79e&amp;type=3#Common" />
     
-    <!-- Main Container -->
-    <engine:VisualElement name="main-container" class="full-screen">
-        
-        <!-- Main Panel -->
+    <!-- Main Fall Guys Style Lobby Screen -->
+    <engine:VisualElement name="main-container" class="screen-container">
         <engine:VisualElement name="main-panel" class="panel">
-            <engine:Label name="game-title" text="Recipe Rage" class="title" />
+            <!-- Top Bar -->
+            <engine:VisualElement name="top-bar" class="top-bar">
+                <!-- Player Profile -->
+                <engine:VisualElement name="player-profile" class="player-profile">
+                    <engine:VisualElement name="player-avatar" class="player-avatar" />
+                    <engine:Label name="player-level" text="1" class="player-level" />
+                </engine:VisualElement>
+                
+                <!-- Currencies -->
+                <engine:VisualElement name="currencies" class="currencies">
+                    <engine:VisualElement name="trophy-container" class="currency-container">
+                        <engine:VisualElement name="trophy-icon" class="currency-icon trophy-icon" />
+                        <engine:Label name="trophy-count" text="22166" class="currency-count" />
+                    </engine:VisualElement>
+                    <engine:VisualElement name="gem-container" class="currency-container">
+                        <engine:VisualElement name="gem-icon" class="currency-icon gem-icon" />
+                        <engine:Label name="gem-count" text="1609" class="currency-count" />
+                    </engine:VisualElement>
+                    <engine:VisualElement name="coin-container" class="currency-container">
+                        <engine:VisualElement name="coin-icon" class="currency-icon coin-icon" />
+                        <engine:Label name="coin-count" text="6103" class="currency-count" />
+                    </engine:VisualElement>
+                    <engine:VisualElement name="energy-container" class="currency-container">
+                        <engine:VisualElement name="energy-icon" class="currency-icon energy-icon" />
+                        <engine:Label name="energy-count" text="122" class="currency-count" />
+                    </engine:VisualElement>
+                </engine:VisualElement>
+                
+                <!-- Settings Button -->
+                <engine:Button name="settings-button" class="icon-button settings-button" />
+            </engine:VisualElement>
             
-            <!-- Player Info Section -->
-            <engine:VisualElement name="player-info" class="player-info-container">
-                <engine:TextField name="player-name" label="Player Name" value="Player" />
-                <engine:Label name="player-level" text="Level: 1" />
-                <engine:VisualElement name="currency-container" class="currency-container">
-                    <engine:Label name="player-coins" text="Coins: 0" />
-                    <engine:Label name="player-gems" text="Gems: 0" />
+            <!-- Middle Content -->
+            <engine:VisualElement name="middle-content" class="middle-content">
+                <!-- Rank Badge -->
+                <engine:VisualElement name="rank-badge" class="rank-badge">
+                    <engine:Label text="RANK" class="rank-label" />
+                    <engine:Label name="rank-number" text="6" class="rank-number" />
+                </engine:VisualElement>
+                
+                <!-- Trophy Road -->
+                <engine:VisualElement name="trophy-road" class="trophy-road">
+                    <engine:VisualElement name="trophy-icon-small" class="trophy-icon-small" />
+                    <engine:Label name="trophy-road-count" text="506" class="trophy-road-count" />
+                </engine:VisualElement>
+                
+                <!-- Character Display -->
+                <engine:VisualElement name="character-display" class="character-display">
+                    <engine:VisualElement name="character-slot-left" class="character-slot">
+                        <engine:VisualElement name="character-left" class="character" />
+                    </engine:VisualElement>
+                    <engine:VisualElement name="character-slot-center" class="character-slot character-slot-center">
+                        <engine:VisualElement name="character-bubble" class="character-bubble">
+                            <engine:VisualElement name="character-icon" class="character-icon" />
+                        </engine:VisualElement>
+                        <engine:VisualElement name="character-main" class="character character-main" />
+                    </engine:VisualElement>
+                    <engine:VisualElement name="character-slot-right" class="character-slot">
+                        <engine:VisualElement name="character-right" class="character" />
+                    </engine:VisualElement>
+                </engine:VisualElement>
+                
+                <!-- Player Info -->
+                <engine:VisualElement name="player-info" class="player-info">
+                    <engine:TextField name="player-name" value="Fall Guy 2005" class="player-name" />
+                    <engine:VisualElement name="team-code-container" class="team-code-container">
+                        <engine:Label text="Invite Players" class="team-code-label" />
+                        <engine:Label name="team-code" text="Y" class="team-code" />
+                    </engine:VisualElement>
+                </engine:VisualElement>
+                
+                <!-- Event Banner -->
+                <engine:VisualElement name="event-banner" class="event-banner">
+                    <engine:VisualElement name="event-icon" class="event-icon" />
+                    <engine:VisualElement name="event-info" class="event-info">
+                        <engine:Label text="BRAWL BALL" class="event-title" />
+                        <engine:Label text="Sunny Soccer" class="event-subtitle" />
+                    </engine:VisualElement>
+                    <engine:VisualElement name="event-timer" class="event-timer">
+                        <engine:VisualElement name="timer-icon" class="timer-icon" />
+                        <engine:Label text="New Event in: 4h 15m" class="timer-text" />
+                    </engine:VisualElement>
                 </engine:VisualElement>
             </engine:VisualElement>
             
-            <!-- Main Menu Buttons -->
-            <engine:VisualElement name="menu-buttons" class="button-container">
-                <engine:Button name="play-button" text="Play" class="menu-button" />
-                <engine:Button name="settings-button" text="Settings" class="menu-button" />
-                <engine:Button name="credits-button" text="Credits" class="menu-button" />
-                <engine:Button name="quit-button" text="Quit" class="menu-button" />
+            <!-- Bottom Navigation -->
+            <engine:VisualElement name="bottom-navigation" class="bottom-navigation">
+                <!-- Left Navigation Buttons -->
+                <engine:VisualElement name="nav-buttons-left" class="nav-buttons-group">
+                    <engine:Button name="shop-button" class="nav-button">
+                        <engine:VisualElement class="nav-button-icon shop-icon" />
+                        <engine:Label text="SHOP" class="nav-button-text" />
+                        <engine:VisualElement name="shop-badge" class="nav-button-badge">
+                            <engine:Label text="NEW" class="nav-button-badge-text" />
+                        </engine:VisualElement>
+                    </engine:Button>
+                    <engine:Button name="brawlers-button" class="nav-button">
+                        <engine:VisualElement class="nav-button-icon brawlers-icon" />
+                        <engine:Label text="BRAWLERS" class="nav-button-text" />
+                        <engine:VisualElement name="brawlers-badge" class="nav-button-badge">
+                            <engine:Label text="1" class="nav-button-badge-text" />
+                        </engine:VisualElement>
+                    </engine:Button>
+                    <engine:Button name="news-button" class="nav-button">
+                        <engine:VisualElement class="nav-button-icon news-icon" />
+                        <engine:Label text="NEWS" class="nav-button-text" />
+                        <engine:VisualElement name="news-badge" class="nav-button-badge">
+                            <engine:Label text="1" class="nav-button-badge-text" />
+                        </engine:VisualElement>
+                    </engine:Button>
+                </engine:VisualElement>
+                
+                <!-- Play Button -->
+                <engine:Button name="play-button" class="play-button">
+                    <engine:Label text="PLAY!" class="play-text" />
+                </engine:Button>
+                
+                <!-- Right Navigation Buttons -->
+                <engine:VisualElement name="nav-buttons-right" class="nav-buttons-group">
+                    <engine:Button name="friends-button" class="nav-button">
+                        <engine:VisualElement class="nav-button-icon friends-icon" />
+                        <engine:Label text="FRIENDS" class="nav-button-text" />
+                    </engine:Button>
+                    <engine:Button name="club-button" class="nav-button">
+                        <engine:VisualElement class="nav-button-icon club-icon" />
+                        <engine:Label text="CLUB" class="nav-button-text" />
+                    </engine:Button>
+                    <engine:Button name="chat-button" class="nav-button">
+                        <engine:VisualElement class="nav-button-icon chat-icon" />
+                        <engine:Label text="CHAT" class="nav-button-text" />
+                    </engine:Button>
+                </engine:VisualElement>
+            </engine:VisualElement>
+            
+            <!-- Pass Progress (Bottom Left) -->
+            <engine:VisualElement name="pass-progress" class="pass-progress">
+                <engine:VisualElement name="pass-icon" class="pass-icon" />
+                <engine:VisualElement name="pass-info" class="pass-info">
+                    <engine:Label text="FALL GUYS" class="pass-title" />
+                    <engine:Label text="SEASON 1" class="pass-subtitle" />
+                </engine:VisualElement>
+                <engine:VisualElement name="pass-badge" class="pass-badge">
+                    <engine:Label text="4" class="pass-badge-text" />
+                </engine:VisualElement>
+                <engine:VisualElement name="pass-progress-bar" class="pass-progress-bar">
+                    <engine:VisualElement name="pass-progress-fill" class="pass-progress-fill" />
+                    <engine:Label text="609/800" class="pass-progress-text" />
+                </engine:VisualElement>
+                <engine:VisualElement name="pass-level" class="pass-level">
+                    <engine:Label text="30" class="pass-level-text" />
+                </engine:VisualElement>
             </engine:VisualElement>
         </engine:VisualElement>
         
-        <!-- Settings Panel -->
+        <!-- Settings Panel (Hidden by default) -->
         <engine:VisualElement name="settings-panel" class="panel hidden">
             <engine:Label text="Settings" class="panel-title" />
-            
-            <!-- Settings Controls -->
             <engine:VisualElement class="settings-container">
                 <engine:Slider name="music-volume" label="Music Volume" low-value="0" high-value="1" value="0.75" />
                 <engine:Slider name="sfx-volume" label="SFX Volume" low-value="0" high-value="1" value="0.75" />
@@ -43,15 +169,12 @@
                 <engine:DropdownField name="resolution-dropdown" label="Resolution" />
                 <engine:DropdownField name="quality-dropdown" label="Quality" />
             </engine:VisualElement>
-            
             <engine:Button name="settings-back-button" text="Back" class="back-button" />
         </engine:VisualElement>
         
-        <!-- Credits Panel -->
+        <!-- Credits Panel (Hidden by default) -->
         <engine:VisualElement name="credits-panel" class="panel hidden">
             <engine:Label text="Credits" class="panel-title" />
-            
-            <!-- Credits Content -->
             <engine:ScrollView class="credits-container">
                 <engine:Label text="Recipe Rage" class="credits-title" />
                 <engine:Label text="A multiplayer cooking game" class="credits-subtitle" />
@@ -61,9 +184,7 @@
                 <engine:Label text="Unity Technologies" class="credits-text" />
                 <engine:Label text="All the testers" class="credits-text" />
             </engine:ScrollView>
-            
             <engine:Button name="credits-back-button" text="Back" class="back-button" />
         </engine:VisualElement>
-        
     </engine:VisualElement>
 </engine:UXML>

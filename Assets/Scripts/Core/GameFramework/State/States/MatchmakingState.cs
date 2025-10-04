@@ -2,8 +2,7 @@ using System;
 using Core.Networking;
 using Core.Networking.Common;
 using Core.Networking.EOS;
-using UI;
-using UI.Screens;
+using UI.UISystem;
 using UnityEngine;
 
 namespace Core.GameFramework.State.States
@@ -54,7 +53,7 @@ namespace Core.GameFramework.State.States
             LogMessage("Starting matchmaking process");
 
             // Show game mode selection screen
-            UIManager.Instance.ShowScreen<GameModeSelectionScreen>();
+            UIManager.Instance.ShowScreen(UIScreenType.GameModeSelection, true, true);
 
             // Subscribe to lobby events
             if (_lobbyManager != null)
@@ -98,7 +97,7 @@ namespace Core.GameFramework.State.States
             }
 
             // Hide game mode selection screen
-            UIManager.Instance.GetScreen<GameModeSelectionScreen>()?.Hide();
+            UIManager.Instance.HideScreen(UIScreenType.GameModeSelection, true);
         }
 
         /// <summary>

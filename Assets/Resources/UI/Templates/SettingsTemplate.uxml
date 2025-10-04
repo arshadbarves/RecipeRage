@@ -1,0 +1,39 @@
+<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/USS/Settings.uss?fileID=7433441132597879392&amp;guid=ce13c355a0e3346d586ee254f45c6391&amp;type=3#Settings" />
+    <VisualElement name="screen-container" class="settings-screen">
+        <VisualElement name="settings-header" class="settings-header">
+            <Label name="settings-title" text="Settings" class="settings-title" />
+            <Button name="close-button" text="×" class="close-button" />
+        </VisualElement>
+        <VisualElement name="settings-content" class="settings-content">
+            <VisualElement name="settings-section" class="settings-section">
+                <Label name="audio-section-title" text="Audio" class="section-title" />
+                <VisualElement name="volume-controls" class="volume-controls">
+                    <VisualElement name="master-volume" class="volume-control">
+                        <Label text="Master Volume" class="volume-label" />
+                        <Slider name="master-volume-slider" low-value="0" high-value="1" value="0.8" class="volume-slider" />
+                    </VisualElement>
+                    <VisualElement name="music-volume" class="volume-control">
+                        <Label text="Music Volume" class="volume-label" />
+                        <Slider name="music-volume-slider" low-value="0" high-value="1" value="0.7" class="volume-slider" />
+                    </VisualElement>
+                    <VisualElement name="sfx-volume" class="volume-control">
+                        <Label text="SFX Volume" class="volume-label" />
+                        <Slider name="sfx-volume-slider" low-value="0" high-value="1" value="0.9" class="volume-slider" />
+                    </VisualElement>
+                </VisualElement>
+            </VisualElement>
+            <VisualElement name="graphics-section" class="settings-section">
+                <Label name="graphics-section-title" text="Graphics" class="section-title" />
+                <VisualElement name="graphics-controls" class="graphics-controls">
+                    <Toggle name="fullscreen-toggle" text="Fullscreen" value="true" class="settings-toggle" />
+                    <Toggle name="vsync-toggle" text="V-Sync" value="true" class="settings-toggle" />
+                </VisualElement>
+            </VisualElement>
+        </VisualElement>
+        <VisualElement name="settings-footer" class="settings-footer">
+            <Button name="reset-button" text="Reset to Default" class="settings-button settings-button--secondary" />
+            <Button name="apply-button" text="Apply" class="settings-button settings-button--primary" />
+        </VisualElement>
+    </VisualElement>
+</UXML>

@@ -1,4 +1,7 @@
+using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Core.Audio;
 using Core.Characters;
 using Core.GameFramework.State;
@@ -8,24 +11,18 @@ using Core.Input;
 using Core.Networking;
 using Core.Patterns;
 using Core.SaveSystem;
-using Core.UI.Loading;
-using Core.UI.SplashScreen;
-using Core.Utilities;
 using Gameplay.Cooking;
 using Gameplay.Scoring;
-using UI;
+using UI.UISystem;
+using UI.UISystem.Screens;
 using UnityEngine;
 
 namespace Core
 {
-    /// <summary>
-    /// Main bootstrap class for initializing all game systems.
-    /// This is the entry point for the game and should be placed in the initial scene.
-    /// </summary>
     public class GameBootstrap : MonoBehaviourSingleton<GameBootstrap>
     {
-        [Header("Initial State")] [SerializeField]
-        private GameStateType _initialState = GameStateType.MainMenu;
+        [Header("Configuration")] [SerializeField]
+        private Configuration.BootstrapConfiguration _bootstrapConfig;
 
         [Header("Manager Prefabs")] [SerializeField]
         private GameObject _networkManagerPrefab;
@@ -39,273 +36,316 @@ namespace Core
         [SerializeField] private GameObject _orderManagerPrefab;
         [SerializeField] private GameObject _saveManagerPrefab;
         [SerializeField] private GameObject _audioManagerPrefab;
-        [SerializeField] private GameObject _splashScreenManagerPrefab;
-        [SerializeField] private GameObject _loadingScreenManagerPrefab;
 
+        public static event Action<string, float> OnInitializationProgress;
+        public static event Action<string> OnSystemInitialized;
+        public static event Action OnInitializationComplete;
+        public static event Action<string> OnInitializationError;
 
-        [Header("Splash Screen Settings")] [SerializeField]
-        private bool _showSplashScreens = true;
+        private readonly Dictionary<Type, object> _managers = new Dictionary<Type, object>();
+        private bool _isInitialized;
+        private Coroutine _initializationCoroutine;
 
-        // Initialization status
-        private bool _isInitialized = false;
-
-        // Component references
-        private NetworkBootstrap _networkBootstrap;
-        private GameStateManager _gameStateManager;
-        private UIManager _uiManager;
-        private InputManager _inputManager;
-        private SplashScreenManager _splashScreenManager;
-        private LoadingScreenManager _loadingScreenManager;
-        private GameModeManager _gameModeManager;
-        private CharacterManager _characterManager;
-        private ScoreManager _scoreManager;
-        private OrderManager _orderManager;
-        private SaveManager _saveManager;
-        private AudioManager _audioManager;
-
-        /// <summary>
-        /// Initialize all game systems.
-        /// </summary>
         protected override void Awake()
         {
             base.Awake();
-
-            // Start initialization
-            StartCoroutine(InitializeGameSystems());
+            InitializeUIManager();
         }
 
-        /// <summary>
-        /// Helper method to update loading progress if splash screens are enabled.
-        /// </summary>
-        /// <param name="message">The loading message to display</param>
-        /// <param name="progress">Progress value between 0 and 1</param>
-        private void UpdateLoadingProgress(string message, float progress)
+        private void Start()
         {
-            if (_showSplashScreens && _loadingScreenManager != null)
-            {
-                _loadingScreenManager.UpdateLoadingProgress(message, progress);
-            }
+            if (_initializationCoroutine == null)
+                _initializationCoroutine = StartCoroutine(InitializeGameSystemsAsync());
         }
 
-        /// <summary>
-        /// Initialize all game systems in the correct order.
-        /// </summary>
-        private IEnumerator InitializeGameSystems()
+        protected override void OnDestroy()
         {
-            Debug.Log("[GameBootstrap] Starting game initialization...");
-
-            // Always initialize splash and loading screen managers
-            yield return StartCoroutine(InitializeUIManagers());
-
-            // Show splash and loading screens if enabled
-            if (_showSplashScreens && _splashScreenManager != null)
+            if (_initializationCoroutine != null)
             {
-                _splashScreenManager.ShowCompanySplash();
-                yield return StartCoroutine(WaitForSplashCompletion());
+                StopCoroutine(_initializationCoroutine);
+                _initializationCoroutine = null;
             }
 
-            if (_loadingScreenManager != null)
-                _loadingScreenManager.ShowLoadingScreen();
+            base.OnDestroy();
+        }
 
-            // Initialize all core systems
-            yield return StartCoroutine(InitializeAllSystems());
+        private void UpdateProgress(string message, float progress)
+        {
+            OnInitializationProgress?.Invoke(message, progress);
+            var uiManager = GetManager<UIManager>();
+            LoadingScreen loadingScreen = uiManager?.GetScreen<LoadingScreen>();
+            loadingScreen?.UpdateProgress(message, progress);
+        }
 
-            // Final loading progress
-            UpdateLoadingProgress("Finalizing...", 0.95f);
+        private T GetManager<T>() where T : class
+        {
+            return _managers.TryGetValue(typeof(T), out var manager) ? manager as T : null;
+        }
 
-            // Set initial game state
-            if (_gameStateManager != null)
+        private IEnumerator InitializeGameSystemsAsync()
+        {
+            yield return StartCoroutine(HandleSplashScreenAsync());
+            yield return StartCoroutine(InitializeAllSystemsAsync());
+
+            if (ValidateSystemHealth())
+            {
                 SetInitialGameState();
-
-            // Hide loading screen if shown
-            if (_showSplashScreens && _loadingScreenManager != null)
-            {
-                _loadingScreenManager.HideLoadingScreen();
+                OnInitializationComplete?.Invoke();
+                _isInitialized = true;
             }
-
-            _isInitialized = true;
-            Debug.Log("[GameBootstrap] Game initialization complete!");
+            else
+            {
+                Debug.LogError("[GameBootstrap] Critical systems failed validation");
+                OnInitializationError?.Invoke("Critical systems failed validation");
+            }
         }
-        
-        /// <summary>
-        /// System initialization information
-        /// </summary>
-        private class SystemInitInfo
+
+        private IEnumerator HandleSplashScreenAsync()
         {
-            public string Name { get; }
-            public float Progress { get; }
-            public GameObject Prefab { get; }
-            public System.Action<GameObject> OnInitialized { get; }
-            public System.Func<bool> IsReady { get; }
+            var uiManager = GetManager<UIManager>();
+
+            if (_bootstrapConfig == null || !_bootstrapConfig.showSplashScreens || uiManager == null)
+                yield break;
+
+            // Show splash screen
+            uiManager.ShowScreen(UIScreenType.Splash, true, false);
+
+            // Wait for splash duration
+            yield return new WaitForSeconds(_bootstrapConfig.companySplashDuration);
+
+            // Hide splash screen (no extra delay needed - animation handles it)
+            uiManager.HideScreen(UIScreenType.Splash, true);
+        }
+
+        private readonly struct SystemInitInfo
+        {
+            public readonly string Name;
+            public readonly float Progress;
+            public readonly GameObject Prefab;
+            public readonly Action<GameObject> OnInitialized;
+            public readonly Func<bool> IsReady;
 
             public SystemInitInfo(string name, float progress, GameObject prefab,
-                System.Action<GameObject> onInitialized, System.Func<bool> isReady = null)
+                Action<GameObject> onInitialized, Func<bool> isReady = null)
             {
                 Name = name;
                 Progress = progress;
                 Prefab = prefab;
                 OnInitialized = onInitialized;
-                IsReady = isReady ?? (() => true); // Default to always ready
+                IsReady = isReady ?? (() => true);
             }
         }
 
-        /// <summary>
-        /// Initialize UI managers (splash and loading screen)
-        /// </summary>
-        private IEnumerator InitializeUIManagers()
+        private void InitializeUIManager()
         {
-            var uiManagers = new[]
-            {
-                new SystemInitInfo("SplashScreenManager", 0f, _splashScreenManagerPrefab,
-                    (obj) => _splashScreenManager = obj.GetComponent<Core.UI.SplashScreen.SplashScreenManager>()),
-                new SystemInitInfo("LoadingScreenManager", 0f, _loadingScreenManagerPrefab,
-                    (obj) => _loadingScreenManager = Core.UI.Loading.LoadingScreenManager.Instance)
-            };
-
-            foreach (var manager in uiManagers)
-            {
-                if (manager.Prefab != null)
-                {
-                    yield return StartCoroutine(InitializeSystem(manager));
-                }
-            }
+            InitializeSystemSync(new SystemInitInfo("UIManager", 0f, _uiManagerPrefab,
+                obj => { _managers[typeof(UIManager)] = UIManager.Instance; }));
         }
 
-        /// <summary>
-        /// Initialize all systems using a generic approach
-        /// </summary>
-        private IEnumerator InitializeAllSystems()
+        private void InitializeSystemSync(SystemInitInfo systemInfo)
         {
-            // Define all systems to initialize
-            var systems = new[]
-            {
-                new SystemInitInfo("Save System", 0.05f, _saveManagerPrefab, (obj) =>
-                {
-                    _saveManager = SaveManager.Instance;
-                    _saveManager?.ImportFromPlayerPrefs();
-                }),
-                new SystemInitInfo("Audio System", 0.1f, _audioManagerPrefab,
-                    (obj) => _audioManager = AudioManager.Instance),
-                new SystemInitInfo("Networking System", 0.15f, _networkManagerPrefab,
-                    (obj) => _networkBootstrap = obj.GetComponent<NetworkBootstrap>(),
-                    () => _networkBootstrap?.IsInitialized ?? true),
-                new SystemInitInfo("Game State System", 0.25f, _gameStateManagerPrefab,
-                    (obj) => _gameStateManager = GameStateManager.Instance),
-                new SystemInitInfo("UI System", 0.35f, _uiManagerPrefab,
-                    (obj) => _uiManager = obj.GetComponent<UIManager>()),
-                new SystemInitInfo("Input System", 0.45f, _inputManagerPrefab,
-                    (obj) => _inputManager = obj.GetComponent<InputManager>()),
-                new SystemInitInfo("Game Mode System", 0.55f, _gameModeManagerPrefab,
-                    (obj) => _gameModeManager = obj.GetComponent<GameModeManager>()),
-                new SystemInitInfo("Character System", 0.65f, _characterManagerPrefab,
-                    (obj) => _characterManager = obj.GetComponent<CharacterManager>()),
-                new SystemInitInfo("Scoring System", 0.75f, _scoreManagerPrefab,
-                    (obj) => _scoreManager = obj.GetComponent<ScoreManager>()),
-                new SystemInitInfo("Order System", 0.85f, _orderManagerPrefab,
-                    (obj) => _orderManager = obj.GetComponent<OrderManager>())
-            };
-
-            // Initialize all systems
-            foreach (var system in systems)
-            {
-                UpdateLoadingProgress($"Initializing {system.Name}...", system.Progress);
-                yield return StartCoroutine(InitializeSystem(system));
-            }
-        }
-
-        /// <summary>
-        /// Generic system initialization method
-        /// </summary>
-        private IEnumerator InitializeSystem(SystemInitInfo systemInfo)
-        {
-            Debug.Log($"[GameBootstrap] Initializing {systemInfo.Name.ToLower()}...");
-
             if (systemInfo.Prefab == null)
             {
-                Debug.LogError(
-                    $"[GameBootstrap] {systemInfo.Name} prefab is not assigned! Please assign the prefab in the inspector.");
+                Debug.LogError($"[GameBootstrap] {systemInfo.Name} prefab not assigned");
+                return;
+            }
+
+            var systemObj = Instantiate(systemInfo.Prefab);
+            systemObj.name = systemInfo.Name.Replace(" ", "");
+            systemInfo.OnInitialized?.Invoke(systemObj);
+
+            if (!systemInfo.IsReady())
+                Debug.LogWarning($"[GameBootstrap] {systemInfo.Name} not ready after initialization");
+        }
+
+        private IEnumerator InitializeAllSystemsAsync()
+        {
+            var uiManager = GetManager<UIManager>();
+            uiManager?.ShowScreen(UIScreenType.Loading, true, false);
+
+            var systems = new SystemInitInfo[]
+            {
+                new("Save System", 0.1f, _saveManagerPrefab, obj =>
+                {
+                    var manager = SaveManager.Instance;
+                    if (manager == null)
+                        Debug.LogError("[GameBootstrap] SaveManager instance missing after prefab instantiation");
+                    _managers[typeof(SaveManager)] = manager;
+                    manager?.ImportFromPlayerPrefs();
+                }),
+                new("Audio System", 0.2f, _audioManagerPrefab,
+                    obj =>
+                    {
+                        var manager = AudioManager.Instance;
+                        if (manager == null)
+                            Debug.LogError("[GameBootstrap] AudioManager instance missing after prefab instantiation");
+                        _managers[typeof(AudioManager)] = manager;
+                    }),
+                new("Networking System", 0.3f, _networkManagerPrefab, obj =>
+                {
+                    var bootstrap = obj.GetComponent<NetworkBootstrap>();
+                    if (bootstrap == null)
+                        Debug.LogError(
+                            "[GameBootstrap] NetworkBootstrap component missing on Networking System prefab");
+                    _managers[typeof(NetworkBootstrap)] = bootstrap;
+                }, () => GetManager<NetworkBootstrap>()?.IsInitialized ?? true),
+                new("Game State System", 0.4f, _gameStateManagerPrefab,
+                    obj =>
+                    {
+                        var manager = GameStateManager.Instance;
+                        if (manager == null)
+                            Debug.LogError(
+                                "[GameBootstrap] GameStateManager instance missing after prefab instantiation");
+                        _managers[typeof(GameStateManager)] = manager;
+                    }),
+                // UI System already initialized in Awake, just validate
+                new("UI System Validation", 0.5f, null,
+                    obj =>
+                    {
+                        var manager = GetManager<UIManager>();
+                        if (manager == null)
+                            Debug.LogError("[GameBootstrap] UIManager not properly initialized");
+                    }),
+                new("Input System", 0.6f, _inputManagerPrefab,
+                    obj =>
+                    {
+                        var manager = obj.GetComponent<InputManager>();
+                        if (manager == null)
+                            Debug.LogError("[GameBootstrap] InputManager component missing on Input System prefab");
+                        _managers[typeof(InputManager)] = manager;
+                    }),
+                new("Game Mode System", 0.7f, _gameModeManagerPrefab,
+                    obj =>
+                    {
+                        var manager = obj.GetComponent<GameModeManager>();
+                        if (manager == null)
+                            Debug.LogError(
+                                "[GameBootstrap] GameModeManager component missing on Game Mode System prefab");
+                        _managers[typeof(GameModeManager)] = manager;
+                    }),
+                new("Character System", 0.8f, _characterManagerPrefab,
+                    obj =>
+                    {
+                        var manager = obj.GetComponent<CharacterManager>();
+                        if (manager == null)
+                            Debug.LogError(
+                                "[GameBootstrap] CharacterManager component missing on Character System prefab");
+                        _managers[typeof(CharacterManager)] = manager;
+                    }),
+                new("Scoring System", 0.9f, _scoreManagerPrefab,
+                    obj =>
+                    {
+                        var manager = obj.GetComponent<ScoreManager>();
+                        if (manager == null)
+                            Debug.LogError("[GameBootstrap] ScoreManager component missing on Scoring System prefab");
+                        _managers[typeof(ScoreManager)] = manager;
+                    }),
+                new("Order System", 1.0f, _orderManagerPrefab,
+                    obj =>
+                    {
+                        var manager = obj.GetComponent<OrderManager>();
+                        if (manager == null)
+                            Debug.LogError("[GameBootstrap] OrderManager component missing on Order System prefab");
+                        _managers[typeof(OrderManager)] = manager;
+                    })
+            };
+
+            float timeoutTime = Time.time + (_bootstrapConfig?.initializationTimeout ?? 30f);
+            bool hasErrors = false;
+
+            foreach (var system in systems)
+            {
+                if (Time.time > timeoutTime)
+                {
+                    Debug.LogError("[GameBootstrap] System initialization timed out");
+                    OnInitializationError?.Invoke("System initialization timed out");
+                    hasErrors = true;
+                    break;
+                }
+
+                UpdateProgress($"Initializing {system.Name}...", system.Progress);
+
+                yield return StartCoroutine(InitializeSystemAsync(system));
+                OnSystemInitialized?.Invoke(system.Name);
+
+                yield return null;
+            }
+
+            if (!hasErrors)
+            {
+                UpdateProgress("Complete!", 1.0f);
+            }
+        }
+
+        private IEnumerator InitializeSystemAsync(SystemInitInfo systemInfo)
+        {
+            // Skip if no prefab (for validation-only systems)
+            if (systemInfo.Prefab == null)
+            {
+                systemInfo.OnInitialized?.Invoke(null);
                 yield break;
             }
 
-            // Instantiate the system
             var systemObj = Instantiate(systemInfo.Prefab);
             systemObj.name = systemInfo.Name.Replace(" ", "");
 
-            // Wait a frame for initialization
+            systemInfo.OnInitialized?.Invoke(systemObj);
             yield return null;
 
-            // Call the initialization callback
-            systemInfo.OnInitialized?.Invoke(systemObj);
+            float timeout = Time.time + 5f;
+            while (!systemInfo.IsReady() && Time.time < timeout)
+                yield return null;
 
-            // Wait for system to be ready (if it has async initialization)
-            while (!systemInfo.IsReady())
-            {
-                yield return new WaitForSeconds(0.1f);
-            }
-
-            Debug.Log($"[GameBootstrap] {systemInfo.Name} initialized.");
+            if (!systemInfo.IsReady())
+                Debug.LogWarning($"[GameBootstrap] {systemInfo.Name} not ready after timeout");
         }
 
 
-        /// <summary>
-        /// Set the initial game state.
-        /// </summary>
         private void SetInitialGameState()
         {
-            Debug.Log($"[GameBootstrap] Setting initial game state to {_initialState}");
-
-            // Create the appropriate state based on the enum
-            IState initialState = null;
-
-            switch (_initialState)
+            var gameStateManager = GetManager<GameStateManager>();
+            if (gameStateManager == null)
             {
-                case GameStateType.MainMenu:
-                    initialState = new MainMenuState();
-                    break;
-                case GameStateType.Lobby:
-                    initialState = new LobbyState();
-                    break;
-                case GameStateType.Game:
-                    initialState = new GameplayState();
-                    break;
-                case GameStateType.GameOver:
-                    initialState = new GameOverState();
-                    break;
-                default:
-                    initialState = new MainMenuState();
-                    break;
+                Debug.LogError("[GameBootstrap] GameStateManager not found");
+                return;
             }
 
-            // Initialize the state machine with the initial state
-            _gameStateManager.Initialize(initialState);
+            var uiManager = GetManager<UIManager>();
+            if (uiManager == null)
+            {
+                Debug.LogError("[GameBootstrap] UIManager not found");
+                return;
+            }
+
+            GameStateType initialStateType =
+                _bootstrapConfig?.initialState ?? GameStateType.MainMenu;
+
+            IState initialState = initialStateType switch
+            {
+                GameStateType.MainMenu => new MainMenuState(),
+                GameStateType.Lobby => new LobbyState(),
+                GameStateType.Game => new GameplayState(),
+                GameStateType.GameOver => new GameOverState(),
+                _ => new MainMenuState()
+            };
+
+            gameStateManager.Initialize(initialState);
         }
 
-        /// <summary>
-        /// Wait for splash screen completion using the event system.
-        /// </summary>
-        private IEnumerator WaitForSplashCompletion()
+        private bool ValidateSystemHealth()
         {
-            bool splashCompleted = false;
-            
-            // Create callback reference for proper unsubscription
-            System.Action onComplete = () => splashCompleted = true;
-            
-            // Subscribe to the completion event
-            _splashScreenManager.OnSplashComplete += onComplete;
-            
-            // Wait for completion
-            while (!splashCompleted)
+            var criticalManagers = new Type[]
             {
-                yield return null;
-            }
-            
-            // Unsubscribe from the event
-            _splashScreenManager.OnSplashComplete -= onComplete;
+                typeof(GameStateManager),
+                typeof(UIManager)
+            };
+
+            return criticalManagers.All(type => _managers.ContainsKey(type) && _managers[type] != null);
         }
 
-        /// <summary>
-        /// Enum for the different game states.
-        /// </summary>
+        public bool IsInitialized => _isInitialized;
+        public bool IsHealthy => _isInitialized && ValidateSystemHealth();
+
         public enum GameStateType
         {
             MainMenu,

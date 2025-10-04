@@ -2,7 +2,6 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using Core;
-using RecipeRage.Editor.UI;
 
 namespace RecipeRage.Editor
 {
@@ -108,30 +107,6 @@ namespace RecipeRage.Editor
             {
                 Debug.LogError($"GenerateStartupScene: Error - {ex.Message}\n{ex.StackTrace}");
             }
-        }
-
-        // Menu item removed to avoid duplication with PrefabCreationManager
-        public static void CreateSplashAndLoadingScreenPrefabs()
-        {
-            Debug.Log("Creating SplashScreenManager prefab...");
-            SplashScreenManagerPrefabCreator.CreateSplashScreenManagerPrefab();
-
-            Debug.Log("Creating LoadingScreenManager prefab...");
-            LoadingScreenManagerPrefabCreator.CreateLoadingScreenManagerPrefab();
-
-            Debug.Log("Splash and Loading Screen prefabs created successfully!");
-        }
-
-        // Menu item removed to avoid duplication with PrefabCreationManager
-        public static void SetupCompleteStartup()
-        {
-            // Create the prefabs first
-            CreateSplashAndLoadingScreenPrefabs();
-
-            // Then generate the scene
-            GenerateStartupScene();
-
-            Debug.Log("Complete startup setup finished successfully!");
         }
     }
 }

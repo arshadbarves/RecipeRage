@@ -44,12 +44,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0669a740a39b946968864efa3c7725be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _initialState: 0
+  _config:
+    showSplashScreens: 1
+    initializationTimeout: 30
+    initialState: 0
   _networkManagerPrefab: {fileID: 2594776718386978240, guid: 40c77cce3a5ad41baa118189c655d9f8,
     type: 3}
   _gameStateManagerPrefab: {fileID: 3944221741089729046, guid: 85632adac7d014beda8a01d0af7cbf3e,
     type: 3}
-  _uiManagerPrefab: {fileID: 8873109318483759759, guid: 2e10a8ed9c47b4e32b20cdfcb4c8f6fa,
+  _uiManagerPrefab: {fileID: 8873109318483759759, guid: 007f71e0e1a074158b4829f34d39c627,
     type: 3}
   _inputManagerPrefab: {fileID: 642751688635406397, guid: 17f7cbd3bd31a4269af68199d8b16fca,
     type: 3}
@@ -65,8 +68,3 @@ MonoBehaviour:
     type: 3}
   _audioManagerPrefab: {fileID: 5783940906952233042, guid: f35a957944e024af5aa5b4f0dc1a718c,
     type: 3}
-  _splashScreenManagerPrefab: {fileID: 3660244031719307646, guid: c518d32cbdbd448efbd05dae44103273,
-    type: 3}
-  _loadingScreenManagerPrefab: {fileID: 371995494698772485, guid: 9d578dd7998d849a3b7073d13b9f0a65,
-    type: 3}
-  _showSplashScreens: 1
