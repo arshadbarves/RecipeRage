@@ -8,6 +8,7 @@ namespace UI.UISystem
         // System screens (highest priority)
         Splash,
         Loading,
+        Login,
         
         // Modal and overlay screens
         Modal,

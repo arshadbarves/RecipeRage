@@ -117,9 +117,9 @@ namespace Core.Networking.EOS
                 }
 
                 // Get the search results
-                var searchResults = _eosLobbyManager.GetSearchResults();
+                Dictionary<Lobby, LobbyDetails> searchResults = _eosLobbyManager.GetSearchResults();
 
-                foreach (var kvp in searchResults)
+                foreach (KeyValuePair<Lobby, LobbyDetails> kvp in searchResults)
                 {
                     if (kvp.Key.Id == lobbyId)
                     {
@@ -417,7 +417,7 @@ namespace Core.Networking.EOS
                 }
 
                 // Extract member attributes
-                foreach (var kvp in member.MemberAttributes)
+                foreach (KeyValuePair<string, LobbyAttribute> kvp in member.MemberAttributes)
                 {
                     LobbyAttribute attribute = kvp.Value;
 

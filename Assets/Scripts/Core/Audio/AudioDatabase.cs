@@ -43,7 +43,7 @@ namespace Core.Audio
         {
             // Initialize music dictionary
             _musicDict = new Dictionary<string, AudioClip>();
-            foreach (var reference in _musicClips)
+            foreach (AudioClipReference reference in _musicClips)
             {
                 if (reference.Clip != null && !string.IsNullOrEmpty(reference.Id))
                 {
@@ -53,7 +53,7 @@ namespace Core.Audio
             
             // Initialize SFX dictionary
             _sfxDict = new Dictionary<string, AudioClip>();
-            foreach (var reference in _sfxClips)
+            foreach (AudioClipReference reference in _sfxClips)
             {
                 if (reference.Clip != null && !string.IsNullOrEmpty(reference.Id))
                 {
@@ -63,7 +63,7 @@ namespace Core.Audio
             
             // Initialize voice dictionary
             _voiceDict = new Dictionary<string, AudioClip>();
-            foreach (var reference in _voiceClips)
+            foreach (AudioClipReference reference in _voiceClips)
             {
                 if (reference.Clip != null && !string.IsNullOrEmpty(reference.Id))
                 {
@@ -73,7 +73,7 @@ namespace Core.Audio
             
             // Initialize UI dictionary
             _uiDict = new Dictionary<string, AudioClip>();
-            foreach (var reference in _uiClips)
+            foreach (AudioClipReference reference in _uiClips)
             {
                 if (reference.Clip != null && !string.IsNullOrEmpty(reference.Id))
                 {

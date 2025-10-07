@@ -225,7 +225,7 @@ namespace UI.UISystem.Screens
             ApplyGraphicsSettings();
             ApplyAudioSettings();
 
-            var settingsData = GetCurrentSettings();
+            SettingsData settingsData = GetCurrentSettings();
             OnSettingsApplied?.Invoke(settingsData);
 
             Debug.Log("[SettingsScreen] Settings applied and saved");

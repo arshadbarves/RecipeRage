@@ -288,7 +288,7 @@ namespace Core.Characters
             {
                 try
                 {
-                    var parameters = JsonConvert.DeserializeObject<SpeedBoostParameters>(characterClass.PrimaryAbilityParameters);
+                    SpeedBoostParameters parameters = JsonConvert.DeserializeObject<SpeedBoostParameters>(characterClass.PrimaryAbilityParameters);
                     if (parameters != null)
                     {
                         _speedMultiplier = parameters.SpeedMultiplier;
@@ -460,7 +460,7 @@ namespace Core.Characters
             {
                 try
                 {
-                    var parameters = JsonConvert.DeserializeObject<PushParameters>(characterClass.PrimaryAbilityParameters);
+                    PushParameters parameters = JsonConvert.DeserializeObject<PushParameters>(characterClass.PrimaryAbilityParameters);
                     if (parameters != null)
                     {
                         _pushForce = parameters.PushForce;
@@ -510,7 +510,7 @@ namespace Core.Characters
             {
                 try
                 {
-                    var parameters = JsonConvert.DeserializeObject<StealParameters>(characterClass.PrimaryAbilityParameters);
+                    StealParameters parameters = JsonConvert.DeserializeObject<StealParameters>(characterClass.PrimaryAbilityParameters);
                     if (parameters != null)
                     {
                         _stealRadius = parameters.StealRadius;
@@ -609,7 +609,7 @@ namespace Core.Characters
             {
                 try
                 {
-                    var parameters = JsonConvert.DeserializeObject<MagnetParameters>(characterClass.PrimaryAbilityParameters);
+                    MagnetParameters parameters = JsonConvert.DeserializeObject<MagnetParameters>(characterClass.PrimaryAbilityParameters);
                     if (parameters != null)
                     {
                         _magnetRadius = parameters.MagnetRadius;

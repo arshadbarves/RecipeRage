@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Core.Patterns;
+using Core.UI.Animation;
 using UI.UISystem.Core;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -90,7 +91,7 @@ namespace UI.UISystem
         private void CreateScreenControllers()
         {
             // Create screens for all registered screen types
-            foreach (var screenType in UIScreenRegistry.GetRegisteredScreenTypes())
+            foreach (UIScreenType screenType in UIScreenRegistry.GetRegisteredScreenTypes())
             {
                 CreateScreen(screenType);
             }
@@ -101,7 +102,7 @@ namespace UI.UISystem
         private void CreateScreen(UIScreenType screenType)
         {
             // Get screen attribute for configuration
-            var attribute = UIScreenRegistry.GetScreenAttribute(screenType);
+            UIScreenAttribute attribute = UIScreenRegistry.GetScreenAttribute(screenType);
             if (attribute == null)
             {
                 Debug.LogError($"[UIManager] No attribute found for screen type {screenType}");
@@ -109,7 +110,7 @@ namespace UI.UISystem
             }
 
             // Load template from attribute path
-            var template = LoadTemplateFromPath(attribute.TemplatePath);
+            VisualTreeAsset template = LoadTemplateFromPath(attribute.TemplatePath);
 
             // Create controller
             var controller = new UIScreenController(screenType, attribute.Priority, template, _root);
@@ -119,7 +120,7 @@ namespace UI.UISystem
             SortScreensByPriority();
 
             // Create screen class instance
-            var screen = UIScreenRegistry.CreateScreen(screenType);
+            BaseUIScreen screen = UIScreenRegistry.CreateScreen(screenType);
             if (screen != null)
             {
                 screen.Initialize(screenType, attribute.Priority, controller);
@@ -143,8 +144,8 @@ namespace UI.UISystem
 
             try
             {
-                var resourcePath = $"UI/Templates/{templatePath}";
-                var template = Resources.Load<VisualTreeAsset>(resourcePath);
+                string resourcePath = $"UI/Templates/{templatePath}";
+                VisualTreeAsset template = Resources.Load<VisualTreeAsset>(resourcePath);
                 
                 if (template != null)
                 {
@@ -167,7 +168,7 @@ namespace UI.UISystem
         protected override void OnDestroy()
         {
             // Dispose all screens
-            foreach (var screen in _screens.Values)
+            foreach (BaseUIScreen screen in _screens.Values)
             {
                 screen.Dispose();
             }
@@ -187,7 +188,7 @@ namespace UI.UISystem
         /// </summary>
         public void ShowScreen(UIScreenType screenType, bool animate = true, bool addToHistory = true)
         {
-            if (!_screens.TryGetValue(screenType, out var screen))
+            if (!_screens.TryGetValue(screenType, out BaseUIScreen screen))
             {
                 Debug.LogError($"[UIManager] Screen {screenType} not found");
                 return;
@@ -196,7 +197,7 @@ namespace UI.UISystem
             // Add current visible screen to history if requested
             if (addToHistory && _visibleScreens.Count > 0)
             {
-                var currentScreen = _visibleScreens.LastOrDefault();
+                BaseUIScreen currentScreen = _visibleScreens.LastOrDefault();
                 if (currentScreen != null && currentScreen != screen)
                 {
                     _screenHistory.Push(currentScreen);
@@ -212,7 +213,7 @@ namespace UI.UISystem
         /// </summary>
         public T GetScreen<T>() where T : BaseUIScreen
         {
-            foreach (var screen in _screens.Values)
+            foreach (BaseUIScreen screen in _screens.Values)
             {
                 if (screen is T typedScreen)
                     return typedScreen;
@@ -225,7 +226,7 @@ namespace UI.UISystem
         /// </summary>
         public BaseUIScreen GetScreen(UIScreenType screenType)
         {
-            _screens.TryGetValue(screenType, out var screen);
+            _screens.TryGetValue(screenType, out BaseUIScreen screen);
             return screen;
         }
 
@@ -234,7 +235,7 @@ namespace UI.UISystem
         /// </summary>
         public void HideScreen(UIScreenType screenType, bool animate = true)
         {
-            if (!_screens.TryGetValue(screenType, out var screen))
+            if (!_screens.TryGetValue(screenType, out BaseUIScreen screen))
             {
                 Debug.LogError($"[UIManager] Screen {screenType} not found");
                 return;
@@ -249,7 +250,7 @@ namespace UI.UISystem
         public void HideScreensOfType(UIScreenType screenType, bool animate = true)
         {
             var screensToHide = _visibleScreens.Where(s => s.ScreenType == screenType).ToList();
-            foreach (var screen in screensToHide)
+            foreach (BaseUIScreen screen in screensToHide)
             {
                 HideScreenInternal(screen, animate);
             }
@@ -260,10 +261,10 @@ namespace UI.UISystem
         /// </summary>
         public void HideAllPopups(bool animate = true)
         {
-            var popupTypes = new[] { UIScreenType.Popup, UIScreenType.Modal, UIScreenType.Notification };
+            UIScreenType[] popupTypes = new[] { UIScreenType.Popup, UIScreenType.Modal, UIScreenType.Notification };
             var popupsToHide = _visibleScreens.Where(s => popupTypes.Contains(s.ScreenType)).ToList();
             
-            foreach (var popup in popupsToHide)
+            foreach (BaseUIScreen popup in popupsToHide)
             {
                 HideScreenInternal(popup, animate);
             }
@@ -274,10 +275,10 @@ namespace UI.UISystem
         /// </summary>
         public void HideAllGameScreens(bool animate = true)
         {
-            var systemTypes = new[] { UIScreenType.Splash, UIScreenType.Loading };
+            UIScreenType[] systemTypes = new[] { UIScreenType.Splash, UIScreenType.Loading };
             var screensToHide = _visibleScreens.Where(s => !systemTypes.Contains(s.ScreenType)).ToList();
             
-            foreach (var screen in screensToHide)
+            foreach (BaseUIScreen screen in screensToHide)
             {
                 HideScreenInternal(screen, animate);
             }
@@ -289,7 +290,7 @@ namespace UI.UISystem
         public void HideAllScreens(bool animate = false)
         {
             var screensToHide = _visibleScreens.ToList();
-            foreach (var screen in screensToHide)
+            foreach (BaseUIScreen screen in screensToHide)
             {
                 HideScreenInternal(screen, animate);
             }
@@ -302,12 +303,12 @@ namespace UI.UISystem
         {
             if (_screenHistory.Count == 0) return false;
 
-            var previousScreen = _screenHistory.Pop();
+            BaseUIScreen previousScreen = _screenHistory.Pop();
             
             // Hide current screen
             if (_visibleScreens.Count > 0)
             {
-                var currentScreen = _visibleScreens.Last();
+                BaseUIScreen currentScreen = _visibleScreens.Last();
                 HideScreenInternal(currentScreen, animate);
             }
 
@@ -321,7 +322,7 @@ namespace UI.UISystem
         /// </summary>
         public bool IsScreenVisible(UIScreenType screenType)
         {
-            return _screens.TryGetValue(screenType, out var screen) && screen.IsVisible;
+            return _screens.TryGetValue(screenType, out BaseUIScreen screen) && screen.IsVisible;
         }
 
         /// <summary>
@@ -357,15 +358,17 @@ namespace UI.UISystem
             if (screen.IsVisible) return;
 
             // Get the controller for this screen
-            if (!_controllers.TryGetValue(screen.ScreenType, out var controller))
+            if (!_controllers.TryGetValue(screen.ScreenType, out UIScreenController controller))
             {
                 Debug.LogError($"[UIManager] No controller found for screen {screen.ScreenType}");
                 return;
             }
 
+            SortScreensByPriority();
+
             // Let the screen determine its own animation configuration
-            var animationType = screen.GetShowAnimationType();
-            var duration = screen.GetAnimationDuration();
+            UnityNativeUIAnimationSystem.AnimationType animationType = screen.GetShowAnimationType();
+            float duration = screen.GetAnimationDuration();
 
             // Call screen's pre-animation hook
             screen.OnBeforeShowAnimation();
@@ -390,15 +393,15 @@ namespace UI.UISystem
             if (!screen.IsVisible) return;
 
             // Get the controller for this screen
-            if (!_controllers.TryGetValue(screen.ScreenType, out var controller))
+            if (!_controllers.TryGetValue(screen.ScreenType, out UIScreenController controller))
             {
                 Debug.LogError($"[UIManager] No controller found for screen {screen.ScreenType}");
                 return;
             }
 
             // Let the screen determine its own animation configuration
-            var animationType = screen.GetHideAnimationType();
-            var duration = screen.GetAnimationDuration();
+            UnityNativeUIAnimationSystem.AnimationType animationType = screen.GetHideAnimationType();
+            float duration = screen.GetAnimationDuration();
 
             // Call screen's pre-animation hook
             screen.OnBeforeHideAnimation();
@@ -423,7 +426,7 @@ namespace UI.UISystem
         {
             // Update all visible screens
             float deltaTime = Time.deltaTime;
-            foreach (var screen in _visibleScreens)
+            foreach (BaseUIScreen screen in _visibleScreens)
             {
                 screen.Update(deltaTime);
             }
@@ -433,16 +436,22 @@ namespace UI.UISystem
 
         private void SortScreensByPriority()
         {
-            var sortedControllers = _controllers.Values.OrderByDescending(c => (int)c.Priority).ToList();
+            // Sort by priority ASCENDING (lowest to highest)
+            // BringToFront() moves element to end of parent's children list
+            // So we call it from lowest to highest priority
+            // Result: highest priority ends up at the end (rendered on top)
+            var sortedControllers = _controllers.Values.OrderBy(c => (int)c.Priority).ToList();
             
             // Reorder in the visual tree
-            foreach (var controller in sortedControllers)
+            foreach (UIScreenController controller in sortedControllers)
             {
                 if (controller.Container?.parent != null)
                 {
                     controller.Container.BringToFront();
                 }
             }
+            
+            Debug.Log($"[UIManager] Sorted {sortedControllers.Count} screens by priority");
         }
 
         #endregion
@@ -453,13 +462,13 @@ namespace UI.UISystem
         public void DebugUIState()
         {
             Debug.Log($"[UIManager] Visible Screens ({_visibleScreens.Count}):");
-            foreach (var screen in _visibleScreens)
+            foreach (BaseUIScreen screen in _visibleScreens)
             {
                 Debug.Log($"  - {screen.ScreenType} (Priority: {screen.Priority})");
             }
             
             Debug.Log($"[UIManager] Screen History ({_screenHistory.Count}):");
-            foreach (var screen in _screenHistory)
+            foreach (BaseUIScreen screen in _screenHistory)
             {
                 Debug.Log($"  - {screen.ScreenType}");
             }
@@ -470,10 +479,10 @@ namespace UI.UISystem
         {
             Debug.Log($"[UIManager] Root Element Size: {_root.resolvedStyle.width}x{_root.resolvedStyle.height}");
             
-            foreach (var kvp in _controllers)
+            foreach (KeyValuePair<UIScreenType, UIScreenController> kvp in _controllers)
             {
-                var controller = kvp.Value;
-                var container = controller.Container;
+                UIScreenController controller = kvp.Value;
+                VisualElement container = controller.Container;
                 Debug.Log($"[UIManager] {kvp.Key} Container Size: {container.resolvedStyle.width}x{container.resolvedStyle.height}, Position: ({container.resolvedStyle.left}, {container.resolvedStyle.top}), Display: {container.resolvedStyle.display}");
             }
         }
@@ -481,9 +490,9 @@ namespace UI.UISystem
         [ContextMenu("Force Resize All Screens")]
         public void ForceResizeAllScreens()
         {
-            foreach (var kvp in _controllers)
+            foreach (KeyValuePair<UIScreenType, UIScreenController> kvp in _controllers)
             {
-                var container = kvp.Value.Container;
+                VisualElement container = kvp.Value.Container;
                 container.style.width = Length.Percent(100);
                 container.style.height = Length.Percent(100);
                 container.style.position = Position.Absolute;

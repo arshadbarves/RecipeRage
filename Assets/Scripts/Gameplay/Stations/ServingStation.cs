@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Gameplay.Cooking;
 using Unity.Netcode;
 using UnityEngine;
@@ -63,9 +64,9 @@ namespace Gameplay.Stations
             bool orderFound = false;
 
             // Get all active orders
-            var activeOrders = _orderManager.GetActiveOrders();
+            IReadOnlyList<RecipeOrderState> activeOrders = _orderManager.GetActiveOrders();
 
-            foreach (var order in activeOrders)
+            foreach (RecipeOrderState order in activeOrders)
             {
                 // Check if the ingredient matches what's needed for the order
                 // In a real implementation, you would check if the ingredient matches the recipe

@@ -1,0 +1,40 @@
+<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/USS/LoginScreen.uss?fileID=7433441132597879392&amp;guid=4b557b5c6c2c8444f9dd359c67577447&amp;type=3#LoginScreen" />
+    <VisualElement name="screen-container" class="login-screen">
+        <VisualElement name="left-panel" class="left-panel">
+            <VisualElement name="left-panel-bg" class="left-panel-bg" />
+            <VisualElement name="left-panel-grid" class="left-panel-grid" />
+            <VisualElement name="left-content" class="left-content">
+                <Label name="left-title" text="Welcome Back" class="left-title" />
+                <Label name="left-subtitle" text="Continue your journey and unlock new achievements. Your progress is waiting." class="left-subtitle" />
+            </VisualElement>
+        </VisualElement>
+        <VisualElement name="right-panel" class="right-panel">
+            <VisualElement name="right-panel-orb" class="right-panel-orb" />
+            <VisualElement name="logo-container" class="logo-container">
+                <VisualElement name="logo" class="logo">
+                    <Label text="ID" class="logo-text" />
+                </VisualElement>
+            </VisualElement>
+            <Label name="subtitle" text="Keep track of your progress across devices." class="subtitle" />
+            <VisualElement name="login-section" class="login-section">
+                <Label name="login-title" text="LOG IN" class="login-title" />
+                <Label name="login-subtitle" text="WITH" class="login-subtitle" />
+                <VisualElement name="button-group" class="button-group">
+                    <Button name="facebook-login-button" class="btn btn-facebook">
+                        <Label text="FACEBOOK" class="btn-text" />
+                    </Button>
+                    <Button name="guest-login-button" class="btn btn-guest">
+                        <Label text="GUEST" class="btn-text" />
+                    </Button>
+                </VisualElement>
+                <Label name="disclaimer" text="By logging in as a guest, you may lose your progress. Consider creating an account for a better gaming experience." class="disclaimer" />
+            </VisualElement>
+            <VisualElement name="loading-indicator" class="loading-indicator">
+                <VisualElement name="spinner" class="spinner" />
+                <Label text="Connecting..." class="loading-text" />
+            </VisualElement>
+            <Label name="status-text" class="status-text" />
+        </VisualElement>
+    </VisualElement>
+</UXML>

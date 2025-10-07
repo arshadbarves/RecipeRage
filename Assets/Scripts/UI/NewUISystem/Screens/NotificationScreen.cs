@@ -200,7 +200,7 @@ namespace UI.UISystem.Screens
         /// </summary>
         public static NotificationScreen ShowInfo(string message, float duration = 3.0f)
         {
-            var notification = UIManager.Instance.GetScreen<NotificationScreen>();
+            NotificationScreen notification = UIManager.Instance.GetScreen<NotificationScreen>();
             return notification?
                 .SetMessage(message)
                 .SetType(NotificationType.Info)
@@ -212,7 +212,7 @@ namespace UI.UISystem.Screens
         /// </summary>
         public static NotificationScreen ShowSuccess(string message, float duration = 2.5f)
         {
-            var notification = UIManager.Instance.GetScreen<NotificationScreen>();
+            NotificationScreen notification = UIManager.Instance.GetScreen<NotificationScreen>();
             return notification?
                 .SetMessage(message)
                 .SetType(NotificationType.Success)
@@ -224,7 +224,7 @@ namespace UI.UISystem.Screens
         /// </summary>
         public static NotificationScreen ShowWarning(string message, float duration = 4.0f)
         {
-            var notification = UIManager.Instance.GetScreen<NotificationScreen>();
+            NotificationScreen notification = UIManager.Instance.GetScreen<NotificationScreen>();
             return notification?
                 .SetMessage(message)
                 .SetType(NotificationType.Warning)
@@ -236,7 +236,7 @@ namespace UI.UISystem.Screens
         /// </summary>
         public static NotificationScreen ShowError(string message, bool autoHide = false)
         {
-            var notification = UIManager.Instance.GetScreen<NotificationScreen>();
+            NotificationScreen notification = UIManager.Instance.GetScreen<NotificationScreen>();
             return notification?
                 .SetMessage(message)
                 .SetType(NotificationType.Error)

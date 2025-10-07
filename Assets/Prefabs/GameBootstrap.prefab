@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6887119164124692602}
   - component: {fileID: 417808214242561093}
+  - component: {fileID: 4071736836862752304}
   m_Layer: 0
   m_Name: GameBootstrap
   m_TagString: Untagged
@@ -44,10 +45,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0669a740a39b946968864efa3c7725be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _config:
+  _bootstrapConfig:
     showSplashScreens: 1
+    companySplashDuration: 2.5
+    splashFadeInDuration: 0.8
+    splashFadeOutDuration: 0.5
+    minLoadingScreenDuration: 3
+    loadingFadeTransitionDuration: 0.5
+    tipChangeDuration: 5
     initializationTimeout: 30
     initialState: 0
+    loadingTips:
+    - 'Tip: Use WASD to move around the kitchen'
+    - 'Tip: Press Space to interact with cooking stations'
+    - 'Tip: Complete orders quickly for bonus points'
+    - 'Tip: Keep your kitchen organized for better efficiency'
+    - 'Tip: Watch the timer - don''t let orders expire!'
+    - 'Tip: Upgrade your equipment to cook faster'
+    enableDebugLogging: 0
+  _authenticationManagerPrefab: {fileID: 3995240767920382576, guid: 15d71f49bddc5442e9f2539369475701,
+    type: 3}
   _networkManagerPrefab: {fileID: 2594776718386978240, guid: 40c77cce3a5ad41baa118189c655d9f8,
     type: 3}
   _gameStateManagerPrefab: {fileID: 3944221741089729046, guid: 85632adac7d014beda8a01d0af7cbf3e,
@@ -68,3 +85,16 @@ MonoBehaviour:
     type: 3}
   _audioManagerPrefab: {fileID: 5783940906952233042, guid: f35a957944e024af5aa5b4f0dc1a718c,
     type: 3}
+--- !u!114 &4071736836862752304
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 278132838411788017}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55c06b9b50cdcdf45839b7da18fa5e5b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShouldShutdownOnApplicationQuit: 1

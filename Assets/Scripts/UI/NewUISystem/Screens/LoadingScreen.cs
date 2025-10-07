@@ -168,6 +168,10 @@ namespace UI.UISystem.Screens
             {
                 CompleteLoading();
             }
+            else
+            {
+                Debug.Log($"Loading progress: {_currentProgress * 100}% and isLoading: {_isLoading}");
+            }
         }
 
         /// <summary>

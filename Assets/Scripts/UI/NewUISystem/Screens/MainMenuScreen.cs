@@ -228,7 +228,7 @@ namespace UI.UISystem.Screens
             _character3?.RemoveFromClassList("character-selected");
 
             // Highlight selected character
-            var selectedCharacter = SelectedCharacterIndex switch
+            VisualElement selectedCharacter = SelectedCharacterIndex switch
             {
                 0 => _character1,
                 1 => _character2,
@@ -374,7 +374,7 @@ namespace UI.UISystem.Screens
             OnCharacterClicked?.Invoke(characterIndex);
 
             // Animate the clicked character
-            var character = characterIndex switch
+            VisualElement character = characterIndex switch
             {
                 0 => _character1,
                 1 => _character2,
@@ -396,7 +396,7 @@ namespace UI.UISystem.Screens
         private void ShowQuitConfirmation()
         {
             // Show quit confirmation popup
-            var popupScreen = UIManager.Instance.GetScreen<PopupScreen>();
+            PopupScreen popupScreen = UIManager.Instance.GetScreen<PopupScreen>();
             if (popupScreen != null)
             {
                 popupScreen

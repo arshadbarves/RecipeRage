@@ -133,7 +133,7 @@ namespace Gameplay.Cooking
             }
 
             // Select a random recipe
-            var recipe = _availableRecipes[Random.Range(0, _availableRecipes.Count)];
+            Recipe recipe = _availableRecipes[Random.Range(0, _availableRecipes.Count)];
 
             // Create a new order state
             var orderState = new RecipeOrderState
@@ -160,7 +160,7 @@ namespace Gameplay.Cooking
         {
             for (int i = 0; i < _activeOrders.Count; i++)
             {
-                var order = _activeOrders[i];
+                RecipeOrderState order = _activeOrders[i];
 
                 // Skip completed or already expired orders
                 if (order.IsCompleted || order.IsExpired)
@@ -196,7 +196,7 @@ namespace Gameplay.Cooking
             // Find the order with the specified ID
             for (int i = 0; i < _activeOrders.Count; i++)
             {
-                var order = _activeOrders[i];
+                RecipeOrderState order = _activeOrders[i];
 
                 if (order.OrderId == orderId && !order.IsCompleted && !order.IsExpired)
                 {
@@ -222,13 +222,13 @@ namespace Gameplay.Cooking
             if (changeEvent.Type == NetworkListEvent<RecipeOrderState>.EventType.Add)
             {
                 // A new order was added
-                var newOrder = _activeOrders[changeEvent.Index];
+                RecipeOrderState newOrder = _activeOrders[changeEvent.Index];
                 OnOrderCreated?.Invoke(newOrder);
             }
             else if (changeEvent.Type == NetworkListEvent<RecipeOrderState>.EventType.Value)
             {
                 // An order was updated
-                var updatedOrder = _activeOrders[changeEvent.Index];
+                RecipeOrderState updatedOrder = _activeOrders[changeEvent.Index];
 
                 if (updatedOrder.IsCompleted)
                 {
@@ -270,7 +270,7 @@ namespace Gameplay.Cooking
         /// <returns> The recipe, or null if not found. </returns>
         public Recipe GetRecipeById(int recipeId)
         {
-            foreach (var recipe in _availableRecipes)
+            foreach (Recipe recipe in _availableRecipes)
             {
                 if (recipe.Id == recipeId)
                 {
@@ -289,7 +289,7 @@ namespace Gameplay.Cooking
         {
             // Convert NetworkList to List to satisfy IReadOnlyList interface
             var ordersList = new List<RecipeOrderState>();
-            foreach (var order in _activeOrders)
+            foreach (RecipeOrderState order in _activeOrders)
             {
                 ordersList.Add(order);
             }

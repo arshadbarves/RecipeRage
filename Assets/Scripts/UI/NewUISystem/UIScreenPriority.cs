@@ -16,6 +16,7 @@ namespace UI.UISystem
         Popup = 700,        // Popup dialogs
         Modal = 800,        // Modal dialogs
         Loading = 900,      // Loading screens
+        Login = 950,        // Login screens
         Splash = 1000       // Splash screens (highest)
     }
 }
