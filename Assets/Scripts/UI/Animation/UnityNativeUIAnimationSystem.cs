@@ -62,7 +62,7 @@ namespace Core.UI.Animation
 
         private static Func<float, float> GetEasingFunction(EasingCurve easingCurve)
         {
-            return EasingFunctions.TryGetValue(easingCurve, out var func) ? func : Easing.OutQuad;
+            return EasingFunctions.TryGetValue(easingCurve, out Func<float, float> func) ? func : Easing.OutQuad;
         }
 
         public static void AnimateOpacity(VisualElement element, float startValue, float endValue,
@@ -196,7 +196,7 @@ namespace Core.UI.Animation
                         duration, delay, onComplete);
                     break;
                 case AnimationType.SlideInFromRight:
-                    var parentWidth = element.parent?.resolvedStyle.width ?? Screen.width;
+                    float parentWidth = element.parent?.resolvedStyle.width ?? Screen.width;
                     AnimateSlideIn(element, new Vector2(parentWidth, element.resolvedStyle.top), 
                         duration, delay, onComplete);
                     break;
@@ -205,7 +205,7 @@ namespace Core.UI.Animation
                         duration, delay, onComplete);
                     break;
                 case AnimationType.SlideInFromBottom:
-                    var parentHeight = element.parent?.resolvedStyle.height ?? Screen.height;
+                    float parentHeight = element.parent?.resolvedStyle.height ?? Screen.height;
                     AnimateSlideIn(element, new Vector2(element.resolvedStyle.left, parentHeight), 
                         duration, delay, onComplete);
                     break;
@@ -244,7 +244,7 @@ namespace Core.UI.Animation
         {
             const float scaleUp = 1.2f;
             const float scaleDown = 0.9f;
-            var thirdDuration = duration / 3f;
+            float thirdDuration = duration / 3f;
 
             AnimateScale(element, Vector2.one, Vector2.one * scaleUp, thirdDuration, delay, EasingCurve.EaseOut,
                 () => AnimateScale(element, Vector2.one * scaleUp, Vector2.one * scaleDown, thirdDuration, 0,
@@ -255,7 +255,7 @@ namespace Core.UI.Animation
         private static void AnimatePulse(VisualElement element, float duration, float delay, Action onComplete)
         {
             const float pulseScale = 1.1f;
-            var halfDuration = duration * 0.5f;
+            float halfDuration = duration * 0.5f;
 
             AnimateScale(element, Vector2.one, Vector2.one * pulseScale, halfDuration, delay, EasingCurve.EaseOut,
                 () => AnimateScale(element, Vector2.one * pulseScale, Vector2.one, halfDuration, 0, 
@@ -276,9 +276,9 @@ namespace Core.UI.Animation
                 animation.easingCurve = GetEasingFunction(EasingCurve.EaseOut);
                 animation.valueUpdated = (e, progress) =>
                 {
-                    var intensity = shakeIntensity * (1f - progress);
-                    var shakeX = Mathf.Sin(progress * 20f) * intensity;
-                    var shakeY = Mathf.Cos(progress * 25f) * intensity;
+                    float intensity = shakeIntensity * (1f - progress);
+                    float shakeX = Mathf.Sin(progress * 20f) * intensity;
+                    float shakeY = Mathf.Cos(progress * 25f) * intensity;
 
                     e.style.left = originalPos.x + shakeX;
                     e.style.top = originalPos.y + shakeY;
@@ -309,7 +309,7 @@ namespace Core.UI.Animation
             }
 
             int completedCount = 0;
-            var totalElements = elements.Length;
+            int totalElements = elements.Length;
 
             for (int i = 0; i < totalElements; i++)
             {

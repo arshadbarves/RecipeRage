@@ -276,7 +276,7 @@ namespace Core.Characters
             }
 
             // Convert input to world space movement
-            var movement = new Vector3(moveInput.x, 0f, moveInput.y) * MovementSpeed * Time.deltaTime;
+            Vector3 movement = new Vector3(moveInput.x, 0f, moveInput.y) * MovementSpeed * Time.deltaTime;
 
             // Move the player
             transform.position += movement;
@@ -306,9 +306,9 @@ namespace Core.Characters
             float closestDistance = float.MaxValue;
             IInteractable closestInteractable = null;
 
-            foreach (var collider in colliders)
+            foreach (Collider collider in colliders)
             {
-                var interactable = collider.GetComponent<IInteractable>();
+                IInteractable interactable = collider.GetComponent<IInteractable>();
                 if (interactable != null)
                 {
                     float distance = Vector3.Distance(transform.position, collider.transform.position);
@@ -429,7 +429,7 @@ namespace Core.Characters
             obj.transform.localRotation = Quaternion.identity;
 
             // Disable physics
-            var objRigidbody = obj.GetComponent<Rigidbody>();
+            Rigidbody objRigidbody = obj.GetComponent<Rigidbody>();
             if (objRigidbody != null)
             {
                 objRigidbody.isKinematic = true;
@@ -451,14 +451,14 @@ namespace Core.Characters
                 return null;
             }
 
-            var obj = _heldObject;
+            GameObject obj = _heldObject;
             _heldObject = null;
 
             // Unparent the object
             obj.transform.SetParent(null);
 
             // Enable physics
-            var objRigidbody = obj.GetComponent<Rigidbody>();
+            Rigidbody objRigidbody = obj.GetComponent<Rigidbody>();
             if (objRigidbody != null)
             {
                 objRigidbody.isKinematic = false;

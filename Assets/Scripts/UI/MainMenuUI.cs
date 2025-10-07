@@ -105,12 +105,12 @@ namespace UI
             _quitButton = _root.Q<Button>("quit-button");
             
             // Get navigation buttons
-            var shopButton = _root.Q<Button>("shop-button");
-            var brawlersButton = _root.Q<Button>("brawlers-button");
-            var newsButton = _root.Q<Button>("news-button");
-            var friendsButton = _root.Q<Button>("friends-button");
-            var clubButton = _root.Q<Button>("club-button");
-            var chatButton = _root.Q<Button>("chat-button");
+            Button shopButton = _root.Q<Button>("shop-button");
+            Button brawlersButton = _root.Q<Button>("brawlers-button");
+            Button newsButton = _root.Q<Button>("news-button");
+            Button friendsButton = _root.Q<Button>("friends-button");
+            Button clubButton = _root.Q<Button>("club-button");
+            Button chatButton = _root.Q<Button>("chat-button");
             
             // Set up navigation button listeners
             if (shopButton != null) shopButton.clicked += () => Debug.Log("Shop clicked");
@@ -196,39 +196,39 @@ namespace UI
             }
 
             // Load currencies
-            var trophyCount = _root.Q<Label>("trophy-count");
+            Label trophyCount = _root.Q<Label>("trophy-count");
             if (trophyCount != null)
             {
                 trophyCount.text = PlayerPrefs.GetInt("PlayerTrophies", 22166).ToString();
             }
 
-            var gemCount = _root.Q<Label>("gem-count");
+            Label gemCount = _root.Q<Label>("gem-count");
             if (gemCount != null)
             {
                 gemCount.text = PlayerPrefs.GetInt("PlayerGems", 1609).ToString();
             }
 
-            var coinCount = _root.Q<Label>("coin-count");
+            Label coinCount = _root.Q<Label>("coin-count");
             if (coinCount != null)
             {
                 coinCount.text = PlayerPrefs.GetInt("PlayerCoins", 6103).ToString();
             }
 
-            var energyCount = _root.Q<Label>("energy-count");
+            Label energyCount = _root.Q<Label>("energy-count");
             if (energyCount != null)
             {
                 energyCount.text = PlayerPrefs.GetInt("PlayerEnergy", 122).ToString();
             }
 
             // Load rank
-            var rankNumber = _root.Q<Label>("rank-number");
+            Label rankNumber = _root.Q<Label>("rank-number");
             if (rankNumber != null)
             {
                 rankNumber.text = PlayerPrefs.GetInt("PlayerRank", 6).ToString();
             }
 
             // Load trophy road progress
-            var trophyRoadCount = _root.Q<Label>("trophy-road-count");
+            Label trophyRoadCount = _root.Q<Label>("trophy-road-count");
             if (trophyRoadCount != null)
             {
                 trophyRoadCount.text = PlayerPrefs.GetInt("TrophyRoadProgress", 506).ToString();

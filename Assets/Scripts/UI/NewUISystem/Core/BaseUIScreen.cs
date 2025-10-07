@@ -219,7 +219,7 @@ namespace UI.UISystem.Core
         /// </summary>
         protected void RegisterCallback<T>(string elementName, EventCallback<T> callback) where T : EventBase<T>, new()
         {
-            var element = GetElement<VisualElement>(elementName);
+            VisualElement element = GetElement<VisualElement>(elementName);
             element?.RegisterCallback(callback);
         }
 
@@ -228,7 +228,7 @@ namespace UI.UISystem.Core
         /// </summary>
         protected void UnregisterCallback<T>(string elementName, EventCallback<T> callback) where T : EventBase<T>, new()
         {
-            var element = GetElement<VisualElement>(elementName);
+            VisualElement element = GetElement<VisualElement>(elementName);
             element?.UnregisterCallback(callback);
         }
 

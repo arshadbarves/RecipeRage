@@ -313,7 +313,7 @@ namespace UI
             // Notify lobby manager (if host)
             if (_lobbyManager != null && _networkManager.IsHost)
             {
-                if (Enum.TryParse<Core.Networking.Common.GameMode>(gameMode.Id, out var gameModeEnum))
+                if (Enum.TryParse<Core.Networking.Common.GameMode>(gameMode.Id, out Core.Networking.Common.GameMode gameModeEnum))
                 {
                     _lobbyManager.SetGameMode(gameModeEnum);
                 }
@@ -342,7 +342,7 @@ namespace UI
             ClearPlayerList();
 
             // Create new player entries
-            foreach (var player in allPlayers)
+            foreach (PlayerInfo player in allPlayers)
             {
                 CreatePlayerEntry(player);
             }
@@ -358,7 +358,7 @@ namespace UI
         {
             if (_playerList == null) return;
 
-            foreach (var entry in _playerEntries)
+            foreach (VisualElement entry in _playerEntries)
             {
                 _playerList.Remove(entry);
             }
@@ -436,7 +436,7 @@ namespace UI
             if (_lobbyStatusText != null)
             {
                 int readyCount = 0;
-                foreach (var player in players)
+                foreach (PlayerInfo player in players)
                 {
                     if (player.IsReady)
                     {
@@ -490,7 +490,7 @@ namespace UI
                 GameMode[] gameModes = _gameModeManager.GetAvailableGameModes();
 
                 // Create game mode entries
-                foreach (var gameMode in gameModes)
+                foreach (GameMode gameMode in gameModes)
                 {
                     CreateGameModeEntry(gameMode);
                 }
@@ -504,7 +504,7 @@ namespace UI
         {
             if (_gameModeList == null) return;
 
-            foreach (var entry in _gameModeEntries)
+            foreach (VisualElement entry in _gameModeEntries)
             {
                 _gameModeList.Remove(entry);
             }

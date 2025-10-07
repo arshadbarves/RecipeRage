@@ -203,7 +203,7 @@ namespace UI.UISystem.Screens
         /// </summary>
         public static PopupScreen CreateAlert(string title, string message, Action onConfirm = null)
         {
-            var popup = UIManager.Instance.GetScreen<PopupScreen>();
+            PopupScreen popup = UIManager.Instance.GetScreen<PopupScreen>();
             return popup?
                 .SetTitle(title)
                 .SetMessage(message)
@@ -216,7 +216,7 @@ namespace UI.UISystem.Screens
         /// </summary>
         public static PopupScreen CreateConfirmation(string title, string message, Action onConfirm = null, Action onCancel = null)
         {
-            var popup = UIManager.Instance.GetScreen<PopupScreen>();
+            PopupScreen popup = UIManager.Instance.GetScreen<PopupScreen>();
             return popup?
                 .SetTitle(title)
                 .SetMessage(message)
@@ -229,7 +229,7 @@ namespace UI.UISystem.Screens
         /// </summary>
         public static PopupScreen CreateYesNo(string title, string message, Action onYes = null, Action onNo = null)
         {
-            var popup = UIManager.Instance.GetScreen<PopupScreen>();
+            PopupScreen popup = UIManager.Instance.GetScreen<PopupScreen>();
             return popup?
                 .SetTitle(title)
                 .SetMessage(message)

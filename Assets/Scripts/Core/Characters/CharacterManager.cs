@@ -42,7 +42,7 @@ namespace Core.Characters
             base.Awake();
             
             // Build the character class dictionary
-            foreach (var characterClass in _availableCharacterClasses)
+            foreach (CharacterClass characterClass in _availableCharacterClasses)
             {
                 if (characterClass != null)
                 {
@@ -106,7 +106,7 @@ namespace Core.Characters
         {
             var unlockedClasses = new List<CharacterClass>();
             
-            foreach (var characterClassId in _unlockedCharacterClasses)
+            foreach (int characterClassId in _unlockedCharacterClasses)
             {
                 if (_characterClassDict.ContainsKey(characterClassId))
                 {
@@ -160,7 +160,7 @@ namespace Core.Characters
         /// <returns>True if the character class was selected</returns>
         public bool SelectCharacterClass(int characterClassId)
         {
-            var characterClass = GetCharacterClass(characterClassId);
+            CharacterClass characterClass = GetCharacterClass(characterClassId);
             if (characterClass == null)
             {
                 return false;
@@ -247,7 +247,7 @@ namespace Core.Characters
                 return false;
             }
             
-            var characterClass = _characterClassDict[characterClassId];
+            CharacterClass characterClass = _characterClassDict[characterClassId];
             _availableCharacterClasses.Remove(characterClass);
             _characterClassDict.Remove(characterClassId);
             _unlockedCharacterClasses.Remove(characterClassId);

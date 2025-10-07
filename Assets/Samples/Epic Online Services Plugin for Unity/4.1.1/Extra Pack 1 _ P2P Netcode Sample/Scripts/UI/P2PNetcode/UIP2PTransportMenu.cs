@@ -20,6 +20,8 @@
 * SOFTWARE.
 */
 
+using Epic.OnlineServices.UserInfo;
+
 namespace PlayEveryWare.EpicOnlineServices.Samples.Network
 {
     using System;
@@ -97,10 +99,10 @@ namespace PlayEveryWare.EpicOnlineServices.Samples.Network
                 }
                 else
                 {
-                    var keyboard = Keyboard.current;
-                    var gamepad = Gamepad.current;
+                    Keyboard keyboard = Keyboard.current;
+                    Gamepad gamepad = Gamepad.current;
 
-                    var movementVector = Vector2.zero;
+                    Vector2 movementVector = Vector2.zero;
 
                     if (keyboard != null)
                     {
@@ -170,7 +172,7 @@ namespace PlayEveryWare.EpicOnlineServices.Samples.Network
 
         private void MoveTowardsTarget()
         {
-            var currentPos = NetworkSamplePlayer.GetOwnerPlayerPosition();
+            Vector3? currentPos = NetworkSamplePlayer.GetOwnerPlayerPosition();
             if (currentPos != null && moveTarget != null)
             {
                 var currentPos2D = new Vector2(currentPos.Value.x, currentPos.Value.y);
@@ -180,8 +182,8 @@ namespace PlayEveryWare.EpicOnlineServices.Samples.Network
                     moveTarget = null;
                     return;
                 }
-                var diff = moveTarget.Value - currentPos2D;
-                var dist = diff.magnitude;
+                Vector2 diff = moveTarget.Value - currentPos2D;
+                float dist = diff.magnitude;
                 if (dist <= 0.01f)
                 {
                     //target reached
@@ -203,13 +205,13 @@ namespace PlayEveryWare.EpicOnlineServices.Samples.Network
             if (controllingCharacter && pointerData != null)
             {
                 var screenPoint = new Vector3(pointerData.position.x, pointerData.position.y, 0);
-                var worldPoint = Camera.main.ScreenToWorldPoint(screenPoint);
-                var moveBounds = NetworkSamplePlayer.GetPlayerMovementBounds();
-                var currentPos = NetworkSamplePlayer.GetOwnerPlayerPosition();
+                Vector3 worldPoint = Camera.main.ScreenToWorldPoint(screenPoint);
+                Bounds? moveBounds = NetworkSamplePlayer.GetPlayerMovementBounds();
+                Vector3? currentPos = NetworkSamplePlayer.GetOwnerPlayerPosition();
                 if (moveBounds != null && currentPos != null)
                 {
                     moveInitialPos = new Vector2(currentPos.Value.x, currentPos.Value.y);
-                    var targetPoint = moveBounds.Value.ClosestPoint(worldPoint);
+                    Vector3 targetPoint = moveBounds.Value.ClosestPoint(worldPoint);
                     moveTarget = new Vector2(targetPoint.x, targetPoint.y);
                 }
             }
@@ -263,7 +265,7 @@ namespace PlayEveryWare.EpicOnlineServices.Samples.Network
         public override void OnFriendInteractButtonClicked(FriendData friendData)
         {
 #if !EOS_DISABLE
-            var joinInfo = JsonUtility.FromJson<P2PTransportPresenceData>(friendData.Presence.JoinInfo);
+            P2PTransportPresenceData joinInfo = JsonUtility.FromJson<P2PTransportPresenceData>(friendData.Presence.JoinInfo);
             if (joinInfo.IsValid())
             {
                 var hostId = ProductUserId.FromString(joinInfo.ServerUserId);
@@ -377,7 +379,7 @@ namespace PlayEveryWare.EpicOnlineServices.Samples.Network
 #if !EOS_DISABLE
         private void OnJoinGameAccepted(ref JoinGameAcceptedCallbackInfo data)
         {
-            var joinData = JsonUtility.FromJson<P2PTransportPresenceData>(data.JoinInfo);
+            P2PTransportPresenceData joinData = JsonUtility.FromJson<P2PTransportPresenceData>(data.JoinInfo);
             if (joinData.IsValid())
             {
                 ProductUserId serverUserId = ProductUserId.FromString(joinData.ServerUserId);
@@ -429,7 +431,7 @@ namespace PlayEveryWare.EpicOnlineServices.Samples.Network
         private void AddJoinListener()
         {
 #if !EOS_DISABLE
-            var presenceInterface = EOSManager.Instance.GetEOSPresenceInterface();
+            PresenceInterface presenceInterface = EOSManager.Instance.GetEOSPresenceInterface();
             if (presenceInterface == null)
             {
                 Debug.LogError("UIP2PTransportMenu (AddJoinListener): presence interface not available");
@@ -443,7 +445,7 @@ namespace PlayEveryWare.EpicOnlineServices.Samples.Network
         {
             if (joinGameAcceptedNotifyHandle != 0)
             {
-                var presenceInterface = EOSManager.Instance.GetEOSPresenceInterface();
+                PresenceInterface presenceInterface = EOSManager.Instance.GetEOSPresenceInterface();
                 presenceInterface?.RemoveNotifyJoinGameAccepted(joinGameAcceptedNotifyHandle);
                 joinGameAcceptedNotifyHandle = 0;
             }
@@ -495,8 +497,8 @@ namespace PlayEveryWare.EpicOnlineServices.Samples.Network
 #if !EOS_DISABLE
         private void SetDisplayNameText(Text displayNameUI, EpicAccountId userId)
         {
-            var userInfoManager = EOSManager.Instance.GetOrCreateManager<EOSUserInfoManager>();
-            var userInfo = userInfoManager.GetUserInfoById(userId);
+            EOSUserInfoManager userInfoManager = EOSManager.Instance.GetOrCreateManager<EOSUserInfoManager>();
+            UserInfoData userInfo = userInfoManager.GetUserInfoById(userId);
             if (userInfo.UserId?.IsValid() == true)
             {
                 displayNameUI.text = userInfo.DisplayName;
@@ -506,7 +508,7 @@ namespace PlayEveryWare.EpicOnlineServices.Samples.Network
                 userInfoManager.QueryUserInfoById(userId, (EpicAccountId UserId, Result QueryResult) => {
                     if (QueryResult == Result.Success)
                     {
-                        var queriedUserInfo = userInfoManager.GetUserInfoById(userId);
+                        UserInfoData queriedUserInfo = userInfoManager.GetUserInfoById(userId);
                         if (queriedUserInfo.UserId.IsValid())
                         {
                             displayNameUI.text = queriedUserInfo.DisplayName;

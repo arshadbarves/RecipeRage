@@ -111,7 +111,7 @@ namespace Core.Networking.EOS
         public void LeaveSession()
         {
             // Get the current session
-            if (_eosSessionsManager.TryGetSession(_currentSession?.SessionId, out var session))
+            if (_eosSessionsManager.TryGetSession(_currentSession?.SessionId, out Session session))
             {
                 // Leave the session
                 _eosSessionsManager.DestroySession(session.Name, (info) => OnSessionLeftComplete(info.ResultCode));
@@ -194,7 +194,7 @@ namespace Core.Networking.EOS
             info.IsPrivate = session.PermissionLevel == OnlineSessionPermissionLevel.InviteOnly;
 
             // Extract attributes
-            foreach (var attribute in session.Attributes)
+            foreach (SessionAttribute attribute in session.Attributes)
             {
                 switch (attribute.Key)
                 {
@@ -227,7 +227,7 @@ namespace Core.Networking.EOS
                 Debug.Log($"[RecipeRageSessionManager] Session created: {info.SessionToCreateName}");
 
                 // Get the created session
-                if (_eosSessionsManager.TryGetSession(info.SessionToCreateName, out var session))
+                if (_eosSessionsManager.TryGetSession(info.SessionToCreateName, out Session session))
                 {
                     _currentSession = ConvertToGameSessionInfo(session);
                 }
@@ -253,7 +253,7 @@ namespace Core.Networking.EOS
                 // Get the joined session
                 foreach (KeyValuePair<string, Session> kvp in _eosSessionsManager.GetCurrentSessions())
                 {
-                    var session = kvp.Value;
+                    Session session = kvp.Value;
                     if (session.SessionState == OnlineSessionState.InProgress)
                     {
                         _currentSession = ConvertToGameSessionInfo(session);

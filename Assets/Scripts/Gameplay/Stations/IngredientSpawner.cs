@@ -235,7 +235,7 @@ namespace Gameplay.Stations
         private void InteractServerRpc()
         {
             // Get the local player
-            var player = NetworkManager.Singleton.LocalClient.PlayerObject.GetComponent<PlayerController>();
+            PlayerController player = NetworkManager.Singleton.LocalClient.PlayerObject.GetComponent<PlayerController>();
 
             // Interact with the spawner
             Interact(player);

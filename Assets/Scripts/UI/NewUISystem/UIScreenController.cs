@@ -67,7 +67,7 @@ namespace UI.UISystem
         {
             try
             {
-                var templateInstance = _template.Instantiate();
+                TemplateContainer templateInstance = _template.Instantiate();
                 
                 // Ensure template instance fills the container
                 templateInstance.style.width = Length.Percent(100);
@@ -81,7 +81,7 @@ namespace UI.UISystem
                 Container.Add(templateInstance);
                 
                 // Find the main screen container within the template
-                var screenContainer = templateInstance.Q<VisualElement>("screen-container");
+                VisualElement screenContainer = templateInstance.Q<VisualElement>("screen-container");
                 if (screenContainer != null)
                 {
                     // Apply screen-specific styling and ensure full coverage

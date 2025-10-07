@@ -32,7 +32,7 @@ namespace Core.GameModes
             base.Awake();
 
             // Build the game mode dictionary
-            foreach (var gameMode in _availableGameModes)
+            foreach (GameMode gameMode in _availableGameModes)
             {
                 if (gameMode != null && !string.IsNullOrEmpty(gameMode.Id))
                 {
@@ -91,7 +91,7 @@ namespace Core.GameModes
                 return null;
             }
 
-            foreach (var gameMode in _availableGameModes)
+            foreach (GameMode gameMode in _availableGameModes)
             {
                 if (gameMode.DisplayName.Equals(gameModeName, StringComparison.OrdinalIgnoreCase))
                 {
@@ -128,7 +128,7 @@ namespace Core.GameModes
         /// <returns> True if the game mode was selected, false otherwise </returns>
         public bool SelectGameMode(string gameModeId)
         {
-            var gameMode = GetGameMode(gameModeId);
+            GameMode gameMode = GetGameMode(gameModeId);
             if (gameMode == null)
             {
                 return false;
@@ -213,7 +213,7 @@ namespace Core.GameModes
                 return false;
             }
 
-            var gameMode = _gameModeDict[gameModeId];
+            GameMode gameMode = _gameModeDict[gameModeId];
             _availableGameModes.Remove(gameMode);
             _gameModeDict.Remove(gameModeId);
 

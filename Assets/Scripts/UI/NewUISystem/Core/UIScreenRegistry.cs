@@ -39,19 +39,19 @@ namespace UI.UISystem.Core
         /// </summary>
         private static void ScanForScreenClasses()
         {
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
             
-            foreach (var assembly in assemblies)
+            foreach (Assembly assembly in assemblies)
             {
                 try
                 {
-                    var types = assembly.GetTypes()
+                    IEnumerable<Type> types = assembly.GetTypes()
                         .Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(BaseUIScreen)))
                         .Where(t => t.GetCustomAttribute<UIScreenAttribute>() != null);
 
-                    foreach (var type in types)
+                    foreach (Type type in types)
                     {
-                        var attribute = type.GetCustomAttribute<UIScreenAttribute>();
+                        UIScreenAttribute attribute = type.GetCustomAttribute<UIScreenAttribute>();
                         if (attribute != null && attribute.AutoRegister)
                         {
                             RegisterScreenType(attribute.ScreenType, type, attribute);
@@ -87,7 +87,7 @@ namespace UI.UISystem.Core
         /// </summary>
         public static BaseUIScreen CreateScreen(UIScreenType screenType)
         {
-            if (!_screenTypes.TryGetValue(screenType, out var screenClass))
+            if (!_screenTypes.TryGetValue(screenType, out Type screenClass))
             {
                 Debug.LogError($"[UIScreenRegistry] No screen class registered for {screenType}");
                 return null;
@@ -110,7 +110,7 @@ namespace UI.UISystem.Core
         /// </summary>
         public static UIScreenAttribute GetScreenAttribute(UIScreenType screenType)
         {
-            _screenAttributes.TryGetValue(screenType, out var attribute);
+            _screenAttributes.TryGetValue(screenType, out UIScreenAttribute attribute);
             return attribute;
         }
 
@@ -135,7 +135,7 @@ namespace UI.UISystem.Core
         /// </summary>
         public static Type GetScreenClassType(UIScreenType screenType)
         {
-            _screenTypes.TryGetValue(screenType, out var type);
+            _screenTypes.TryGetValue(screenType, out Type type);
             return type;
         }
 
@@ -163,10 +163,10 @@ namespace UI.UISystem.Core
         /// </summary>
         public static string GetDebugInfo()
         {
-            var info = $"UIScreenRegistry - {_screenTypes.Count} registered screens:\n";
-            foreach (var kvp in _screenTypes)
+            string info = $"UIScreenRegistry - {_screenTypes.Count} registered screens:\n";
+            foreach (KeyValuePair<UIScreenType, Type> kvp in _screenTypes)
             {
-                var attribute = _screenAttributes[kvp.Key];
+                UIScreenAttribute attribute = _screenAttributes[kvp.Key];
                 info += $"  {kvp.Key} -> {kvp.Value.Name} (Priority: {attribute.Priority})\n";
             }
             return info;

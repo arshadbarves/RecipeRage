@@ -333,7 +333,7 @@ namespace Core.Audio
         {
             List<AudioSource> sourcesToStop = new List<AudioSource>();
             
-            foreach (var kvp in _activeAudioSources)
+            foreach (KeyValuePair<AudioSource, Coroutine> kvp in _activeAudioSources)
             {
                 AudioSource source = kvp.Key;
                 
