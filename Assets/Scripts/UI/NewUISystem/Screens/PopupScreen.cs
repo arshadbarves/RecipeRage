@@ -105,7 +105,10 @@ namespace UI.UISystem.Screens
         public PopupScreen SetTitle(string title)
         {
             Title = title;
-            if (_titleLabel != null) _titleLabel.text = title;
+            if (_titleLabel != null)
+            {
+                _titleLabel.text = title;
+            }
             return this;
         }
 
@@ -115,7 +118,10 @@ namespace UI.UISystem.Screens
         public PopupScreen SetMessage(string message)
         {
             Message = message;
-            if (_messageLabel != null) _messageLabel.text = message;
+            if (_messageLabel != null)
+            {
+                _messageLabel.text = message;
+            }
             return this;
         }
 
@@ -179,7 +185,9 @@ namespace UI.UISystem.Screens
         {
             ShowCancelButton = false;
             if (_cancelButton != null)
+            {
                 _cancelButton.style.display = DisplayStyle.None;
+            }
             return this;
         }
 
@@ -190,7 +198,9 @@ namespace UI.UISystem.Screens
         {
             ShowCloseButton = false;
             if (_closeButton != null)
+            {
                 _closeButton.style.display = DisplayStyle.None;
+            }
             return this;
         }
 
@@ -243,9 +253,18 @@ namespace UI.UISystem.Screens
 
         private void UpdateUI()
         {
-            if (_titleLabel != null) _titleLabel.text = Title;
-            if (_messageLabel != null) _messageLabel.text = Message;
-            if (_confirmButton != null) _confirmButton.text = ConfirmButtonText;
+            if (_titleLabel != null)
+            {
+                _titleLabel.text = Title;
+            }
+            if (_messageLabel != null)
+            {
+                _messageLabel.text = Message;
+            }
+            if (_confirmButton != null)
+            {
+                _confirmButton.text = ConfirmButtonText;
+            }
             if (_cancelButton != null) 
             {
                 _cancelButton.text = CancelButtonText;

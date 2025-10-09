@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0669a740a39b946968864efa3c7725be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _bootstrapConfig:
+  bootstrapConfig:
     showSplashScreens: 1
     companySplashDuration: 2.5
     splashFadeInDuration: 0.8
@@ -54,6 +54,7 @@ MonoBehaviour:
     loadingFadeTransitionDuration: 0.5
     tipChangeDuration: 5
     initializationTimeout: 30
+    systemInitTimeout: 5
     initialState: 0
     loadingTips:
     - 'Tip: Use WASD to move around the kitchen'
@@ -63,27 +64,27 @@ MonoBehaviour:
     - 'Tip: Watch the timer - don''t let orders expire!'
     - 'Tip: Upgrade your equipment to cook faster'
     enableDebugLogging: 0
-  _authenticationManagerPrefab: {fileID: 3995240767920382576, guid: 15d71f49bddc5442e9f2539369475701,
+  authenticationManagerPrefab: {fileID: 3995240767920382576, guid: 15d71f49bddc5442e9f2539369475701,
     type: 3}
-  _networkManagerPrefab: {fileID: 2594776718386978240, guid: 40c77cce3a5ad41baa118189c655d9f8,
+  networkManagerPrefab: {fileID: 2594776718386978240, guid: 40c77cce3a5ad41baa118189c655d9f8,
     type: 3}
-  _gameStateManagerPrefab: {fileID: 3944221741089729046, guid: 85632adac7d014beda8a01d0af7cbf3e,
+  gameStateManagerPrefab: {fileID: 3944221741089729046, guid: 85632adac7d014beda8a01d0af7cbf3e,
     type: 3}
-  _uiManagerPrefab: {fileID: 8873109318483759759, guid: 007f71e0e1a074158b4829f34d39c627,
+  uiManagerPrefab: {fileID: 8873109318483759759, guid: 007f71e0e1a074158b4829f34d39c627,
     type: 3}
-  _inputManagerPrefab: {fileID: 642751688635406397, guid: 17f7cbd3bd31a4269af68199d8b16fca,
+  inputManagerPrefab: {fileID: 642751688635406397, guid: 17f7cbd3bd31a4269af68199d8b16fca,
     type: 3}
-  _gameModeManagerPrefab: {fileID: 585557305123895782, guid: ba9a5829e80fa4b0f9f86ac1d1771773,
+  gameModeManagerPrefab: {fileID: 585557305123895782, guid: ba9a5829e80fa4b0f9f86ac1d1771773,
     type: 3}
-  _characterManagerPrefab: {fileID: 948546681456617815, guid: e75c0567795c54bac839f1da08ca4aba,
+  characterManagerPrefab: {fileID: 948546681456617815, guid: e75c0567795c54bac839f1da08ca4aba,
     type: 3}
-  _scoreManagerPrefab: {fileID: 3919467403614891902, guid: 70cb6c8f5cb5a4bf1ae4421962e8892d,
+  scoreManagerPrefab: {fileID: 3919467403614891902, guid: 70cb6c8f5cb5a4bf1ae4421962e8892d,
     type: 3}
-  _orderManagerPrefab: {fileID: 7977691852345876824, guid: 53f30423b353749099625049f4395a4f,
+  orderManagerPrefab: {fileID: 7977691852345876824, guid: 53f30423b353749099625049f4395a4f,
     type: 3}
-  _saveManagerPrefab: {fileID: 3825598497515875527, guid: 9c91d245a95b840bea5545a7acd01e34,
+  saveManagerPrefab: {fileID: 3825598497515875527, guid: 9c91d245a95b840bea5545a7acd01e34,
     type: 3}
-  _audioManagerPrefab: {fileID: 5783940906952233042, guid: f35a957944e024af5aa5b4f0dc1a718c,
+  audioManagerPrefab: {fileID: 5783940906952233042, guid: f35a957944e024af5aa5b4f0dc1a718c,
     type: 3}
 --- !u!114 &4071736836862752304
 MonoBehaviour:

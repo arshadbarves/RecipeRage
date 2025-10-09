@@ -24,18 +24,24 @@ namespace UI.UISystem.Screens
 
         private ProgressBar _progressBar;
         private Label _progressText;
-        private Label _statusText;
         private Label _versionInfo;
 
         #endregion
 
         #region Loading State
 
+        private enum LoadingState
+        {
+            Idle,
+            Loading,
+            WaitingForMinDuration
+        }
+
         private float _currentProgress;
-        private bool _isLoading;
+        private LoadingState _loadingState;
         private float _loadingStartTime;
         private float _showStartTime;
-        private bool _waitingForMinShowDuration;
+        private Coroutine _hideDelayCoroutine;
 
         #endregion
 
@@ -53,7 +59,7 @@ namespace UI.UISystem.Screens
         {
             CacheUIElements();
             ResetLoadingState();
-            
+
             Debug.Log("[LoadingScreen] Initialized with pure C# implementation");
         }
 
@@ -61,13 +67,17 @@ namespace UI.UISystem.Screens
         {
             _loadingStartTime = Time.time;
             _showStartTime = Time.time;
-            _waitingForMinShowDuration = false;
             UpdateUI();
         }
 
         protected override void OnHide()
         {
-            _isLoading = false;
+            _loadingState = LoadingState.Idle;
+            if (_hideDelayCoroutine != null)
+            {
+                UIManager.Instance.StopCoroutine(_hideDelayCoroutine);
+                _hideDelayCoroutine = null;
+            }
             OnLoadingComplete?.Invoke();
         }
 
@@ -75,11 +85,11 @@ namespace UI.UISystem.Screens
         {
             if (IsVisible)
             {
-                if (_isLoading)
+                if (_loadingState == LoadingState.Loading)
                 {
                     CheckMinimumDuration();
                 }
-                else if (_waitingForMinShowDuration)
+                else if (_loadingState == LoadingState.WaitingForMinDuration)
                 {
                     CheckMinimumShowDuration();
                 }
@@ -88,7 +98,6 @@ namespace UI.UISystem.Screens
 
         protected override void OnDispose()
         {
-            // Clean up any resources
         }
 
         #endregion
@@ -99,7 +108,6 @@ namespace UI.UISystem.Screens
         {
             _progressBar = GetElement<ProgressBar>("loading-progress");
             _progressText = GetElement<Label>("progress-text");
-            _statusText = GetElement<Label>("progress-text"); // Using progress-text for status messages
             _versionInfo = GetElement<Label>("version-info");
 
             // Set version info from Application
@@ -109,35 +117,36 @@ namespace UI.UISystem.Screens
             }
 
             // Log missing elements for debugging
-            if (_progressBar == null) Debug.LogWarning("[LoadingScreen] loading-progress not found in template");
-            if (_progressText == null) Debug.LogWarning("[LoadingScreen] progress-text not found in template");
-            if (_versionInfo == null) Debug.LogWarning("[LoadingScreen] version-info not found in template");
+            if (_progressBar == null)
+            {
+                Debug.LogWarning("[LoadingScreen] loading-progress not found in template");
+            }
+            if (_progressText == null)
+            {
+                Debug.LogWarning("[LoadingScreen] progress-text not found in template");
+            }
+            if (_versionInfo == null)
+            {
+                Debug.LogWarning("[LoadingScreen] version-info not found in template");
+            }
+
+
         }
 
         #endregion
 
         #region Public API
 
-        /// <summary>
-        /// Start the loading process
-        /// </summary>
         public void StartLoading()
         {
-            // Reset state when explicitly starting a new loading process
             ResetLoadingState();
-            _isLoading = true;
+            _loadingState = LoadingState.Loading;
             _loadingStartTime = Time.time;
             UpdateProgress("Initializing...", 0f);
         }
 
-        /// <summary>
-        /// Update loading progress manually
-        /// </summary>
-        /// <param name="status">Status message to display (null to keep current)</param>
-        /// <param name="progress">Progress value 0-1 (null to keep current)</param>
         public void UpdateProgress(string status = null, float? progress = null)
         {
-            // Update progress if provided
             if (progress.HasValue)
             {
                 float clampedProgress = Mathf.Clamp01(progress.Value);
@@ -156,88 +165,57 @@ namespace UI.UISystem.Screens
                 OnProgressChanged?.Invoke(clampedProgress);
             }
 
-            // Update status if provided
-            if (status != null && _statusText != null)
+            if (status != null && _progressText != null)
             {
-                _statusText.text = status;
+                _progressText.text = status;
                 OnStatusChanged?.Invoke(status);
             }
 
-            // Complete loading if progress reaches 100%
-            if (_currentProgress >= 1f && _isLoading)
+            if (_currentProgress >= 1f && _loadingState == LoadingState.Loading)
             {
                 CompleteLoading();
             }
-            else
-            {
-                Debug.Log($"Loading progress: {_currentProgress * 100}% and isLoading: {_isLoading}");
-            }
         }
 
-        /// <summary>
-        /// Update only the status text
-        /// </summary>
         public void UpdateStatus(string status)
         {
             UpdateProgress(status: status);
         }
 
-        /// <summary>
-        /// Update only the progress value
-        /// </summary>
         public void UpdateProgressValue(float progress)
         {
             UpdateProgress(progress: progress);
         }
 
-        /// <summary>
-        /// Set minimum loading duration (time from start to completion)
-        /// </summary>
         public LoadingScreen SetMinimumDuration(float duration)
         {
             MinLoadingDuration = duration;
             return this;
         }
 
-        /// <summary>
-        /// Set minimum show duration (minimum time screen stays visible)
-        /// </summary>
         public LoadingScreen SetMinimumShowDuration(float duration)
         {
             MinShowDuration = duration;
             return this;
         }
 
-        /// <summary>
-        /// Set delay before hiding after completion
-        /// </summary>
         public LoadingScreen SetHideDelay(float delay)
         {
             HideDelay = delay;
             return this;
         }
 
-        /// <summary>
-        /// Force complete loading
-        /// </summary>
         public void ForceComplete()
         {
-            if (_isLoading)
+            if (_loadingState == LoadingState.Loading)
             {
                 UpdateProgress("Loading complete!", 1f);
                 CompleteLoading();
             }
         }
 
-        /// <summary>
-        /// Get current loading progress (0-1)
-        /// </summary>
         public float GetProgress() => _currentProgress;
-
-        /// <summary>
-        /// Check if currently loading
-        /// </summary>
-        public bool IsLoading() => _isLoading;
+        public bool IsLoading() => _loadingState == LoadingState.Loading;
 
         #endregion
 
@@ -246,23 +224,14 @@ namespace UI.UISystem.Screens
         private void ResetLoadingState()
         {
             _currentProgress = 0f;
-            _isLoading = false;
-
+            _loadingState = LoadingState.Idle;
             UpdateUI();
         }
 
         private void UpdateUI()
         {
-            // Update progress display with current values (don't reset to 0)
-            if (_progressBar != null)
-            {
-                _progressBar.value = _currentProgress * 100;
-            }
-
-            if (_progressText != null)
-            {
-                _progressText.text = $"{Mathf.RoundToInt(_currentProgress * 100)}%";
-            }
+            if (_progressBar != null) _progressBar.value = _currentProgress * 100;
+            if (_progressText != null) _progressText.text = $"{Mathf.RoundToInt(_currentProgress * 100)}%";
         }
 
         private void CheckMinimumDuration()
@@ -282,30 +251,26 @@ namespace UI.UISystem.Screens
             float showElapsedTime = Time.time - _showStartTime;
             if (showElapsedTime >= MinShowDuration)
             {
-                _waitingForMinShowDuration = false;
-                // Auto-hide after configured delay
-                UIManager.Instance.StartCoroutine(HideAfterDelay(HideDelay));
+                _loadingState = LoadingState.Idle;
+                _hideDelayCoroutine = UIManager.Instance.StartCoroutine(HideAfterDelay(HideDelay));
             }
         }
 
         private void CompleteLoading()
         {
-            if (!_isLoading) return;
+            if (_loadingState != LoadingState.Loading) return;
 
-            _isLoading = false;
+            _loadingState = LoadingState.Idle;
             UpdateProgress("Loading complete!", 1f);
 
-            // Check if minimum show duration has been met
             float showElapsedTime = Time.time - _showStartTime;
             if (showElapsedTime >= MinShowDuration)
             {
-                // Minimum show duration met, hide after delay
-                UIManager.Instance.StartCoroutine(HideAfterDelay(HideDelay));
+                _hideDelayCoroutine = UIManager.Instance.StartCoroutine(HideAfterDelay(HideDelay));
             }
             else
             {
-                // Wait for minimum show duration before hiding
-                _waitingForMinShowDuration = true;
+                _loadingState = LoadingState.WaitingForMinDuration;
             }
         }
 

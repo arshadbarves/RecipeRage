@@ -103,8 +103,14 @@ namespace UI.UISystem.Screens
             _vsyncToggle = GetElement<Toggle>("vsync-toggle");
 
             // Log missing elements for debugging
-            if (_closeButton == null) Debug.LogWarning("[SettingsScreen] close-button not found in template");
-            if (_masterVolumeSlider == null) Debug.LogWarning("[SettingsScreen] master-volume-slider not found in template");
+            if (_closeButton == null)
+            {
+                Debug.LogWarning("[SettingsScreen] close-button not found in template");
+            }
+            if (_masterVolumeSlider == null)
+            {
+                Debug.LogWarning("[SettingsScreen] master-volume-slider not found in template");
+            }
         }
 
         private void SetupEventHandlers()
@@ -260,13 +266,28 @@ namespace UI.UISystem.Screens
         private void UpdateUIFromSettings()
         {
             // Update sliders
-            if (_masterVolumeSlider != null) _masterVolumeSlider.value = MasterVolume;
-            if (_musicVolumeSlider != null) _musicVolumeSlider.value = MusicVolume;
-            if (_sfxVolumeSlider != null) _sfxVolumeSlider.value = SFXVolume;
+            if (_masterVolumeSlider != null)
+            {
+                _masterVolumeSlider.value = MasterVolume;
+            }
+            if (_musicVolumeSlider != null)
+            {
+                _musicVolumeSlider.value = MusicVolume;
+            }
+            if (_sfxVolumeSlider != null)
+            {
+                _sfxVolumeSlider.value = SFXVolume;
+            }
 
             // Update toggles
-            if (_fullscreenToggle != null) _fullscreenToggle.value = Fullscreen;
-            if (_vsyncToggle != null) _vsyncToggle.value = VSync;
+            if (_fullscreenToggle != null)
+            {
+                _fullscreenToggle.value = Fullscreen;
+            }
+            if (_vsyncToggle != null)
+            {
+                _vsyncToggle.value = VSync;
+            }
         }
 
         private void ApplyGraphicsSettings()

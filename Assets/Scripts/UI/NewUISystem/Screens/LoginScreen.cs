@@ -42,18 +42,18 @@ namespace UI.UISystem.Screens
         {
             CacheUIElements();
             SetupButtonHandlers();
-            
+
             Debug.Log("[LoginScreen] Initialized");
         }
 
         protected override void OnShow()
         {
             _isLoggingIn = false;
-            
+
             // Setup AuthenticationManager connection when screen is shown
             // This handles timing issues where AuthenticationManager might not exist during OnInitialize
             SetupAuthenticationManager();
-            
+
             UpdateUI();
             UpdateStatus("Please select a login method");
         }
@@ -75,7 +75,7 @@ namespace UI.UISystem.Screens
             {
                 _facebookLoginButton.clicked -= OnFacebookLoginClicked;
             }
-            
+
             if (_guestLoginButton != null)
             {
                 _guestLoginButton.clicked -= OnGuestLoginClicked;
@@ -102,10 +102,22 @@ namespace UI.UISystem.Screens
             _loadingIndicator = GetElement<VisualElement>("loading-indicator");
 
             // Log missing elements for debugging
-            if (_facebookLoginButton == null) Debug.LogWarning("[LoginScreen] facebook-login-button not found");
-            if (_guestLoginButton == null) Debug.LogWarning("[LoginScreen] guest-login-button not found");
-            if (_statusText == null) Debug.LogWarning("[LoginScreen] status-text not found");
-            if (_loadingIndicator == null) Debug.LogWarning("[LoginScreen] loading-indicator not found");
+            if (_facebookLoginButton == null)
+            {
+                Debug.LogWarning("[LoginScreen] facebook-login-button not found");
+            }
+            if (_guestLoginButton == null)
+            {
+                Debug.LogWarning("[LoginScreen] guest-login-button not found");
+            }
+            if (_statusText == null)
+            {
+                Debug.LogWarning("[LoginScreen] status-text not found");
+            }
+            if (_loadingIndicator == null)
+            {
+                Debug.LogWarning("[LoginScreen] loading-indicator not found");
+            }
         }
 
         private void SetupButtonHandlers()
@@ -114,7 +126,7 @@ namespace UI.UISystem.Screens
             {
                 _facebookLoginButton.clicked += OnFacebookLoginClicked;
             }
-            
+
             if (_guestLoginButton != null)
             {
                 _guestLoginButton.clicked += OnGuestLoginClicked;
@@ -138,24 +150,24 @@ namespace UI.UISystem.Screens
             AuthenticationManager.Instance.OnLoginSuccess += HandleLoginSuccess;
             AuthenticationManager.Instance.OnLoginFailed += HandleLoginFailed;
             AuthenticationManager.Instance.OnLoginStatusChanged += UpdateStatus;
-            
+
             Debug.Log("[LoginScreen] Connected to AuthenticationManager");
         }
 
         private void UpdateUI()
         {
             bool buttonsEnabled = !_isLoggingIn;
-            
+
             if (_facebookLoginButton != null)
             {
                 _facebookLoginButton.SetEnabled(buttonsEnabled);
             }
-            
+
             if (_guestLoginButton != null)
             {
                 _guestLoginButton.SetEnabled(buttonsEnabled);
             }
-            
+
             if (_loadingIndicator != null)
             {
                 _loadingIndicator.style.display = _isLoggingIn ? DisplayStyle.Flex : DisplayStyle.None;
@@ -168,7 +180,7 @@ namespace UI.UISystem.Screens
             {
                 _statusText.text = message;
             }
-            
+
             Debug.Log($"[LoginScreen] {message}");
         }
 
@@ -180,23 +192,29 @@ namespace UI.UISystem.Screens
 
         private void OnFacebookLoginClicked()
         {
-            if (_isLoggingIn) return;
-            
+            if (_isLoggingIn)
+            {
+                return;
+            }
+
             Debug.Log("[LoginScreen] Facebook login clicked");
-            
+
             _isLoggingIn = true;
             UpdateUI();
-            
+
             // Start coroutine to handle async AuthenticationManager check
             UIManager.Instance.StartCoroutine(HandleFacebookLogin());
         }
 
         private void OnGuestLoginClicked()
         {
-            if (_isLoggingIn) return;
-            
+            if (_isLoggingIn)
+            {
+                return;
+            }
+
             Debug.Log("[LoginScreen] Guest login clicked");
-            
+
             _isLoggingIn = true;
             UpdateUI();
 
@@ -210,10 +228,10 @@ namespace UI.UISystem.Screens
             if (AuthenticationManager.Instance == null)
             {
                 UpdateStatus("Initializing authentication...");
-                
+
                 float timeout = 5f;
                 float elapsed = 0f;
-                
+
                 while (AuthenticationManager.Instance == null && elapsed < timeout)
                 {
                     elapsed += Time.deltaTime;
@@ -228,7 +246,7 @@ namespace UI.UISystem.Screens
                     UpdateUI();
                     yield break;
                 }
-                
+
                 // Ensure we're connected
                 SetupAuthenticationManager();
             }
@@ -243,10 +261,10 @@ namespace UI.UISystem.Screens
             if (AuthenticationManager.Instance == null)
             {
                 UpdateStatus("Initializing authentication...");
-                
+
                 float timeout = 5f;
                 float elapsed = 0f;
-                
+
                 while (AuthenticationManager.Instance == null && elapsed < timeout)
                 {
                     elapsed += Time.deltaTime;
@@ -261,7 +279,7 @@ namespace UI.UISystem.Screens
                     UpdateUI();
                     yield break;
                 }
-                
+
                 // Ensure we're connected
                 SetupAuthenticationManager();
             }
@@ -278,12 +296,12 @@ namespace UI.UISystem.Screens
         {
             _isLoggingIn = false;
             UpdateUI();
-            
+
             Debug.Log("[LoginScreen] Login successful from AuthenticationManager");
-            
+
             // Notify listeners
             OnLoginSuccess?.Invoke();
-            
+
             // Hide login screen after a short delay
             UIManager.Instance.StartCoroutine(HideAfterDelay(1f));
         }
@@ -292,9 +310,9 @@ namespace UI.UISystem.Screens
         {
             _isLoggingIn = false;
             UpdateUI();
-            
+
             Debug.LogWarning($"[LoginScreen] Login failed from AuthenticationManager: {error}");
-            
+
             // Notify listeners
             OnLoginFailed?.Invoke(error);
         }

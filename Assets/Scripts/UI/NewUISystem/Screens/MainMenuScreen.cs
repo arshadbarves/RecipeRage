@@ -127,8 +127,14 @@ namespace UI.UISystem.Screens
             _character3 = GetElement<VisualElement>("character-3");
 
             // Log missing elements for debugging
-            if (_playButton == null) Debug.LogWarning("[MainMenuScreen] play-button not found in template");
-            if (_gameTitle == null) Debug.LogWarning("[MainMenuScreen] game-title not found in template");
+            if (_playButton == null)
+            {
+                Debug.LogWarning("[MainMenuScreen] play-button not found in template");
+            }
+            if (_gameTitle == null)
+            {
+                Debug.LogWarning("[MainMenuScreen] game-title not found in template");
+            }
         }
 
         private void SetupEventHandlers()
@@ -203,19 +209,31 @@ namespace UI.UISystem.Screens
         {
             // Update game title
             if (_gameTitle != null)
+            {
                 _gameTitle.text = "Recipe Rage";
+            }
 
             // Update player info
             if (_playerNameLabel != null)
+            {
                 _playerNameLabel.text = PlayerName;
+            }
             if (_playerLevelLabel != null)
+            {
                 _playerLevelLabel.text = PlayerLevel.ToString();
+            }
             if (_trophyCountLabel != null)
+            {
                 _trophyCountLabel.text = TrophyCount.ToString();
+            }
             if (_gemCountLabel != null)
+            {
                 _gemCountLabel.text = GemCount.ToString();
+            }
             if (_coinCountLabel != null)
+            {
                 _coinCountLabel.text = CoinCount.ToString();
+            }
 
             HighlightSelectedCharacter();
         }
@@ -262,11 +280,17 @@ namespace UI.UISystem.Screens
 
             // Animate characters with slight variations
             if (_character1 != null)
+            {
                 _character1.style.rotate = new Rotate(angle);
+            }
             if (_character2 != null)
+            {
                 _character2.style.rotate = new Rotate(-angle * 0.5f);
+            }
             if (_character3 != null)
+            {
                 _character3.style.rotate = new Rotate(angle * 0.8f);
+            }
         }
 
         private void AnimateUIElementsEntrance()
