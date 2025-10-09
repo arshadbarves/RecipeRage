@@ -86,11 +86,11 @@ namespace Core
         {
             // Wait one frame to ensure Unity is fully initialized before creating UI
             yield return null;
-            
+
             // Initialize UI Manager first, now that we're on the main thread after first frame
             InitializeUIManager();
             yield return null;
-            
+
             yield return StartCoroutine(HandleSplashScreenAsync());
             yield return StartCoroutine(InitializeAllSystemsAsync());
 
@@ -115,9 +115,23 @@ namespace Core
                 yield break;
             }
 
-            uiManager.ShowScreen(UIScreenType.Splash, true, false);
-            yield return new WaitForSeconds(bootstrapConfig.companySplashDuration);
-            uiManager.HideScreen(UIScreenType.Splash);
+            SplashScreen splashScreen = uiManager.GetScreen<SplashScreen>();
+            if (splashScreen != null)
+            {
+                splashScreen
+                    .SetSplashDuration(bootstrapConfig.companySplashDuration)
+                    .SetFadeDurations(bootstrapConfig.splashFadeInDuration, bootstrapConfig.splashFadeOutDuration);
+
+                bool splashCompleted = false;
+                splashScreen.OnSplashComplete += () => splashCompleted = true;
+
+                uiManager.ShowScreen(UIScreenType.Splash, true, false);
+
+                while (!splashCompleted)
+                {
+                    yield return null;
+                }
+            }
         }
 
         private readonly struct SystemInitInfo
@@ -148,7 +162,7 @@ namespace Core
             {
                 return;
             }
-            
+
             InitializeSystemSync(new SystemInitInfo("UIManager", 0f, uiManagerPrefab,
                 _ => { _managers[typeof(UIManager)] = UIManager.Instance; }));
         }
@@ -169,8 +183,17 @@ namespace Core
         private IEnumerator InitializeAllSystemsAsync()
         {
             UIManager uiManager = GetManager<UIManager>();
+            LoadingScreen loadingScreen = uiManager?.GetScreen<LoadingScreen>();
+
+            if (loadingScreen != null && bootstrapConfig != null)
+            {
+                loadingScreen
+                    .SetMinimumDuration(bootstrapConfig.minLoadingScreenDuration)
+                    .SetHideDelay(bootstrapConfig.loadingFadeTransitionDuration);
+            }
+
             uiManager?.ShowScreen(UIScreenType.Loading, true, false);
-            uiManager?.GetScreen<LoadingScreen>()?.StartLoading();
+            loadingScreen?.StartLoading();
 
             SystemInitInfo[] systems = new[]
             {
@@ -260,7 +283,7 @@ namespace Core
 
             if (systemInfo.AllowTimeout)
             {
-                float timeout = Time.time + 5f;
+                float timeout = Time.time + (bootstrapConfig?.systemInitTimeout ?? 5f);
                 while (!systemInfo.IsReady() && Time.time < timeout)
                 {
                     yield return null;

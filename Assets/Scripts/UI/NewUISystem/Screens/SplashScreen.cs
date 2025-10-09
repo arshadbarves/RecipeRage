@@ -25,6 +25,7 @@ namespace UI.UISystem.Screens
 
         #region UI Elements
 
+        private VisualElement _splashContent;
         private Label _companyNameLabel;
 
         #endregion
@@ -32,16 +33,7 @@ namespace UI.UISystem.Screens
         #region Splash State
 
         private bool _isPlayingSplash;
-        private float _splashTimer;
-        private SplashPhase _currentPhase;
-
-        private enum SplashPhase
-        {
-            FadeIn,
-            Hold,
-            FadeOut,
-            Complete
-        }
+        private Coroutine _splashCoroutine;
 
         #endregion
 
@@ -57,14 +49,14 @@ namespace UI.UISystem.Screens
         {
             CacheUIElements();
             SetInitialValues();
-            
+
             Debug.Log("[SplashScreen] Initialized with pure C# implementation");
         }
 
         protected override void OnShow()
         {
             UpdateUI();
-            
+
             // Auto-start splash sequence
             PlaySplashSequence();
         }
@@ -74,17 +66,14 @@ namespace UI.UISystem.Screens
             StopSplashSequence();
         }
 
-        public override void Update(float deltaTime)
-        {
-            if (IsVisible && _isPlayingSplash)
-            {
-                UpdateSplashSequence(deltaTime);
-            }
-        }
-
         protected override void OnDispose()
         {
             // Clean up resources
+            if (_splashCoroutine != null && UIManager.Instance != null)
+            {
+                UIManager.Instance.StopCoroutine(_splashCoroutine);
+                _splashCoroutine = null;
+            }
         }
 
         #endregion
@@ -93,32 +82,31 @@ namespace UI.UISystem.Screens
 
         private void CacheUIElements()
         {
+            _splashContent = GetElement<VisualElement>("splash-content");
             _companyNameLabel = GetElement<Label>("company-name");
 
             // Log missing elements for debugging
-            if (_companyNameLabel == null) Debug.LogWarning("[SplashScreen] company-name not found in template");
+            if (_splashContent == null)
+            {
+                Debug.LogWarning("[SplashScreen] splash-content not found in template");
+            }
+            if (_companyNameLabel == null)
+            {
+                Debug.LogWarning("[SplashScreen] company-name not found in template");
+            }
         }
 
         private void SetInitialValues()
         {
             if (_companyNameLabel != null)
+            {
                 _companyNameLabel.text = CompanyName;
+            }
         }
 
         #endregion
 
         #region Public API
-
-        /// <summary>
-        /// Set the company name
-        /// </summary>
-        public SplashScreen SetCompanyName(string companyName)
-        {
-            CompanyName = companyName;
-            if (_companyNameLabel != null)
-                _companyNameLabel.text = companyName;
-            return this;
-        }
 
         /// <summary>
         /// Set splash duration
@@ -132,35 +120,29 @@ namespace UI.UISystem.Screens
         /// <summary>
         /// Set fade durations
         /// </summary>
-        public SplashScreen SetFadeDurations(float fadeIn, float fadeOut)
+        public void SetFadeDurations(float fadeIn, float fadeOut)
         {
             FadeInDuration = Mathf.Max(0.1f, fadeIn);
             FadeOutDuration = Mathf.Max(0.1f, fadeOut);
-            return this;
         }
 
 
-
         /// <summary>
-        /// Play the splash sequence
+        /// Play the splash sequence using automatic animations
         /// </summary>
-        public void PlaySplashSequence()
+        private void PlaySplashSequence()
         {
-            if (_isPlayingSplash) return;
+            if (_isPlayingSplash)
+            {
+                return;
+            }
 
             _isPlayingSplash = true;
-            _splashTimer = 0f;
-            _currentPhase = SplashPhase.FadeIn;
-
             PrepareForSplash();
+
+            // Start automatic animation sequence
+            _splashCoroutine = UIManager.Instance.StartCoroutine(AnimateSplashSequence());
         }
-
-
-
-        /// <summary>
-        /// Check if splash is currently playing
-        /// </summary>
-        public bool IsPlayingSplash() => _isPlayingSplash;
 
         #endregion
 
@@ -168,95 +150,70 @@ namespace UI.UISystem.Screens
 
         private void UpdateUI()
         {
-            if (_companyNameLabel != null) _companyNameLabel.text = CompanyName;
+            if (_companyNameLabel != null)
+            {
+                _companyNameLabel.text = CompanyName;
+            }
         }
 
         private void PrepareForSplash()
         {
-            // Reset company name label for animation
-            if (_companyNameLabel != null)
-                _companyNameLabel.style.opacity = 0;
+            // Reset splash content for animation
+            if (_splashContent != null)
+            {
+                _splashContent.style.opacity = 0;
+            }
         }
 
-        private void UpdateSplashSequence(float deltaTime)
+        private System.Collections.IEnumerator AnimateSplashSequence()
         {
-            _splashTimer += deltaTime;
-
-            switch (_currentPhase)
+            // Fade in splash content
+            if (_splashContent != null)
             {
-                case SplashPhase.FadeIn:
-                    UpdateFadeInPhase();
-                    break;
-                case SplashPhase.Hold:
-                    UpdateHoldPhase();
-                    break;
-                case SplashPhase.FadeOut:
-                    UpdateFadeOutPhase();
-                    break;
-                case SplashPhase.Complete:
-                    CompleteSplash();
-                    break;
+                UnityNativeUIAnimationSystem.AnimateOpacity(
+                    _splashContent,
+                    0f, 1f,
+                    FadeInDuration, 0f,
+                    UnityNativeUIAnimationSystem.EasingCurve.EaseOut,
+                    null
+                );
             }
+
+            // Wait for fade in to complete
+            yield return new WaitForSeconds(FadeInDuration);
+
+            // Hold for duration
+            float holdTime = SplashDuration - FadeInDuration - FadeOutDuration;
+            yield return new WaitForSeconds(holdTime);
+
+            // Fade out splash content
+            if (_splashContent != null)
+            {
+                UnityNativeUIAnimationSystem.AnimateOpacity(
+                    _splashContent,
+                    1f, 0f,
+                    FadeOutDuration, 0f,
+                    UnityNativeUIAnimationSystem.EasingCurve.EaseIn,
+                    null
+                );
+            }
+
+            // Wait for fade out to complete
+            yield return new WaitForSeconds(FadeOutDuration);
+
+            // Complete splash
+            CompleteSplash();
         }
-
-        private void UpdateFadeInPhase()
-        {
-            float fadeProgress = _splashTimer / FadeInDuration;
-            
-            if (fadeProgress >= 1f)
-            {
-                // Fade in complete
-                SetElementsOpacity(1f);
-                _currentPhase = SplashPhase.Hold;
-                _splashTimer = 0f;
-            }
-            else
-            {
-                // Animate fade in
-                SetElementsOpacity(fadeProgress);
-            }
-        }
-
-        private void UpdateHoldPhase()
-        {
-            float holdDuration = SplashDuration - FadeInDuration - FadeOutDuration;
-            
-            if (_splashTimer >= holdDuration)
-            {
-                _currentPhase = SplashPhase.FadeOut;
-                _splashTimer = 0f;
-            }
-        }
-
-        private void UpdateFadeOutPhase()
-        {
-            float fadeProgress = _splashTimer / FadeOutDuration;
-            
-            if (fadeProgress >= 1f)
-            {
-                // Fade out complete
-                SetElementsOpacity(0f);
-                _currentPhase = SplashPhase.Complete;
-            }
-            else
-            {
-                // Animate fade out
-                SetElementsOpacity(1f - fadeProgress);
-            }
-        }
-
-        private void SetElementsOpacity(float opacity)
-        {
-            if (_companyNameLabel != null)
-                _companyNameLabel.style.opacity = opacity;
-        }
-
-
 
         private void StopSplashSequence()
         {
             _isPlayingSplash = false;
-            _currentPhase = SplashPhase.Complete;
+            if (_splashCoroutine == null || UIManager.Instance == null)
+            {
+                return;
+            }
+            UIManager.Instance.StopCoroutine(_splashCoroutine);
+            _splashCoroutine = null;
         }
 
         private void CompleteSplash()
@@ -266,54 +223,6 @@ namespace UI.UISystem.Screens
 
             // Auto-hide after completion
             Hide(true);
-        }
-
-        #endregion
-
-        #region Animation Methods (Alternative to manual updates)
-
-        /// <summary>
-        /// Play splash using Unity's animation system instead of manual updates
-        /// </summary>
-        public SplashScreen PlaySplashWithAnimations()
-        {
-            if (_isPlayingSplash) return this;
-
-            _isPlayingSplash = true;
-            PrepareForSplash();
-
-            // Fade in company name
-            if (_companyNameLabel != null)
-            {
-                UnityNativeUIAnimationSystem.AnimateOpacity(
-                    _companyNameLabel,
-                    0f, 1f,
-                    FadeInDuration, 0f,
-                    UnityNativeUIAnimationSystem.EasingCurve.EaseOut,
-                    () => {
-                        // Hold for duration, then fade out
-                        float holdTime = SplashDuration - FadeInDuration - FadeOutDuration;
-                        UIManager.Instance.StartCoroutine(FadeOutAfterDelay(holdTime));
-                    }
-                );
-            }
-
-            return this;
-        }
-
-        private System.Collections.IEnumerator FadeOutAfterDelay(float delay)
-        {
-            yield return new WaitForSeconds(delay);
-
-            // Fade out company name
-            if (_companyNameLabel != null)
-            {
-                UnityNativeUIAnimationSystem.AnimateOpacity(
-                    _companyNameLabel, 1f, 0f, FadeOutDuration, 0f,
-                    UnityNativeUIAnimationSystem.EasingCurve.EaseIn,
-                    () => CompleteSplash()
-                );
-            }
         }
 
         #endregion

@@ -157,7 +157,10 @@ namespace UI.UISystem.Screens
         public NotificationScreen SetMessage(string message)
         {
             Message = message;
-            if (_messageLabel != null) _messageLabel.text = message;
+            if (_messageLabel != null)
+            {
+                _messageLabel.text = message;
+            }
             return this;
         }
 
@@ -249,13 +252,19 @@ namespace UI.UISystem.Screens
 
         private void UpdateUI()
         {
-            if (_messageLabel != null) _messageLabel.text = Message;
+            if (_messageLabel != null)
+            {
+                _messageLabel.text = Message;
+            }
             ApplyNotificationStyling();
         }
 
         private void ApplyNotificationStyling()
         {
-            if (Container == null) return;
+            if (Container == null)
+            {
+                return;
+            }
 
             // Remove existing type classes
             Container.RemoveFromClassList("notification--info");
@@ -298,7 +307,10 @@ namespace UI.UISystem.Screens
 
         private void StartAutoHideTimer()
         {
-            if (!AutoHide) return;
+            if (!AutoHide)
+            {
+                return;
+            }
 
             StopAutoHideTimer();
             

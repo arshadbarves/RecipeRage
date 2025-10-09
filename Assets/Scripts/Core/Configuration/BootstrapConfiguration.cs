@@ -39,7 +39,11 @@ namespace Core.Configuration
         [Tooltip("Maximum time to wait for all systems to initialize")]
         [Range(10f, 60f)]
         public float initializationTimeout = 30f;
-        
+
+        [Tooltip("Timeout for individual system initialization")]
+        [Range(1f, 15f)]
+        public float systemInitTimeout = 5f;
+
         [Tooltip("Which game state to start in after initialization")]
         public GameBootstrap.GameStateType initialState = GameBootstrap.GameStateType.MainMenu;
 
