@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Core.GameFramework.State;
-using Core.GameFramework.State.States;
+using Core.State;
+using Core.State.States;
 using Core.GameModes;
 using Core.Networking;
 using Core.Networking.Common;

@@ -11,7 +11,7 @@ using Gameplay.Cooking;
 using Gameplay.Scoring;
 using Core;
 using Core.Characters;
-using Core.GameFramework.State;
+using Core.State;
 using UI;
 using Unity.Netcode;
 
@@ -176,7 +176,7 @@ namespace RecipeRage.Editor.Prefabs
             CreatePrefab(gameStateManagerObj, "Assets/Prefabs/Managers/GameStateManager.prefab");
             Object.DestroyImmediate(gameStateManagerObj);
         }
-        
+
         /// <summary>
         /// Creates the InputManager prefab.
         /// </summary>

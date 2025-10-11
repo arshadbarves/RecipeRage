@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
-using Core.Patterns;
+using Core.Utilities.Patterns;
 using Core.SaveSystem;
 
 namespace Core.Audio
@@ -19,37 +19,37 @@ namespace Core.Audio
         [SerializeField] private string _musicVolumeParam = "MusicVolume";
         [SerializeField] private string _sfxVolumeParam = "SFXVolume";
         [SerializeField] private string _voiceVolumeParam = "VoiceVolume";
-        
+
         [Header("Audio Sources")]
         [SerializeField] private AudioSource _musicSource;
         [SerializeField] private Transform _poolContainer;
-        
+
         [Header("Audio Settings")]
         [SerializeField] private int _initialPoolSize = 10;
         [SerializeField] private int _maxPoolSize = 20;
         [SerializeField] private float _spatialBlend2D = 0f;
         [SerializeField] private float _spatialBlend3D = 1f;
-        
+
         // Audio pools
         private Queue<AudioSource> _sfxPool = new Queue<AudioSource>();
         private Queue<AudioSource> _voicePool = new Queue<AudioSource>();
         private Dictionary<AudioSource, Coroutine> _activeAudioSources = new Dictionary<AudioSource, Coroutine>();
-        
+
         // Currently playing music
         private AudioClip _currentMusic;
         private AudioClip _nextMusic;
         private Coroutine _musicFadeCoroutine;
-        
+
         // Save manager reference
         private SaveManager _saveManager;
-        
+
         /// <summary>
         /// Initialize the audio manager.
         /// </summary>
         protected override void Awake()
         {
             base.Awake();
-            
+
             // Create pool container if not set
             if (_poolContainer == null)
             {
@@ -57,7 +57,7 @@ namespace Core.Audio
                 poolObj.transform.SetParent(transform);
                 _poolContainer = poolObj.transform;
             }
-            
+
             // Create music source if not set
             if (_musicSource == null)
             {
@@ -67,13 +67,13 @@ namespace Core.Audio
                 _musicSource.loop = true;
                 _musicSource.spatialBlend = 0f; // 2D sound
             }
-            
+
             // Initialize audio pools
             InitializeAudioPools();
-            
+
             Debug.Log("[AudioManager] Initialized");
         }
-        
+
         /// <summary>
         /// Set up the audio manager.
         /// </summary>
@@ -81,13 +81,13 @@ namespace Core.Audio
         {
             // Get save manager reference
             _saveManager = SaveManager.Instance;
-            
+
             if (_saveManager != null)
             {
                 // Load audio settings
                 GameSettingsData settings = _saveManager.GetSettings();
                 ApplyAudioSettings(settings);
-                
+
                 // Subscribe to settings changes
                 _saveManager.OnSettingsChanged += ApplyAudioSettings;
             }
@@ -96,7 +96,7 @@ namespace Core.Audio
                 Debug.LogWarning("[AudioManager] SaveManager not found. Audio settings will not be saved.");
             }
         }
-        
+
         /// <summary>
         /// Clean up when destroyed.
         /// </summary>
@@ -106,12 +106,12 @@ namespace Core.Audio
             {
                 _saveManager.OnSettingsChanged -= ApplyAudioSettings;
             }
-            
+
             base.OnDestroy();
         }
-        
+
         #region Public API
-        
+
         /// <summary>
         /// Play a music track.
         /// </summary>
@@ -126,19 +126,19 @@ namespace Core.Audio
                 Debug.LogWarning("[AudioManager] Attempted to play null music clip");
                 return;
             }
-            
+
             // If the same music is already playing, don't restart it
             if (_currentMusic == clip && _musicSource.isPlaying)
             {
                 return;
             }
-            
+
             // Stop any existing fade
             if (_musicFadeCoroutine != null)
             {
                 StopCoroutine(_musicFadeCoroutine);
             }
-            
+
             // If we're already playing music, fade it out and then start the new music
             if (_musicSource.isPlaying && fadeTime > 0f)
             {
@@ -161,16 +161,16 @@ namespace Core.Audio
                 _musicSource.loop = loop;
                 _musicSource.Play();
                 _currentMusic = clip;
-                
+
                 if (fadeTime > 0f)
                 {
                     _musicFadeCoroutine = StartCoroutine(FadeMusicCoroutine(volume, fadeTime, null));
                 }
             }
-            
+
             Debug.Log($"[AudioManager] Playing music: {clip.name}");
         }
-        
+
         /// <summary>
         /// Stop the currently playing music.
         /// </summary>
@@ -182,7 +182,7 @@ namespace Core.Audio
             {
                 StopCoroutine(_musicFadeCoroutine);
             }
-            
+
             if (_musicSource.isPlaying)
             {
                 if (fadeTime > 0f)
@@ -197,11 +197,11 @@ namespace Core.Audio
                     _musicSource.Stop();
                     _currentMusic = null;
                 }
-                
+
                 Debug.Log("[AudioManager] Stopping music");
             }
         }
-        
+
         /// <summary>
         /// Pause the currently playing music.
         /// </summary>
@@ -213,7 +213,7 @@ namespace Core.Audio
                 Debug.Log("[AudioManager] Pausing music");
             }
         }
-        
+
         /// <summary>
         /// Resume the paused music.
         /// </summary>
@@ -225,7 +225,7 @@ namespace Core.Audio
                 Debug.Log("[AudioManager] Resuming music");
             }
         }
-        
+
         /// <summary>
         /// Play a sound effect.
         /// </summary>
@@ -238,7 +238,7 @@ namespace Core.Audio
         {
             return PlaySound(clip, SoundCategory.SFX, null, volume, pitch, _spatialBlend2D, loop);
         }
-        
+
         /// <summary>
         /// Play a sound effect at a position in 3D space.
         /// </summary>
@@ -253,7 +253,7 @@ namespace Core.Audio
         {
             return PlaySound(clip, SoundCategory.SFX, position, volume, pitch, spatialBlend ?? _spatialBlend3D, loop);
         }
-        
+
         /// <summary>
         /// Play a voice clip.
         /// </summary>
@@ -265,7 +265,7 @@ namespace Core.Audio
         {
             return PlaySound(clip, SoundCategory.Voice, null, volume, pitch, _spatialBlend2D, false);
         }
-        
+
         /// <summary>
         /// Play a voice clip at a position in 3D space.
         /// </summary>
@@ -279,7 +279,7 @@ namespace Core.Audio
         {
             return PlaySound(clip, SoundCategory.Voice, position, volume, pitch, spatialBlend ?? _spatialBlend3D, false);
         }
-        
+
         /// <summary>
         /// Play a UI sound effect.
         /// </summary>
@@ -291,7 +291,7 @@ namespace Core.Audio
         {
             return PlaySound(clip, SoundCategory.UI, null, volume, pitch, 0f, false);
         }
-        
+
         /// <summary>
         /// Stop a sound.
         /// </summary>
@@ -303,14 +303,14 @@ namespace Core.Audio
             {
                 return;
             }
-            
+
             if (_activeAudioSources.TryGetValue(audioSource, out Coroutine fadeCoroutine))
             {
                 if (fadeCoroutine != null)
                 {
                     StopCoroutine(fadeCoroutine);
                 }
-                
+
                 if (fadeTime > 0f)
                 {
                     _activeAudioSources[audioSource] = StartCoroutine(FadeSoundCoroutine(audioSource, 0f, fadeTime, () => {
@@ -323,7 +323,7 @@ namespace Core.Audio
                 }
             }
         }
-        
+
         /// <summary>
         /// Stop all sounds of a specific category.
         /// </summary>
@@ -332,24 +332,24 @@ namespace Core.Audio
         public void StopAllSounds(SoundCategory category, float fadeTime = 0f)
         {
             List<AudioSource> sourcesToStop = new List<AudioSource>();
-            
+
             foreach (KeyValuePair<AudioSource, Coroutine> kvp in _activeAudioSources)
             {
                 AudioSource source = kvp.Key;
-                
-                if (source.outputAudioMixerGroup != null && 
+
+                if (source.outputAudioMixerGroup != null &&
                     source.outputAudioMixerGroup.name.Contains(category.ToString()))
                 {
                     sourcesToStop.Add(source);
                 }
             }
-            
+
             foreach (AudioSource source in sourcesToStop)
             {
                 StopSound(source, fadeTime);
             }
         }
-        
+
         /// <summary>
         /// Stop all sounds.
         /// </summary>
@@ -357,13 +357,13 @@ namespace Core.Audio
         public void StopAllSounds(float fadeTime = 0f)
         {
             List<AudioSource> sourcesToStop = new List<AudioSource>(_activeAudioSources.Keys);
-            
+
             foreach (AudioSource source in sourcesToStop)
             {
                 StopSound(source, fadeTime);
             }
         }
-        
+
         /// <summary>
         /// Set the master volume.
         /// </summary>
@@ -371,7 +371,7 @@ namespace Core.Audio
         public void SetMasterVolume(float volume)
         {
             SetMixerVolume(_masterVolumeParam, volume);
-            
+
             // Update settings if save manager exists
             if (_saveManager != null)
             {
@@ -380,7 +380,7 @@ namespace Core.Audio
                 });
             }
         }
-        
+
         /// <summary>
         /// Set the music volume.
         /// </summary>
@@ -388,7 +388,7 @@ namespace Core.Audio
         public void SetMusicVolume(float volume)
         {
             SetMixerVolume(_musicVolumeParam, volume);
-            
+
             // Update settings if save manager exists
             if (_saveManager != null)
             {
@@ -397,7 +397,7 @@ namespace Core.Audio
                 });
             }
         }
-        
+
         /// <summary>
         /// Set the SFX volume.
         /// </summary>
@@ -405,7 +405,7 @@ namespace Core.Audio
         public void SetSFXVolume(float volume)
         {
             SetMixerVolume(_sfxVolumeParam, volume);
-            
+
             // Update settings if save manager exists
             if (_saveManager != null)
             {
@@ -414,7 +414,7 @@ namespace Core.Audio
                 });
             }
         }
-        
+
         /// <summary>
         /// Set the voice volume.
         /// </summary>
@@ -422,7 +422,7 @@ namespace Core.Audio
         public void SetVoiceVolume(float volume)
         {
             SetMixerVolume(_voiceVolumeParam, volume);
-            
+
             // Update settings if save manager exists
             if (_saveManager != null)
             {
@@ -431,7 +431,7 @@ namespace Core.Audio
                 });
             }
         }
-        
+
         /// <summary>
         /// Mute or unmute all audio.
         /// </summary>
@@ -440,7 +440,7 @@ namespace Core.Audio
         {
             float volume = mute ? 0f : 1f;
             SetMixerVolume(_masterVolumeParam, volume);
-            
+
             // Update settings if save manager exists
             if (_saveManager != null)
             {
@@ -449,11 +449,11 @@ namespace Core.Audio
                 });
             }
         }
-        
+
         #endregion
-        
+
         #region Private Methods
-        
+
         /// <summary>
         /// Initialize the audio source pools.
         /// </summary>
@@ -465,17 +465,17 @@ namespace Core.Audio
                 AudioSource source = CreateAudioSource("SFX_Pool_" + i, SoundCategory.SFX);
                 _sfxPool.Enqueue(source);
             }
-            
+
             // Create initial voice pool
             for (int i = 0; i < _initialPoolSize / 2; i++)
             {
                 AudioSource source = CreateAudioSource("Voice_Pool_" + i, SoundCategory.Voice);
                 _voicePool.Enqueue(source);
             }
-            
+
             Debug.Log($"[AudioManager] Initialized audio pools: {_initialPoolSize} SFX, {_initialPoolSize / 2} Voice");
         }
-        
+
         /// <summary>
         /// Create an audio source.
         /// </summary>
@@ -486,11 +486,11 @@ namespace Core.Audio
         {
             GameObject obj = new GameObject(name);
             obj.transform.SetParent(_poolContainer);
-            
+
             AudioSource source = obj.AddComponent<AudioSource>();
             source.playOnAwake = false;
             source.spatialBlend = 0f; // 2D by default
-            
+
             // Set the mixer group based on category
             if (_audioMixer != null)
             {
@@ -500,10 +500,10 @@ namespace Core.Audio
                     source.outputAudioMixerGroup = groups[0];
                 }
             }
-            
+
             return source;
         }
-        
+
         /// <summary>
         /// Get an audio source from the appropriate pool.
         /// </summary>
@@ -512,7 +512,7 @@ namespace Core.Audio
         private AudioSource GetAudioSourceFromPool(SoundCategory category)
         {
             AudioSource source = null;
-            
+
             switch (category)
             {
                 case SoundCategory.SFX:
@@ -526,7 +526,7 @@ namespace Core.Audio
                         source = CreateAudioSource("SFX_Pool_" + _sfxPool.Count, category);
                     }
                     break;
-                    
+
                 case SoundCategory.Voice:
                     if (_voicePool.Count > 0)
                     {
@@ -538,7 +538,7 @@ namespace Core.Audio
                     }
                     break;
             }
-            
+
             if (source != null)
             {
                 source.gameObject.SetActive(true);
@@ -547,10 +547,10 @@ namespace Core.Audio
             {
                 Debug.LogWarning($"[AudioManager] No available audio sources for category: {category}");
             }
-            
+
             return source;
         }
-        
+
         /// <summary>
         /// Return an audio source to the appropriate pool.
         /// </summary>
@@ -561,13 +561,13 @@ namespace Core.Audio
             {
                 return;
             }
-            
+
             // Remove from active sources
             if (_activeAudioSources.ContainsKey(source))
             {
                 _activeAudioSources.Remove(source);
             }
-            
+
             // Reset the audio source
             source.Stop();
             source.clip = null;
@@ -576,12 +576,12 @@ namespace Core.Audio
             source.pitch = 1f;
             source.spatialBlend = 0f;
             source.transform.position = _poolContainer.position;
-            
+
             // Return to the appropriate pool
             if (source.outputAudioMixerGroup != null)
             {
                 string groupName = source.outputAudioMixerGroup.name;
-                
+
                 if (groupName.Contains("SFX") || groupName.Contains("UI"))
                 {
                     _sfxPool.Enqueue(source);
@@ -596,10 +596,10 @@ namespace Core.Audio
                 // Default to SFX pool if no mixer group
                 _sfxPool.Enqueue(source);
             }
-            
+
             source.gameObject.SetActive(false);
         }
-        
+
         /// <summary>
         /// Play a sound.
         /// </summary>
@@ -618,21 +618,21 @@ namespace Core.Audio
                 Debug.LogWarning($"[AudioManager] Attempted to play null {category} clip");
                 return null;
             }
-            
+
             // Get an audio source from the pool
             AudioSource source = GetAudioSourceFromPool(category);
             if (source == null)
             {
                 return null;
             }
-            
+
             // Set up the audio source
             source.clip = clip;
             source.volume = volume;
             source.pitch = pitch;
             source.spatialBlend = spatialBlend;
             source.loop = loop;
-            
+
             // Set position if provided
             if (position.HasValue)
             {
@@ -642,10 +642,10 @@ namespace Core.Audio
             {
                 source.transform.position = _poolContainer.position;
             }
-            
+
             // Play the sound
             source.Play();
-            
+
             // Add to active sources
             if (!loop)
             {
@@ -657,10 +657,10 @@ namespace Core.Audio
                 // If looping, just add to active sources without a coroutine
                 _activeAudioSources[source] = null;
             }
-            
+
             return source;
         }
-        
+
         /// <summary>
         /// Return an audio source to the pool after it finishes playing.
         /// </summary>
@@ -670,13 +670,13 @@ namespace Core.Audio
         private IEnumerator ReturnToPoolAfterPlay(AudioSource source, float delay)
         {
             yield return new WaitForSeconds(delay);
-            
+
             if (source != null)
             {
                 ReturnAudioSourceToPool(source);
             }
         }
-        
+
         /// <summary>
         /// Fade music volume.
         /// </summary>
@@ -688,18 +688,18 @@ namespace Core.Audio
         {
             float startVolume = _musicSource.volume;
             float time = 0f;
-            
+
             while (time < duration)
             {
                 time += Time.deltaTime;
                 _musicSource.volume = Mathf.Lerp(startVolume, targetVolume, time / duration);
                 yield return null;
             }
-            
+
             _musicSource.volume = targetVolume;
             onComplete?.Invoke();
         }
-        
+
         /// <summary>
         /// Fade sound volume.
         /// </summary>
@@ -714,21 +714,21 @@ namespace Core.Audio
             {
                 yield break;
             }
-            
+
             float startVolume = source.volume;
             float time = 0f;
-            
+
             while (time < duration)
             {
                 time += Time.deltaTime;
                 source.volume = Mathf.Lerp(startVolume, targetVolume, time / duration);
                 yield return null;
             }
-            
+
             source.volume = targetVolume;
             onComplete?.Invoke();
         }
-        
+
         /// <summary>
         /// Set a volume parameter on the audio mixer.
         /// </summary>
@@ -741,12 +741,12 @@ namespace Core.Audio
                 Debug.LogWarning("[AudioManager] Audio mixer not assigned");
                 return;
             }
-            
+
             // Convert linear volume (0-1) to decibels (-80-0)
             float decibelValue = volume > 0.0001f ? 20f * Mathf.Log10(volume) : -80f;
             _audioMixer.SetFloat(paramName, decibelValue);
         }
-        
+
         /// <summary>
         /// Apply audio settings from the save system.
         /// </summary>
@@ -755,18 +755,18 @@ namespace Core.Audio
         {
             // Apply master volume
             SetMixerVolume(_masterVolumeParam, settings.IsMuted ? 0f : settings.MasterVolume);
-            
+
             // Apply category volumes
             SetMixerVolume(_musicVolumeParam, settings.MusicVolume);
             SetMixerVolume(_sfxVolumeParam, settings.SfxVolume);
             SetMixerVolume(_voiceVolumeParam, settings.VoiceVolume);
-            
+
             Debug.Log("[AudioManager] Applied audio settings from save system");
         }
-        
+
         #endregion
     }
-    
+
     /// <summary>
     /// Categories of sounds.
     /// </summary>

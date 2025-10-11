@@ -140,8 +140,7 @@ namespace UI.UISystem.Screens
             _isPlayingSplash = true;
             PrepareForSplash();
 
-            // Start automatic animation sequence
-            _splashCoroutine = UIManager.Instance.StartCoroutine(AnimateSplashSequence());
+            AnimateSplashSequence();
         }
 
         #endregion
@@ -165,7 +164,7 @@ namespace UI.UISystem.Screens
             }
         }
 
-        private System.Collections.IEnumerator AnimateSplashSequence()
+        private void AnimateSplashSequence()
         {
             // Fade in splash content
             if (_splashContent != null)
@@ -175,34 +174,24 @@ namespace UI.UISystem.Screens
                     0f, 1f,
                     FadeInDuration, 0f,
                     UnityNativeUIAnimationSystem.EasingCurve.EaseOut,
-                    null
+                    () =>
+                    {
+                        float holdTime = SplashDuration - FadeInDuration - FadeOutDuration;
+
+                        // Fade out splash content
+                        if (_splashContent != null)
+                        {
+                            UnityNativeUIAnimationSystem.AnimateOpacity(
+                                _splashContent,
+                                1f, 0f,
+                                FadeOutDuration, holdTime,
+                                UnityNativeUIAnimationSystem.EasingCurve.EaseIn,
+                                CompleteSplash
+                            );
+                        }
+                    }
                 );
             }
-
-            // Wait for fade in to complete
-            yield return new WaitForSeconds(FadeInDuration);
-
-            // Hold for duration
-            float holdTime = SplashDuration - FadeInDuration - FadeOutDuration;
-            yield return new WaitForSeconds(holdTime);
-
-            // Fade out splash content
-            if (_splashContent != null)
-            {
-                UnityNativeUIAnimationSystem.AnimateOpacity(
-                    _splashContent,
-                    1f, 0f,
-                    FadeOutDuration, 0f,
-                    UnityNativeUIAnimationSystem.EasingCurve.EaseIn,
-                    null
-                );
-            }
-
-            // Wait for fade out to complete
-            yield return new WaitForSeconds(FadeOutDuration);
-
-            // Complete splash
-            CompleteSplash();
         }
 
         private void StopSplashSequence()

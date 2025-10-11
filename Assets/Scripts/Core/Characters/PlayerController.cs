@@ -1,6 +1,6 @@
 using System;
 using Core.Input;
-using Core.Patterns;
+using Core.Utilities.Patterns;
 using Unity.Netcode;
 using UnityEngine;
 

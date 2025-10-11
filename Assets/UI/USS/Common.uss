@@ -200,12 +200,16 @@ ScrollView {
 
 .logo {
     -unity-background-scale-mode: scale-to-fit;
-    background-color: rgba(255, 255, 255, 0.78);
+    background-color: rgba(0, 0, 0, 0.78);
     border-radius: 25px;
     border-width: 8px;
     border-color: rgba(255, 255, 255, 0.95);
     width: 600px;
     height: 250px;
+    border-top-width: 5px;
+    border-right-width: 5px;
+    border-bottom-width: 5px;
+    border-left-width: 5px;
 }
 
 .game-title-1 {
