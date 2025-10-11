@@ -1,5 +1,5 @@
 using System;
-using Core.Patterns;
+using Core.Utilities.Patterns;
 using UnityEngine;
 
 namespace Core.Input

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using Core.GameFramework.State;
-using Core.GameFramework.State.States;
+using Core.State;
+using Core.State.States;
 using Core.Networking;
 using UnityEditor;
 using UnityEngine;
@@ -103,7 +103,7 @@ namespace UI
             _settingsButton = _root.Q<Button>("settings-button");
             _creditsButton = _root.Q<Button>("credits-button");
             _quitButton = _root.Q<Button>("quit-button");
-            
+
             // Get navigation buttons
             Button shopButton = _root.Q<Button>("shop-button");
             Button brawlersButton = _root.Q<Button>("brawlers-button");
@@ -111,7 +111,7 @@ namespace UI
             Button friendsButton = _root.Q<Button>("friends-button");
             Button clubButton = _root.Q<Button>("club-button");
             Button chatButton = _root.Q<Button>("chat-button");
-            
+
             // Set up navigation button listeners
             if (shopButton != null) shopButton.clicked += () => Debug.Log("Shop clicked");
             if (brawlersButton != null) brawlersButton.clicked += () => Debug.Log("Brawlers clicked");

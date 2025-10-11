@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Core.Audio;
 using Core.Characters;
-using Core.GameFramework.State;
-using Core.GameFramework.State.States;
+using Core.State;
+using Core.State.States;
 using Core.GameModes;
 using Core.Input;
 using Core.Networking;
-using Core.Patterns;
+using Core.Utilities.Patterns;
 using Core.SaveSystem;
 using Gameplay.Cooking;
 using Gameplay.Scoring;
@@ -37,20 +37,9 @@ namespace Core
         [SerializeField] private GameObject saveManagerPrefab;
         [SerializeField] private GameObject audioManagerPrefab;
 
-        public static event Action<string, float> OnInitializationProgress;
-        public static event Action<string> OnSystemInitialized;
-        public static event Action OnInitializationComplete;
-        public static event Action<string> OnInitializationError;
-
         private readonly Dictionary<Type, object> _managers = new Dictionary<Type, object>();
         private bool _isInitialized;
         private Coroutine _initializationCoroutine;
-
-        protected override void Awake()
-        {
-            base.Awake();
-            // Defer UI initialization to avoid threading issues with UI Toolkit text rendering
-        }
 
         private void Start()
         {
@@ -78,18 +67,31 @@ namespace Core
 
         private void UpdateProgress(string message, float progress)
         {
-            OnInitializationProgress?.Invoke(message, progress);
             GetManager<UIManager>()?.GetScreen<LoadingScreen>()?.UpdateProgress(message, progress);
         }
 
         private IEnumerator InitializeGameSystemsAsync()
         {
-            // Wait one frame to ensure Unity is fully initialized before creating UI
-            yield return null;
+            yield return new WaitForEndOfFrame();
 
-            // Initialize UI Manager first, now that we're on the main thread after first frame
             InitializeUIManager();
-            yield return null;
+
+            yield return new WaitForEndOfFrame();
+
+            UIManager uiManager = GetManager<UIManager>();
+            float timeout = Time.time + 5f;
+            while (uiManager != null && !uiManager.IsInitialized && Time.time < timeout)
+            {
+                yield return null;
+            }
+
+            if (uiManager == null || !uiManager.IsInitialized)
+            {
+                Debug.LogError("[GameBootstrap] UIManager failed to initialize within timeout");
+                yield break;
+            }
+
+            Debug.Log("[GameBootstrap] UIManager is ready, proceeding with initialization");
 
             yield return StartCoroutine(HandleSplashScreenAsync());
             yield return StartCoroutine(InitializeAllSystemsAsync());
@@ -98,12 +100,10 @@ namespace Core
             {
                 const string error = "Critical systems failed validation";
                 Debug.LogError($"[GameBootstrap] {error}");
-                OnInitializationError?.Invoke(error);
                 yield break;
             }
 
             SetInitialGameState();
-            OnInitializationComplete?.Invoke();
             _isInitialized = true;
         }
 
@@ -125,7 +125,7 @@ namespace Core
                 bool splashCompleted = false;
                 splashScreen.OnSplashComplete += () => splashCompleted = true;
 
-                uiManager.ShowScreen(UIScreenType.Splash, true, false);
+                uiManager.ShowScreen(UIScreenType.Splash, false, false);
 
                 while (!splashCompleted)
                 {
@@ -157,7 +157,6 @@ namespace Core
 
         private void InitializeUIManager()
         {
-            // Prevent double initialization
             if (_managers.ContainsKey(typeof(UIManager)))
             {
                 return;
@@ -255,13 +254,11 @@ namespace Core
                 {
                     const string error = "System initialization timed out";
                     Debug.LogError($"[GameBootstrap] {error}");
-                    OnInitializationError?.Invoke(error);
                     yield break;
                 }
 
                 UpdateProgress($"Initializing {system.Name}...", system.Progress);
                 yield return StartCoroutine(InitializeSystemAsync(system));
-                OnSystemInitialized?.Invoke(system.Name);
                 yield return null;
             }
 
@@ -302,7 +299,6 @@ namespace Core
                 }
             }
         }
-
 
         private void SetInitialGameState()
         {

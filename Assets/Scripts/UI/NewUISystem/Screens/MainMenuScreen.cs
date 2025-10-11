@@ -1,6 +1,6 @@
 using System;
-using Core.GameFramework.State;
-using Core.GameFramework.State.States;
+using Core.State;
+using Core.State.States;
 using Core.UI.Animation;
 using UI.UISystem.Core;
 using UnityEngine;
@@ -72,7 +72,7 @@ namespace UI.UISystem.Screens
             CacheUIElements();
             SetupEventHandlers();
             UpdateUI();
-            
+
             Debug.Log("[MainMenuScreen] Initialized with pure C# implementation");
         }
 
@@ -176,7 +176,7 @@ namespace UI.UISystem.Screens
             TrophyCount = trophies;
             GemCount = gems;
             CoinCount = coins;
-            
+
             UpdateUI();
             return this;
         }

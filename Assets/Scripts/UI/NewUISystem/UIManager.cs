@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Core.Patterns;
+using Core.Utilities.Patterns;
 using Core.UI.Animation;
 using UI.UISystem.Core;
 using UnityEngine;
@@ -16,7 +16,7 @@ namespace UI.UISystem
     public class UIManager : MonoBehaviourSingleton<UIManager>
     {
 
-        
+
         private UIDocument _uiDocument;
         private VisualElement _root;
         private readonly Dictionary<UIScreenType, UIScreenController> _controllers = new();
@@ -29,13 +29,30 @@ namespace UI.UISystem
         public event Action<UIScreenType> OnScreenHidden;
         public event Action OnAllScreensHidden;
 
+        private bool _isInitialized = false;
+
         protected override void Awake()
         {
             base.Awake();
-            
-            UIScreenRegistry.Initialize();
-            
+            // Defer initialization to avoid threading issues with UI Toolkit
+            // Do NOT initialize UI here - wait for Start()
+        }
+
+        private void Start()
+        {
+            if (!_isInitialized)
+            {
+                UIScreenRegistry.Initialize();
+                StartCoroutine(InitializeUISystemDelayed());
+            }
+        }
+
+        private System.Collections.IEnumerator InitializeUISystemDelayed()
+        {
+            // Wait for end of frame to ensure Unity is fully ready
+            yield return new WaitForEndOfFrame();
             InitializeUISystem();
+            _isInitialized = true;
         }
 
         private void InitializeUISystem()
@@ -68,7 +85,7 @@ namespace UI.UISystem
         {
             _root = _uiDocument.rootVisualElement;
             _root.name = "ui-root";
-            
+
             // Ensure root element fills the entire screen
             _root.style.width = Length.Percent(100);
             _root.style.height = Length.Percent(100);
@@ -78,13 +95,13 @@ namespace UI.UISystem
             _root.style.right = 0;
             _root.style.bottom = 0;
             _root.AddToClassList("ui-root");
-            
+
             // Create all screen controllers
             CreateScreenControllers();
-            
+
             // Hide all screens initially
             HideAllScreens();
-            
+
             Debug.Log("[UIManager] UI System initialized successfully");
         }
 
@@ -95,7 +112,7 @@ namespace UI.UISystem
             {
                 CreateScreen(screenType);
             }
-            
+
             Debug.Log($"[UIManager] Created {_screens.Count} screens from registry");
         }
 
@@ -115,7 +132,7 @@ namespace UI.UISystem
             // Create controller
             var controller = new UIScreenController(screenType, attribute.Priority, template, _root);
             _controllers[screenType] = controller;
-            
+
             // Sort screens by priority after adding
             SortScreensByPriority();
 
@@ -125,7 +142,7 @@ namespace UI.UISystem
             {
                 screen.Initialize(screenType, attribute.Priority, controller);
                 _screens[screenType] = screen;
-                
+
                 Debug.Log($"[UIManager] Created screen: {screenType} -> {screen.GetType().Name}");
             }
             else
@@ -146,7 +163,7 @@ namespace UI.UISystem
             {
                 string resourcePath = $"UI/Templates/{templatePath}";
                 VisualTreeAsset template = Resources.Load<VisualTreeAsset>(resourcePath);
-                
+
                 if (template != null)
                 {
                     Debug.Log($"[UIManager] Loaded template '{templatePath}' from Resources at '{resourcePath}'");
@@ -172,16 +189,21 @@ namespace UI.UISystem
             {
                 screen.Dispose();
             }
-            
+
             _screens.Clear();
             _controllers.Clear();
             _visibleScreens.Clear();
             _screenHistory.Clear();
-            
+
             base.OnDestroy();
         }
 
         #region Public API
+
+        /// <summary>
+        /// Check if UIManager is fully initialized and ready to use
+        /// </summary>
+        public bool IsInitialized => _isInitialized && _root != null;
 
         /// <summary>
         /// Show a screen with optional animation
@@ -263,7 +285,7 @@ namespace UI.UISystem
         {
             UIScreenType[] popupTypes = new[] { UIScreenType.Popup, UIScreenType.Modal, UIScreenType.Notification };
             var popupsToHide = _visibleScreens.Where(s => popupTypes.Contains(s.ScreenType)).ToList();
-            
+
             foreach (BaseUIScreen popup in popupsToHide)
             {
                 HideScreenInternal(popup, animate);
@@ -277,7 +299,7 @@ namespace UI.UISystem
         {
             UIScreenType[] systemTypes = new[] { UIScreenType.Splash, UIScreenType.Loading };
             var screensToHide = _visibleScreens.Where(s => !systemTypes.Contains(s.ScreenType)).ToList();
-            
+
             foreach (BaseUIScreen screen in screensToHide)
             {
                 HideScreenInternal(screen, animate);
@@ -304,7 +326,7 @@ namespace UI.UISystem
             if (_screenHistory.Count == 0) return false;
 
             BaseUIScreen previousScreen = _screenHistory.Pop();
-            
+
             // Hide current screen
             if (_visibleScreens.Count > 0)
             {
@@ -380,10 +402,10 @@ namespace UI.UISystem
                     _visibleScreens.Add(screen);
                     _visibleScreens.Sort((a, b) => ((int)b.Priority).CompareTo((int)a.Priority));
                 }
-                
+
                 // Call screen's post-animation hook
                 screen.OnAfterShowAnimation();
-                
+
                 OnScreenShown?.Invoke(screen.ScreenType);
             });
         }
@@ -409,12 +431,12 @@ namespace UI.UISystem
             controller.Hide(animationType, duration, animate, () =>
             {
                 _visibleScreens.Remove(screen);
-                
+
                 // Call screen's post-animation hook
                 screen.OnAfterHideAnimation();
-                
+
                 OnScreenHidden?.Invoke(screen.ScreenType);
-                
+
                 if (_visibleScreens.Count == 0)
                 {
                     OnAllScreensHidden?.Invoke();
@@ -441,7 +463,7 @@ namespace UI.UISystem
             // So we call it from lowest to highest priority
             // Result: highest priority ends up at the end (rendered on top)
             var sortedControllers = _controllers.Values.OrderBy(c => (int)c.Priority).ToList();
-            
+
             // Reorder in the visual tree
             foreach (UIScreenController controller in sortedControllers)
             {
@@ -450,7 +472,7 @@ namespace UI.UISystem
                     controller.Container.BringToFront();
                 }
             }
-            
+
             Debug.Log($"[UIManager] Sorted {sortedControllers.Count} screens by priority");
         }
 
@@ -466,7 +488,7 @@ namespace UI.UISystem
             {
                 Debug.Log($"  - {screen.ScreenType} (Priority: {screen.Priority})");
             }
-            
+
             Debug.Log($"[UIManager] Screen History ({_screenHistory.Count}):");
             foreach (BaseUIScreen screen in _screenHistory)
             {
@@ -478,7 +500,7 @@ namespace UI.UISystem
         public void DebugScreenSizes()
         {
             Debug.Log($"[UIManager] Root Element Size: {_root.resolvedStyle.width}x{_root.resolvedStyle.height}");
-            
+
             foreach (KeyValuePair<UIScreenType, UIScreenController> kvp in _controllers)
             {
                 UIScreenController controller = kvp.Value;

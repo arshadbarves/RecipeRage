@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Core.Patterns;
+using Core.Utilities.Patterns;
 using UnityEngine;
 
 namespace Core.GameModes
