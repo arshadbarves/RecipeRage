@@ -67,6 +67,13 @@ namespace UI.UISystem.Screens
         {
             _loadingStartTime = Time.time;
             _showStartTime = Time.time;
+
+            // Set version info when shown (not during initialization to avoid threading issues)
+            if (_versionInfo != null)
+            {
+                _versionInfo.text = $"v{Application.version} (Build {Application.buildGUID.Substring(0, 8)})";
+            }
+
             UpdateUI();
         }
 
@@ -110,12 +117,6 @@ namespace UI.UISystem.Screens
             _progressText = GetElement<Label>("progress-text");
             _versionInfo = GetElement<Label>("version-info");
 
-            // Set version info from Application
-            if (_versionInfo != null)
-            {
-                _versionInfo.text = $"v{Application.version} (Build {Application.buildGUID.Substring(0, 8)})";
-            }
-
             // Log missing elements for debugging
             if (_progressBar == null)
             {
@@ -129,8 +130,6 @@ namespace UI.UISystem.Screens
             {
                 Debug.LogWarning("[LoadingScreen] version-info not found in template");
             }
-
-
         }
 
         #endregion

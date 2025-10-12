@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Custom_Fall Guys Lobby Background
+  m_Shader: {fileID: 4800000, guid: a7f8e9d2c4b3a1f5e6d7c8b9a0f1e2d3, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs: []
+    m_Ints: []
+    m_Floats:
+    - _BlobIntensity: 0.4
+    - _BlobScale: 2
+    - _BlobSpeed: 0.3
+    - _GradientAngle: 45
+    - _GradientStrength: 0.3
+    - _HueOffset: 0
+    - _HueSpeed: 0.1
+    - _Lightness: 0.6
+    - _PulseAmount: 0.1
+    - _PulseSpeed: 0.5
+    - _Saturation: 0.8
+    - _WaveScale1: 3
+    - _WaveScale2: 5
+    - _WaveScale3: 8
+    - _WaveSpeed1: 0.5
+    - _WaveSpeed2: 0.8
+    - _WaveSpeed3: 1.2
+    m_Colors: []
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1
