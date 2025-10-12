@@ -1,14 +1,58 @@
 <UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/UI/USS/MainMenu.uss?fileID=7433441132597879392&amp;guid=15bb364f81be046f5a66a2cf721fada9&amp;type=3#MainMenu" />
-    <VisualElement name="screen-container" class="main-menu">
-        <VisualElement name="menu-content" class="menu-content">
-            <Label name="game-title" text="Recipe Rage" class="game-title" />
-            <VisualElement name="menu-buttons" class="menu-buttons">
-                <Button name="play-button" text="Play" class="menu-button menu-button--primary" />
-                <Button name="character-selection-button" text="Characters" class="menu-button" />
-                <Button name="settings-button" text="Settings" class="menu-button" />
-                <Button name="quit-button" text="Quit" class="menu-button" />
+    <VisualElement name="bottom-background-bar" class="bottom-background-bar" style="flex-grow: 1;" />
+    <VisualElement name="top-bar" class="top-bar">
+        <VisualElement name="player-card" class="player-card">
+            <VisualElement name="star-icon" class="star-icon" />
+            <VisualElement name="player-info" class="player-info">
+                <Label name="player-title" text="Chef Player" class="player-title" />
+                <Label name="player-number" text="#675" class="player-number" />
             </VisualElement>
         </VisualElement>
+        <VisualElement name="currency-container" class="currency-container">
+            <VisualElement name="coins-display" class="currency-display">
+                <VisualElement name="coin-icon" class="currency-icon coin-icon" />
+                <Label name="coins-amount" text="1,250" class="currency-amount" />
+                <Button name="add-coins-button" class="add-currency-button">
+                    <Label text="+" class="add-button-text" />
+                </Button>
+            </VisualElement>
+            <VisualElement name="gems-display" class="currency-display">
+                <VisualElement name="gem-icon" class="currency-icon gem-icon" />
+                <Label name="gems-amount" text="85" class="currency-amount" />
+                <Button name="add-gems-button" class="add-currency-button">
+                    <Label text="+" class="add-button-text" />
+                </Button>
+            </VisualElement>
+        </VisualElement>
+    </VisualElement>
+    <VisualElement name="main-menu-root" class="main-menu-root">
+        <TabView name="main-tabs" class="main-tabs">
+            <Tab name="chef-tab" icon-image="project://database/Assets/Textures/Icons/Badges/icons8-home-96.png?fileID=2800000&amp;guid=2be65e77c79024ee1a42cef702ecd4bc&amp;type=3#icons8-home-96" class="chef-tab">
+                <VisualElement name="lobby-view" style="flex-grow: 1;" />
+                <VisualElement name="bottom-bar" class="bottom-bar">
+                    <Button name="map-button" class="map-button">
+                        <VisualElement name="timer-content" class="timer-content">
+                            <Label name="timer-text" text="NEW MAP IN : 30h 12m" class="timer-text" />
+                            <VisualElement name="timer-icon" class="timer-icon" />
+                        </VisualElement>
+                        <VisualElement name="map-card">
+                            <Label name="map-name" text="CRUMB HAVEN" class="map-name" />
+                            <Label name="map-subtitle" text="COOPERATIVE CHAOS" class="map-subtitle" />
+                        </VisualElement>
+                    </Button>
+                    <Button name="play-button" class="play-button">
+                        <Label text="PLAY!" class="play-text" />
+                    </Button>
+                </VisualElement>
+            </Tab>
+            <Tab name="scissors-tab" icon-image="project://database/Assets/Textures/Icons/Badges/icons8-chef-96.png?fileID=2800000&amp;guid=02588443caf3d42c7970590d186fe793&amp;type=3#icons8-chef-96" />
+            <Tab name="cart-tab" icon-image="project://database/Assets/Textures/Icons/Badges/icons8-shop-96.png?fileID=2800000&amp;guid=8bddd360023be43369db1644138f5fdb&amp;type=3#icons8-shop-96">
+                <VisualElement name="cart-badge" class="cart-badge">
+                    <Label text="1" class="badge-text" />
+                </VisualElement>
+            </Tab>
+            <Tab name="settings-tab" icon-image="project://database/Assets/Textures/Icons/Badges/icons8-settings-96.png?fileID=2800000&amp;guid=f3f55e28fe7084597817e02bc52799e0&amp;type=3#icons8-settings-96" />
+        </TabView>
     </VisualElement>
 </UXML>
