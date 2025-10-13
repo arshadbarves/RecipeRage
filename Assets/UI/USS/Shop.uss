@@ -1,0 +1,139 @@
+.shop-root {
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    -unity-font-definition: url("project://database/Assets/Fonts/LilitaOne-Regular.ttf?fileID=12800000&guid=2309d3a0e6c55446ea2d106abff555fe&type=3#LilitaOne-Regular");
+}
+
+.shop-header {
+    padding: 15px 20px 10px 20px;
+    align-items: center;
+}
+
+.shop-title {
+    font-size: 42px;
+    color: rgb(40, 30, 25);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+}
+
+.shop-scroll {
+    flex-grow: 1;
+}
+
+.shop-categories {
+    flex-direction: row;
+    justify-content: center;
+    gap: 12px;
+    padding: 15px 20px;
+    flex-wrap: wrap;
+}
+
+.category-button {
+    background-color: rgb(245, 240, 235);
+    border-radius: 18px;
+    padding: 12px 25px;
+    border-width: 4px;
+    border-color: rgb(40, 30, 25);
+    font-size: 18px;
+    color: rgb(40, 30, 25);
+    -unity-font-style: bold;
+    transition-property: scale, background-color;
+    transition-duration: 0.15s;
+    min-width: 110px;
+}
+
+.category-button:active {
+    scale: 0.95;
+}
+
+.category-active {
+    background-color: rgb(255, 100, 100);
+    color: rgb(255, 255, 255);
+    border-width: 5px;
+    scale: 1.05;
+}
+
+.shop-items-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 18px;
+    padding: 15px 20px 30px 20px;
+}
+
+.shop-item {
+    width: 260px;
+    background-color: rgb(245, 240, 235);
+    border-radius: 18px;
+    border-width: 5px;
+    border-color: rgb(40, 30, 25);
+    padding: 18px;
+    transition-property: scale, border-color;
+    transition-duration: 0.15s;
+}
+
+.shop-item:active {
+    scale: 0.96;
+    border-color: rgb(255, 100, 100);
+}
+
+.shop-item-image {
+    width: 100%;
+    height: 180px;
+    background-color: rgb(220, 220, 220);
+    border-radius: 12px;
+    margin-bottom: 12px;
+    border-width: 3px;
+    border-color: rgb(40, 30, 25);
+}
+
+.shop-item-name {
+    font-size: 20px;
+    color: rgb(40, 30, 25);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    margin-bottom: 8px;
+    white-space: normal;
+}
+
+.shop-item-price {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.price-icon {
+    width: 30px;
+    height: 30px;
+    background-color: rgb(255, 200, 60);
+    border-radius: 50%;
+    border-width: 3px;
+    border-color: rgb(40, 30, 25);
+}
+
+.price-text {
+    font-size: 28px;
+    color: rgb(40, 30, 25);
+    -unity-font-style: bold;
+}
+
+.buy-button {
+    background-color: rgb(100, 230, 150);
+    border-radius: 12px;
+    padding: 10px 20px;
+    border-width: 4px;
+    border-color: rgb(40, 30, 25);
+    margin-top: 12px;
+    font-size: 18px;
+    color: rgb(40, 30, 25);
+    -unity-font-style: bold;
+    transition-property: scale, background-color;
+    transition-duration: 0.15s;
+}
+
+.buy-button:active {
+    scale: 0.92;
+    background-color: rgb(80, 210, 130);
+}

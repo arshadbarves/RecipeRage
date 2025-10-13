@@ -1,0 +1,50 @@
+<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/USS/JoystickEditor.uss" />
+    <VisualElement name="joystick-editor-root" class="joystick-editor-root">
+        <VisualElement name="editor-header" class="editor-header">
+            <Label text="EDIT CONTROLS" class="editor-title" />
+            <Button name="close-button" text="✕" class="close-button" />
+        </VisualElement>
+        <VisualElement name="editor-content" class="editor-content">
+            <VisualElement name="preview-area" class="preview-area">
+                <VisualElement name="left-joystick" class="joystick-preview left-joystick">
+                    <VisualElement name="left-joystick-base" class="joystick-base" />
+                    <VisualElement name="left-joystick-stick" class="joystick-stick" />
+                </VisualElement>
+                <VisualElement name="right-joystick" class="joystick-preview right-joystick">
+                    <VisualElement name="right-joystick-base" class="joystick-base" />
+                    <VisualElement name="right-joystick-stick" class="joystick-stick" />
+                </VisualElement>
+                <VisualElement name="action-buttons" class="action-buttons">
+                    <Button name="jump-button" class="action-button">
+                        <Label text="JUMP" class="action-label" />
+                    </Button>
+                    <Button name="attack-button" class="action-button">
+                        <Label text="ATTACK" class="action-label" />
+                    </Button>
+                    <Button name="special-button" class="action-button">
+                        <Label text="SPECIAL" class="action-label" />
+                    </Button>
+                </VisualElement>
+            </VisualElement>
+            <VisualElement name="controls-panel" class="controls-panel">
+                <Label text="JOYSTICK SETTINGS" class="panel-title" />
+                <VisualElement class="control-row">
+                    <Label text="Joystick Size" class="control-label" />
+                    <Slider name="joystick-size" low-value="0.5" high-value="1.5" value="1" class="control-slider" />
+                </VisualElement>
+                <VisualElement class="control-row">
+                    <Label text="Opacity" class="control-label" />
+                    <Slider name="joystick-opacity" low-value="0.3" high-value="1" value="0.7" class="control-slider" />
+                </VisualElement>
+                <VisualElement class="control-row">
+                    <Label text="Dead Zone" class="control-label" />
+                    <Slider name="dead-zone" low-value="0" high-value="0.5" value="0.1" class="control-slider" />
+                </VisualElement>
+                <Toggle name="fixed-joystick" text="Fixed Position" class="control-toggle" />
+                <Button name="reset-button" text="RESET TO DEFAULT" class="settings-button" />
+                <Button name="save-button" text="SAVE CHANGES" class="settings-button save-button" />
+            </VisualElement>
+        </VisualElement>
+    </VisualElement>
+</UXML>

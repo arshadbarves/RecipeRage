@@ -1,0 +1,11 @@
+/* Global Button Animations */
+/* Apply to all buttons across the entire UI */
+
+.unity-button {
+    transition-property: scale;
+    transition-duration: 0.1s;
+}
+
+.unity-button:active {
+    scale: 0.92 0.92 1;
+}

@@ -1,0 +1,19 @@
+<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/USS/Shop.uss" />
+    <VisualElement name="shop-root" class="shop-root">
+        <VisualElement name="shop-header" class="shop-header">
+            <Label text="SHOP" class="shop-title" />
+        </VisualElement>
+        <ScrollView name="shop-scroll" class="shop-scroll">
+            <VisualElement name="shop-categories" class="shop-categories">
+                <Button name="featured-button" text="FEATURED" class="category-button category-active" />
+                <Button name="skins-button" text="SKINS" class="category-button" />
+                <Button name="weapons-button" text="WEAPONS" class="category-button" />
+                <Button name="bundles-button" text="BUNDLES" class="category-button" />
+            </VisualElement>
+            <VisualElement name="shop-items-grid" class="shop-items-grid">
+                <!-- Shop items will be dynamically added here -->
+            </VisualElement>
+        </ScrollView>
+    </VisualElement>
+</UXML>

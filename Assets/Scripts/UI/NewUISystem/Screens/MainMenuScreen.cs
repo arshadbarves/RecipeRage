@@ -67,38 +67,176 @@ namespace UI.UISystem.Screens
 
         #region Lifecycle
 
+        // Tab UI instances
+        private MainMenuUI _mainMenuUI;
+        private ShopUI _shopUI;
+        private SkinsUI _skinsUI;
+        private SettingsUI _settingsUI;
+        private bool _tabsInitialized = false;
+
         protected override void OnInitialize()
         {
-            CacheUIElements();
-            SetupEventHandlers();
-            UpdateUI();
+            // Configure top-bar to ignore pointer events (let clicks pass through)
+            // but keep child elements clickable
+            ConfigureTopBarPointerEvents();
+            
+            // Initialize CurrencyManager with the root element
+            CurrencyManager.Instance.Initialize(Container);
+            
+            // Initialize tab content
+            InitializeTabContent();
 
             Debug.Log("[MainMenuScreen] Initialized with pure C# implementation");
+        }
+        
+        private void ConfigureTopBarPointerEvents()
+        {
+            VisualElement topBar = GetElement<VisualElement>("top-bar");
+            if (topBar != null)
+            {
+                // Make top-bar ignore pointer events so clicks pass through
+                topBar.pickingMode = PickingMode.Ignore;
+                
+                // Make child elements clickable
+                VisualElement playerCard = topBar.Q<VisualElement>("player-card");
+                if (playerCard != null)
+                {
+                    playerCard.pickingMode = PickingMode.Position;
+                }
+                
+                VisualElement currencyContainer = topBar.Q<VisualElement>("currency-container");
+                if (currencyContainer != null)
+                {
+                    currencyContainer.pickingMode = PickingMode.Position;
+                    
+                    // Make currency displays and buttons clickable
+                    var currencyDisplays = currencyContainer.Query<VisualElement>(className: "currency-display").ToList();
+                    foreach (var display in currencyDisplays)
+                    {
+                        display.pickingMode = PickingMode.Position;
+                    }
+                    
+                    var addButtons = currencyContainer.Query<Button>(className: "add-currency-button").ToList();
+                    foreach (var button in addButtons)
+                    {
+                        button.pickingMode = PickingMode.Position;
+                    }
+                }
+                
+                Debug.Log("[MainMenuScreen] Configured top-bar pointer events");
+            }
+        }
+        
+        private void InitializeTabContent()
+        {
+            // Get the TabView and listen for tab changes
+            TabView tabView = GetElement<TabView>("main-tabs");
+            if (tabView != null)
+            {
+                // Listen for tab changes
+                tabView.RegisterCallback<ChangeEvent<int>>(OnTabChanged);
+                
+                Debug.Log("[MainMenuScreen] TabView found, initializing tabs immediately");
+                
+                // Initialize tabs immediately so the first tab shows data
+                InitializeAllTabs();
+                _tabsInitialized = true;
+            }
+            else
+            {
+                Debug.LogError("[MainMenuScreen] TabView not found!");
+            }
+        }
+        
+        private void OnTabChanged(ChangeEvent<int> evt)
+        {
+            Debug.Log($"[MainMenuScreen] Tab changed to index: {evt.newValue}");
+            
+            // Initialize tabs lazily when first shown
+            if (!_tabsInitialized)
+            {
+                InitializeAllTabs();
+                _tabsInitialized = true;
+            }
+        }
+        
+        private void InitializeAllTabs()
+        {
+            Debug.Log("[MainMenuScreen] Initializing all tabs...");
+            
+            // Initialize Main Menu/Lobby tab (first tab)
+            VisualElement lobbyView = GetElement<VisualElement>("lobby-view");
+            if (lobbyView != null)
+            {
+                _mainMenuUI = new MainMenuUI();
+                _mainMenuUI.Initialize(Container); // Pass the whole container since lobby elements are at root level
+                Debug.Log("[MainMenuScreen] Initialized Main Menu tab");
+            }
+            else
+            {
+                Debug.LogWarning("[MainMenuScreen] Lobby view not found, initializing with container");
+                _mainMenuUI = new MainMenuUI();
+                _mainMenuUI.Initialize(Container);
+            }
+            
+            // Initialize Skins tab
+            VisualElement skinsRoot = GetElement<VisualElement>("skins-root");
+            if (skinsRoot != null)
+            {
+                _skinsUI = new SkinsUI();
+                _skinsUI.Initialize(skinsRoot);
+                Debug.Log("[MainMenuScreen] Initialized Skins tab");
+            }
+            else
+            {
+                Debug.LogWarning("[MainMenuScreen] Skins root not found");
+            }
+            
+            // Initialize Shop tab
+            VisualElement shopRoot = GetElement<VisualElement>("shop-root");
+            if (shopRoot != null)
+            {
+                _shopUI = new ShopUI();
+                _shopUI.Initialize(shopRoot);
+                Debug.Log("[MainMenuScreen] Initialized Shop tab");
+            }
+            else
+            {
+                Debug.LogWarning("[MainMenuScreen] Shop root not found");
+            }
+            
+            // Initialize Settings tab
+            VisualElement settingsRoot = GetElement<VisualElement>("settings-root");
+            if (settingsRoot != null)
+            {
+                _settingsUI = new SettingsUI();
+                _settingsUI.Initialize(settingsRoot);
+                Debug.Log("[MainMenuScreen] Initialized Settings tab");
+            }
+            else
+            {
+                Debug.LogWarning("[MainMenuScreen] Settings root not found");
+            }
         }
 
         protected override void OnShow()
         {
-            StartCharacterAnimations();
-            AnimateUIElementsEntrance();
-            UpdateUI();
+            // Screen is being shown
         }
 
         protected override void OnHide()
         {
-            StopCharacterAnimations();
+            // Screen is being hidden
         }
 
         public override void Update(float deltaTime)
         {
-            if (_isAnimatingCharacters)
-            {
-                UpdateCharacterAnimations(deltaTime);
-            }
+            // Update logic if needed
         }
 
         protected override void OnDispose()
         {
-            UnregisterEventHandlers();
+            // Cleanup
         }
 
         #endregion

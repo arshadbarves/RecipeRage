@@ -1,0 +1,20 @@
+<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/USS/Skins.uss" />
+    <VisualElement name="skins-root" class="skins-root">
+        <VisualElement name="skins-header" class="skins-header">
+            <Label text="CHEF SKINS" class="skins-title" />
+        </VisualElement>
+        <VisualElement name="skins-content" class="skins-content">
+            <VisualElement name="character-preview" class="character-preview">
+                <VisualElement name="preview-model" class="preview-model" />
+                <Label name="skin-name" text="CLASSIC CHEF" class="preview-skin-name" />
+                <Button name="equip-button" text="EQUIPPED" class="equip-button equipped" />
+            </VisualElement>
+            <ScrollView name="skins-scroll" class="skins-scroll">
+                <VisualElement name="skins-grid" class="skins-grid">
+                    <!-- Skin items will be dynamically added here -->
+                </VisualElement>
+            </ScrollView>
+        </VisualElement>
+    </VisualElement>
+</UXML>

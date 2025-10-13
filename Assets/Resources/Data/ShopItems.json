@@ -1,0 +1,163 @@
+{
+    "categories": [
+        {
+            "id": "featured",
+            "name": "Featured",
+            "items": [
+                {
+                    "id": "chef_bundle",
+                    "name": "Chef Bundle",
+                    "description": "Complete chef starter pack",
+                    "price": 1500,
+                    "currency": "coins",
+                    "type": "bundle",
+                    "icon": ""
+                },
+                {
+                    "id": "golden_spatula",
+                    "name": "Golden Spatula",
+                    "description": "Legendary cooking weapon",
+                    "price": 800,
+                    "currency": "coins",
+                    "type": "weapon",
+                    "icon": ""
+                },
+                {
+                    "id": "royal_chef_skin",
+                    "name": "Royal Chef Skin",
+                    "description": "Cook like royalty",
+                    "price": 1200,
+                    "currency": "coins",
+                    "type": "skin",
+                    "icon": ""
+                },
+                {
+                    "id": "starter_pack",
+                    "name": "Starter Pack",
+                    "description": "Perfect for beginners",
+                    "price": 500,
+                    "currency": "coins",
+                    "type": "bundle",
+                    "icon": ""
+                }
+            ]
+        },
+        {
+            "id": "skins",
+            "name": "Skins",
+            "items": [
+                {
+                    "id": "master_chef",
+                    "name": "Master Chef",
+                    "description": "Professional chef outfit",
+                    "price": 1000,
+                    "currency": "coins",
+                    "type": "skin",
+                    "icon": ""
+                },
+                {
+                    "id": "pirate_chef",
+                    "name": "Pirate Chef",
+                    "description": "Sail the culinary seas",
+                    "price": 1200,
+                    "currency": "coins",
+                    "type": "skin",
+                    "icon": ""
+                },
+                {
+                    "id": "space_chef",
+                    "name": "Space Chef",
+                    "description": "Cook among the stars",
+                    "price": 1500,
+                    "currency": "coins",
+                    "type": "skin",
+                    "icon": ""
+                },
+                {
+                    "id": "ninja_chef",
+                    "name": "Ninja Chef",
+                    "description": "Silent but deadly cooking",
+                    "price": 1800,
+                    "currency": "coins",
+                    "type": "skin",
+                    "icon": ""
+                },
+                {
+                    "id": "royal_chef",
+                    "name": "Royal Chef",
+                    "description": "Fit for a king",
+                    "price": 2000,
+                    "currency": "coins",
+                    "type": "skin",
+                    "icon": ""
+                }
+            ]
+        },
+        {
+            "id": "weapons",
+            "name": "Weapons",
+            "items": [
+                {
+                    "id": "golden_spatula",
+                    "name": "Golden Spatula",
+                    "description": "Legendary cooking weapon",
+                    "price": 800,
+                    "currency": "coins",
+                    "type": "weapon",
+                    "icon": ""
+                },
+                {
+                    "id": "diamond_whisk",
+                    "name": "Diamond Whisk",
+                    "description": "Mix with style",
+                    "price": 1200,
+                    "currency": "coins",
+                    "type": "weapon",
+                    "icon": ""
+                },
+                {
+                    "id": "flaming_pan",
+                    "name": "Flaming Pan",
+                    "description": "Hot and dangerous",
+                    "price": 1500,
+                    "currency": "coins",
+                    "type": "weapon",
+                    "icon": ""
+                }
+            ]
+        },
+        {
+            "id": "bundles",
+            "name": "Bundles",
+            "items": [
+                {
+                    "id": "starter_pack",
+                    "name": "Starter Pack",
+                    "description": "Perfect for beginners",
+                    "price": 500,
+                    "currency": "coins",
+                    "type": "bundle",
+                    "icon": ""
+                },
+                {
+                    "id": "chef_bundle",
+                    "name": "Chef Bundle",
+                    "description": "Complete chef starter pack",
+                    "price": 1500,
+                    "currency": "coins",
+                    "type": "bundle",
+                    "icon": ""
+                },
+                {
+                    "id": "ultimate_pack",
+                    "name": "Ultimate Pack",
+                    "description": "Everything you need",
+                    "price": 3000,
+                    "currency": "coins",
+                    "type": "bundle",
+                    "icon": ""
+                }
+            ]
+        }
+    ]
+}

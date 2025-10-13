@@ -1,0 +1,192 @@
+.joystick-editor-root {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    position: absolute;
+    -unity-font-definition: url("project://database/Assets/Fonts/LilitaOne-Regular.ttf?fileID=12800000&guid=2309d3a0e6c55446ea2d106abff555fe&type=3#LilitaOne-Regular");
+}
+
+.editor-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: rgb(40, 30, 25);
+}
+
+.editor-title {
+    font-size: 36px;
+    color: rgb(255, 255, 255);
+    -unity-font-style: bold;
+}
+
+.close-button {
+    width: 50px;
+    height: 50px;
+    background-color: rgb(255, 100, 100);
+    border-radius: 50%;
+    border-width: 4px;
+    border-color: rgb(255, 255, 255);
+    font-size: 32px;
+    color: rgb(255, 255, 255);
+    -unity-font-style: bold;
+}
+
+.editor-content {
+    flex-direction: row;
+    flex-grow: 1;
+    padding: 20px;
+    gap: 20px;
+}
+
+.preview-area {
+    flex-grow: 1;
+    background-color: rgb(100, 150, 100);
+    border-radius: 20px;
+    border-width: 5px;
+    border-color: rgb(40, 30, 25);
+    position: relative;
+}
+
+.joystick-preview {
+    position: absolute;
+    width: 150px;
+    height: 150px;
+}
+
+.left-joystick {
+    bottom: 50px;
+    left: 50px;
+}
+
+.right-joystick {
+    bottom: 50px;
+    right: 50px;
+}
+
+.joystick-base {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-width: 4px;
+    border-color: rgb(40, 30, 25);
+}
+
+.joystick-stick {
+    width: 60px;
+    height: 60px;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
+    border-width: 4px;
+    border-color: rgb(40, 30, 25);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+}
+
+.action-buttons {
+    position: absolute;
+    right: 250px;
+    bottom: 50px;
+    gap: 15px;
+}
+
+.action-button {
+    width: 80px;
+    height: 80px;
+    background-color: rgb(255, 100, 100);
+    border-radius: 50%;
+    border-width: 5px;
+    border-color: rgb(40, 30, 25);
+    margin: 5px;
+}
+
+.action-label {
+    font-size: 14px;
+    color: rgb(255, 255, 255);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+}
+
+.controls-panel {
+    width: 400px;
+    background-color: rgb(245, 240, 235);
+    border-radius: 20px;
+    border-width: 5px;
+    border-color: rgb(40, 30, 25);
+    padding: 25px;
+}
+
+.panel-title {
+    font-size: 28px;
+    color: rgb(40, 30, 25);
+    -unity-font-style: bold;
+    margin-bottom: 20px;
+}
+
+.control-row {
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+.control-label {
+    font-size: 20px;
+    color: rgb(40, 30, 25);
+    -unity-font-style: bold;
+    margin-bottom: 10px;
+}
+
+.control-slider {
+    width: 100%;
+}
+
+.control-slider .unity-base-slider__dragger {
+    background-color: rgb(100, 230, 150);
+    border-radius: 50%;
+    border-width: 4px;
+    border-color: rgb(40, 30, 25);
+    width: 30px;
+    height: 30px;
+}
+
+.control-slider .unity-base-slider__tracker {
+    background-color: rgb(200, 200, 200);
+    border-radius: 10px;
+    height: 10px;
+    border-width: 3px;
+    border-color: rgb(40, 30, 25);
+}
+
+.control-toggle {
+    margin: 15px 0;
+}
+
+.control-toggle .unity-label {
+    font-size: 20px;
+    color: rgb(40, 30, 25);
+    -unity-font-style: bold;
+}
+
+.settings-button {
+    background-color: rgb(100, 201, 255);
+    border-radius: 15px;
+    padding: 15px 30px;
+    border-width: 5px;
+    border-color: rgb(40, 30, 25);
+    font-size: 20px;
+    color: rgb(40, 30, 25);
+    -unity-font-style: bold;
+    margin: 10px 0;
+    transition-property: scale;
+    transition-duration: 0.15s;
+}
+
+.settings-button:hover {
+    scale: 1.05;
+}
+
+.save-button {
+    background-color: rgb(100, 230, 150);
+}
