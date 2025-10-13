@@ -132,17 +132,12 @@
     padding: 0;
     margin: 0;
     margin-left: 10px;
-    transition-property: scale, background-color;
-    transition-duration: 0.15s;
-}
-
-.add-currency-button:hover {
-    background-color: rgb(120, 250, 170);
-    scale: 1.1;
+    transition-property: scale;
+    transition-duration: 0.1s;
 }
 
 .add-currency-button:active {
-    scale: 0.95;
+    scale: 0.88;
 }
 
 .add-button-text {
@@ -189,7 +184,7 @@
     border-width: 0;
     background-color: rgb(100, 201, 255);
     transition-property: scale;
-    transition-duration: 0.15s;
+    transition-duration: 0.1s;
 }
 
 .main-tabs .unity-tab__header:checked {
@@ -200,15 +195,8 @@
     display: none;
 }
 
-.main-tabs .unity-tab__header.selected:hover {
-    scale: 1.05;
-}
-
-.main-tabs .unity-tab__header:hover {
-    scale: 1.08;
-}
-
 .main-tabs .unity-tab__header:active {
+    scale: 0.92;
 }
 
 .main-tabs .unity-tab__header-image {
@@ -322,18 +310,13 @@
     border-width: 5px;
     border-color: rgb(40, 30, 25);
     min-width: 280px;
-    transition-property: scale, background-color;
-    transition-duration: 0.15s;
     overflow: visible;
-}
-
-.play-button:hover {
-    background-color: rgb(120, 250, 170);
-    scale: 1.05;
+    transition-property: scale;
+    transition-duration: 0.1s;
 }
 
 .play-button:active {
-    scale: 0.97;
+    scale: 0.93;
 }
 
 .timer-icon {

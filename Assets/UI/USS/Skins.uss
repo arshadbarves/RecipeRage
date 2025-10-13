@@ -1,0 +1,146 @@
+.skins-root {
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    -unity-font-definition: url("project://database/Assets/Fonts/LilitaOne-Regular.ttf?fileID=12800000&guid=2309d3a0e6c55446ea2d106abff555fe&type=3#LilitaOne-Regular");
+}
+
+.skins-header {
+    padding: 15px 20px 10px 20px;
+    align-items: center;
+}
+
+.skins-title {
+    font-size: 42px;
+    color: rgb(40, 30, 25);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+}
+
+.skins-content {
+    flex-direction: row;
+    flex-grow: 1;
+    gap: 15px;
+    padding: 15px 20px 30px 20px;
+}
+
+.character-preview {
+    width: 380px;
+    min-width: 380px;
+    background-color: rgb(245, 240, 235);
+    border-radius: 18px;
+    border-width: 5px;
+    border-color: rgb(40, 30, 25);
+    padding: 18px;
+    align-items: center;
+}
+
+.preview-model {
+    width: 100%;
+    height: 380px;
+    background-color: rgb(220, 220, 220);
+    border-radius: 12px;
+    margin-bottom: 18px;
+    border-width: 3px;
+    border-color: rgb(40, 30, 25);
+}
+
+.preview-skin-name {
+    font-size: 28px;
+    color: rgb(40, 30, 25);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    margin-bottom: 12px;
+    white-space: normal;
+}
+
+.equip-button {
+    background-color: rgb(100, 230, 150);
+    border-radius: 12px;
+    padding: 12px 35px;
+    border-width: 4px;
+    border-color: rgb(40, 30, 25);
+    font-size: 22px;
+    color: rgb(40, 30, 25);
+    -unity-font-style: bold;
+    transition-property: scale, background-color;
+    transition-duration: 0.15s;
+    width: 100%;
+}
+
+.equip-button:active {
+    scale: 0.92;
+    background-color: rgb(80, 210, 130);
+}
+
+.equip-button.equipped {
+    background-color: rgb(255, 200, 60);
+}
+
+.equip-button.equipped:active {
+    background-color: rgb(235, 180, 40);
+}
+
+.skins-scroll {
+    flex-grow: 1;
+}
+
+.skins-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: flex-start;
+    padding-bottom: 20px;
+}
+
+.skin-item {
+    width: 170px;
+    background-color: rgb(245, 240, 235);
+    border-radius: 16px;
+    border-width: 4px;
+    border-color: rgb(40, 30, 25);
+    padding: 14px;
+    transition-property: scale, border-color, border-width;
+    transition-duration: 0.15s;
+}
+
+.skin-item:active {
+    scale: 0.95;
+}
+
+.skin-item.selected {
+    border-color: rgb(255, 100, 100);
+    border-width: 5px;
+    scale: 1.02;
+}
+
+.skin-item-image {
+    width: 100%;
+    height: 140px;
+    background-color: rgb(220, 220, 220);
+    border-radius: 12px;
+    margin-bottom: 10px;
+    border-width: 3px;
+    border-color: rgb(40, 30, 25);
+}
+
+.skin-item-name {
+    font-size: 16px;
+    color: rgb(40, 30, 25);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    white-space: normal;
+}
+
+.skin-locked {
+    opacity: 0.5;
+}
+
+.lock-icon {
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+}

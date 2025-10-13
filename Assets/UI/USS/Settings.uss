@@ -1,116 +1,290 @@
-/* Settings Screen Styles */
-.settings-screen {
+.settings-root {
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
+    -unity-font-definition: url("project://database/Assets/Fonts/LilitaOne-Regular.ttf?fileID=12800000&guid=2309d3a0e6c55446ea2d106abff555fe&type=3#LilitaOne-Regular");
 }
 
 .settings-header {
-    flex-direction: row;
-    justify-content: space-between;
+    padding: 20px 20px 10px 20px;
     align-items: center;
-    padding: 20px;
-    background-color: rgb(30, 30, 40);
-    border-bottom-width: 2px;
-    border-bottom-color: rgba(255, 255, 255, 0.1);
 }
 
 .settings-title {
-    font-size: 24px;
-    color: white;
+    font-size: 42px;
+    color: rgb(40, 30, 25);
     -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    margin-bottom: 5px;
 }
 
-.close-button {
-    width: 40px;
-    height: 40px;
-    border-radius: 20px;
-    background-color: rgba(255, 100, 100, 0.8);
-    border-width: 0;
-    color: white;
-    font-size: 20px;
-    -unity-font-style: bold;
+.settings-subtitle {
+    font-size: 18px;
+    color: rgb(100, 90, 85);
+    -unity-text-align: middle-center;
 }
 
-.settings-content {
+.settings-scroll {
     flex-grow: 1;
-    padding: 20px;
-    background-color: rgb(25, 25, 35);
-    min-width: 400px;
-    max-width: 600px;
+    padding: 15px;
+    padding-bottom: 30px;
 }
 
 .settings-section {
-    margin-bottom: 30px;
+    background-color: rgb(245, 240, 235);
+    border-radius: 20px;
+    border-width: 5px;
+    border-color: rgb(40, 30, 25);
+    padding: 20px;
+    margin-bottom: 15px;
+}
+
+.settings-section-danger {
+    background-color: rgb(255, 240, 240);
+    border-color: rgb(255, 100, 100);
 }
 
 .section-title {
-    font-size: 18px;
-    color: rgb(200, 200, 255);
-    margin-bottom: 15px;
+    font-size: 28px;
+    color: rgb(40, 30, 25);
     -unity-font-style: bold;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom-width: 3px;
+    border-bottom-color: rgba(40, 30, 25, 0.3);
 }
 
-.volume-controls {
-    flex-direction: column;
+.controls-group {
+    gap: 8px;
 }
 
-.volume-control {
+.button-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: flex-start;
+}
+
+.control-row {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    padding: 12px 15px;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 14px;
+    margin-bottom: 8px;
 }
 
-.volume-label {
-    color: white;
-    font-size: 14px;
-    min-width: 120px;
+.control-label {
+    font-size: 22px;
+    color: rgb(40, 30, 25);
+    -unity-font-style: bold;
+    flex-shrink: 0;
+    margin-right: 15px;
 }
 
-.volume-slider {
-    flex-grow: 1;
-    margin-left: 20px;
-}
-
-.graphics-controls {
-    flex-direction: column;
-}
-
-.settings-toggle {
-    margin-bottom: 10px;
-    color: white;
-}
-
-.settings-footer {
+.slider-container {
     flex-direction: row;
+    align-items: flex-start;
+    flex-shrink: 0;
+}
+
+.control-slider {
+    width: 200px;
+    min-width: 200px;
+    align-items: center;
+}
+
+.value-label {
+    font-size: 20px;
+    color: rgb(40, 30, 25);
+    -unity-font-style: bold;
+    min-width: 55px;
+    -unity-text-align: middle-right;
+    background-color: rgba(40, 30, 25, 0.1);
+    border-radius: 10px;
+    padding: 4px 8px;
+}
+
+.control-slider .unity-base-slider__dragger {
+    background-color: rgb(100, 230, 150);
+    border-radius: 50%;
+    border-width: 5px;
+    border-color: rgb(40, 30, 25);
+    width: 36px;
+    height: 36px;
+    margin: -12px;
+}
+
+.control-slider .unity-base-slider__tracker {
+    background-color: rgb(210, 210, 210);
+    border-radius: 8px;
+    height: 15px;
+    border-width: 3px;
+    border-color: rgb(40, 30, 25);
+}
+
+.control-slider .unity-base-slider__drag-container {
+    background-color: rgb(100, 230, 150);
+    border-radius: 12px;
+}
+
+.control-dropdown {
+    width: 400px;
+    min-width: 200px;
+    background-color: rgb(255, 255, 255);
+    border-radius: 15px;
+    border-width: 4px;
+    border-color: rgb(40, 30, 25);
+    padding: 10px 15px;
+    font-size: 20px;
+    color: rgb(40, 30, 25);
+    -unity-font-style: bold;
+    flex-shrink: 0;
+    max-width: 400px;
+}
+
+.control-dropdown .unity-base-popup-field__text {
+    color: rgb(40, 30, 25);
+    -unity-font-style: bold;
+    font-size: 20px;
+}
+
+.control-dropdown .unity-base-popup-field__arrow {
+    width: 18px;
+    height: 18px;
+    -unity-background-image-tint-color: rgb(40, 30, 25);
+}
+
+.control-dropdown:focus {
+    border-color: rgb(40, 30, 25);
+}
+
+.control-dropdown .unity-base-popup-field__input {
+    background-color: transparent;
+}
+
+.control-toggle .unity-toggle__input {
+    background-color: rgb(255, 100, 100);
+    border-radius: 20px;
+    border-width: 4px;
+    border-color: rgb(40, 30, 25);
+    width: 75px;
+    height: 40px;
+    transition-property: all;
+    transition-duration: 0.25s;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 1px;
+}
+
+.control-toggle:checked .unity-toggle__input {
+    background-color: rgb(100, 230, 150);
     justify-content: flex-end;
-    padding: 20px;
-    background-color: rgb(30, 30, 40);
-    border-top-width: 2px;
-    border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+.control-toggle .unity-toggle__checkmark {
+    background-color: rgb(255, 255, 255);
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    border-width: 4px;
+    border-color: rgb(40, 30, 25);
+    margin: 0;
+    padding: 0;
 }
 
 .settings-button {
-    height: 40px;
-    padding-left: 20px;
-    padding-right: 20px;
-    margin-left: 10px;
-    border-radius: 8px;
-    border-width: 1px;
+    background-color: rgb(100, 201, 255);
+    border-radius: 15px;
+    padding: 12px 18px;
+    border-width: 4px;
+    border-color: rgb(40, 30, 25);
+    font-size: 16px;
+    color: rgb(40, 30, 25);
+    -unity-font-style: bold;
+    transition-property: scale;
+    transition-duration: 0.1s;
+    flex-grow: 0;
+    flex-shrink: 0;
+    width: auto;
+}
+
+.settings-button:active {
+    scale: 0.95 0.95 1;
+}
+
+.settings-button-full {
+    width: 100%;
+    font-size: 18px;
+    padding: 14px 20px;
+}
+
+.settings-button-primary {
+    background-color: rgb(100, 230, 150);
+    font-size: 20px;
+    padding: 14px 20px;
+}
+
+.settings-button-warning {
+    background-color: rgb(255, 200, 60);
+}
+
+.settings-button-danger {
+    background-color: rgb(255, 100, 100);
+    color: rgb(255, 255, 255);
+    border-color: rgb(200, 50, 50);
+}
+
+.version-info {
+    padding: 15px;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 15px;
+}
+
+.version-text {
+    font-size: 16px;
+    color: rgb(100, 90, 85);
+    -unity-text-align: middle-center;
+    margin-bottom: 5px;
+    -unity-font-style: bold;
+}
+
+.credits-text {
     font-size: 14px;
+    color: rgb(120, 110, 105);
+    -unity-text-align: middle-center;
 }
 
-.settings-button--secondary {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.3);
-    color: rgba(255, 255, 255, 0.8);
+.settings-scroll .unity-scroller--vertical {
+    width: 20px;
+    margin-left: 10px;
 }
 
-.settings-button--primary {
-    background-color: rgb(100, 150, 255);
-    border-color: rgb(120, 170, 255);
-    color: white;
+.settings-scroll .unity-scroller--vertical .unity-base-slider__tracker {
+    background-color: rgba(40, 30, 25, 0.1);
+    border-radius: 10px;
+    border-width: 0;
+    margin: 5px;
+}
+
+.settings-scroll .unity-scroller--vertical .unity-base-slider__dragger {
+    background-color: rgb(40, 30, 25);
+    border-radius: 10px;
+    border-width: 0;
+    margin: 2px;
+    min-height: 40px;
+}
+
+.settings-scroll .unity-scroller--vertical .unity-base-slider__drag-container {
+    background-color: transparent;
+}
+
+.settings-scroll .unity-scroller__low-button {
+    display: none;
+}
+
+.settings-scroll .unity-scroller__high-button {
+    display: none;
 }

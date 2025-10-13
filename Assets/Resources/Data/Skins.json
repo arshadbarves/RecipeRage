@@ -1,0 +1,52 @@
+{
+    "skins": [
+        {
+            "id": "classic_chef",
+            "name": "Classic Chef",
+            "description": "The original chef outfit",
+            "rarity": "common",
+            "unlocked": true,
+            "icon": ""
+        },
+        {
+            "id": "master_chef",
+            "name": "Master Chef",
+            "description": "Professional chef outfit",
+            "rarity": "rare",
+            "unlocked": false,
+            "icon": ""
+        },
+        {
+            "id": "pirate_chef",
+            "name": "Pirate Chef",
+            "description": "Sail the culinary seas",
+            "rarity": "rare",
+            "unlocked": false,
+            "icon": ""
+        },
+        {
+            "id": "space_chef",
+            "name": "Space Chef",
+            "description": "Cook among the stars",
+            "rarity": "epic",
+            "unlocked": false,
+            "icon": ""
+        },
+        {
+            "id": "ninja_chef",
+            "name": "Ninja Chef",
+            "description": "Silent but deadly cooking",
+            "rarity": "epic",
+            "unlocked": false,
+            "icon": ""
+        },
+        {
+            "id": "royal_chef",
+            "name": "Royal Chef",
+            "description": "Fit for a king",
+            "rarity": "legendary",
+            "unlocked": false,
+            "icon": ""
+        }
+    ]
+}
