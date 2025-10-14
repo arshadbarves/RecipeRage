@@ -209,6 +209,24 @@ namespace Core.UI.Animation
                     AnimateSlideIn(element, new Vector2(element.resolvedStyle.left, parentHeight), 
                         duration, delay, onComplete);
                     break;
+                case AnimationType.SlideOutToLeft:
+                    AnimateSlideOut(element, new Vector2(-element.resolvedStyle.width, element.resolvedStyle.top), 
+                        duration, delay, onComplete);
+                    break;
+                case AnimationType.SlideOutToRight:
+                    float parentWidthOut = element.parent?.resolvedStyle.width ?? Screen.width;
+                    AnimateSlideOut(element, new Vector2(parentWidthOut, element.resolvedStyle.top), 
+                        duration, delay, onComplete);
+                    break;
+                case AnimationType.SlideOutToTop:
+                    AnimateSlideOut(element, new Vector2(element.resolvedStyle.left, -element.resolvedStyle.height), 
+                        duration, delay, onComplete);
+                    break;
+                case AnimationType.SlideOutToBottom:
+                    float parentHeightOut = element.parent?.resolvedStyle.height ?? Screen.height;
+                    AnimateSlideOut(element, new Vector2(element.resolvedStyle.left, parentHeightOut), 
+                        duration, delay, onComplete);
+                    break;
                 case AnimationType.ScaleIn:
                     AnimateScale(element, Vector2.zero, Vector2.one, duration, delay, EasingCurve.EaseOutBack, onComplete);
                     break;
@@ -238,6 +256,13 @@ namespace Core.UI.Animation
         {
             var endPos = new Vector2(element.resolvedStyle.left, element.resolvedStyle.top);
             AnimatePosition(element, startPos, endPos, duration, delay, EasingCurve.EaseOut, onComplete);
+        }
+
+        private static void AnimateSlideOut(VisualElement element, Vector2 endPos, 
+            float duration, float delay, Action onComplete)
+        {
+            var startPos = new Vector2(element.resolvedStyle.left, element.resolvedStyle.top);
+            AnimatePosition(element, startPos, endPos, duration, delay, EasingCurve.EaseIn, onComplete);
         }
 
         private static void AnimateBounce(VisualElement element, float duration, float delay, Action onComplete)

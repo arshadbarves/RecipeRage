@@ -102,20 +102,10 @@ namespace UI
         
         private void SetupEventHandlers()
         {
-            // Button events - using clicked event for buttons
-            if (_closeButton != null)
-            {
-                _closeButton.clicked += HandleCloseClicked;
-                Debug.Log("[JoystickEditorUI] Close button handler registered");
-            }
-            if (_resetButton != null)
-            {
-                _resetButton.clicked += HandleResetClicked;
-            }
-            if (_saveButton != null)
-            {
-                _saveButton.clicked += HandleSaveClicked;
-            }
+            // Button events
+            _closeButton?.RegisterCallback<ClickEvent>(_ => HandleCloseClicked());
+            _resetButton?.RegisterCallback<ClickEvent>(_ => HandleResetClicked());
+            _saveButton?.RegisterCallback<ClickEvent>(_ => HandleSaveClicked());
             
             // Slider events
             _joystickSizeSlider?.RegisterValueChangedCallback(evt => HandleSizeChanged(evt.newValue));
@@ -128,19 +118,9 @@ namespace UI
         
         private void UnregisterEventHandlers()
         {
-            // Button events
-            if (_closeButton != null)
-            {
-                _closeButton.clicked -= HandleCloseClicked;
-            }
-            if (_resetButton != null)
-            {
-                _resetButton.clicked -= HandleResetClicked;
-            }
-            if (_saveButton != null)
-            {
-                _saveButton.clicked -= HandleSaveClicked;
-            }
+            _closeButton?.UnregisterCallback<ClickEvent>(_ => HandleCloseClicked());
+            _resetButton?.UnregisterCallback<ClickEvent>(_ => HandleResetClicked());
+            _saveButton?.UnregisterCallback<ClickEvent>(_ => HandleSaveClicked());
             
             _joystickSizeSlider?.UnregisterValueChangedCallback(evt => HandleSizeChanged(evt.newValue));
             _joystickOpacitySlider?.UnregisterValueChangedCallback(evt => HandleOpacityChanged(evt.newValue));
