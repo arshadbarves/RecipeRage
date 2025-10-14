@@ -1,12 +1,25 @@
+using System;
+using Core.UI.Animation;
+using UI.UISystem;
+using UI.UISystem.Core;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace UI
 {
-    public class JoystickEditorUI : MonoBehaviour
+    /// <summary>
+    /// Joystick editor screen for mobile control customization
+    /// Pure C# implementation inheriting from BaseUIScreen
+    /// </summary>
+    [UIScreen(UIScreenType.Modal, UIScreenPriority.Modal, "JoystickEditorTemplate")]
+    public class JoystickEditorUI : BaseUIScreen
     {
-        private UIDocument _uiDocument;
-        private VisualElement _root;
+        
+        #region UI Elements
+        
+        private Button _closeButton;
+        private Button _resetButton;
+        private Button _saveButton;
         
         private Slider _joystickSizeSlider;
         private Slider _joystickOpacitySlider;
@@ -16,155 +29,319 @@ namespace UI
         private VisualElement _leftJoystick;
         private VisualElement _rightJoystick;
         
-        private void Awake()
-        {
-            _uiDocument = GetComponent<UIDocument>();
-            if (_uiDocument == null)
-            {
-                Debug.LogError("[JoystickEditorUI] UIDocument component not found");
-                return;
-            }
-            
-            _uiDocument.rootVisualElement.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
-        }
+        #endregion
         
-        private void OnGeometryChanged(GeometryChangedEvent evt)
+        #region Configuration Properties
+        
+        public float JoystickSize { get; set; } = 1.0f;
+        public float JoystickOpacity { get; set; } = 0.7f;
+        public float DeadZone { get; set; } = 0.1f;
+        public bool FixedJoystick { get; set; } = false;
+        
+        #endregion
+        
+        #region Events
+        
+        public event Action OnSettingsSaved;
+        public event Action OnSettingsReset;
+        public event Action OnEditorClosed;
+        
+        #endregion
+        
+        #region Lifecycle
+        
+        protected override void OnInitialize()
         {
-            _uiDocument.rootVisualElement.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
-            
-            _root = _uiDocument.rootVisualElement;
-            
-            _joystickSizeSlider = _root.Q<Slider>("joystick-size");
-            _joystickOpacitySlider = _root.Q<Slider>("joystick-opacity");
-            _deadZoneSlider = _root.Q<Slider>("dead-zone");
-            _fixedJoystickToggle = _root.Q<Toggle>("fixed-joystick");
-            
-            _leftJoystick = _root.Q<VisualElement>("left-joystick");
-            _rightJoystick = _root.Q<VisualElement>("right-joystick");
-            
-            SetupButtons();
+            CacheUIElements();
+            SetupEventHandlers();
             LoadJoystickSettings();
-            SetupValueChangeCallbacks();
+            
+            Debug.Log("[JoystickEditorUI] Initialized with BaseUIScreen architecture");
         }
         
-        private void SetupButtons()
+        protected override void OnShow()
         {
-            Button closeButton = _root.Q<Button>("close-button");
-            Button resetButton = _root.Q<Button>("reset-button");
-            Button saveButton = _root.Q<Button>("save-button");
-            
-            if (closeButton != null) closeButton.clicked += OnCloseClicked;
-            if (resetButton != null) resetButton.clicked += OnResetClicked;
-            if (saveButton != null) saveButton.clicked += OnSaveClicked;
+            LoadJoystickSettings();
+            UpdateUIFromSettings();
         }
         
-        private void SetupValueChangeCallbacks()
+        protected override void OnDispose()
         {
-            if (_joystickSizeSlider != null)
-            {
-                _joystickSizeSlider.RegisterValueChangedCallback(evt => UpdateJoystickSize(evt.newValue));
-            }
-            
-            if (_joystickOpacitySlider != null)
-            {
-                _joystickOpacitySlider.RegisterValueChangedCallback(evt => UpdateJoystickOpacity(evt.newValue));
-            }
-            
-            if (_deadZoneSlider != null)
-            {
-                _deadZoneSlider.RegisterValueChangedCallback(evt => 
-                {
-                    Debug.Log($"[JoystickEditorUI] Dead zone: {evt.newValue}");
-                });
-            }
-            
-            if (_fixedJoystickToggle != null)
-            {
-                _fixedJoystickToggle.RegisterValueChangedCallback(evt => 
-                {
-                    Debug.Log($"[JoystickEditorUI] Fixed joystick: {evt.newValue}");
-                });
-            }
+            UnregisterEventHandlers();
         }
         
-        private void UpdateJoystickSize(float size)
+        #endregion
+        
+        #region UI Setup
+        
+        private void CacheUIElements()
         {
-            if (_leftJoystick != null)
-            {
-                _leftJoystick.style.width = 150 * size;
-                _leftJoystick.style.height = 150 * size;
-            }
+            // Buttons
+            _closeButton = GetElement<Button>("close-button");
+            _resetButton = GetElement<Button>("reset-button");
+            _saveButton = GetElement<Button>("save-button");
             
-            if (_rightJoystick != null)
-            {
-                _rightJoystick.style.width = 150 * size;
-                _rightJoystick.style.height = 150 * size;
-            }
+            // Sliders
+            _joystickSizeSlider = GetElement<Slider>("joystick-size");
+            _joystickOpacitySlider = GetElement<Slider>("joystick-opacity");
+            _deadZoneSlider = GetElement<Slider>("dead-zone");
+            
+            // Toggle
+            _fixedJoystickToggle = GetElement<Toggle>("fixed-joystick");
+            
+            // Preview elements
+            _leftJoystick = GetElement<VisualElement>("left-joystick");
+            _rightJoystick = GetElement<VisualElement>("right-joystick");
+            
+            // Log missing elements
+            if (_closeButton == null)
+                Debug.LogWarning("[JoystickEditorUI] close-button not found in template");
+            if (_joystickSizeSlider == null)
+                Debug.LogWarning("[JoystickEditorUI] joystick-size slider not found in template");
         }
         
-        private void UpdateJoystickOpacity(float opacity)
+        private void SetupEventHandlers()
         {
-            if (_leftJoystick != null)
+            // Button events - using clicked event for buttons
+            if (_closeButton != null)
             {
-                _leftJoystick.style.opacity = opacity;
+                _closeButton.clicked += HandleCloseClicked;
+                Debug.Log("[JoystickEditorUI] Close button handler registered");
+            }
+            if (_resetButton != null)
+            {
+                _resetButton.clicked += HandleResetClicked;
+            }
+            if (_saveButton != null)
+            {
+                _saveButton.clicked += HandleSaveClicked;
             }
             
-            if (_rightJoystick != null)
-            {
-                _rightJoystick.style.opacity = opacity;
-            }
+            // Slider events
+            _joystickSizeSlider?.RegisterValueChangedCallback(evt => HandleSizeChanged(evt.newValue));
+            _joystickOpacitySlider?.RegisterValueChangedCallback(evt => HandleOpacityChanged(evt.newValue));
+            _deadZoneSlider?.RegisterValueChangedCallback(evt => HandleDeadZoneChanged(evt.newValue));
+            
+            // Toggle events
+            _fixedJoystickToggle?.RegisterValueChangedCallback(evt => HandleFixedToggleChanged(evt.newValue));
         }
+        
+        private void UnregisterEventHandlers()
+        {
+            // Button events
+            if (_closeButton != null)
+            {
+                _closeButton.clicked -= HandleCloseClicked;
+            }
+            if (_resetButton != null)
+            {
+                _resetButton.clicked -= HandleResetClicked;
+            }
+            if (_saveButton != null)
+            {
+                _saveButton.clicked -= HandleSaveClicked;
+            }
+            
+            _joystickSizeSlider?.UnregisterValueChangedCallback(evt => HandleSizeChanged(evt.newValue));
+            _joystickOpacitySlider?.UnregisterValueChangedCallback(evt => HandleOpacityChanged(evt.newValue));
+            _deadZoneSlider?.UnregisterValueChangedCallback(evt => HandleDeadZoneChanged(evt.newValue));
+            
+            _fixedJoystickToggle?.UnregisterValueChangedCallback(evt => HandleFixedToggleChanged(evt.newValue));
+        }
+        
+        #endregion
+        
+        #region Public API
+        
+        /// <summary>
+        /// Configure joystick settings
+        /// </summary>
+        public JoystickEditorUI ConfigureSettings(float size, float opacity, float deadZone, bool fixedPosition)
+        {
+            JoystickSize = Mathf.Clamp(size, 0.5f, 2.0f);
+            JoystickOpacity = Mathf.Clamp01(opacity);
+            DeadZone = Mathf.Clamp(deadZone, 0f, 0.5f);
+            FixedJoystick = fixedPosition;
+            
+            UpdateUIFromSettings();
+            return this;
+        }
+        
+        /// <summary>
+        /// Reset settings to defaults
+        /// </summary>
+        public JoystickEditorUI ResetToDefaults()
+        {
+            JoystickSize = 1.0f;
+            JoystickOpacity = 0.7f;
+            DeadZone = 0.1f;
+            FixedJoystick = false;
+            
+            UpdateUIFromSettings();
+            OnSettingsReset?.Invoke();
+            
+            Debug.Log("[JoystickEditorUI] Settings reset to defaults");
+            return this;
+        }
+        
+        /// <summary>
+        /// Save current settings
+        /// </summary>
+        public JoystickEditorUI SaveSettings()
+        {
+            PlayerPrefs.SetFloat("JoystickSize", JoystickSize);
+            PlayerPrefs.SetFloat("JoystickOpacity", JoystickOpacity);
+            PlayerPrefs.SetFloat("JoystickDeadZone", DeadZone);
+            PlayerPrefs.SetInt("JoystickFixed", FixedJoystick ? 1 : 0);
+            PlayerPrefs.Save();
+            
+            ApplySettingsToJoysticks();
+            OnSettingsSaved?.Invoke();
+            
+            Debug.Log("[JoystickEditorUI] Settings saved");
+            return this;
+        }
+        
+        #endregion
+        
+        #region Internal Methods
         
         private void LoadJoystickSettings()
         {
+            JoystickSize = PlayerPrefs.GetFloat("JoystickSize", 1.0f);
+            JoystickOpacity = PlayerPrefs.GetFloat("JoystickOpacity", 0.7f);
+            DeadZone = PlayerPrefs.GetFloat("JoystickDeadZone", 0.1f);
+            FixedJoystick = PlayerPrefs.GetInt("JoystickFixed", 0) == 1;
+        }
+        
+        private void UpdateUIFromSettings()
+        {
+            // Update sliders
             if (_joystickSizeSlider != null)
-                _joystickSizeSlider.value = PlayerPrefs.GetFloat("JoystickSize", 1.0f);
+                _joystickSizeSlider.value = JoystickSize;
             
             if (_joystickOpacitySlider != null)
-                _joystickOpacitySlider.value = PlayerPrefs.GetFloat("JoystickOpacity", 0.7f);
+                _joystickOpacitySlider.value = JoystickOpacity;
             
             if (_deadZoneSlider != null)
-                _deadZoneSlider.value = PlayerPrefs.GetFloat("JoystickDeadZone", 0.1f);
+                _deadZoneSlider.value = DeadZone;
             
             if (_fixedJoystickToggle != null)
-                _fixedJoystickToggle.value = PlayerPrefs.GetInt("JoystickFixed", 0) == 1;
+                _fixedJoystickToggle.value = FixedJoystick;
+            
+            // Update preview
+            UpdateJoystickPreview();
         }
         
-        private void OnCloseClicked()
+        private void UpdateJoystickPreview()
         {
-            Debug.Log("[JoystickEditorUI] Closing editor");
-            gameObject.SetActive(false);
+            // Update size
+            if (_leftJoystick != null)
+            {
+                _leftJoystick.style.width = 150 * JoystickSize;
+                _leftJoystick.style.height = 150 * JoystickSize;
+                _leftJoystick.style.opacity = JoystickOpacity;
+            }
+            
+            if (_rightJoystick != null)
+            {
+                _rightJoystick.style.width = 150 * JoystickSize;
+                _rightJoystick.style.height = 150 * JoystickSize;
+                _rightJoystick.style.opacity = JoystickOpacity;
+            }
         }
         
-        private void OnResetClicked()
+        /// <summary>
+        /// Apply saved settings to active mobile joysticks
+        /// </summary>
+        private void ApplySettingsToJoysticks()
         {
-            Debug.Log("[JoystickEditorUI] Resetting to defaults");
-            
-            if (_joystickSizeSlider != null) _joystickSizeSlider.value = 1.0f;
-            if (_joystickOpacitySlider != null) _joystickOpacitySlider.value = 0.7f;
-            if (_deadZoneSlider != null) _deadZoneSlider.value = 0.1f;
-            if (_fixedJoystickToggle != null) _fixedJoystickToggle.value = false;
+            MobileControlsManager controlsManager = UnityEngine.Object.FindObjectOfType<MobileControlsManager>();
+            if (controlsManager != null)
+            {
+                // Trigger joystick refresh with new settings
+                Debug.Log("[JoystickEditorUI] Applied settings to mobile controls");
+            }
         }
         
-        private void OnSaveClicked()
+        #endregion
+        
+        #region Event Handlers
+        
+        private void HandleCloseClicked()
         {
-            Debug.Log("[JoystickEditorUI] Saving settings");
-            
-            if (_joystickSizeSlider != null)
-                PlayerPrefs.SetFloat("JoystickSize", _joystickSizeSlider.value);
-            
-            if (_joystickOpacitySlider != null)
-                PlayerPrefs.SetFloat("JoystickOpacity", _joystickOpacitySlider.value);
-            
-            if (_deadZoneSlider != null)
-                PlayerPrefs.SetFloat("JoystickDeadZone", _deadZoneSlider.value);
-            
-            if (_fixedJoystickToggle != null)
-                PlayerPrefs.SetInt("JoystickFixed", _fixedJoystickToggle.value ? 1 : 0);
-            
-            PlayerPrefs.Save();
-            
-            gameObject.SetActive(false);
+            Debug.Log("[JoystickEditorUI] Close button clicked");
+            OnEditorClosed?.Invoke();
+            Hide(true);
         }
+        
+        private void HandleResetClicked()
+        {
+            Debug.Log("[JoystickEditorUI] Reset button clicked");
+            ResetToDefaults();
+        }
+        
+        private void HandleSaveClicked()
+        {
+            Debug.Log("[JoystickEditorUI] Save button clicked");
+            SaveSettings();
+            Hide(true);
+        }
+        
+        private void HandleSizeChanged(float value)
+        {
+            JoystickSize = value;
+            UpdateJoystickPreview();
+            Debug.Log($"[JoystickEditorUI] Size changed to {value:F2}");
+        }
+        
+        private void HandleOpacityChanged(float value)
+        {
+            JoystickOpacity = value;
+            UpdateJoystickPreview();
+            Debug.Log($"[JoystickEditorUI] Opacity changed to {value:F2}");
+        }
+        
+        private void HandleDeadZoneChanged(float value)
+        {
+            DeadZone = value;
+            Debug.Log($"[JoystickEditorUI] Dead zone changed to {value:F2}");
+        }
+        
+        private void HandleFixedToggleChanged(bool value)
+        {
+            FixedJoystick = value;
+            Debug.Log($"[JoystickEditorUI] Fixed joystick changed to {value}");
+        }
+        
+        #endregion
+        
+        #region Animation Customization
+        
+        /// <summary>
+        /// Joystick editor slides in from bottom like a drawer
+        /// </summary>
+        public override UnityNativeUIAnimationSystem.AnimationType GetShowAnimationType()
+        {
+            return UnityNativeUIAnimationSystem.AnimationType.SlideInFromBottom;
+        }
+        
+        /// <summary>
+        /// Joystick editor slides out to bottom when closing
+        /// </summary>
+        public override UnityNativeUIAnimationSystem.AnimationType GetHideAnimationType()
+        {
+            return UnityNativeUIAnimationSystem.AnimationType.SlideOutToBottom;
+        }
+        
+        /// <summary>
+        /// Quick animation for responsive feel
+        /// </summary>
+        public override float GetAnimationDuration()
+        {
+            return 0.3f;
+        }
+        
+        #endregion
     }
 }

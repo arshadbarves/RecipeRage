@@ -183,7 +183,7 @@
     margin: 0 15px;
     border-width: 0;
     background-color: rgb(100, 201, 255);
-    transition-property: scale;
+    transition-property: scale, background-color;
     transition-duration: 0.1s;
 }
 
@@ -196,7 +196,7 @@
 }
 
 .main-tabs .unity-tab__header:active {
-    scale: 0.92;
+    scale: 0.92 0.92 1;
 }
 
 .main-tabs .unity-tab__header-image {
