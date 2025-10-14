@@ -393,39 +393,24 @@ namespace UI
         {
             Debug.Log("[SettingsUI] Opening joystick editor");
             
-            // Find or create joystick editor
-            GameObject editorObj = GameObject.Find("JoystickEditor");
-            if (editorObj == null)
+            // Show the joystick editor screen using UIManager
+            UI.UISystem.UIManager uiManager = UI.UISystem.UIManager.Instance;
+            if (uiManager != null && uiManager.IsInitialized)
             {
-                // Create joystick editor GameObject
-                editorObj = new GameObject("JoystickEditor");
-                
-                // Add UIDocument component
-                UIDocument uiDoc = editorObj.AddComponent<UIDocument>();
-                
-                // Load the joystick editor template
-                VisualTreeAsset template = Resources.Load<VisualTreeAsset>("UI/Templates/JoystickEditorTemplate");
-                if (template != null)
+                // Get the joystick editor screen
+                JoystickEditorUI joystickEditor = uiManager.GetScreen<JoystickEditorUI>();
+                if (joystickEditor != null)
                 {
-                    uiDoc.visualTreeAsset = template;
-                    
-                    // Add JoystickEditorUI component
-                    editorObj.AddComponent<JoystickEditorUI>();
-                    
-                    Debug.Log("[SettingsUI] Created joystick editor");
+                    joystickEditor.Show(true, true);
                 }
                 else
                 {
-                    Debug.LogError("[SettingsUI] Failed to load JoystickEditorTemplate");
-                    Object.Destroy(editorObj);
-                    return;
+                    Debug.LogWarning("[SettingsUI] JoystickEditorUI screen not found in UIManager");
                 }
             }
             else
             {
-                // Just show existing editor
-                editorObj.SetActive(true);
-                Debug.Log("[SettingsUI] Showing existing joystick editor");
+                Debug.LogWarning("[SettingsUI] UIManager not available or not initialized");
             }
         }
 
