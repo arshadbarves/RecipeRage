@@ -50,5 +50,9 @@ namespace Core.SaveSystem
         
         // Difficulty
         public string Difficulty = "Normal";
+        
+        // Authentication (secure storage instead of PlayerPrefs)
+        [Header("Authentication")]
+        public string LastLoginMethod = "";
     }
 }

@@ -23,10 +23,7 @@ namespace Core.Characters
         [Header("Character Settings")]
         [SerializeField] private int _characterClassId;
 
-        /// <summary>
-        /// The player's character manager.
-        /// </summary>
-        private CharacterManager _characterManager;
+
 
         /// <summary>
         /// The player's currently held object.
@@ -134,13 +131,7 @@ namespace Core.Characters
                 Debug.Log("[PlayerController] Local player initialized");
             }
 
-            // Get the character manager
-            _characterManager = ServiceLocator.Instance.Get<CharacterManager>();
-            if (_characterManager == null)
-            {
-                Debug.LogError("[PlayerController] Character manager not found");
-                return;
-            }
+            // Character service will be accessed through GameBootstrap when needed
 
             // Set up character class
             SetupCharacterClass();
@@ -167,17 +158,19 @@ namespace Core.Characters
         /// </summary>
         private void SetupCharacterClass()
         {
-            if (_characterManager == null)
+            var services = Core.Bootstrap.GameBootstrap.Services;
+            if (services == null || services.CharacterService == null)
             {
+                Debug.LogError("[PlayerController] Character service not available");
                 return;
             }
 
             // Get the character class
-            CharacterClass = _characterManager.GetCharacterClass(_characterClassId);
+            CharacterClass = services.CharacterService.GetCharacter(_characterClassId);
             if (CharacterClass == null)
             {
                 // Use the default character class
-                CharacterClass = _characterManager.SelectedCharacterClass;
+                CharacterClass = services.CharacterService.SelectedCharacter;
                 _characterClassId = CharacterClass != null ? CharacterClass.Id : 0;
             }
 
@@ -189,7 +182,7 @@ namespace Core.Characters
                 CarryingCapacity = Mathf.RoundToInt(CharacterClass.CarryingCapacityModifier);
 
                 // Create ability
-                PrimaryAbility = _characterManager.CreateAbilityForPlayer(CharacterClass, this);
+                PrimaryAbility = CharacterAbility.CreateAbility(CharacterClass.PrimaryAbilityType, CharacterClass, this);
 
                 Debug.Log($"[PlayerController] Character class set: {CharacterClass.DisplayName} ({CharacterClass.Id})");
             }
@@ -205,13 +198,15 @@ namespace Core.Characters
         /// <param name="characterClassId"> The character class ID </param>
         public void SetCharacterClass(int characterClassId)
         {
-            if (_characterManager == null)
+            var services = Core.Bootstrap.GameBootstrap.Services;
+            if (services == null || services.CharacterService == null)
             {
+                Debug.LogError("[PlayerController] Character service not available");
                 return;
             }
 
             // Check if the character class is unlocked
-            if (!_characterManager.IsCharacterClassUnlocked(characterClassId))
+            if (!services.CharacterService.IsUnlocked(characterClassId))
             {
                 Debug.LogError($"[PlayerController] Cannot set character class: not unlocked: {characterClassId}");
                 return;

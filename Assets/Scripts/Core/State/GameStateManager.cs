@@ -1,126 +1,48 @@
 using System;
-using Core.Utilities.Patterns;
-using UnityEngine;
 
 namespace Core.State
 {
     /// <summary>
-    /// Manages game states and transitions between them.
+    /// Game state manager - pure C# class, no MonoBehaviour
     /// </summary>
-    public class GameStateManager : MonoBehaviourSingleton<GameStateManager>
+    public class GameStateManager : IGameStateManager
     {
-        /// <summary>
-        /// Event triggered when a state transition occurs.
-        /// </summary>
+        private readonly IStateMachine _stateMachine;
+
         public event Action<IState, IState> OnStateChanged;
 
-        /// <summary>
-        /// The state machine that manages game states.
-        /// </summary>
-        private IStateMachine _stateMachine;
+        public IState CurrentState => _stateMachine.CurrentState;
+        public IState PreviousState => _stateMachine.PreviousState;
 
-        /// <summary>
-        /// The current active state.
-        /// </summary>
-        public IState CurrentState => _stateMachine?.CurrentState;
-
-        /// <summary>
-        /// The previous state before the current one.
-        /// </summary>
-        public IState PreviousState => _stateMachine?.PreviousState;
-
-        /// <summary>
-        /// Initialize the game state manager.
-        /// </summary>
-        protected override void Awake()
+        public GameStateManager()
         {
-            base.Awake();
-
-            // Create the state machine
             _stateMachine = new StateMachine();
-
-            // Subscribe to state machine events
-            _stateMachine.OnStateChanged += HandleStateChanged;
-
-            Debug.Log("[GameStateManager] Initialized");
+            _stateMachine.OnStateChanged += (prev, curr) => OnStateChanged?.Invoke(prev, curr);
         }
 
-        /// <summary>
-        /// Update the current state.
-        /// </summary>
-        private void Update()
-        {
-            // Update the state machine
-            _stateMachine?.Update();
-        }
-
-        /// <summary>
-        /// Update the current state at fixed intervals for physics.
-        /// </summary>
-        private void FixedUpdate()
-        {
-            // Update the state machine for physics
-            _stateMachine?.FixedUpdate();
-        }
-
-        /// <summary>
-        /// Clean up when the object is destroyed.
-        /// </summary>
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-
-            // Unsubscribe from state machine events
-            if (_stateMachine != null)
-            {
-                _stateMachine.OnStateChanged -= HandleStateChanged;
-            }
-        }
-
-        /// <summary>
-        /// Initialize the state machine with an initial state.
-        /// </summary>
-        /// <param name="initialState">The initial state</param>
         public void Initialize(IState initialState)
         {
-            if (_stateMachine != null)
-            {
-                _stateMachine.Initialize(initialState);
-            }
+            _stateMachine.Initialize(initialState);
         }
 
-        /// <summary>
-        /// Change to a new state.
-        /// </summary>
-        /// <param name="newState">The new state to change to</param>
         public void ChangeState(IState newState)
         {
-            if (_stateMachine != null)
-            {
-                _stateMachine.ChangeState(newState);
-            }
+            _stateMachine.ChangeState(newState);
         }
 
-        /// <summary>
-        /// Change to a new state of type T.
-        /// </summary>
-        /// <typeparam name="T">The type of state to change to</typeparam>
         public void ChangeState<T>() where T : IState, new()
         {
             ChangeState(new T());
         }
 
-        /// <summary>
-        /// Handle state machine state changed event.
-        /// </summary>
-        /// <param name="previousState">The previous state</param>
-        /// <param name="currentState">The current state</param>
-        private void HandleStateChanged(IState previousState, IState currentState)
+        public void Update(float deltaTime)
         {
-            Debug.Log($"[GameStateManager] State changed from {(previousState != null ? previousState.GetType().Name : "null")} to {currentState.GetType().Name}");
+            _stateMachine.Update();
+        }
 
-            // Forward the event
-            OnStateChanged?.Invoke(previousState, currentState);
+        public void FixedUpdate(float fixedDeltaTime)
+        {
+            _stateMachine.FixedUpdate();
         }
     }
 }

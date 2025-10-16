@@ -51,10 +51,10 @@ namespace Core.State.States
             if (networkManager != null && networkManager.IsHost && networkManager.AreAllPlayersReady())
             {
                 // Transition to the game state
-                GameStateManager gameStateManager = GameStateManager.Instance;
-                if (gameStateManager != null)
+                var services = Core.Bootstrap.GameBootstrap.Services;
+                if (services != null)
                 {
-                    gameStateManager.ChangeState(new GameplayState());
+                    services.StateManager.ChangeState(new GameplayState());
                 }
             }
         }

@@ -91,14 +91,13 @@ namespace Core.State.States
             // Gameplay update logic
 
             // Check if the game is over
-            GameModeManager gameModeManager = GameModeManager.Instance;
-            if (gameModeManager == null || !gameModeManager.IsGameOver()) return;
+            var services = Core.Bootstrap.GameBootstrap.Services;
+            if (services == null) return;
+            
+            if (!services.GameModeService.SelectedGameMode.IsGameOver()) return;
+            
             // Transition to the game over state
-            GameStateManager gameStateManager = GameStateManager.Instance;
-            if (gameStateManager != null)
-            {
-                gameStateManager.ChangeState(new GameOverState());
-            }
+            services.StateManager.ChangeState(new GameOverState());
         }
 
         /// <summary>

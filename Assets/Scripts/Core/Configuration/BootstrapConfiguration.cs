@@ -45,7 +45,7 @@ namespace Core.Configuration
         public float systemInitTimeout = 5f;
 
         [Tooltip("Which game state to start in after initialization")]
-        public GameBootstrap.GameStateType initialState = GameBootstrap.GameStateType.MainMenu;
+        public InitialGameState initialState = InitialGameState.MainMenu;
 
         [Header("Loading Tips")]
         [Tooltip("Tips to cycle through during loading")]
@@ -90,5 +90,16 @@ namespace Core.Configuration
                 return showSplashScreens;
             }
         }
+    }
+    
+    /// <summary>
+    /// Initial game state options
+    /// </summary>
+    public enum InitialGameState
+    {
+        MainMenu,
+        Lobby,
+        Game,
+        GameOver
     }
 }

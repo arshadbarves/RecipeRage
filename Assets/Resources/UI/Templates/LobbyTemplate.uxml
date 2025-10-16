@@ -1,0 +1,44 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/Resources/UI/LobbyStyles.uss?fileID=7433441132597879392&amp;guid=4874f17ee45e3402ca5e263b1825a11b&amp;type=3#LobbyStyles" />
+    <ui:VisualElement name="lobby-container" class="full-screen">
+        <ui:VisualElement name="lobby-panel" class="lobby-panel">
+            <ui:VisualElement name="lobby-header" class="header-section">
+                <ui:Label name="lobby-code" text="Lobby Code: XXXXX" class="lobby-code-text" />
+                <ui:Label name="lobby-status" text="Players: 0 | Ready: 0/0" class="lobby-status-text" />
+            </ui:VisualElement>
+            <ui:VisualElement name="matchmaking-status" class="matchmaking-status" style="display: none;">
+                <ui:VisualElement name="status-indicator" class="status-dot searching" />
+                <ui:Label text="Searching for players..." class="status-text" />
+                <ui:Label name="search-time" text="00:00" class="search-time-text" />
+            </ui:VisualElement>
+            <ui:VisualElement name="player-section" class="section">
+                <ui:Label text="PLAYERS" class="section-title" />
+                <ui:ScrollView name="player-list" class="player-list" />
+            </ui:VisualElement>
+            <ui:VisualElement name="game-mode-section" class="section">
+                <ui:Label text="GAME MODE" class="section-title" />
+                <ui:Label name="selected-game-mode" text="Selected: Classic" class="selected-mode-text" />
+                <ui:Button name="change-game-mode-button" text="Change Mode" class="secondary-button" />
+            </ui:VisualElement>
+            <ui:VisualElement name="team-section" class="section" style="display: none;">
+                <ui:Label text="TEAM" class="section-title" />
+                <ui:RadioButtonGroup name="team-toggle" class="team-toggle">
+                    <ui:RadioButton label="Team A" value="0" />
+                    <ui:RadioButton label="Team B" value="1" />
+                </ui:RadioButtonGroup>
+            </ui:VisualElement>
+            <ui:VisualElement name="button-section" class="button-section">
+                <ui:Button name="invite-friend-button" text="Invite Friend" class="secondary-button" />
+                <ui:Button name="ready-button" text="Ready" class="primary-button" />
+                <ui:Button name="leave-button" text="Leave" class="danger-button" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="game-mode-panel" class="overlay-panel hidden">
+            <ui:VisualElement name="game-mode-header" class="panel-header">
+                <ui:Label text="SELECT GAME MODE" class="panel-title" />
+                <ui:Button name="game-mode-back-button" text="✕" class="close-button" />
+            </ui:VisualElement>
+            <ui:ScrollView name="game-mode-list" class="game-mode-list" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

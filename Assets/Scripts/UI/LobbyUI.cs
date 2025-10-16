@@ -6,6 +6,7 @@ using Core.GameModes;
 using Core.Networking;
 using Core.Networking.Common;
 using Core.Networking.EOS;
+using Core.Networking.Interfaces;
 using UnityEngine;
 using UnityEngine.UIElements;
 using GameMode = Core.GameModes.GameMode;
@@ -39,6 +40,11 @@ namespace UI
         private Label _lobbyStatusText;
         private Label _selectedGameModeText;
         private Button _changeGameModeButton;
+        
+        // Matchmaking elements
+        private Label _searchTimeLabel;
+        private Button _inviteFriendButton;
+        private VisualElement _matchmakingStatus;
 
         // Game Mode Panel
         private ScrollView _gameModeList;
@@ -58,14 +64,14 @@ namespace UI
         private RecipeRageNetworkManager _networkManager;
 
         /// <summary>
-        /// Reference to the lobby manager.
+        /// Reference to the lobby manager (using interface for DIP).
         /// </summary>
-        private RecipeRageLobbyManager _lobbyManager;
+        private ILobbyManager _lobbyManager;
+        private IMatchmakingService _matchmakingService;
+        private IPlayerManager _playerManager;
+        private ITeamManager _teamManager;
 
-        /// <summary>
-        /// Reference to the game mode manager.
-        /// </summary>
-        private GameModeManager _gameModeManager;
+
 
         /// <summary>
         /// The list of player entry elements in the UI.
@@ -102,11 +108,15 @@ namespace UI
         /// </summary>
         private void Awake()
         {
-            // Get references
-            _gameStateManager = GameStateManager.Instance;
+            // Get references - will be properly initialized later
             _networkManager = RecipeRageNetworkManager.Instance;
-            _lobbyManager = _networkManager?.LobbyManager;
-            _gameModeManager = GameModeManager.Instance;
+            
+            // Use the concrete manager but store as interfaces (DIP)
+            RecipeRageLobbyManager concreteLobbyManager = _networkManager?.LobbyManager;
+            _lobbyManager = concreteLobbyManager;
+            _matchmakingService = concreteLobbyManager;
+            _playerManager = concreteLobbyManager;
+            _teamManager = concreteLobbyManager;
 
             // Get UI Document component
             _uiDocument = GetComponent<UIDocument>();
@@ -116,18 +126,36 @@ namespace UI
                 return;
             }
 
-            // Load UXML templates
+            // Load main lobby template
+            VisualTreeAsset lobbyTemplate = Resources.Load<VisualTreeAsset>("UI/Templates/LobbyTemplate");
+            StyleSheet lobbyStyles = Resources.Load<StyleSheet>("UI/LobbyStyles");
+
+            if (lobbyTemplate != null)
+            {
+                _uiDocument.visualTreeAsset = lobbyTemplate;
+                
+                if (lobbyStyles != null)
+                {
+                    _uiDocument.rootVisualElement.styleSheets.Add(lobbyStyles);
+                }
+            }
+            else
+            {
+                Debug.LogWarning("[LobbyUI] LobbyTemplate not found, using existing UI");
+            }
+
+            // Load UXML templates for entries
             _playerEntryTemplate = Resources.Load<VisualTreeAsset>("UI/LobbyPlayerEntry");
             _gameModeEntryTemplate = Resources.Load<VisualTreeAsset>("UI/GameModeEntry");
 
             if (_playerEntryTemplate == null)
             {
-                Debug.LogError("[LobbyUI] Failed to load LobbyPlayerEntry template");
+                Debug.LogWarning("[LobbyUI] LobbyPlayerEntry template not found");
             }
 
             if (_gameModeEntryTemplate == null)
             {
-                Debug.LogError("[LobbyUI] Failed to load GameModeEntry template");
+                Debug.LogWarning("[LobbyUI] GameModeEntry template not found");
             }
 
             // Initialize UI when the document is ready
@@ -157,6 +185,11 @@ namespace UI
             _lobbyStatusText = _root.Q<Label>("lobby-status");
             _selectedGameModeText = _root.Q<Label>("selected-game-mode");
             _changeGameModeButton = _root.Q<Button>("change-game-mode-button");
+            
+            // Get matchmaking elements (optional - for enhanced UI)
+            _searchTimeLabel = _root.Q<Label>("search-time");
+            _inviteFriendButton = _root.Q<Button>("invite-friend-button");
+            _matchmakingStatus = _root.Q<VisualElement>("matchmaking-status");
 
             // Get game mode panel references
             _gameModeList = _root.Q<ScrollView>("game-mode-list");
@@ -184,12 +217,22 @@ namespace UI
             if (_readyButton != null) _readyButton.clicked += OnReadyButtonClicked;
             if (_leaveButton != null) _leaveButton.clicked += OnLeaveButtonClicked;
             if (_changeGameModeButton != null) _changeGameModeButton.clicked += OnChangeGameModeButtonClicked;
+            if (_inviteFriendButton != null) _inviteFriendButton.clicked += OnInviteFriendButtonClicked;
 
             // Game mode panel buttons
             if (_gameModeBackButton != null) _gameModeBackButton.clicked += OnGameModeBackButtonClicked;
 
             // Team toggle
             if (_teamToggle != null) _teamToggle.RegisterValueChangedCallback(OnTeamToggleChanged);
+        }
+        
+        /// <summary>
+        /// Handle invite friend button click.
+        /// </summary>
+        private void OnInviteFriendButtonClicked()
+        {
+            Debug.Log("[LobbyUI] Invite friend button clicked");
+            // TODO: Show friends list UI
         }
 
         /// <summary>
@@ -235,10 +278,10 @@ namespace UI
                 _readyButton.text = _isReady ? "Unready" : "Ready";
             }
 
-            // Notify lobby manager
-            if (_lobbyManager != null)
+            // Notify player manager
+            if (_playerManager != null)
             {
-                _lobbyManager.SetPlayerReady(_isReady);
+                _playerManager.SetPlayerReady(_isReady);
 
                 // Update the UI immediately
                 UpdatePlayerList();
@@ -259,9 +302,10 @@ namespace UI
             }
 
             // Return to main menu
-            if (_gameStateManager != null)
+            var services = Core.Bootstrap.GameBootstrap.Services;
+            if (services != null)
             {
-                _gameStateManager.ChangeState(new MainMenuState());
+                services.StateManager.ChangeState(new MainMenuState());
             }
         }
 
@@ -283,10 +327,10 @@ namespace UI
             int teamIndex = evt.newValue;
             Debug.Log($"[LobbyUI] Team toggle changed to team {teamIndex + 1}");
 
-            // Notify lobby manager
-            if (_lobbyManager != null)
+            // Notify player manager
+            if (_playerManager != null)
             {
-                _lobbyManager.SetPlayerTeam((TeamId)teamIndex);
+                _playerManager.SetPlayerTeam((TeamId)teamIndex);
 
                 // Update the UI immediately
                 UpdatePlayerList();
@@ -331,12 +375,12 @@ namespace UI
         /// </summary>
         public void UpdatePlayerList()
         {
-            if (_lobbyManager == null) return;
+            if (_teamManager == null) return;
 
             // Get players from both teams
             List<PlayerInfo> allPlayers = new();
-            allPlayers.AddRange(_lobbyManager.TeamA);
-            allPlayers.AddRange(_lobbyManager.TeamB);
+            allPlayers.AddRange(_teamManager.TeamA);
+            allPlayers.AddRange(_teamManager.TeamB);
 
             // Clear existing player entries
             ClearPlayerList();
@@ -485,9 +529,10 @@ namespace UI
             ClearGameModeList();
 
             // Get available game modes
-            if (_gameModeManager != null)
+            var services = Core.Bootstrap.GameBootstrap.Services;
+            if (services != null && services.GameModeService != null)
             {
-                GameMode[] gameModes = _gameModeManager.GetAvailableGameModes();
+                GameMode[] gameModes = services.GameModeService.GetAvailableGameModes();
 
                 // Create game mode entries
                 foreach (GameMode gameMode in gameModes)
@@ -570,6 +615,15 @@ namespace UI
             {
                 _lobbyManager.OnLobbyUpdated += OnLobbyUpdated;
             }
+            
+            // Subscribe to matchmaking events
+            if (_matchmakingService != null)
+            {
+                _matchmakingService.OnMatchmakingStarted += OnMatchmakingStarted;
+                _matchmakingService.OnMatchmakingCancelled += OnMatchmakingCancelled;
+                _matchmakingService.OnPlayersFoundUpdated += OnPlayersFoundUpdated;
+                _matchmakingService.OnMatchFound += OnMatchFound;
+            }
         }
 
         /// <summary>
@@ -581,6 +635,74 @@ namespace UI
             if (_lobbyManager != null)
             {
                 _lobbyManager.OnLobbyUpdated -= OnLobbyUpdated;
+            }
+            
+            // Unsubscribe from matchmaking events
+            if (_matchmakingService != null)
+            {
+                _matchmakingService.OnMatchmakingStarted -= OnMatchmakingStarted;
+                _matchmakingService.OnMatchmakingCancelled -= OnMatchmakingCancelled;
+                _matchmakingService.OnPlayersFoundUpdated -= OnPlayersFoundUpdated;
+                _matchmakingService.OnMatchFound -= OnMatchFound;
+            }
+        }
+        
+        /// <summary>
+        /// Handle matchmaking started event.
+        /// </summary>
+        private void OnMatchmakingStarted()
+        {
+            Debug.Log("[LobbyUI] Matchmaking started");
+            if (_matchmakingStatus != null)
+            {
+                _matchmakingStatus.style.display = DisplayStyle.Flex;
+            }
+        }
+        
+        /// <summary>
+        /// Handle matchmaking cancelled event.
+        /// </summary>
+        private void OnMatchmakingCancelled()
+        {
+            Debug.Log("[LobbyUI] Matchmaking cancelled");
+            if (_matchmakingStatus != null)
+            {
+                _matchmakingStatus.style.display = DisplayStyle.None;
+            }
+        }
+        
+        /// <summary>
+        /// Handle players found updated event.
+        /// </summary>
+        private void OnPlayersFoundUpdated(int playerCount)
+        {
+            Debug.Log($"[LobbyUI] Players found: {playerCount}");
+            UpdatePlayerList();
+        }
+        
+        /// <summary>
+        /// Handle match found event.
+        /// </summary>
+        private void OnMatchFound()
+        {
+            Debug.Log("[LobbyUI] Match found!");
+            if (_lobbyStatusText != null)
+            {
+                _lobbyStatusText.text = "Match Found! Starting game...";
+            }
+        }
+        
+        /// <summary>
+        /// Update search time display.
+        /// </summary>
+        private void Update()
+        {
+            if (_matchmakingService != null && _matchmakingService.IsSearchingForMatch && _searchTimeLabel != null)
+            {
+                float searchTime = _matchmakingService.SearchTime;
+                int minutes = Mathf.FloorToInt(searchTime / 60f);
+                int seconds = Mathf.FloorToInt(searchTime % 60f);
+                _searchTimeLabel.text = $"Searching: {minutes:00}:{seconds:00}";
             }
         }
 

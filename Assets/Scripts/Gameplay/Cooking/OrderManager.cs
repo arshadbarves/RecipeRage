@@ -24,7 +24,6 @@ namespace Gameplay.Cooking
 
         [Header("References")]
         [SerializeField] private List<Recipe> _availableRecipes = new List<Recipe>();
-        [SerializeField] private GameModeManager _gameModeManager;
 
         /// <summary>
         /// The list of active orders.
