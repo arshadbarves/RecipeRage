@@ -88,7 +88,7 @@ namespace Core.Networking
         private IEnumerator InitializeComponents()
         {
             // Wait for EOSManager to initialize
-            while (EOSManager.Instance == null || EOSManager.Instance.GetLocalUserId() == null)
+            while (EOSManager.Instance == null)
             {
                 yield return new WaitForSeconds(0.1f);
             }

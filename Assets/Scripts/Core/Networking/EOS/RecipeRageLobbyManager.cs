@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 using Core.Networking.Common;
+using Core.Networking.Interfaces;
+using Core.Networking.Services;
+using Core.Networking.Strategies;
 using Epic.OnlineServices;
-using Epic.OnlineServices.Lobby;
-using Epic.OnlineServices.Sessions;
 using PlayEveryWare.EpicOnlineServices;
 using PlayEveryWare.EpicOnlineServices.Samples;
 using UnityEngine;
@@ -11,555 +12,263 @@ using UnityEngine;
 namespace Core.Networking.EOS
 {
     /// <summary>
-    /// Wrapper for EOSLobbyManager that provides game-specific lobby functionality.
+    /// Facade for lobby functionality - delegates to specialized services (SOLID compliant)
+    /// Implements all interfaces to maintain backward compatibility
     /// </summary>
-    public class RecipeRageLobbyManager : MonoBehaviour
+    public class RecipeRageLobbyManager : MonoBehaviour, ILobbyManager, IPlayerManager, IMatchmakingService, ITeamManager
     {
-        // Reference to the EOS Lobby Manager
-        private EOSLobbyManager _eosLobbyManager;
+        // Injected dependencies
+        private ILobbyManager _lobbyManager;
+        private IPlayerManager _playerManager;
+        private IMatchmakingService _matchmakingService;
+        private ITeamManager _teamManager;
 
-        // Current lobby information
-        private Lobby _currentLobby;
-
-        // Cached player information
-        private List<PlayerInfo> _teamA = new List<PlayerInfo>();
-        private List<PlayerInfo> _teamB = new List<PlayerInfo>();
-        private Dictionary<string, PlayerInfo> _playerInfoCache = new Dictionary<string, PlayerInfo>();
-
-        // Game settings
-        private GameMode _currentGameMode = GameMode.Classic;
-        private string _currentMapName = "Kitchen";
-        private bool _isPrivate = false;
-
-        // Events
+        // Events - delegated from services
         public event Action<Result> OnLobbyCreated;
         public event Action<Result> OnLobbyJoined;
         public event Action<Result> OnLobbyLeft;
         public event Action OnLobbyUpdated;
         public event Action<PlayerInfo> OnPlayerJoined;
         public event Action<PlayerInfo> OnPlayerLeft;
+        public event Action OnMatchmakingStarted;
+        public event Action OnMatchmakingCancelled;
+        public event Action<int> OnPlayersFoundUpdated;
+        public event Action OnMatchFound;
 
-        // Properties
-        public List<PlayerInfo> TeamA => _teamA;
-        public List<PlayerInfo> TeamB => _teamB;
-        public GameMode CurrentGameMode => _currentGameMode;
-        public string CurrentMapName => _currentMapName;
-        public bool IsPrivate => _isPrivate;
-        public bool IsLobbyOwner => _currentLobby?.IsOwner(EOSManager.Instance.GetProductUserId()) ?? false;
+        // Properties - delegated from services
+        public List<PlayerInfo> TeamA => _teamManager.TeamA;
+        public List<PlayerInfo> TeamB => _teamManager.TeamB;
+        public GameMode CurrentGameMode => _lobbyManager.CurrentGameMode;
+        public string CurrentMapName => _lobbyManager.CurrentMapName;
+        public bool IsPrivate => _lobbyManager.IsPrivate;
+        public bool IsLobbyOwner => _lobbyManager.IsLobbyOwner;
+        public bool IsSearchingForMatch => _matchmakingService.IsSearchingForMatch;
+        public float SearchTime => _matchmakingService.SearchTime;
+        public int CurrentPlayerCount => _lobbyManager.CurrentPlayerCount;
+        public Lobby CurrentLobby => (_lobbyManager as LobbyStateManager)?.CurrentLobby;
 
         /// <summary>
-        /// Initialize the lobby manager.
+        /// Initialize with dependency injection
         /// </summary>
         public void Initialize()
         {
-            // Get the EOS Lobby Manager from the EOSManager
-            _eosLobbyManager = EOSManager.Instance.GetOrCreateManager<EOSLobbyManager>();
+            EOSLobbyManager eosLobbyManager = EOSManager.Instance.GetOrCreateManager<EOSLobbyManager>();
 
-            if (_eosLobbyManager == null)
+            if (eosLobbyManager == null)
             {
-                Debug.LogError("[RecipeRageLobbyManager] EOSLobbyManager not found on EOSManager");
+                Debug.LogError("[RecipeRageLobbyManager] EOSLobbyManager not found");
                 return;
             }
 
-            // Subscribe to lobby events
-            _eosLobbyManager.LobbyChanged += OnLobbyChanged;
+            // Create services with dependency injection
+            _teamManager = new TeamManager();
+            _lobbyManager = new LobbyStateManager(eosLobbyManager, _teamManager);
+            _playerManager = new PlayerManager(eosLobbyManager);
 
-            Debug.Log("[RecipeRageLobbyManager] Initialized");
+            IMatchmakingStrategy strategy = new QuickMatchStrategy(_lobbyManager);
+            _matchmakingService = new MatchmakingService(_lobbyManager, strategy);
+
+            // Wire up events
+            WireUpEvents();
+
+            // Initialize services
+            _lobbyManager.Initialize();
+
+            Debug.Log("[RecipeRageLobbyManager] Initialized with SOLID architecture");
         }
 
         /// <summary>
-        /// Create a new lobby.
+        /// Wire up events from services to facade
         /// </summary>
-        /// <param name="lobbyName">The name of the lobby</param>
-        /// <param name="maxPlayers">The maximum number of players</param>
-        /// <param name="isPrivate">Whether the lobby is private</param>
+        private void WireUpEvents()
+        {
+            _lobbyManager.OnLobbyCreated += (result) =>
+            {
+                // Update player manager with current lobby
+                if (_playerManager is PlayerManager pm && _lobbyManager is LobbyStateManager lsm)
+                {
+                    pm.SetCurrentLobby(lsm.CurrentLobby);
+                }
+                OnLobbyCreated?.Invoke(result);
+            };
+
+            _lobbyManager.OnLobbyJoined += (result) =>
+            {
+                // Update player manager with current lobby
+                if (_playerManager is PlayerManager pm && _lobbyManager is LobbyStateManager lsm)
+                {
+                    pm.SetCurrentLobby(lsm.CurrentLobby);
+                }
+                OnLobbyJoined?.Invoke(result);
+            };
+
+            _lobbyManager.OnLobbyLeft += (result) => OnLobbyLeft?.Invoke(result);
+            _lobbyManager.OnLobbyUpdated += () =>
+            {
+                // Update player manager with current lobby
+                if (_playerManager is PlayerManager pm && _lobbyManager is LobbyStateManager lsm)
+                {
+                    pm.SetCurrentLobby(lsm.CurrentLobby);
+                }
+                OnLobbyUpdated?.Invoke();
+            };
+
+            _playerManager.OnPlayerJoined += (player) => OnPlayerJoined?.Invoke(player);
+            _playerManager.OnPlayerLeft += (player) => OnPlayerLeft?.Invoke(player);
+
+            _matchmakingService.OnMatchmakingStarted += () => OnMatchmakingStarted?.Invoke();
+            _matchmakingService.OnMatchmakingCancelled += () => OnMatchmakingCancelled?.Invoke();
+            _matchmakingService.OnPlayersFoundUpdated += (count) => OnPlayersFoundUpdated?.Invoke(count);
+            _matchmakingService.OnMatchFound += () => OnMatchFound?.Invoke();
+        }
+
+        /// <summary>
+        /// Create a new lobby - delegates to LobbyStateManager
+        /// </summary>
         public void CreateLobby(string lobbyName, int maxPlayers = 4, bool isPrivate = false)
         {
-            // Create a new lobby
-            Lobby lobby = new Lobby();
-            lobby.MaxNumLobbyMembers = (uint)maxPlayers;
-            lobby.LobbyPermissionLevel = isPrivate ?
-                Epic.OnlineServices.Lobby.LobbyPermissionLevel.Inviteonly :
-                Epic.OnlineServices.Lobby.LobbyPermissionLevel.Publicadvertised;
-            lobby.AllowInvites = true;
-            lobby.PresenceEnabled = true;
-            lobby.RTCRoomEnabled = true;
-
-            // Add game-specific attributes
-            AddLobbyAttribute(lobby, "LobbyName", lobbyName, SessionAttributeAdvertisementType.Advertise);
-            AddLobbyAttribute(lobby, "GameMode", _currentGameMode.ToString(), SessionAttributeAdvertisementType.Advertise);
-            AddLobbyAttribute(lobby, "MapName", _currentMapName, SessionAttributeAdvertisementType.Advertise);
-
-            // Create the lobby
-            _eosLobbyManager.CreateLobby(lobby, OnLobbyCreationComplete);
-
-            // Update local state
-            _isPrivate = isPrivate;
-
-            Debug.Log($"[RecipeRageLobbyManager] Creating lobby: {lobbyName}, MaxPlayers: {maxPlayers}, IsPrivate: {isPrivate}");
+            _lobbyManager.CreateLobby(lobbyName, maxPlayers, isPrivate);
         }
 
         /// <summary>
-        /// Join an existing lobby.
+        /// Join an existing lobby - delegates to LobbyStateManager
         /// </summary>
-        /// <param name="lobbyId">The ID of the lobby to join</param>
-        /// <param name="presenceEnabled">Whether to enable presence for this lobby (default: true)</param>
         public void JoinLobby(string lobbyId, bool presenceEnabled = true)
         {
-            // Search for the lobby by ID
-            _eosLobbyManager.SearchByLobbyId(lobbyId, (Result searchResult) =>
-            {
-                if (searchResult != Result.Success)
-                {
-                    Debug.LogError($"[RecipeRageLobbyManager] Failed to find lobby {lobbyId}: {searchResult}");
-                    OnLobbyJoined?.Invoke(searchResult);
-                    return;
-                }
-
-                // Get the search results
-                Dictionary<Lobby, LobbyDetails> searchResults = _eosLobbyManager.GetSearchResults();
-
-                foreach (KeyValuePair<Lobby, LobbyDetails> kvp in searchResults)
-                {
-                    if (kvp.Key.Id == lobbyId)
-                    {
-                        // Join the lobby
-                        _eosLobbyManager.JoinLobby(lobbyId, kvp.Value, presenceEnabled, OnLobbyJoinComplete);
-
-                        Debug.Log($"[RecipeRageLobbyManager] Joining lobby: {lobbyId}");
-                        return;
-                    }
-                }
-
-                Debug.LogError($"[RecipeRageLobbyManager] Lobby {lobbyId} found in search but not in results");
-                OnLobbyJoined?.Invoke(Result.NotFound);
-            });
-
-            Debug.Log($"[RecipeRageLobbyManager] Searching for lobby: {lobbyId}");
+            _lobbyManager.JoinLobby(lobbyId, presenceEnabled);
         }
 
         /// <summary>
-        /// Leave the current lobby.
+        /// Leave the current lobby - delegates to LobbyStateManager
         /// </summary>
         public void LeaveLobby()
         {
-            if (_currentLobby != null)
-            {
-                // Leave the lobby
-                _eosLobbyManager.LeaveLobby(OnLobbyLeftComplete);
-
-                Debug.Log($"[RecipeRageLobbyManager] Leaving lobby: {_currentLobby.Id}");
-            }
-            else
-            {
-                Debug.LogError("[RecipeRageLobbyManager] No current lobby to leave");
-                OnLobbyLeft?.Invoke(Result.NotFound);
-            }
+            _lobbyManager.LeaveLobby();
         }
 
         /// <summary>
-        /// Set the player's ready state.
+        /// Set the player's ready state - delegates to PlayerManager
         /// </summary>
-        /// <param name="isReady">Whether the player is ready</param>
         public void SetPlayerReady(bool isReady)
         {
-            if (_currentLobby != null)
-            {
-                // Find the local player
-                ProductUserId localUserId = EOSManager.Instance.GetProductUserId();
-
-                foreach (LobbyMember member in _currentLobby.Members)
-                {
-                    if (member.ProductId == localUserId)
-                    {
-                        // Update the ready state
-                        AddMemberAttribute(_currentLobby, "IsReady", isReady.ToString(), SessionAttributeAdvertisementType.Advertise);
-
-                        Debug.Log($"[RecipeRageLobbyManager] Setting player ready: {isReady}");
-                        return;
-                    }
-                }
-
-                Debug.LogError("[RecipeRageLobbyManager] Local player not found in lobby");
-            }
-            else
-            {
-                Debug.LogError("[RecipeRageLobbyManager] No current lobby");
-            }
+            _playerManager.SetPlayerReady(isReady);
         }
 
         /// <summary>
-        /// Set the player's team.
+        /// Set the player's team - delegates to PlayerManager
         /// </summary>
-        /// <param name="teamId">The team ID</param>
         public void SetPlayerTeam(TeamId teamId)
         {
-            if (_currentLobby != null)
-            {
-                // Find the local player
-                ProductUserId localUserId = EOSManager.Instance.GetProductUserId();
-
-                foreach (LobbyMember member in _currentLobby.Members)
-                {
-                    if (member.ProductId == localUserId)
-                    {
-                        // Update the team
-                        AddMemberAttribute(_currentLobby, "TeamId", ((int)teamId).ToString(), SessionAttributeAdvertisementType.Advertise);
-
-                        Debug.Log($"[RecipeRageLobbyManager] Setting player team: {teamId}");
-                        return;
-                    }
-                }
-
-                Debug.LogError("[RecipeRageLobbyManager] Local player not found in lobby");
-            }
-            else
-            {
-                Debug.LogError("[RecipeRageLobbyManager] No current lobby");
-            }
+            _playerManager.SetPlayerTeam(teamId);
         }
 
         /// <summary>
-        /// Set the player's character class.
+        /// Set the player's character class - delegates to PlayerManager
         /// </summary>
-        /// <param name="characterClass">The character class</param>
         public void SetPlayerCharacterClass(CharacterClass characterClass)
         {
-            if (_currentLobby != null)
-            {
-                // Find the local player
-                ProductUserId localUserId = EOSManager.Instance.GetProductUserId();
-
-                foreach (LobbyMember member in _currentLobby.Members)
-                {
-                    if (member.ProductId == localUserId)
-                    {
-                        // Update the character class
-                        AddMemberAttribute(_currentLobby, "CharacterClass", ((int)characterClass).ToString(), SessionAttributeAdvertisementType.Advertise);
-
-                        Debug.Log($"[RecipeRageLobbyManager] Setting player character class: {characterClass}");
-                        return;
-                    }
-                }
-
-                Debug.LogError("[RecipeRageLobbyManager] Local player not found in lobby");
-            }
-            else
-            {
-                Debug.LogError("[RecipeRageLobbyManager] No current lobby");
-            }
+            _playerManager.SetPlayerCharacterClass(characterClass);
         }
 
         /// <summary>
-        /// Set the game mode.
+        /// Set the game mode - delegates to LobbyStateManager
         /// </summary>
-        /// <param name="gameMode">The game mode</param>
         public void SetGameMode(GameMode gameMode)
         {
-            if (_currentLobby != null && IsLobbyOwner)
-            {
-                // Update the game mode
-                AddLobbyAttribute(_currentLobby, "GameMode", gameMode.ToString(), SessionAttributeAdvertisementType.Advertise);
-
-                // Update local state
-                _currentGameMode = gameMode;
-
-                Debug.Log($"[RecipeRageLobbyManager] Setting game mode: {gameMode}");
-            }
-            else
-            {
-                Debug.LogError("[RecipeRageLobbyManager] No current lobby or not lobby owner");
-            }
+            _lobbyManager.SetGameMode(gameMode);
         }
 
         /// <summary>
-        /// Set the map name.
+        /// Set the map name - delegates to LobbyStateManager
         /// </summary>
-        /// <param name="mapName">The map name</param>
         public void SetMapName(string mapName)
         {
-            if (_currentLobby != null && IsLobbyOwner)
-            {
-                // Update the map name
-                AddLobbyAttribute(_currentLobby, "MapName", mapName, SessionAttributeAdvertisementType.Advertise);
-
-                // Update local state
-                _currentMapName = mapName;
-
-                Debug.Log($"[RecipeRageLobbyManager] Setting map name: {mapName}");
-            }
-            else
-            {
-                Debug.LogError("[RecipeRageLobbyManager] No current lobby or not lobby owner");
-            }
+            _lobbyManager.SetMapName(mapName);
         }
 
         /// <summary>
-        /// Check if all players are ready.
+        /// Check if all players are ready - delegates to LobbyStateManager
         /// </summary>
-        /// <returns>Whether all players are ready</returns>
         public bool AreAllPlayersReady()
         {
-            foreach (PlayerInfo player in _teamA)
-            {
-                if (!player.IsReady)
-                {
-                    return false;
-                }
-            }
+            return _lobbyManager.AreAllPlayersReady();
+        }
 
-            foreach (PlayerInfo player in _teamB)
-            {
-                if (!player.IsReady)
-                {
-                    return false;
-                }
-            }
+        #region Matchmaking Methods - Delegated to MatchmakingService
 
-            return _teamA.Count + _teamB.Count > 0;
+        /// <summary>
+        /// Start matchmaking - delegates to MatchmakingService
+        /// </summary>
+        public void StartMatchmaking(GameMode gameMode, int minPlayers = 2, int maxPlayers = 4)
+        {
+            _matchmakingService.StartMatchmaking(gameMode, minPlayers, maxPlayers);
         }
 
         /// <summary>
-        /// Add a lobby attribute to a lobby.
+        /// Cancel matchmaking - delegates to MatchmakingService
         /// </summary>
-        /// <param name="lobby">The lobby</param>
-        /// <param name="key">The attribute key</param>
-        /// <param name="value">The attribute value</param>
-        /// <param name="visibility">The attribute visibility</param>
-        private void AddLobbyAttribute(Lobby lobby, string key, string value, SessionAttributeAdvertisementType visibility)
+        public void CancelMatchmaking()
         {
-            // Create the attribute
-            LobbyAttribute attribute = new LobbyAttribute
-            {
-                Key = key,
-                ValueType = AttributeType.String,
-                AsString = value,
-                Visibility = LobbyAttributeVisibility.Public
-            };
-
-            // Add the attribute to the lobby
-            if (_eosLobbyManager.GetCurrentLobby() != null)
-            {
-                // Create a new lobby with the updated attribute
-                Lobby updatedLobby = new Lobby();
-                // Add the attribute to the lobby
-                updatedLobby.Attributes.Add(attribute);
-
-                // Modify the lobby
-                _eosLobbyManager.ModifyLobby(updatedLobby, null);
-            }
+            _matchmakingService.CancelMatchmaking();
         }
 
         /// <summary>
-        /// Add a member attribute to a lobby.
+        /// Search for available lobbies - delegates to MatchmakingService
         /// </summary>
-        /// <param name="lobby">The lobby</param>
-        /// <param name="key">The attribute key</param>
-        /// <param name="value">The attribute value</param>
-        /// <param name="visibility">The attribute visibility</param>
-        private void AddMemberAttribute(Lobby lobby, string key, string value, SessionAttributeAdvertisementType visibility)
+        public void SearchForLobbies(GameMode gameMode)
         {
-            // Create the attribute
-            LobbyAttribute attribute = new LobbyAttribute
-            {
-                Key = key,
-                ValueType = AttributeType.String,
-                AsString = value,
-                Visibility = LobbyAttributeVisibility.Public
-            };
-
-            // Add the attribute to the member
-            _eosLobbyManager.SetMemberAttribute(attribute);
+            _matchmakingService.SearchForLobbies(gameMode);
+        }
+        public void CheckForMatchReady(int currentPlayerCount, bool allPlayersReady)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
-        /// Update the teams based on the current lobby.
+        /// Invite a friend - delegates to PlayerManager
         /// </summary>
-        private void UpdateTeams()
+        public void InviteFriend(ProductUserId friendId)
         {
-            // Clear the teams
-            _teamA.Clear();
-            _teamB.Clear();
-
-            if (_currentLobby == null)
-            {
-                return;
-            }
-
-            // Process each member
-            foreach (LobbyMember member in _currentLobby.Members)
-            {
-                // Create or get the player info
-                PlayerInfo playerInfo;
-                string playerId = member.ProductId.ToString();
-
-                if (_playerInfoCache.TryGetValue(playerId, out playerInfo))
-                {
-                    // Update existing player info
-                    playerInfo.DisplayName = member.DisplayName;
-                    playerInfo.IsHost = _currentLobby.IsOwner(member.ProductId);
-                    playerInfo.IsLocal = member.ProductId == EOSManager.Instance.GetProductUserId();
-                    playerInfo.ProductUserId = member.ProductId;
-                }
-                else
-                {
-                    // Create new player info
-                    playerInfo = new PlayerInfo
-                    {
-                        PlayerId = playerId,
-                        DisplayName = member.DisplayName,
-                        IsHost = _currentLobby.IsOwner(member.ProductId),
-                        IsLocal = member.ProductId == EOSManager.Instance.GetProductUserId(),
-                        ProductUserId = member.ProductId
-                    };
-
-                    _playerInfoCache[playerId] = playerInfo;
-                }
-
-                // Extract member attributes
-                foreach (KeyValuePair<string, LobbyAttribute> kvp in member.MemberAttributes)
-                {
-                    LobbyAttribute attribute = kvp.Value;
-
-                    switch (attribute.Key)
-                    {
-                        case "IsReady":
-                            bool.TryParse(attribute.AsString, out bool isReady);
-                            playerInfo.IsReady = isReady;
-                            break;
-                        case "TeamId":
-                            int.TryParse(attribute.AsString, out int teamId);
-                            playerInfo.Team = (TeamId)teamId;
-                            break;
-                        case "CharacterClass":
-                            int.TryParse(attribute.AsString, out int characterClass);
-                            playerInfo.CharacterClass = (CharacterClass)characterClass;
-                            break;
-                    }
-                }
-
-                // Add to the appropriate team
-                if (playerInfo.Team == TeamId.TeamA)
-                {
-                    _teamA.Add(playerInfo);
-                }
-                else
-                {
-                    _teamB.Add(playerInfo);
-                }
-            }
-
-            // Extract lobby attributes
-            foreach (LobbyAttribute attribute in _currentLobby.Attributes)
-            {
-                switch (attribute.Key)
-                {
-                    case "GameMode":
-                        if (Enum.TryParse<GameMode>(attribute.AsString, out GameMode gameMode))
-                        {
-                            _currentGameMode = gameMode;
-                        }
-                        break;
-                    case "MapName":
-                        _currentMapName = attribute.AsString;
-                        break;
-                }
-            }
-
-            // Update private state
-            _isPrivate = _currentLobby.LobbyPermissionLevel == Epic.OnlineServices.Lobby.LobbyPermissionLevel.Inviteonly;
+            _playerManager.InviteFriend(friendId);
         }
 
         /// <summary>
-        /// Handle lobby changes.
+        /// Kick a player - delegates to PlayerManager
         /// </summary>
-        /// <param name="sender">The sender</param>
-        /// <param name="e">The event args</param>
-        private void OnLobbyChanged(object sender, EOSLobbyManager.LobbyChangeEventArgs e)
+        public void KickPlayer(ProductUserId playerId)
         {
-            // Get the current lobby
-            _currentLobby = _eosLobbyManager.GetCurrentLobby();
+            _playerManager.KickPlayer(playerId);
+        }
 
-            // Update teams
-            UpdateTeams();
+        #endregion
 
-            // Notify listeners
-            OnLobbyUpdated?.Invoke();
+        #region ITeamManager Implementation
 
-            Debug.Log($"[RecipeRageLobbyManager] Lobby changed: {e.LobbyId}, Type: {e.LobbyChangeType}");
+        /// <summary>
+        /// Update teams - delegates to TeamManager
+        /// </summary>
+        public void UpdateTeams()
+        {
+            _teamManager.UpdateTeams();
         }
 
         /// <summary>
-        /// Callback for lobby creation.
+        /// Get player info - delegates to TeamManager
         /// </summary>
-        /// <param name="result">The result</param>
-        private void OnLobbyCreationComplete(Result result)
+        public PlayerInfo GetPlayerInfo(string playerId)
         {
-            if (result == Result.Success)
-            {
-                Debug.Log("[RecipeRageLobbyManager] Lobby created");
-
-                // Get the current lobby
-                _currentLobby = _eosLobbyManager.GetCurrentLobby();
-
-                // Update teams
-                UpdateTeams();
-            }
-            else
-            {
-                Debug.LogError($"[RecipeRageLobbyManager] Failed to create lobby: {result}");
-            }
-
-            OnLobbyCreated?.Invoke(result);
+            return _teamManager.GetPlayerInfo(playerId);
         }
 
-        /// <summary>
-        /// Callback for lobby join.
-        /// </summary>
-        /// <param name="result">The result</param>
-        private void OnLobbyJoinComplete(Result result)
+        #endregion
+
+        private void Update()
         {
-            if (result == Result.Success)
+            // Check for match ready during matchmaking
+            if (_matchmakingService != null && _matchmakingService.IsSearchingForMatch)
             {
-                Debug.Log("[RecipeRageLobbyManager] Lobby joined");
-
-                // Get the current lobby
-                _currentLobby = _eosLobbyManager.GetCurrentLobby();
-
-                // Update teams
-                UpdateTeams();
+                _matchmakingService.CheckForMatchReady(CurrentPlayerCount, AreAllPlayersReady());
             }
-            else
-            {
-                Debug.LogError($"[RecipeRageLobbyManager] Failed to join lobby: {result}");
-            }
-
-            OnLobbyJoined?.Invoke(result);
-        }
-
-        /// <summary>
-        /// Callback for lobby leave.
-        /// </summary>
-        /// <param name="result">The result</param>
-        private void OnLobbyLeftComplete(Result result)
-        {
-            if (result == Result.Success)
-            {
-                Debug.Log("[RecipeRageLobbyManager] Lobby left");
-
-                // Clear the current lobby
-                _currentLobby = null;
-
-                // Clear teams
-                _teamA.Clear();
-                _teamB.Clear();
-            }
-            else
-            {
-                Debug.LogError($"[RecipeRageLobbyManager] Failed to leave lobby: {result}");
-            }
-
-            OnLobbyLeft?.Invoke(result);
         }
     }
 }

@@ -1,0 +1,11 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/Resources/UI/LobbyStyles.uss?fileID=7433441132597879392&amp;guid=4874f17ee45e3402ca5e263b1825a11b&amp;type=3#LobbyStyles" />
+    <ui:VisualElement name="game-mode-entry" class="game-mode-entry">
+        <ui:VisualElement name="game-mode-icon" class="game-mode-icon" />
+        <ui:VisualElement name="game-mode-info" class="game-mode-info">
+            <ui:Label name="game-mode-name" text="Classic Mode" class="game-mode-name" />
+            <ui:Label name="game-mode-description" text="Standard cooking gameplay" class="game-mode-description" />
+        </ui:VisualElement>
+        <ui:Button name="select-button" text="Select" class="select-button" />
+    </ui:VisualElement>
+</ui:UXML>

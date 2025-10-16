@@ -498,7 +498,8 @@ namespace UI.UISystem.Screens
             OnPlayButtonClicked?.Invoke();
 
             // Default behavior: transition to matchmaking
-            GameStateManager.Instance?.ChangeState<MatchmakingState>();
+            var services = Core.Bootstrap.GameBootstrap.Services;
+            services?.StateManager.ChangeState<MatchmakingState>();
         }
 
         private void HandleCharacterSelectionClicked()

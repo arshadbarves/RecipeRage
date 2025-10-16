@@ -151,7 +151,11 @@ namespace Core.State.States
             }
 
             // Transition to gameplay state
-            GameStateManager.Instance.ChangeState(new GameplayState());
+            var services = Core.Bootstrap.GameBootstrap.Services;
+            if (services != null)
+            {
+                services.StateManager.ChangeState(new GameplayState());
+            }
         }
 
         /// <summary>

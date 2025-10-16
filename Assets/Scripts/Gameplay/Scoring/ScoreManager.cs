@@ -20,7 +20,6 @@ namespace Gameplay.Scoring
 
         [Header("References")]
         [SerializeField] private OrderManager _orderManager;
-        [SerializeField] private GameModeManager _gameModeManager;
 
         /// <summary>
         /// Event triggered when the score changes.

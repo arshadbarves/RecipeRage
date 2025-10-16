@@ -18,6 +18,9 @@ namespace UI
         private Label _mapSubtitleLabel;
         private Label _timerLabel;
         
+        // Matchmaking widget
+        private MatchmakingWidget _matchmakingWidget;
+        
         public void Initialize(VisualElement root)
         {
             Debug.Log("[MainMenuUI] Initialize called");
@@ -42,6 +45,17 @@ namespace UI
             
             SetupButtons();
             LoadMapInfo();
+            SetupMatchmakingWidget();
+        }
+        
+        private void SetupMatchmakingWidget()
+        {
+            // Create matchmaking widget component
+            GameObject widgetObject = new GameObject("MatchmakingWidget");
+            _matchmakingWidget = widgetObject.AddComponent<MatchmakingWidget>();
+            _matchmakingWidget.Initialize(_root);
+            
+            Debug.Log("[MainMenuUI] Matchmaking widget setup complete");
         }
         
         private void SetupButtons()
@@ -92,11 +106,23 @@ namespace UI
         {
             Debug.Log("[MainMenuUI] Play button clicked - Starting matchmaking");
             
-            // Transition to matchmaking/lobby
-            Core.State.GameStateManager gameStateManager = Core.State.GameStateManager.Instance;
-            if (gameStateManager != null)
+            // Start matchmaking directly from main menu (PUBG/Fortnite style)
+            Core.Networking.RecipeRageNetworkManager networkManager = Core.Networking.RecipeRageNetworkManager.Instance;
+            if (networkManager != null && networkManager.LobbyManager != null)
             {
-                gameStateManager.ChangeState(new Core.State.States.LobbyState());
+                // Start matchmaking - widget will show automatically
+                networkManager.LobbyManager.StartMatchmaking(Core.Networking.Common.GameMode.Classic, 2, 4);
+            }
+            else
+            {
+                Debug.LogWarning("[MainMenuUI] Network manager not available, falling back to lobby state");
+                
+                // Fallback: Transition to lobby state
+                var services = Core.Bootstrap.GameBootstrap.Services;
+                if (services != null && services.StateManager != null)
+                {
+                    services.StateManager.ChangeState(new Core.State.States.LobbyState());
+                }
             }
         }
         

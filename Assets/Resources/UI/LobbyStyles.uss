@@ -1,0 +1,379 @@
+/* Lobby UI Styles - Matching Main Menu Style */
+
+/* Container */
+.full-screen {
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+    -unity-font-definition: url("project://database/Assets/Fonts/LilitaOne-Regular.ttf?fileID=12800000&guid=2309d3a0e6c55446ea2d106abff555fe&type=3#LilitaOne-Regular");
+}
+
+.lobby-panel {
+    flex-grow: 1;
+    padding: 30px;
+    max-width: 800px;
+    margin: auto;
+}
+
+/* Header Section */
+.header-section {
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: rgb(245, 240, 235);
+    border-radius: 20px;
+    border-width: 5px;
+    border-color: rgb(40, 30, 25);
+}
+
+.lobby-code-text {
+    font-size: 28px;
+    color: rgb(40, 30, 25);
+    -unity-font-style: bold;
+    margin-bottom: 10px;
+}
+
+.lobby-status-text {
+    font-size: 20px;
+    color: rgb(100, 90, 85);
+}
+
+/* Matchmaking Status */
+.matchmaking-status {
+    flex-direction: row;
+    align-items: center;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    background-color: rgb(255, 245, 220);
+    border-radius: 20px;
+    border-width: 5px;
+    border-color: rgb(255, 180, 0);
+}
+
+.status-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    margin-right: 15px;
+    border-width: 3px;
+    border-color: rgb(40, 30, 25);
+}
+
+.status-dot.searching {
+    background-color: rgb(255, 200, 0);
+    /* Add animation in code */
+}
+
+.status-dot.found {
+    background-color: rgb(100, 200, 100);
+}
+
+.status-text {
+    font-size: 22px;
+    color: rgb(40, 30, 25);
+    -unity-font-style: bold;
+    flex-grow: 1;
+}
+
+.search-time-text {
+    font-size: 24px;
+    color: rgb(255, 140, 0);
+    -unity-font-style: bold;
+}
+
+/* Sections */
+.section {
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: rgb(245, 240, 235);
+    border-radius: 20px;
+    border-width: 5px;
+    border-color: rgb(40, 30, 25);
+}
+
+.section-title {
+    font-size: 28px;
+    color: rgb(40, 30, 25);
+    -unity-font-style: bold;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom-width: 3px;
+    border-bottom-color: rgba(40, 30, 25, 0.3);
+}
+
+/* Player List */
+.player-list {
+    min-height: 200px;
+    max-height: 400px;
+}
+
+.player-entry {
+    flex-direction: row;
+    align-items: center;
+    padding: 15px;
+    margin-bottom: 10px;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 14px;
+    border-width: 3px;
+    border-color: rgba(40, 30, 25, 0.2);
+    transition-duration: 0.1s;
+}
+
+.player-entry:hover {
+    background-color: rgba(255, 255, 255, 0.8);
+    border-color: rgba(40, 30, 25, 0.4);
+    scale: 1.02;
+}
+
+.player-info {
+    flex-direction: row;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.ready-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 6px;
+    margin-right: 15px;
+}
+
+.ready-indicator.ready {
+    background-color: rgb(100, 200, 100);
+    border-width: 2px;
+    border-color: rgb(40, 30, 25);
+}
+
+.ready-indicator.not-ready {
+    background-color: rgb(200, 180, 160);
+    border-width: 2px;
+    border-color: rgb(40, 30, 25);
+}
+
+.player-name {
+    font-size: 22px;
+    color: rgb(40, 30, 25);
+    -unity-font-style: bold;
+    flex-grow: 1;
+}
+
+.player-level {
+    font-size: 18px;
+    color: rgb(100, 90, 85);
+    margin-left: 10px;
+}
+
+/* Game Mode Section */
+.selected-mode-text {
+    font-size: 24px;
+    color: rgb(40, 30, 25);
+    -unity-font-style: bold;
+    margin-bottom: 15px;
+}
+
+/* Team Toggle */
+.team-toggle {
+    flex-direction: row;
+}
+
+.team-toggle > RadioButton {
+    margin-right: 20px;
+}
+
+/* Buttons */
+.button-section {
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 30px;
+}
+
+.primary-button {
+    flex-grow: 1;
+    height: 70px;
+    font-size: 28px;
+    -unity-font-style: bold;
+    background-color: rgb(100, 200, 255);
+    border-color: rgb(40, 30, 25);
+    color: rgb(40, 30, 25);
+    border-radius: 20px;
+    border-width: 5px;
+    margin: 5px;
+    transition-duration: 0.1s;
+}
+
+.primary-button:hover {
+    background-color: rgb(120, 220, 255);
+}
+
+.primary-button:active {
+    scale: 0.92;
+}
+
+.secondary-button {
+    flex-grow: 1;
+    height: 60px;
+    font-size: 22px;
+    -unity-font-style: bold;
+    background-color: rgb(220, 210, 200);
+    border-color: rgb(40, 30, 25);
+    color: rgb(40, 30, 25);
+    border-radius: 20px;
+    border-width: 5px;
+    margin: 5px;
+    transition-duration: 0.1s;
+}
+
+.secondary-button:hover {
+    background-color: rgb(235, 225, 215);
+}
+
+.secondary-button:active {
+    scale: 0.92;
+}
+
+.danger-button {
+    flex-grow: 1;
+    height: 60px;
+    font-size: 22px;
+    -unity-font-style: bold;
+    background-color: rgb(255, 150, 150);
+    border-color: rgb(40, 30, 25);
+    color: rgb(40, 30, 25);
+    border-radius: 20px;
+    border-width: 5px;
+    margin: 5px;
+    transition-duration: 0.1s;
+}
+
+.danger-button:hover {
+    background-color: rgb(255, 180, 180);
+}
+
+.danger-button:active {
+    scale: 0.92;
+}
+
+/* Game Mode Panel */
+.overlay-panel {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    width: 600px;
+    min-height: 500px;
+    background-color: rgb(245, 240, 235);
+    border-radius: 25px;
+    border-width: 6px;
+    border-color: rgb(40, 30, 25);
+    padding: 30px;
+}
+
+.panel-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom-width: 3px;
+    border-bottom-color: rgba(40, 30, 25, 0.3);
+}
+
+.panel-title {
+    font-size: 32px;
+    color: rgb(40, 30, 25);
+    -unity-font-style: bold;
+}
+
+.close-button {
+    width: 50px;
+    height: 50px;
+    font-size: 28px;
+    background-color: rgb(255, 150, 150);
+    border-color: rgb(40, 30, 25);
+    border-radius: 25px;
+    border-width: 4px;
+    color: rgb(40, 30, 25);
+    transition-duration: 0.1s;
+}
+
+.close-button:hover {
+    background-color: rgb(255, 180, 180);
+}
+
+.close-button:active {
+    scale: 0.92;
+}
+
+/* Game Mode List */
+.game-mode-list {
+    flex-grow: 1;
+}
+
+.game-mode-entry {
+    flex-direction: row;
+    align-items: center;
+    padding: 20px;
+    margin-bottom: 15px;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 18px;
+    border-width: 4px;
+    border-color: rgba(40, 30, 25, 0.3);
+    transition-duration: 0.1s;
+}
+
+.game-mode-entry:hover {
+    background-color: rgba(255, 255, 255, 0.8);
+    border-color: rgba(40, 30, 25, 0.5);
+    scale: 1.02;
+}
+
+.game-mode-icon {
+    width: 70px;
+    height: 70px;
+    background-color: rgb(220, 210, 200);
+    border-radius: 15px;
+    border-width: 3px;
+    border-color: rgb(40, 30, 25);
+    margin-right: 20px;
+}
+
+.game-mode-info {
+    flex-grow: 1;
+}
+
+.game-mode-name {
+    font-size: 24px;
+    color: rgb(40, 30, 25);
+    -unity-font-style: bold;
+    margin-bottom: 5px;
+}
+
+.game-mode-description {
+    font-size: 18px;
+    color: rgb(100, 90, 85);
+}
+
+.select-button {
+    width: 120px;
+    height: 50px;
+    font-size: 20px;
+    background-color: rgb(100, 200, 255);
+    border-color: rgb(40, 30, 25);
+    color: rgb(40, 30, 25);
+    border-radius: 15px;
+    border-width: 4px;
+    -unity-font-style: bold;
+    transition-duration: 0.1s;
+}
+
+.select-button:hover {
+    background-color: rgb(120, 220, 255);
+}
+
+.select-button:active {
+    scale: 0.92;
+}
+
+/* Utility Classes */
+.hidden {
+    display: none;
+}
