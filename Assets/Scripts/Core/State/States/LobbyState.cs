@@ -1,6 +1,6 @@
+using Core.Bootstrap;
 using Core.Networking;
 using UI.UISystem;
-using UnityEngine;
 
 namespace Core.State.States
 {
@@ -17,10 +17,10 @@ namespace Core.State.States
             base.Enter();
 
             // Show the lobby UI
-            UIManager uiManager = Object.FindFirstObjectByType<UIManager>();
-            if (uiManager != null)
+            var uiService = GameBootstrap.Services?.UIService;
+            if (uiService != null)
             {
-                uiManager.ShowScreen(UIScreenType.Lobby, true, false);
+                uiService.ShowScreen(UIScreenType.Lobby, true, false);
             }
         }
 
@@ -32,10 +32,10 @@ namespace Core.State.States
             base.Exit();
 
             // Hide the lobby UI
-            UIManager uiManager = Object.FindFirstObjectByType<UIManager>();
-            if (uiManager != null)
+            var uiService = GameBootstrap.Services?.UIService;
+            if (uiService != null)
             {
-                uiManager.HideScreen(UIScreenType.Lobby, true);
+                uiService.HideScreen(UIScreenType.Lobby, true);
             }
         }
 

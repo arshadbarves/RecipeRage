@@ -394,11 +394,11 @@ namespace UI
             Debug.Log("[SettingsUI] Opening joystick editor");
             
             // Show the joystick editor screen using UIManager
-            UI.UISystem.UIManager uiManager = UI.UISystem.UIManager.Instance;
-            if (uiManager != null && uiManager.IsInitialized)
+            var uiService = UI.UISystem.UIServiceAccessor.Instance;
+            if (uiService != null && uiService.IsInitialized)
             {
                 // Get the joystick editor screen
-                JoystickEditorUI joystickEditor = uiManager.GetScreen<JoystickEditorUI>();
+                JoystickEditorUI joystickEditor = uiService.GetScreen<JoystickEditorUI>();
                 if (joystickEditor != null)
                 {
                     joystickEditor.Show(true, true);

@@ -1,8 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Core.Utilities.Patterns;
-using Core.UI.Animation;
+using Core.Animation;
+using Core.Utilities;
 using UI.UISystem.Core;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -12,11 +13,10 @@ namespace UI.UISystem
     /// <summary>
     /// Professional UI Manager using single UIDocument with priority-based sorting
     /// Supports Splash, Loading, Popup, Modal, and regular screens
+    /// Follows service-based architecture - no MonoBehaviour dependency
     /// </summary>
-    public class UIManager : MonoBehaviourSingleton<UIManager>
+    public class UIManager : IUIService, IDisposable
     {
-
-
         private UIDocument _uiDocument;
         private VisualElement _root;
         private readonly Dictionary<UIScreenType, UIScreenController> _controllers = new();
@@ -30,24 +30,28 @@ namespace UI.UISystem
         public event Action OnAllScreensHidden;
 
         private bool _isInitialized = false;
+        private Coroutine _initializationCoroutine;
 
-        protected override void Awake()
+        /// <summary>
+        /// Initialize the UI Manager with a UIDocument
+        /// </summary>
+        /// <param name="uiDocument">The UIDocument to use for rendering</param>
+        public void Initialize(UIDocument uiDocument)
         {
-            base.Awake();
-            // Defer initialization to avoid threading issues with UI Toolkit
-            // Do NOT initialize UI here - wait for Start()
-        }
-
-        private void Start()
-        {
-            if (!_isInitialized)
+            if (_isInitialized)
             {
-                UIScreenRegistry.Initialize();
-                StartCoroutine(InitializeUISystemDelayed());
+                Debug.LogWarning("[UIManager] Already initialized");
+                return;
             }
+
+            _uiDocument = uiDocument;
+            UIScreenRegistry.Initialize();
+            
+            // Start delayed initialization using CoroutineRunner
+            _initializationCoroutine = CoroutineRunner.Run(InitializeUISystemDelayed());
         }
 
-        private System.Collections.IEnumerator InitializeUISystemDelayed()
+        private IEnumerator InitializeUISystemDelayed()
         {
             // Wait for end of frame to ensure Unity is fully ready
             yield return new WaitForEndOfFrame();
@@ -57,11 +61,10 @@ namespace UI.UISystem
 
         private void InitializeUISystem()
         {
-            // Get or create UIDocument
-            _uiDocument = GetComponent<UIDocument>();
             if (_uiDocument == null)
             {
-                _uiDocument = gameObject.AddComponent<UIDocument>();
+                Debug.LogError("[UIManager] UIDocument is null. Call Initialize(UIDocument) first.");
+                return;
             }
 
             // Wait for UI to be ready
@@ -182,8 +185,18 @@ namespace UI.UISystem
             }
         }
 
-        protected override void OnDestroy()
+        /// <summary>
+        /// Dispose of the UI Manager and clean up resources
+        /// </summary>
+        public void Dispose()
         {
+            // Stop initialization coroutine if running
+            if (_initializationCoroutine != null)
+            {
+                CoroutineRunner.Stop(_initializationCoroutine);
+                _initializationCoroutine = null;
+            }
+
             // Dispose all screens
             foreach (BaseUIScreen screen in _screens.Values)
             {
@@ -194,8 +207,8 @@ namespace UI.UISystem
             _controllers.Clear();
             _visibleScreens.Clear();
             _screenHistory.Clear();
-
-            base.OnDestroy();
+            
+            _isInitialized = false;
         }
 
         #region Public API
@@ -388,14 +401,17 @@ namespace UI.UISystem
 
             SortScreensByPriority();
 
-            // Let the screen determine its own animation configuration
-            UnityNativeUIAnimationSystem.AnimationType animationType = screen.GetShowAnimationType();
+            // Get animation duration from screen
             float duration = screen.GetAnimationDuration();
 
             // Call screen's pre-animation hook
             screen.OnBeforeShowAnimation();
 
-            controller.Show(animationType, duration, animate, () =>
+            // Create animator
+            var animator = new DOTweenUIAnimator();
+
+            // Show with direct animation callback
+            controller.Show(animator, screen.AnimateShow, duration, animate, () =>
             {
                 if (!_visibleScreens.Contains(screen))
                 {
@@ -421,14 +437,17 @@ namespace UI.UISystem
                 return;
             }
 
-            // Let the screen determine its own animation configuration
-            UnityNativeUIAnimationSystem.AnimationType animationType = screen.GetHideAnimationType();
+            // Get animation duration from screen
             float duration = screen.GetAnimationDuration();
 
             // Call screen's pre-animation hook
             screen.OnBeforeHideAnimation();
 
-            controller.Hide(animationType, duration, animate, () =>
+            // Create animator
+            var animator = new DOTweenUIAnimator();
+
+            // Hide with direct animation callback
+            controller.Hide(animator, screen.AnimateHide, duration, animate, () =>
             {
                 _visibleScreens.Remove(screen);
 
@@ -444,17 +463,17 @@ namespace UI.UISystem
             });
         }
 
-        private void Update()
+        /// <summary>
+        /// Update all visible screens - called by ServiceContainer
+        /// </summary>
+        public void Update(float deltaTime)
         {
             // Update all visible screens
-            float deltaTime = Time.deltaTime;
             foreach (BaseUIScreen screen in _visibleScreens)
             {
                 screen.Update(deltaTime);
             }
         }
-
-
 
         private void SortScreensByPriority()
         {

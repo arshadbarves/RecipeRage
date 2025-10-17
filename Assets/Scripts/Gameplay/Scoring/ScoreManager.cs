@@ -56,12 +56,6 @@ namespace Gameplay.Scoring
             {
                 _orderManager = FindFirstObjectByType<OrderManager>();
             }
-
-            // Find the game mode manager if not set
-            if (_gameModeManager == null)
-            {
-                _gameModeManager = FindFirstObjectByType<GameModeManager>();
-            }
         }
 
         /// <summary>

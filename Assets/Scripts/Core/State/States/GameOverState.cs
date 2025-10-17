@@ -1,3 +1,4 @@
+using Core.Bootstrap;
 using Gameplay.Scoring;
 using UI.UISystem;
 using UnityEngine;
@@ -17,10 +18,10 @@ namespace Core.State.States
             base.Enter();
 
             // Show the game over UI
-            UIManager uiManager = Object.FindFirstObjectByType<UIManager>();
-            if (uiManager != null)
+            var uiService = GameBootstrap.Services?.UIService;
+            if (uiService != null)
             {
-                uiManager.ShowScreen(UIScreenType.GameOver, true, false);
+                uiService.ShowScreen(UIScreenType.GameOver, true, false);
             }
 
             // Get the final scores
@@ -40,10 +41,10 @@ namespace Core.State.States
             base.Exit();
 
             // Hide the game over UI
-            UIManager uiManager = Object.FindFirstObjectByType<UIManager>();
-            if (uiManager != null)
+            var uiService = GameBootstrap.Services?.UIService;
+            if (uiService != null)
             {
-                uiManager.HideScreen(UIScreenType.GameOver, true);
+                uiService.HideScreen(UIScreenType.GameOver, true);
             }
         }
 

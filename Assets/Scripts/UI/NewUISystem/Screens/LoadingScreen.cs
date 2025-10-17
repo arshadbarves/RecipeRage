@@ -82,7 +82,7 @@ namespace UI.UISystem.Screens
             _loadingState = LoadingState.Idle;
             if (_hideDelayCoroutine != null)
             {
-                UIManager.Instance.StopCoroutine(_hideDelayCoroutine);
+                UIServiceAccessor.StopCoroutine(_hideDelayCoroutine);
                 _hideDelayCoroutine = null;
             }
             OnLoadingComplete?.Invoke();
@@ -251,7 +251,7 @@ namespace UI.UISystem.Screens
             if (showElapsedTime >= MinShowDuration)
             {
                 _loadingState = LoadingState.Idle;
-                _hideDelayCoroutine = UIManager.Instance.StartCoroutine(HideAfterDelay(HideDelay));
+                _hideDelayCoroutine = UIServiceAccessor.StartCoroutine(HideAfterDelay(HideDelay));
             }
         }
 
@@ -265,7 +265,7 @@ namespace UI.UISystem.Screens
             float showElapsedTime = Time.time - _showStartTime;
             if (showElapsedTime >= MinShowDuration)
             {
-                _hideDelayCoroutine = UIManager.Instance.StartCoroutine(HideAfterDelay(HideDelay));
+                _hideDelayCoroutine = UIServiceAccessor.StartCoroutine(HideAfterDelay(HideDelay));
             }
             else
             {

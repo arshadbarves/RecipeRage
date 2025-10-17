@@ -53,7 +53,7 @@ namespace Core.State.States
             LogMessage("Starting matchmaking process");
 
             // Show game mode selection screen
-            UIManager.Instance.ShowScreen(UIScreenType.GameModeSelection, true, true);
+            UIServiceAccessor.Instance.ShowScreen(UIScreenType.GameModeSelection, true, true);
 
             // Subscribe to lobby events
             if (_lobbyManager != null)
@@ -97,7 +97,7 @@ namespace Core.State.States
             }
 
             // Hide game mode selection screen
-            UIManager.Instance.HideScreen(UIScreenType.GameModeSelection, true);
+            UIServiceAccessor.Instance.HideScreen(UIScreenType.GameModeSelection, true);
         }
 
         /// <summary>
@@ -130,7 +130,7 @@ namespace Core.State.States
             {
                 // Show the lobby screen
                 // Note: We're using the existing GameModeSelectionScreen for now
-                // UIManager.Instance.ShowScreen<LobbyScreen>();
+                // UIServiceAccessor.Instance.ShowScreen<LobbyScreen>();
 
                 // Mark matchmaking as complete
                 CompleteMatchmaking(true);
