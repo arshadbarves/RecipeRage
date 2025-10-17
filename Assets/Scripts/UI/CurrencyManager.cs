@@ -1,4 +1,3 @@
-using Core.Utilities.Patterns;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -6,10 +5,12 @@ namespace UI
 {
     /// <summary>
     /// Manages player currency display and updates across the UI.
-    /// Pure C# singleton - no MonoBehaviour needed.
+    /// Simple static instance pattern for UI-only manager.
     /// </summary>
-    public class CurrencyManager : Singleton<CurrencyManager>
+    public class CurrencyManager
     {
+        private static CurrencyManager _instance;
+        public static CurrencyManager Instance => _instance ??= new CurrencyManager();
         private Label _coinsLabel;
         private Label _gemsLabel;
         

@@ -1,5 +1,5 @@
 using System;
-using Core.UI.Animation;
+using Core.Animation;
 using UI.UISystem.Core;
 using UnityEngine.UIElements;
 
@@ -213,7 +213,7 @@ namespace UI.UISystem.Screens
         /// </summary>
         public static PopupScreen CreateAlert(string title, string message, Action onConfirm = null)
         {
-            PopupScreen popup = UIManager.Instance.GetScreen<PopupScreen>();
+            PopupScreen popup = UIServiceAccessor.Instance.GetScreen<PopupScreen>();
             return popup?
                 .SetTitle(title)
                 .SetMessage(message)
@@ -226,7 +226,7 @@ namespace UI.UISystem.Screens
         /// </summary>
         public static PopupScreen CreateConfirmation(string title, string message, Action onConfirm = null, Action onCancel = null)
         {
-            PopupScreen popup = UIManager.Instance.GetScreen<PopupScreen>();
+            PopupScreen popup = UIServiceAccessor.Instance.GetScreen<PopupScreen>();
             return popup?
                 .SetTitle(title)
                 .SetMessage(message)
@@ -239,7 +239,7 @@ namespace UI.UISystem.Screens
         /// </summary>
         public static PopupScreen CreateYesNo(string title, string message, Action onYes = null, Action onNo = null)
         {
-            PopupScreen popup = UIManager.Instance.GetScreen<PopupScreen>();
+            PopupScreen popup = UIServiceAccessor.Instance.GetScreen<PopupScreen>();
             return popup?
                 .SetTitle(title)
                 .SetMessage(message)
@@ -283,17 +283,17 @@ namespace UI.UISystem.Screens
         /// <summary>
         /// Popups use a bouncy scale-in animation for more impact
         /// </summary>
-        public override UnityNativeUIAnimationSystem.AnimationType GetShowAnimationType()
+        public override void AnimateShow(IUIAnimator animator, VisualElement element, float duration, Action onComplete)
         {
-            return UnityNativeUIAnimationSystem.AnimationType.ScaleIn;
+            animator.ScaleIn(element, duration, onComplete);
         }
 
         /// <summary>
         /// Popups scale out quickly when hiding
         /// </summary>
-        public override UnityNativeUIAnimationSystem.AnimationType GetHideAnimationType()
+        public override void AnimateHide(IUIAnimator animator, VisualElement element, float duration, Action onComplete)
         {
-            return UnityNativeUIAnimationSystem.AnimationType.ScaleOut;
+            animator.ScaleOut(element, duration, onComplete);
         }
 
         /// <summary>

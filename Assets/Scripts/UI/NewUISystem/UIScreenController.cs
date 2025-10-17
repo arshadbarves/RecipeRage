@@ -1,5 +1,5 @@
 using System;
-using Core.UI.Animation;
+using Core.Animation;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -99,7 +99,7 @@ namespace UI.UISystem
         /// <summary>
         /// Show the screen with animation
         /// </summary>
-        public void Show(UnityNativeUIAnimationSystem.AnimationType animationType, float duration, bool animate, Action onComplete = null)
+        public void Show(IUIAnimator animator, Action<IUIAnimator, VisualElement, float, Action> animateCallback, float duration, bool animate, Action onComplete = null)
         {
             if (IsVisible || IsAnimating) return;
 
@@ -111,11 +111,8 @@ namespace UI.UISystem
 
             if (animate)
             {
-                // Prepare for animation based on type
-                PrepareForShowAnimation(animationType);
-
-                // Animate
-                UnityNativeUIAnimationSystem.Animate(Container, animationType, duration, 0f, () =>
+                // Call the animation callback which will invoke the specific animation method
+                animateCallback?.Invoke(animator, Container, duration, () =>
                 {
                     CompleteShow(onComplete);
                 });
@@ -132,7 +129,7 @@ namespace UI.UISystem
         /// <summary>
         /// Hide the screen with animation
         /// </summary>
-        public void Hide(UnityNativeUIAnimationSystem.AnimationType animationType, float duration, bool animate, Action onComplete = null)
+        public void Hide(IUIAnimator animator, Action<IUIAnimator, VisualElement, float, Action> animateCallback, float duration, bool animate, Action onComplete = null)
         {
             if (!IsVisible || IsAnimating) return;
 
@@ -141,7 +138,7 @@ namespace UI.UISystem
 
             if (animate)
             {
-                UnityNativeUIAnimationSystem.Animate(Container, animationType, duration, 0f, () =>
+                animateCallback?.Invoke(animator, Container, duration, () =>
                 {
                     CompleteHide(onComplete);
                 });
@@ -149,41 +146,6 @@ namespace UI.UISystem
             else
             {
                 CompleteHide(onComplete);
-            }
-        }
-
-        private void PrepareForShowAnimation(UnityNativeUIAnimationSystem.AnimationType animationType)
-        {
-            switch (animationType)
-            {
-                case UnityNativeUIAnimationSystem.AnimationType.FadeIn:
-                    Container.style.opacity = 0f;
-                    break;
-                
-                case UnityNativeUIAnimationSystem.AnimationType.ScaleIn:
-                    Container.style.opacity = 0f;
-                    Container.style.scale = new StyleScale(Vector2.zero);
-                    break;
-                
-                case UnityNativeUIAnimationSystem.AnimationType.SlideInFromTop:
-                    Container.style.opacity = 1f;
-                    Container.style.translate = new StyleTranslate(new Translate(0, -Container.resolvedStyle.height));
-                    break;
-                
-                case UnityNativeUIAnimationSystem.AnimationType.SlideInFromRight:
-                    Container.style.opacity = 1f;
-                    Container.style.translate = new StyleTranslate(new Translate(Container.resolvedStyle.width, 0));
-                    break;
-                
-                case UnityNativeUIAnimationSystem.AnimationType.SlideInFromBottom:
-                    Container.style.opacity = 1f;
-                    Container.style.translate = new StyleTranslate(new Translate(0, Container.resolvedStyle.height));
-                    break;
-                
-                case UnityNativeUIAnimationSystem.AnimationType.SlideInFromLeft:
-                    Container.style.opacity = 1f;
-                    Container.style.translate = new StyleTranslate(new Translate(-Container.resolvedStyle.width, 0));
-                    break;
             }
         }
 

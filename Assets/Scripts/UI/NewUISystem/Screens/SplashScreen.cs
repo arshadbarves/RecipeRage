@@ -1,6 +1,6 @@
 using System;
 using Core;
-using Core.UI.Animation;
+using Core.Animation;
 using UI.UISystem.Core;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -69,9 +69,9 @@ namespace UI.UISystem.Screens
         protected override void OnDispose()
         {
             // Clean up resources
-            if (_splashCoroutine != null && UIManager.Instance != null)
+            if (_splashCoroutine != null && UIServiceAccessor.Instance != null)
             {
-                UIManager.Instance.StopCoroutine(_splashCoroutine);
+                UIServiceAccessor.StopCoroutine(_splashCoroutine);
                 _splashCoroutine = null;
             }
         }
@@ -169,39 +169,32 @@ namespace UI.UISystem.Screens
             // Fade in splash content
             if (_splashContent != null)
             {
-                UnityNativeUIAnimationSystem.AnimateOpacity(
-                    _splashContent,
-                    0f, 1f,
-                    FadeInDuration, 0f,
-                    UnityNativeUIAnimationSystem.EasingCurve.EaseOut,
-                    () =>
-                    {
-                        float holdTime = SplashDuration - FadeInDuration - FadeOutDuration;
+                var animator = new DOTweenUIAnimator();
+                animator.FadeIn(_splashContent, FadeInDuration, () =>
+                {
+                    float holdTime = SplashDuration - FadeInDuration - FadeOutDuration;
 
-                        // Fade out splash content
-                        if (_splashContent != null)
+                    // Wait for hold time, then fade out
+                    if (_splashContent != null)
+                    {
+                        // Use DOTween's delay
+                        DG.Tweening.DOVirtual.DelayedCall(holdTime, () =>
                         {
-                            UnityNativeUIAnimationSystem.AnimateOpacity(
-                                _splashContent,
-                                1f, 0f,
-                                FadeOutDuration, holdTime,
-                                UnityNativeUIAnimationSystem.EasingCurve.EaseIn,
-                                CompleteSplash
-                            );
-                        }
+                            animator.FadeOut(_splashContent, FadeOutDuration, CompleteSplash);
+                        });
                     }
-                );
+                });
             }
         }
 
         private void StopSplashSequence()
         {
             _isPlayingSplash = false;
-            if (_splashCoroutine == null || UIManager.Instance == null)
+            if (_splashCoroutine == null || UIServiceAccessor.Instance == null)
             {
                 return;
             }
-            UIManager.Instance.StopCoroutine(_splashCoroutine);
+            UIServiceAccessor.StopCoroutine(_splashCoroutine);
             _splashCoroutine = null;
         }
 

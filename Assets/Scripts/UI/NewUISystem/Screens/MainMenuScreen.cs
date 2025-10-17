@@ -1,7 +1,8 @@
 using System;
+using Core.Animation;
+using Core.Bootstrap;
 using Core.State;
 using Core.State.States;
-using Core.UI.Animation;
 using UI.UISystem.Core;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -433,46 +434,28 @@ namespace UI.UISystem.Screens
 
         private void AnimateUIElementsEntrance()
         {
-            // Animate play button with bounce
+            var animator = new DOTweenUIAnimator();
+            
+            // Animate play button with bounce (using pulse as alternative)
             if (_playButton != null)
             {
-                UnityNativeUIAnimationSystem.Animate(
-                    _playButton,
-                    UnityNativeUIAnimationSystem.AnimationType.Bounce,
-                    0.8f,
-                    0.5f
-                );
+                DG.Tweening.DOVirtual.DelayedCall(0.5f, () => animator.Pulse(_playButton, 0.8f));
             }
 
             // Animate characters with staggered scale-in
             if (_character1 != null)
             {
-                UnityNativeUIAnimationSystem.Animate(
-                    _character1,
-                    UnityNativeUIAnimationSystem.AnimationType.ScaleIn,
-                    0.5f,
-                    0.2f
-                );
+                DG.Tweening.DOVirtual.DelayedCall(0.2f, () => animator.ScaleIn(_character1, 0.5f));
             }
 
             if (_character2 != null)
             {
-                UnityNativeUIAnimationSystem.Animate(
-                    _character2,
-                    UnityNativeUIAnimationSystem.AnimationType.ScaleIn,
-                    0.5f,
-                    0.4f
-                );
+                DG.Tweening.DOVirtual.DelayedCall(0.4f, () => animator.ScaleIn(_character2, 0.5f));
             }
 
             if (_character3 != null)
             {
-                UnityNativeUIAnimationSystem.Animate(
-                    _character3,
-                    UnityNativeUIAnimationSystem.AnimationType.ScaleIn,
-                    0.5f,
-                    0.6f
-                );
+                DG.Tweening.DOVirtual.DelayedCall(0.6f, () => animator.ScaleIn(_character3, 0.5f));
             }
         }
 
@@ -487,19 +470,15 @@ namespace UI.UISystem.Screens
             // Animate button press
             if (_playButton != null)
             {
-                UnityNativeUIAnimationSystem.Animate(
-                    _playButton,
-                    UnityNativeUIAnimationSystem.AnimationType.Pulse,
-                    0.2f,
-                    0f
-                );
+                var animator = new DOTweenUIAnimator();
+                animator.Pulse(_playButton, 0.2f);
             }
 
             OnPlayButtonClicked?.Invoke();
 
             // Default behavior: transition to matchmaking
-            var services = Core.Bootstrap.GameBootstrap.Services;
-            services?.StateManager.ChangeState<MatchmakingState>();
+            var services = GameBootstrap.Services;
+            services?.StateManager.ChangeState(new MatchmakingState());
         }
 
         private void HandleCharacterSelectionClicked()
@@ -508,7 +487,7 @@ namespace UI.UISystem.Screens
             OnCharacterSelectionClicked?.Invoke();
 
             // Default behavior: show character selection screen
-            UIManager.Instance.ShowScreen(UIScreenType.CharacterSelection, true, true);
+            UIServiceAccessor.Instance.ShowScreen(UIScreenType.CharacterSelection, true, true);
         }
 
         private void HandleSettingsClicked()
@@ -517,7 +496,7 @@ namespace UI.UISystem.Screens
             OnSettingsClicked?.Invoke();
 
             // Default behavior: show settings screen
-            UIManager.Instance.ShowScreen(UIScreenType.Settings, true, true);
+            UIServiceAccessor.Instance.ShowScreen(UIScreenType.Settings, true, true);
         }
 
         private void HandleQuitClicked()
@@ -547,19 +526,15 @@ namespace UI.UISystem.Screens
 
             if (character != null)
             {
-                UnityNativeUIAnimationSystem.Animate(
-                    character,
-                    UnityNativeUIAnimationSystem.AnimationType.Bounce,
-                    0.5f,
-                    0f
-                );
+                var animator = new DOTweenUIAnimator();
+                animator.Pulse(character, 0.5f);
             }
         }
 
         private void ShowQuitConfirmation()
         {
             // Show quit confirmation popup
-            PopupScreen popupScreen = UIManager.Instance.GetScreen<PopupScreen>();
+            PopupScreen popupScreen = UIServiceAccessor.Instance.GetScreen<PopupScreen>();
             if (popupScreen != null)
             {
                 popupScreen

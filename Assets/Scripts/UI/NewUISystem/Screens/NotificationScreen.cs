@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using Core.UI.Animation;
+using Core.Animation;
 using UI.UISystem.Core;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -77,17 +77,17 @@ namespace UI.UISystem.Screens
         /// <summary>
         /// Notifications slide in from the top for immediate attention
         /// </summary>
-        public override UnityNativeUIAnimationSystem.AnimationType GetShowAnimationType()
+        public override void AnimateShow(IUIAnimator animator, VisualElement element, float duration, Action onComplete)
         {
-            return UnityNativeUIAnimationSystem.AnimationType.SlideInFromTop;
+            animator.SlideIn(element, SlideDirection.Top, duration, onComplete);
         }
 
         /// <summary>
         /// Notifications slide out to the top when dismissed
         /// </summary>
-        public override UnityNativeUIAnimationSystem.AnimationType GetHideAnimationType()
+        public override void AnimateHide(IUIAnimator animator, VisualElement element, float duration, Action onComplete)
         {
-            return UnityNativeUIAnimationSystem.AnimationType.SlideOutToTop;
+            animator.SlideOut(element, SlideDirection.Top, duration, onComplete);
         }
 
         /// <summary>
@@ -203,7 +203,7 @@ namespace UI.UISystem.Screens
         /// </summary>
         public static NotificationScreen ShowInfo(string message, float duration = 3.0f)
         {
-            NotificationScreen notification = UIManager.Instance.GetScreen<NotificationScreen>();
+            NotificationScreen notification = UIServiceAccessor.Instance.GetScreen<NotificationScreen>();
             return notification?
                 .SetMessage(message)
                 .SetType(NotificationType.Info)
@@ -215,7 +215,7 @@ namespace UI.UISystem.Screens
         /// </summary>
         public static NotificationScreen ShowSuccess(string message, float duration = 2.5f)
         {
-            NotificationScreen notification = UIManager.Instance.GetScreen<NotificationScreen>();
+            NotificationScreen notification = UIServiceAccessor.Instance.GetScreen<NotificationScreen>();
             return notification?
                 .SetMessage(message)
                 .SetType(NotificationType.Success)
@@ -227,7 +227,7 @@ namespace UI.UISystem.Screens
         /// </summary>
         public static NotificationScreen ShowWarning(string message, float duration = 4.0f)
         {
-            NotificationScreen notification = UIManager.Instance.GetScreen<NotificationScreen>();
+            NotificationScreen notification = UIServiceAccessor.Instance.GetScreen<NotificationScreen>();
             return notification?
                 .SetMessage(message)
                 .SetType(NotificationType.Warning)
@@ -239,7 +239,7 @@ namespace UI.UISystem.Screens
         /// </summary>
         public static NotificationScreen ShowError(string message, bool autoHide = false)
         {
-            NotificationScreen notification = UIManager.Instance.GetScreen<NotificationScreen>();
+            NotificationScreen notification = UIServiceAccessor.Instance.GetScreen<NotificationScreen>();
             return notification?
                 .SetMessage(message)
                 .SetType(NotificationType.Error)
@@ -315,17 +315,17 @@ namespace UI.UISystem.Screens
             StopAutoHideTimer();
             
             // Start coroutine through UIManager (since this is not a MonoBehaviour)
-            if (UIManager.Instance != null)
+            if (UIServiceAccessor.Instance != null)
             {
-                _autoHideCoroutine = UIManager.Instance.StartCoroutine(AutoHideCoroutine());
+                _autoHideCoroutine = UIServiceAccessor.StartCoroutine(AutoHideCoroutine());
             }
         }
 
         private void StopAutoHideTimer()
         {
-            if (_autoHideCoroutine != null && UIManager.Instance != null)
+            if (_autoHideCoroutine != null && UIServiceAccessor.Instance != null)
             {
-                UIManager.Instance.StopCoroutine(_autoHideCoroutine);
+                UIServiceAccessor.StopCoroutine(_autoHideCoroutine);
                 _autoHideCoroutine = null;
             }
         }

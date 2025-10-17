@@ -1,4 +1,5 @@
 using System;
+using Core.Logging;
 
 namespace Core.SaveSystem
 {
@@ -127,19 +128,42 @@ namespace Core.SaveSystem
             }
 
             string content = _storage.Read(filename);
-            
-            if (_encryption != null && !string.IsNullOrEmpty(content))
+
+            // Handle empty or null content
+            if (string.IsNullOrEmpty(content))
             {
-                content = _encryption.Decrypt(content);
+                return new T();
             }
 
-            return UnityEngine.JsonUtility.FromJson<T>(content);
+            if (_encryption != null)
+            {
+                try
+                {
+                    content = _encryption.Decrypt(content);
+                }
+                catch (System.Exception ex)
+                {
+                    GameLogger.Log($"[SaveService] Failed to decrypt {filename}: {ex.Message}");
+                    return new T();
+                }
+            }
+
+            // Handle invalid JSON
+            try
+            {
+                return UnityEngine.JsonUtility.FromJson<T>(content);
+            }
+            catch (System.Exception ex)
+            {
+                GameLogger.Log($"[SaveService] Failed to parse {filename}: {ex.Message}. Creating new instance.");
+                return new T();
+            }
         }
 
         private void Save<T>(string filename, T data)
         {
             string content = UnityEngine.JsonUtility.ToJson(data, true);
-            
+
             if (_encryption != null)
             {
                 content = _encryption.Encrypt(content);

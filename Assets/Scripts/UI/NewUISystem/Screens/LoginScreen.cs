@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using Core.Authentication;
+using Core.Bootstrap;
 using UI.UISystem.Core;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -82,11 +83,11 @@ namespace UI.UISystem.Screens
             }
 
             // Unsubscribe from authentication events
-            if (AuthenticationManager.Instance != null)
+            if (GameBootstrap.Services.AuthenticationService != null)
             {
-                AuthenticationManager.Instance.OnLoginSuccess -= HandleLoginSuccess;
-                AuthenticationManager.Instance.OnLoginFailed -= HandleLoginFailed;
-                AuthenticationManager.Instance.OnLoginStatusChanged -= UpdateStatus;
+                GameBootstrap.Services.AuthenticationService.OnLoginSuccess -= HandleLoginSuccess;
+                GameBootstrap.Services.AuthenticationService.OnLoginFailed -= HandleLoginFailed;
+                GameBootstrap.Services.AuthenticationService.OnLoginStatusChanged -= UpdateStatus;
             }
         }
 
@@ -135,21 +136,21 @@ namespace UI.UISystem.Screens
 
         private void SetupAuthenticationManager()
         {
-            if (AuthenticationManager.Instance == null)
+            if (GameBootstrap.Services.AuthenticationService == null)
             {
                 Debug.LogWarning("[LoginScreen] AuthenticationManager not available yet, will retry when needed");
                 return;
             }
 
             // Unsubscribe first to avoid duplicate subscriptions
-            AuthenticationManager.Instance.OnLoginSuccess -= HandleLoginSuccess;
-            AuthenticationManager.Instance.OnLoginFailed -= HandleLoginFailed;
-            AuthenticationManager.Instance.OnLoginStatusChanged -= UpdateStatus;
+            GameBootstrap.Services.AuthenticationService.OnLoginSuccess -= HandleLoginSuccess;
+            GameBootstrap.Services.AuthenticationService.OnLoginFailed -= HandleLoginFailed;
+            GameBootstrap.Services.AuthenticationService.OnLoginStatusChanged -= UpdateStatus;
 
             // Subscribe to authentication events
-            AuthenticationManager.Instance.OnLoginSuccess += HandleLoginSuccess;
-            AuthenticationManager.Instance.OnLoginFailed += HandleLoginFailed;
-            AuthenticationManager.Instance.OnLoginStatusChanged += UpdateStatus;
+            GameBootstrap.Services.AuthenticationService.OnLoginSuccess += HandleLoginSuccess;
+            GameBootstrap.Services.AuthenticationService.OnLoginFailed += HandleLoginFailed;
+            GameBootstrap.Services.AuthenticationService.OnLoginStatusChanged += UpdateStatus;
 
             Debug.Log("[LoginScreen] Connected to AuthenticationManager");
         }
@@ -203,7 +204,7 @@ namespace UI.UISystem.Screens
             UpdateUI();
 
             // Start coroutine to handle async AuthenticationManager check
-            UIManager.Instance.StartCoroutine(HandleFacebookLogin());
+            UIServiceAccessor.StartCoroutine(HandleFacebookLogin());
         }
 
         private void OnGuestLoginClicked()
@@ -219,26 +220,26 @@ namespace UI.UISystem.Screens
             UpdateUI();
 
             // Start coroutine to handle async AuthenticationManager check
-            UIManager.Instance.StartCoroutine(HandleGuestLogin());
+            UIServiceAccessor.StartCoroutine(HandleGuestLogin());
         }
 
         private IEnumerator HandleFacebookLogin()
         {
             // Wait for AuthenticationManager if not available
-            if (AuthenticationManager.Instance == null)
+            if (GameBootstrap.Services.AuthenticationService == null)
             {
                 UpdateStatus("Initializing authentication...");
 
                 float timeout = 5f;
                 float elapsed = 0f;
 
-                while (AuthenticationManager.Instance == null && elapsed < timeout)
+                while (GameBootstrap.Services.AuthenticationService == null && elapsed < timeout)
                 {
                     elapsed += Time.deltaTime;
                     yield return null;
                 }
 
-                if (AuthenticationManager.Instance == null)
+                if (GameBootstrap.Services.AuthenticationService == null)
                 {
                     Debug.LogError("[LoginScreen] AuthenticationManager not available!");
                     UpdateStatus("Authentication system not available");
@@ -252,26 +253,26 @@ namespace UI.UISystem.Screens
             }
 
             // Delegate to AuthenticationManager
-            yield return AuthenticationManager.Instance.LoginWithFacebook();
+            yield return GameBootstrap.Services.AuthenticationService.LoginWithFacebook();
         }
 
         private IEnumerator HandleGuestLogin()
         {
             // Wait for AuthenticationManager if not available
-            if (AuthenticationManager.Instance == null)
+            if (GameBootstrap.Services.AuthenticationService == null)
             {
                 UpdateStatus("Initializing authentication...");
 
                 float timeout = 5f;
                 float elapsed = 0f;
 
-                while (AuthenticationManager.Instance == null && elapsed < timeout)
+                while (GameBootstrap.Services.AuthenticationService == null && elapsed < timeout)
                 {
                     elapsed += Time.deltaTime;
                     yield return null;
                 }
 
-                if (AuthenticationManager.Instance == null)
+                if (GameBootstrap.Services.AuthenticationService == null)
                 {
                     Debug.LogError("[LoginScreen] AuthenticationManager not available!");
                     UpdateStatus("Authentication system not available");
@@ -285,7 +286,7 @@ namespace UI.UISystem.Screens
             }
 
             // Delegate to AuthenticationManager
-            yield return AuthenticationManager.Instance.LoginAsGuest();
+            yield return GameBootstrap.Services.AuthenticationService.LoginAsGuest();
         }
 
         #endregion
@@ -303,7 +304,7 @@ namespace UI.UISystem.Screens
             OnLoginSuccess?.Invoke();
 
             // Hide login screen after a short delay
-            UIManager.Instance.StartCoroutine(HideAfterDelay(1f));
+            UIServiceAccessor.StartCoroutine(HideAfterDelay(1f));
         }
 
         private void HandleLoginFailed(string error)

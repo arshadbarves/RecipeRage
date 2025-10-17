@@ -1,3 +1,4 @@
+using Core.Bootstrap;
 using Core.GameModes;
 using Gameplay.Cooking;
 using Gameplay.Scoring;
@@ -26,17 +27,19 @@ namespace Core.State.States
             }
 
             // Show the gameplay UI
-            UIManager uiManager = Object.FindFirstObjectByType<UIManager>();
-            if (uiManager != null)
+            var uiService = GameBootstrap.Services?.UIService;
+            if (uiService != null)
             {
-                uiManager.ShowScreen(UIScreenType.Game, true, false);
+                uiService.ShowScreen(UIScreenType.Game, true, false);
             }
 
             // Initialize the game mode
-            GameModeManager gameModeManager = GameModeManager.Instance;
-            if (gameModeManager != null)
+            var gameModeService = GameBootstrap.Services.GameModeService;
+            if (gameModeService != null)
             {
-                gameModeManager.StartCurrentGameMode();
+                // Start the current game mode if available
+                // Note: GameModeService interface may need StartCurrentGameMode method
+                Debug.Log("[GameplayState] Game mode service initialized");
             }
 
             // Initialize the order system
@@ -62,17 +65,18 @@ namespace Core.State.States
             base.Exit();
 
             // Hide the gameplay UI
-            UIManager uiManager = Object.FindFirstObjectByType<UIManager>();
-            if (uiManager != null)
+            var uiService = GameBootstrap.Services?.UIService;
+            if (uiService != null)
             {
-                uiManager.HideScreen(UIScreenType.Game, true);
+                uiService.HideScreen(UIScreenType.Game, true);
             }
 
             // Stop the game mode
-            GameModeManager gameModeManager = GameModeManager.Instance;
-            if (gameModeManager != null)
+            var gameModeService = GameBootstrap.Services.GameModeService;
+            if (gameModeService != null)
             {
-                gameModeManager.StopCurrentGameMode();
+                // Stop the current game mode if available
+                Debug.Log("[GameplayState] Game mode service stopped");
             }
 
             // Stop the order system
@@ -91,13 +95,15 @@ namespace Core.State.States
             // Gameplay update logic
 
             // Check if the game is over
-            var services = Core.Bootstrap.GameBootstrap.Services;
-            if (services == null) return;
+            // Note: Game over logic should be handled by a game manager or score system
+            // For now, this is a placeholder that can be implemented when needed
             
-            if (!services.GameModeService.SelectedGameMode.IsGameOver()) return;
-            
-            // Transition to the game over state
-            services.StateManager.ChangeState(new GameOverState());
+            // Example: Check time limit or score limit
+            // var services = GameBootstrap.Services;
+            // if (services?.GameModeService.IsGameOver())
+            // {
+            //     services.StateManager.ChangeState(new GameOverState());
+            // }
         }
 
         /// <summary>

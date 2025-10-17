@@ -1,5 +1,5 @@
 using System;
-using Core.UI.Animation;
+using Core.Animation;
 using UI.UISystem.Core;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -309,17 +309,17 @@ namespace UI.UISystem.Screens
         /// <summary>
         /// Settings screen slides in from the right like a drawer
         /// </summary>
-        public override UnityNativeUIAnimationSystem.AnimationType GetShowAnimationType()
+        public override void AnimateShow(IUIAnimator animator, VisualElement element, float duration, Action onComplete)
         {
-            return UnityNativeUIAnimationSystem.AnimationType.SlideInFromRight;
+            animator.SlideIn(element, SlideDirection.Right, duration, onComplete);
         }
 
         /// <summary>
         /// Settings screen slides out to the right when closing
         /// </summary>
-        public override UnityNativeUIAnimationSystem.AnimationType GetHideAnimationType()
+        public override void AnimateHide(IUIAnimator animator, VisualElement element, float duration, Action onComplete)
         {
-            return UnityNativeUIAnimationSystem.AnimationType.SlideOutToRight;
+            animator.SlideOut(element, SlideDirection.Right, duration, onComplete);
         }
 
         /// <summary>

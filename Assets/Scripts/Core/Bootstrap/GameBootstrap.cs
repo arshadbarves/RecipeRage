@@ -1,4 +1,5 @@
 using System.Collections;
+using Core.Animation;
 using Core.Audio;
 using Core.Authentication;
 using Core.Characters;
@@ -10,6 +11,7 @@ using Core.SaveSystem;
 using Core.State;
 using Core.State.States;
 using PlayEveryWare.EpicOnlineServices;
+using UI.UISystem;
 using UnityEngine;
 
 namespace Core.Bootstrap
@@ -17,7 +19,6 @@ namespace Core.Bootstrap
     /// <summary>
     /// Single entry point for the entire game - bootstraps all services
     /// Flow: Bootstrap → ServiceContainer → Services → Game
-    /// UIManager is separate and accessed via singleton (justified for UI system)
     /// </summary>
     public class GameBootstrap : MonoBehaviour
     {
@@ -42,7 +43,7 @@ namespace Core.Bootstrap
             // Initialize services in dependency order
             InitializeCore();
             InitializeGameSystems();
-            
+
             // Start async initialization
             StartCoroutine(InitializeAsync());
         }
@@ -51,36 +52,36 @@ namespace Core.Bootstrap
         {
             // Wait for EOS to initialize
             yield return WaitForEOS();
-            
+
             // Initialize authentication
             InitializeAuthentication();
-            
+
             // Try auto-login
             yield return _services.AuthenticationService.AttemptAutoLogin();
-            
+
             // Initialize networking (requires auth)
             InitializeNetworking();
-            
+
             // Initialize state machine
             InitializeStateMachine();
 
             _isInitialized = true;
-            
+
             // Make services globally accessible
             Services = _services;
-            
+
             Debug.Log("[GameBootstrap] ✅ Game initialization complete!");
         }
 
         private IEnumerator WaitForEOS()
         {
             Debug.Log("[GameBootstrap] Waiting for EOS to initialize...");
-            
+
             while (EOSManager.Instance == null)
             {
                 yield return new WaitForSeconds(0.1f);
             }
-            
+
             Debug.Log("[GameBootstrap] EOS initialized");
         }
 
@@ -93,7 +94,7 @@ namespace Core.Bootstrap
             _services.RegisterLoggingService(new LoggingService(maxLogEntries: 5000));
             Debug.Log("[GameBootstrap] Logging service initialized (Development Build)");
 #endif
-            
+
             // Core services (no dependencies)
             _services.RegisterSaveService(new SaveService(
                 new FileSystemStorage(),
@@ -102,6 +103,8 @@ namespace Core.Bootstrap
 
             _services.RegisterAudioService(CreateAudioService());
             _services.RegisterInputService(CreateInputService());
+            _services.RegisterAnimationService(CreateAnimationService());
+            _services.RegisterUIService(CreateUIService());
         }
 
         private void InitializeGameSystems()
@@ -117,7 +120,7 @@ namespace Core.Bootstrap
             // Authentication service (with SaveService dependency)
             var authService = new AuthenticationService(_services.SaveService);
             _services.RegisterAuthenticationService(authService);
-            
+
             Debug.Log("[GameBootstrap] Authentication service initialized");
         }
 
@@ -150,6 +153,24 @@ namespace Core.Bootstrap
             return new InputService(provider);
         }
 
+        private IAnimationService CreateAnimationService()
+        {
+            var uiAnimator = new DOTweenUIAnimator();
+            var transformAnimator = new DOTweenTransformAnimator();
+            return new AnimationService(uiAnimator, transformAnimator);
+        }
+
+        private IUIService CreateUIService()
+        {
+            // Create UIManager as a pure service (no MonoBehaviour)
+            // UIDocument will be provided by UIDocumentProvider component in the scene
+            var uiManager = new UIManager();
+            
+            GameLogger.Log("[GameBootstrap] UIManager service created. Waiting for UIDocumentProvider to initialize...");
+            
+            return uiManager;
+        }
+
         private void Update()
         {
             _services?.Update(Time.deltaTime);
@@ -169,12 +190,12 @@ namespace Core.Bootstrap
         /// Global access point (only for MonoBehaviours that can't use DI)
         /// </summary>
         public static ServiceContainer Services { get; private set; }
-        
+
         /// <summary>
         /// Check if bootstrap is fully initialized
         /// </summary>
         public bool IsInitialized => _isInitialized;
-        
+
         /// <summary>
         /// Check if system is healthy
         /// </summary>

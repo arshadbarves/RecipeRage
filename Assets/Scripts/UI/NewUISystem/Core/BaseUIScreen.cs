@@ -1,5 +1,5 @@
 using System;
-using Core.UI.Animation;
+using Core.Animation;
 using UI.UISystem;
 using UnityEngine.UIElements;
 
@@ -164,7 +164,7 @@ namespace UI.UISystem.Core
         /// </summary>
         public void Show(bool animate = true, bool addToHistory = true)
         {
-            UIManager.Instance?.ShowScreen(ScreenType, animate, addToHistory);
+            UIServiceAccessor.Instance?.ShowScreen(ScreenType, animate, addToHistory);
         }
 
         /// <summary>
@@ -172,7 +172,7 @@ namespace UI.UISystem.Core
         /// </summary>
         public void Hide(bool animate = true)
         {
-            UIManager.Instance?.HideScreen(ScreenType, animate);
+            UIServiceAccessor.Instance?.HideScreen(ScreenType, animate);
         }
 
         /// <summary>
@@ -267,35 +267,69 @@ namespace UI.UISystem.Core
         #region Animation Configuration
 
         /// <summary>
-        /// Get the animation type for showing this screen
         /// Override this to customize show animations
+        /// Calls the appropriate animation method on the animator directly
         /// </summary>
-        public virtual UnityNativeUIAnimationSystem.AnimationType GetShowAnimationType()
+        public virtual void AnimateShow(IUIAnimator animator, VisualElement element, float duration, Action onComplete)
         {
-            return ScreenType switch
+            switch (ScreenType)
             {
-                UIScreenType.Splash or UIScreenType.Loading => UnityNativeUIAnimationSystem.AnimationType.FadeIn,
-                UIScreenType.Popup or UIScreenType.Modal => UnityNativeUIAnimationSystem.AnimationType.ScaleIn,
-                UIScreenType.Notification => UnityNativeUIAnimationSystem.AnimationType.SlideInFromTop,
-                UIScreenType.Settings or UIScreenType.Pause => UnityNativeUIAnimationSystem.AnimationType.SlideInFromRight,
-                _ => UnityNativeUIAnimationSystem.AnimationType.FadeIn
-            };
+                case UIScreenType.Splash:
+                case UIScreenType.Loading:
+                    animator.FadeIn(element, duration, onComplete);
+                    break;
+
+                case UIScreenType.Popup:
+                case UIScreenType.Modal:
+                    animator.ScaleIn(element, duration, onComplete);
+                    break;
+
+                case UIScreenType.Notification:
+                    animator.SlideIn(element, SlideDirection.Top, duration, onComplete);
+                    break;
+
+                case UIScreenType.Settings:
+                case UIScreenType.Pause:
+                    animator.SlideIn(element, SlideDirection.Right, duration, onComplete);
+                    break;
+
+                default:
+                    animator.FadeIn(element, duration, onComplete);
+                    break;
+            }
         }
 
         /// <summary>
-        /// Get the animation type for hiding this screen
         /// Override this to customize hide animations
+        /// Calls the appropriate animation method on the animator directly
         /// </summary>
-        public virtual UnityNativeUIAnimationSystem.AnimationType GetHideAnimationType()
+        public virtual void AnimateHide(IUIAnimator animator, VisualElement element, float duration, Action onComplete)
         {
-            return ScreenType switch
+            switch (ScreenType)
             {
-                UIScreenType.Splash or UIScreenType.Loading => UnityNativeUIAnimationSystem.AnimationType.FadeOut,
-                UIScreenType.Popup or UIScreenType.Modal => UnityNativeUIAnimationSystem.AnimationType.ScaleOut,
-                UIScreenType.Notification => UnityNativeUIAnimationSystem.AnimationType.SlideOutToTop,
-                UIScreenType.Settings or UIScreenType.Pause => UnityNativeUIAnimationSystem.AnimationType.SlideOutToRight,
-                _ => UnityNativeUIAnimationSystem.AnimationType.FadeOut
-            };
+                case UIScreenType.Splash:
+                case UIScreenType.Loading:
+                    animator.FadeOut(element, duration, onComplete);
+                    break;
+
+                case UIScreenType.Popup:
+                case UIScreenType.Modal:
+                    animator.ScaleOut(element, duration, onComplete);
+                    break;
+
+                case UIScreenType.Notification:
+                    animator.SlideOut(element, SlideDirection.Top, duration, onComplete);
+                    break;
+
+                case UIScreenType.Settings:
+                case UIScreenType.Pause:
+                    animator.SlideOut(element, SlideDirection.Right, duration, onComplete);
+                    break;
+
+                default:
+                    animator.FadeOut(element, duration, onComplete);
+                    break;
+            }
         }
 
         /// <summary>

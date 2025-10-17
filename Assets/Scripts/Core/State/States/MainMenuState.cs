@@ -1,5 +1,5 @@
+using Core.Bootstrap;
 using UI.UISystem;
-using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace Core.State.States
@@ -23,10 +23,10 @@ namespace Core.State.States
             }
 
             // Show the main menu UI
-            UIManager uiManager = Object.FindFirstObjectByType<UIManager>();
-            if (uiManager != null)
+            var uiService = GameBootstrap.Services?.UIService;
+            if (uiService != null)
             {
-                uiManager.ShowScreen(UIScreenType.Menu, true, false);
+                uiService.ShowScreen(UIScreenType.Menu, true, false);
             }
         }
 
@@ -38,10 +38,10 @@ namespace Core.State.States
             base.Exit();
 
             // Hide the main menu UI
-            UIManager uiManager = Object.FindFirstObjectByType<UIManager>();
-            if (uiManager != null)
+            var uiService = GameBootstrap.Services?.UIService;
+            if (uiService != null)
             {
-                uiManager.HideScreen(UIScreenType.Menu, true);
+                uiService.HideScreen(UIScreenType.Menu, true);
             }
         }
 

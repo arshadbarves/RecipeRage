@@ -1,6 +1,6 @@
 using System;
+using Core.Bootstrap;
 using Core.Input;
-using Core.Utilities.Patterns;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -115,8 +115,8 @@ namespace Core.Characters
             // Only set up input for the local player
             if (IsLocalPlayer)
             {
-                // Get the input provider
-                _inputProvider = ServiceLocator.Instance.Get<IInputProvider>();
+                // Get the input provider - use factory to create platform-specific provider
+                _inputProvider = InputProviderFactory.CreateForPlatform();
                 if (_inputProvider == null)
                 {
                     Debug.LogError("[PlayerController] Input provider not found");

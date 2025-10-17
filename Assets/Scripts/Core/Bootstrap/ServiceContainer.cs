@@ -1,4 +1,5 @@
 using System;
+using Core.Animation;
 using Core.Audio;
 using Core.Authentication;
 using Core.Characters;
@@ -8,12 +9,21 @@ using Core.Logging;
 using Core.Networking;
 using Core.SaveSystem;
 using Core.State;
+using UI.UISystem;
 
 namespace Core.Bootstrap
 {
     /// <summary>
     /// Central service container - single source of truth for all services
-    /// Replaces all singletons with proper dependency injection
+    /// 
+    /// This is a lightweight custom DI container optimized for RecipeRage.
+    /// It's intentionally simple and explicit - VContainer would be overkill.
+    /// 
+    /// Benefits of this approach:
+    /// - Clear initialization order (critical for EOS → Auth → Networking)
+    /// - Zero reflection overhead
+    /// - Easy to debug and understand
+    /// - No external dependencies
     /// </summary>
     public class ServiceContainer : IDisposable
     {
@@ -22,6 +32,8 @@ namespace Core.Bootstrap
         public IAudioService AudioService { get; private set; }
         public IInputService InputService { get; private set; }
         public ILoggingService LoggingService { get; private set; }
+        public IAnimationService AnimationService { get; private set; }
+        public IUIService UIService { get; private set; }
 
         // Game Systems
         public IGameModeService GameModeService { get; private set; }
@@ -39,6 +51,8 @@ namespace Core.Bootstrap
         public void RegisterAudioService(IAudioService service) => AudioService = service;
         public void RegisterInputService(IInputService service) => InputService = service;
         public void RegisterLoggingService(ILoggingService service) => LoggingService = service;
+        public void RegisterAnimationService(IAnimationService service) => AnimationService = service;
+        public void RegisterUIService(IUIService service) => UIService = service;
         public void RegisterGameModeService(IGameModeService service) => GameModeService = service;
         public void RegisterCharacterService(ICharacterService service) => CharacterService = service;
         public void RegisterStateManager(IGameStateManager manager) => StateManager = manager;
@@ -52,6 +66,7 @@ namespace Core.Bootstrap
         {
             InputService?.Update(deltaTime);
             StateManager?.Update(deltaTime);
+            UIService?.Update(deltaTime);
         }
 
         /// <summary>
@@ -71,6 +86,8 @@ namespace Core.Bootstrap
             (SaveService as IDisposable)?.Dispose();
             (AudioService as IDisposable)?.Dispose();
             (InputService as IDisposable)?.Dispose();
+            (AnimationService as IDisposable)?.Dispose();
+            (UIService as IDisposable)?.Dispose();
             (NetworkingServices as IDisposable)?.Dispose();
         }
     }
