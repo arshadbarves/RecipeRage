@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UI.UISystem.Core;
+using UnityEngine.UIElements;
 
 namespace UI.UISystem
 {
@@ -12,7 +13,8 @@ namespace UI.UISystem
     {
         // Initialization
         bool IsInitialized { get; }
-        
+        void Initialize(UIDocument uiDocument);
+
         // Screen management
         void ShowScreen(UIScreenType screenType, bool animate = true, bool addToHistory = true);
         void HideScreen(UIScreenType screenType, bool animate = true);
@@ -20,23 +22,23 @@ namespace UI.UISystem
         void HideAllPopups(bool animate = true);
         void HideAllGameScreens(bool animate = true);
         void HideAllScreens(bool animate = false);
-        
+
         // Screen queries
         T GetScreen<T>() where T : BaseUIScreen;
         BaseUIScreen GetScreen(UIScreenType screenType);
         bool IsScreenVisible(UIScreenType screenType);
         IReadOnlyList<BaseUIScreen> GetVisibleScreens();
         IReadOnlyList<BaseUIScreen> GetScreensByPriority();
-        
+
         // Navigation
         bool GoBack(bool animate = true);
         void ClearHistory();
-        
+
         // Events
         event Action<UIScreenType> OnScreenShown;
         event Action<UIScreenType> OnScreenHidden;
         event Action OnAllScreensHidden;
-        
+
         // Update
         void Update(float deltaTime);
     }

@@ -1,5 +1,6 @@
 using System;
 using Core.Animation;
+using Core.Bootstrap;
 using UI.UISystem;
 using UnityEngine.UIElements;
 
@@ -164,7 +165,7 @@ namespace UI.UISystem.Core
         /// </summary>
         public void Show(bool animate = true, bool addToHistory = true)
         {
-            UIServiceAccessor.Instance?.ShowScreen(ScreenType, animate, addToHistory);
+            GameBootstrap.Services?.UIService?.ShowScreen(ScreenType, animate, addToHistory);
         }
 
         /// <summary>
@@ -172,7 +173,7 @@ namespace UI.UISystem.Core
         /// </summary>
         public void Hide(bool animate = true)
         {
-            UIServiceAccessor.Instance?.HideScreen(ScreenType, animate);
+            GameBootstrap.Services?.UIService?.HideScreen(ScreenType, animate);
         }
 
         /// <summary>

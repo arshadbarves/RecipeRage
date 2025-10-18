@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Core.Bootstrap;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -10,53 +11,53 @@ namespace UI
     public class SettingsUI
     {
         private VisualElement _root;
-        
+
         // Audio controls
         private Slider _musicVolumeSlider;
         private Slider _sfxVolumeSlider;
         private Toggle _muteToggle;
         private Label _musicVolumeLabel;
         private Label _sfxVolumeLabel;
-        
+
         // Graphics controls
         private DropdownField _qualityDropdown;
         private DropdownField _resolutionDropdown;
         private Toggle _fullscreenToggle;
         private Toggle _vsyncToggle;
         private Toggle _fpsToggle;
-        
+
         // Controls
         private Slider _sensitivitySlider;
         private Toggle _vibrationToggle;
         private Label _sensitivityLabel;
-        
+
         // Gameplay
         private DropdownField _languageDropdown;
         private Toggle _tutorialsToggle;
         private Toggle _notificationsToggle;
-        
+
         // Version
         private Label _versionLabel;
-        
+
         private float _previousMusicVolume = 0.75f;
         private float _previousSfxVolume = 0.75f;
 
         public void Initialize(VisualElement root)
         {
             Debug.Log("[SettingsUI] Initialize called");
-            
+
             if (root == null)
             {
                 Debug.LogError("[SettingsUI] Root is null!");
                 return;
             }
-            
+
             _root = root;
             Debug.Log($"[SettingsUI] Root element: {_root.name}");
-            
+
             // Query all elements
             QueryElements();
-            
+
             Debug.Log($"[SettingsUI] Elements found - Music: {_musicVolumeSlider != null}, SFX: {_sfxVolumeSlider != null}, Quality: {_qualityDropdown != null}");
 
             InitializeDropdowns();
@@ -74,28 +75,28 @@ namespace UI
             _muteToggle = _root.Q<Toggle>("mute-toggle");
             _musicVolumeLabel = _root.Q<Label>("music-volume-value");
             _sfxVolumeLabel = _root.Q<Label>("sfx-volume-value");
-            
+
             // Graphics
             _qualityDropdown = _root.Q<DropdownField>("quality-dropdown");
             _resolutionDropdown = _root.Q<DropdownField>("resolution-dropdown");
             _fullscreenToggle = _root.Q<Toggle>("fullscreen-toggle");
             _vsyncToggle = _root.Q<Toggle>("vsync-toggle");
             _fpsToggle = _root.Q<Toggle>("fps-toggle");
-            
+
             // Controls
             _sensitivitySlider = _root.Q<Slider>("sensitivity-slider");
             _vibrationToggle = _root.Q<Toggle>("vibration-toggle");
             _sensitivityLabel = _root.Q<Label>("sensitivity-value");
-            
+
             // Gameplay
             _languageDropdown = _root.Q<DropdownField>("language-dropdown");
             _tutorialsToggle = _root.Q<Toggle>("tutorials-toggle");
             _notificationsToggle = _root.Q<Toggle>("notifications-toggle");
-            
+
             // Version
             _versionLabel = _root.Q<Label>("version-label");
         }
-        
+
         private void InitializeDropdowns()
         {
             // Quality dropdown
@@ -112,19 +113,19 @@ namespace UI
                 Resolution[] resolutions = Screen.resolutions;
                 List<string> resolutionStrings = new List<string>();
                 int currentResolutionIndex = 0;
-                
+
                 for (int i = 0; i < resolutions.Length; i++)
                 {
                     string resString = $"{resolutions[i].width} x {resolutions[i].height} @ {resolutions[i].refreshRate}Hz";
                     resolutionStrings.Add(resString);
-                    
+
                     if (resolutions[i].width == Screen.currentResolution.width &&
                         resolutions[i].height == Screen.currentResolution.height)
                     {
                         currentResolutionIndex = i;
                     }
                 }
-                
+
                 _resolutionDropdown.choices = resolutionStrings;
                 _resolutionDropdown.index = currentResolutionIndex;
             }
@@ -145,7 +146,7 @@ namespace UI
         {
             // Control buttons
             Button editJoystickButton = _root.Q<Button>("edit-joystick-button");
-            
+
             // Support buttons
             Button helpButton = _root.Q<Button>("help-button");
             Button supportButton = _root.Q<Button>("support-button");
@@ -153,14 +154,14 @@ namespace UI
             Button termsButton = _root.Q<Button>("terms-button");
             Button creditsButton = _root.Q<Button>("credits-button");
             Button parentGuideButton = _root.Q<Button>("parent-guide-button");
-            
+
             // Action buttons
             Button resetButton = _root.Q<Button>("reset-button");
             Button clearDataButton = _root.Q<Button>("clear-data-button");
 
             Debug.Log($"[SettingsUI] Buttons found - Joystick: {editJoystickButton != null}, Help: {helpButton != null}, Support: {supportButton != null}");
 
-            if (editJoystickButton != null) 
+            if (editJoystickButton != null)
             {
                 editJoystickButton.clicked += OnEditJoystickClicked;
                 Debug.Log("[SettingsUI] Edit joystick button listener added");
@@ -364,7 +365,7 @@ namespace UI
             if (_notificationsToggle != null)
                 _notificationsToggle.value = PlayerPrefs.GetInt("Notifications", 1) == 1;
         }
-        
+
         private void UpdateVolumeLabel(Label label, float value)
         {
             if (label != null)
@@ -372,7 +373,7 @@ namespace UI
                 label.text = $"{Mathf.RoundToInt(value * 100)}%";
             }
         }
-        
+
         private void UpdateSensitivityLabel(float value)
         {
             if (_sensitivityLabel != null)
@@ -380,7 +381,7 @@ namespace UI
                 _sensitivityLabel.text = $"{value:F1}x";
             }
         }
-        
+
         private void UpdateVersionInfo()
         {
             if (_versionLabel != null)
@@ -392,9 +393,9 @@ namespace UI
         private void OnEditJoystickClicked()
         {
             Debug.Log("[SettingsUI] Opening joystick editor");
-            
-            // Show the joystick editor screen using UIManager
-            var uiService = UI.UISystem.UIServiceAccessor.Instance;
+
+            // Show the joystick editor screen using UIService
+            var uiService = GameBootstrap.Services?.UIService;
             if (uiService != null && uiService.IsInitialized)
             {
                 // Get the joystick editor screen
@@ -405,12 +406,12 @@ namespace UI
                 }
                 else
                 {
-                    Debug.LogWarning("[SettingsUI] JoystickEditorUI screen not found in UIManager");
+                    Debug.LogWarning("[SettingsUI] JoystickEditorUI screen not found in UIService");
                 }
             }
             else
             {
-                Debug.LogWarning("[SettingsUI] UIManager not available or not initialized");
+                Debug.LogWarning("[SettingsUI] UIService not available or not initialized");
             }
         }
 
@@ -453,7 +454,7 @@ namespace UI
         private void OnResetClicked()
         {
             Debug.Log("[SettingsUI] Resetting settings to defaults");
-            
+
             // Reset all settings to defaults
             PlayerPrefs.SetFloat("MusicVolume", 0.75f);
             PlayerPrefs.SetFloat("SFXVolume", 0.75f);
@@ -468,28 +469,28 @@ namespace UI
             PlayerPrefs.SetInt("Tutorials", 1);
             PlayerPrefs.SetInt("Notifications", 1);
             PlayerPrefs.Save();
-            
+
             // Reload settings
             LoadSettings();
-            
+
             // Apply graphics settings
             if (_qualityDropdown != null)
             {
                 QualitySettings.SetQualityLevel(2);
                 _qualityDropdown.index = 2;
             }
-            
+
             Screen.fullScreen = true;
             QualitySettings.vSyncCount = 1;
             AudioListener.volume = 0.75f;
-            
+
             Debug.Log("[SettingsUI] Settings reset complete");
         }
 
         private void OnClearDataClicked()
         {
             Debug.Log("[SettingsUI] Clear data requested");
-            
+
             // Show confirmation dialog (you can implement a proper dialog system)
             if (Application.isEditor)
             {

@@ -1,4 +1,5 @@
 using System.Collections;
+using Core.Utilities;
 using UnityEngine;
 
 namespace Core.Audio
@@ -17,7 +18,7 @@ namespace Core.Audio
             _volumeController = volumeController;
         }
 
-        public AudioSource PlaySFX(AudioClip clip, float volume, float pitch)
+        public AudioSource PlaySFX(AudioClip clip, float pitch = 1f)
         {
             if (clip == null) return null;
 
@@ -25,18 +26,18 @@ namespace Core.Audio
             if (source == null) return null;
 
             source.clip = clip;
-            source.volume = volume;
+            source.volume = _volumeController.GetSFXVolume();
             source.pitch = pitch;
             source.spatialBlend = 0f;
             source.Play();
 
             // Return to pool after clip finishes
-            AudioCoroutineRunner.Instance.StartCoroutine(ReturnToPoolAfterPlay(source, clip.length));
+            CoroutineRunner.Run(ReturnToPoolAfterPlay(source, clip.length));
 
             return source;
         }
 
-        public AudioSource PlaySFXAtPosition(AudioClip clip, Vector3 position, float volume)
+        public AudioSource PlaySFXAtPosition(AudioClip clip, Vector3 position)
         {
             if (clip == null) return null;
 
@@ -44,13 +45,13 @@ namespace Core.Audio
             if (source == null) return null;
 
             source.clip = clip;
-            source.volume = volume;
+            source.volume = _volumeController.GetSFXVolume();
             source.pitch = 1f;
             source.spatialBlend = 1f;
             source.transform.position = position;
             source.Play();
 
-            AudioCoroutineRunner.Instance.StartCoroutine(ReturnToPoolAfterPlay(source, clip.length));
+            CoroutineRunner.Run(ReturnToPoolAfterPlay(source, clip.length));
 
             return source;
         }
@@ -61,7 +62,7 @@ namespace Core.Audio
 
             if (fadeTime > 0f)
             {
-                AudioCoroutineRunner.Instance.StartCoroutine(FadeOutAndReturn(source, fadeTime));
+                CoroutineRunner.Run(FadeOutAndReturn(source, fadeTime));
             }
             else
             {

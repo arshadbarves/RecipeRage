@@ -22,6 +22,9 @@ namespace Core.Bootstrap
     /// </summary>
     public class GameBootstrap : MonoBehaviour
     {
+        [Header("UI")]
+        [SerializeField] private UIDocumentProvider _uiDocumentProvider;
+
         private ServiceContainer _services;
         private bool _isInitialized;
 
@@ -50,6 +53,9 @@ namespace Core.Bootstrap
 
         private IEnumerator InitializeAsync()
         {
+            // Make services globally accessible immediately (before async operations)
+            Services = _services;
+
             // Wait for EOS to initialize
             yield return WaitForEOS();
 
@@ -66,9 +72,6 @@ namespace Core.Bootstrap
             InitializeStateMachine();
 
             _isInitialized = true;
-
-            // Make services globally accessible
-            Services = _services;
 
             Debug.Log("[GameBootstrap] ✅ Game initialization complete!");
         }
@@ -162,13 +165,10 @@ namespace Core.Bootstrap
 
         private IUIService CreateUIService()
         {
-            // Create UIManager as a pure service (no MonoBehaviour)
             // UIDocument will be provided by UIDocumentProvider component in the scene
-            var uiManager = new UIManager();
-            
-            GameLogger.Log("[GameBootstrap] UIManager service created. Waiting for UIDocumentProvider to initialize...");
-            
-            return uiManager;
+            var uiService = new UIService(_services.AnimationService);
+            _uiDocumentProvider.Initialize(uiService);
+            return uiService;
         }
 
         private void Update()

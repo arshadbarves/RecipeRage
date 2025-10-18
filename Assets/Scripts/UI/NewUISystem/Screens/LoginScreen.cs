@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using Core.Authentication;
 using Core.Bootstrap;
+using Core.Utilities;
 using UI.UISystem.Core;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -204,7 +205,7 @@ namespace UI.UISystem.Screens
             UpdateUI();
 
             // Start coroutine to handle async AuthenticationManager check
-            UIServiceAccessor.StartCoroutine(HandleFacebookLogin());
+            CoroutineRunner.Run(HandleFacebookLogin());
         }
 
         private void OnGuestLoginClicked()
@@ -220,7 +221,7 @@ namespace UI.UISystem.Screens
             UpdateUI();
 
             // Start coroutine to handle async AuthenticationManager check
-            UIServiceAccessor.StartCoroutine(HandleGuestLogin());
+            CoroutineRunner.Run(HandleGuestLogin());
         }
 
         private IEnumerator HandleFacebookLogin()
@@ -304,7 +305,7 @@ namespace UI.UISystem.Screens
             OnLoginSuccess?.Invoke();
 
             // Hide login screen after a short delay
-            UIServiceAccessor.StartCoroutine(HideAfterDelay(1f));
+            CoroutineRunner.Run(HideAfterDelay(1f));
         }
 
         private void HandleLoginFailed(string error)

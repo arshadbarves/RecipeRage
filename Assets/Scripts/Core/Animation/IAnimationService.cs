@@ -59,5 +59,15 @@ namespace Core.Animation
         /// Kill all active animations
         /// </summary>
         void KillAllAnimations();
+        
+        /// <summary>
+        /// Access to specialized UI animator
+        /// </summary>
+        IUIAnimator UI { get; }
+        
+        /// <summary>
+        /// Access to specialized Transform animator
+        /// </summary>
+        ITransformAnimator Transform { get; }
     }
 }

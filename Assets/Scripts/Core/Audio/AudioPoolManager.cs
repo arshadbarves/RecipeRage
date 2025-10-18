@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Audio;
+using System;
 
 namespace Core.Audio
 {
@@ -9,7 +9,7 @@ namespace Core.Audio
     /// </summary>
     public class AudioPoolManager
     {
-        private readonly Transform _poolContainer;
+        private readonly Transform _sourcesContainer;
         private readonly Queue<AudioSource> _sfxPool = new Queue<AudioSource>();
         private readonly Dictionary<AudioSource, bool> _activeAudioSources = new Dictionary<AudioSource, bool>();
         private readonly int _initialPoolSize = 10;
@@ -17,7 +17,16 @@ namespace Core.Audio
 
         public AudioPoolManager(Transform poolContainer)
         {
-            _poolContainer = poolContainer;
+            if (poolContainer == null)
+            {
+                throw new ArgumentNullException(nameof(poolContainer));
+            }
+
+            GameObject containerObj = new GameObject("AudioPool");
+            containerObj.transform.SetParent(poolContainer, false);
+            containerObj.transform.localPosition = Vector3.zero;
+            _sourcesContainer = containerObj.transform;
+
             InitializePool();
         }
 
@@ -35,7 +44,7 @@ namespace Core.Audio
         private AudioSource CreateAudioSource(string name)
         {
             GameObject obj = new GameObject(name);
-            obj.transform.SetParent(_poolContainer);
+            obj.transform.SetParent(_sourcesContainer, false);
 
             AudioSource source = obj.AddComponent<AudioSource>();
             source.playOnAwake = false;
@@ -68,7 +77,10 @@ namespace Core.Audio
 
         public void ReturnAudioSource(AudioSource source)
         {
-            if (source == null) return;
+            if (source == null)
+            {
+                return;
+            }
 
             source.Stop();
             source.clip = null;
@@ -76,13 +88,10 @@ namespace Core.Audio
             source.volume = 1f;
             source.pitch = 1f;
             source.spatialBlend = 0f;
-            source.transform.position = _poolContainer.position;
+            source.transform.position = _sourcesContainer.position;
             source.gameObject.SetActive(false);
 
-            if (_activeAudioSources.ContainsKey(source))
-            {
-                _activeAudioSources.Remove(source);
-            }
+            _activeAudioSources.Remove(source);
 
             _sfxPool.Enqueue(source);
         }

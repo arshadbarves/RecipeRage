@@ -1,4 +1,5 @@
 using System;
+using Core.Utilities;
 using UI.UISystem.Core;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -82,7 +83,7 @@ namespace UI.UISystem.Screens
             _loadingState = LoadingState.Idle;
             if (_hideDelayCoroutine != null)
             {
-                UIServiceAccessor.StopCoroutine(_hideDelayCoroutine);
+                CoroutineRunner.Stop(_hideDelayCoroutine);
                 _hideDelayCoroutine = null;
             }
             OnLoadingComplete?.Invoke();
@@ -251,7 +252,7 @@ namespace UI.UISystem.Screens
             if (showElapsedTime >= MinShowDuration)
             {
                 _loadingState = LoadingState.Idle;
-                _hideDelayCoroutine = UIServiceAccessor.StartCoroutine(HideAfterDelay(HideDelay));
+                _hideDelayCoroutine = CoroutineRunner.Run(HideAfterDelay(HideDelay));
             }
         }
 
@@ -265,7 +266,7 @@ namespace UI.UISystem.Screens
             float showElapsedTime = Time.time - _showStartTime;
             if (showElapsedTime >= MinShowDuration)
             {
-                _hideDelayCoroutine = UIServiceAccessor.StartCoroutine(HideAfterDelay(HideDelay));
+                _hideDelayCoroutine = CoroutineRunner.Run(HideAfterDelay(HideDelay));
             }
             else
             {

@@ -155,7 +155,7 @@ namespace Core.SaveSystem
             }
             catch (System.Exception ex)
             {
-                GameLogger.Log($"[SaveService] Failed to parse {filename}: {ex.Message}. Creating new instance.");
+                GameLogger.LogError($"[SaveService] Failed to parse {filename}: {ex.Message}. Creating new instance.");
                 return new T();
             }
         }
