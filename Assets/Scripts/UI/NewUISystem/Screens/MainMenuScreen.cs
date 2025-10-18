@@ -434,7 +434,7 @@ namespace UI.UISystem.Screens
 
         private void AnimateUIElementsEntrance()
         {
-            var animator = new DOTweenUIAnimator();
+            var animator = GameBootstrap.Services.AnimationService.UI;
             
             // Animate play button with bounce (using pulse as alternative)
             if (_playButton != null)
@@ -470,7 +470,7 @@ namespace UI.UISystem.Screens
             // Animate button press
             if (_playButton != null)
             {
-                var animator = new DOTweenUIAnimator();
+                var animator = GameBootstrap.Services.AnimationService.UI;
                 animator.Pulse(_playButton, 0.2f);
             }
 
@@ -487,7 +487,7 @@ namespace UI.UISystem.Screens
             OnCharacterSelectionClicked?.Invoke();
 
             // Default behavior: show character selection screen
-            UIServiceAccessor.Instance.ShowScreen(UIScreenType.CharacterSelection, true, true);
+            GameBootstrap.Services?.UIService.ShowScreen(UIScreenType.CharacterSelection, true, true);
         }
 
         private void HandleSettingsClicked()
@@ -496,7 +496,7 @@ namespace UI.UISystem.Screens
             OnSettingsClicked?.Invoke();
 
             // Default behavior: show settings screen
-            UIServiceAccessor.Instance.ShowScreen(UIScreenType.Settings, true, true);
+            GameBootstrap.Services?.UIService.ShowScreen(UIScreenType.Settings, true, true);
         }
 
         private void HandleQuitClicked()
@@ -526,7 +526,7 @@ namespace UI.UISystem.Screens
 
             if (character != null)
             {
-                var animator = new DOTweenUIAnimator();
+                var animator = GameBootstrap.Services.AnimationService.UI;
                 animator.Pulse(character, 0.5f);
             }
         }
@@ -534,7 +534,7 @@ namespace UI.UISystem.Screens
         private void ShowQuitConfirmation()
         {
             // Show quit confirmation popup
-            PopupScreen popupScreen = UIServiceAccessor.Instance.GetScreen<PopupScreen>();
+            PopupScreen popupScreen = GameBootstrap.Services?.UIService.GetScreen<PopupScreen>();
             if (popupScreen != null)
             {
                 popupScreen

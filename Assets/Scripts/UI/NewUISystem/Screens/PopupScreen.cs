@@ -1,5 +1,6 @@
 using System;
 using Core.Animation;
+using Core.Bootstrap;
 using UI.UISystem.Core;
 using UnityEngine.UIElements;
 
@@ -213,7 +214,7 @@ namespace UI.UISystem.Screens
         /// </summary>
         public static PopupScreen CreateAlert(string title, string message, Action onConfirm = null)
         {
-            PopupScreen popup = UIServiceAccessor.Instance.GetScreen<PopupScreen>();
+            PopupScreen popup = GameBootstrap.Services?.UIService.GetScreen<PopupScreen>();
             return popup?
                 .SetTitle(title)
                 .SetMessage(message)
@@ -226,7 +227,7 @@ namespace UI.UISystem.Screens
         /// </summary>
         public static PopupScreen CreateConfirmation(string title, string message, Action onConfirm = null, Action onCancel = null)
         {
-            PopupScreen popup = UIServiceAccessor.Instance.GetScreen<PopupScreen>();
+            PopupScreen popup = GameBootstrap.Services?.UIService.GetScreen<PopupScreen>();
             return popup?
                 .SetTitle(title)
                 .SetMessage(message)
@@ -239,7 +240,7 @@ namespace UI.UISystem.Screens
         /// </summary>
         public static PopupScreen CreateYesNo(string title, string message, Action onYes = null, Action onNo = null)
         {
-            PopupScreen popup = UIServiceAccessor.Instance.GetScreen<PopupScreen>();
+            PopupScreen popup = GameBootstrap.Services?.UIService.GetScreen<PopupScreen>();
             return popup?
                 .SetTitle(title)
                 .SetMessage(message)

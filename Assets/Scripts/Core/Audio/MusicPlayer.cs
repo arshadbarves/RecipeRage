@@ -1,4 +1,5 @@
 using System.Collections;
+using Core.Utilities;
 using UnityEngine;
 
 namespace Core.Audio
@@ -23,22 +24,24 @@ namespace Core.Audio
         {
             GameObject musicObj = new GameObject("MusicSource");
             Object.DontDestroyOnLoad(musicObj);
-            
+
             _musicSource = musicObj.AddComponent<AudioSource>();
             _musicSource.loop = true;
             _musicSource.spatialBlend = 0f;
             _musicSource.playOnAwake = false;
         }
 
-        public void PlayMusic(AudioClip clip, float fadeTime, float volume)
+        public void PlayMusic(AudioClip clip, float fadeTime)
         {
             if (clip == null) return;
             if (_currentMusic == clip && _musicSource.isPlaying) return;
 
+            float volume = _volumeController.GetMusicVolume();
+
             if (_musicSource.isPlaying && fadeTime > 0f)
             {
                 // Fade out current, then play new
-                AudioCoroutineRunner.Instance.StartCoroutine(FadeOutAndPlayNew(clip, fadeTime, volume));
+                CoroutineRunner.Run(FadeOutAndPlayNew(clip, fadeTime, volume));
             }
             else
             {
@@ -55,7 +58,7 @@ namespace Core.Audio
 
             if (fadeTime > 0f)
             {
-                AudioCoroutineRunner.Instance.StartCoroutine(FadeOut(fadeTime));
+                CoroutineRunner.Run(FadeOut(fadeTime));
             }
             else
             {
@@ -123,27 +126,6 @@ namespace Core.Audio
 
             _musicSource.Stop();
             _currentMusic = null;
-        }
-    }
-
-    /// <summary>
-    /// Helper MonoBehaviour for running coroutines
-    /// </summary>
-    public class AudioCoroutineRunner : MonoBehaviour
-    {
-        private static AudioCoroutineRunner _instance;
-        public static AudioCoroutineRunner Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    GameObject obj = new GameObject("AudioCoroutineRunner");
-                    DontDestroyOnLoad(obj);
-                    _instance = obj.AddComponent<AudioCoroutineRunner>();
-                }
-                return _instance;
-            }
         }
     }
 }

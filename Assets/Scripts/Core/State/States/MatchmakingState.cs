@@ -1,4 +1,5 @@
 using System;
+using Core.Bootstrap;
 using Core.Networking;
 using Core.Networking.Common;
 using Core.Networking.EOS;
@@ -18,7 +19,7 @@ namespace Core.State.States
         /// </summary>
         private bool _isMatchmakingInProgress;
 
-        // No need to store references to UI elements anymore as they're managed by the UIManager
+        // No need to store references to UI elements anymore as they're managed by the UIService
 
         /// <summary>
         /// Reference to the network manager.
@@ -53,7 +54,7 @@ namespace Core.State.States
             LogMessage("Starting matchmaking process");
 
             // Show game mode selection screen
-            UIServiceAccessor.Instance.ShowScreen(UIScreenType.GameModeSelection, true, true);
+            GameBootstrap.Services?.UIService.ShowScreen(UIScreenType.GameModeSelection, true, true);
 
             // Subscribe to lobby events
             if (_lobbyManager != null)
@@ -97,7 +98,7 @@ namespace Core.State.States
             }
 
             // Hide game mode selection screen
-            UIServiceAccessor.Instance.HideScreen(UIScreenType.GameModeSelection, true);
+            GameBootstrap.Services?.UIService.HideScreen(UIScreenType.GameModeSelection, true);
         }
 
         /// <summary>
@@ -116,7 +117,7 @@ namespace Core.State.States
             // Matchmaking doesn't need physics updates
         }
 
-        // UI is now managed by the UIManager
+        // UI is now managed by the UIService
 
         /// <summary>
         /// Handle lobby updated event.
@@ -130,7 +131,7 @@ namespace Core.State.States
             {
                 // Show the lobby screen
                 // Note: We're using the existing GameModeSelectionScreen for now
-                // UIServiceAccessor.Instance.ShowScreen<LobbyScreen>();
+                // GameBootstrap.Services?.UIService.ShowScreen<LobbyScreen>();
 
                 // Mark matchmaking as complete
                 CompleteMatchmaking(true);

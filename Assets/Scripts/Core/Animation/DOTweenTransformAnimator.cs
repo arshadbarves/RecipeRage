@@ -10,6 +10,27 @@ namespace Core.Animation
     /// </summary>
     public class DOTweenTransformAnimator : ITransformAnimator
     {
+        private static bool _isInitialized;
+
+        public DOTweenTransformAnimator()
+        {
+            EnsureInitialized();
+        }
+
+        private static void EnsureInitialized()
+        {
+            if (_isInitialized) return;
+
+            // Initialize DOTween with optimal settings
+            DOTween.Init(
+                recycleAllByDefault: true,
+                useSafeMode: true,
+                logBehaviour: LogBehaviour.ErrorsOnly
+            ).SetCapacity(200, 50);
+
+            _isInitialized = true;
+        }
+
         public void MoveTo(Transform transform, Vector3 target, float duration, Action onComplete = null)
         {
             if (transform == null) return;

@@ -8,14 +8,14 @@ namespace Core.Audio
     public interface IAudioService
     {
         // Music
-        void PlayMusic(AudioClip clip, float fadeTime = 1f, float volume = 1f);
+        void PlayMusic(AudioClip clip, float fadeTime = 1f);
         void StopMusic(float fadeTime = 1f);
         void PauseMusic();
         void ResumeMusic();
 
         // SFX
-        AudioSource PlaySFX(AudioClip clip, float volume = 1f, float pitch = 1f);
-        AudioSource PlaySFXAtPosition(AudioClip clip, Vector3 position, float volume = 1f);
+        AudioSource PlaySFX(AudioClip clip, float pitch = 1f);
+        AudioSource PlaySFXAtPosition(AudioClip clip, Vector3 position);
         void StopSound(AudioSource source, float fadeTime = 0f);
 
         // Volume

@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 namespace UI.UISystem
 {
     /// <summary>
-    /// MonoBehaviour component that provides UIDocument to the UIManager service
+    /// MonoBehaviour component that provides UIDocument to the UIService
     /// This is the only MonoBehaviour needed for the UI system
     /// Attach this to a GameObject with a UIDocument component
     /// </summary>
@@ -13,11 +13,12 @@ namespace UI.UISystem
     public class UIDocumentProvider : MonoBehaviour
     {
         private UIDocument _uiDocument;
+        private bool _isInitialized;
 
         private void Awake()
         {
             _uiDocument = GetComponent<UIDocument>();
-            
+
             if (_uiDocument == null)
             {
                 Debug.LogError("[UIDocumentProvider] UIDocument component not found!");
@@ -25,19 +26,25 @@ namespace UI.UISystem
             }
         }
 
-        private void Start()
+        public void Initialize(IUIService uiService)
         {
+            // Get the UI service
+            if (uiService == null)
+            {
+                Debug.LogError("[UIDocumentProvider] UIService not found or is not of type UIService");
+                return;
+            }
+
             // Initialize the UI service with this UIDocument
-            var uiService = GameBootstrap.Services?.UIService as UIManager;
-            if (uiService != null)
-            {
-                uiService.Initialize(_uiDocument);
-                Debug.Log("[UIDocumentProvider] UIManager initialized with UIDocument");
-            }
-            else
-            {
-                Debug.LogError("[UIDocumentProvider] UIService not found in ServiceContainer or is not UIManager type");
-            }
+            uiService.Initialize(_uiDocument);
+            _isInitialized = true;
+
+            Debug.Log("[UIDocumentProvider] ✅ UIService initialized with UIDocument");
         }
+
+        /// <summary>
+        /// Check if the UI system is ready
+        /// </summary>
+        public bool IsInitialized => _isInitialized;
     }
 }

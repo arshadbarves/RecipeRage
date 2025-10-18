@@ -23,8 +23,8 @@ namespace Core.Audio
         }
 
         // Music delegation
-        public void PlayMusic(AudioClip clip, float fadeTime = 1f, float volume = 1f)
-            => _musicPlayer.PlayMusic(clip, fadeTime, volume);
+        public void PlayMusic(AudioClip clip, float fadeTime = 1f)
+            => _musicPlayer.PlayMusic(clip, fadeTime);
 
         public void StopMusic(float fadeTime = 1f)
             => _musicPlayer.StopMusic(fadeTime);
@@ -36,11 +36,11 @@ namespace Core.Audio
             => _musicPlayer.ResumeMusic();
 
         // SFX delegation
-        public AudioSource PlaySFX(AudioClip clip, float volume = 1f, float pitch = 1f)
-            => _sfxPlayer.PlaySFX(clip, volume, pitch);
+        public AudioSource PlaySFX(AudioClip clip, float pitch = 1f)
+            => _sfxPlayer.PlaySFX(clip, pitch);
 
-        public AudioSource PlaySFXAtPosition(AudioClip clip, Vector3 position, float volume = 1f)
-            => _sfxPlayer.PlaySFXAtPosition(clip, position, volume);
+        public AudioSource PlaySFXAtPosition(AudioClip clip, Vector3 position)
+            => _sfxPlayer.PlaySFXAtPosition(clip, position);
 
         public void StopSound(AudioSource source, float fadeTime = 0f)
             => _sfxPlayer.StopSound(source, fadeTime);

@@ -1,6 +1,8 @@
 using System;
 using Core;
 using Core.Animation;
+using Core.Bootstrap;
+using Core.Utilities;
 using UI.UISystem.Core;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -69,9 +71,9 @@ namespace UI.UISystem.Screens
         protected override void OnDispose()
         {
             // Clean up resources
-            if (_splashCoroutine != null && UIServiceAccessor.Instance != null)
+            if (_splashCoroutine != null && GameBootstrap.Services?.UIService != null)
             {
-                UIServiceAccessor.StopCoroutine(_splashCoroutine);
+                CoroutineRunner.Stop(_splashCoroutine);
                 _splashCoroutine = null;
             }
         }
@@ -169,7 +171,7 @@ namespace UI.UISystem.Screens
             // Fade in splash content
             if (_splashContent != null)
             {
-                var animator = new DOTweenUIAnimator();
+                var animator = GameBootstrap.Services.AnimationService.UI;
                 animator.FadeIn(_splashContent, FadeInDuration, () =>
                 {
                     float holdTime = SplashDuration - FadeInDuration - FadeOutDuration;
@@ -190,11 +192,11 @@ namespace UI.UISystem.Screens
         private void StopSplashSequence()
         {
             _isPlayingSplash = false;
-            if (_splashCoroutine == null || UIServiceAccessor.Instance == null)
+            if (_splashCoroutine == null || GameBootstrap.Services?.UIService == null)
             {
                 return;
             }
-            UIServiceAccessor.StopCoroutine(_splashCoroutine);
+            CoroutineRunner.Stop(_splashCoroutine);
             _splashCoroutine = null;
         }
 

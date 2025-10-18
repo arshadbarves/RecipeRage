@@ -274,7 +274,7 @@ GameBootstrap.Services.RegisterMyService(myService);
 ### Singleton Pattern (Avoid)
 Utility classes exist in `Core.Utilities.Patterns` but **avoid using them**:
 - Use ServiceContainer for services
-- Exception: UIManager (justified for UI system)
+- All services follow consistent naming (e.g., UIService, AudioService)
 
 ### Async Operations
 Use UniTask for async operations:

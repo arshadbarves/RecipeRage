@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using Core.Animation;
+using Core.Bootstrap;
+using Core.Utilities;
 using UI.UISystem.Core;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -203,7 +205,7 @@ namespace UI.UISystem.Screens
         /// </summary>
         public static NotificationScreen ShowInfo(string message, float duration = 3.0f)
         {
-            NotificationScreen notification = UIServiceAccessor.Instance.GetScreen<NotificationScreen>();
+            NotificationScreen notification = GameBootstrap.Services?.UIService.GetScreen<NotificationScreen>();
             return notification?
                 .SetMessage(message)
                 .SetType(NotificationType.Info)
@@ -215,7 +217,7 @@ namespace UI.UISystem.Screens
         /// </summary>
         public static NotificationScreen ShowSuccess(string message, float duration = 2.5f)
         {
-            NotificationScreen notification = UIServiceAccessor.Instance.GetScreen<NotificationScreen>();
+            NotificationScreen notification = GameBootstrap.Services?.UIService.GetScreen<NotificationScreen>();
             return notification?
                 .SetMessage(message)
                 .SetType(NotificationType.Success)
@@ -227,7 +229,7 @@ namespace UI.UISystem.Screens
         /// </summary>
         public static NotificationScreen ShowWarning(string message, float duration = 4.0f)
         {
-            NotificationScreen notification = UIServiceAccessor.Instance.GetScreen<NotificationScreen>();
+            NotificationScreen notification = GameBootstrap.Services?.UIService.GetScreen<NotificationScreen>();
             return notification?
                 .SetMessage(message)
                 .SetType(NotificationType.Warning)
@@ -239,7 +241,7 @@ namespace UI.UISystem.Screens
         /// </summary>
         public static NotificationScreen ShowError(string message, bool autoHide = false)
         {
-            NotificationScreen notification = UIServiceAccessor.Instance.GetScreen<NotificationScreen>();
+            NotificationScreen notification = GameBootstrap.Services?.UIService.GetScreen<NotificationScreen>();
             return notification?
                 .SetMessage(message)
                 .SetType(NotificationType.Error)
@@ -314,18 +316,15 @@ namespace UI.UISystem.Screens
 
             StopAutoHideTimer();
             
-            // Start coroutine through UIManager (since this is not a MonoBehaviour)
-            if (UIServiceAccessor.Instance != null)
-            {
-                _autoHideCoroutine = UIServiceAccessor.StartCoroutine(AutoHideCoroutine());
-            }
+            // Start coroutine through CoroutineRunner (since this is not a MonoBehaviour)
+            _autoHideCoroutine = CoroutineRunner.Run(AutoHideCoroutine());
         }
 
         private void StopAutoHideTimer()
         {
-            if (_autoHideCoroutine != null && UIServiceAccessor.Instance != null)
+            if (_autoHideCoroutine != null)
             {
-                UIServiceAccessor.StopCoroutine(_autoHideCoroutine);
+                CoroutineRunner.Stop(_autoHideCoroutine);
                 _autoHideCoroutine = null;
             }
         }
