@@ -9,11 +9,10 @@ namespace Core.State.States
 {
     /// <summary>
     /// State for the main menu.
+    /// Note: Settings is now a tab within MainMenuScreen, not a separate screen
     /// </summary>
     public class MainMenuState : BaseState
     {
-        private SettingsScreen _settingsScreen;
-
         /// <summary>
         /// Called when the state is entered.
         /// </summary>
@@ -32,13 +31,6 @@ namespace Core.State.States
             if (uiService != null)
             {
                 uiService.ShowScreen(UIScreenType.Menu, true, false);
-
-                // Subscribe to settings screen logout event
-                _settingsScreen = uiService.GetScreen<SettingsScreen>(UIScreenType.Settings);
-                if (_settingsScreen != null)
-                {
-                    _settingsScreen.OnLogoutRequested += HandleLogoutRequested;
-                }
             }
         }
 
@@ -49,44 +41,12 @@ namespace Core.State.States
         {
             base.Exit();
 
-            // Unsubscribe from settings screen events
-            if (_settingsScreen != null)
-            {
-                _settingsScreen.OnLogoutRequested -= HandleLogoutRequested;
-            }
-
             // Hide the main menu UI
             var uiService = GameBootstrap.Services?.UIService;
             if (uiService != null)
             {
                 uiService.HideScreen(UIScreenType.Menu, true);
             }
-        }
-
-        private void HandleLogoutRequested()
-        {
-            Debug.Log("[MainMenuState] Logout requested");
-
-            // Get services
-            var authService = GameBootstrap.Services?.AuthenticationService;
-            var uiService = GameBootstrap.Services?.UIService;
-
-            if (authService == null || uiService == null)
-            {
-                Debug.LogError("[MainMenuState] Required services not available for logout");
-                return;
-            }
-
-            // Logout (async)
-            authService.LogoutAsync().Forget();
-
-            // Hide settings screen
-            uiService.HideScreen(UIScreenType.Settings, true);
-
-            // Show login screen
-            uiService.ShowScreen(UIScreenType.Login, true, false);
-
-            Debug.Log("[MainMenuState] User logged out successfully");
         }
 
         /// <summary>

@@ -5,6 +5,7 @@ namespace Core.SaveSystem
 {
     /// <summary>
     /// Data class for game settings.
+    /// Unified naming convention for all settings
     /// </summary>
     [Serializable]
     public class GameSettingsData
@@ -27,14 +28,15 @@ namespace Core.SaveSystem
 
         // Graphics settings
         [Header("Graphics Settings")]
-        public bool Fullscreen = true;
-        public string Resolution = "1920x1080";
-        public string QualityLevel = "High";
+        public bool IsFullscreen = true;
+        public int ResolutionIndex = 0;
+        public int GraphicsQuality = 2; // 0=Low, 1=Medium, 2=High
 
         [Range(0f, 1f)]
         public float Brightness = 0.5f;
 
-        public bool VSync = true;
+        public bool IsVSyncEnabled = true;
+        public bool ShowFPS = false;
 
         // Gameplay settings
         [Header("Gameplay Settings")]
@@ -44,9 +46,10 @@ namespace Core.SaveSystem
         public bool InvertY = false;
         public bool CameraShake = true;
         public bool AutoPickup = false;
-        public bool Vibration = true;
-        public bool ShowTutorial = true;
-        public bool Notifications = true;
+        public bool IsVibrationEnabled = true;
+        public bool ShowTutorials = true;
+        public bool NotificationsEnabled = true;
+        public int LanguageIndex = 0; // 0=English, 1=Spanish, etc.
 
         // Authentication
         [Header("Authentication")]
