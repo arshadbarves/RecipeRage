@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UI.Data;
 
-namespace UI
+namespace UI.Components
 {
     /// <summary>
     /// Shop tab content - embedded directly in MainMenu tabs

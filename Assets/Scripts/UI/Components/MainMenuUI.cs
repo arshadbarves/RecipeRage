@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace UI
+namespace UI.Components
 {
     /// <summary>
     /// Main Menu tab content - handles lobby/home view

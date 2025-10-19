@@ -1,16 +1,22 @@
+using System;
 using System.Collections.Generic;
 using Core.Bootstrap;
+using Core.SaveSystem;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace UI
+namespace UI.Components
 {
     /// <summary>
     /// Settings tab content - embedded directly in MainMenu tabs
+    /// Uses SaveService for persistence (cloud sync + encryption)
+    /// Follows proper dependency injection pattern
     /// </summary>
     public class SettingsUI
     {
         private VisualElement _root;
+        private readonly ISaveService _saveService;
 
         // Audio controls
         private Slider _musicVolumeSlider;
@@ -42,6 +48,15 @@ namespace UI
         private float _previousMusicVolume = 0.75f;
         private float _previousSfxVolume = 0.75f;
 
+        /// <summary>
+        /// Constructor with dependency injection
+        /// </summary>
+        /// <param name="saveService">Save service for settings persistence</param>
+        public SettingsUI(ISaveService saveService)
+        {
+            _saveService = saveService ?? throw new ArgumentNullException(nameof(saveService));
+        }
+
         public void Initialize(VisualElement root)
         {
             Debug.Log("[SettingsUI] Initialize called");
@@ -53,6 +68,7 @@ namespace UI
             }
 
             _root = root;
+
             Debug.Log($"[SettingsUI] Root element: {_root.name}");
 
             // Query all elements
@@ -60,11 +76,16 @@ namespace UI
 
             Debug.Log($"[SettingsUI] Elements found - Music: {_musicVolumeSlider != null}, SFX: {_sfxVolumeSlider != null}, Quality: {_qualityDropdown != null}");
 
+            // Setup callbacks BEFORE loading settings
             InitializeDropdowns();
-            SetupButtons();
-            LoadSettings();
             SetupValueChangeCallbacks();
+            SetupButtons();
+            
+            // Load settings AFTER callbacks are registered
+            LoadSettings();
             UpdateVersionInfo();
+            
+            Debug.Log("[SettingsUI] Initialization complete");
         }
 
         private void QueryElements()
@@ -99,12 +120,19 @@ namespace UI
 
         private void InitializeDropdowns()
         {
+            Debug.Log("[SettingsUI] Initializing dropdowns");
+            
             // Quality dropdown
             if (_qualityDropdown != null)
             {
                 string[] qualityNames = QualitySettings.names;
                 _qualityDropdown.choices = new List<string>(qualityNames);
                 _qualityDropdown.index = QualitySettings.GetQualityLevel();
+                Debug.Log($"[SettingsUI] Quality dropdown initialized with {qualityNames.Length} options, current: {_qualityDropdown.index}");
+            }
+            else
+            {
+                Debug.LogWarning("[SettingsUI] Quality dropdown not found!");
             }
 
             // Resolution dropdown
@@ -128,6 +156,11 @@ namespace UI
 
                 _resolutionDropdown.choices = resolutionStrings;
                 _resolutionDropdown.index = currentResolutionIndex;
+                Debug.Log($"[SettingsUI] Resolution dropdown initialized with {resolutionStrings.Count} options, current: {currentResolutionIndex}");
+            }
+            else
+            {
+                Debug.LogWarning("[SettingsUI] Resolution dropdown not found!");
             }
 
             // Language dropdown
@@ -138,12 +171,22 @@ namespace UI
                     "English", "Español", "Français", "Deutsch", "Italiano",
                     "Português", "Русский", "日本語", "한국어", "中文"
                 };
-                _languageDropdown.index = PlayerPrefs.GetInt("Language", 0);
+                var settings = _saveService.GetSettings();
+                _languageDropdown.index = settings.LanguageIndex;
+                Debug.Log($"[SettingsUI] Language dropdown initialized with 10 options, current: {settings.LanguageIndex}");
             }
+            else
+            {
+                Debug.LogWarning("[SettingsUI] Language dropdown not found!");
+            }
+            
+            Debug.Log("[SettingsUI] Dropdown initialization complete");
         }
 
         private void SetupButtons()
         {
+            Debug.Log("[SettingsUI] Setting up buttons");
+            
             // Control buttons
             Button editJoystickButton = _root.Q<Button>("edit-joystick-button");
 
@@ -155,52 +198,90 @@ namespace UI
             Button creditsButton = _root.Q<Button>("credits-button");
             Button parentGuideButton = _root.Q<Button>("parent-guide-button");
 
+            // Account buttons
+            Button logoutButton = _root.Q<Button>("logout-button");
+
             // Action buttons
             Button resetButton = _root.Q<Button>("reset-button");
             Button clearDataButton = _root.Q<Button>("clear-data-button");
 
-            Debug.Log($"[SettingsUI] Buttons found - Joystick: {editJoystickButton != null}, Help: {helpButton != null}, Support: {supportButton != null}");
+            Debug.Log($"[SettingsUI] Buttons found - Joystick: {editJoystickButton != null}, Help: {helpButton != null}, Support: {supportButton != null}, Logout: {logoutButton != null}, Reset: {resetButton != null}");
 
             if (editJoystickButton != null)
             {
                 editJoystickButton.clicked += OnEditJoystickClicked;
                 Debug.Log("[SettingsUI] Edit joystick button listener added");
             }
-            if (helpButton != null) helpButton.clicked += OnHelpClicked;
-            if (supportButton != null) supportButton.clicked += OnSupportClicked;
+            
+            if (helpButton != null)
+            {
+                helpButton.clicked += OnHelpClicked;
+                Debug.Log("[SettingsUI] Help button listener added");
+            }
+            
+            if (supportButton != null)
+            {
+                supportButton.clicked += OnSupportClicked;
+                Debug.Log("[SettingsUI] Support button listener added");
+            }
+            
             if (privacyButton != null) privacyButton.clicked += OnPrivacyClicked;
             if (termsButton != null) termsButton.clicked += OnTermsClicked;
             if (creditsButton != null) creditsButton.clicked += OnCreditsClicked;
             if (parentGuideButton != null) parentGuideButton.clicked += OnParentGuideClicked;
-            if (resetButton != null) resetButton.clicked += OnResetClicked;
-            if (clearDataButton != null) clearDataButton.clicked += OnClearDataClicked;
+            
+            if (logoutButton != null)
+            {
+                logoutButton.clicked += OnLogoutClicked;
+                Debug.Log("[SettingsUI] Logout button listener added");
+            }
+            
+            if (resetButton != null)
+            {
+                resetButton.clicked += OnResetClicked;
+                Debug.Log("[SettingsUI] Reset button listener added");
+            }
+            
+            if (clearDataButton != null)
+            {
+                clearDataButton.clicked += OnClearDataClicked;
+                Debug.Log("[SettingsUI] Clear data button listener added");
+            }
+            
+            Debug.Log("[SettingsUI] Button setup complete");
         }
 
         private void SetupValueChangeCallbacks()
         {
+            Debug.Log("[SettingsUI] Setting up value change callbacks");
+            
             // Audio callbacks
             if (_musicVolumeSlider != null)
             {
                 _musicVolumeSlider.RegisterValueChangedCallback(evt =>
                 {
+                    Debug.Log($"[SettingsUI] Music volume changed to {evt.newValue}");
                     _previousMusicVolume = evt.newValue;
                     if (_muteToggle != null && !_muteToggle.value)
                     {
-                        PlayerPrefs.SetFloat("MusicVolume", evt.newValue);
+                        _saveService.UpdateSettings(s => s.MusicVolume = evt.newValue);
                         AudioListener.volume = evt.newValue;
                     }
                     UpdateVolumeLabel(_musicVolumeLabel, evt.newValue);
                 });
+                Debug.Log("[SettingsUI] Music volume callback registered");
             }
 
             if (_sfxVolumeSlider != null)
             {
                 _sfxVolumeSlider.RegisterValueChangedCallback(evt =>
                 {
+                    Debug.Log($"[SettingsUI] SFX volume changed to {evt.newValue}");
                     _previousSfxVolume = evt.newValue;
-                    PlayerPrefs.SetFloat("SFXVolume", evt.newValue);
+                    _saveService.UpdateSettings(s => s.SFXVolume = evt.newValue);
                     UpdateVolumeLabel(_sfxVolumeLabel, evt.newValue);
                 });
+                Debug.Log("[SettingsUI] SFX volume callback registered");
             }
 
             if (_muteToggle != null)
@@ -215,7 +296,7 @@ namespace UI
                     {
                         AudioListener.volume = _previousMusicVolume;
                     }
-                    PlayerPrefs.SetInt("Muted", evt.newValue ? 1 : 0);
+                    _saveService.UpdateSettings(s => s.IsMuted = evt.newValue);
                 });
             }
 
@@ -225,7 +306,7 @@ namespace UI
                 _qualityDropdown.RegisterValueChangedCallback(evt =>
                 {
                     QualitySettings.SetQualityLevel(_qualityDropdown.index);
-                    PlayerPrefs.SetInt("Quality", _qualityDropdown.index);
+                    _saveService.UpdateSettings(s => s.GraphicsQuality = _qualityDropdown.index);
                 });
             }
 
@@ -238,7 +319,7 @@ namespace UI
                     {
                         Resolution res = resolutions[_resolutionDropdown.index];
                         Screen.SetResolution(res.width, res.height, Screen.fullScreen, res.refreshRate);
-                        PlayerPrefs.SetInt("ResolutionIndex", _resolutionDropdown.index);
+                        _saveService.UpdateSettings(s => s.ResolutionIndex = _resolutionDropdown.index);
                     }
                 });
             }
@@ -248,7 +329,7 @@ namespace UI
                 _fullscreenToggle.RegisterValueChangedCallback(evt =>
                 {
                     Screen.fullScreen = evt.newValue;
-                    PlayerPrefs.SetInt("Fullscreen", evt.newValue ? 1 : 0);
+                    _saveService.UpdateSettings(s => s.IsFullscreen = evt.newValue);
                 });
             }
 
@@ -257,7 +338,7 @@ namespace UI
                 _vsyncToggle.RegisterValueChangedCallback(evt =>
                 {
                     QualitySettings.vSyncCount = evt.newValue ? 1 : 0;
-                    PlayerPrefs.SetInt("VSync", evt.newValue ? 1 : 0);
+                    _saveService.UpdateSettings(s => s.IsVSyncEnabled = evt.newValue);
                 });
             }
 
@@ -265,7 +346,7 @@ namespace UI
             {
                 _fpsToggle.RegisterValueChangedCallback(evt =>
                 {
-                    PlayerPrefs.SetInt("ShowFPS", evt.newValue ? 1 : 0);
+                    _saveService.UpdateSettings(s => s.ShowFPS = evt.newValue);
                     // You can implement FPS counter display here
                 });
             }
@@ -275,7 +356,7 @@ namespace UI
             {
                 _sensitivitySlider.RegisterValueChangedCallback(evt =>
                 {
-                    PlayerPrefs.SetFloat("Sensitivity", evt.newValue);
+                    _saveService.UpdateSettings(s => s.Sensitivity = evt.newValue);
                     UpdateSensitivityLabel(evt.newValue);
                 });
             }
@@ -284,7 +365,7 @@ namespace UI
             {
                 _vibrationToggle.RegisterValueChangedCallback(evt =>
                 {
-                    PlayerPrefs.SetInt("Vibration", evt.newValue ? 1 : 0);
+                    _saveService.UpdateSettings(s => s.IsVibrationEnabled = evt.newValue);
                 });
             }
 
@@ -293,7 +374,7 @@ namespace UI
             {
                 _languageDropdown.RegisterValueChangedCallback(evt =>
                 {
-                    PlayerPrefs.SetInt("Language", _languageDropdown.index);
+                    _saveService.UpdateSettings(s => s.LanguageIndex = _languageDropdown.index);
                     Debug.Log($"[SettingsUI] Language changed to: {_languageDropdown.value}");
                 });
             }
@@ -302,7 +383,7 @@ namespace UI
             {
                 _tutorialsToggle.RegisterValueChangedCallback(evt =>
                 {
-                    PlayerPrefs.SetInt("Tutorials", evt.newValue ? 1 : 0);
+                    _saveService.UpdateSettings(s => s.ShowTutorials = evt.newValue);
                 });
             }
 
@@ -310,17 +391,19 @@ namespace UI
             {
                 _notificationsToggle.RegisterValueChangedCallback(evt =>
                 {
-                    PlayerPrefs.SetInt("Notifications", evt.newValue ? 1 : 0);
+                    _saveService.UpdateSettings(s => s.NotificationsEnabled = evt.newValue);
                 });
             }
         }
 
         private void LoadSettings()
         {
+            var settings = _saveService.GetSettings();
+
             // Audio
             if (_musicVolumeSlider != null)
             {
-                float musicVolume = PlayerPrefs.GetFloat("MusicVolume", 0.75f);
+                float musicVolume = settings.MusicVolume;
                 _musicVolumeSlider.value = musicVolume;
                 _previousMusicVolume = musicVolume;
                 UpdateVolumeLabel(_musicVolumeLabel, musicVolume);
@@ -328,42 +411,42 @@ namespace UI
 
             if (_sfxVolumeSlider != null)
             {
-                float sfxVolume = PlayerPrefs.GetFloat("SFXVolume", 0.75f);
+                float sfxVolume = settings.SFXVolume;
                 _sfxVolumeSlider.value = sfxVolume;
                 _previousSfxVolume = sfxVolume;
                 UpdateVolumeLabel(_sfxVolumeLabel, sfxVolume);
             }
 
             if (_muteToggle != null)
-                _muteToggle.value = PlayerPrefs.GetInt("Muted", 0) == 1;
+                _muteToggle.value = settings.IsMuted;
 
             // Graphics
             if (_fullscreenToggle != null)
-                _fullscreenToggle.value = PlayerPrefs.GetInt("Fullscreen", 1) == 1;
+                _fullscreenToggle.value = settings.IsFullscreen;
 
             if (_vsyncToggle != null)
-                _vsyncToggle.value = PlayerPrefs.GetInt("VSync", 1) == 1;
+                _vsyncToggle.value = settings.IsVSyncEnabled;
 
             if (_fpsToggle != null)
-                _fpsToggle.value = PlayerPrefs.GetInt("ShowFPS", 0) == 1;
+                _fpsToggle.value = settings.ShowFPS;
 
             // Controls
             if (_sensitivitySlider != null)
             {
-                float sensitivity = PlayerPrefs.GetFloat("Sensitivity", 1.0f);
+                float sensitivity = settings.Sensitivity;
                 _sensitivitySlider.value = sensitivity;
                 UpdateSensitivityLabel(sensitivity);
             }
 
             if (_vibrationToggle != null)
-                _vibrationToggle.value = PlayerPrefs.GetInt("Vibration", 1) == 1;
+                _vibrationToggle.value = settings.IsVibrationEnabled;
 
             // Gameplay
             if (_tutorialsToggle != null)
-                _tutorialsToggle.value = PlayerPrefs.GetInt("Tutorials", 1) == 1;
+                _tutorialsToggle.value = settings.ShowTutorials;
 
             if (_notificationsToggle != null)
-                _notificationsToggle.value = PlayerPrefs.GetInt("Notifications", 1) == 1;
+                _notificationsToggle.value = settings.NotificationsEnabled;
         }
 
         private void UpdateVolumeLabel(Label label, float value)
@@ -455,20 +538,22 @@ namespace UI
         {
             Debug.Log("[SettingsUI] Resetting settings to defaults");
 
-            // Reset all settings to defaults
-            PlayerPrefs.SetFloat("MusicVolume", 0.75f);
-            PlayerPrefs.SetFloat("SFXVolume", 0.75f);
-            PlayerPrefs.SetInt("Muted", 0);
-            PlayerPrefs.SetInt("Quality", 2);
-            PlayerPrefs.SetInt("Fullscreen", 1);
-            PlayerPrefs.SetInt("VSync", 1);
-            PlayerPrefs.SetInt("ShowFPS", 0);
-            PlayerPrefs.SetFloat("Sensitivity", 1.0f);
-            PlayerPrefs.SetInt("Vibration", 1);
-            PlayerPrefs.SetInt("Language", 0);
-            PlayerPrefs.SetInt("Tutorials", 1);
-            PlayerPrefs.SetInt("Notifications", 1);
-            PlayerPrefs.Save();
+            // Reset all settings to defaults using SaveService
+            _saveService.UpdateSettings(s =>
+            {
+                s.MusicVolume = 0.75f;
+                s.SFXVolume = 0.75f;
+                s.IsMuted = false;
+                s.GraphicsQuality = 2;
+                s.IsFullscreen = true;
+                s.IsVSyncEnabled = true;
+                s.ShowFPS = false;
+                s.Sensitivity = 1.0f;
+                s.IsVibrationEnabled = true;
+                s.LanguageIndex = 0;
+                s.ShowTutorials = true;
+                s.NotificationsEnabled = true;
+            });
 
             // Reload settings
             LoadSettings();
@@ -487,6 +572,22 @@ namespace UI
             Debug.Log("[SettingsUI] Settings reset complete");
         }
 
+        private async void OnLogoutClicked()
+        {
+            Debug.Log("[SettingsUI] Logout button clicked");
+
+            var authService = GameBootstrap.Services?.AuthenticationService;
+            if (authService != null)
+            {
+                await authService.LogoutAsync();
+                Debug.Log("[SettingsUI] User logged out successfully");
+            }
+            else
+            {
+                Debug.LogError("[SettingsUI] AuthenticationService not available");
+            }
+        }
+
         private void OnClearDataClicked()
         {
             Debug.Log("[SettingsUI] Clear data requested");
@@ -500,8 +601,6 @@ namespace UI
             }
             else
             {
-                // PlayerPrefs.DeleteAll();
-                // PlayerPrefs.Save();
                 Debug.LogWarning("[SettingsUI] Data clearing disabled in build - implement confirmation dialog first");
             }
         }

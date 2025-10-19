@@ -27,7 +27,6 @@ namespace Core.Bootstrap
         private float _splashDuration = 2f;
         [SerializeField]
         private bool _showLoadingScreen = true;
-        private ServiceContainer _services;
         private bool _isInitialized;
 
         // Static instance for factory methods
@@ -48,11 +47,8 @@ namespace Core.Bootstrap
             Debug.Log("[GameBootstrap] Starting game initialization...");
 
             // Create service container
-            _services = new ServiceContainer();
+            Services = new ServiceContainer();
             InitializeFoundation();
-
-            // Make services globally accessible
-            Services = _services;
 
             // Start async initialization
             InitializeAsync().Forget();
@@ -60,9 +56,13 @@ namespace Core.Bootstrap
         private void InitializeFoundation()
         {
             Debug.Log("[GameBootstrap] Initializing foundation services");
-            _services.RegisterEventBus(new Events.EventBus());
-            _services.RegisterAnimationService(CreateAnimationService());
-            _services.RegisterUIService(CreateUIService());
+            Services.RegisterEventBus(new Events.EventBus());
+
+            var storageFactory = new StorageProviderFactory();
+            Services.RegisterSaveService(new SaveService(storageFactory, new EncryptionService()));
+
+            Services.RegisterAnimationService(CreateAnimationService());
+            Services.RegisterUIService(CreateUIService());
             Debug.Log("[GameBootstrap] Foundation services initialized");
         }
         private async UniTaskVoid InitializeAsync()
@@ -79,7 +79,7 @@ namespace Core.Bootstrap
                 InitializeCoreServices();
 
                 // Delegate authentication flow to AuthenticationService
-                bool isAuthenticated = await _services.AuthenticationService.InitializeAsync();
+                bool isAuthenticated = await Services.AuthenticationService.InitializeAsync();
                 if (isAuthenticated)
                 {
                     // User is authenticated - proceed with post-login initialization
@@ -90,7 +90,7 @@ namespace Core.Bootstrap
                 {
                     // User needs to login - AuthenticationService handles showing login screen
                     // Subscribe to login success event to continue initialization
-                    _services.EventBus.Subscribe<Events.LoginSuccessEvent>(OnLoginSuccess);
+                    Services.EventBus.Subscribe<Events.LoginSuccessEvent>(OnLoginSuccess);
                 }
                 _isInitialized = true;
             }
@@ -102,13 +102,9 @@ namespace Core.Bootstrap
         }
         private void InitializeCoreServices()
         {
-            // Save service
-            var storageFactory = new StorageProviderFactory();
-            _services.RegisterSaveService(new SaveService(storageFactory, new EncryptionService()));
-
             // Authentication service with proper dependency injection
-            var authService = new AuthenticationService(_services.SaveService, _services.EventBus, _services.UIService);
-            _services.RegisterAuthenticationService(authService);
+            var authService = new AuthenticationService(Services.SaveService, Services.EventBus, Services.UIService);
+            Services.RegisterAuthenticationService(authService);
 
             // Subscribe to logout event
             authService.OnLogoutComplete += HandleLogout;
@@ -137,8 +133,11 @@ namespace Core.Bootstrap
         }
         private async UniTask ShowSplashScreenAsync()
         {
-            var uiService = _services?.UIService;
-            if (uiService == null) return;
+            var uiService = Services?.UIService;
+            if (uiService == null)
+            {
+                return;
+            }
             uiService.ShowScreen(UIScreenType.Splash, false, true);
 
             // Get splash screen instance
@@ -154,15 +153,18 @@ namespace Core.Bootstrap
         }
         private LoadingScreen ShowLoadingScreen()
         {
-            var uiService = _services?.UIService;
-            if (uiService == null) return null;
+            var uiService = Services?.UIService;
+            if (uiService == null)
+            {
+                return null;
+            }
             uiService.ShowScreen(UIScreenType.Loading, false, true);
             return uiService.GetScreen<LoadingScreen>(UIScreenType.Loading);
         }
         private async void OnLoginSuccess(Events.LoginSuccessEvent evt)
         {
             // Unsubscribe
-            _services.EventBus.Unsubscribe<Events.LoginSuccessEvent>(OnLoginSuccess);
+            Services.EventBus.Unsubscribe<Events.LoginSuccessEvent>(OnLoginSuccess);
             Debug.Log($"[GameBootstrap] Login successful for user: {evt.UserId}");
 
             // Initialize post-login services (AuthenticationService already notified SaveService)
@@ -174,19 +176,19 @@ namespace Core.Bootstrap
             Debug.Log("[GameBootstrap] User logged out - resetting services");
 
             // Reset user-specific services
-            _services.ResetUserServices();
+            Services.ResetUserServices();
 
             // Hide all game screens
-            _services.UIService.HideAllGameScreens(animate: false);
+            Services.UIService.HideAllGameScreens(animate: false);
 
             // AuthenticationService handles showing login screen
             // Subscribe to login success for next login
-            _services.EventBus.Subscribe<Events.LoginSuccessEvent>(OnLoginSuccess);
+            Services.EventBus.Subscribe<Events.LoginSuccessEvent>(OnLoginSuccess);
             Debug.Log("[GameBootstrap] Logout complete - ready for new login");
         }
         private void ProceedToMainMenu()
         {
-            _services.StateManager.Initialize(new MainMenuState());
+            Services.StateManager.Initialize(new MainMenuState());
         }
         private void ShowErrorScreen(string errorMessage)
         {
@@ -194,8 +196,8 @@ namespace Core.Bootstrap
             Debug.LogError($"[GameBootstrap] {errorMessage}");
 
             // Let AuthenticationService handle showing login screen
-            _services.UIService?.ShowScreen(UIScreenType.Login);
-            _services.EventBus.Subscribe<Events.LoginSuccessEvent>(OnLoginSuccess);
+            Services.UIService?.ShowScreen(UIScreenType.Login);
+            Services.EventBus.Subscribe<Events.LoginSuccessEvent>(OnLoginSuccess);
         }
         private IAnimationService CreateAnimationService()
         {
@@ -206,21 +208,21 @@ namespace Core.Bootstrap
         private IUIService CreateUIService()
         {
             // UIDocument will be provided by UIDocumentProvider component in the scene
-            var uiService = new UIService(_services.AnimationService);
+            var uiService = new UIService(Services.AnimationService);
             _uiDocumentProvider.Initialize(uiService);
             return uiService;
         }
         private void Update()
         {
-            _services?.Update(Time.deltaTime);
+            Services?.Update(Time.deltaTime);
         }
         private void FixedUpdate()
         {
-            _services?.FixedUpdate(Time.fixedDeltaTime);
+            Services?.FixedUpdate(Time.fixedDeltaTime);
         }
         private void OnDestroy()
         {
-            _services?.Dispose();
+            Services?.Dispose();
         }
         /// <summary>
         /// Global access point (only for MonoBehaviours that can't use DI)
@@ -233,6 +235,6 @@ namespace Core.Bootstrap
         /// <summary>
         /// Check if system is healthy
         /// </summary>
-        public bool IsHealthy => _isInitialized && _services != null;
+        public bool IsHealthy => _isInitialized && Services != null;
     }
 }

@@ -23,10 +23,6 @@ namespace Editor
                 "Yes, Clear All Data",
                 "Cancel"))
             {
-                // Clear PlayerPrefs (used by EOS and other systems)
-                PlayerPrefs.DeleteAll();
-                PlayerPrefs.Save();
-                
                 // Clear save files if game is running
                 if (Application.isPlaying && GameBootstrap.Services?.SaveService != null)
                 {
@@ -48,6 +44,9 @@ namespace Editor
                         Debug.Log($"[DevelopmentTools] ✅ Deleted {files.Length} save files from: {savePath}");
                     }
                 }
+                
+                // Note: EOS plugin may use PlayerPrefs internally for its own data
+                // We don't clear PlayerPrefs to avoid breaking EOS functionality
                 
                 Debug.Log("[DevelopmentTools] ✅ All saved data cleared successfully!");
                 EditorUtility.DisplayDialog(
@@ -77,10 +76,19 @@ namespace Editor
                 }
                 else
                 {
-                    // Clear auth-related PlayerPrefs
-                    PlayerPrefs.DeleteKey("LastLoginMethod");
-                    PlayerPrefs.Save();
-                    Debug.Log("[DevelopmentTools] ✅ Authentication data cleared");
+                    // Clear settings file manually when not playing
+                    string savePath = Application.persistentDataPath;
+                    string settingsFile = System.IO.Path.Combine(savePath, "settings.json");
+                    
+                    if (System.IO.File.Exists(settingsFile))
+                    {
+                        System.IO.File.Delete(settingsFile);
+                        Debug.Log("[DevelopmentTools] ✅ Settings file deleted");
+                    }
+                    else
+                    {
+                        Debug.Log("[DevelopmentTools] No settings file found");
+                    }
                 }
                 
                 EditorUtility.DisplayDialog(
