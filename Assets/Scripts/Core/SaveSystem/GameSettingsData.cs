@@ -13,45 +13,42 @@ namespace Core.SaveSystem
         [Header("Audio Settings")]
         [Range(0f, 1f)]
         public float MasterVolume = 0.8f;
-        
+
         [Range(0f, 1f)]
         public float MusicVolume = 0.7f;
-        
+
         [Range(0f, 1f)]
-        public float SfxVolume = 0.9f;
-        
+        public float SFXVolume = 0.9f;
+
         [Range(0f, 1f)]
         public float VoiceVolume = 0.85f;
-        
+
         public bool IsMuted = false;
-        
+
         // Graphics settings
         [Header("Graphics Settings")]
-        public bool IsFullscreen = true;
+        public bool Fullscreen = true;
         public string Resolution = "1920x1080";
         public string QualityLevel = "High";
-        
+
         [Range(0f, 1f)]
         public float Brightness = 0.5f;
-        
+
         public bool VSync = true;
-        
+
         // Gameplay settings
         [Header("Gameplay Settings")]
         [Range(0f, 1f)]
         public float Sensitivity = 0.65f;
-        
+
         public bool InvertY = false;
         public bool CameraShake = true;
         public bool AutoPickup = false;
         public bool Vibration = true;
         public bool ShowTutorial = true;
         public bool Notifications = true;
-        
-        // Difficulty
-        public string Difficulty = "Normal";
-        
-        // Authentication (secure storage instead of PlayerPrefs)
+
+        // Authentication
         [Header("Authentication")]
         public string LastLoginMethod = "";
     }

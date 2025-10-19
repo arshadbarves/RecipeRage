@@ -39,7 +39,7 @@ namespace Core.Audio
             var settings = _saveService.GetSettings();
             SetMasterVolume(settings.MasterVolume);
             SetMusicVolume(settings.MusicVolume);
-            SetSFXVolume(settings.SfxVolume);
+            SetSFXVolume(settings.SFXVolume);
             SetMute(settings.IsMuted);
         }
 
@@ -58,7 +58,7 @@ namespace Core.Audio
         public void SetSFXVolume(float volume)
         {
             SetMixerVolume(SFX_PARAM, volume);
-            _saveService?.UpdateSettings(s => s.SfxVolume = volume);
+            _saveService?.UpdateSettings(s => s.SFXVolume = volume);
         }
 
         public void SetMute(bool mute)
@@ -70,7 +70,7 @@ namespace Core.Audio
 
         public float GetMasterVolume() => _saveService?.GetSettings().MasterVolume ?? 0.8f;
         public float GetMusicVolume() => _saveService?.GetSettings().MusicVolume ?? 0.7f;
-        public float GetSFXVolume() => _saveService?.GetSettings().SfxVolume ?? 0.9f;
+        public float GetSFXVolume() => _saveService?.GetSettings().SFXVolume ?? 0.9f;
 
         private void SetMixerVolume(string paramName, float volume)
         {

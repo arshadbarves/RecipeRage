@@ -1,9 +1,10 @@
 using System;
+using Cysharp.Threading.Tasks;
 
 namespace Core.SaveSystem
 {
     /// <summary>
-    /// Interface for save/load operations
+    /// Interface for save/load operations with multi-provider support
     /// </summary>
     public interface ISaveService
     {
@@ -27,5 +28,17 @@ namespace Core.SaveSystem
 
         // Utility
         void DeleteAllData();
+        
+        // Cloud sync
+        SyncStatus GetSyncStatus(string key);
+        UniTask SyncAllCloudDataAsync();
+        
+        // Authentication integration
+        void OnUserLoggedIn();
+        void OnUserLoggedOut();
+        
+        // Generic save/load (for custom data like currency)
+        T LoadData<T>(string key) where T : class, new();
+        void SaveData<T>(string key, T data) where T : class, new();
     }
 }

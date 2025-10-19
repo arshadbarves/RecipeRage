@@ -1,15 +1,26 @@
 using System;
+using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using Core.Logging;
 
 namespace Core.SaveSystem
 {
     /// <summary>
-    /// Pure C# save service - no MonoBehaviour needed
+    /// Multi-provider save service with cloud and local storage support.
+    /// Orchestrates storage strategies per data type.
     /// </summary>
     public class SaveService : ISaveService
     {
-        private readonly IFileStorage _storage;
+        private readonly StorageProviderFactory _providerFactory;
         private readonly IEncryptionService _encryption;
+        private readonly IStorageProvider _localProvider;
+        private readonly IStorageProvider _cloudProvider;
+        
+        // Storage configurations per data type
+        private readonly Dictionary<string, StorageConfig> _storageConfigs;
+        
+        // Sync status tracking
+        private readonly Dictionary<string, SyncStatus> _syncStatus;
 
         // Cached data
         private GameSettingsData _cachedSettings;
@@ -21,19 +32,114 @@ namespace Core.SaveSystem
         public event Action<PlayerProgressData> OnPlayerProgressChanged;
         public event Action<PlayerStatsData> OnPlayerStatsChanged;
 
-        public SaveService(IFileStorage storage, IEncryptionService encryption)
+        public SaveService(StorageProviderFactory providerFactory, IEncryptionService encryption)
         {
-            _storage = storage ?? throw new ArgumentNullException(nameof(storage));
+            _providerFactory = providerFactory ?? throw new ArgumentNullException(nameof(providerFactory));
             _encryption = encryption;
+            
+            // Get providers
+            _localProvider = _providerFactory.GetLocalProvider();
+            _cloudProvider = _providerFactory.GetCloudProvider();
+            
+            // Configure storage strategies
+            _storageConfigs = new Dictionary<string, StorageConfig>
+            {
+                // Settings: Local only (fast, offline)
+                { "settings.json", new StorageConfig("settings.json", StorageStrategy.LocalOnly, false) },
+                
+                // Progress: Cloud with local cache (persistent, cross-device)
+                { "progress.json", new StorageConfig("progress.json", StorageStrategy.CloudWithCache, true) },
+                
+                // Stats: Cloud with local cache (persistent, cross-device)
+                { "stats.json", new StorageConfig("stats.json", StorageStrategy.CloudWithCache, true) }
+            };
+            
+            // Initialize sync status
+            _syncStatus = new Dictionary<string, SyncStatus>();
+            foreach (var config in _storageConfigs.Values)
+            {
+                _syncStatus[config.Key] = new SyncStatus();
+            }
 
             LoadAllData();
+        }
+        
+        /// <summary>
+        /// Notify cloud provider that user has logged in.
+        /// Call this after successful authentication.
+        /// Enables cloud storage and syncs local data.
+        /// </summary>
+        public void OnUserLoggedIn()
+        {
+            GameLogger.Log("[SaveService] User logged in - enabling cloud storage");
+            
+            if (_cloudProvider is EOSCloudStorageProvider eosProvider)
+            {
+                eosProvider.OnUserLoggedIn();
+            }
+            
+            // Optionally sync local data to cloud
+            SyncLocalToCloudAsync().Forget();
+        }
+        
+        /// <summary>
+        /// Called when user logs out - switches to local storage only
+        /// </summary>
+        public void OnUserLoggedOut()
+        {
+            GameLogger.Log("[SaveService] User logged out - switching to local storage only");
+            
+            // Clear cached data
+            _cachedSettings = null;
+            _cachedProgress = null;
+            _cachedStats = null;
+            
+            // Future saves will use local storage only
+        }
+        
+        private async UniTaskVoid SyncLocalToCloudAsync()
+        {
+            if (!_cloudProvider.IsAvailable)
+            {
+                GameLogger.Log("[SaveService] Cloud provider not available for sync");
+                return;
+            }
+
+            GameLogger.Log("[SaveService] Syncing local data to cloud...");
+
+            try
+            {
+                // Sync progress data
+                if (_cachedProgress != null)
+                {
+                    var progressConfig = GetStorageConfig("progress.json");
+                    string progressContent = SerializeData(_cachedProgress, progressConfig.EncryptData);
+                    await _cloudProvider.WriteAsync("progress.json", progressContent);
+                    GameLogger.Log("[SaveService] Progress synced to cloud");
+                }
+
+                // Sync stats data
+                if (_cachedStats != null)
+                {
+                    var statsConfig = GetStorageConfig("stats.json");
+                    string statsContent = SerializeData(_cachedStats, statsConfig.EncryptData);
+                    await _cloudProvider.WriteAsync("stats.json", statsContent);
+                    GameLogger.Log("[SaveService] Stats synced to cloud");
+                }
+
+                GameLogger.Log("[SaveService] Cloud sync complete");
+            }
+            catch (Exception ex)
+            {
+                GameLogger.LogError($"[SaveService] Cloud sync failed: {ex.Message}");
+            }
         }
 
         public GameSettingsData GetSettings()
         {
             if (_cachedSettings == null)
             {
-                _cachedSettings = Load<GameSettingsData>("settings.json");
+                _cachedSettings = LoadData<GameSettingsData>("settings.json");
             }
             return _cachedSettings;
         }
@@ -41,7 +147,7 @@ namespace Core.SaveSystem
         public void SaveSettings(GameSettingsData settings)
         {
             _cachedSettings = settings;
-            Save("settings.json", settings);
+            SaveData("settings.json", settings);
             OnSettingsChanged?.Invoke(settings);
         }
 
@@ -51,12 +157,45 @@ namespace Core.SaveSystem
             updateAction?.Invoke(settings);
             SaveSettings(settings);
         }
+        
+        /// <summary>
+        /// Get sync status for a specific data type.
+        /// </summary>
+        public SyncStatus GetSyncStatus(string key)
+        {
+            return _syncStatus.TryGetValue(key, out var status) ? status : null;
+        }
+        
+        /// <summary>
+        /// Force sync all cloud data.
+        /// </summary>
+        public async UniTask SyncAllCloudDataAsync()
+        {
+            if (!_cloudProvider.IsAvailable)
+            {
+                GameLogger.Log("[SaveService] Cloud provider not available for sync");
+                return;
+            }
+            
+            var syncTasks = new List<UniTask>();
+            
+            foreach (var config in _storageConfigs.Values)
+            {
+                if (config.Strategy == StorageStrategy.CloudWithCache || 
+                    config.Strategy == StorageStrategy.CloudOnly)
+                {
+                    syncTasks.Add(SyncToCloudAsync(config.Key));
+                }
+            }
+            
+            await UniTask.WhenAll(syncTasks);
+        }
 
         public PlayerProgressData GetPlayerProgress()
         {
             if (_cachedProgress == null)
             {
-                _cachedProgress = Load<PlayerProgressData>("progress.json");
+                _cachedProgress = LoadData<PlayerProgressData>("progress.json");
             }
             return _cachedProgress;
         }
@@ -64,7 +203,7 @@ namespace Core.SaveSystem
         public void SavePlayerProgress(PlayerProgressData progress)
         {
             _cachedProgress = progress;
-            Save("progress.json", progress);
+            SaveData("progress.json", progress);
             OnPlayerProgressChanged?.Invoke(progress);
         }
 
@@ -79,7 +218,7 @@ namespace Core.SaveSystem
         {
             if (_cachedStats == null)
             {
-                _cachedStats = Load<PlayerStatsData>("stats.json");
+                _cachedStats = LoadData<PlayerStatsData>("stats.json");
             }
             return _cachedStats;
         }
@@ -87,7 +226,7 @@ namespace Core.SaveSystem
         public void SavePlayerStats(PlayerStatsData stats)
         {
             _cachedStats = stats;
-            Save("stats.json", stats);
+            SaveData("stats.json", stats);
             OnPlayerStatsChanged?.Invoke(stats);
         }
 
@@ -100,9 +239,15 @@ namespace Core.SaveSystem
 
         public void DeleteAllData()
         {
-            _storage.Delete("settings.json");
-            _storage.Delete("progress.json");
-            _storage.Delete("stats.json");
+            _localProvider.Delete("settings.json");
+            _localProvider.Delete("progress.json");
+            _localProvider.Delete("stats.json");
+            
+            if (_cloudProvider.IsAvailable)
+            {
+                _cloudProvider.Delete("progress.json");
+                _cloudProvider.Delete("stats.json");
+            }
 
             _cachedSettings = new GameSettingsData();
             _cachedProgress = new PlayerProgressData();
@@ -115,61 +260,162 @@ namespace Core.SaveSystem
 
         private void LoadAllData()
         {
-            _cachedSettings = Load<GameSettingsData>("settings.json");
-            _cachedProgress = Load<PlayerProgressData>("progress.json");
-            _cachedStats = Load<PlayerStatsData>("stats.json");
+            _cachedSettings = LoadData<GameSettingsData>("settings.json");
+            _cachedProgress = LoadData<PlayerProgressData>("progress.json");
+            _cachedStats = LoadData<PlayerStatsData>("stats.json");
         }
 
-        private T Load<T>(string filename) where T : new()
+        public T LoadData<T>(string key) where T : class, new()
         {
-            if (!_storage.Exists(filename))
+            var config = GetStorageConfig(key);
+            var provider = GetProviderForStrategy(config.Strategy);
+            
+            // Try primary provider
+            if (provider.Exists(key))
             {
-                return new T();
-            }
-
-            string content = _storage.Read(filename);
-
-            // Handle empty or null content
-            if (string.IsNullOrEmpty(content))
-            {
-                return new T();
-            }
-
-            if (_encryption != null)
-            {
-                try
+                string content = provider.Read(key);
+                if (!string.IsNullOrEmpty(content))
                 {
-                    content = _encryption.Decrypt(content);
-                }
-                catch (System.Exception ex)
-                {
-                    GameLogger.Log($"[SaveService] Failed to decrypt {filename}: {ex.Message}");
-                    return new T();
+                    return DeserializeData<T>(key, content, config.EncryptData);
                 }
             }
+            
+            // For CloudWithCache, try local fallback
+            if (config.Strategy == StorageStrategy.CloudWithCache && _localProvider.Exists(key))
+            {
+                string content = _localProvider.Read(key);
+                if (!string.IsNullOrEmpty(content))
+                {
+                    GameLogger.Log($"[SaveService] Using local cache for {key}");
+                    return DeserializeData<T>(key, content, config.EncryptData);
+                }
+            }
+            
+            return new T();
+        }
 
-            // Handle invalid JSON
+        public void SaveData<T>(string key, T data) where T : class, new()
+        {
+            var config = GetStorageConfig(key);
+            string content = SerializeData(data, config.EncryptData);
+            
+            switch (config.Strategy)
+            {
+                case StorageStrategy.LocalOnly:
+                    _localProvider.Write(key, content);
+                    break;
+                    
+                case StorageStrategy.CloudOnly:
+                    if (_cloudProvider.IsAvailable)
+                    {
+                        _cloudProvider.Write(key, content);
+                    }
+                    else
+                    {
+                        GameLogger.LogWarning($"[SaveService] Cloud provider not available for {key}");
+                    }
+                    break;
+                    
+                case StorageStrategy.CloudWithCache:
+                    // Write to local immediately (fast)
+                    _localProvider.Write(key, content);
+                    
+                    // Queue cloud sync (async)
+                    if (_cloudProvider.IsAvailable)
+                    {
+                        _syncStatus[key].MarkPendingChanges();
+                        SyncToCloudAsync(key).Forget();
+                    }
+                    else
+                    {
+                        GameLogger.Log($"[SaveService] Cloud not available, saved to local cache: {key}");
+                    }
+                    break;
+            }
+        }
+        
+        private async UniTask SyncToCloudAsync(string key)
+        {
+            var config = GetStorageConfig(key);
+            var status = _syncStatus[key];
+            
+            if (status.IsSyncing)
+            {
+                return; // Already syncing
+            }
+            
+            status.MarkSyncStarted();
+            
             try
             {
-                return UnityEngine.JsonUtility.FromJson<T>(content);
+                // Read from local
+                string content = _localProvider.Read(key);
+                if (string.IsNullOrEmpty(content))
+                {
+                    status.MarkSyncCompleted();
+                    return;
+                }
+                
+                // Write to cloud
+                await _cloudProvider.WriteAsync(key, content);
+                
+                status.MarkSyncCompleted();
+                GameLogger.Log($"[SaveService] Synced {key} to cloud");
             }
-            catch (System.Exception ex)
+            catch (Exception e)
             {
-                GameLogger.LogError($"[SaveService] Failed to parse {filename}: {ex.Message}. Creating new instance.");
-                return new T();
+                status.MarkSyncFailed(e.Message);
+                GameLogger.LogError($"[SaveService] Failed to sync {key}: {e.Message}");
             }
         }
-
-        private void Save<T>(string filename, T data)
+        
+        private string SerializeData<T>(T data, bool encrypt)
         {
             string content = UnityEngine.JsonUtility.ToJson(data, true);
-
-            if (_encryption != null)
+            
+            if (encrypt && _encryption != null)
             {
                 content = _encryption.Encrypt(content);
             }
-
-            _storage.Write(filename, content);
+            
+            return content;
         }
+        
+        private T DeserializeData<T>(string key, string content, bool encrypted) where T : new()
+        {
+            try
+            {
+                if (encrypted && _encryption != null)
+                {
+                    content = _encryption.Decrypt(content);
+                }
+                
+                return UnityEngine.JsonUtility.FromJson<T>(content);
+            }
+            catch (Exception ex)
+            {
+                GameLogger.LogError($"[SaveService] Failed to deserialize {key}: {ex.Message}");
+                return new T();
+            }
+        }
+        
+        private StorageConfig GetStorageConfig(string key)
+        {
+            return _storageConfigs.TryGetValue(key, out var config) 
+                ? config 
+                : new StorageConfig(key, StorageStrategy.LocalOnly, false);
+        }
+        
+        private IStorageProvider GetProviderForStrategy(StorageStrategy strategy)
+        {
+            return strategy switch
+            {
+                StorageStrategy.LocalOnly => _localProvider,
+                StorageStrategy.CloudOnly => _cloudProvider,
+                StorageStrategy.CloudWithCache => _cloudProvider.IsAvailable ? _cloudProvider : _localProvider,
+                _ => _localProvider
+            };
+        }
+
     }
 }

@@ -99,6 +99,18 @@
                     <Button name="parent-guide-button" text="👨‍👩‍👧 PARENT GUIDE" class="settings-button" />
                 </VisualElement>
             </VisualElement>
+            <VisualElement name="account-section" class="settings-section">
+                <Label text="👤 ACCOUNT" class="section-title" />
+                <VisualElement name="account-controls" class="controls-group">
+                    <VisualElement class="control-row">
+                        <Label text="Player Name" class="control-label" />
+                        <TextField name="player-name-field" class="control-textfield" />
+                    </VisualElement>
+                </VisualElement>
+                <VisualElement name="account-buttons" class="button-grid">
+                    <Button name="logout-button" text="🚪 LOGOUT" class="settings-button settings-button-full settings-button-warning" />
+                </VisualElement>
+            </VisualElement>
             <VisualElement name="actions-section" class="settings-section settings-section-danger">
                 <VisualElement name="action-buttons" class="button-grid">
                     <Button name="reset-button" text="🔄 RESET TO DEFAULTS" class="settings-button settings-button-full settings-button-warning" />

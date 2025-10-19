@@ -1,5 +1,7 @@
 using System;
 using Core.Animation;
+using Core.Bootstrap;
+using Core.SaveSystem;
 using UI.UISystem.Core;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -9,6 +11,7 @@ namespace UI.UISystem.Screens
     /// <summary>
     /// Settings screen for game configuration
     /// Pure C# implementation with programmatic configuration
+    /// Uses SaveService instead of PlayerPrefs for persistence
     /// </summary>
     [UIScreen(UIScreenType.Settings, UIScreenPriority.Settings, "SettingsTemplate")]
     public class SettingsScreen : BaseUIScreen
@@ -35,6 +38,7 @@ namespace UI.UISystem.Screens
         private Button _closeButton;
         private Button _resetButton;
         private Button _applyButton;
+        private Button _logoutButton;
 
         // Audio controls
         private Slider _masterVolumeSlider;
@@ -44,6 +48,9 @@ namespace UI.UISystem.Screens
         // Graphics controls
         private Toggle _fullscreenToggle;
         private Toggle _vsyncToggle;
+        
+        // Account controls
+        private TextField _playerNameField;
 
         #endregion
 
@@ -52,6 +59,7 @@ namespace UI.UISystem.Screens
         public event Action<SettingsData> OnSettingsApplied;
         public event Action OnSettingsReset;
         public event Action OnSettingsClosed;
+        public event Action OnLogoutRequested;
         public event Action<float> OnMasterVolumeChanged;
         public event Action<float> OnMusicVolumeChanged;
         public event Action<float> OnSFXVolumeChanged;
@@ -92,6 +100,7 @@ namespace UI.UISystem.Screens
             _closeButton = GetElement<Button>("close-button");
             _resetButton = GetElement<Button>("reset-button");
             _applyButton = GetElement<Button>("apply-button");
+            _logoutButton = GetElement<Button>("logout-button");
 
             // Audio sliders
             _masterVolumeSlider = GetElement<Slider>("master-volume-slider");
@@ -101,6 +110,9 @@ namespace UI.UISystem.Screens
             // Graphics toggles
             _fullscreenToggle = GetElement<Toggle>("fullscreen-toggle");
             _vsyncToggle = GetElement<Toggle>("vsync-toggle");
+            
+            // Account controls
+            _playerNameField = GetElement<TextField>("player-name-field");
 
             // Log missing elements for debugging
             if (_closeButton == null)
@@ -119,6 +131,7 @@ namespace UI.UISystem.Screens
             _closeButton?.RegisterCallback<ClickEvent>(_ => HandleCloseClicked());
             _resetButton?.RegisterCallback<ClickEvent>(_ => HandleResetClicked());
             _applyButton?.RegisterCallback<ClickEvent>(_ => HandleApplyClicked());
+            _logoutButton?.RegisterCallback<ClickEvent>(_ => HandleLogoutClicked());
 
             // Slider events
             _masterVolumeSlider?.RegisterValueChangedCallback(evt => HandleMasterVolumeChanged(evt.newValue));
@@ -135,6 +148,7 @@ namespace UI.UISystem.Screens
             _closeButton?.UnregisterCallback<ClickEvent>(_ => HandleCloseClicked());
             _resetButton?.UnregisterCallback<ClickEvent>(_ => HandleResetClicked());
             _applyButton?.UnregisterCallback<ClickEvent>(_ => HandleApplyClicked());
+            _logoutButton?.UnregisterCallback<ClickEvent>(_ => HandleLogoutClicked());
 
             _masterVolumeSlider?.UnregisterValueChangedCallback(evt => HandleMasterVolumeChanged(evt.newValue));
             _musicVolumeSlider?.UnregisterValueChangedCallback(evt => HandleMusicVolumeChanged(evt.newValue));
@@ -244,23 +258,66 @@ namespace UI.UISystem.Screens
 
         private void LoadCurrentSettings()
         {
-            // Load from PlayerPrefs or use defaults
-            MasterVolume = PlayerPrefs.GetFloat("MasterVolume", DefaultMasterVolume);
-            MusicVolume = PlayerPrefs.GetFloat("MusicVolume", DefaultMusicVolume);
-            SFXVolume = PlayerPrefs.GetFloat("SFXVolume", DefaultSFXVolume);
-            Fullscreen = PlayerPrefs.GetInt("Fullscreen", DefaultFullscreen ? 1 : 0) == 1;
-            VSync = PlayerPrefs.GetInt("VSync", DefaultVSync ? 1 : 0) == 1;
+            // Load from SaveService or use defaults
+            var saveService = GameBootstrap.Services?.SaveService;
+            if (saveService != null)
+            {
+                var settings = saveService.GetSettings();
+                MasterVolume = settings.MasterVolume;
+                MusicVolume = settings.MusicVolume;
+                SFXVolume = settings.SFXVolume;
+                Fullscreen = settings.Fullscreen;
+                VSync = settings.VSync;
+                
+                // Load player name from stats (cloud storage)
+                var stats = saveService.GetPlayerStats();
+                if (_playerNameField != null)
+                {
+                    _playerNameField.value = stats.PlayerName;
+                }
+            }
+            else
+            {
+                // Fallback to defaults if SaveService not available
+                MasterVolume = DefaultMasterVolume;
+                MusicVolume = DefaultMusicVolume;
+                SFXVolume = DefaultSFXVolume;
+                Fullscreen = DefaultFullscreen;
+                VSync = DefaultVSync;
+            }
         }
 
         private void SaveSettings()
         {
-            // Save to PlayerPrefs
-            PlayerPrefs.SetFloat("MasterVolume", MasterVolume);
-            PlayerPrefs.SetFloat("MusicVolume", MusicVolume);
-            PlayerPrefs.SetFloat("SFXVolume", SFXVolume);
-            PlayerPrefs.SetInt("Fullscreen", Fullscreen ? 1 : 0);
-            PlayerPrefs.SetInt("VSync", VSync ? 1 : 0);
-            PlayerPrefs.Save();
+            // Save to SaveService (local storage)
+            var saveService = GameBootstrap.Services?.SaveService;
+            if (saveService != null)
+            {
+                // Save settings (local storage)
+                saveService.UpdateSettings(settings =>
+                {
+                    settings.MasterVolume = MasterVolume;
+                    settings.MusicVolume = MusicVolume;
+                    settings.SFXVolume = SFXVolume;
+                    settings.Fullscreen = Fullscreen;
+                    settings.VSync = VSync;
+                });
+                
+                // Save player name to stats (cloud storage)
+                if (_playerNameField != null && !string.IsNullOrWhiteSpace(_playerNameField.value))
+                {
+                    saveService.UpdatePlayerStats(stats =>
+                    {
+                        stats.PlayerName = _playerNameField.value;
+                    });
+                }
+                
+                Debug.Log("[SettingsScreen] Settings saved to SaveService");
+            }
+            else
+            {
+                Debug.LogWarning("[SettingsScreen] SaveService not available, settings not saved");
+            }
         }
 
         private void UpdateUIFromSettings()
@@ -423,6 +480,23 @@ namespace UI.UISystem.Screens
             OnVSyncChanged?.Invoke(value);
             
             Debug.Log($"[SettingsScreen] VSync changed to {value}");
+        }
+
+        private async void HandleLogoutClicked()
+        {
+            Debug.Log("[SettingsScreen] Logout button clicked");
+            
+            // Use AuthenticationService
+            var authService = GameBootstrap.Services?.AuthenticationService;
+            if (authService != null)
+            {
+                await authService.LogoutAsync();
+                // Bootstrap will handle the rest via OnLogoutComplete event
+            }
+            else
+            {
+                Debug.LogError("[SettingsScreen] AuthenticationService not available");
+            }
         }
 
         #endregion
