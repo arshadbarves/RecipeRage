@@ -190,10 +190,10 @@ namespace UI
         {
             Debug.Log($"[ShopUI] Attempting to buy {item.name} for {item.price} {item.currency}");
 
-            CurrencyManager currencyManager = CurrencyManager.Instance;
-            if (currencyManager == null)
+            var currencyService = Core.Bootstrap.GameBootstrap.Services?.CurrencyService;
+            if (currencyService == null)
             {
-                Debug.LogError("[ShopUI] CurrencyManager not found");
+                Debug.LogError("[ShopUI] CurrencyService not found");
                 return;
             }
 
@@ -202,18 +202,18 @@ namespace UI
             // Check currency type and spend accordingly
             if (item.currency == "coins")
             {
-                purchaseSuccess = currencyManager.SpendCoins(item.price);
+                purchaseSuccess = currencyService.SpendCoins(item.price);
             }
             else if (item.currency == "gems")
             {
-                purchaseSuccess = currencyManager.SpendGems(item.price);
+                purchaseSuccess = currencyService.SpendGems(item.price);
             }
 
             if (purchaseSuccess)
             {
                 Debug.Log($"[ShopUI] Successfully purchased {item.name}");
                 
-                // Mark item as owned
+                // Mark item as owned (TODO: Use SaveService instead of PlayerPrefs)
                 PlayerPrefs.SetInt($"Owned_{item.id}", 1);
                 
                 // If it's a skin, also unlock it

@@ -1,11 +1,13 @@
 using System;
+using UnityEngine;
 
 namespace Core.State
 {
     /// <summary>
     /// Game state manager - pure C# class, no MonoBehaviour
+    /// Implements IDisposable for proper cleanup on logout
     /// </summary>
-    public class GameStateManager : IGameStateManager
+    public class GameStateManager : IGameStateManager, IDisposable
     {
         private readonly IStateMachine _stateMachine;
 
@@ -43,6 +45,17 @@ namespace Core.State
         public void FixedUpdate(float fixedDeltaTime)
         {
             _stateMachine.FixedUpdate();
+        }
+
+        public void Dispose()
+        {
+            Debug.Log("[GameStateManager] Disposing");
+
+            // Exit current state
+            CurrentState?.Exit();
+
+            // Clear state machine
+            // Note: StateMachine doesn't have a Dispose method, so we just clear references
         }
     }
 }

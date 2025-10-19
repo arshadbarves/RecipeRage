@@ -75,14 +75,24 @@ namespace UI.UISystem.Screens
         private SettingsUI _settingsUI;
         private bool _tabsInitialized = false;
 
+        private UI.Components.CurrencyDisplay _currencyDisplay;
+
         protected override void OnInitialize()
         {
             // Configure top-bar to ignore pointer events (let clicks pass through)
             // but keep child elements clickable
             ConfigureTopBarPointerEvents();
             
-            // Initialize CurrencyManager with the root element
-            CurrencyManager.Instance.Initialize(Container);
+            // Initialize CurrencyDisplay with new system
+            var services = GameBootstrap.Services;
+            if (services != null)
+            {
+                _currencyDisplay = new UI.Components.CurrencyDisplay(
+                    Container,
+                    services.EventBus,
+                    services.CurrencyService
+                );
+            }
             
             // Initialize tab content
             InitializeTabContent();
@@ -237,7 +247,8 @@ namespace UI.UISystem.Screens
 
         protected override void OnDispose()
         {
-            // Cleanup
+            // Cleanup currency display
+            _currencyDisplay?.Dispose();
         }
 
         #endregion

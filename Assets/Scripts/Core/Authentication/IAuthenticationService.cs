@@ -10,14 +10,18 @@ namespace Core.Authentication
     {
         bool IsLoggedIn { get; }
         string LastLoginMethod { get; }
+
+        /// <summary>
+        /// Initialize authentication - checks for existing session and shows appropriate UI
+        /// Returns true if user is authenticated, false if login screen is shown
+        /// </summary>
+        UniTask<bool> InitializeAsync();
         
         UniTask<bool> AttemptAutoLoginAsync();
         UniTask<bool> LoginAsGuestAsync();
         UniTask<bool> LoginWithFacebookAsync();
-        void Logout();
+        UniTask LogoutAsync();
         
-        event Action OnLoginSuccess;
-        event Action<string> OnLoginFailed;
-        event Action<string> OnLoginStatusChanged;
+        event Action OnLogoutComplete;
     }
 }

@@ -162,6 +162,10 @@
 
 .control-dropdown .unity-base-popup-field__input {
     background-color: transparent;
+    border-width: 0;
+    color: rgb(40, 30, 25);
+    -unity-font-style: bold;
+    font-size: 20px;
 }
 
 .control-toggle .unity-toggle__input {

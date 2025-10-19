@@ -6,8 +6,9 @@ namespace Core.GameModes
 {
     /// <summary>
     /// Game mode service - pure C# class, no MonoBehaviour
+    /// Implements IDisposable for proper cleanup on logout
     /// </summary>
-    public class GameModeService : IGameModeService
+    public class GameModeService : IGameModeService, IDisposable
     {
         private readonly Dictionary<string, GameMode> _gameModes = new Dictionary<string, GameMode>();
         private GameMode _selectedGameMode;
@@ -79,6 +80,13 @@ namespace Core.GameModes
             
             Debug.Log($"[GameModeService] Selected: {mode.DisplayName}");
             return true;
+        }
+
+        public void Dispose()
+        {
+            Debug.Log("[GameModeService] Disposing");
+            _gameModes.Clear();
+            _selectedGameMode = null;
         }
     }
 }

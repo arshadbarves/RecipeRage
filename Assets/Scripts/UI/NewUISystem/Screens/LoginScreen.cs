@@ -2,6 +2,7 @@ using System;
 using Core.Animation;
 using Core.Authentication;
 using Core.Bootstrap;
+using Core.Events;
 using Core.Utilities;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
@@ -35,10 +36,7 @@ namespace UI.UISystem.Screens
         #endregion
 
         #region Events
-
-        public event Action OnLoginSuccess;
-        public event Action<string> OnLoginFailed;
-
+        // Events removed - using EventBus instead
         #endregion
 
         #region Lifecycle
@@ -47,7 +45,7 @@ namespace UI.UISystem.Screens
         {
             CacheUIElements();
             SetupButtonHandlers();
-            
+
             _loginCard.style.translate = new Translate(new Length(100, LengthUnit.Percent), 0);
 
             Debug.Log("[LoginScreen] Initialized");
@@ -131,12 +129,13 @@ namespace UI.UISystem.Screens
                 _guestLoginButton.clicked -= OnGuestLoginClicked;
             }
 
-            // Unsubscribe from authentication events
-            if (GameBootstrap.Services.AuthenticationService != null)
+            // Unsubscribe from EventBus
+            var eventBus = GameBootstrap.Services?.EventBus;
+            if (eventBus != null)
             {
-                GameBootstrap.Services.AuthenticationService.OnLoginSuccess -= HandleLoginSuccess;
-                GameBootstrap.Services.AuthenticationService.OnLoginFailed -= HandleLoginFailed;
-                GameBootstrap.Services.AuthenticationService.OnLoginStatusChanged -= UpdateStatus;
+                eventBus.Unsubscribe<LoginSuccessEvent>(HandleLoginSuccess);
+                eventBus.Unsubscribe<LoginFailedEvent>(HandleLoginFailed);
+                eventBus.Unsubscribe<LoginStatusChangedEvent>(HandleStatusChanged);
             }
         }
 
@@ -196,17 +195,16 @@ namespace UI.UISystem.Screens
                 return;
             }
 
-            // Unsubscribe first to avoid duplicate subscriptions
-            GameBootstrap.Services.AuthenticationService.OnLoginSuccess -= HandleLoginSuccess;
-            GameBootstrap.Services.AuthenticationService.OnLoginFailed -= HandleLoginFailed;
-            GameBootstrap.Services.AuthenticationService.OnLoginStatusChanged -= UpdateStatus;
+            // Subscribe to EventBus events
+            var eventBus = GameBootstrap.Services.EventBus;
+            if (eventBus != null)
+            {
+                eventBus.Subscribe<LoginSuccessEvent>(HandleLoginSuccess);
+                eventBus.Subscribe<LoginFailedEvent>(HandleLoginFailed);
+                eventBus.Subscribe<LoginStatusChangedEvent>(HandleStatusChanged);
+            }
 
-            // Subscribe to authentication events
-            GameBootstrap.Services.AuthenticationService.OnLoginSuccess += HandleLoginSuccess;
-            GameBootstrap.Services.AuthenticationService.OnLoginFailed += HandleLoginFailed;
-            GameBootstrap.Services.AuthenticationService.OnLoginStatusChanged += UpdateStatus;
-
-            Debug.Log("[LoginScreen] Connected to AuthenticationManager");
+            Debug.Log("[LoginScreen] Connected to EventBus");
         }
 
         private void UpdateUI()
@@ -365,29 +363,28 @@ namespace UI.UISystem.Screens
 
         #region Event Handlers
 
-        private void HandleLoginSuccess()
+        private void HandleLoginSuccess(LoginSuccessEvent evt)
         {
             _isLoggingIn = false;
             UpdateUI();
 
-            Debug.Log("[LoginScreen] Login successful from AuthenticationService");
-
-            // Notify listeners
-            OnLoginSuccess?.Invoke();
+            Debug.Log($"[LoginScreen] Login successful for user: {evt.UserId}");
 
             // Hide login screen after a short delay
             HideAfterDelayAsync(1f).Forget();
         }
 
-        private void HandleLoginFailed(string error)
+        private void HandleLoginFailed(LoginFailedEvent evt)
         {
             _isLoggingIn = false;
             UpdateUI();
 
-            Debug.LogWarning($"[LoginScreen] Login failed from AuthenticationService: {error}");
+            Debug.LogWarning($"[LoginScreen] Login failed: {evt.Error}");
+        }
 
-            // Notify listeners
-            OnLoginFailed?.Invoke(error);
+        private void HandleStatusChanged(LoginStatusChangedEvent evt)
+        {
+            UpdateStatus(evt.Status);
         }
 
         private async UniTaskVoid HideAfterDelayAsync(float delay)

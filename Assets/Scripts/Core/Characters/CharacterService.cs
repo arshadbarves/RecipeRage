@@ -7,8 +7,9 @@ namespace Core.Characters
 {
     /// <summary>
     /// Character service - pure C# class, no MonoBehaviour
+    /// Implements IDisposable for proper cleanup on logout
     /// </summary>
-    public class CharacterService : ICharacterService
+    public class CharacterService : ICharacterService, IDisposable
     {
         private readonly Dictionary<int, CharacterClass> _characters = new Dictionary<int, CharacterClass>();
         private readonly HashSet<int> _unlockedCharacters = new HashSet<int>();
@@ -100,6 +101,14 @@ namespace Core.Characters
             
             Debug.Log($"[CharacterService] Selected: {character.DisplayName}");
             return true;
+        }
+
+        public void Dispose()
+        {
+            Debug.Log("[CharacterService] Disposing");
+            _characters.Clear();
+            _unlockedCharacters.Clear();
+            _selectedCharacter = null;
         }
     }
 }

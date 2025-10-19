@@ -9,7 +9,9 @@ using UnityEngine;
 namespace Core.Authentication
 {
     /// <summary>
-    /// Authentication service - uses SaveService for persistence (SOLID compliant)
+    /// Authentication service - handles all auth logic and UI flow
+    /// Uses SaveService for persistence (SOLID compliant)
+    /// Publishes events via EventBus for decoupled communication
     /// </summary>
     public class AuthenticationService : IAuthenticationService
     {
@@ -17,17 +19,83 @@ namespace Core.Authentication
         private const string LOGIN_METHOD_FACEBOOK = "Facebook";
         
         private readonly ISaveService _saveService;
-
-        public event Action OnLoginSuccess;
-        public event Action<string> OnLoginFailed;
-        public event Action<string> OnLoginStatusChanged;
+        private readonly Core.Events.IEventBus _eventBus;
+        private readonly UI.UISystem.IUIService _uiService;
 
         public bool IsLoggedIn => IsUserLoggedIn();
         public string LastLoginMethod => _saveService?.GetSettings().LastLoginMethod ?? "";
 
-        public AuthenticationService(ISaveService saveService)
+        /// <summary>
+        /// Constructor with proper dependency injection
+        /// </summary>
+        public AuthenticationService(
+            ISaveService saveService,
+            Core.Events.IEventBus eventBus,
+            UI.UISystem.IUIService uiService)
         {
-            _saveService = saveService;
+            _saveService = saveService ?? throw new ArgumentNullException(nameof(saveService));
+            _eventBus = eventBus ?? throw new ArgumentNullException(nameof(eventBus));
+            _uiService = uiService ?? throw new ArgumentNullException(nameof(uiService));
+        }
+
+        /// <summary>
+        /// Initialize authentication - checks for existing session and shows appropriate UI
+        /// Returns true if user is authenticated, false if login screen is shown
+        /// </summary>
+        public async UniTask<bool> InitializeAsync()
+        {
+            Debug.Log("[AuthenticationService] Initializing authentication...");
+
+            // Try auto-login
+            bool loginSuccess = await AttemptAutoLoginAsync();
+
+            if (loginSuccess)
+            {
+                Debug.Log("[AuthenticationService] Auto-login successful");
+                
+                // Notify save service that user logged in
+                _saveService.OnUserLoggedIn();
+                
+                return true;
+            }
+            else
+            {
+                Debug.Log("[AuthenticationService] Auto-login failed - showing login screen");
+                ShowLoginScreen();
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Show login screen and subscribe to login events
+        /// </summary>
+        private void ShowLoginScreen()
+        {
+            if (_uiService != null)
+            {
+                _uiService.ShowScreen(UI.UISystem.UIScreenType.Login);
+
+                // Subscribe to login success via EventBus
+                _eventBus?.Subscribe<Core.Events.LoginSuccessEvent>(OnLoginSuccessInternal);
+            }
+            else
+            {
+                Debug.LogError("[AuthenticationService] UIService not available to show login screen");
+            }
+        }
+
+        /// <summary>
+        /// Internal handler for login success event
+        /// </summary>
+        private void OnLoginSuccessInternal(Core.Events.LoginSuccessEvent evt)
+        {
+            // Unsubscribe
+            _eventBus?.Unsubscribe<Core.Events.LoginSuccessEvent>(OnLoginSuccessInternal);
+
+            Debug.Log($"[AuthenticationService] Login successful for user: {evt.UserId}");
+
+            // Notify save service that user logged in
+            _saveService.OnUserLoggedIn();
         }
 
         public async UniTask<bool> AttemptAutoLoginAsync()
@@ -38,7 +106,14 @@ namespace Core.Authentication
             {
                 UpdateStatus("Session found!");
                 await UniTask.Delay(500);
-                OnLoginSuccess?.Invoke();
+                
+                // Publish event via EventBus
+                _eventBus?.Publish(new Core.Events.LoginSuccessEvent
+                {
+                    UserId = EOSManager.Instance?.GetProductUserId()?.ToString() ?? "unknown",
+                    DisplayName = "User"
+                });
+                
                 return true;
             }
 
@@ -77,7 +152,12 @@ namespace Core.Authentication
             Debug.Log("[AuthenticationService] Facebook login requested");
             UpdateStatus("Facebook login requires Facebook SDK integration");
             await UniTask.Delay(1000);
-            OnLoginFailed?.Invoke("Facebook SDK not integrated");
+            
+            _eventBus?.Publish(new Core.Events.LoginFailedEvent
+            {
+                Error = "Facebook SDK not integrated"
+            });
+            
             return false;
         }
 
@@ -95,6 +175,9 @@ namespace Core.Authentication
             }
 
             UpdateStatus("Logged out");
+            
+            // Show login screen after logout
+            ShowLoginScreen();
         }
 
         private async UniTask<bool> LoginWithDeviceIdInternalAsync(bool isAutoLogin)
@@ -140,14 +223,24 @@ namespace Core.Authentication
                 {
                     errorMessage = "Device ID creation timed out";
                     UpdateStatus(errorMessage);
-                    OnLoginFailed?.Invoke(errorMessage);
+                    
+                    _eventBus?.Publish(new Core.Events.LoginFailedEvent
+                    {
+                        Error = errorMessage
+                    });
+                    
                     return false;
                 }
 
                 if (!createSuccess)
                 {
                     UpdateStatus(string.IsNullOrEmpty(errorMessage) ? "Failed to create guest account" : errorMessage);
-                    OnLoginFailed?.Invoke(errorMessage);
+                    
+                    _eventBus?.Publish(new Core.Events.LoginFailedEvent
+                    {
+                        Error = errorMessage
+                    });
+                    
                     return false;
                 }
             }
@@ -189,7 +282,12 @@ namespace Core.Authentication
             {
                 errorMessage = "Login timed out";
                 UpdateStatus(errorMessage);
-                OnLoginFailed?.Invoke(errorMessage);
+                
+                _eventBus?.Publish(new Core.Events.LoginFailedEvent
+                {
+                    Error = errorMessage
+                });
+                
                 return false;
             }
 
@@ -199,7 +297,14 @@ namespace Core.Authentication
                 _saveService?.UpdateSettings(s => s.LastLoginMethod = LOGIN_METHOD_DEVICE_ID);
 
                 UpdateStatus("Login successful!");
-                OnLoginSuccess?.Invoke();
+                
+                // Publish event via EventBus
+                _eventBus?.Publish(new Core.Events.LoginSuccessEvent
+                {
+                    UserId = EOSManager.Instance?.GetProductUserId()?.ToString() ?? "unknown",
+                    DisplayName = "Guest"
+                });
+                
                 return true;
             }
             else
@@ -210,7 +315,13 @@ namespace Core.Authentication
                 }
 
                 UpdateStatus(errorMessage);
-                OnLoginFailed?.Invoke(errorMessage);
+                
+                // Publish event via EventBus
+                _eventBus?.Publish(new Core.Events.LoginFailedEvent
+                {
+                    Error = errorMessage
+                });
+                
                 return false;
             }
         }
@@ -226,7 +337,52 @@ namespace Core.Authentication
         private void UpdateStatus(string message)
         {
             Debug.Log($"[AuthenticationService] {message}");
-            OnLoginStatusChanged?.Invoke(message);
+            
+            // Publish event via EventBus
+            _eventBus?.Publish(new Core.Events.LoginStatusChangedEvent
+            {
+                Status = message
+            });
+        }
+
+        // ============================================
+        // LOGOUT SUPPORT
+        // ============================================
+
+        public event Action OnLogoutComplete;
+
+        public async UniTask LogoutAsync()
+        {
+            Debug.Log("[AuthenticationService] Logging out...");
+            UpdateStatus("Logging out...");
+
+            try
+            {
+                // Clear saved login method
+                var settings = _saveService.GetSettings();
+                settings.LastLoginMethod = "";
+                _saveService.SaveSettings(settings);
+
+                // EOS logout (if available)
+                if (EOSManager.Instance != null)
+                {
+                    // Note: EOS Connect doesn't have explicit logout
+                    // The session will expire naturally
+                    Debug.Log("[AuthenticationService] EOS session will expire naturally");
+                }
+
+                await UniTask.Delay(500);
+
+                UpdateStatus("Logged out successfully");
+                OnLogoutComplete?.Invoke();
+
+                Debug.Log("[AuthenticationService] Logout complete");
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[AuthenticationService] Logout failed: {ex.Message}");
+                UpdateStatus($"Logout failed: {ex.Message}");
+            }
         }
     }
 }

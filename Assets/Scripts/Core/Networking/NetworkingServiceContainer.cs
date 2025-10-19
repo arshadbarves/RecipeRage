@@ -11,8 +11,9 @@ namespace Core.Networking
 {
     /// <summary>
     /// Container for all networking services - no MonoBehaviour
+    /// Implements IDisposable for proper cleanup on logout
     /// </summary>
-    public class NetworkingServiceContainer : INetworkingServices
+    public class NetworkingServiceContainer : INetworkingServices, IDisposable
     {
         public ILobbyManager LobbyManager { get; private set; }
         public IPlayerManager PlayerManager { get; private set; }
@@ -52,7 +53,25 @@ namespace Core.Networking
 
         public void Dispose()
         {
-            // Clean up if needed
+            Debug.Log("[NetworkingServiceContainer] Disposing - leaving lobbies, closing connections");
+
+            // Leave any active lobbies
+            try
+            {
+                // LobbyManager?.LeaveLobby(); // Uncomment when LeaveLobby is implemented
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[NetworkingServiceContainer] Error leaving lobby: {ex.Message}");
+            }
+
+            // Clear references
+            LobbyManager = null;
+            PlayerManager = null;
+            MatchmakingService = null;
+            TeamManager = null;
+
+            Debug.Log("[NetworkingServiceContainer] Disposed");
         }
     }
 }
