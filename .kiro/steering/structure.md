@@ -125,14 +125,61 @@ Log levels:
 ### UI Toolkit Conventions
 
 1. **UXML Templates**: Define structure in Assets/Resources/UI/
-2. **USS Styles**: Define styling in Assets/Resources/UI/
-3. **C# Controllers**: MonoBehaviour that binds to UXML
-4. **Query Elements**: Use UQuery to find elements
+2. **USS Styles**: Define styling in Assets/Resources/UI/ (static styles only, no animations)
+3. **C# Controllers**: BaseUIScreen-derived classes that bind to UXML
+4. **Query Elements**: Use GetElement<T>() helper methods
 ```csharp
-var root = GetComponent<UIDocument>().rootVisualElement;
-var button = root.Q<Button>("my-button");
-button.clicked += OnButtonClicked;
+protected override void OnInitialize()
+{
+    var button = GetElement<Button>("my-button");
+    button.clicked += OnButtonClicked;
+}
 ```
+
+### UI Animation Guidelines
+
+**ALWAYS use AnimationService (DOTween) for UI animations - NEVER use CSS transitions/animations**
+
+```csharp
+// ✅ CORRECT - Use AnimationService
+protected override void OnShow()
+{
+    var animationService = GameBootstrap.Services?.AnimationService;
+    if (animationService != null && _loginCard != null)
+    {
+        // Slide in from right
+        animationService.UI.SlideIn(_loginCard, SlideDirection.Right, 0.5f);
+    }
+}
+
+protected override void OnHide()
+{
+    var animationService = GameBootstrap.Services?.AnimationService;
+    if (animationService != null && _loginCard != null)
+    {
+        // Slide out to right
+        animationService.UI.SlideOut(_loginCard, SlideDirection.Right, 0.4f);
+    }
+}
+
+// ❌ WRONG - Don't use CSS classes for animations
+Container?.AddToClassList("show"); // Don't do this
+Container?.RemoveFromClassList("hide"); // Don't do this
+```
+
+**Available Animation Methods:**
+- `FadeIn()` / `FadeOut()` - Opacity animations
+- `SlideIn()` / `SlideOut()` - Position animations (Left, Right, Top, Bottom)
+- `ScaleIn()` / `ScaleOut()` - Scale animations
+- `Pulse()` - Pulsing effect
+- `Shake()` - Shake effect
+
+**Why AnimationService over CSS:**
+- Consistent animation system across all UI
+- Better performance with DOTween
+- Easier to control programmatically
+- Callbacks for animation completion
+- Can be killed/interrupted cleanly
 
 ### ScriptableObject Data
 

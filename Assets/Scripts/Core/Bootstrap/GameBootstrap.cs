@@ -1,4 +1,4 @@
-using System.Collections;
+using System;
 using Core.Animation;
 using Core.Audio;
 using Core.Authentication;
@@ -10,7 +10,7 @@ using Core.Networking;
 using Core.SaveSystem;
 using Core.State;
 using Core.State.States;
-using PlayEveryWare.EpicOnlineServices;
+using Cysharp.Threading.Tasks;
 using UI.UISystem;
 using UnityEngine;
 
@@ -24,6 +24,11 @@ namespace Core.Bootstrap
     {
         [Header("UI")]
         [SerializeField] private UIDocumentProvider _uiDocumentProvider;
+
+        [Header("Splash & Loading")]
+        [SerializeField] private bool _showSplashScreen = true;
+        [SerializeField] private float _splashDuration = 2f;
+        [SerializeField] private bool _showLoadingScreen = true;
 
         private ServiceContainer _services;
         private bool _isInitialized;
@@ -48,47 +53,140 @@ namespace Core.Bootstrap
             InitializeGameSystems();
 
             // Start async initialization
-            StartCoroutine(InitializeAsync());
+            InitializeAsync().Forget();
         }
 
-        private IEnumerator InitializeAsync()
+        private async UniTaskVoid InitializeAsync()
         {
-            // Make services globally accessible immediately (before async operations)
-            Services = _services;
-
-            // Wait for EOS to initialize
-            yield return WaitForEOS();
-
-            // Initialize authentication
-            InitializeAuthentication();
-
-            // Try auto-login
-            yield return _services.AuthenticationService.AttemptAutoLogin();
-
-            // Initialize networking (requires auth)
-            InitializeNetworking();
-
-            // Initialize state machine
-            InitializeStateMachine();
-
-            _isInitialized = true;
-
-            Debug.Log("[GameBootstrap] ✅ Game initialization complete!");
-        }
-
-        private IEnumerator WaitForEOS()
-        {
-            Debug.Log("[GameBootstrap] Waiting for EOS to initialize...");
-
-            while (EOSManager.Instance == null)
+            try
             {
-                yield return new WaitForSeconds(0.1f);
-            }
+                // Wait for next frame to ensure Unity is ready
+                await UniTask.Yield();
+                
+                // Make services globally accessible immediately (before async operations)
+                Services = _services;
 
-            Debug.Log("[GameBootstrap] EOS initialized");
+                // Show splash screen if enabled
+                if (_showSplashScreen)
+                {
+                    await ShowSplashScreenAsync();
+                }
+
+                // Show loading screen if enabled
+                UI.UISystem.Screens.LoadingScreen loadingScreen = null;
+                if (_showLoadingScreen)
+                {
+                    loadingScreen = ShowLoadingScreen();
+                }
+
+                // Initialize authentication (EOS is already attached to this GameObject)
+                loadingScreen?.UpdateProgress(0.3f, "Initializing authentication...");
+                InitializeAuthentication();
+                await UniTask.Delay(200); // Small delay for visual feedback
+
+                // Initialize networking (requires auth)
+                loadingScreen?.UpdateProgress(0.6f, "Connecting to services...");
+                InitializeNetworking();
+                await UniTask.Delay(200);
+
+                _isInitialized = true;
+                loadingScreen?.UpdateProgress(0.9f, "Finalizing...");
+                await UniTask.Delay(200);
+
+                Debug.Log("[GameBootstrap] ✅ Core initialization complete!");
+
+                // Try auto-login
+                loadingScreen?.UpdateProgress(1f, "Checking credentials...");
+                bool loginSuccess = await _services.AuthenticationService.AttemptAutoLoginAsync();
+
+                // Hide loading screen
+                if (loadingScreen != null)
+                {
+                    await loadingScreen.CompleteAsync();
+                }
+
+                if (loginSuccess)
+                {
+                    Debug.Log("[GameBootstrap] Auto-login successful - proceeding to main menu");
+                    ProceedToMainMenu();
+                }
+                else
+                {
+                    Debug.Log("[GameBootstrap] Auto-login failed - showing login screen");
+                    ShowLoginScreen();
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[GameBootstrap] Initialization failed: {ex.Message}");
+                ShowErrorScreen($"Initialization failed: {ex.Message}");
+            }
         }
 
+        private async UniTask ShowSplashScreenAsync()
+        {
+            var uiService = _services?.UIService;
+            if (uiService == null) return;
 
+            uiService.ShowScreen(UIScreenType.Splash, false, true);
+
+            // Get splash screen instance
+            var splashScreen = uiService.GetScreen<UI.UISystem.Screens.SplashScreen>(UIScreenType.Splash);
+            if (splashScreen != null)
+            {
+                await splashScreen.ShowForDurationAsync(_splashDuration);
+            }
+            else
+            {
+                await UniTask.Delay(TimeSpan.FromSeconds(_splashDuration));
+            }
+        }
+
+        private UI.UISystem.Screens.LoadingScreen ShowLoadingScreen()
+        {
+            var uiService = _services?.UIService;
+            if (uiService == null) return null;
+
+            uiService.ShowScreen(UIScreenType.Loading, false, true);
+            return uiService.GetScreen<UI.UISystem.Screens.LoadingScreen>(UIScreenType.Loading);
+        }
+
+        private void ShowLoginScreen()
+        {
+            var uiService = _services?.UIService;
+            if (uiService != null)
+            {
+                uiService.ShowScreen(UIScreenType.Login);
+
+                // Subscribe to login success to proceed to main menu
+                _services.AuthenticationService.OnLoginSuccess += OnLoginSuccessHandler;
+            }
+            else
+            {
+                Debug.LogError("[GameBootstrap] UIService not available to show login screen");
+            }
+        }
+
+        private void OnLoginSuccessHandler()
+        {
+            // Unsubscribe to avoid duplicate calls
+            _services.AuthenticationService.OnLoginSuccess -= OnLoginSuccessHandler;
+
+            Debug.Log("[GameBootstrap] Login successful - proceeding to main menu");
+            ProceedToMainMenu();
+        }
+
+        private void ProceedToMainMenu()
+        {
+            _services.StateManager.Initialize(new MainMenuState());
+        }
+
+        private void ShowErrorScreen(string errorMessage)
+        {
+            // Show error UI or fallback to login screen
+            Debug.LogError($"[GameBootstrap] {errorMessage}");
+            ShowLoginScreen();
+        }
 
         private void InitializeCore()
         {
@@ -132,12 +230,6 @@ namespace Core.Bootstrap
             // Networking (depends on authentication)
             var networkingServices = new NetworkingServiceContainer();
             _services.RegisterNetworkingServices(networkingServices);
-        }
-
-        private void InitializeStateMachine()
-        {
-            // Start with main menu state
-            _services.StateManager.Initialize(new MainMenuState());
         }
 
         private IAudioService CreateAudioService()
