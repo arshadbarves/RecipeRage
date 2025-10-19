@@ -1,6 +1,6 @@
 using System;
-using System.Collections;
 using Core.SaveSystem;
+using Cysharp.Threading.Tasks;
 using Epic.OnlineServices;
 using Epic.OnlineServices.Connect;
 using PlayEveryWare.EpicOnlineServices;
@@ -30,16 +30,16 @@ namespace Core.Authentication
             _saveService = saveService;
         }
 
-        public IEnumerator AttemptAutoLogin()
+        public async UniTask<bool> AttemptAutoLoginAsync()
         {
             UpdateStatus("Checking for existing session...");
 
             if (IsUserLoggedIn())
             {
                 UpdateStatus("Session found!");
-                yield return new WaitForSeconds(0.5f);
+                await UniTask.Delay(500);
                 OnLoginSuccess?.Invoke();
-                yield break;
+                return true;
             }
 
             string lastLoginMethod = _saveService?.GetSettings().LastLoginMethod ?? "";
@@ -47,7 +47,7 @@ namespace Core.Authentication
             if (string.IsNullOrEmpty(lastLoginMethod))
             {
                 UpdateStatus("No previous session found");
-                yield break;
+                return false;
             }
 
             Debug.Log($"[AuthenticationService] Attempting auto-login with method: {lastLoginMethod}");
@@ -55,30 +55,30 @@ namespace Core.Authentication
             switch (lastLoginMethod)
             {
                 case LOGIN_METHOD_DEVICE_ID:
-                    yield return LoginWithDeviceIdInternal(true);
-                    break;
+                    return await LoginWithDeviceIdInternalAsync(true);
                 case LOGIN_METHOD_FACEBOOK:
                     UpdateStatus("Facebook auto-login requires Facebook SDK");
-                    break;
+                    return false;
                 default:
                     UpdateStatus("Unknown login method");
-                    break;
+                    return false;
             }
         }
 
-        public IEnumerator LoginAsGuest()
+        public async UniTask<bool> LoginAsGuestAsync()
         {
             Debug.Log("[AuthenticationService] Guest login requested");
             UpdateStatus("Logging in as guest...");
-            yield return LoginWithDeviceIdInternal(false);
+            return await LoginWithDeviceIdInternalAsync(false);
         }
 
-        public IEnumerator LoginWithFacebook()
+        public async UniTask<bool> LoginWithFacebookAsync()
         {
             Debug.Log("[AuthenticationService] Facebook login requested");
             UpdateStatus("Facebook login requires Facebook SDK integration");
-            yield return new WaitForSeconds(1f);
+            await UniTask.Delay(1000);
             OnLoginFailed?.Invoke("Facebook SDK not integrated");
+            return false;
         }
 
         public void Logout()
@@ -97,10 +97,8 @@ namespace Core.Authentication
             UpdateStatus("Logged out");
         }
 
-        private IEnumerator LoginWithDeviceIdInternal(bool isAutoLogin)
+        private async UniTask<bool> LoginWithDeviceIdInternalAsync(bool isAutoLogin)
         {
-            bool createCompleted = false;
-            bool createSuccess = false;
             string errorMessage = "";
 
             if (!isAutoLogin)
@@ -112,6 +110,9 @@ namespace Core.Authentication
                 {
                     DeviceModel = SystemInfo.deviceModel
                 };
+
+                bool createCompleted = false;
+                bool createSuccess = false;
 
                 connectInterface.CreateDeviceId(ref createOptions, null, (ref CreateDeviceIdCallbackInfo createInfo) =>
                 {
@@ -129,20 +130,25 @@ namespace Core.Authentication
                     }
                 });
 
-                float timeout = 10f;
-                float elapsed = 0f;
+                // Wait for completion with timeout
+                var timeoutTask = UniTask.Delay(TimeSpan.FromSeconds(10));
+                var waitTask = UniTask.WaitUntil(() => createCompleted);
+                
+                var completedTask = await UniTask.WhenAny(waitTask, timeoutTask);
 
-                while (!createCompleted && elapsed < timeout)
+                if (completedTask == 1) // Timeout
                 {
-                    elapsed += Time.deltaTime;
-                    yield return null;
+                    errorMessage = "Device ID creation timed out";
+                    UpdateStatus(errorMessage);
+                    OnLoginFailed?.Invoke(errorMessage);
+                    return false;
                 }
 
                 if (!createSuccess)
                 {
                     UpdateStatus(string.IsNullOrEmpty(errorMessage) ? "Failed to create guest account" : errorMessage);
                     OnLoginFailed?.Invoke(errorMessage);
-                    yield break;
+                    return false;
                 }
             }
 
@@ -173,13 +179,18 @@ namespace Core.Authentication
                 }
             );
 
-            float loginTimeout = 10f;
-            float loginElapsed = 0f;
+            // Wait for login completion with timeout
+            var loginTimeoutTask = UniTask.Delay(TimeSpan.FromSeconds(10));
+            var loginWaitTask = UniTask.WaitUntil(() => loginCompleted);
+            
+            var loginCompletedTask = await UniTask.WhenAny(loginWaitTask, loginTimeoutTask);
 
-            while (!loginCompleted && loginElapsed < loginTimeout)
+            if (loginCompletedTask == 1) // Timeout
             {
-                loginElapsed += Time.deltaTime;
-                yield return null;
+                errorMessage = "Login timed out";
+                UpdateStatus(errorMessage);
+                OnLoginFailed?.Invoke(errorMessage);
+                return false;
             }
 
             if (loginSuccess)
@@ -189,16 +200,18 @@ namespace Core.Authentication
 
                 UpdateStatus("Login successful!");
                 OnLoginSuccess?.Invoke();
+                return true;
             }
             else
             {
                 if (string.IsNullOrEmpty(errorMessage))
                 {
-                    errorMessage = "Login timed out";
+                    errorMessage = "Login failed";
                 }
 
                 UpdateStatus(errorMessage);
                 OnLoginFailed?.Invoke(errorMessage);
+                return false;
             }
         }
 

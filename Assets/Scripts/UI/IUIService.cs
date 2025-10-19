@@ -26,6 +26,7 @@ namespace UI.UISystem
         // Screen queries
         T GetScreen<T>() where T : BaseUIScreen;
         BaseUIScreen GetScreen(UIScreenType screenType);
+        T GetScreen<T>(UIScreenType screenType) where T : BaseUIScreen;
         bool IsScreenVisible(UIScreenType screenType);
         IReadOnlyList<BaseUIScreen> GetVisibleScreens();
         IReadOnlyList<BaseUIScreen> GetScreensByPriority();

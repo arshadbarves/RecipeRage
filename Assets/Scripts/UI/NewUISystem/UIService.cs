@@ -257,6 +257,15 @@ namespace UI.UISystem
         }
 
         /// <summary>
+        /// Get a typed screen instance by screen type
+        /// </summary>
+        public T GetScreen<T>(UIScreenType screenType) where T : BaseUIScreen
+        {
+            _screens.TryGetValue(screenType, out BaseUIScreen screen);
+            return screen as T;
+        }
+
+        /// <summary>
         /// Hide a specific screen
         /// </summary>
         public void HideScreen(UIScreenType screenType, bool animate = true)

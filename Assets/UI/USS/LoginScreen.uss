@@ -1,305 +1,205 @@
-/* Main Container */
 .login-screen {
     position: absolute;
     width: 100%;
     height: 100%;
-    flex-direction: row;
-}
-
-/* ===== LEFT PANEL ===== */
-.left-panel {
-    flex: 1;
-    flex-direction: column;
-    justify-content: flex-end;
-    padding: 50px;
-    position: relative;
+    align-items: center;
+    justify-content: center;
     overflow: hidden;
 }
 
-.left-panel-bg {
+.background {
     position: absolute;
-    top: 0;
-    left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgb(15, 15, 15);
+    background-color: rgb(18, 18, 18);
+    opacity: 1;
 }
 
-.left-panel-grid {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0.03;
-}
-
-.left-content {
-    margin-bottom: 50px;
-    translate: -60px 0;
-}
-
-.left-title {
-    font-size: 48px;
-    -unity-font-style: bold;
-    color: rgb(255, 255, 255);
-    margin-bottom: 20px;
-    letter-spacing: -1px;
-}
-
-.left-subtitle {
-    font-size: 18px;
-    color: rgba(255, 255, 255, 0.7);
-    max-width: 400px;
-    white-space: normal;
-}
-
-/* ===== RIGHT PANEL ===== */
-.right-panel {
-    flex: 1;
+.login-card {
+    width: 480px;
     background-color: rgb(255, 255, 255);
+    border-radius: 24px;
+    padding: 48px 40px;
     flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    align-self: flex-end;
+    flex-grow: 1;
+    border-top-left-radius: 24px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 24px;
+}
+
+.header {
     align-items: center;
-    justify-content: center;
-    padding: 80px 60px;
-    position: relative;
-}
-
-.right-panel-orb {
-    position: absolute;
-    top: -200px;
-    right: -200px;
-    width: 500px;
-    height: 500px;
-    background-color: rgba(24, 119, 242, 0.08);
-    border-radius: 250px;
-}
-
-/* Logo */
-.logo-container {
     margin-bottom: 40px;
-    align-items: center;
-    translate: 0 -50px;
 }
 
-.logo {
-    width: 90px;
-    height: 90px;
-    background-color: rgb(44, 62, 80);
-    border-radius: 22px;
-    align-items: center;
-    justify-content: center;
-    transition-property: scale, rotate;
-    transition-duration: 0.3s, 0.3s;
-}
-
-.logo:hover {
-    scale: 1.05;
-    rotate: -3deg;
-}
-
-.logo-text {
-    font-size: 42px;
+.app-title {
+    font-size: 32px;
     -unity-font-style: bold;
-    color: rgb(255, 255, 255);
+    color: rgb(26, 26, 26);
     -unity-text-align: middle-center;
-    letter-spacing: -2px;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
 }
 
-.subtitle {
+.app-subtitle {
+    font-size: 16px;
+    color: rgb(115, 115, 115);
     -unity-text-align: middle-center;
-    color: rgb(102, 102, 102);
-    font-size: 15px;
-    max-width: 380px;
-    margin-bottom: 50px;
-    white-space: normal;
-    translate: 0 30px;
 }
 
-/* Login Section */
-.login-section {
-    width: 100%;
-    max-width: 460px;
-    align-items: center;
-    translate: 0 40px;
-}
-
-.login-title {
-    font-size: 52px;
-    -unity-font-style: bold;
-    -unity-text-align: middle-center;
-    color: rgb(44, 62, 80);
-    margin-bottom: 12px;
-    letter-spacing: -2px;
-}
-
-.login-subtitle {
-    -unity-text-align: middle-center;
-    color: rgb(153, 153, 153);
-    font-size: 13px;
-    margin-bottom: 45px;
-    letter-spacing: 3px;
-    -unity-font-style: bold;
-}
-
-/* Buttons */
-.button-group {
+.login-form {
     width: 100%;
     flex-direction: column;
-    margin-bottom: 35px;
+}
+
+.form-label {
+    font-size: 14px;
+    color: rgb(77, 77, 77);
+    -unity-font-style: bold;
+    margin-bottom: 20px;
+    -unity-text-align: middle-center;
+    letter-spacing: 0.5px;
 }
 
 .btn {
     width: 100%;
-    height: 60px;
-    border-radius: 14px;
+    height: 56px;
+    border-radius: 12px;
     border-width: 0;
-    margin-bottom: 16px;
+    flex-direction: row;
     align-items: center;
     justify-content: center;
-    transition-property: scale, background-color;
-    transition-duration: 0.2s, 0.2s;
-}
-
-.btn:hover {
-    scale: 1.02;
-}
-
-.btn:active {
-    scale: 0.98;
+    padding: 0 20px;
+    cursor: link;
 }
 
 .btn:disabled {
     opacity: 0.5;
+    cursor: default;
 }
 
-.btn-facebook {
+.btn-primary {
     background-color: rgb(24, 119, 242);
+    margin-bottom: 16px;
 }
 
-.btn-facebook:hover {
+.btn-primary:hover {
     background-color: rgb(13, 110, 253);
 }
 
-.btn-guest {
-    background-color: rgb(44, 62, 80);
+.btn-secondary {
+    background-color: rgb(245, 245, 245);
+    border-width: 2px;
+    border-color: rgb(230, 230, 230);
 }
 
-.btn-guest:hover {
-    background-color: rgb(52, 73, 94);
+.btn-secondary:hover {
+    background-color: rgb(240, 240, 240);
+    border-color: rgb(220, 220, 220);
 }
 
-.btn-text {
+.btn-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 12px;
+    border-radius: 12px;
+}
+
+.btn-icon-facebook {
+    background-color: rgb(255, 255, 255);
+}
+
+.btn-icon-guest {
+    background-color: rgb(115, 115, 115);
+}
+
+.btn-label {
     font-size: 16px;
     -unity-font-style: bold;
-    color: rgb(255, 255, 255);
     -unity-text-align: middle-center;
-    letter-spacing: 1.5px;
+}
+
+.btn-primary .btn-label {
+    color: rgb(255, 255, 255);
+}
+
+.btn-secondary .btn-label {
+    color: rgb(26, 26, 26);
+}
+
+.divider {
+    flex-direction: row;
+    align-items: center;
+    margin: 24px 0;
+}
+
+.divider-line {
+    flex: 1;
+    height: 1px;
+    background-color: rgb(230, 230, 230);
+}
+
+.divider-text {
+    font-size: 12px;
+    color: rgb(153, 153, 153);
+    -unity-font-style: bold;
+    margin: 0 16px;
+    letter-spacing: 1px;
 }
 
 .disclaimer {
-    -unity-text-align: middle-center;
-    color: rgb(153, 153, 153);
     font-size: 12px;
+    color: rgb(153, 153, 153);
+    -unity-text-align: middle-center;
     white-space: normal;
-    max-width: 480px;
+    margin-top: 24px;
+    line-height: 18px;
 }
 
-/* Loading & Status */
 .loading-indicator {
     width: 100%;
     align-items: center;
     justify-content: center;
     flex-direction: row;
-    margin-top: 20px;
+    margin-top: 24px;
     display: none;
 }
 
 .spinner {
-    width: 24px;
-    height: 24px;
-    border-radius: 12px;
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
     border-width: 3px;
     border-color: rgb(24, 119, 242);
-    margin-right: 10px;
+    margin-right: 12px;
 }
 
 .loading-text {
-    font-size: 16px;
-    color: rgb(102, 102, 102);
+    font-size: 14px;
+    color: rgb(77, 77, 77);
+    -unity-font-style: bold;
 }
 
 .status-text {
     font-size: 14px;
     color: rgb(24, 119, 242);
     -unity-text-align: middle-center;
-    margin-top: 15px;
+    margin-top: 16px;
     white-space: normal;
-    max-width: 100%;
 }
 
-/* Slide-In Animation States */
-.animate-in .left-content {
-    translate: 0 0;
-    transition-property: translate;
-    transition-duration: 0.6s;
-    transition-delay: 0.1s;
-    transition-timing-function: ease-out;
+.footer {
+    margin-top: 32px;
+    align-items: center;
 }
 
-.animate-in .logo-container {
-    translate: 0 0;
-    transition-property: translate;
-    transition-duration: 0.7s;
-    transition-delay: 0.2s;
-    transition-timing-function: ease-out;
-}
-
-.animate-in .subtitle {
-    translate: 0 0;
-    transition-property: translate;
-    transition-duration: 0.6s;
-    transition-delay: 0.4s;
-    transition-timing-function: ease-out;
-}
-
-.animate-in .login-section {
-    translate: 0 0;
-    transition-property: translate;
-    transition-duration: 0.6s;
-    transition-delay: 0.6s;
-    transition-timing-function: ease-out;
-}
-
-/* Slide-Out Animation States */
-.animate-out .left-content {
-    translate: -60px 0;
-    transition-property: translate;
-    transition-duration: 0.5s;
-    transition-delay: 0s;
-    transition-timing-function: ease-in;
-}
-
-.animate-out .logo-container {
-    translate: 0 -50px;
-    transition-property: translate;
-    transition-duration: 0.5s;
-    transition-delay: 0.1s;
-    transition-timing-function: ease-in;
-}
-
-.animate-out .subtitle {
-    translate: 0 30px;
-    transition-property: translate;
-    transition-duration: 0.5s;
-    transition-delay: 0.15s;
-    transition-timing-function: ease-in;
-}
-
-.animate-out .login-section {
-    translate: 0 40px;
-    transition-property: translate;
-    transition-duration: 0.5s;
-    transition-delay: 0.2s;
-    transition-timing-function: ease-in;
+.footer-text {
+    font-size: 11px;
+    color: rgb(153, 153, 153);
+    -unity-text-align: middle-center;
+    white-space: normal;
+    line-height: 16px;
 }

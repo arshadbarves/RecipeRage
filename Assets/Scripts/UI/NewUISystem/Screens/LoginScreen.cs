@@ -1,8 +1,10 @@
 using System;
-using System.Collections;
+using Core.Animation;
 using Core.Authentication;
 using Core.Bootstrap;
 using Core.Utilities;
+using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using UI.UISystem.Core;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -22,6 +24,7 @@ namespace UI.UISystem.Screens
         private Button _guestLoginButton;
         private Label _statusText;
         private VisualElement _loadingIndicator;
+        private VisualElement _loginCard;
 
         #endregion
 
@@ -44,6 +47,8 @@ namespace UI.UISystem.Screens
         {
             CacheUIElements();
             SetupButtonHandlers();
+            
+            _loginCard.style.translate = new Translate(new Length(100, LengthUnit.Percent), 0);
 
             Debug.Log("[LoginScreen] Initialized");
         }
@@ -58,11 +63,54 @@ namespace UI.UISystem.Screens
 
             UpdateUI();
             UpdateStatus("Please select a login method");
+
+            // Slide in from right using translate
+            if (_loginCard != null)
+            {
+                SlideInFromRight(_loginCard, 0.5f);
+            }
         }
 
         protected override void OnHide()
         {
             _isLoggingIn = false;
+
+            // Slide out to right using translate
+            if (_loginCard != null)
+            {
+                SlideOutToRight(_loginCard, 0.4f);
+            }
+        }
+
+        private void SlideInFromRight(VisualElement element, float duration)
+        {
+            // Start off-screen to the right (100% translate)
+            float startX = 100f;
+            float endX = 0f;
+
+            element.style.translate = new Translate(new Length(startX, LengthUnit.Percent), 0);
+
+            // Animate translate from 100% to 0%
+            DOTween.To(
+                () => startX,
+                x => element.style.translate = new Translate(new Length(x, LengthUnit.Percent), 0),
+                endX,
+                duration
+            ).SetEase(Ease.OutCubic);
+        }
+
+        private void SlideOutToRight(VisualElement element, float duration)
+        {
+            // Animate translate from 0% to 100%
+            float startX = 0f;
+            float endX = 100f;
+
+            DOTween.To(
+                () => startX,
+                x => element.style.translate = new Translate(new Length(x, LengthUnit.Percent), 0),
+                endX,
+                duration
+            ).SetEase(Ease.InCubic);
         }
 
         public override void Update(float deltaTime)
@@ -98,12 +146,17 @@ namespace UI.UISystem.Screens
 
         private void CacheUIElements()
         {
+            _loginCard = GetElement<VisualElement>("login-card");
             _facebookLoginButton = GetElement<Button>("facebook-login-button");
             _guestLoginButton = GetElement<Button>("guest-login-button");
             _statusText = GetElement<Label>("status-text");
             _loadingIndicator = GetElement<VisualElement>("loading-indicator");
 
             // Log missing elements for debugging
+            if (_loginCard == null)
+            {
+                Debug.LogWarning("[LoginScreen] login-card not found");
+            }
             if (_facebookLoginButton == null)
             {
                 Debug.LogWarning("[LoginScreen] facebook-login-button not found");
@@ -204,8 +257,8 @@ namespace UI.UISystem.Screens
             _isLoggingIn = true;
             UpdateUI();
 
-            // Start coroutine to handle async AuthenticationManager check
-            CoroutineRunner.Run(HandleFacebookLogin());
+            // Start async login
+            HandleFacebookLoginAsync().Forget();
         }
 
         private void OnGuestLoginClicked()
@@ -220,74 +273,92 @@ namespace UI.UISystem.Screens
             _isLoggingIn = true;
             UpdateUI();
 
-            // Start coroutine to handle async AuthenticationManager check
-            CoroutineRunner.Run(HandleGuestLogin());
+            // Start async login
+            HandleGuestLoginAsync().Forget();
         }
 
-        private IEnumerator HandleFacebookLogin()
+        private async UniTaskVoid HandleFacebookLoginAsync()
         {
-            // Wait for AuthenticationManager if not available
-            if (GameBootstrap.Services.AuthenticationService == null)
+            try
             {
-                UpdateStatus("Initializing authentication...");
-
-                float timeout = 5f;
-                float elapsed = 0f;
-
-                while (GameBootstrap.Services.AuthenticationService == null && elapsed < timeout)
-                {
-                    elapsed += Time.deltaTime;
-                    yield return null;
-                }
-
+                // Wait for AuthenticationService if not available
                 if (GameBootstrap.Services.AuthenticationService == null)
                 {
-                    Debug.LogError("[LoginScreen] AuthenticationManager not available!");
-                    UpdateStatus("Authentication system not available");
-                    _isLoggingIn = false;
-                    UpdateUI();
-                    yield break;
+                    UpdateStatus("Initializing authentication...");
+
+                    var timeout = TimeSpan.FromSeconds(5);
+                    var startTime = Time.time;
+
+                    while (GameBootstrap.Services.AuthenticationService == null)
+                    {
+                        if (Time.time - startTime > timeout.TotalSeconds)
+                        {
+                            Debug.LogError("[LoginScreen] AuthenticationService not available!");
+                            UpdateStatus("Authentication system not available");
+                            _isLoggingIn = false;
+                            UpdateUI();
+                            return;
+                        }
+
+                        await UniTask.Yield();
+                    }
+
+                    // Ensure we're connected
+                    SetupAuthenticationManager();
                 }
 
-                // Ensure we're connected
-                SetupAuthenticationManager();
+                // Delegate to AuthenticationService
+                await GameBootstrap.Services.AuthenticationService.LoginWithFacebookAsync();
             }
-
-            // Delegate to AuthenticationManager
-            yield return GameBootstrap.Services.AuthenticationService.LoginWithFacebook();
+            catch (Exception ex)
+            {
+                Debug.LogError($"[LoginScreen] Facebook login error: {ex.Message}");
+                UpdateStatus("Login failed");
+                _isLoggingIn = false;
+                UpdateUI();
+            }
         }
 
-        private IEnumerator HandleGuestLogin()
+        private async UniTaskVoid HandleGuestLoginAsync()
         {
-            // Wait for AuthenticationManager if not available
-            if (GameBootstrap.Services.AuthenticationService == null)
+            try
             {
-                UpdateStatus("Initializing authentication...");
-
-                float timeout = 5f;
-                float elapsed = 0f;
-
-                while (GameBootstrap.Services.AuthenticationService == null && elapsed < timeout)
-                {
-                    elapsed += Time.deltaTime;
-                    yield return null;
-                }
-
+                // Wait for AuthenticationService if not available
                 if (GameBootstrap.Services.AuthenticationService == null)
                 {
-                    Debug.LogError("[LoginScreen] AuthenticationManager not available!");
-                    UpdateStatus("Authentication system not available");
-                    _isLoggingIn = false;
-                    UpdateUI();
-                    yield break;
+                    UpdateStatus("Initializing authentication...");
+
+                    var timeout = TimeSpan.FromSeconds(5);
+                    var startTime = Time.time;
+
+                    while (GameBootstrap.Services.AuthenticationService == null)
+                    {
+                        if (Time.time - startTime > timeout.TotalSeconds)
+                        {
+                            Debug.LogError("[LoginScreen] AuthenticationService not available!");
+                            UpdateStatus("Authentication system not available");
+                            _isLoggingIn = false;
+                            UpdateUI();
+                            return;
+                        }
+
+                        await UniTask.Yield();
+                    }
+
+                    // Ensure we're connected
+                    SetupAuthenticationManager();
                 }
 
-                // Ensure we're connected
-                SetupAuthenticationManager();
+                // Delegate to AuthenticationService
+                await GameBootstrap.Services.AuthenticationService.LoginAsGuestAsync();
             }
-
-            // Delegate to AuthenticationManager
-            yield return GameBootstrap.Services.AuthenticationService.LoginAsGuest();
+            catch (Exception ex)
+            {
+                Debug.LogError($"[LoginScreen] Guest login error: {ex.Message}");
+                UpdateStatus("Login failed");
+                _isLoggingIn = false;
+                UpdateUI();
+            }
         }
 
         #endregion
@@ -299,13 +370,13 @@ namespace UI.UISystem.Screens
             _isLoggingIn = false;
             UpdateUI();
 
-            Debug.Log("[LoginScreen] Login successful from AuthenticationManager");
+            Debug.Log("[LoginScreen] Login successful from AuthenticationService");
 
             // Notify listeners
             OnLoginSuccess?.Invoke();
 
             // Hide login screen after a short delay
-            CoroutineRunner.Run(HideAfterDelay(1f));
+            HideAfterDelayAsync(1f).Forget();
         }
 
         private void HandleLoginFailed(string error)
@@ -313,15 +384,15 @@ namespace UI.UISystem.Screens
             _isLoggingIn = false;
             UpdateUI();
 
-            Debug.LogWarning($"[LoginScreen] Login failed from AuthenticationManager: {error}");
+            Debug.LogWarning($"[LoginScreen] Login failed from AuthenticationService: {error}");
 
             // Notify listeners
             OnLoginFailed?.Invoke(error);
         }
 
-        private IEnumerator HideAfterDelay(float delay)
+        private async UniTaskVoid HideAfterDelayAsync(float delay)
         {
-            yield return new WaitForSeconds(delay);
+            await UniTask.Delay(TimeSpan.FromSeconds(delay));
             Hide(true);
         }
 

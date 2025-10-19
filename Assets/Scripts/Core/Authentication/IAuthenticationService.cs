@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using Cysharp.Threading.Tasks;
 
 namespace Core.Authentication
 {
@@ -11,9 +11,9 @@ namespace Core.Authentication
         bool IsLoggedIn { get; }
         string LastLoginMethod { get; }
         
-        IEnumerator AttemptAutoLogin();
-        IEnumerator LoginAsGuest();
-        IEnumerator LoginWithFacebook();
+        UniTask<bool> AttemptAutoLoginAsync();
+        UniTask<bool> LoginAsGuestAsync();
+        UniTask<bool> LoginWithFacebookAsync();
         void Logout();
         
         event Action OnLoginSuccess;
