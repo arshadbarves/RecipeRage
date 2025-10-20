@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Core.Bootstrap;
 using Core.SaveSystem;
-using Cysharp.Threading.Tasks;
+using UI.UISystem.Screens;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -80,11 +80,11 @@ namespace UI.Components
             InitializeDropdowns();
             SetupValueChangeCallbacks();
             SetupButtons();
-            
+
             // Load settings AFTER callbacks are registered
             LoadSettings();
             UpdateVersionInfo();
-            
+
             Debug.Log("[SettingsUI] Initialization complete");
         }
 
@@ -121,7 +121,7 @@ namespace UI.Components
         private void InitializeDropdowns()
         {
             Debug.Log("[SettingsUI] Initializing dropdowns");
-            
+
             // Quality dropdown
             if (_qualityDropdown != null)
             {
@@ -179,14 +179,14 @@ namespace UI.Components
             {
                 Debug.LogWarning("[SettingsUI] Language dropdown not found!");
             }
-            
+
             Debug.Log("[SettingsUI] Dropdown initialization complete");
         }
 
         private void SetupButtons()
         {
             Debug.Log("[SettingsUI] Setting up buttons");
-            
+
             // Control buttons
             Button editJoystickButton = _root.Q<Button>("edit-joystick-button");
 
@@ -212,49 +212,49 @@ namespace UI.Components
                 editJoystickButton.clicked += OnEditJoystickClicked;
                 Debug.Log("[SettingsUI] Edit joystick button listener added");
             }
-            
+
             if (helpButton != null)
             {
                 helpButton.clicked += OnHelpClicked;
                 Debug.Log("[SettingsUI] Help button listener added");
             }
-            
+
             if (supportButton != null)
             {
                 supportButton.clicked += OnSupportClicked;
                 Debug.Log("[SettingsUI] Support button listener added");
             }
-            
+
             if (privacyButton != null) privacyButton.clicked += OnPrivacyClicked;
             if (termsButton != null) termsButton.clicked += OnTermsClicked;
             if (creditsButton != null) creditsButton.clicked += OnCreditsClicked;
             if (parentGuideButton != null) parentGuideButton.clicked += OnParentGuideClicked;
-            
+
             if (logoutButton != null)
             {
                 logoutButton.clicked += OnLogoutClicked;
                 Debug.Log("[SettingsUI] Logout button listener added");
             }
-            
+
             if (resetButton != null)
             {
                 resetButton.clicked += OnResetClicked;
                 Debug.Log("[SettingsUI] Reset button listener added");
             }
-            
+
             if (clearDataButton != null)
             {
                 clearDataButton.clicked += OnClearDataClicked;
                 Debug.Log("[SettingsUI] Clear data button listener added");
             }
-            
+
             Debug.Log("[SettingsUI] Button setup complete");
         }
 
         private void SetupValueChangeCallbacks()
         {
             Debug.Log("[SettingsUI] Setting up value change callbacks");
-            
+
             // Audio callbacks
             if (_musicVolumeSlider != null)
             {
@@ -534,7 +534,7 @@ namespace UI.Components
             Application.OpenURL("https://yourwebsite.com/credits");
         }
 
-        private void OnResetClicked()
+        private async void OnResetClicked()
         {
             Debug.Log("[SettingsUI] Resetting settings to defaults");
 
@@ -568,6 +568,10 @@ namespace UI.Components
             Screen.fullScreen = true;
             QualitySettings.vSyncCount = 1;
             AudioListener.volume = 0.75f;
+
+            // Show success toast
+            var uiService = GameBootstrap.Services?.UIService;
+            uiService?.ShowToast("Settings reset to defaults", ToastType.Success, 2f);
 
             Debug.Log("[SettingsUI] Settings reset complete");
         }

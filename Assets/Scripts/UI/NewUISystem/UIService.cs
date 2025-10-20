@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Core.Animation;
 using Core.Utilities;
+using Cysharp.Threading.Tasks;
 using UI.UISystem.Core;
+using UI.UISystem.Screens;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -193,7 +195,7 @@ namespace UI.UISystem
             _controllers.Clear();
             _visibleScreens.Clear();
             _screenHistory.Clear();
-            
+
             _isInitialized = false;
         }
 
@@ -328,6 +330,18 @@ namespace UI.UISystem
         public void ClearHistory()
         {
             _screenHistory.Clear();
+        }
+
+        public async UniTask ShowToast(string message, ToastType type = ToastType.Info, float duration = 3f)
+        {
+            var toastScreen = GetScreen<ToastScreen>(UIScreenType.Toast);
+            if (toastScreen == null)
+            {
+                Debug.LogWarning("[UIService] ToastScreen not found - make sure it's registered");
+                return;
+            }
+
+            await toastScreen.Show(message, type, duration);
         }
 
         #endregion
