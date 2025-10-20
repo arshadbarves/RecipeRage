@@ -40,13 +40,13 @@
         </TabView>
     </VisualElement>
     <VisualElement name="top-bar" class="top-bar">
-        <VisualElement name="player-card" class="player-card">
+        <Button name="player-card-button" class="player-card">
             <VisualElement name="star-icon" class="star-icon" />
             <VisualElement name="player-info" class="player-info">
-                <Label name="player-title" text="Chef Player" class="player-title" />
+                <Label name="player-title" text="Guest Player" class="player-title" />
                 <Label name="player-number" text="#675" class="player-number" />
             </VisualElement>
-        </VisualElement>
+        </Button>
         <VisualElement name="currency-container" class="currency-container">
             <VisualElement name="coins-display" class="currency-display">
                 <VisualElement name="coin-icon" class="currency-icon coin-icon" />

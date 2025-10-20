@@ -1,0 +1,20 @@
+<UXML xmlns="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/USS/Popup.uss?fileID=7433441132597879392&amp;guid=d74de88c89f184d749e7dbc03c84d505&amp;type=3#Popup" />
+    <VisualElement name="username-popup-root" class="popup-root-fullscreen">
+        <VisualElement name="popup-overlay" class="popup-overlay" />
+        <VisualElement name="popup-container" class="popup-container">
+            <Button name="close-button" class="popup-close-button" style="top: -20px; right: -20px;">
+                <Label text="×" class="close-icon" />
+            </Button>
+            <Label name="popup-title" text="Choose Your Username" class="popup-title" />
+            <VisualElement name="popup-content" class="popup-content">
+                <TextField name="username-field" placeholder-text="Enter username..." max-length="15" class="username-field" />
+                <Label name="error-label" class="error-label" />
+                <VisualElement name="button-container" class="popup-button-container">
+                    <Button name="cancel-button" text="Cancel" class="popup-button popup-cancel-button" />
+                    <Button name="confirm-button" text="Confirm" class="popup-button popup-confirm-button" />
+                </VisualElement>
+            </VisualElement>
+        </VisualElement>
+    </VisualElement>
+</UXML>

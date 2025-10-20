@@ -206,5 +206,29 @@ namespace Core.SaveSystem
                 RefreshFileList();
             }
         }
+
+        /// <summary>
+        /// Call this when user logs out to clear cached cloud data.
+        /// Clears user-specific cached files but keeps provider ready for next login.
+        /// </summary>
+        public void OnUserLoggedOut()
+        {
+            Debug.Log("[EOSCloudStorageProvider] User logged out - clearing cached cloud data");
+            
+            // Clear cached file data from EOS storage service
+            if (_eosStorage != null)
+            {
+                var cachedData = _eosStorage.GetLocallyCachedData();
+                if (cachedData != null)
+                {
+                    cachedData.Clear();
+                }
+            }
+            
+            // Mark as not initialized (will re-initialize on next login)
+            _isInitialized = false;
+            
+            Debug.Log("[EOSCloudStorageProvider] Cloud cache cleared");
+        }
     }
 }

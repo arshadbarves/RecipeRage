@@ -83,18 +83,36 @@ namespace Core.SaveSystem
         }
         
         /// <summary>
-        /// Called when user logs out - switches to local storage only
+        /// Called when user logs out - clears user-specific cache
         /// </summary>
         public void OnUserLoggedOut()
         {
-            GameLogger.Log("[SaveService] User logged out - switching to local storage only");
+            GameLogger.Log("[SaveService] User logged out - clearing user-specific cache");
             
-            // Clear cached data
-            _cachedSettings = null;
+            // Clear user-specific cached data
             _cachedProgress = null;
             _cachedStats = null;
             
-            // Future saves will use local storage only
+            // Keep device settings cached (not user-specific)
+            // _cachedSettings is preserved
+            
+            // Clear sync status for user data
+            if (_syncStatus.ContainsKey("progress.json"))
+            {
+                _syncStatus["progress.json"] = new SyncStatus();
+            }
+            if (_syncStatus.ContainsKey("stats.json"))
+            {
+                _syncStatus["stats.json"] = new SyncStatus();
+            }
+            
+            // Notify cloud provider
+            if (_cloudProvider is EOSCloudStorageProvider eosProvider)
+            {
+                eosProvider.OnUserLoggedOut();
+            }
+            
+            GameLogger.Log("[SaveService] User cache cleared - device settings preserved");
         }
         
         private async UniTaskVoid SyncLocalToCloudAsync()
@@ -256,6 +274,29 @@ namespace Core.SaveSystem
             OnSettingsChanged?.Invoke(_cachedSettings);
             OnPlayerProgressChanged?.Invoke(_cachedProgress);
             OnPlayerStatsChanged?.Invoke(_cachedStats);
+        }
+
+        /// <summary>
+        /// Clear user-specific cache without deleting saved data.
+        /// Useful for "Clear Cache" functionality or troubleshooting.
+        /// </summary>
+        public void ClearUserCache()
+        {
+            GameLogger.Log("[SaveService] Clearing user cache (data preserved on disk)");
+            
+            // Clear cached user data (will reload from disk on next access)
+            _cachedProgress = null;
+            _cachedStats = null;
+            
+            // Keep settings cached (device-level, not user-specific)
+            
+            // Clear cloud cache
+            if (_cloudProvider is EOSCloudStorageProvider eosProvider)
+            {
+                eosProvider.OnUserLoggedOut();
+            }
+            
+            GameLogger.Log("[SaveService] User cache cleared");
         }
 
         private void LoadAllData()

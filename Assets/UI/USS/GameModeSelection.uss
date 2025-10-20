@@ -17,7 +17,6 @@
 .gamemode-title {
     font-size: 32px;
     color: white;
-    -unity-font-style: bold;
 }
 
 .gamemode-content {
@@ -66,7 +65,6 @@
 .gamemode-name {
     font-size: 20px;
     color: white;
-    -unity-font-style: bold;
     -unity-text-align: middle-center;
     margin-bottom: 10px;
 }
@@ -87,7 +85,6 @@
     padding: 12px 30px;
     border-radius: 8px;
     font-size: 16px;
-    -unity-font-style: bold;
     width: 100%;
     transition-property: background-color, scale;
     transition-duration: 0.2s;

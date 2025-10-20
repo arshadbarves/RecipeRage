@@ -10,6 +10,5 @@
 .company-name-label {
     font-size: 36px;
     color: rgb(255, 255, 255);
-    -unity-font-style: bold;
     letter-spacing: 2px;
 }

@@ -28,7 +28,6 @@
 .lobby-code-text {
     font-size: 28px;
     color: rgb(40, 30, 25);
-    -unity-font-style: bold;
     margin-bottom: 10px;
 }
 
@@ -70,14 +69,12 @@
 .status-text {
     font-size: 22px;
     color: rgb(40, 30, 25);
-    -unity-font-style: bold;
     flex-grow: 1;
 }
 
 .search-time-text {
     font-size: 24px;
     color: rgb(255, 140, 0);
-    -unity-font-style: bold;
 }
 
 /* Sections */
@@ -93,7 +90,6 @@
 .section-title {
     font-size: 28px;
     color: rgb(40, 30, 25);
-    -unity-font-style: bold;
     margin-bottom: 15px;
     padding-bottom: 10px;
     border-bottom-width: 3px;
@@ -152,7 +148,6 @@
 .player-name {
     font-size: 22px;
     color: rgb(40, 30, 25);
-    -unity-font-style: bold;
     flex-grow: 1;
 }
 
@@ -166,7 +161,6 @@
 .selected-mode-text {
     font-size: 24px;
     color: rgb(40, 30, 25);
-    -unity-font-style: bold;
     margin-bottom: 15px;
 }
 
@@ -190,7 +184,6 @@
     flex-grow: 1;
     height: 70px;
     font-size: 28px;
-    -unity-font-style: bold;
     background-color: rgb(100, 200, 255);
     border-color: rgb(40, 30, 25);
     color: rgb(40, 30, 25);
@@ -212,7 +205,6 @@
     flex-grow: 1;
     height: 60px;
     font-size: 22px;
-    -unity-font-style: bold;
     background-color: rgb(220, 210, 200);
     border-color: rgb(40, 30, 25);
     color: rgb(40, 30, 25);
@@ -234,7 +226,6 @@
     flex-grow: 1;
     height: 60px;
     font-size: 22px;
-    -unity-font-style: bold;
     background-color: rgb(255, 150, 150);
     border-color: rgb(40, 30, 25);
     color: rgb(40, 30, 25);
@@ -280,7 +271,6 @@
 .panel-title {
     font-size: 32px;
     color: rgb(40, 30, 25);
-    -unity-font-style: bold;
 }
 
 .close-button {
@@ -343,7 +333,6 @@
 .game-mode-name {
     font-size: 24px;
     color: rgb(40, 30, 25);
-    -unity-font-style: bold;
     margin-bottom: 5px;
 }
 
@@ -361,7 +350,6 @@
     color: rgb(40, 30, 25);
     border-radius: 15px;
     border-width: 4px;
-    -unity-font-style: bold;
     transition-duration: 0.1s;
 }
 

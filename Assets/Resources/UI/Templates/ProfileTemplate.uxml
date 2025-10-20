@@ -1,0 +1,101 @@
+<UXML xmlns="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/USS/Profile.uss?fileID=7433441132597879392&amp;guid=d042c2af8f69c49a1a16869c99153cd5&amp;type=3#Profile" />
+    <VisualElement name="profile-root" class="profile-root">
+        <VisualElement name="background" class="background" />
+        <VisualElement name="top-bar" class="top-bar">
+            <Button name="back-button" class="icon-button back-button">
+                <Label text="&lt;" class="icon-label" />
+            </Button>
+            <Label text="PROFILE" class="screen-title" />
+            <VisualElement class="spacer" />
+        </VisualElement>
+        <ScrollView name="content-scroll" class="content-scroll">
+            <VisualElement name="player-card" class="player-card">
+                <VisualElement name="left-section" class="left-section">
+                    <VisualElement name="avatar-container" class="avatar-container">
+                        <VisualElement name="player-avatar" class="player-avatar" />
+                        <VisualElement name="level-badge" class="level-badge">
+                            <Label name="player-level" text="1" class="level-text" />
+                        </VisualElement>
+                    </VisualElement>
+                    <Label name="favorite-character-value" text="COLETTE" class="character-name" />
+                </VisualElement>
+                <VisualElement name="right-section" class="right-section">
+                    <VisualElement name="name-row" class="name-row">
+                        <Label name="player-name" text="IceXFire" class="player-name" />
+                        <Button name="change-name-button" class="edit-button">
+                            <Label text="✏️" class="edit-icon" />
+                        </Button>
+                    </VisualElement>
+                    <Label name="player-number" text="#2V8V8VU00" class="player-tag" />
+                    <VisualElement name="trophy-row" class="trophy-row">
+                        <VisualElement name="trophy-icon" class="trophy-icon" />
+                        <Label name="games-played-value" text="23109" class="trophy-count" />
+                        <Label text="/ 23400" class="trophy-max" />
+                    </VisualElement>
+                </VisualElement>
+            </VisualElement>
+            <VisualElement name="stats-grid" class="stats-grid-container">
+                <VisualElement name="stat-card-1" class="stat-card">
+                    <VisualElement name="stat-icon-1" class="stat-icon trophy-icon-small" />
+                    <VisualElement class="stat-content">
+                        <Label text="TROPHY RECORD" class="stat-title" />
+                        <Label name="highest-combo-value" text="23346" class="stat-value-large" />
+                    </VisualElement>
+                </VisualElement>
+                <VisualElement name="stat-card-2" class="stat-card">
+                    <VisualElement name="stat-icon-2" class="stat-icon team-icon" />
+                    <VisualElement class="stat-content">
+                        <Label text="HIGHEST LEAGUE (TEAM)" class="stat-title" />
+                        <Label text="II" class="stat-value-large" />
+                    </VisualElement>
+                </VisualElement>
+                <VisualElement name="stat-card-3" class="stat-card">
+                    <VisualElement name="stat-icon-3" class="stat-icon solo-icon" />
+                    <VisualElement class="stat-content">
+                        <Label text="HIGHEST LEAGUE (SOLO)" class="stat-title" />
+                        <Label text="I" class="stat-value-large" />
+                    </VisualElement>
+                </VisualElement>
+                <VisualElement name="stat-card-4" class="stat-card">
+                    <VisualElement name="stat-icon-4" class="stat-icon wins-icon" />
+                    <VisualElement class="stat-content">
+                        <Label text="3 v 3 WINS" class="stat-title" />
+                        <Label name="games-won-value" text="1997" class="stat-value-large" />
+                    </VisualElement>
+                </VisualElement>
+                <VisualElement name="stat-card-5" class="stat-card">
+                    <VisualElement name="stat-icon-5" class="stat-icon solo-wins-icon" />
+                    <VisualElement class="stat-content">
+                        <Label text="SOLO WINS" class="stat-title" />
+                        <Label name="orders-completed-value" text="1000" class="stat-value-large" />
+                    </VisualElement>
+                </VisualElement>
+                <VisualElement name="stat-card-6" class="stat-card">
+                    <VisualElement name="stat-icon-6" class="stat-icon duo-wins-icon" />
+                    <VisualElement class="stat-content">
+                        <Label text="DUO WINS" class="stat-title" />
+                        <Label name="dishes-served-value" text="674" class="stat-value-large" />
+                    </VisualElement>
+                </VisualElement>
+            </VisualElement>
+            <VisualElement name="streak-card" class="streak-card">
+                <VisualElement name="streak-icon" class="streak-icon" />
+                <VisualElement class="streak-content">
+                    <Label text="WIN STREAK" class="streak-title" />
+                    <Label text="11 MAXIMUM" class="streak-subtitle" />
+                </VisualElement>
+                <Label name="win-rate-value" text="0%" class="streak-value" />
+            </VisualElement>
+            <VisualElement name="battle-cards-section" class="battle-cards-section">
+                <Label text="BATTLE CARD" class="section-header" />
+                <VisualElement name="battle-cards-row" class="battle-cards-row">
+                    <VisualElement class="battle-card-slot" />
+                    <VisualElement class="battle-card-slot" />
+                    <VisualElement class="battle-card-slot" />
+                </VisualElement>
+            </VisualElement>
+            <VisualElement class="bottom-spacer" />
+        </ScrollView>
+    </VisualElement>
+</UXML>

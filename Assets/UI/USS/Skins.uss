@@ -13,7 +13,6 @@
 .skins-title {
     font-size: 42px;
     color: rgb(40, 30, 25);
-    -unity-font-style: bold;
     -unity-text-align: middle-center;
 }
 
@@ -48,7 +47,6 @@
 .preview-skin-name {
     font-size: 28px;
     color: rgb(40, 30, 25);
-    -unity-font-style: bold;
     -unity-text-align: middle-center;
     margin-bottom: 12px;
     white-space: normal;
@@ -62,7 +60,6 @@
     border-color: rgb(40, 30, 25);
     font-size: 22px;
     color: rgb(40, 30, 25);
-    -unity-font-style: bold;
     transition-property: scale, background-color;
     transition-duration: 0.15s;
     width: 100%;
@@ -127,7 +124,6 @@
 .skin-item-name {
     font-size: 16px;
     color: rgb(40, 30, 25);
-    -unity-font-style: bold;
     -unity-text-align: middle-center;
     white-space: normal;
 }

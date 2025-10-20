@@ -12,7 +12,8 @@ namespace Core.SaveSystem
     {
         // Player info
         [Header("Player Info")]
-        public string PlayerName = "Player";
+        public string PlayerName = "";
+        public int UsernameChangeCount = 0; // Track how many times username has been changed
         public string PlayerId = Guid.NewGuid().ToString();
         public int Level = 1;
         public int Experience = 0;

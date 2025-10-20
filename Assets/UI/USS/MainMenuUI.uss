@@ -45,7 +45,6 @@
 .player-level {
     color: #FFD700;
     font-size: 18px;
-    -unity-font-style: bold;
     margin-left: 8px;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
 }
@@ -98,7 +97,6 @@
 .currency-count {
     color: #FFFFFF;
     font-size: 16px;
-    -unity-font-style: bold;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
 }
 
@@ -144,14 +142,12 @@
 .rank-label {
     color: #FFFFFF;
     font-size: 12px;
-    -unity-font-style: bold;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
 }
 
 .rank-number {
     color: #FFD700;
     font-size: 32px;
-    -unity-font-style: bold;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
 }
 
@@ -180,7 +176,6 @@
 .trophy-road-count {
     color: #FFFFFF;
     font-size: 18px;
-    -unity-font-style: bold;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
 }
 
@@ -276,7 +271,6 @@
     border-color: #00BFFF;
     color: #FFFFFF;
     font-size: 20px;
-    -unity-font-style: bold;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
     min-width: 200px;
     -unity-text-align: middle-center;
@@ -296,14 +290,12 @@
     color: #FFFFFF;
     font-size: 16px;
     margin-right: 10px;
-    -unity-font-style: bold;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
 }
 
 .team-code {
     color: #FFD700;
     font-size: 24px;
-    -unity-font-style: bold;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
     background-color: rgba(255, 215, 0, 0.2);
     border-radius: 15px;
@@ -348,7 +340,6 @@
 .event-title {
     color: #FFFFFF;
     font-size: 28px;
-    -unity-font-style: bold;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
     margin-bottom: 5px;
 }
@@ -356,7 +347,6 @@
 .event-subtitle {
     color: #FFD700;
     font-size: 20px;
-    -unity-font-style: bold;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
 }
 
@@ -382,7 +372,6 @@
 .timer-text {
     color: #FFFFFF;
     font-size: 14px;
-    -unity-font-style: bold;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
 }
 
@@ -462,7 +451,6 @@
 .nav-button-text {
     color: #FFFFFF;
     font-size: 10px;
-    -unity-font-style: bold;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
     -unity-text-align: middle-center;
 }
@@ -484,7 +472,6 @@
 .nav-button-badge-text {
     color: #FFFFFF;
     font-size: 12px;
-    -unity-font-style: bold;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
 }
 
@@ -511,7 +498,6 @@
 .play-text {
     color: #FFFFFF;
     font-size: 32px;
-    -unity-font-style: bold;
     text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);
 }
 
@@ -554,14 +540,12 @@
 .pass-title {
     color: #00BFFF;
     font-size: 14px;
-    -unity-font-style: bold;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
 }
 
 .pass-subtitle {
     color: #FFFFFF;
     font-size: 12px;
-    -unity-font-style: bold;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
 }
 
@@ -580,7 +564,6 @@
 .pass-badge-text {
     color: #FFFFFF;
     font-size: 12px;
-    -unity-font-style: bold;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
 }
 
@@ -609,7 +592,6 @@
     height: 100%;
     color: #FFFFFF;
     font-size: 12px;
-    -unity-font-style: bold;
     -unity-text-align: middle-center;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
     top: 0;
@@ -632,7 +614,6 @@
 .pass-level-text {
     color: #000000;
     font-size: 16px;
-    -unity-font-style: bold;
     text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
 }
 
@@ -650,7 +631,6 @@
 .panel-title {
     color: #FFD700;
     font-size: 36px;
-    -unity-font-style: bold;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
     margin-bottom: 30px;
 }
@@ -666,7 +646,6 @@
     background-color: #FF1493;
     color: #FFFFFF;
     font-size: 20px;
-    -unity-font-style: bold;
     height: 60px;
     border-radius: 30px;
     border-width: 3px;
@@ -688,7 +667,6 @@
 .credits-title {
     color: #FFD700;
     font-size: 32px;
-    -unity-font-style: bold;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
     margin-bottom: 10px;
 }
@@ -696,14 +674,12 @@
 .credits-subtitle {
     color: #00BFFF;
     font-size: 18px;
-    -unity-font-style: bold;
     margin-bottom: 20px;
 }
 
 .credits-section {
     color: #FFFFFF;
     font-size: 16px;
-    -unity-font-style: bold;
     margin-top: 15px;
     margin-bottom: 5px;
 }

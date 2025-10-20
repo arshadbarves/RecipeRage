@@ -1,4 +1,5 @@
 using Core.Bootstrap;
+using Core.Events;
 using UI.Components;
 using UI.UISystem.Core;
 using UnityEngine;
@@ -25,6 +26,8 @@ namespace UI.UISystem.Screens
         #region Other Components
 
         private CurrencyDisplay _currencyDisplay;
+        private Button _playerCardButton;
+        private Label _playerNameLabel;
 
         #endregion
 
@@ -34,14 +37,17 @@ namespace UI.UISystem.Screens
         {
             ConfigureTopBarPointerEvents();
             InitializeCurrencyDisplay();
+            InitializePlayerCard();
             InitializeTabContent();
+            SubscribeToEvents();
 
             Debug.Log("[MainMenuScreen] Initialized");
         }
 
         protected override void OnShow()
         {
-            // Screen is being shown
+            // Update player name when screen is shown
+            UpdatePlayerName();
         }
 
         protected override void OnHide()
@@ -56,7 +62,40 @@ namespace UI.UISystem.Screens
 
         protected override void OnDispose()
         {
+            UnsubscribeFromEvents();
             _currencyDisplay?.Dispose();
+
+            if (_playerCardButton != null)
+            {
+                _playerCardButton.clicked -= OnPlayerCardClicked;
+            }
+        }
+
+        #endregion
+
+        #region Event Subscription
+
+        private void SubscribeToEvents()
+        {
+            var eventBus = GameBootstrap.Services?.EventBus;
+            if (eventBus != null)
+            {
+                eventBus.Subscribe<PlayerStatsChangedEvent>(OnPlayerStatsChanged);
+            }
+        }
+
+        private void UnsubscribeFromEvents()
+        {
+            var eventBus = GameBootstrap.Services?.EventBus;
+            if (eventBus != null)
+            {
+                eventBus.Unsubscribe<PlayerStatsChangedEvent>(OnPlayerStatsChanged);
+            }
+        }
+
+        private void OnPlayerStatsChanged(PlayerStatsChangedEvent evt)
+        {
+            UpdatePlayerName();
         }
 
         #endregion
@@ -109,6 +148,42 @@ namespace UI.UISystem.Screens
                     services.EventBus,
                     services.CurrencyService
                 );
+            }
+        }
+
+        private void InitializePlayerCard()
+        {
+            _playerCardButton = GetElement<Button>("player-card-button");
+            _playerNameLabel = GetElement<Label>("player-title");
+
+            if (_playerCardButton != null)
+            {
+                _playerCardButton.clicked += OnPlayerCardClicked;
+            }
+
+            // Update player name
+            UpdatePlayerName();
+        }
+
+        private void UpdatePlayerName()
+        {
+            var saveService = GameBootstrap.Services?.SaveService;
+            if (saveService != null && _playerNameLabel != null)
+            {
+                var stats = saveService.GetPlayerStats();
+                string displayName = string.IsNullOrEmpty(stats.PlayerName) ? "Guest Player" : stats.PlayerName;
+                _playerNameLabel.text = displayName;
+            }
+        }
+
+        private void OnPlayerCardClicked()
+        {
+            Debug.Log("[MainMenuScreen] Player card clicked - showing profile");
+
+            var uiService = GameBootstrap.Services?.UIService;
+            if (uiService != null)
+            {
+                uiService.ShowScreen(UIScreenType.Profile, true, true);
             }
         }
 

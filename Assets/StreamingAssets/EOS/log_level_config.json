@@ -2,139 +2,139 @@
   "LogCategoryLevelPairs": [
     {
       "Category": "Core",
-      "Level": "Info"
+      "Level": "Off"
     },
     {
       "Category": "Auth",
-      "Level": "Info"
+      "Level": "Off"
     },
     {
       "Category": "Friends",
-      "Level": "Info"
+      "Level": "Off"
     },
     {
       "Category": "Presence",
-      "Level": "Info"
+      "Level": "Off"
     },
     {
       "Category": "UserInfo",
-      "Level": "Info"
+      "Level": "Off"
     },
     {
       "Category": "HttpSerialization",
-      "Level": "Info"
+      "Level": "Off"
     },
     {
       "Category": "Ecom",
-      "Level": "Info"
+      "Level": "Off"
     },
     {
       "Category": "P2P",
-      "Level": "Info"
+      "Level": "Off"
     },
     {
       "Category": "Sessions",
-      "Level": "Info"
+      "Level": "Off"
     },
     {
       "Category": "RateLimiter",
-      "Level": "Info"
+      "Level": "Off"
     },
     {
       "Category": "PlayerDataStorage",
-      "Level": "Info"
+      "Level": "Off"
     },
     {
       "Category": "Analytics",
-      "Level": "Info"
+      "Level": "Off"
     },
     {
       "Category": "Messaging",
-      "Level": "Info"
+      "Level": "Off"
     },
     {
       "Category": "Connect",
-      "Level": "Info"
+      "Level": "Off"
     },
     {
       "Category": "Overlay",
-      "Level": "Info"
+      "Level": "Off"
     },
     {
       "Category": "Achievements",
-      "Level": "Info"
+      "Level": "Off"
     },
     {
       "Category": "Stats",
-      "Level": "Info"
+      "Level": "Off"
     },
     {
       "Category": "Ui",
-      "Level": "Info"
+      "Level": "Off"
     },
     {
       "Category": "Lobby",
-      "Level": "Info"
+      "Level": "Off"
     },
     {
       "Category": "Leaderboards",
-      "Level": "Info"
+      "Level": "Off"
     },
     {
       "Category": "Keychain",
-      "Level": "Info"
+      "Level": "Off"
     },
     {
       "Category": "IntegratedPlatform",
-      "Level": "Info"
+      "Level": "Off"
     },
     {
       "Category": "TitleStorage",
-      "Level": "Info"
+      "Level": "Off"
     },
     {
       "Category": "Mods",
-      "Level": "Info"
+      "Level": "Off"
     },
     {
       "Category": "AntiCheat",
-      "Level": "Info"
+      "Level": "Off"
     },
     {
       "Category": "Reports",
-      "Level": "Info"
+      "Level": "Off"
     },
     {
       "Category": "Sanctions",
-      "Level": "Info"
+      "Level": "Off"
     },
     {
       "Category": "ProgressionSnapshots",
-      "Level": "Info"
+      "Level": "Off"
     },
     {
       "Category": "Kws",
-      "Level": "Info"
+      "Level": "Off"
     },
     {
       "Category": "Rtc",
-      "Level": "Info"
+      "Level": "Off"
     },
     {
       "Category": "RTCAdmin",
-      "Level": "Info"
+      "Level": "Off"
     },
     {
       "Category": "CustomInvites",
-      "Level": "Info"
+      "Level": "Off"
     },
     {
       "Category": "Http",
-      "Level": "Info"
+      "Level": "Off"
     },
     {
       "Category": "AllCategories",
-      "Level": "Info"
+      "Level": "Off"
     }
   ],
   "schemaVersion": "1.0"
