@@ -320,6 +320,9 @@ namespace UI.UISystem.Popups
                 _errorLabel.style.display = DisplayStyle.Flex;
             }
 
+            // Show error toast
+            _ = GameBootstrap.Services?.UIService?.ShowToast(message, ToastType.Error, 3f);
+
             Debug.LogWarning($"[UsernamePopup] Validation error: {message}");
         }
 

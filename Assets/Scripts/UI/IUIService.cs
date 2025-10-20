@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using UI.UISystem.Core;
+using UI.UISystem.Screens;
 using UnityEngine.UIElements;
 
 namespace UI.UISystem
@@ -27,6 +29,8 @@ namespace UI.UISystem
 
         bool GoBack(bool animate = true);
         void ClearHistory();
+
+        UniTask ShowToast(string message, ToastType type = ToastType.Info, float duration = 3f);
 
         event Action<UIScreenType> OnScreenShown;
         event Action<UIScreenType> OnScreenHidden;

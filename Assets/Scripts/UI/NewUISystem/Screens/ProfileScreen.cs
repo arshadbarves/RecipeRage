@@ -1,7 +1,6 @@
 using System;
 using Core.Animation;
 using Core.Bootstrap;
-using Core.Currency;
 using Core.SaveSystem;
 using UI.UISystem.Core;
 using UI.UISystem.Popups;
@@ -209,6 +208,9 @@ namespace UI.UISystem.Screens
                     {
                         Debug.Log($"[ProfileScreen] Username changed to: {newUsername}");
                         RefreshStats();
+
+                        // Show success toast
+                        _ = _uiService?.ShowToast($"Username changed to {newUsername}", ToastType.Success, 2.5f);
 
                         // Update main menu player name
                         var mainMenu = _uiService.GetScreen<MainMenuScreen>();

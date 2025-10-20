@@ -15,6 +15,7 @@ namespace UI.UISystem
         Modal,
         Popup,
         Notification,
+        Toast,
         
         // Game screens
         Settings,

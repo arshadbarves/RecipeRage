@@ -5,6 +5,7 @@ using Cysharp.Threading.Tasks;
 using Epic.OnlineServices;
 using Epic.OnlineServices.Connect;
 using PlayEveryWare.EpicOnlineServices;
+using UI.UISystem.Screens;
 using UnityEngine;
 
 namespace Core.Authentication
@@ -18,7 +19,7 @@ namespace Core.Authentication
     {
         private const string LOGIN_METHOD_DEVICE_ID = "DeviceID";
         private const string LOGIN_METHOD_FACEBOOK = "Facebook";
-        
+
         private readonly ISaveService _saveService;
         private readonly Core.Events.IEventBus _eventBus;
         private readonly UI.UISystem.IUIService _uiService;
@@ -53,10 +54,10 @@ namespace Core.Authentication
             if (loginSuccess)
             {
                 Debug.Log("[AuthenticationService] Auto-login successful");
-                
+
                 // Notify save service that user logged in
                 _saveService.OnUserLoggedIn();
-                
+
                 return true;
             }
             else
@@ -107,14 +108,14 @@ namespace Core.Authentication
             {
                 UpdateStatus("Session found!");
                 await UniTask.Delay(500);
-                
+
                 // Publish event via EventBus
                 _eventBus?.Publish(new Core.Events.LoginSuccessEvent
                 {
                     UserId = EOSManager.Instance?.GetProductUserId()?.ToString() ?? "unknown",
                     DisplayName = "User"
                 });
-                
+
                 return true;
             }
 
@@ -153,19 +154,19 @@ namespace Core.Authentication
             Debug.Log("[AuthenticationService] Facebook login requested");
             UpdateStatus("Facebook login requires Facebook SDK integration");
             await UniTask.Delay(1000);
-            
+
             _eventBus?.Publish(new Core.Events.LoginFailedEvent
             {
                 Error = "Facebook SDK not integrated"
             });
-            
+
             return false;
         }
 
         public void Logout()
         {
             Debug.Log("[AuthenticationService] Logging out user (sync)");
-            
+
             // Clear login method from save service
             _saveService?.UpdateSettings(s => s.LastLoginMethod = "");
 
@@ -187,7 +188,7 @@ namespace Core.Authentication
             }
 
             UpdateStatus("Logged out");
-            
+
             // Trigger logout complete event - GameBootstrap will handle full reboot
             OnLogoutComplete?.Invoke();
         }
@@ -228,7 +229,7 @@ namespace Core.Authentication
                 // Wait for completion with timeout
                 var timeoutTask = UniTask.Delay(TimeSpan.FromSeconds(10));
                 var waitTask = UniTask.WaitUntil(() => createCompleted);
-                
+
                 var completedTask = await UniTask.WhenAny(waitTask, timeoutTask);
 
                 if (completedTask == 1) // Timeout
@@ -250,12 +251,12 @@ namespace Core.Authentication
                 if (!createSuccess)
                 {
                     UpdateStatus(string.IsNullOrEmpty(errorMessage) ? "Failed to create guest account" : errorMessage);
-                    
+
                     _eventBus?.Publish(new Core.Events.LoginFailedEvent
                     {
                         Error = errorMessage
                     });
-                    
+
                     return false;
                 }
             }
@@ -290,13 +291,16 @@ namespace Core.Authentication
             // Wait for login completion with timeout
             var loginTimeoutTask = UniTask.Delay(TimeSpan.FromSeconds(10));
             var loginWaitTask = UniTask.WaitUntil(() => loginCompleted);
-            
+
             var loginCompletedTask = await UniTask.WhenAny(loginWaitTask, loginTimeoutTask);
 
             if (loginCompletedTask == 1) // Timeout
             {
-                errorMessage = "Login timed out";
+                errorMessage = "Login timeout - server not responding";
                 UpdateStatus(errorMessage);
+
+                // Show error toast
+                _ = _uiService?.ShowToast(errorMessage, ToastType.Error, 4f);
 
                 _eventBus?.Publish(new Core.Events.LoginFailedEvent
                 {
@@ -315,14 +319,14 @@ namespace Core.Authentication
                 _saveService?.UpdateSettings(s => s.LastLoginMethod = LOGIN_METHOD_DEVICE_ID);
 
                 UpdateStatus("Login successful!");
-                
+
                 // Publish event via EventBus
                 _eventBus?.Publish(new Core.Events.LoginSuccessEvent
                 {
                     UserId = EOSManager.Instance?.GetProductUserId()?.ToString() ?? "unknown",
                     DisplayName = "Guest"
                 });
-                
+
                 return true;
             }
             else
@@ -333,13 +337,13 @@ namespace Core.Authentication
                 }
 
                 UpdateStatus(errorMessage);
-                
+
                 // Publish event via EventBus
                 _eventBus?.Publish(new Core.Events.LoginFailedEvent
                 {
                     Error = errorMessage
                 });
-                
+
                 return false;
             }
         }
@@ -355,7 +359,7 @@ namespace Core.Authentication
         private void UpdateStatus(string message)
         {
             Debug.Log($"[AuthenticationService] {message}");
-            
+
             // Publish event via EventBus
             _eventBus?.Publish(new Core.Events.LoginStatusChangedEvent
             {
@@ -406,7 +410,10 @@ namespace Core.Authentication
                 await UniTask.Delay(500);
 
                 UpdateStatus("Logged out successfully");
-                
+
+                // Show success toast
+                _ = _uiService?.ShowToast("Logged out successfully", ToastType.Success, 2f);
+
                 // Trigger logout complete event - GameBootstrap will handle full reboot
                 OnLogoutComplete?.Invoke();
 
@@ -416,6 +423,9 @@ namespace Core.Authentication
             {
                 Debug.LogError($"[AuthenticationService] Logout failed: {ex.Message}");
                 UpdateStatus($"Logout failed: {ex.Message}");
+
+                // Show error toast
+                _ = _uiService?.ShowToast("Logout failed", ToastType.Error, 3f);
             }
         }
     }
