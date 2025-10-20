@@ -1,4 +1,5 @@
 using System;
+using Core.Bootstrap;
 using Core.SaveSystem;
 using Cysharp.Threading.Tasks;
 using Epic.OnlineServices;
@@ -163,10 +164,21 @@ namespace Core.Authentication
 
         public void Logout()
         {
-            Debug.Log("[AuthenticationService] Logging out user");
+            Debug.Log("[AuthenticationService] Logging out user (sync)");
             
             // Clear login method from save service
             _saveService?.UpdateSettings(s => s.LastLoginMethod = "");
+
+            // Notify save service to clear user-specific cache
+            _saveService?.OnUserLoggedOut();
+
+            // Clear all UI screens and history
+            if (_uiService != null)
+            {
+                Debug.Log("[AuthenticationService] Clearing all UI screens and history");
+                _uiService.HideAllScreens(animate: false);
+                _uiService.ClearHistory();
+            }
 
             ProductUserId productUserId = EOSManager.Instance?.GetProductUserId();
             if (productUserId != null && productUserId.IsValid())
@@ -176,8 +188,8 @@ namespace Core.Authentication
 
             UpdateStatus("Logged out");
             
-            // Show login screen after logout
-            ShowLoginScreen();
+            // Trigger logout complete event - GameBootstrap will handle full reboot
+            OnLogoutComplete?.Invoke();
         }
 
         private async UniTask<bool> LoginWithDeviceIdInternalAsync(bool isAutoLogin)
@@ -223,12 +235,15 @@ namespace Core.Authentication
                 {
                     errorMessage = "Device ID creation timed out";
                     UpdateStatus(errorMessage);
-                    
+
                     _eventBus?.Publish(new Core.Events.LoginFailedEvent
                     {
                         Error = errorMessage
                     });
-                    
+
+                    // Show maintenance screen for server down scenario
+                    GameBootstrap.Services?.MaintenanceService?.ShowServerDownMaintenance(errorMessage);
+
                     return false;
                 }
 
@@ -282,12 +297,15 @@ namespace Core.Authentication
             {
                 errorMessage = "Login timed out";
                 UpdateStatus(errorMessage);
-                
+
                 _eventBus?.Publish(new Core.Events.LoginFailedEvent
                 {
                     Error = errorMessage
                 });
-                
+
+                // Show maintenance screen for server down scenario
+                GameBootstrap.Services?.MaintenanceService?.ShowServerDownMaintenance(errorMessage);
+
                 return false;
             }
 
@@ -363,17 +381,33 @@ namespace Core.Authentication
                 settings.LastLoginMethod = "";
                 _saveService.SaveSettings(settings);
 
+                // Notify save service to clear user-specific cache
+                _saveService.OnUserLoggedOut();
+
+                // Clear all UI screens and history
+                if (_uiService != null)
+                {
+                    Debug.Log("[AuthenticationService] Clearing all UI screens and history");
+                    _uiService.HideAllScreens(animate: false);
+                    _uiService.ClearHistory();
+                }
+
                 // EOS logout (if available)
                 if (EOSManager.Instance != null)
                 {
-                    // Note: EOS Connect doesn't have explicit logout
-                    // The session will expire naturally
-                    Debug.Log("[AuthenticationService] EOS session will expire naturally");
+                    ProductUserId productUserId = EOSManager.Instance.GetProductUserId();
+                    if (productUserId != null && productUserId.IsValid())
+                    {
+                        EOSManager.Instance.ClearConnectId(productUserId);
+                    }
+                    Debug.Log("[AuthenticationService] EOS session cleared");
                 }
 
                 await UniTask.Delay(500);
 
                 UpdateStatus("Logged out successfully");
+                
+                // Trigger logout complete event - GameBootstrap will handle full reboot
                 OnLogoutComplete?.Invoke();
 
                 Debug.Log("[AuthenticationService] Logout complete");

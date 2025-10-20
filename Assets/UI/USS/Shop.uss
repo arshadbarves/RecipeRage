@@ -13,7 +13,6 @@
 .shop-title {
     font-size: 42px;
     color: rgb(40, 30, 25);
-    -unity-font-style: bold;
     -unity-text-align: middle-center;
 }
 
@@ -37,7 +36,6 @@
     border-color: rgb(40, 30, 25);
     font-size: 18px;
     color: rgb(40, 30, 25);
-    -unity-font-style: bold;
     transition-property: scale, background-color;
     transition-duration: 0.15s;
     min-width: 110px;
@@ -91,7 +89,6 @@
 .shop-item-name {
     font-size: 20px;
     color: rgb(40, 30, 25);
-    -unity-font-style: bold;
     -unity-text-align: middle-center;
     margin-bottom: 8px;
     white-space: normal;
@@ -116,7 +113,6 @@
 .price-text {
     font-size: 28px;
     color: rgb(40, 30, 25);
-    -unity-font-style: bold;
 }
 
 .buy-button {
@@ -128,7 +124,6 @@
     margin-top: 12px;
     font-size: 18px;
     color: rgb(40, 30, 25);
-    -unity-font-style: bold;
     transition-property: scale, background-color;
     transition-duration: 0.15s;
 }

@@ -17,7 +17,6 @@
 .editor-title {
     font-size: 36px;
     color: rgb(255, 255, 255);
-    -unity-font-style: bold;
 }
 
 .close-button {
@@ -29,7 +28,6 @@
     border-color: rgb(255, 255, 255);
     font-size: 32px;
     color: rgb(255, 255, 255);
-    -unity-font-style: bold;
 }
 
 .editor-content {
@@ -106,7 +104,6 @@
 .action-label {
     font-size: 14px;
     color: rgb(255, 255, 255);
-    -unity-font-style: bold;
     -unity-text-align: middle-center;
 }
 
@@ -122,7 +119,6 @@
 .panel-title {
     font-size: 28px;
     color: rgb(40, 30, 25);
-    -unity-font-style: bold;
     margin-bottom: 20px;
 }
 
@@ -134,7 +130,6 @@
 .control-label {
     font-size: 20px;
     color: rgb(40, 30, 25);
-    -unity-font-style: bold;
     margin-bottom: 10px;
 }
 
@@ -166,7 +161,6 @@
 .control-toggle .unity-label {
     font-size: 20px;
     color: rgb(40, 30, 25);
-    -unity-font-style: bold;
 }
 
 .settings-button {
@@ -177,7 +171,6 @@
     border-color: rgb(40, 30, 25);
     font-size: 20px;
     color: rgb(40, 30, 25);
-    -unity-font-style: bold;
     margin: 10px 0;
     transition-property: scale;
     transition-duration: 0.15s;

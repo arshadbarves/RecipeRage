@@ -28,6 +28,7 @@ namespace Core.SaveSystem
 
         // Utility
         void DeleteAllData();
+        void ClearUserCache(); // Clear user-specific cache without deleting data
         
         // Cloud sync
         SyncStatus GetSyncStatus(string key);

@@ -23,6 +23,18 @@ namespace Core.Events
     }
 
     // ============================================
+    // PLAYER EVENTS
+    // ============================================
+
+    /// <summary>
+    /// Published when player stats change (username, level, etc.)
+    /// </summary>
+    public class PlayerStatsChangedEvent
+    {
+        public string PlayerName { get; set; }
+    }
+
+    // ============================================
     // AUTHENTICATION EVENTS
     // ============================================
 
@@ -57,6 +69,29 @@ namespace Core.Events
     public class LoginStatusChangedEvent
     {
         public string Status { get; set; }
+    }
+
+    // ============================================
+    // MAINTENANCE EVENTS
+    // ============================================
+
+    /// <summary>
+    /// Published when maintenance mode is detected
+    /// </summary>
+    public class MaintenanceModeEvent
+    {
+        public bool IsMaintenanceMode { get; set; }
+        public string EstimatedEndTime { get; set; }
+        public string Message { get; set; }
+        public bool AllowRetry { get; set; }
+    }
+
+    /// <summary>
+    /// Published when maintenance data cannot be fetched (server down scenario)
+    /// </summary>
+    public class MaintenanceCheckFailedEvent
+    {
+        public string Error { get; set; }
     }
 
     // ============================================

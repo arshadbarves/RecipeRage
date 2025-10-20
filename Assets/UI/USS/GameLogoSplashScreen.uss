@@ -25,7 +25,6 @@
 .game-tagline {
     font-size: 24px;
     color: #FF6B35;
-    -unity-font-style: bold;
     margin-top: 20px;
     letter-spacing: 3px;
 }

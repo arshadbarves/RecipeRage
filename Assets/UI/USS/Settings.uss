@@ -13,7 +13,6 @@
 .settings-title {
     font-size: 42px;
     color: rgb(40, 30, 25);
-    -unity-font-style: bold;
     -unity-text-align: middle-center;
     margin-bottom: 5px;
 }
@@ -47,7 +46,6 @@
 .section-title {
     font-size: 28px;
     color: rgb(40, 30, 25);
-    -unity-font-style: bold;
     margin-bottom: 15px;
     padding-bottom: 10px;
     border-bottom-width: 3px;
@@ -78,7 +76,6 @@
 .control-label {
     font-size: 22px;
     color: rgb(40, 30, 25);
-    -unity-font-style: bold;
     flex-shrink: 0;
     margin-right: 15px;
 }
@@ -98,7 +95,6 @@
 .value-label {
     font-size: 20px;
     color: rgb(40, 30, 25);
-    -unity-font-style: bold;
     min-width: 55px;
     -unity-text-align: middle-right;
     background-color: rgba(40, 30, 25, 0.1);
@@ -139,14 +135,12 @@
     padding: 10px 15px;
     font-size: 20px;
     color: rgb(40, 30, 25);
-    -unity-font-style: bold;
     flex-shrink: 0;
     max-width: 400px;
 }
 
 .control-dropdown .unity-base-popup-field__text {
     color: rgb(40, 30, 25);
-    -unity-font-style: bold;
     font-size: 20px;
 }
 
@@ -164,7 +158,6 @@
     background-color: transparent;
     border-width: 0;
     color: rgb(40, 30, 25);
-    -unity-font-style: bold;
     font-size: 20px;
 }
 
@@ -206,7 +199,6 @@
     border-color: rgb(40, 30, 25);
     font-size: 16px;
     color: rgb(40, 30, 25);
-    -unity-font-style: bold;
     transition-property: scale;
     transition-duration: 0.1s;
     flex-grow: 0;
@@ -252,7 +244,6 @@
     color: rgb(100, 90, 85);
     -unity-text-align: middle-center;
     margin-bottom: 5px;
-    -unity-font-style: bold;
 }
 
 .credits-text {

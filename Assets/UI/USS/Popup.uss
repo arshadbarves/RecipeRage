@@ -1,113 +1,182 @@
-/* Popup Styles */
-.popup-overlay {
+.popup-root {
+    position: absolute;
     width: 100%;
     height: 100%;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
     left: 0;
     top: 0;
-    right: 0;
-    bottom: 0;
+    align-items: center;
+    justify-content: center;
+    display: none;
 }
 
-.popup-bg {
+.popup-root-fullscreen {
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    -unity-font-definition: url("project://database/Assets/Fonts/LilitaOne-Regular.ttf?fileID=12800000&guid=2309d3a0e6c55446ea2d106abff555fe&type=3#LilitaOne-Regular");
+}
+
+.popup-overlay {
     position: absolute;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.6);
 }
 
-.popup-content {
-    background-color: rgb(40, 40, 50);
-    border-radius: 12px;
-    border-width: 2px;
-    border-color: rgba(255, 255, 255, 0.2);
-    min-width: 300px;
-    max-width: 500px;
+.popup-container {
+    width: 450px;
+    min-height: 280px;
+    background-color: rgb(245, 240, 235);
+    border-radius: 20px;
+    border-width: 6px;
+    border-color: rgb(40, 30, 25);
+    padding: 35px;
     flex-direction: column;
+    align-items: center;
 }
 
-.popup-header {
-    flex-direction: row;
-    justify-content: space-between;
+.popup-close-button {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    width: 50px;
+    height: 50px;
+    background-color: rgb(255, 100, 100);
+    border-radius: 50%;
+    border-width: 4px;
+    border-color: rgb(40, 30, 25);
+    transition-property: scale;
+    transition-duration: 0.1s;
     align-items: center;
-    padding: 15px 20px;
-    border-bottom-width: 1px;
-    border-bottom-color: rgba(255, 255, 255, 0.1);
+    justify-content: center;
+}
+
+.popup-close-button:active {
+    scale: 0.88;
+}
+
+.close-icon {
+    font-size: 32px;
+    color: rgb(40, 30, 25);
+    -unity-text-align: middle-center;
+    margin: 0;
+    padding: 0;
 }
 
 .popup-title {
+    font-size: 32px;
+    color: rgb(40, 30, 25);
+    margin-bottom: 25px;
+    -unity-text-align: upper-center;
+}
+
+.popup-content {
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+}
+
+.username-field {
+    width: 100%;
+    background-color: white;
+    border-radius: 14px;
+    border-width: 4px;
+    border-color: rgb(40, 30, 25);
+    padding: 12px 18px;
     font-size: 20px;
-    color: white;
-    -unity-font-style: bold;
+    color: rgb(40, 30, 25);
+    margin-bottom: 12px;
 }
 
-.close-button {
-    width: 30px;
-    height: 30px;
-    border-radius: 15px;
-    background-color: rgba(255, 100, 100, 0.8);
+.username-field:focus {
+    border-color: rgb(100, 200, 255);
+    border-width: 5px;
+}
+
+.username-field > TextInput {
+    background-color: transparent;
     border-width: 0;
-    color: white;
-    font-size: 18px;
-    -unity-font-style: bold;
+    color: rgb(40, 30, 25);
+    -unity-text-align: middle-left;
+    font-size: 20px;
 }
 
-.close-button:hover {
-    background-color: rgb(255, 100, 100);
-    scale: 1.1;
-}
-
-.popup-body {
-    padding: 20px;
-    flex-grow: 1;
-}
-
-.popup-message {
+.error-label {
+    width: 100%;
+    color: rgb(255, 100, 100);
     font-size: 16px;
-    color: rgba(255, 255, 255, 0.9);
-    white-space: normal;
+    margin-bottom: 12px;
+    -unity-text-align: upper-center;
+    display: none;
 }
 
-.popup-footer {
+.cost-container {
+    width: 100%;
     flex-direction: row;
-    justify-content: flex-end;
-    padding: 15px 20px;
-    border-top-width: 1px;
-    border-top-color: rgba(255, 255, 255, 0.1);
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    padding: 12px 20px;
+    background-color: rgb(255, 200, 60);
+    border-radius: 14px;
+    border-width: 4px;
+    border-color: rgb(40, 30, 25);
+}
+
+.cost-text {
+    font-size: 18px;
+    color: rgb(40, 30, 25);
+    margin-right: 10px;
+}
+
+.gem-icon-small {
+    width: 28px;
+    height: 28px;
+    background-color: rgb(100, 200, 255);
+    border-radius: 50%;
+    margin-right: 8px;
+    border-width: 3px;
+    border-color: rgb(40, 30, 25);
+}
+
+.cost-label {
+    font-size: 20px;
+    color: rgb(40, 30, 25);
+}
+
+.popup-button-container {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 10px;
 }
 
 .popup-button {
-    height: 35px;
-    padding-left: 20px;
-    padding-right: 20px;
-    margin-left: 10px;
-    border-radius: 6px;
-    border-width: 1px;
-    font-size: 14px;
-    transition-property: background-color, scale;
-    transition-duration: 0.2s;
+    flex-grow: 1;
+    height: 50px;
+    border-radius: 14px;
+    border-width: 4px;
+    border-color: rgb(40, 30, 25);
+    font-size: 20px;
+    transition-property: scale;
+    transition-duration: 0.1s;
 }
 
-.popup-button--secondary {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.3);
-    color: rgba(255, 255, 255, 0.8);
+.popup-cancel-button {
+    background-color: rgb(255, 100, 100);
+    color: rgb(40, 30, 25);
 }
 
-.popup-button--secondary:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-    scale: 1.05;
+.popup-cancel-button:active {
+    scale: 0.92;
 }
 
-.popup-button--primary {
-    background-color: rgb(100, 150, 255);
-    border-color: rgb(120, 170, 255);
-    color: white;
+.popup-confirm-button {
+    background-color: rgb(100, 230, 150);
+    color: rgb(40, 30, 25);
 }
 
-.popup-button--primary:hover {
-    background-color: rgb(120, 170, 255);
-    scale: 1.05;
+.popup-confirm-button:active {
+    scale: 0.92;
 }

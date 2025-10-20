@@ -37,10 +37,6 @@ namespace UI.UISystem
             _animationService = animationService ?? throw new ArgumentNullException(nameof(animationService));
         }
 
-        /// <summary>
-        /// Initialize the UI Service with a UIDocument
-        /// </summary>
-        /// <param name="uiDocument">The UIDocument to use for rendering</param>
         public void Initialize(UIDocument uiDocument)
         {
             if (_isInitialized)
@@ -51,10 +47,31 @@ namespace UI.UISystem
 
             _uiDocument = uiDocument;
             UIScreenRegistry.Initialize();
-            InitializeUISystem();
+            SetupUIDocument();
         }
 
-        private void InitializeUISystem()
+        public void InitializeScreens()
+        {
+            if (_isInitialized)
+            {
+                Debug.LogWarning("[UIService] Screens already initialized");
+                return;
+            }
+
+            if (_root == null)
+            {
+                Debug.LogError("[UIService] Root element not ready. Call Initialize(UIDocument) first.");
+                return;
+            }
+
+            CreateScreenControllers();
+            HideAllScreens();
+
+            _isInitialized = true;
+            Debug.Log("[UIService] UI screens initialized successfully");
+        }
+
+        private void SetupUIDocument()
         {
             if (_uiDocument == null)
             {
@@ -62,15 +79,12 @@ namespace UI.UISystem
                 return;
             }
 
-            // Check if UI is ready
             if (_uiDocument.rootVisualElement != null)
             {
                 OnUIDocumentReady();
-                _isInitialized = true;
             }
             else
             {
-                // Wait for UI to be ready via event
                 _uiDocument.rootVisualElement?.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
             }
         }
@@ -79,15 +93,12 @@ namespace UI.UISystem
         {
             _uiDocument.rootVisualElement.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
             OnUIDocumentReady();
-            _isInitialized = true;
         }
 
         private void OnUIDocumentReady()
         {
             _root = _uiDocument.rootVisualElement;
             _root.name = "ui-root";
-
-            // Ensure root element fills the entire screen
             _root.style.width = Length.Percent(100);
             _root.style.height = Length.Percent(100);
             _root.style.position = Position.Absolute;
@@ -97,18 +108,11 @@ namespace UI.UISystem
             _root.style.bottom = 0;
             _root.AddToClassList("ui-root");
 
-            // Create all screen controllers
-            CreateScreenControllers();
-
-            // Hide all screens initially
-            HideAllScreens();
-
-            Debug.Log("[UIService] UI System initialized successfully");
+            Debug.Log("[UIService] UIDocument ready");
         }
 
         private void CreateScreenControllers()
         {
-            // Create screens for all registered screen types
             foreach (UIScreenType screenType in UIScreenRegistry.GetRegisteredScreenTypes())
             {
                 CreateScreen(screenType);
@@ -119,7 +123,6 @@ namespace UI.UISystem
 
         private void CreateScreen(UIScreenType screenType)
         {
-            // Get screen attribute for configuration
             UIScreenAttribute attribute = UIScreenRegistry.GetScreenAttribute(screenType);
             if (attribute == null)
             {
@@ -127,17 +130,13 @@ namespace UI.UISystem
                 return;
             }
 
-            // Load template from attribute path
             VisualTreeAsset template = LoadTemplateFromPath(attribute.TemplatePath);
 
-            // Create controller
             var controller = new UIScreenController(screenType, attribute.Priority, template, _root);
             _controllers[screenType] = controller;
 
-            // Sort screens by priority after adding
             SortScreensByPriority();
 
-            // Create screen class instance
             BaseUIScreen screen = UIScreenRegistry.CreateScreen(screenType);
             if (screen != null)
             {
@@ -183,12 +182,8 @@ namespace UI.UISystem
             }
         }
 
-        /// <summary>
-        /// Dispose of the UI Service and clean up resources
-        /// </summary>
         public void Dispose()
         {
-            // Dispose all screens
             foreach (BaseUIScreen screen in _screens.Values)
             {
                 screen.Dispose();
@@ -204,14 +199,8 @@ namespace UI.UISystem
 
         #region Public API
 
-        /// <summary>
-        /// Check if UIService is fully initialized and ready to use
-        /// </summary>
         public bool IsInitialized => _isInitialized && _root != null;
 
-        /// <summary>
-        /// Show a screen with optional animation
-        /// </summary>
         public void ShowScreen(UIScreenType screenType, bool animate = true, bool addToHistory = true)
         {
             if (!_screens.TryGetValue(screenType, out BaseUIScreen screen))
@@ -220,7 +209,6 @@ namespace UI.UISystem
                 return;
             }
 
-            // Add current visible screen to history if requested
             if (addToHistory && _visibleScreens.Count > 0)
             {
                 BaseUIScreen currentScreen = _visibleScreens.LastOrDefault();
@@ -230,13 +218,9 @@ namespace UI.UISystem
                 }
             }
 
-            // Show the screen
             ShowScreenInternal(screen, animate);
         }
 
-        /// <summary>
-        /// Get a screen instance by type
-        /// </summary>
         public T GetScreen<T>() where T : BaseUIScreen
         {
             foreach (BaseUIScreen screen in _screens.Values)
@@ -247,27 +231,18 @@ namespace UI.UISystem
             return null;
         }
 
-        /// <summary>
-        /// Get a screen instance by screen type
-        /// </summary>
         public BaseUIScreen GetScreen(UIScreenType screenType)
         {
             _screens.TryGetValue(screenType, out BaseUIScreen screen);
             return screen;
         }
 
-        /// <summary>
-        /// Get a typed screen instance by screen type
-        /// </summary>
         public T GetScreen<T>(UIScreenType screenType) where T : BaseUIScreen
         {
             _screens.TryGetValue(screenType, out BaseUIScreen screen);
             return screen as T;
         }
 
-        /// <summary>
-        /// Hide a specific screen
-        /// </summary>
         public void HideScreen(UIScreenType screenType, bool animate = true)
         {
             if (!_screens.TryGetValue(screenType, out BaseUIScreen screen))
@@ -279,9 +254,6 @@ namespace UI.UISystem
             HideScreenInternal(screen, animate);
         }
 
-        /// <summary>
-        /// Hide all screens of a specific type (useful for popups/notifications)
-        /// </summary>
         public void HideScreensOfType(UIScreenType screenType, bool animate = true)
         {
             var screensToHide = _visibleScreens.Where(s => s.ScreenType == screenType).ToList();
@@ -291,9 +263,6 @@ namespace UI.UISystem
             }
         }
 
-        /// <summary>
-        /// Hide all popup screens (Popup, Modal, Notification)
-        /// </summary>
         public void HideAllPopups(bool animate = true)
         {
             UIScreenType[] popupTypes = new[] { UIScreenType.Popup, UIScreenType.Modal, UIScreenType.Notification };
@@ -305,9 +274,6 @@ namespace UI.UISystem
             }
         }
 
-        /// <summary>
-        /// Hide all screens except system screens (Splash, Loading)
-        /// </summary>
         public void HideAllGameScreens(bool animate = true)
         {
             UIScreenType[] systemTypes = new[] { UIScreenType.Splash, UIScreenType.Loading };
@@ -319,9 +285,6 @@ namespace UI.UISystem
             }
         }
 
-        /// <summary>
-        /// Hide all screens
-        /// </summary>
         public void HideAllScreens(bool animate = false)
         {
             var screensToHide = _visibleScreens.ToList();
@@ -331,54 +294,37 @@ namespace UI.UISystem
             }
         }
 
-        /// <summary>
-        /// Go back to previous screen
-        /// </summary>
         public bool GoBack(bool animate = true)
         {
             if (_screenHistory.Count == 0) return false;
 
             BaseUIScreen previousScreen = _screenHistory.Pop();
 
-            // Hide current screen
             if (_visibleScreens.Count > 0)
             {
                 BaseUIScreen currentScreen = _visibleScreens.Last();
                 HideScreenInternal(currentScreen, animate);
             }
 
-            // Show previous screen
             ShowScreenInternal(previousScreen, animate);
             return true;
         }
 
-        /// <summary>
-        /// Check if a screen is visible
-        /// </summary>
         public bool IsScreenVisible(UIScreenType screenType)
         {
             return _screens.TryGetValue(screenType, out BaseUIScreen screen) && screen.IsVisible;
         }
 
-        /// <summary>
-        /// Get all visible screens sorted by priority
-        /// </summary>
         public IReadOnlyList<BaseUIScreen> GetVisibleScreens()
         {
             return _visibleScreens.AsReadOnly();
         }
 
-        /// <summary>
-        /// Get all screens sorted by priority
-        /// </summary>
         public IReadOnlyList<BaseUIScreen> GetScreensByPriority()
         {
             return _screens.Values.OrderByDescending(s => (int)s.Priority).ToList().AsReadOnly();
         }
 
-        /// <summary>
-        /// Clear screen history
-        /// </summary>
         public void ClearHistory()
         {
             _screenHistory.Clear();
@@ -392,7 +338,6 @@ namespace UI.UISystem
         {
             if (screen.IsVisible) return;
 
-            // Get the controller for this screen
             if (!_controllers.TryGetValue(screen.ScreenType, out UIScreenController controller))
             {
                 Debug.LogError($"[UIService] No controller found for screen {screen.ScreenType}");
@@ -401,13 +346,9 @@ namespace UI.UISystem
 
             SortScreensByPriority();
 
-            // Get animation duration from screen
             float duration = screen.GetAnimationDuration();
-
-            // Call screen's pre-animation hook
             screen.OnBeforeShowAnimation();
 
-            // Show with direct animation callback using service's UI animator
             controller.Show(_animationService.UI, screen.AnimateShow, duration, animate, () =>
             {
                 if (!_visibleScreens.Contains(screen))
@@ -416,9 +357,7 @@ namespace UI.UISystem
                     _visibleScreens.Sort((a, b) => ((int)b.Priority).CompareTo((int)a.Priority));
                 }
 
-                // Call screen's post-animation hook
                 screen.OnAfterShowAnimation();
-
                 OnScreenShown?.Invoke(screen.ScreenType);
             });
         }
@@ -427,27 +366,19 @@ namespace UI.UISystem
         {
             if (!screen.IsVisible) return;
 
-            // Get the controller for this screen
             if (!_controllers.TryGetValue(screen.ScreenType, out UIScreenController controller))
             {
                 Debug.LogError($"[UIService] No controller found for screen {screen.ScreenType}");
                 return;
             }
 
-            // Get animation duration from screen
             float duration = screen.GetAnimationDuration();
-
-            // Call screen's pre-animation hook
             screen.OnBeforeHideAnimation();
 
-            // Hide with direct animation callback using service's UI animator
             controller.Hide(_animationService.UI, screen.AnimateHide, duration, animate, () =>
             {
                 _visibleScreens.Remove(screen);
-
-                // Call screen's post-animation hook
                 screen.OnAfterHideAnimation();
-
                 OnScreenHidden?.Invoke(screen.ScreenType);
 
                 if (_visibleScreens.Count == 0)
@@ -457,12 +388,8 @@ namespace UI.UISystem
             });
         }
 
-        /// <summary>
-        /// Update all visible screens - called by ServiceContainer
-        /// </summary>
         public void Update(float deltaTime)
         {
-            // Update all visible screens
             foreach (BaseUIScreen screen in _visibleScreens)
             {
                 screen.Update(deltaTime);
@@ -471,13 +398,8 @@ namespace UI.UISystem
 
         private void SortScreensByPriority()
         {
-            // Sort by priority ASCENDING (lowest to highest)
-            // BringToFront() moves element to end of parent's children list
-            // So we call it from lowest to highest priority
-            // Result: highest priority ends up at the end (rendered on top)
             var sortedControllers = _controllers.Values.OrderBy(c => (int)c.Priority).ToList();
 
-            // Reorder in the visual tree
             foreach (UIScreenController controller in sortedControllers)
             {
                 if (controller.Container?.parent != null)

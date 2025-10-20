@@ -41,7 +41,6 @@
 .modal-title {
     font-size: 20px;
     color: white;
-    -unity-font-style: bold;
     -unity-text-align: middle-center;
 }
 
@@ -82,7 +81,6 @@
     border-radius: 8px;
     border-width: 1px;
     font-size: 14px;
-    -unity-font-style: bold;
     transition-property: background-color, scale;
     transition-duration: 0.2s;
 }

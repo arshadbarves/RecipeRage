@@ -36,7 +36,6 @@
 .progress-text {
     font-size: 24px;
     color: rgb(255, 255, 255);
-    -unity-font-style: bold;
     margin-bottom: 10px;
     -unity-text-align: middle-center;
     -unity-text-outline-width: 2px;
@@ -92,7 +91,6 @@
 .tip-header {
     font-size: 20px;
     color: rgb(255, 107, 53);
-    -unity-font-style: bold;
     margin-bottom: 8px;
     letter-spacing: 1px;
     -unity-text-outline-width: 1px;

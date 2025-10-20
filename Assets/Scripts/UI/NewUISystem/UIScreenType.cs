@@ -9,6 +9,7 @@ namespace UI.UISystem
         Splash,
         Loading,
         Login,
+        Maintenance,
         
         // Modal and overlay screens
         Modal,
@@ -20,6 +21,7 @@ namespace UI.UISystem
         Pause,
         Game,
         Menu,
+        Profile,
         CharacterSelection,
         GameModeSelection,
         Lobby,

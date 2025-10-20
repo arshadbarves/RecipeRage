@@ -125,7 +125,6 @@ ScrollView {
     background-color: var(--color-primary);
     color: white;
     font-size: var(--font-size-medium);
-    -unity-font-style: bold;
     height: 50px;
     border-radius: 25px;
 }
@@ -134,7 +133,6 @@ ScrollView {
     background-color: var(--color-secondary);
     color: white;
     font-size: var(--font-size-medium);
-    -unity-font-style: bold;
     height: 50px;
     border-radius: 25px;
 }
@@ -143,7 +141,6 @@ ScrollView {
     background-color: var(--color-success);
     color: white;
     font-size: var(--font-size-medium);
-    -unity-font-style: bold;
     height: 50px;
     border-radius: 25px;
 }
@@ -152,7 +149,6 @@ ScrollView {
     background-color: var(--color-danger);
     color: white;
     font-size: var(--font-size-medium);
-    -unity-font-style: bold;
     height: 50px;
     border-radius: 25px;
 }
@@ -163,7 +159,6 @@ ScrollView {
     padding: var(--spacing-xs) var(--spacing-sm);
     color: white;
     font-size: var(--font-size-small);
-    -unity-font-style: bold;
     -unity-text-align: middle-center;
 }
 
@@ -209,7 +204,6 @@ ScrollView {
 
 .game-title-1 {
     font-size: 70px;
-    -unity-font-style: bold;
     -unity-text-align: middle-center;
     -unity-text-outline-width: 2px;
     -unity-text-outline-color: rgba(0, 0, 0, 0.9);
@@ -221,7 +215,6 @@ ScrollView {
 
 .game-title-2 {
     font-size: 150px;
-    -unity-font-style: bold;
     -unity-text-align: middle-center;
     -unity-text-outline-width: 2px;
     -unity-text-outline-color: rgba(0, 0, 0, 0.9);

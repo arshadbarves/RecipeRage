@@ -9,6 +9,7 @@ using Core.GameModes;
 using Core.Input;
 using Core.Interfaces;
 using Core.Logging;
+using Core.Maintenance;
 using Core.Networking;
 using Core.SaveSystem;
 using Core.State;
@@ -38,9 +39,10 @@ namespace Core.Bootstrap
         // ============================================
         // CORE SERVICES (Eager - Pre-Auth)
         // ============================================
-        
+
         public ISaveService SaveService { get; private set; }
         public IAuthenticationService AuthenticationService { get; private set; }
+        public IMaintenanceService MaintenanceService { get; private set; }
 
         // ============================================
         // APPLICATION SERVICES (Lazy - Post-Auth)
@@ -91,6 +93,7 @@ namespace Core.Bootstrap
         public void RegisterUIService(IUIService service) => UIService = service;
         public void RegisterSaveService(ISaveService service) => SaveService = service;
         public void RegisterAuthenticationService(IAuthenticationService service) => AuthenticationService = service;
+        public void RegisterMaintenanceService(IMaintenanceService service) => MaintenanceService = service;
 
         // ============================================
         // LAZY SERVICE FACTORIES
