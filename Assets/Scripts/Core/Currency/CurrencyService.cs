@@ -2,7 +2,7 @@ using Core.Bootstrap;
 using Core.Events;
 using Core.Interfaces;
 using Core.SaveSystem;
-using UI.UISystem.Screens;
+using UI.Screens;
 using UnityEngine;
 
 namespace Core.Currency
@@ -49,7 +49,7 @@ namespace Core.Currency
             PublishCurrencyChanged();
 
             Debug.Log($"[CurrencyService] Added {amount} coins. Total: {_coins}");
-            
+
             // Show reward toast
             _ = GameBootstrap.Services?.UIService?.ShowToast($"+{amount} coins earned!", ToastType.Success, 2f);
         }
@@ -67,7 +67,7 @@ namespace Core.Currency
             PublishCurrencyChanged();
 
             Debug.Log($"[CurrencyService] Added {amount} gems. Total: {_gems}");
-            
+
             // Show reward toast
             _ = GameBootstrap.Services?.UIService?.ShowToast($"+{amount} gems earned!", ToastType.Success, 2f);
         }
@@ -87,18 +87,18 @@ namespace Core.Currency
                 PublishCurrencyChanged();
 
                 Debug.Log($"[CurrencyService] Spent {amount} coins. Remaining: {_coins}");
-                
+
                 // Show success toast
                 _ = GameBootstrap.Services?.UIService?.ShowToast($"Purchased for {amount} coins", ToastType.Success, 2f);
-                
+
                 return true;
             }
 
             Debug.LogWarning($"[CurrencyService] Not enough coins. Need {amount}, have {_coins}");
-            
+
             // Show error toast
             _ = GameBootstrap.Services?.UIService?.ShowToast("Not enough coins", ToastType.Error, 2.5f);
-            
+
             return false;
         }
 
@@ -117,18 +117,18 @@ namespace Core.Currency
                 PublishCurrencyChanged();
 
                 Debug.Log($"[CurrencyService] Spent {amount} gems. Remaining: {_gems}");
-                
+
                 // Show success toast
                 _ = GameBootstrap.Services?.UIService?.ShowToast($"Purchased for {amount} gems", ToastType.Success, 2f);
-                
+
                 return true;
             }
 
             Debug.LogWarning($"[CurrencyService] Not enough gems. Need {amount}, have {_gems}");
-            
+
             // Show error toast
             _ = GameBootstrap.Services?.UIService?.ShowToast("Not enough gems", ToastType.Error, 2.5f);
-            
+
             return false;
         }
 

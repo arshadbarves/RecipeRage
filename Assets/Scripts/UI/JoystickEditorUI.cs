@@ -1,7 +1,6 @@
 using System;
 using Core.Animation;
-using UI.UISystem;
-using UI.UISystem.Core;
+using UI.Core;
 using UnityEngine;
 using UnityEngine.UIElements;
 

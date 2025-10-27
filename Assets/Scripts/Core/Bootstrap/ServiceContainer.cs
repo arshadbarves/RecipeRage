@@ -13,7 +13,8 @@ using Core.Maintenance;
 using Core.Networking;
 using Core.SaveSystem;
 using Core.State;
-using UI.UISystem;
+using UI;
+using UI;
 using UnityEngine;
 
 namespace Core.Bootstrap
@@ -31,7 +32,7 @@ namespace Core.Bootstrap
         // ============================================
         // FOUNDATION SERVICES (Eager - Always Loaded)
         // ============================================
-        
+
         public IEventBus EventBus { get; private set; }
         public IAnimationService AnimationService { get; private set; }
         public IUIService UIService { get; private set; }
@@ -47,47 +48,47 @@ namespace Core.Bootstrap
         // ============================================
         // APPLICATION SERVICES (Lazy - Post-Auth)
         // ============================================
-        
+
         private ICurrencyService _currencyService;
-        public ICurrencyService CurrencyService => 
+        public ICurrencyService CurrencyService =>
             _currencyService ??= CreateCurrencyService();
 
         private IAudioService _audioService;
-        public IAudioService AudioService => 
+        public IAudioService AudioService =>
             _audioService ??= CreateAudioService();
 
         private IInputService _inputService;
-        public IInputService InputService => 
+        public IInputService InputService =>
             _inputService ??= CreateInputService();
 
         private ILoggingService _loggingService;
-        public ILoggingService LoggingService => 
+        public ILoggingService LoggingService =>
             _loggingService ??= CreateLoggingService();
 
         // ============================================
         // GAME SYSTEMS (Lazy - On-Demand)
         // ============================================
-        
+
         private IGameModeService _gameModeService;
-        public IGameModeService GameModeService => 
+        public IGameModeService GameModeService =>
             _gameModeService ??= CreateGameModeService();
 
         private ICharacterService _characterService;
-        public ICharacterService CharacterService => 
+        public ICharacterService CharacterService =>
             _characterService ??= CreateCharacterService();
 
         private INetworkingServices _networkingServices;
-        public INetworkingServices NetworkingServices => 
+        public INetworkingServices NetworkingServices =>
             _networkingServices ??= CreateNetworkingServices();
 
         private IGameStateManager _stateManager;
-        public IGameStateManager StateManager => 
+        public IGameStateManager StateManager =>
             _stateManager ??= CreateStateManager();
 
         // ============================================
         // REGISTRATION METHODS (Eager Services)
         // ============================================
-        
+
         public void RegisterEventBus(IEventBus eventBus) => EventBus = eventBus;
         public void RegisterAnimationService(IAnimationService service) => AnimationService = service;
         public void RegisterUIService(IUIService service) => UIService = service;
@@ -98,7 +99,7 @@ namespace Core.Bootstrap
         // ============================================
         // LAZY SERVICE FACTORIES
         // ============================================
-        
+
         private ICurrencyService CreateCurrencyService()
         {
             Debug.Log("[ServiceContainer] Lazy-loading CurrencyService");
@@ -198,6 +199,12 @@ namespace Core.Bootstrap
             _inputService?.Update(deltaTime);
             _stateManager?.Update(deltaTime);
             UIService?.Update(deltaTime);
+            
+            // Update networking services (for matchmaking and P2P)
+            if (_networkingServices is NetworkingServiceContainer networkingContainer)
+            {
+                networkingContainer.Update();
+            }
         }
 
         /// <summary>

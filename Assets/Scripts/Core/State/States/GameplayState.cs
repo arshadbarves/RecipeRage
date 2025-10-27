@@ -2,7 +2,7 @@ using Core.Bootstrap;
 using Core.GameModes;
 using Gameplay.Cooking;
 using Gameplay.Scoring;
-using UI.UISystem;
+using UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 

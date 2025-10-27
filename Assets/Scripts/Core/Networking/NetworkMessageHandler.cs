@@ -1,20 +1,24 @@
 using System;
 using System.Collections.Generic;
+using Core.Bootstrap;
 using Core.Networking.Common;
+using Core.Networking.Interfaces;
 using UnityEngine;
 
 namespace Core.Networking
 {
     /// <summary>
     /// Handles game-specific network messages.
+    /// Updated to use new NetworkingServices architecture
     /// </summary>
     public class NetworkMessageHandler : MonoBehaviour
     {
         // Singleton instance
         public static NetworkMessageHandler Instance { get; private set; }
         
-        // Reference to the network manager
-        private RecipeRageNetworkManager _networkManager;
+        // Reference to networking services
+        private INetworkingServices _networkingServices;
+        private IP2PService _p2pService;
         
         // Events for game systems
         public event Action<PlayerInfo, PlayerAction> OnPlayerActionReceived;
@@ -53,21 +57,23 @@ namespace Core.Networking
         /// </summary>
         private void Start()
         {
-            // Get the network manager
-            _networkManager = RecipeRageNetworkManager.Instance;
+            // Get networking services
+            _networkingServices = GameBootstrap.Services?.NetworkingServices;
             
-            if (_networkManager == null)
+            if (_networkingServices == null)
             {
-                Debug.LogError("[NetworkMessageHandler] RecipeRageNetworkManager instance not found");
+                Debug.LogError("[NetworkMessageHandler] NetworkingServices not available");
                 return;
             }
             
-            // Subscribe to P2P events
-            _networkManager.P2PManager.OnPlayerActionReceived += HandlePlayerAction;
-            _networkManager.P2PManager.OnChatMessageReceived += HandleChatMessage;
-            _networkManager.P2PManager.OnEmoteReceived += HandleEmote;
+            _p2pService = _networkingServices.P2PService;
             
-            Debug.Log("[NetworkMessageHandler] Initialized");
+            // Subscribe to P2P events
+            _p2pService.OnPlayerActionReceived += HandlePlayerAction;
+            _p2pService.OnChatMessageReceived += HandleChatMessage;
+            _p2pService.OnEmoteReceived += HandleEmote;
+            
+            Debug.Log("[NetworkMessageHandler] Initialized with new architecture");
         }
         
         /// <summary>
@@ -76,7 +82,7 @@ namespace Core.Networking
         /// <param name="action">The player action</param>
         public void SendPlayerAction(PlayerAction action)
         {
-            _networkManager.P2PManager.SendPlayerAction(action);
+            _p2pService?.SendPlayerAction(action);
         }
         
         /// <summary>
@@ -85,7 +91,7 @@ namespace Core.Networking
         /// <param name="message">The chat message</param>
         public void SendChatMessage(string message)
         {
-            _networkManager.P2PManager.SendChatMessage(message);
+            _p2pService?.SendChatMessage(message);
         }
         
         /// <summary>
@@ -94,7 +100,7 @@ namespace Core.Networking
         /// <param name="emoteId">The emote ID</param>
         public void SendEmote(int emoteId)
         {
-            _networkManager.P2PManager.SendEmote(emoteId);
+            _p2pService?.SendEmote(emoteId);
         }
         
         /// <summary>
@@ -110,7 +116,7 @@ namespace Core.Networking
             BitConverter.GetBytes(score).CopyTo(scoreData, 4);
             
             // Send to all players
-            _networkManager.P2PManager.SendToAll(NetworkMessageType.TeamScore, scoreData);
+            _p2pService?.SendToAll(NetworkMessageType.TeamScore, scoreData);
             
             // Update local state
             OnTeamScoreUpdated?.Invoke(teamId, score);
@@ -136,7 +142,7 @@ namespace Core.Networking
             posBytes.CopyTo(spawnData, 4 + idBytes.Length);
             
             // Send to all players
-            _networkManager.P2PManager.SendToAll(NetworkMessageType.IngredientSpawned, spawnData);
+            _p2pService?.SendToAll(NetworkMessageType.IngredientSpawned, spawnData);
             
             // Update local state
             OnIngredientSpawned?.Invoke(ingredientId, position);
@@ -160,7 +166,7 @@ namespace Core.Networking
             playerBytes.CopyTo(pickupData, 8 + idBytes.Length);
             
             // Send to all players
-            _networkManager.P2PManager.SendToAll(NetworkMessageType.IngredientPickedUp, pickupData);
+            _p2pService?.SendToAll(NetworkMessageType.IngredientPickedUp, pickupData);
             
             // Update local state
             OnIngredientPickedUp?.Invoke(ingredientId, playerId);
@@ -186,7 +192,7 @@ namespace Core.Networking
             posBytes.CopyTo(dropData, 4 + idBytes.Length);
             
             // Send to all players
-            _networkManager.P2PManager.SendToAll(NetworkMessageType.IngredientDropped, dropData);
+            _p2pService?.SendToAll(NetworkMessageType.IngredientDropped, dropData);
             
             // Update local state
             OnIngredientDropped?.Invoke(ingredientId, position);
@@ -208,7 +214,7 @@ namespace Core.Networking
             idBytes.CopyTo(completeData, 8);
             
             // Send to all players
-            _networkManager.P2PManager.SendToAll(NetworkMessageType.RecipeCompleted, completeData);
+            _p2pService?.SendToAll(NetworkMessageType.RecipeCompleted, completeData);
             
             // Update local state
             OnRecipeCompleted?.Invoke(recipeId, score);
@@ -258,11 +264,11 @@ namespace Core.Networking
             }
             
             // Unsubscribe from events
-            if (_networkManager != null && _networkManager.P2PManager != null)
+            if (_p2pService != null)
             {
-                _networkManager.P2PManager.OnPlayerActionReceived -= HandlePlayerAction;
-                _networkManager.P2PManager.OnChatMessageReceived -= HandleChatMessage;
-                _networkManager.P2PManager.OnEmoteReceived -= HandleEmote;
+                _p2pService.OnPlayerActionReceived -= HandlePlayerAction;
+                _p2pService.OnChatMessageReceived -= HandleChatMessage;
+                _p2pService.OnEmoteReceived -= HandleEmote;
             }
         }
     }

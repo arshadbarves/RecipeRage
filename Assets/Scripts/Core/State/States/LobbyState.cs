@@ -1,6 +1,6 @@
 using Core.Bootstrap;
 using Core.Networking;
-using UI.UISystem;
+using UI;
 
 namespace Core.State.States
 {
@@ -46,12 +46,15 @@ namespace Core.State.States
         {
             // Lobby update logic
 
-            // Check if all players are ready and the host has started the game
-            RecipeRageNetworkManager networkManager = RecipeRageNetworkManager.Instance;
-            if (networkManager != null && networkManager.IsHost && networkManager.AreAllPlayersReady())
+            // Check if all players are ready and the host can start the game
+            var services = GameBootstrap.Services;
+            var networking = services?.NetworkingServices;
+            
+            if (networking != null && 
+                networking.LobbyManager.IsMatchLobbyOwner && 
+                networking.LobbyManager.AreAllPlayersReady())
             {
                 // Transition to the game state
-                var services = Core.Bootstrap.GameBootstrap.Services;
                 if (services != null)
                 {
                     services.StateManager.ChangeState(new GameplayState());

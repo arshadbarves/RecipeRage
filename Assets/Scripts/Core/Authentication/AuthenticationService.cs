@@ -5,7 +5,8 @@ using Cysharp.Threading.Tasks;
 using Epic.OnlineServices;
 using Epic.OnlineServices.Connect;
 using PlayEveryWare.EpicOnlineServices;
-using UI.UISystem.Screens;
+using UI;
+using UI.Screens;
 using UnityEngine;
 
 namespace Core.Authentication
@@ -22,7 +23,7 @@ namespace Core.Authentication
 
         private readonly ISaveService _saveService;
         private readonly Core.Events.IEventBus _eventBus;
-        private readonly UI.UISystem.IUIService _uiService;
+        private readonly UI.IUIService _uiService;
 
         public bool IsLoggedIn => IsUserLoggedIn();
         public string LastLoginMethod => _saveService?.GetSettings().LastLoginMethod ?? "";
@@ -33,7 +34,7 @@ namespace Core.Authentication
         public AuthenticationService(
             ISaveService saveService,
             Core.Events.IEventBus eventBus,
-            UI.UISystem.IUIService uiService)
+            UI.IUIService uiService)
         {
             _saveService = saveService ?? throw new ArgumentNullException(nameof(saveService));
             _eventBus = eventBus ?? throw new ArgumentNullException(nameof(eventBus));
@@ -75,7 +76,7 @@ namespace Core.Authentication
         {
             if (_uiService != null)
             {
-                _uiService.ShowScreen(UI.UISystem.UIScreenType.Login);
+                _uiService.ShowScreen(UIScreenType.Login);
 
                 // Subscribe to login success via EventBus
                 _eventBus?.Subscribe<Core.Events.LoginSuccessEvent>(OnLoginSuccessInternal);

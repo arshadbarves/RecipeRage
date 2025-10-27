@@ -46,7 +46,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: afd3d1c17ef3e4337911313bc8a21629, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uiDocumentProvider: {fileID: 6806329339727991598}
+  _uiDocumentProvider: {fileID: 7525430368098650970}
+  _showSplashScreen: 1
+  _splashDuration: 2
+  _showLoadingScreen: 1
 --- !u!1 &282745282915237301
 GameObject:
   m_ObjectHideFlags: 0
@@ -57,7 +60,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8432972302416662543}
   - component: {fileID: 7968856636002483841}
-  - component: {fileID: 6806329339727991598}
+  - component: {fileID: 7525430368098650970}
   m_Layer: 0
   m_Name: UI
   m_TagString: Untagged
@@ -99,7 +102,7 @@ MonoBehaviour:
   m_WorldSpaceSizeMode: 1
   m_WorldSpaceWidth: 1920
   m_WorldSpaceHeight: 1080
---- !u!114 &6806329339727991598
+--- !u!114 &7525430368098650970
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -108,7 +111,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 282745282915237301}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3d3f423d041454308b4c77ba2c656651, type: 3}
+  m_Script: {fileID: 11500000, guid: f4cc107a09001488ba190bea2c8f334a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &7252799237765879498
