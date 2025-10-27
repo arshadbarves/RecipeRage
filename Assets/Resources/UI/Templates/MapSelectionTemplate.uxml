@@ -1,0 +1,16 @@
+<UXML xmlns="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="project://database/Assets/UI/USS/MapSelection.uss?fileID=7433441132597879392&amp;guid=a1b2c3d4e5f6789012345678901234ab&amp;type=3#MapSelection" />
+    
+    <VisualElement class="map-selection-screen">
+        <!-- Header -->
+        <VisualElement class="header">
+            <Button name="back-button" text="← BACK" class="back-button" />
+            <Label name="screen-title" text="SELECT MAP" class="screen-title" />
+        </VisualElement>
+        
+        <!-- Map Grid -->
+        <ScrollView name="map-grid" class="map-grid" mode="Vertical">
+            <!-- Map cards will be populated dynamically by MapSelectionScreen.cs -->
+        </ScrollView>
+    </VisualElement>
+</UXML>

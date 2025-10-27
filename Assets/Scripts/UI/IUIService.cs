@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
-using UI.UISystem.Core;
-using UI.UISystem.Screens;
+using UI.Core;
+using UI.Screens;
 using UnityEngine.UIElements;
 
-namespace UI.UISystem
+namespace UI
 {
     public interface IUIService
     {

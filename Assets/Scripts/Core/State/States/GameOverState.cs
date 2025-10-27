@@ -1,6 +1,6 @@
 using Core.Bootstrap;
 using Gameplay.Scoring;
-using UI.UISystem;
+using UI;
 using UnityEngine;
 
 namespace Core.State.States

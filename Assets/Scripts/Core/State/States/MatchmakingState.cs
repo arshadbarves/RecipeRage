@@ -2,34 +2,26 @@ using System;
 using Core.Bootstrap;
 using Core.Networking;
 using Core.Networking.Common;
-using Core.Networking.EOS;
-using UI.UISystem;
+using UI;
 using UnityEngine;
 
 namespace Core.State.States
 {
     /// <summary>
     /// State for matchmaking and finding players for a game.
+    /// Updated to use new NetworkingServiceContainer architecture
     /// </summary>
     public class MatchmakingState : BaseState
     {
-
         /// <summary>
         /// Flag to track if matchmaking is in progress.
         /// </summary>
         private bool _isMatchmakingInProgress;
 
-        // No need to store references to UI elements anymore as they're managed by the UIService
-
         /// <summary>
-        /// Reference to the network manager.
+        /// Reference to the networking services
         /// </summary>
-        private RecipeRageNetworkManager _networkManager;
-
-        /// <summary>
-        /// Reference to the lobby manager.
-        /// </summary>
-        private RecipeRageLobbyManager _lobbyManager;
+        private INetworkingServices _networkingServices;
 
         /// <summary>
         /// Event triggered when matchmaking is complete.
@@ -43,9 +35,15 @@ namespace Core.State.States
         {
             base.Enter();
 
-            // Get reference to the network manager and lobby manager
-            _networkManager = RecipeRageNetworkManager.Instance;
-            _lobbyManager = _networkManager?.LobbyManager;
+            // Get reference to networking services
+            _networkingServices = GameBootstrap.Services?.NetworkingServices;
+
+            if (_networkingServices == null)
+            {
+                LogError("NetworkingServices not available");
+                CompleteMatchmaking(false);
+                return;
+            }
 
             // Reset matchmaking state
             _isMatchmakingInProgress = true;
@@ -56,21 +54,15 @@ namespace Core.State.States
             // Show game mode selection screen
             GameBootstrap.Services?.UIService.ShowScreen(UIScreenType.GameModeSelection, true, true);
 
-            // Subscribe to lobby events
-            if (_lobbyManager != null)
-            {
-                _lobbyManager.OnLobbyUpdated += HandleLobbyUpdated;
-                _networkManager.OnGameStarted += HandleGameStarted;
+            // Subscribe to matchmaking events
+            _networkingServices.MatchmakingService.OnMatchFound += HandleMatchFound;
+            _networkingServices.MatchmakingService.OnMatchmakingFailed += HandleMatchmakingFailed;
+            _networkingServices.MatchmakingService.OnPlayersFound += HandlePlayersFound;
 
-                // Create a new lobby by default
-                string sessionName = $"RecipeRage_{DateTime.Now.Ticks}";
-                _networkManager.CreateGame(sessionName, GameMode.Classic, "Kitchen", 4, false);
-            }
-            else
-            {
-                LogError("RecipeRageNetworkManager or LobbyManager instance not found");
-                CompleteMatchmaking(false);
-            }
+            // Start matchmaking (default to 4v4 Classic mode)
+            _networkingServices.MatchmakingService.FindMatch(GameMode.Classic, teamSize: 4);
+            
+            LogMessage("Matchmaking started - searching for players...");
         }
 
         /// <summary>
@@ -80,15 +72,12 @@ namespace Core.State.States
         {
             base.Exit();
 
-            // Unsubscribe from lobby events
-            if (_lobbyManager != null)
+            // Unsubscribe from matchmaking events
+            if (_networkingServices != null)
             {
-                _lobbyManager.OnLobbyUpdated -= HandleLobbyUpdated;
-            }
-
-            if (_networkManager != null)
-            {
-                _networkManager.OnGameStarted -= HandleGameStarted;
+                _networkingServices.MatchmakingService.OnMatchFound -= HandleMatchFound;
+                _networkingServices.MatchmakingService.OnMatchmakingFailed -= HandleMatchmakingFailed;
+                _networkingServices.MatchmakingService.OnPlayersFound -= HandlePlayersFound;
             }
 
             // Cancel matchmaking if still in progress
@@ -120,43 +109,50 @@ namespace Core.State.States
         // UI is now managed by the UIService
 
         /// <summary>
-        /// Handle lobby updated event.
+        /// Handle match found event
         /// </summary>
-        private void HandleLobbyUpdated()
+        private void HandleMatchFound(LobbyInfo lobbyInfo)
         {
-            LogMessage("Lobby updated");
+            LogMessage($"Match found! Lobby: {lobbyInfo.LobbyId}, Players: {lobbyInfo.CurrentPlayers}/{lobbyInfo.MaxPlayers}");
 
-            // If this is the first update, transition to the lobby screen
-            if (_isMatchmakingInProgress)
-            {
-                // Show the lobby screen
-                // Note: We're using the existing GameModeSelectionScreen for now
-                // GameBootstrap.Services?.UIService.ShowScreen<LobbyScreen>();
-
-                // Mark matchmaking as complete
-                CompleteMatchmaking(true);
-            }
-        }
-
-        /// <summary>
-        /// Handle game started event.
-        /// </summary>
-        private void HandleGameStarted()
-        {
-            LogMessage("Game started");
-
-            // Complete matchmaking successfully if not already done
-            if (_isMatchmakingInProgress)
-            {
-                CompleteMatchmaking(true);
-            }
+            // Complete matchmaking successfully
+            CompleteMatchmaking(true);
 
             // Transition to gameplay state
-            var services = Core.Bootstrap.GameBootstrap.Services;
+            var services = GameBootstrap.Services;
             if (services != null)
             {
                 services.StateManager.ChangeState(new GameplayState());
             }
+        }
+
+        /// <summary>
+        /// Handle matchmaking failed event
+        /// </summary>
+        private void HandleMatchmakingFailed(string reason)
+        {
+            LogError($"Matchmaking failed: {reason}");
+
+            // Complete matchmaking with failure
+            CompleteMatchmaking(false);
+
+            // Return to main menu
+            var services = GameBootstrap.Services;
+            if (services != null)
+            {
+                services.StateManager.ChangeState(new MainMenuState());
+            }
+        }
+
+        /// <summary>
+        /// Handle players found update
+        /// </summary>
+        private void HandlePlayersFound(int current, int required)
+        {
+            LogMessage($"Players found: {current}/{required}");
+            
+            // Update UI with progress (if we have a matchmaking screen)
+            // TODO: Update matchmaking UI with player count
         }
 
         /// <summary>
@@ -190,10 +186,10 @@ namespace Core.State.States
             _isMatchmakingInProgress = false;
             LogMessage("Matchmaking canceled");
 
-            // Leave the game if we're in one
-            if (_networkManager != null)
+            // Cancel matchmaking via service
+            if (_networkingServices != null)
             {
-                _networkManager.LeaveGame();
+                _networkingServices.MatchmakingService.CancelMatchmaking();
             }
 
             // Trigger the matchmaking complete event with failure

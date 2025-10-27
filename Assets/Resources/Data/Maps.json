@@ -1,0 +1,50 @@
+{
+    "maps": [
+        {
+            "id": "crumb_haven",
+            "name": "CRUMB HAVEN",
+            "subtitle": "COOPERATIVE CHAOS",
+            "description": "A cozy kitchen with tight spaces and multiple cooking stations. Perfect for teamwork!",
+            "icon": "Textures/Maps/crumb_haven_icon",
+            "thumbnail": "Textures/Maps/crumb_haven_thumb",
+            "maxPlayers": 4,
+            "rotationTime": 108000,
+            "isAvailable": true
+        },
+        {
+            "id": "spice_station",
+            "name": "SPICE STATION",
+            "subtitle": "FAST & FURIOUS",
+            "description": "A large restaurant with multiple stations. Speed is key!",
+            "icon": "Textures/Maps/spice_station_icon",
+            "thumbnail": "Textures/Maps/spice_station_thumb",
+            "maxPlayers": 4,
+            "rotationTime": 108000,
+            "isAvailable": true
+        },
+        {
+            "id": "grill_masters",
+            "name": "GRILL MASTERS",
+            "subtitle": "BBQ BONANZA",
+            "description": "Outdoor grilling paradise. Master the flames!",
+            "icon": "Textures/Maps/grill_masters_icon",
+            "thumbnail": "Textures/Maps/grill_masters_thumb",
+            "maxPlayers": 4,
+            "rotationTime": 108000,
+            "isAvailable": true
+        },
+        {
+            "id": "sushi_central",
+            "name": "SUSHI CENTRAL",
+            "subtitle": "PRECISION REQUIRED",
+            "description": "Japanese cuisine at its finest. Precision and timing matter!",
+            "icon": "Textures/Maps/sushi_central_icon",
+            "thumbnail": "Textures/Maps/sushi_central_thumb",
+            "maxPlayers": 4,
+            "rotationTime": 108000,
+            "isAvailable": false
+        }
+    ],
+    "currentMapId": "crumb_haven",
+    "rotationStartTime": "2025-10-26T00:00:00Z"
+}

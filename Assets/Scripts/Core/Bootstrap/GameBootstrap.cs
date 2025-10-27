@@ -5,8 +5,9 @@ using Core.Maintenance;
 using Core.SaveSystem;
 using Core.State.States;
 using Cysharp.Threading.Tasks;
-using UI.UISystem;
-using UI.UISystem.Screens;
+using UI;
+using UI.Screens;
+using UI;
 using UnityEngine;
 
 namespace Core.Bootstrap
@@ -60,7 +61,7 @@ namespace Core.Bootstrap
             Services.RegisterAnimationService(CreateAnimationService());
             Services.RegisterUIService(CreateUIService());
             Services.UIService.InitializeScreens();
-            
+
             Debug.Log("[GameBootstrap] Foundation services initialized");
         }
         private async UniTaskVoid InitializeAsync()
