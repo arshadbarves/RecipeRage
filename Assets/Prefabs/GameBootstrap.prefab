@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 6887119164124692602}
   - component: {fileID: 417808214242561093}
+  - component: {fileID: 2203266933821147587}
+  - component: {fileID: 4646105006637090929}
   m_Layer: 0
   m_Name: GameBootstrap
   m_TagString: Untagged
@@ -50,6 +52,63 @@ MonoBehaviour:
   _showSplashScreen: 1
   _splashDuration: 2
   _showLoadingScreen: 1
+--- !u!114 &2203266933821147587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 278132838411788017}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 593a2fe42fa9d37498c96f9a383b6521, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NetworkManagerExpanded: 0
+  NetworkConfig:
+    ProtocolVersion: 0
+    NetworkTransport: {fileID: 4646105006637090929}
+    PlayerPrefab: {fileID: 0}
+    Prefabs:
+      NetworkPrefabsLists:
+      - {fileID: 11400000, guid: 5c580f2e4548d476cae926db5b9d3c10, type: 2}
+    TickRate: 30
+    ClientConnectionBufferTimeout: 10
+    ConnectionApproval: 0
+    ConnectionData: 
+    EnableTimeResync: 0
+    TimeResyncInterval: 30
+    EnsureNetworkVariableLengthSafety: 0
+    EnableSceneManagement: 1
+    ForceSamePrefabs: 1
+    RecycleNetworkIds: 1
+    NetworkIdRecycleDelay: 120
+    RpcHashSize: 0
+    LoadSceneTimeOut: 120
+    SpawnTimeout: 10
+    EnableNetworkLogs: 1
+    NetworkTopology: 0
+    UseCMBService: 0
+    AutoSpawnPlayerPrefabClientSide: 1
+    NetworkMessageMetrics: 1
+    NetworkProfilingMetrics: 1
+    OldPrefabList: []
+  RunInBackground: 1
+  LogLevel: 1
+--- !u!114 &4646105006637090929
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 278132838411788017}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40280ed37878dc543b702f2365726092, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ServerUserIdToConnectToInput: 
+  ServerUserIDForCopying: 
 --- !u!1 &282745282915237301
 GameObject:
   m_ObjectHideFlags: 0

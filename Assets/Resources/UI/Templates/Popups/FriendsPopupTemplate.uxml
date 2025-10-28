@@ -1,0 +1,21 @@
+<UXML xmlns="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/Resources/UI/Styles/Popups/Friends.uss?fileID=7433441132597879392&amp;guid=2552d209e2db2440d8ca8764c5d94dd2&amp;type=3#Friends" />
+    <VisualElement class="friends-popup-overlay">
+        <VisualElement class="friends-popup">
+            <VisualElement class="popup-header">
+                <Label name="title-label" text="FRIENDS &amp; PARTY" class="popup-title" />
+                <Button name="close-button" text="✕" class="close-button" />
+            </VisualElement>
+            <VisualElement class="popup-content">
+                <VisualElement name="party-section" class="section">
+                    <Label text="PARTY" class="section-title" />
+                    <ScrollView name="party-list" mode="Vertical" class="party-list" />
+                </VisualElement>
+                <VisualElement class="section">
+                    <Label text="FRIENDS" class="section-title" />
+                    <ScrollView name="friends-list" mode="Vertical" class="friends-list" />
+                </VisualElement>
+            </VisualElement>
+        </VisualElement>
+    </VisualElement>
+</UXML>

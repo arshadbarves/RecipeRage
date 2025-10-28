@@ -14,7 +14,7 @@ namespace UI.Screens
     /// Main menu screen - container for tab-based navigation
     /// Delegates content to tab components (MainMenuUI, ShopUI, SkinsUI, SettingsUI)
     /// </summary>
-    [UIScreen(UIScreenType.Menu, UIScreenPriority.Menu, "MainMenuTemplate")]
+    [UIScreen(UIScreenType.MainMenu, UIScreenPriority.Menu, "Screens/MainMenuTemplate")]
     public class MainMenuScreen : BaseUIScreen
     {
         #region Tab Components
@@ -221,8 +221,11 @@ namespace UI.Screens
             }
 
             // Lobby tab (Main Menu/Home)
-            VisualElement lobbyView = GetElement<VisualElement>("lobby-view");
-            if (lobbyView != null)
+            // Get the chef-tab which contains both lobby-view and bottom-bar
+            TabView tabView = GetElement<TabView>("main-tabs");
+            Tab chefTab = tabView?.Q<Tab>("chef-tab");
+            
+            if (chefTab != null)
             {
                 // Get matchmaking service from networking services
                 IMatchmakingService matchmakingService = services.NetworkingServices?.MatchmakingService;
@@ -230,8 +233,8 @@ namespace UI.Screens
                 if (matchmakingService != null && services.StateManager != null)
                 {
                     _lobbyTab = new LobbyTabComponent(matchmakingService, services.StateManager);
-                    _lobbyTab.Initialize(lobbyView);
-                    Debug.Log("[MainMenuScreen] Initialized Lobby tab");
+                    _lobbyTab.Initialize(chefTab); // Pass the tab root, not just lobby-view
+                    Debug.Log("[MainMenuScreen] Initialized Lobby tab with chef-tab root");
                 }
                 else
                 {
@@ -240,7 +243,7 @@ namespace UI.Screens
             }
             else
             {
-                Debug.LogWarning("[MainMenuScreen] Lobby view not found");
+                Debug.LogWarning("[MainMenuScreen] Chef tab not found");
             }
 
             // Skins tab

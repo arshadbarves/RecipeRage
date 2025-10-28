@@ -1,8 +1,0 @@
-<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/UI/USS/SplashScreen.uss?fileID=7433441132597879392&amp;guid=b724b6d18cc4f4d4990e45d83782907e&amp;type=3#SplashScreen" />
-    <VisualElement name="screen-container" class="splash-screen">
-        <VisualElement name="splash-content" class="splash-content">
-            <Label name="company-name" text="Your Company" class="company-name" />
-        </VisualElement>
-    </VisualElement>
-</UXML>

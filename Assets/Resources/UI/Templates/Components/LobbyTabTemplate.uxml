@@ -1,0 +1,29 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/USS/LobbyTab.uss?fileID=7433441132597879392&amp;guid=0b4fb89eabeab43bd805d6c1d380c4e1&amp;type=3#LobbyTab" />
+    <ui:VisualElement name="lobby-tab-root" class="lobby-tab-root">
+        <ui:VisualElement name="party-display" class="party-section">
+            <ui:VisualElement name="party-header" class="party-header">
+                <ui:Label text="YOUR PARTY" class="section-title" />
+                <ui:Button name="friends-button" text="FRIENDS" class="friends-button" />
+            </ui:VisualElement>
+            <ui:ScrollView name="party-members" class="party-members-list">
+                <ui:VisualElement name="solo-player-card" class="player-card solo">
+                    <ui:VisualElement name="player-avatar" class="player-avatar" />
+                    <ui:VisualElement name="player-info" class="player-info">
+                        <ui:Label name="player-name" text="You" class="player-name" />
+                        <ui:Label name="player-status" text="Solo" class="player-status" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:ScrollView>
+        </ui:VisualElement>
+        <ui:VisualElement name="quick-stats" class="quick-stats-section">
+            <ui:Label text="TODAY&apos;S CHALLENGES" class="section-title" />
+            <ui:VisualElement name="challenge-list" class="challenge-list">
+                <ui:VisualElement name="challenge-item" class="challenge-item">
+                    <ui:Label text="Win 3 matches" class="challenge-text" />
+                    <ui:Label text="1/3" class="challenge-progress" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

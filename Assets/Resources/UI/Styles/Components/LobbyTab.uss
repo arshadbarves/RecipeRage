@@ -1,0 +1,121 @@
+/* Lobby Tab Styles */
+
+.lobby-tab-root {
+    flex-grow: 1;
+    padding: 20px;
+    flex-direction: column;
+}
+
+/* Party Section */
+.party-section {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.party-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.section-title {
+    font-size: 16px;
+    color: #FFD700;
+    -unity-font-style: bold;
+    letter-spacing: 1px;
+}
+
+.friends-button {
+    background-color: #4A90E2;
+    color: white;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 14px;
+    -unity-font-style: bold;
+    border-width: 0;
+    transition: background-color 0.2s;
+}
+
+.friends-button:hover {
+    background-color: #357ABD;
+}
+
+.friends-button:active {
+    background-color: #2868A8;
+}
+
+/* Party Members List */
+.party-members-list {
+    max-height: 200px;
+}
+
+.player-card {
+    flex-direction: row;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 8px;
+}
+
+.player-card.solo {
+    border: 2px solid #4A90E2;
+}
+
+.player-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 24px;
+    background-color: #4A90E2;
+    margin-right: 12px;
+}
+
+.player-info {
+    flex-grow: 1;
+}
+
+.player-name {
+    font-size: 16px;
+    color: white;
+    -unity-font-style: bold;
+    margin-bottom: 4px;
+}
+
+.player-status {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Quick Stats Section */
+.quick-stats-section {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.challenge-list {
+    margin-top: 12px;
+}
+
+.challenge-item {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+.challenge-text {
+    font-size: 14px;
+    color: white;
+}
+
+.challenge-progress {
+    font-size: 14px;
+    color: #FFD700;
+    -unity-font-style: bold;
+}

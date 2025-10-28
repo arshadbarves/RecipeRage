@@ -16,7 +16,7 @@ namespace UI.Screens
     /// Login screen UI - handles button clicks and status display.
     /// All authentication logic is handled by AuthenticationManager.
     /// </summary>
-    [UIScreen(UIScreenType.Login, UIScreenPriority.Login, "LoginScreenTemplate")]
+    [UIScreen(UIScreenType.Login, UIScreenPriority.Login, "Screens/LoginScreenTemplate")]
     public class LoginScreen : BaseUIScreen
     {
         #region UI Elements

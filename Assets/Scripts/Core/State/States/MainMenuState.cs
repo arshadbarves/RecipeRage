@@ -30,7 +30,7 @@ namespace Core.State.States
             var uiService = GameBootstrap.Services?.UIService;
             if (uiService != null)
             {
-                uiService.ShowScreen(UIScreenType.Menu, true, false);
+                uiService.ShowScreen(UIScreenType.MainMenu, true, false);
             }
 
             // Check if this is first time user (no username set)
@@ -88,7 +88,7 @@ namespace Core.State.States
             var uiService = GameBootstrap.Services?.UIService;
             if (uiService != null)
             {
-                uiService.HideScreen(UIScreenType.Menu, true);
+                uiService.HideScreen(UIScreenType.MainMenu, true);
             }
         }
 
