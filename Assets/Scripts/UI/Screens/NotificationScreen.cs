@@ -13,7 +13,7 @@ namespace UI.Screens
     /// Notification screen for temporary messages and alerts
     /// Demonstrates custom animation behavior with auto-hide functionality
     /// </summary>
-    [UIScreen(UIScreenType.Notification, UIScreenPriority.Notification, "NotificationTemplate")]
+    [UIScreen(UIScreenType.Notification, UIScreenPriority.Notification, "Popups/NotificationTemplate")]
     public class NotificationScreen : BaseUIScreen
     {
         #region Configuration Properties

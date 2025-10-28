@@ -10,25 +10,27 @@ namespace UI
         Loading,
         Login,
         Maintenance,
-        
+
         // Modal and overlay screens
         Modal,
         Popup,
         Notification,
         Toast,
-        
+        FriendsPopup,
+        UsernamePopup,
+
         // Game screens
         Settings,
         Pause,
         Game,
-        Menu,
+        MainMenu,
         Profile,
         CharacterSelection,
         GameModeSelection,
         MapSelection,
         Lobby,
         GameOver,
-        
+
         // Background screens (lowest priority)
         HUD,
         Background

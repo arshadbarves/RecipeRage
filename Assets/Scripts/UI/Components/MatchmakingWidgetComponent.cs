@@ -40,8 +40,8 @@ namespace UI.Components
             _root = rootElement;
 
             // Load widget template
-            VisualTreeAsset widgetTemplate = Resources.Load<VisualTreeAsset>("UI/Templates/MatchmakingWidget");
-            StyleSheet widgetStyles = Resources.Load<StyleSheet>("UI/MatchmakingWidget");
+            VisualTreeAsset widgetTemplate = Resources.Load<VisualTreeAsset>("UI/Templates/Components/MatchmakingWidget");
+            StyleSheet widgetStyles = Resources.Load<StyleSheet>("UI/Styles/Components/MatchmakingWidget");
 
             if (widgetTemplate != null)
             {

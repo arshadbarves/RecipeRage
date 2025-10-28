@@ -1,0 +1,120 @@
+<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/USS/Settings.uss?fileID=7433441132597879392&amp;guid=ce13c355a0e3346d586ee254f45c6391&amp;type=3#Settings" />
+    <VisualElement name="settings-root" class="settings-root">
+        <VisualElement name="settings-header" class="settings-header">
+            <Label text="SETTINGS" class="settings-title" />
+            <Label text="Customize your experience" class="settings-subtitle" />
+        </VisualElement>
+        <ScrollView name="settings-scroll" class="settings-scroll">
+            <VisualElement name="settings-section" class="settings-section">
+                <Label text="🔊 AUDIO" class="section-title" />
+                <VisualElement name="audio-controls" class="controls-group">
+                    <VisualElement class="control-row">
+                        <Label text="Music Volume" class="control-label" />
+                        <VisualElement class="slider-container">
+                            <Slider name="music-volume" low-value="0" high-value="1" value="0.75" class="control-slider" />
+                            <Label name="music-volume-value" text="75%" class="value-label" />
+                        </VisualElement>
+                    </VisualElement>
+                    <VisualElement class="control-row">
+                        <Label text="SFX Volume" class="control-label" />
+                        <VisualElement class="slider-container">
+                            <Slider name="sfx-volume" low-value="0" high-value="1" value="0.75" class="control-slider" />
+                            <Label name="sfx-volume-value" text="75%" class="value-label" />
+                        </VisualElement>
+                    </VisualElement>
+                    <VisualElement class="control-row">
+                        <Label text="Mute All" class="control-label" />
+                        <Toggle name="mute-toggle" class="control-toggle" />
+                    </VisualElement>
+                </VisualElement>
+            </VisualElement>
+            <VisualElement name="graphics-section" class="settings-section">
+                <Label text="🎨 GRAPHICS" class="section-title" />
+                <VisualElement name="graphics-controls" class="controls-group">
+                    <VisualElement class="control-row">
+                        <Label text="Quality Preset" class="control-label" />
+                        <DropdownField name="quality-dropdown" class="control-dropdown" />
+                    </VisualElement>
+                    <VisualElement class="control-row">
+                        <Label text="Resolution" class="control-label" />
+                        <DropdownField name="resolution-dropdown" class="control-dropdown" />
+                    </VisualElement>
+                    <VisualElement class="control-row">
+                        <Label text="Fullscreen" class="control-label" />
+                        <Toggle name="fullscreen-toggle" class="control-toggle" />
+                    </VisualElement>
+                    <VisualElement class="control-row">
+                        <Label text="VSync" class="control-label" />
+                        <Toggle name="vsync-toggle" class="control-toggle" />
+                    </VisualElement>
+                    <VisualElement class="control-row">
+                        <Label text="Show FPS" class="control-label" />
+                        <Toggle name="fps-toggle" class="control-toggle" />
+                    </VisualElement>
+                </VisualElement>
+            </VisualElement>
+            <VisualElement name="controls-section" class="settings-section">
+                <Label text="🎮 CONTROLS" class="section-title" />
+                <VisualElement name="controls-group" class="controls-group">
+                    <Button name="edit-joystick-button" text="✏️ EDIT JOYSTICK" class="settings-button settings-button-full settings-button-primary" />
+                    <VisualElement class="control-row">
+                        <Label text="Sensitivity" class="control-label" />
+                        <VisualElement class="slider-container">
+                            <Slider name="sensitivity-slider" low-value="0.1" high-value="2" value="1" class="control-slider" />
+                            <Label name="sensitivity-value" text="1.0x" class="value-label" />
+                        </VisualElement>
+                    </VisualElement>
+                    <VisualElement class="control-row">
+                        <Label text="Vibration" class="control-label" />
+                        <Toggle name="vibration-toggle" value="true" class="control-toggle" />
+                    </VisualElement>
+                </VisualElement>
+            </VisualElement>
+            <VisualElement name="gameplay-section" class="settings-section">
+                <Label text="⚡ GAMEPLAY" class="section-title" />
+                <VisualElement name="gameplay-controls" class="controls-group">
+                    <VisualElement class="control-row">
+                        <Label text="Language" class="control-label" />
+                        <DropdownField name="language-dropdown" class="control-dropdown" />
+                    </VisualElement>
+                    <VisualElement class="control-row">
+                        <Label text="Tutorials" class="control-label" />
+                        <Toggle name="tutorials-toggle" value="true" class="control-toggle" />
+                    </VisualElement>
+                    <VisualElement class="control-row">
+                        <Label text="Notifications" class="control-label" />
+                        <Toggle name="notifications-toggle" value="true" class="control-toggle" />
+                    </VisualElement>
+                </VisualElement>
+            </VisualElement>
+            <VisualElement name="support-section" class="settings-section">
+                <Label text="ℹ️ SUPPORT &amp; INFO" class="section-title" />
+                <VisualElement name="support-buttons" class="button-grid">
+                    <Button name="help-button" text="❓ HELP" class="settings-button" />
+                    <Button name="support-button" text="💬 SUPPORT" class="settings-button" />
+                    <Button name="privacy-button" text="🔒 PRIVACY" class="settings-button" />
+                    <Button name="terms-button" text="📄 TERMS" class="settings-button" />
+                    <Button name="credits-button" text="⭐ CREDITS" class="settings-button" />
+                    <Button name="parent-guide-button" text="👨‍👩‍👧 PARENT GUIDE" class="settings-button" />
+                </VisualElement>
+            </VisualElement>
+            <VisualElement name="account-section" class="settings-section">
+                <Label text="👤 ACCOUNT" class="section-title" />
+                <VisualElement name="account-buttons" class="button-grid">
+                    <Button name="logout-button" text="🚪 LOGOUT" class="settings-button settings-button-full settings-button-warning" />
+                </VisualElement>
+            </VisualElement>
+            <VisualElement name="actions-section" class="settings-section settings-section-danger">
+                <VisualElement name="action-buttons" class="button-grid">
+                    <Button name="reset-button" text="🔄 RESET TO DEFAULTS" class="settings-button settings-button-full settings-button-warning" />
+                    <Button name="clear-data-button" text="🗑️ CLEAR ALL DATA" class="settings-button settings-button-full settings-button-danger" />
+                </VisualElement>
+            </VisualElement>
+            <VisualElement name="version-info" class="version-info">
+                <Label name="version-label" text="Version 1.0.0" class="version-text" />
+                <Label text="Made with ❤️ by Recipe Rage Team" class="credits-text" />
+            </VisualElement>
+        </ScrollView>
+    </VisualElement>
+</UXML>

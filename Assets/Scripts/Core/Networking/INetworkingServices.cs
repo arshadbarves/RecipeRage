@@ -1,5 +1,6 @@
 using System;
 using Core.Networking.Interfaces;
+using Core.Networking.Services;
 
 namespace Core.Networking
 {
@@ -30,8 +31,15 @@ namespace Core.Networking
         ITeamManager TeamManager { get; }
         
         /// <summary>
-        /// P2P networking service
+        /// Game starter service for Unity Netcode integration
         /// </summary>
-        IP2PService P2PService { get; }
+        GameStarter GameStarter { get; }
+        
+        /// <summary>
+        /// Friends service for EOS friends management
+        /// </summary>
+        IFriendsService FriendsService { get; }
+        
+        // P2P networking now handled by Unity Netcode + EOSTransport
     }
 }

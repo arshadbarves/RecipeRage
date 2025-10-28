@@ -12,7 +12,7 @@ namespace UI.Screens
     /// <summary>
     /// Profile screen - displays player stats and allows username changes
     /// </summary>
-    [UIScreen(UIScreenType.Profile, UIScreenPriority.Menu, "ProfileTemplate")]
+    [UIScreen(UIScreenType.Profile, UIScreenPriority.Menu, "Screens/ProfileTemplate")]
     public class ProfileScreen : BaseUIScreen
     {
         private ISaveService _saveService;
@@ -21,8 +21,10 @@ namespace UI.Screens
         // UI Elements
         private Button _backButton;
         private Button _changeNameButton;
+        private Button _copyFriendCodeButton;
         private Label _playerNameLabel;
         private Label _playerLevelLabel;
+        private Label _friendCodeLabel;
         private Label _gamesPlayedLabel;
         private Label _gamesWonLabel;
         private Label _winRateLabel;
@@ -54,8 +56,10 @@ namespace UI.Screens
         {
             _backButton = GetElement<Button>("back-button");
             _changeNameButton = GetElement<Button>("change-name-button");
+            _copyFriendCodeButton = GetElement<Button>("copy-friend-code-button");
             _playerNameLabel = GetElement<Label>("player-name");
             _playerLevelLabel = GetElement<Label>("player-level");
+            _friendCodeLabel = GetElement<Label>("friend-code");
             _gamesPlayedLabel = GetElement<Label>("games-played-value");
             _gamesWonLabel = GetElement<Label>("games-won-value");
             _winRateLabel = GetElement<Label>("win-rate-value");
@@ -76,6 +80,11 @@ namespace UI.Screens
             if (_changeNameButton != null)
             {
                 _changeNameButton.clicked += OnChangeNameClicked;
+            }
+
+            if (_copyFriendCodeButton != null)
+            {
+                _copyFriendCodeButton.clicked += OnCopyFriendCodeClicked;
             }
         }
 
@@ -136,6 +145,27 @@ namespace UI.Screens
             if (_totalPlayTimeLabel != null)
             {
                 _totalPlayTimeLabel.text = FormatPlayTime(stats.TotalPlayTime);
+            }
+
+            // Friend code
+            UpdateFriendCode();
+        }
+
+        private void UpdateFriendCode()
+        {
+            if (_friendCodeLabel == null)
+                return;
+
+            var networking = GameBootstrap.Services?.NetworkingServices;
+            var friendsService = networking?.FriendsService;
+
+            if (friendsService != null && friendsService.IsInitialized)
+            {
+                _friendCodeLabel.text = friendsService.MyFriendCode;
+            }
+            else
+            {
+                _friendCodeLabel.text = "Loading...";
             }
         }
 
@@ -222,7 +252,7 @@ namespace UI.Screens
                         // If first time, go back to main menu
                         if (isFirstTime)
                         {
-                            _uiService.ShowScreen(UIScreenType.Menu, true, false);
+                            _uiService.ShowScreen(UIScreenType.MainMenu, true, false);
                         }
                     },
                     onCancel: () =>
@@ -235,6 +265,26 @@ namespace UI.Screens
             {
                 Debug.LogError("[ProfileScreen] UsernamePopup screen not found in UIService - it may not be registered");
             }
+        }
+
+        private void OnCopyFriendCodeClicked()
+        {
+            var networking = GameBootstrap.Services?.NetworkingServices;
+            var friendsService = networking?.FriendsService;
+
+            if (friendsService == null || !friendsService.IsInitialized)
+            {
+                Debug.LogWarning("[ProfileScreen] Friends service not available");
+                return;
+            }
+
+            var code = friendsService.MyFriendCode;
+            GUIUtility.systemCopyBuffer = code;
+
+            var uiService = GameBootstrap.Services?.UIService;
+            uiService?.ShowToast($"Friend Code copied: {code}", ToastType.Success, 2f);
+
+            Debug.Log($"[ProfileScreen] Copied friend code: {code}");
         }
 
         protected override void OnShow()
@@ -253,6 +303,11 @@ namespace UI.Screens
             if (_changeNameButton != null)
             {
                 _changeNameButton.clicked -= OnChangeNameClicked;
+            }
+
+            if (_copyFriendCodeButton != null)
+            {
+                _copyFriendCodeButton.clicked -= OnCopyFriendCodeClicked;
             }
         }
 

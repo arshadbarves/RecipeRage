@@ -10,7 +10,7 @@ namespace UI.Screens
     /// Generic popup screen for confirmations, alerts, and dialogs
     /// Pure C# implementation with fluent API
     /// </summary>
-    [UIScreen(UIScreenType.Popup, UIScreenPriority.Popup, "PopupTemplate")]
+    [UIScreen(UIScreenType.Popup, UIScreenPriority.Popup, "Popups/PopupTemplate")]
     public class PopupScreen : BaseUIScreen
     {
         #region Configuration Properties

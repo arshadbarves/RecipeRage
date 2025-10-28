@@ -10,7 +10,7 @@ namespace UI.Screens
     /// <summary>
     /// Splash screen - quick brand display on startup
     /// </summary>
-    [UIScreen(UIScreenType.Splash, UIScreenPriority.Splash, "SplashScreenTemplate")]
+    [UIScreen(UIScreenType.Splash, UIScreenPriority.Splash, "Screens/SplashScreenTemplate")]
     public class SplashScreen : BaseUIScreen
     {
         #region UI Elements

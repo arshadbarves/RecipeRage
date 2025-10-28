@@ -10,7 +10,7 @@ namespace UI
     /// Joystick editor screen for mobile control customization
     /// Pure C# implementation inheriting from BaseUIScreen
     /// </summary>
-    [UIScreen(UIScreenType.Modal, UIScreenPriority.Modal, "JoystickEditorTemplate")]
+    [UIScreen(UIScreenType.Modal, UIScreenPriority.Modal, "Components/JoystickEditorTemplate")]
     public class JoystickEditorUI : BaseUIScreen
     {
 

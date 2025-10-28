@@ -4,6 +4,7 @@ using Core.Networking.Common;
 using Core.Networking.Interfaces;
 using Core.State;
 using UI.Data;
+using UI.Popups;
 using UI.Screens;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -62,6 +63,24 @@ namespace UI.Components.Tabs
             _root = root;
             Debug.Log($"[LobbyTabComponent] Root element: {_root.name}");
 
+            // Query all elements first
+            QueryElements();
+
+            Debug.Log($"[LobbyTabComponent] Elements found - Play: {_playButton != null}, Map: {_mapButton != null}, Friends: {_friendsButton != null}");
+
+            // Setup in order
+            SetupButtons();
+            LoadMapDatabase();
+            LoadMapInfo();
+            SetupMatchmakingWidget();
+
+            Debug.Log("[LobbyTabComponent] Initialization complete");
+        }
+
+        private void QueryElements()
+        {
+            Debug.Log("[LobbyTabComponent] Querying UI elements");
+
             // Cache UI elements
             _playButton = _root.Q<Button>("play-button");
             _mapButton = _root.Q<Button>("map-button");
@@ -71,12 +90,7 @@ namespace UI.Components.Tabs
             _timerLabel = _root.Q<Label>("timer-text");
             _partyDisplay = _root.Q<VisualElement>("party-display");
 
-            Debug.Log($"[LobbyTabComponent] Elements found - Play: {_playButton != null}, Map: {_mapButton != null}, Friends: {_friendsButton != null}");
-
-            SetupButtons();
-            LoadMapDatabase();
-            LoadMapInfo();
-            SetupMatchmakingWidget();
+            Debug.Log($"[LobbyTabComponent] Query complete - Play: {_playButton != null}, Map: {_mapButton != null}, Friends: {_friendsButton != null}, MapName: {_mapNameLabel != null}, Timer: {_timerLabel != null}, Party: {_partyDisplay != null}");
         }
 
         private void SetupMatchmakingWidget()
@@ -111,7 +125,7 @@ namespace UI.Components.Tabs
 
         private void LoadMapDatabase()
         {
-            TextAsset jsonFile = Resources.Load<TextAsset>("Data/Maps");
+            TextAsset jsonFile = Resources.Load<TextAsset>("UI/Data/Maps");
             if (jsonFile != null)
             {
                 _mapDatabase = JsonUtility.FromJson<MapDatabase>(jsonFile.text);
@@ -228,15 +242,19 @@ namespace UI.Components.Tabs
             var uiService = GameBootstrap.Services?.UIService;
             if (uiService != null)
             {
-                uiService.ShowScreen(UIScreenType.Popup,
-                    true,
-                    true);
-
-                // TODO: Get FriendsPopup specifically
-                // For now, just show a toast
-                uiService.ShowToast("Friends system coming soon!",
-                    ToastType.Info,
-                    2f);
+                // Get the FriendsPopup screen
+                var friendsPopup = uiService.GetScreen<FriendsPopup>();
+                if (friendsPopup != null)
+                {
+                    friendsPopup.Show(true, true);
+                }
+                else
+                {
+                    Debug.LogError("[LobbyTabComponent] FriendsPopup not found");
+                    uiService.ShowToast("Friends popup not available",
+                        ToastType.Error,
+                        2f);
+                }
             }
         }
 

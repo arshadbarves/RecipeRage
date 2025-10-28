@@ -11,7 +11,7 @@ namespace UI.Screens
     /// <summary>
     /// Loading screen - shows initialization progress
     /// </summary>
-    [UIScreen(UIScreenType.Loading, UIScreenPriority.Loading, "LoadingScreenTemplate")]
+    [UIScreen(UIScreenType.Loading, UIScreenPriority.Loading, "Screens/LoadingScreenTemplate")]
     public class LoadingScreen : BaseUIScreen
     {
         #region UI Elements

@@ -161,6 +161,7 @@ namespace UI
 
             try
             {
+                // Template path should already include the category (Screens/, Components/, Popups/)
                 string resourcePath = $"UI/Templates/{templatePath}";
                 VisualTreeAsset template = Resources.Load<VisualTreeAsset>(resourcePath);
 
@@ -171,7 +172,7 @@ namespace UI
                 }
                 else
                 {
-                    Debug.LogError($"[UIService] Template '{templatePath}' not found at '{resourcePath}'. Make sure the template exists in Resources/UI/Templates/");
+                    Debug.LogError($"[UIService] Template '{templatePath}' not found at '{resourcePath}'. Make sure the template exists in Resources/UI/Templates/ with proper category (Screens/, Components/, Popups/)");
                     return null;
                 }
             }

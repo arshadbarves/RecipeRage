@@ -15,7 +15,7 @@ namespace UI.Screens
     /// 1. Scheduled Maintenance - Shows estimated end time with countdown
     /// 2. Server Down - Shows generic message with retry button
     /// </summary>
-    [UIScreen(UIScreenType.Maintenance, UIScreenPriority.Maintenance, "MaintenanceTemplate")]
+    [UIScreen(UIScreenType.Maintenance, UIScreenPriority.Maintenance, "Screens/MaintenanceTemplate")]
     public class MaintenanceScreen : BaseUIScreen
     {
         #region UI Elements
