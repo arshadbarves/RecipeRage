@@ -1,5 +1,5 @@
 <UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/UI/USS/Skins.uss" />
+    <Style src="project://database/Assets/Resources/UI/Styles/Screens/Skins.uss?fileID=7433441132597879392&amp;guid=8c10812b05e234486a139274877d4a9e&amp;type=3#Skins" />
     <VisualElement name="skins-root" class="skins-root">
         <VisualElement name="skins-header" class="skins-header">
             <Label text="CHEF SKINS" class="skins-title" />
@@ -11,9 +11,7 @@
                 <Button name="equip-button" text="EQUIPPED" class="equip-button equipped" />
             </VisualElement>
             <ScrollView name="skins-scroll" class="skins-scroll">
-                <VisualElement name="skins-grid" class="skins-grid">
-                    <!-- Skin items will be dynamically added here -->
-                </VisualElement>
+                <VisualElement name="skins-grid" class="skins-grid" />
             </ScrollView>
         </VisualElement>
     </VisualElement>

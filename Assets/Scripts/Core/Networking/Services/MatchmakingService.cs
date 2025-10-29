@@ -142,6 +142,23 @@ namespace Core.Networking.Services
                 _currentSearch = null;
             }
             
+            // If we're in a match lobby (created or joined during matchmaking), leave/destroy it
+            if (_lobbyManager.IsInMatchLobby)
+            {
+                // If we're the owner and created this lobby for matchmaking, destroy it
+                // Otherwise, just leave it
+                if (_lobbyManager.IsMatchLobbyOwner)
+                {
+                    Debug.Log("[MatchmakingService] Destroying match lobby (owner) due to cancellation");
+                    _lobbyManager.DestroyMatchLobby();
+                }
+                else
+                {
+                    Debug.Log("[MatchmakingService] Leaving match lobby due to cancellation");
+                    _lobbyManager.LeaveMatchLobby();
+                }
+            }
+            
             ChangeState(MatchmakingState.Cancelled);
             OnMatchmakingCancelled?.Invoke();
             
