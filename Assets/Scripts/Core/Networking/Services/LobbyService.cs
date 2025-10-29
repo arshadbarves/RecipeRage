@@ -260,11 +260,70 @@ namespace Core.Networking.Services
             Debug.Log("[LobbyService] Leaving match lobby");
             
             string lobbyId = CurrentMatchLobby.LobbyId;
+            bool wasOwner = IsMatchLobbyOwner;
+            bool wasLastPlayer = CurrentMatchLobby.CurrentPlayers <= 1;
+            
             CurrentMatchLobby = null;
             
             // Leave via EOS
+            // Note: EOS automatically destroys the lobby if the last player leaves
+            // or if the owner leaves (depending on lobby settings)
             _eosLobbyManager.LeaveLobby(null);
             
+            if (wasOwner || wasLastPlayer)
+            {
+                Debug.Log($"[LobbyService] Left match lobby as {(wasOwner ? "owner" : "last player")} - lobby will be destroyed by EOS");
+            }
+            
+            OnMatchLobbyLeft?.Invoke();
+            
+            // Return to party state if in party, otherwise idle
+            ChangeState(IsInParty ? LobbyState.InParty : LobbyState.Idle);
+        }
+        
+        /// <summary>
+        /// Destroy the current match lobby (owner only)
+        /// Explicitly destroys the lobby instead of just leaving
+        /// </summary>
+        public void DestroyMatchLobby()
+        {
+            if (!IsInMatchLobby)
+            {
+                Debug.LogWarning("[LobbyService] Not in a match lobby");
+                return;
+            }
+            
+            if (!IsMatchLobbyOwner)
+            {
+                Debug.LogWarning("[LobbyService] Only the lobby owner can destroy the lobby. Use LeaveMatchLobby() instead.");
+                LeaveMatchLobby();
+                return;
+            }
+            
+            Debug.Log("[LobbyService] Destroying match lobby (owner)");
+            
+            string lobbyId = CurrentMatchLobby.LobbyId;
+            
+            // Destroy the lobby via EOS
+            var destroyOptions = new DestroyLobbyOptions
+            {
+                LocalUserId = EOSManager.Instance.GetProductUserId(),
+                LobbyId = lobbyId
+            };
+            
+            EOSManager.Instance.GetEOSLobbyInterface().DestroyLobby(ref destroyOptions, null, (ref DestroyLobbyCallbackInfo data) =>
+            {
+                if (data.ResultCode == Result.Success)
+                {
+                    Debug.Log($"[LobbyService] Match lobby destroyed successfully: {lobbyId}");
+                }
+                else
+                {
+                    Debug.LogError($"[LobbyService] Failed to destroy match lobby: {data.ResultCode}");
+                }
+            });
+            
+            CurrentMatchLobby = null;
             OnMatchLobbyLeft?.Invoke();
             
             // Return to party state if in party, otherwise idle

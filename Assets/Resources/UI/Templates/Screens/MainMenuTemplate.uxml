@@ -1,48 +1,18 @@
 <UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd" editor-extension-mode="False">
-    <Template name="SkinsTemplate" src="project://database/Assets/Resources/UI/Templates/SkinsTemplate.uxml?fileID=9197481963319205126&amp;guid=d13a1062b3b204f4997e9bead26a7b01&amp;type=3#SkinsTemplate" />
-    <Template name="ShopTemplate" src="project://database/Assets/Resources/UI/Templates/ShopTemplate.uxml?fileID=9197481963319205126&amp;guid=0824e79abae0447b990331c5e433d706&amp;type=3#ShopTemplate" />
-    <Template name="SettingsTemplate" src="project://database/Assets/Resources/UI/Templates/SettingsTemplate.uxml?fileID=9197481963319205126&amp;guid=2cd1b3db03fd841fa89c38e06c5d5b88&amp;type=3#SettingsTemplate" />
-    <Style src="project://database/Assets/UI/USS/MainMenu.uss?fileID=7433441132597879392&amp;guid=15bb364f81be046f5a66a2cf721fada9&amp;type=3#MainMenu" />
-    <Style src="project://database/Assets/UI/USS/Settings.uss?fileID=7433441132597879392&amp;guid=ce13c355a0e3346d586ee254f45c6391&amp;type=3#Settings" />
-    <Style src="project://database/Assets/UI/USS/Shop.uss?fileID=7433441132597879392&amp;guid=4e442d0be92504d63986397556b8d066&amp;type=3#Shop" />
-    <Style src="project://database/Assets/UI/USS/Skins.uss?fileID=7433441132597879392&amp;guid=8c10812b05e234486a139274877d4a9e&amp;type=3#Skins" />
-    <Style src="project://database/Assets/UI/USS/GlobalButtons.uss?fileID=7433441132597879392&amp;guid=99c9eb48eb2e144a1af685d58c2a6d9b&amp;type=3#GlobalButtons" />
+    <Template name="SkinsTemplate" src="project://database/Assets/Resources/UI/Templates/Screens/SkinsTemplate.uxml?fileID=9197481963319205126&amp;guid=d13a1062b3b204f4997e9bead26a7b01&amp;type=3#SkinsTemplate" />
+    <Template name="ShopTemplate" src="project://database/Assets/Resources/UI/Templates/Screens/ShopTemplate.uxml?fileID=9197481963319205126&amp;guid=0824e79abae0447b990331c5e433d706&amp;type=3#ShopTemplate" />
+    <Template name="SettingsTemplate" src="project://database/Assets/Resources/UI/Templates/Screens/SettingsTemplate.uxml?fileID=9197481963319205126&amp;guid=2cd1b3db03fd841fa89c38e06c5d5b88&amp;type=3#SettingsTemplate" />
+    <Template name="LobbyTemplate" src="project://database/Assets/Resources/UI/Templates/Screens/LobbyTemplate.uxml?fileID=9197481963319205126&amp;guid=3da2194908d8a4d65b7a6a67f37ee6f6&amp;type=3#LobbyTemplate" />
+    <Style src="project://database/Assets/Resources/UI/Styles/Screens/MainMenu.uss?fileID=7433441132597879392&amp;guid=15bb364f81be046f5a66a2cf721fada9&amp;type=3#MainMenu" />
+    <Style src="project://database/Assets/Resources/UI/Styles/Screens/Settings.uss?fileID=7433441132597879392&amp;guid=ce13c355a0e3346d586ee254f45c6391&amp;type=3#Settings" />
+    <Style src="project://database/Assets/Resources/UI/Styles/Screens/Shop.uss?fileID=7433441132597879392&amp;guid=4e442d0be92504d63986397556b8d066&amp;type=3#Shop" />
+    <Style src="project://database/Assets/Resources/UI/Styles/Screens/Skins.uss?fileID=7433441132597879392&amp;guid=8c10812b05e234486a139274877d4a9e&amp;type=3#Skins" />
+    <Style src="project://database/Assets/Resources/UI/Styles/Core/GlobalButtons.uss?fileID=7433441132597879392&amp;guid=99c9eb48eb2e144a1af685d58c2a6d9b&amp;type=3#GlobalButtons" />
     <VisualElement name="bottom-background-bar" class="bottom-background-bar" style="flex-grow: 1;" />
     <VisualElement name="main-menu-root" class="main-menu-root">
         <TabView name="main-tabs" class="main-tabs">
             <Tab name="chef-tab" icon-image="project://database/Assets/Textures/Icons/Badges/icons8-home-96.png?fileID=2800000&amp;guid=2be65e77c79024ee1a42cef702ecd4bc&amp;type=3#icons8-home-96" class="chef-tab">
-                <VisualElement name="lobby-view" style="flex-grow: 1; padding: 20px;">
-                    <VisualElement name="party-display" class="party-section">
-                        <VisualElement name="party-header" class="party-header">
-                            <Label text="YOUR PARTY" class="section-title" />
-                            <Button name="friends-button" text="FRIENDS" class="friends-button" />
-                        </VisualElement>
-                        <ScrollView name="party-members" class="party-members-list">
-                            <VisualElement name="solo-player-card" class="player-card solo">
-                                <VisualElement name="player-avatar" class="player-avatar" />
-                                <VisualElement name="player-info-container" class="player-info">
-                                    <Label name="party-player-name" text="You (Solo)" class="player-name" />
-                                    <Label name="party-player-status" text="Ready to play" class="player-status" />
-                                </VisualElement>
-                            </VisualElement>
-                        </ScrollView>
-                    </VisualElement>
-                </VisualElement>
-                <VisualElement name="bottom-bar" class="bottom-bar">
-                    <Button name="map-button" class="map-button">
-                        <VisualElement name="timer-content" class="timer-content">
-                            <Label name="timer-text" text="NEW MAP IN : 30h 12m" class="timer-text" />
-                            <VisualElement name="timer-icon" class="timer-icon" />
-                        </VisualElement>
-                        <VisualElement name="map-card">
-                            <Label name="map-name" text="CRUMB HAVEN" class="map-name" />
-                            <Label name="map-subtitle" text="COOPERATIVE CHAOS" class="map-subtitle" />
-                        </VisualElement>
-                    </Button>
-                    <Button name="play-button" class="play-button">
-                        <Label text="PLAY!" class="play-text" />
-                    </Button>
-                </VisualElement>
+                <Instance template="LobbyTemplate" />
             </Tab>
             <Tab name="skins-tab" icon-image="project://database/Assets/Textures/Icons/Badges/icons8-chef-96.png?fileID=2800000&amp;guid=02588443caf3d42c7970590d186fe793&amp;type=3#icons8-chef-96">
                 <Instance template="SkinsTemplate" />

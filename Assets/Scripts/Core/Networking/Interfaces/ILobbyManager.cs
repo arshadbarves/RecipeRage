@@ -125,6 +125,11 @@ namespace Core.Networking.Interfaces
         /// </summary>
         void LeaveMatchLobby();
         
+        /// <summary>
+        /// Destroy the current match lobby (owner only)
+        /// </summary>
+        void DestroyMatchLobby();
+        
         #endregion
         
         #region Methods - Game Settings

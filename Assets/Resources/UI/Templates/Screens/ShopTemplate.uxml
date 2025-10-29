@@ -1,5 +1,5 @@
 <UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/UI/USS/Shop.uss" />
+    <Style src="project://database/Assets/Resources/UI/Styles/Screens/Shop.uss?fileID=7433441132597879392&amp;guid=4e442d0be92504d63986397556b8d066&amp;type=3#Shop" />
     <VisualElement name="shop-root" class="shop-root">
         <VisualElement name="shop-header" class="shop-header">
             <Label text="SHOP" class="shop-title" />
@@ -11,9 +11,7 @@
                 <Button name="weapons-button" text="WEAPONS" class="category-button" />
                 <Button name="bundles-button" text="BUNDLES" class="category-button" />
             </VisualElement>
-            <VisualElement name="shop-items-grid" class="shop-items-grid">
-                <!-- Shop items will be dynamically added here -->
-            </VisualElement>
+            <VisualElement name="shop-items-grid" class="shop-items-grid" />
         </ScrollView>
     </VisualElement>
 </UXML>

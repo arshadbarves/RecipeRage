@@ -61,6 +61,7 @@ namespace UI.Screens
         public override void Update(float deltaTime)
         {
             // Update logic if needed
+            _lobbyTab?.Update(deltaTime);
         }
 
         protected override void OnDispose()
@@ -221,11 +222,8 @@ namespace UI.Screens
             }
 
             // Lobby tab (Main Menu/Home)
-            // Get the chef-tab which contains both lobby-view and bottom-bar
-            TabView tabView = GetElement<TabView>("main-tabs");
-            Tab chefTab = tabView?.Q<Tab>("chef-tab");
-            
-            if (chefTab != null)
+            VisualElement lobbyRoot = GetElement<VisualElement>("lobby-root");
+            if (lobbyRoot != null)
             {
                 // Get matchmaking service from networking services
                 IMatchmakingService matchmakingService = services.NetworkingServices?.MatchmakingService;
@@ -233,8 +231,8 @@ namespace UI.Screens
                 if (matchmakingService != null && services.StateManager != null)
                 {
                     _lobbyTab = new LobbyTabComponent(matchmakingService, services.StateManager);
-                    _lobbyTab.Initialize(chefTab); // Pass the tab root, not just lobby-view
-                    Debug.Log("[MainMenuScreen] Initialized Lobby tab with chef-tab root");
+                    _lobbyTab.Initialize(lobbyRoot);
+                    Debug.Log("[MainMenuScreen] Initialized Lobby tab");
                 }
                 else
                 {
@@ -243,7 +241,7 @@ namespace UI.Screens
             }
             else
             {
-                Debug.LogWarning("[MainMenuScreen] Chef tab not found");
+                Debug.LogWarning("[MainMenuScreen] Lobby root not found");
             }
 
             // Skins tab
