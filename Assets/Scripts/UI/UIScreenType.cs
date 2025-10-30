@@ -28,6 +28,7 @@ namespace UI
         CharacterSelection,
         GameModeSelection,
         MapSelection,
+        Matchmaking,
         Lobby,
         GameOver,
 

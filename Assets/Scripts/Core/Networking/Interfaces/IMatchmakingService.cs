@@ -37,11 +37,6 @@ namespace Core.Networking.Interfaces
         /// </summary>
         event Action<LobbyInfo> OnMatchFound;
         
-        /// <summary>
-        /// Fired when matchmaking state changes
-        /// </summary>
-        event Action<MatchmakingState> OnStateChanged;
-        
         #endregion
         
         #region Properties
@@ -50,16 +45,6 @@ namespace Core.Networking.Interfaces
         /// Whether matchmaking is currently active
         /// </summary>
         bool IsSearching { get; }
-        
-        /// <summary>
-        /// Current matchmaking state
-        /// </summary>
-        MatchmakingState CurrentState { get; }
-        
-        /// <summary>
-        /// Time spent searching (in seconds)
-        /// </summary>
-        float SearchTime { get; }
         
         /// <summary>
         /// Current number of players found
@@ -107,6 +92,18 @@ namespace Core.Networking.Interfaces
         /// <param name="gameMode">Game mode</param>
         /// <param name="teamSize">Team size</param>
         void CreateAndWaitForPlayers(GameMode gameMode, int teamSize);
+        
+        /// <summary>
+        /// Fill remaining slots with bots and start the match
+        /// Called by MatchmakingState when timeout occurs
+        /// </summary>
+        void FillMatchWithBots();
+        
+        /// <summary>
+        /// Get active bots in the current match
+        /// </summary>
+        /// <returns>List of active bot players</returns>
+        System.Collections.Generic.List<Bot.BotPlayer> GetActiveBots();
         
         #endregion
     }

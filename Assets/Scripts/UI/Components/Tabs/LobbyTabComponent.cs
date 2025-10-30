@@ -3,6 +3,7 @@ using Core.Bootstrap;
 using Core.Networking.Common;
 using Core.Networking.Interfaces;
 using Core.State;
+using Core.State.States;
 using UI.Data;
 using UI.Popups;
 using UI.Screens;
@@ -30,9 +31,6 @@ namespace UI.Components.Tabs
         private Label _mapSubtitleLabel;
         private Label _timerLabel;
         private VisualElement _partyDisplay;
-
-        // Matchmaking widget
-        private MatchmakingWidgetComponent _matchmakingWidget;
 
         // Map data
         private MapDatabase _mapDatabase;
@@ -72,7 +70,6 @@ namespace UI.Components.Tabs
             SetupButtons();
             LoadMapDatabase();
             LoadMapInfo();
-            SetupMatchmakingWidget();
 
             Debug.Log("[LobbyTabComponent] Initialization complete");
         }
@@ -91,15 +88,6 @@ namespace UI.Components.Tabs
             _partyDisplay = _root.Q<VisualElement>("party-display");
 
             Debug.Log($"[LobbyTabComponent] Query complete - Play: {_playButton != null}, Map: {_mapButton != null}, Friends: {_friendsButton != null}, MapName: {_mapNameLabel != null}, Timer: {_timerLabel != null}, Party: {_partyDisplay != null}");
-        }
-
-        private void SetupMatchmakingWidget()
-        {
-            // Create matchmaking widget component (pure C#)
-            _matchmakingWidget = new MatchmakingWidgetComponent(_matchmakingService);
-            _matchmakingWidget.Initialize(_root);
-
-            Debug.Log("[LobbyTabComponent] Matchmaking widget setup complete");
         }
 
         private void SetupButtons()
@@ -200,10 +188,18 @@ namespace UI.Components.Tabs
 
         private void OnPlayClicked()
         {
-            Debug.Log("[LobbyTabComponent] Play button clicked - Starting matchmaking");
+            Debug.Log("[LobbyTabComponent] Play button clicked - Transitioning to MatchmakingState");
 
-            // Start matchmaking using injected service (follows DIP)
-            _matchmakingService.FindMatch(GameMode.Classic, teamSize: 4);
+            // Transition to MatchmakingState (it will handle everything)
+            if (_stateManager != null)
+            {
+                var matchmakingState = new MatchmakingState(GameMode.Classic, teamSize: 4);
+                _stateManager.ChangeState(matchmakingState);
+            }
+            else
+            {
+                Debug.LogError("[LobbyTabComponent] StateManager not available!");
+            }
         }
 
         private void OnMapClicked()
@@ -264,7 +260,6 @@ namespace UI.Components.Tabs
         public void Update(
             float deltaTime)
         {
-            _matchmakingWidget?.Update(deltaTime);
         }
 
         /// <summary>
@@ -286,8 +281,6 @@ namespace UI.Components.Tabs
             {
                 _friendsButton.clicked -= OnFriendsClicked;
             }
-
-            _matchmakingWidget?.Dispose();
 
             Debug.Log("[LobbyTabComponent] Disposed");
         }

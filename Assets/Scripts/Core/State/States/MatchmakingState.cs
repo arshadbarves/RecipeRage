@@ -8,115 +8,138 @@ using UnityEngine;
 namespace Core.State.States
 {
     /// <summary>
-    /// State for matchmaking and finding players for a game.
-    /// Updated to use new NetworkingServiceContainer architecture
+    /// State for matchmaking - handles searching for players and bot filling on timeout
+    /// Owns all matchmaking logic and timeout detection
     /// </summary>
     public class MatchmakingState : BaseState
     {
-        /// <summary>
-        /// Flag to track if matchmaking is in progress.
-        /// </summary>
-        private bool _isMatchmakingInProgress;
-
-        /// <summary>
-        /// Reference to the networking services
-        /// </summary>
         private INetworkingServices _networkingServices;
+        private bool _isMatchmakingInProgress;
+        
+        // Timeout tracking
+        private float _searchStartTime;
+        private float _searchTime;
+        private const float SEARCH_TIMEOUT = 60f;
+        private bool _hasFilledWithBots;
+        
+        // Matchmaking parameters
+        private GameMode _gameMode;
+        private int _teamSize;
 
         /// <summary>
-        /// Event triggered when matchmaking is complete.
+        /// Constructor with matchmaking parameters
         /// </summary>
-        public event Action<bool> OnMatchmakingComplete;
+        public MatchmakingState(GameMode gameMode = GameMode.Classic, int teamSize = 4)
+        {
+            _gameMode = gameMode;
+            _teamSize = teamSize;
+        }
 
-        /// <summary>
-        /// Called when the state is entered.
-        /// </summary>
         public override void Enter()
         {
             base.Enter();
 
-            // Get reference to networking services
             _networkingServices = GameBootstrap.Services?.NetworkingServices;
 
             if (_networkingServices == null)
             {
                 LogError("NetworkingServices not available");
-                CompleteMatchmaking(false);
+                ReturnToMainMenu();
                 return;
             }
 
-            // Reset matchmaking state
+            // Initialize state
             _isMatchmakingInProgress = true;
+            _searchStartTime = Time.time;
+            _searchTime = 0f;
+            _hasFilledWithBots = false;
 
-            // Start matchmaking process
-            LogMessage("Starting matchmaking process");
+            LogMessage($"Starting matchmaking: {_gameMode}, Team Size: {_teamSize}");
 
-            // Show game mode selection screen
-            GameBootstrap.Services?.UIService.ShowScreen(UIScreenType.GameModeSelection, true, true);
+            // Show matchmaking UI
+            var uiService = GameBootstrap.Services?.UIService;
+            if (uiService != null)
+            {
+                // Hide main menu
+                uiService.HideScreen(UIScreenType.MainMenu, true);
+                
+                // Show matchmaking screen
+                uiService.ShowScreen(UIScreenType.Matchmaking, true, false);
+                LogMessage("Matchmaking screen shown");
+            }
 
             // Subscribe to matchmaking events
             _networkingServices.MatchmakingService.OnMatchFound += HandleMatchFound;
             _networkingServices.MatchmakingService.OnMatchmakingFailed += HandleMatchmakingFailed;
             _networkingServices.MatchmakingService.OnPlayersFound += HandlePlayersFound;
+            _networkingServices.MatchmakingService.OnMatchmakingCancelled += HandleMatchmakingCancelled;
 
-            // Start matchmaking (default to 4v4 Classic mode)
-            _networkingServices.MatchmakingService.FindMatch(GameMode.Classic, teamSize: 4);
+            // Start matchmaking
+            _networkingServices.MatchmakingService.FindMatch(_gameMode, _teamSize);
             
             LogMessage("Matchmaking started - searching for players...");
         }
 
-        /// <summary>
-        /// Called when the state is exited.
-        /// </summary>
         public override void Exit()
         {
             base.Exit();
 
-            // Unsubscribe from matchmaking events
+            // Hide matchmaking UI
+            var uiService = GameBootstrap.Services?.UIService;
+            if (uiService != null)
+            {
+                uiService.HideScreen(UIScreenType.Matchmaking, true);
+            }
+
+            // Unsubscribe from events
             if (_networkingServices != null)
             {
                 _networkingServices.MatchmakingService.OnMatchFound -= HandleMatchFound;
                 _networkingServices.MatchmakingService.OnMatchmakingFailed -= HandleMatchmakingFailed;
                 _networkingServices.MatchmakingService.OnPlayersFound -= HandlePlayersFound;
+                _networkingServices.MatchmakingService.OnMatchmakingCancelled -= HandleMatchmakingCancelled;
             }
 
             // Cancel matchmaking if still in progress
-            if (_isMatchmakingInProgress)
+            if (_isMatchmakingInProgress && _networkingServices != null)
             {
-                CancelMatchmaking();
+                _networkingServices.MatchmakingService.CancelMatchmaking();
             }
 
-            // Hide game mode selection screen
-            GameBootstrap.Services?.UIService.HideScreen(UIScreenType.GameModeSelection, true);
+            _isMatchmakingInProgress = false;
         }
 
-        /// <summary>
-        /// Called every frame to update the state.
-        /// </summary>
         public override void Update()
         {
-            // Matchmaking logic is now handled by the NetworkLobbyManager
+            if (!_isMatchmakingInProgress || _networkingServices == null)
+                return;
+
+            // Update search time
+            _searchTime = Time.time - _searchStartTime;
+
+            // Check for timeout - trigger bot filling
+            if (_searchTime >= SEARCH_TIMEOUT && !_hasFilledWithBots)
+            {
+                LogMessage($"Matchmaking timeout after {_searchTime:F1}s - filling with bots");
+                _hasFilledWithBots = true;
+
+                // Tell service to fill with bots
+                _networkingServices.MatchmakingService.FillMatchWithBots();
+            }
         }
 
-        /// <summary>
-        /// Called at fixed intervals for physics updates.
-        /// </summary>
         public override void FixedUpdate()
         {
-            // Matchmaking doesn't need physics updates
+            // No physics needed for matchmaking
         }
 
-        // UI is now managed by the UIService
+        #region Event Handlers
 
-        /// <summary>
-        /// Handle match found event
-        /// </summary>
         private void HandleMatchFound(LobbyInfo lobbyInfo)
         {
             LogMessage($"Match found! Lobby: {lobbyInfo.LobbyId}, Players: {lobbyInfo.CurrentPlayers}/{lobbyInfo.MaxPlayers}");
 
-            // Complete matchmaking successfully
-            CompleteMatchmaking(true);
+            _isMatchmakingInProgress = false;
 
             // Transition to gameplay state
             var services = GameBootstrap.Services;
@@ -126,17 +149,38 @@ namespace Core.State.States
             }
         }
 
-        /// <summary>
-        /// Handle matchmaking failed event
-        /// </summary>
         private void HandleMatchmakingFailed(string reason)
         {
             LogError($"Matchmaking failed: {reason}");
 
-            // Complete matchmaking with failure
-            CompleteMatchmaking(false);
+            _isMatchmakingInProgress = false;
 
             // Return to main menu
+            ReturnToMainMenu();
+        }
+
+        private void HandlePlayersFound(int current, int required)
+        {
+            LogMessage($"Players found: {current}/{required}");
+            // MatchmakingScreen will update its UI via this event
+        }
+
+        private void HandleMatchmakingCancelled()
+        {
+            LogMessage("Matchmaking cancelled by user");
+
+            _isMatchmakingInProgress = false;
+
+            // Return to main menu
+            ReturnToMainMenu();
+        }
+
+        #endregion
+
+        #region Helper Methods
+
+        private void ReturnToMainMenu()
+        {
             var services = GameBootstrap.Services;
             if (services != null)
             {
@@ -144,56 +188,6 @@ namespace Core.State.States
             }
         }
 
-        /// <summary>
-        /// Handle players found update
-        /// </summary>
-        private void HandlePlayersFound(int current, int required)
-        {
-            LogMessage($"Players found: {current}/{required}");
-            
-            // Update UI with progress (if we have a matchmaking screen)
-            // TODO: Update matchmaking UI with player count
-        }
-
-        /// <summary>
-        /// Called when matchmaking is complete.
-        /// </summary>
-        /// <param name="success"> Whether matchmaking was successful </param>
-        private void CompleteMatchmaking(bool success)
-        {
-            if (!_isMatchmakingInProgress)
-            {
-                return;
-            }
-
-            _isMatchmakingInProgress = false;
-            LogMessage($"Matchmaking complete. Success: {success}");
-
-            // Trigger the matchmaking complete event
-            OnMatchmakingComplete?.Invoke(success);
-        }
-
-        /// <summary>
-        /// Cancels the matchmaking process.
-        /// </summary>
-        public void CancelMatchmaking()
-        {
-            if (!_isMatchmakingInProgress)
-            {
-                return;
-            }
-
-            _isMatchmakingInProgress = false;
-            LogMessage("Matchmaking canceled");
-
-            // Cancel matchmaking via service
-            if (_networkingServices != null)
-            {
-                _networkingServices.MatchmakingService.CancelMatchmaking();
-            }
-
-            // Trigger the matchmaking complete event with failure
-            OnMatchmakingComplete?.Invoke(false);
-        }
+        #endregion
     }
 }

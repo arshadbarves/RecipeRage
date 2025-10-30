@@ -74,6 +74,11 @@ namespace Core.Networking.Common
         public bool IsReady { get; set; }
 
         /// <summary>
+        /// Whether this player is a bot.
+        /// </summary>
+        public bool IsBot { get; set; }
+
+        /// <summary>
         /// The player's EOS Product User ID.
         /// </summary>
         public ProductUserId ProductUserId { get; set; }
@@ -95,6 +100,7 @@ namespace Core.Networking.Common
             Team = TeamId.TeamA;
             CharacterClass = CharacterClass.Chef;
             IsReady = false;
+            IsBot = false;
             ProductUserId = null;
             CustomData = new Dictionary<string, string>();
         }

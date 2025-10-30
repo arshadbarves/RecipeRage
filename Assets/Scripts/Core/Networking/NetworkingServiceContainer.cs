@@ -115,11 +115,8 @@ namespace Core.Networking
             if (!_isInitialized)
                 return;
 
-            // Update matchmaking (for search timeout)
-            if (MatchmakingService is MatchmakingService matchmaking)
-            {
-                matchmaking.Update();
-            }
+            // Note: Matchmaking timeout is now handled by MatchmakingState.Update()
+            // No need to update service here
         }
 
         #endregion
