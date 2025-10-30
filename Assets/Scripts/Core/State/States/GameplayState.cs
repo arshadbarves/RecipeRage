@@ -26,11 +26,13 @@ namespace Core.State.States
                 SceneManager.LoadScene("Game");
             }
 
-            // Show the gameplay UI
+            // Hide all UI screens and show only the HUD
+            // Hide all UI Toolkit screens (matchmaking, main menu, etc.)
+            // GameplayUIManager (MonoBehaviour) will handle the in-game UI
             var uiService = GameBootstrap.Services?.UIService;
             if (uiService != null)
             {
-                uiService.ShowScreen(UIScreenType.Game, true, false);
+                uiService.HideAllScreens(true);
             }
 
             // Initialize the game mode
@@ -55,6 +57,21 @@ namespace Core.State.States
             {
                 scoreManager.ResetScores();
             }
+            
+            // Log bot information if any
+            var networkingServices = GameBootstrap.Services?.NetworkingServices;
+            if (networkingServices != null)
+            {
+                var bots = networkingServices.MatchmakingService.GetActiveBots();
+                if (bots.Count > 0)
+                {
+                    Debug.Log($"[GameplayState] Starting game with {bots.Count} bots");
+                    foreach (var bot in bots)
+                    {
+                        Debug.Log($"[GameplayState] Bot: {bot.BotName} (Team {bot.TeamId})");
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -65,11 +82,8 @@ namespace Core.State.States
             base.Exit();
 
             // Hide the gameplay UI
-            var uiService = GameBootstrap.Services?.UIService;
-            if (uiService != null)
-            {
-                uiService.HideScreen(UIScreenType.Game, true);
-            }
+            // Note: GameplayUIManager handles its own cleanup
+            // No need to hide UI Toolkit screens here
 
             // Stop the game mode
             var gameModeService = GameBootstrap.Services.GameModeService;

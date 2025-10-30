@@ -1,0 +1,93 @@
+/* Matchmaking Screen Styles - Matches RecipeRage Theme */
+
+.matchmaking-content {
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(26, 26, 46); /* var(--color-background) */
+    padding: 40px;
+}
+
+/* Status Indicator (animated circle) */
+.status-indicator {
+    width: 120px;
+    height: 120px;
+    border-radius: 60px;
+    margin-bottom: 30px;
+    transition-duration: 0.3s;
+    border-width: 4px;
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.status-indicator.searching {
+    background-color: rgb(255, 154, 60); /* var(--color-primary) - Orange */
+    border-color: rgb(233, 69, 96); /* var(--color-secondary) */
+}
+
+.status-indicator.found {
+    background-color: rgb(76, 175, 80); /* var(--color-success) - Green */
+    border-color: rgb(255, 215, 0); /* var(--color-accent) - Gold */
+}
+
+/* Status Text */
+.status-text {
+    font-size: 32px;
+    color: rgb(255, 255, 255); /* var(--color-text) */
+    margin-bottom: 20px;
+    -unity-text-align: middle-center;
+    -unity-text-outline-width: 1px;
+    -unity-text-outline-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Player Count - Big and Bold */
+.player-count {
+    font-size: 80px;
+    color: rgb(255, 215, 0); /* var(--color-accent) - Gold */
+    font-weight: bold;
+    margin-bottom: 10px;
+    -unity-text-align: middle-center;
+    -unity-text-outline-width: 2px;
+    -unity-text-outline-color: rgba(0, 0, 0, 0.8);
+    text-shadow: 2px 3px 0 rgba(0, 0, 0, 0.6);
+}
+
+/* Search Time */
+.search-time {
+    font-size: 28px;
+    color: rgb(176, 176, 176); /* var(--color-text-muted) */
+    margin-bottom: 40px;
+    -unity-text-align: middle-center;
+}
+
+/* Player List */
+.player-list {
+    width: 500px;
+    min-height: 200px;
+    margin-bottom: 30px;
+    background-color: rgba(0, 0, 0, 0.7); /* Matches .card */
+    border-radius: 15px; /* var(--border-radius-lg) */
+    padding: 20px;
+    border-width: 2px;
+    border-color: rgba(255, 154, 60, 0.3);
+}
+
+/* Cancel Button - Matches danger-button style */
+.cancel-button {
+    width: 200px;
+    height: 50px;
+    font-size: 20px;
+    background-color: rgb(244, 67, 54); /* var(--color-danger) */
+    color: white;
+    border-radius: 25px; /* Rounded like primary-button */
+    border-width: 0;
+    transition-property: scale;
+    transition-duration: 0.1s;
+}
+
+.cancel-button:hover {
+    background-color: rgb(255, 82, 82);
+}
+
+.cancel-button:active {
+    scale: 0.92;
+}

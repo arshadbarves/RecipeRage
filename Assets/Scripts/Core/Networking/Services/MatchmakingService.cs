@@ -23,18 +23,12 @@ namespace Core.Networking.Services
         public event Action<string> OnMatchmakingFailed;
         public event Action<int, int> OnPlayersFound;
         public event Action<LobbyInfo> OnMatchFound;
-        public event Action<MatchmakingState> OnStateChanged;
         
         #endregion
         
         #region Properties
         
-        public bool IsSearching => CurrentState != MatchmakingState.Idle && 
-                                   CurrentState != MatchmakingState.Cancelled && 
-                                   CurrentState != MatchmakingState.Failed;
-        
-        public MatchmakingState CurrentState { get; private set; } = MatchmakingState.Idle;
-        public float SearchTime { get; private set; }
+        public bool IsSearching { get; private set; }
         public int PlayersFound { get; private set; }
         public int RequiredPlayers { get; private set; }
         
@@ -44,6 +38,7 @@ namespace Core.Networking.Services
         
         private ILobbyManager _lobbyManager;
         private EOSLobbyManager _eosLobbyManager;
+        private Bot.BotManager _botManager;
         private bool _isInitialized;
         
         // Matchmaking state
@@ -51,7 +46,7 @@ namespace Core.Networking.Services
         private int _currentTeamSize;
         private int _partySize;
         private float _searchStartTime;
-        private const float SEARCH_TIMEOUT = 60f; // 60 seconds timeout
+        private bool _hasFilledWithBots;
         
         // Search handle
         private LobbySearch _currentSearch;
@@ -67,6 +62,7 @@ namespace Core.Networking.Services
         {
             _lobbyManager = lobbyManager ?? throw new ArgumentNullException(nameof(lobbyManager));
             _eosLobbyManager = eosLobbyManager ?? throw new ArgumentNullException(nameof(eosLobbyManager));
+            _botManager = new Bot.BotManager();
         }
         
         /// <summary>
@@ -110,10 +106,14 @@ namespace Core.Networking.Services
             _partySize = _lobbyManager.CurrentPartyLobby?.CurrentPlayers ?? 1;
             RequiredPlayers = teamSize * 2; // e.g., 4v4 = 8 total players
             PlayersFound = _partySize;
+            _hasFilledWithBots = false;
+            
+            // Clear any previous bots
+            _botManager.ClearBots();
             
             Debug.Log($"[MatchmakingService] Starting matchmaking: Mode={gameMode}, TeamSize={teamSize}, PartySize={_partySize}");
             
-            ChangeState(MatchmakingState.Searching);
+            IsSearching = true;
             _searchStartTime = Time.time;
             
             OnMatchmakingStarted?.Invoke();
@@ -159,7 +159,7 @@ namespace Core.Networking.Services
                 }
             }
             
-            ChangeState(MatchmakingState.Cancelled);
+            IsSearching = false;
             OnMatchmakingCancelled?.Invoke();
             
             // Reset state
@@ -209,8 +209,6 @@ namespace Core.Networking.Services
         public void CreateAndWaitForPlayers(GameMode gameMode, int teamSize)
         {
             Debug.Log($"[MatchmakingService] Creating match lobby and waiting for players");
-            
-            ChangeState(MatchmakingState.CreatingLobby);
             
             // Create match lobby configuration
             var config = new LobbyConfig
@@ -351,7 +349,7 @@ namespace Core.Networking.Services
             if (availableSlots >= _partySize)
             {
                 // Join this lobby
-                ChangeState(MatchmakingState.MatchFound);
+                Debug.Log($"[MatchmakingService] Joining lobby with sufficient space");
                 
                 // Subscribe to join event
                 _lobbyManager.OnMatchLobbyJoined += OnMatchLobbyJoinedForMatchmaking;
@@ -400,8 +398,6 @@ namespace Core.Networking.Services
             
             Debug.Log($"[MatchmakingService] Match lobby created: {lobbyInfo.LobbyId}");
             
-            ChangeState(MatchmakingState.WaitingForPlayers);
-            
             // Subscribe to lobby updates to track when it fills
             _lobbyManager.OnMatchLobbyUpdated += OnMatchLobbyUpdatedDuringMatchmaking;
             
@@ -428,8 +424,6 @@ namespace Core.Networking.Services
             }
             
             Debug.Log($"[MatchmakingService] Joined match lobby: {lobbyInfo.LobbyId}");
-            
-            ChangeState(MatchmakingState.WaitingForPlayers);
             
             // Subscribe to lobby updates
             _lobbyManager.OnMatchLobbyUpdated += OnMatchLobbyUpdatedDuringMatchmaking;
@@ -477,8 +471,6 @@ namespace Core.Networking.Services
             // Unsubscribe from updates
             _lobbyManager.OnMatchLobbyUpdated -= OnMatchLobbyUpdatedDuringMatchmaking;
             
-            ChangeState(MatchmakingState.Starting);
-            
             // Notify that match is found
             OnMatchFound?.Invoke(lobbyInfo);
             
@@ -493,40 +485,24 @@ namespace Core.Networking.Services
         {
             Debug.LogError($"[MatchmakingService] Matchmaking failed: {reason}");
             
-            ChangeState(MatchmakingState.Failed);
             OnMatchmakingFailed?.Invoke(reason);
-            
             ResetMatchmakingState();
         }
         
         #endregion
         
-        #region Private Methods - State Management
-        
-        /// <summary>
-        /// Change matchmaking state
-        /// </summary>
-        private void ChangeState(MatchmakingState newState)
-        {
-            if (CurrentState == newState)
-                return;
-            
-            var oldState = CurrentState;
-            CurrentState = newState;
-            
-            Debug.Log($"[MatchmakingService] State changed: {oldState} -> {newState}");
-            OnStateChanged?.Invoke(newState);
-        }
+        #region Private Methods - Cleanup
         
         /// <summary>
         /// Reset matchmaking state
         /// </summary>
         private void ResetMatchmakingState()
         {
-            SearchTime = 0f;
             PlayersFound = 0;
             RequiredPlayers = 0;
             _searchStartTime = 0f;
+            _hasFilledWithBots = false;
+            IsSearching = false;
             
             if (_currentSearch != null)
             {
@@ -538,30 +514,62 @@ namespace Core.Networking.Services
             _lobbyManager.OnMatchLobbyCreated -= OnMatchLobbyCreatedForMatchmaking;
             _lobbyManager.OnMatchLobbyJoined -= OnMatchLobbyJoinedForMatchmaking;
             _lobbyManager.OnMatchLobbyUpdated -= OnMatchLobbyUpdatedDuringMatchmaking;
-            
-            ChangeState(MatchmakingState.Idle);
         }
         
         #endregion
         
-        #region Update
+        #region Bot Filling
         
         /// <summary>
-        /// Update search time (should be called from MonoBehaviour Update)
+        /// Fill remaining slots with bots and start the match
+        /// Called by MatchmakingState when timeout occurs
         /// </summary>
-        public void Update()
+        public void FillMatchWithBots()
         {
-            if (!IsSearching)
+            if (_hasFilledWithBots)
                 return;
             
-            SearchTime = Time.time - _searchStartTime;
+            _hasFilledWithBots = true;
             
-            // Check for timeout
-            if (SearchTime >= SEARCH_TIMEOUT)
+            var matchLobby = _lobbyManager.CurrentMatchLobby;
+            if (matchLobby == null)
             {
-                Debug.LogWarning("[MatchmakingService] Search timeout reached");
-                HandleMatchmakingFailure("Search timeout");
+                Debug.LogError("[MatchmakingService] Cannot fill with bots - no match lobby");
+                HandleMatchmakingFailure("No match lobby to fill");
+                return;
             }
+            
+            int currentPlayers = matchLobby.CurrentPlayers;
+            int neededBots = RequiredPlayers - currentPlayers;
+            
+            if (neededBots <= 0)
+            {
+                Debug.Log("[MatchmakingService] Match already full, no bots needed");
+                HandleMatchReady(matchLobby);
+                return;
+            }
+            
+            Debug.Log($"[MatchmakingService] Creating {neededBots} bots to fill match ({currentPlayers}/{RequiredPlayers} players)");
+            
+            // Create bots
+            var bots = _botManager.CreateBots(neededBots, startingTeamId: 0);
+            
+            // Update player count
+            PlayersFound = RequiredPlayers;
+            OnPlayersFound?.Invoke(PlayersFound, RequiredPlayers);
+            
+            Debug.Log($"[MatchmakingService] Match filled with bots! Starting game with {currentPlayers} human players and {neededBots} bots");
+            
+            // Start the match
+            HandleMatchReady(matchLobby);
+        }
+        
+        /// <summary>
+        /// Get active bots in the current match
+        /// </summary>
+        public List<Bot.BotPlayer> GetActiveBots()
+        {
+            return _botManager.GetActiveBots();
         }
         
         #endregion
