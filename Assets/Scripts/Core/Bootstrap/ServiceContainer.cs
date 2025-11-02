@@ -11,9 +11,9 @@ using Core.Interfaces;
 using Core.Logging;
 using Core.Maintenance;
 using Core.Networking;
+using Core.Networking.Services;
 using Core.SaveSystem;
 using Core.State;
-using UI;
 using UI;
 using UnityEngine;
 
@@ -86,6 +86,22 @@ namespace Core.Bootstrap
             _stateManager ??= CreateStateManager();
 
         // ============================================
+        // NETWORK GAME SERVICES (Lazy - On-Demand)
+        // ============================================
+
+        private INetworkGameManager _networkGameManager;
+        public INetworkGameManager NetworkGameManager =>
+            _networkGameManager ??= CreateNetworkGameManager();
+
+        private IPlayerNetworkManager _playerNetworkManager;
+        public IPlayerNetworkManager PlayerNetworkManager =>
+            _playerNetworkManager ??= CreatePlayerNetworkManager();
+
+        private INetworkObjectPool _networkObjectPool;
+        public INetworkObjectPool NetworkObjectPool =>
+            _networkObjectPool ??= CreateNetworkObjectPool();
+
+        // ============================================
         // REGISTRATION METHODS (Eager Services)
         // ============================================
 
@@ -153,6 +169,24 @@ namespace Core.Bootstrap
             return new GameStateManager();
         }
 
+        private INetworkGameManager CreateNetworkGameManager()
+        {
+            Debug.Log("[ServiceContainer] Lazy-loading NetworkGameManager");
+            return new NetworkGameManager(LoggingService, PlayerNetworkManager);
+        }
+
+        private IPlayerNetworkManager CreatePlayerNetworkManager()
+        {
+            Debug.Log("[ServiceContainer] Lazy-loading PlayerNetworkManager");
+            return new PlayerNetworkManager(LoggingService);
+        }
+
+        private INetworkObjectPool CreateNetworkObjectPool()
+        {
+            Debug.Log("[ServiceContainer] Lazy-loading NetworkObjectPool");
+            return new NetworkObjectPool(LoggingService);
+        }
+
         // ============================================
         // LIFECYCLE MANAGEMENT
         // ============================================
@@ -173,6 +207,9 @@ namespace Core.Bootstrap
             DisposeService(ref _characterService, "CharacterService");
             DisposeService(ref _networkingServices, "NetworkingServices");
             DisposeService(ref _stateManager, "StateManager");
+            DisposeService(ref _networkGameManager, "NetworkGameManager");
+            DisposeService(ref _playerNetworkManager, "PlayerNetworkManager");
+            DisposeService(ref _networkObjectPool, "NetworkObjectPool");
 
             // Notify SaveService to switch to local storage
             SaveService?.OnUserLoggedOut();
@@ -231,6 +268,9 @@ namespace Core.Bootstrap
             DisposeService(ref _characterService, "CharacterService");
             DisposeService(ref _networkingServices, "NetworkingServices");
             DisposeService(ref _stateManager, "StateManager");
+            DisposeService(ref _networkGameManager, "NetworkGameManager");
+            DisposeService(ref _playerNetworkManager, "PlayerNetworkManager");
+            DisposeService(ref _networkObjectPool, "NetworkObjectPool");
 
             // Dispose eager services
             (SaveService as IDisposable)?.Dispose();

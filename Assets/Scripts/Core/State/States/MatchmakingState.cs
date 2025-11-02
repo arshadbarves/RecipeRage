@@ -15,13 +15,13 @@ namespace Core.State.States
     {
         private INetworkingServices _networkingServices;
         private bool _isMatchmakingInProgress;
-        
+
         // Timeout tracking
         private float _searchStartTime;
         private float _searchTime;
-        private const float SEARCH_TIMEOUT = 60f;
+        private const float SEARCH_TIMEOUT = 6f;
         private bool _hasFilledWithBots;
-        
+
         // Matchmaking parameters
         private GameMode _gameMode;
         private int _teamSize;
@@ -62,7 +62,7 @@ namespace Core.State.States
             {
                 // Hide main menu
                 uiService.HideScreen(UIScreenType.MainMenu, true);
-                
+
                 // Show matchmaking screen
                 uiService.ShowScreen(UIScreenType.Matchmaking, true, false);
                 LogMessage("Matchmaking screen shown");
@@ -76,7 +76,7 @@ namespace Core.State.States
 
             // Start matchmaking
             _networkingServices.MatchmakingService.FindMatch(_gameMode, _teamSize);
-            
+
             LogMessage("Matchmaking started - searching for players...");
         }
 

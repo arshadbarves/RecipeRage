@@ -11,6 +11,7 @@ namespace Core.Characters
     /// </summary>
     public class CharacterService : ICharacterService, IDisposable
     {
+        private const string CharactersPath = "ScriptableObjects/CharacterClasses";
         private readonly Dictionary<int, CharacterClass> _characters = new Dictionary<int, CharacterClass>();
         private readonly HashSet<int> _unlockedCharacters = new HashSet<int>();
         private CharacterClass _selectedCharacter;
@@ -28,14 +29,14 @@ namespace Core.Characters
         private void LoadCharacters()
         {
             // Load from Resources
-            CharacterClass[] characters = Resources.LoadAll<CharacterClass>("Characters");
-            
+            CharacterClass[] characters = Resources.LoadAll<CharacterClass>(CharactersPath);
+
             foreach (var character in characters)
             {
                 if (character != null)
                 {
                     _characters[character.Id] = character;
-                    
+
                     if (character.UnlockedByDefault)
                     {
                         _unlockedCharacters.Add(character.Id);
@@ -83,7 +84,7 @@ namespace Core.Characters
 
             _unlockedCharacters.Add(characterId);
             OnCharacterUnlocked?.Invoke(characterId);
-            
+
             Debug.Log($"[CharacterService] Unlocked: {_characters[characterId].DisplayName}");
             return true;
         }
@@ -91,14 +92,14 @@ namespace Core.Characters
         public bool SelectCharacter(int characterId)
         {
             if (!IsUnlocked(characterId)) return false;
-            
+
             var character = GetCharacter(characterId);
             if (character == null) return false;
             if (_selectedCharacter == character) return true;
 
             _selectedCharacter = character;
             OnCharacterSelected?.Invoke(character);
-            
+
             Debug.Log($"[CharacterService] Selected: {character.DisplayName}");
             return true;
         }

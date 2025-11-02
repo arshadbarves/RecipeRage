@@ -7,13 +7,32 @@ using UnityEngine;
 namespace Core.Characters
 {
     /// <summary>
-    /// Controls player movement and actions in RecipeRage.
+    /// Main player controller - orchestrates all player subsystems.
+    /// Follows Single Responsibility Principle by delegating to specialized controllers.
+    /// 
+    /// Responsibilities:
+    /// - Unity lifecycle management
+    /// - Component orchestration
+    /// - Network synchronization
+    /// - Character class management
     /// </summary>
     public class PlayerController : NetworkBehaviour
     {
+        #region Inspector Settings
+        
         [Header("Movement Settings")]
         [SerializeField] private float _baseMovementSpeed = 5f;
         [SerializeField] private float _rotationSpeed = 10f;
+        [SerializeField] private float _carryingSpeedMultiplier = 0.7f;
+
+        [Header("Input Smoothing")]
+        [SerializeField] private bool _enableInputSmoothing = true;
+        [SerializeField] private float _inputSmoothTime = 0.1f;
+
+        [Header("Network Prediction")]
+        [SerializeField] private bool _enableClientPrediction = true;
+        [SerializeField] private int _maxInputHistorySize = 60;
+        [SerializeField] private float _reconciliationThreshold = 0.1f;
 
         [Header("Interaction Settings")]
         [SerializeField] private float _interactionRadius = 1.5f;
@@ -22,464 +41,431 @@ namespace Core.Characters
 
         [Header("Character Settings")]
         [SerializeField] private int _characterClassId;
+        
+        #endregion
 
-
-
-        /// <summary>
-        /// The player's currently held object.
-        /// </summary>
-        private GameObject _heldObject;
-
-        /// <summary>
-        /// The player's input provider.
-        /// </summary>
-        private IInputProvider _inputProvider;
-
-        /// <summary>
-        /// The player's rigidbody.
-        /// </summary>
+        #region Components
+        
         private Rigidbody _rigidbody;
+        private IInputProvider _inputProvider;
+        
+        #endregion
 
-        /// <summary>
-        /// The player's current movement speed.
-        /// </summary>
-        public float MovementSpeed { get; set; }
+        #region Controllers (SOLID - Separated Responsibilities)
+        
+        private PlayerStateController _stateController;
+        private PlayerMovementController _movementController;
+        private PlayerInputHandler _inputHandler;
+        private PlayerNetworkController _networkController;
+        private PlayerInteractionController _interactionController;
+        
+        #endregion
 
-        /// <summary>
-        /// The player's current interaction speed modifier.
-        /// </summary>
-        public float InteractionSpeedModifier { get; set; } = 1f;
-
-        /// <summary>
-        /// The player's current carrying capacity.
-        /// </summary>
-        public int CarryingCapacity { get; set; } = 1;
-
-        /// <summary>
-        /// The player's character class.
-        /// </summary>
+        #region Character Data
+        
+        private GameObject _heldObject;
         public CharacterClass CharacterClass { get; private set; }
-
-        /// <summary>
-        /// The player's primary ability.
-        /// </summary>
         public CharacterAbility PrimaryAbility { get; private set; }
+        public float InteractionSpeedModifier { get; set; } = 1f;
+        public int CarryingCapacity { get; set; } = 1;
+        
+        #endregion
 
-        /// <summary>
-        /// Initialize the player controller.
-        /// </summary>
+        #region Events
+        
+        public event Action<IInteractable> OnInteraction;
+        public event Action<CharacterAbility> OnAbilityUsed;
+        public event Action<PlayerMovementState, PlayerMovementState> OnMovementStateChanged;
+        
+        #endregion
+
+        #region Unity Lifecycle
+        
         private void Awake()
         {
-            // Get components
             _rigidbody = GetComponent<Rigidbody>();
-
-            // Set default values
-            MovementSpeed = _baseMovementSpeed;
+            InitializeControllers();
         }
 
-        /// <summary>
-        /// Update the player controller.
-        /// </summary>
         private void Update()
         {
-            // Only update for the local player
-            if (!IsLocalPlayer)
-            {
-                return;
-            }
+            if (!IsLocalPlayer) return;
 
-            // Update ability
+            _inputProvider?.Update();
+            _inputHandler.UpdateSmoothing();
+            _stateController.UpdateState(_inputHandler.GetSmoothedInput(), IsHoldingObject());
+
             if (PrimaryAbility != null)
             {
                 PrimaryAbility.Update(Time.deltaTime);
             }
         }
 
-        /// <summary>
-        /// Event triggered when the player interacts with an object.
-        /// </summary>
-        public event Action<IInteractable> OnInteraction;
+        private void FixedUpdate()
+        {
+            if (!IsLocalPlayer) return;
 
-        /// <summary>
-        /// Event triggered when the player uses their ability.
-        /// </summary>
-        public event Action<CharacterAbility> OnAbilityUsed;
+            if (_enableClientPrediction && _networkController.IsPredictionEnabled)
+            {
+                ProcessMovementWithPrediction();
+            }
+            else
+            {
+                ProcessMovement();
+            }
+        }
+        
+        #endregion
 
-        /// <summary>
-        /// Set up the player controller when the network object spawns.
-        /// </summary>
+        #region Initialization
+        
+        private void InitializeControllers()
+        {
+            // State Controller
+            _stateController = new PlayerStateController();
+            _stateController.OnStateChanged += (prev, curr) => OnMovementStateChanged?.Invoke(prev, curr);
+
+            // Movement Controller
+            _movementController = new PlayerMovementController(
+                _rigidbody,
+                transform,
+                _baseMovementSpeed,
+                _rotationSpeed,
+                _carryingSpeedMultiplier
+            );
+
+            // Input Handler
+            _inputHandler = new PlayerInputHandler(_enableInputSmoothing, _inputSmoothTime);
+
+            // Network Controller
+            _networkController = new PlayerNetworkController(
+                _enableClientPrediction,
+                _maxInputHistorySize,
+                _reconciliationThreshold
+            );
+
+            // Interaction Controller
+            _interactionController = new PlayerInteractionController(
+                transform,
+                _interactionRadius,
+                _interactionLayer
+            );
+            
+            _interactionController.OnInteraction += (interactable) => OnInteraction?.Invoke(interactable);
+            _interactionController.OnAbilityUsed += (ability) => OnAbilityUsed?.Invoke(ability);
+        }
+        
+        #endregion
+
+        #region Network Lifecycle
+        
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
 
-            // Only set up input for the local player
             if (IsLocalPlayer)
             {
-                // Get the input provider - use factory to create platform-specific provider
-                _inputProvider = InputProviderFactory.CreateForPlatform();
-                if (_inputProvider == null)
-                {
-                    Debug.LogError("[PlayerController] Input provider not found");
-                    return;
-                }
-
-                // Subscribe to input events
-                _inputProvider.OnMovementInput += HandleMove;
-                _inputProvider.OnInteractionInput += HandleInteract;
-                _inputProvider.OnSpecialAbilityInput += HandleAbility;
-
-                Debug.Log("[PlayerController] Local player initialized");
+                SetupInput();
             }
 
-            // Character service will be accessed through GameBootstrap when needed
-
-            // Set up character class
             SetupCharacterClass();
         }
 
-        /// <summary>
-        /// Clean up when the network object despawns.
-        /// </summary>
         public override void OnNetworkDespawn()
         {
             base.OnNetworkDespawn();
 
-            // Unsubscribe from input events
             if (IsLocalPlayer && _inputProvider != null)
             {
-                _inputProvider.OnMovementInput -= HandleMove;
-                _inputProvider.OnInteractionInput -= HandleInteract;
-                _inputProvider.OnSpecialAbilityInput -= HandleAbility;
+                _inputProvider.OnMovementInput -= HandleMoveInput;
+                _inputProvider.OnInteractionInput -= HandleInteractInput;
+                _inputProvider.OnSpecialAbilityInput -= HandleAbilityInput;
+            }
+        }
+        
+        #endregion
+
+        #region Input Setup
+        
+        private void SetupInput()
+        {
+            _inputProvider = InputProviderFactory.CreateForPlatform();
+            if (_inputProvider == null)
+            {
+                Debug.LogError("[PlayerController] Input provider not found");
+                return;
+            }
+
+            _inputProvider.OnMovementInput += HandleMoveInput;
+            _inputProvider.OnInteractionInput += HandleInteractInput;
+            _inputProvider.OnSpecialAbilityInput += HandleAbilityInput;
+
+            Debug.Log("[PlayerController] Local player initialized");
+        }
+
+        private void HandleMoveInput(Vector2 input)
+        {
+            _inputHandler.SetRawInput(input);
+        }
+
+        private void HandleInteractInput()
+        {
+            if (!IsLocalPlayer) return;
+            
+            bool interacted = _interactionController.TryInteract(_stateController, this);
+            if (interacted)
+            {
+                InteractServerRpc();
             }
         }
 
-        /// <summary>
-        /// Set up the character class.
-        /// </summary>
+        private void HandleAbilityInput()
+        {
+            if (!IsLocalPlayer) return;
+            
+            bool used = _interactionController.TryUseAbility(PrimaryAbility, _stateController);
+            if (used)
+            {
+                UseAbilityServerRpc();
+            }
+        }
+        
+        #endregion
+
+        #region Movement Processing
+        
+        private void ProcessMovement()
+        {
+            Vector2 input = _inputHandler.GetSmoothedInput();
+            _movementController.ApplyMovement(input, _stateController.CurrentState, Time.fixedDeltaTime);
+        }
+
+        private void ProcessMovementWithPrediction()
+        {
+            Vector2 input = _inputHandler.GetSmoothedInput();
+            
+            // Create input data
+            PlayerInputData inputData = _networkController.CreateInputData(input);
+            
+            // Apply movement locally (prediction)
+            _movementController.ApplyMovement(input, _stateController.CurrentState, Time.fixedDeltaTime);
+            
+            // Store state
+            PlayerStateData stateData = _networkController.CreateStateData(
+                transform,
+                _rigidbody,
+                inputData.SequenceNumber
+            );
+            
+            _networkController.StoreHistory(inputData, stateData);
+            
+            // Send to server
+            SendInputToServerRpc(inputData);
+        }
+        
+        #endregion
+
+        #region Network RPCs
+        
+        [ServerRpc]
+        private void SendInputToServerRpc(PlayerInputData input)
+        {
+            // Server applies input
+            _movementController.ApplyMovement(input.Movement, _stateController.CurrentState, Time.fixedDeltaTime);
+            
+            // Send authoritative state back
+            PlayerStateData authState = _networkController.CreateStateData(transform, _rigidbody, input.SequenceNumber);
+            ReconcileStateClientRpc(authState);
+        }
+
+        [ClientRpc]
+        private void ReconcileStateClientRpc(PlayerStateData serverState)
+        {
+            if (IsServer) return;
+            
+            _networkController.ReconcileState(
+                serverState,
+                transform,
+                _rigidbody,
+                (input) => _movementController.ApplyMovement(input.Movement, _stateController.CurrentState, Time.fixedDeltaTime)
+            );
+        }
+
+        [ServerRpc]
+        private void InteractServerRpc()
+        {
+            InteractClientRpc();
+        }
+
+        [ClientRpc]
+        private void InteractClientRpc()
+        {
+            if (IsLocalPlayer) return;
+            // Play interaction effects
+        }
+
+        [ServerRpc]
+        private void UseAbilityServerRpc()
+        {
+            UseAbilityClientRpc();
+        }
+
+        [ClientRpc]
+        private void UseAbilityClientRpc()
+        {
+            if (IsLocalPlayer) return;
+            // Play ability effects
+        }
+        
+        #endregion
+
+        #region Character Class Management
+        
         private void SetupCharacterClass()
         {
-            var services = Core.Bootstrap.GameBootstrap.Services;
-            if (services == null || services.CharacterService == null)
+            var services = GameBootstrap.Services;
+            if (services?.CharacterService == null)
             {
                 Debug.LogError("[PlayerController] Character service not available");
                 return;
             }
 
-            // Get the character class
             CharacterClass = services.CharacterService.GetCharacter(_characterClassId);
             if (CharacterClass == null)
             {
-                // Use the default character class
                 CharacterClass = services.CharacterService.SelectedCharacter;
-                _characterClassId = CharacterClass != null ? CharacterClass.Id : 0;
+                _characterClassId = CharacterClass?.Id ?? 0;
             }
 
             if (CharacterClass != null)
             {
-                // Apply character class modifiers
-                MovementSpeed = _baseMovementSpeed * CharacterClass.MovementSpeedModifier;
+                _movementController.MovementSpeed = _baseMovementSpeed * CharacterClass.MovementSpeedModifier;
                 InteractionSpeedModifier = CharacterClass.InteractionSpeedModifier;
                 CarryingCapacity = Mathf.RoundToInt(CharacterClass.CarryingCapacityModifier);
-
-                // Create ability
                 PrimaryAbility = CharacterAbility.CreateAbility(CharacterClass.PrimaryAbilityType, CharacterClass, this);
-
-                Debug.Log($"[PlayerController] Character class set: {CharacterClass.DisplayName} ({CharacterClass.Id})");
-            }
-            else
-            {
-                Debug.LogError("[PlayerController] No character class available");
+                
+                Debug.Log($"[PlayerController] Character: {CharacterClass.DisplayName}");
             }
         }
 
-        /// <summary>
-        /// Set the character class.
-        /// </summary>
-        /// <param name="characterClassId"> The character class ID </param>
         public void SetCharacterClass(int characterClassId)
         {
-            var services = Core.Bootstrap.GameBootstrap.Services;
-            if (services == null || services.CharacterService == null)
-            {
-                Debug.LogError("[PlayerController] Character service not available");
-                return;
-            }
-
-            // Check if the character class is unlocked
-            if (!services.CharacterService.IsUnlocked(characterClassId))
-            {
-                Debug.LogError($"[PlayerController] Cannot set character class: not unlocked: {characterClassId}");
-                return;
-            }
-
-            // Set the character class ID
             _characterClassId = characterClassId;
-
-            // Set up the character class
             SetupCharacterClass();
-
-            // Sync to server
+            
             if (IsLocalPlayer)
             {
                 SetCharacterClassServerRpc(characterClassId);
             }
         }
 
-        /// <summary>
-        /// Set the character class on the server.
-        /// </summary>
-        /// <param name="characterClassId"> The character class ID </param>
         [ServerRpc]
         private void SetCharacterClassServerRpc(int characterClassId)
         {
-            // Set the character class ID
             _characterClassId = characterClassId;
-
-            // Notify clients
             SetCharacterClassClientRpc(characterClassId);
         }
 
-        /// <summary>
-        /// Set the character class on all clients.
-        /// </summary>
-        /// <param name="characterClassId"> The character class ID </param>
         [ClientRpc]
         private void SetCharacterClassClientRpc(int characterClassId)
         {
-            // Skip the local player (already set)
-            if (IsLocalPlayer)
-            {
-                return;
-            }
-
-            // Set the character class ID
+            if (IsLocalPlayer) return;
             _characterClassId = characterClassId;
-
-            // Set up the character class
             SetupCharacterClass();
         }
+        
+        #endregion
 
-        /// <summary>
-        /// Handle move input.
-        /// </summary>
-        /// <param name="moveInput"> The move input vector </param>
-        private void HandleMove(Vector2 moveInput)
-        {
-            if (!IsLocalPlayer || _rigidbody == null)
-            {
-                return;
-            }
-
-            // Convert input to world space movement
-            Vector3 movement = new Vector3(moveInput.x, 0f, moveInput.y) * MovementSpeed * Time.deltaTime;
-
-            // Move the player
-            transform.position += movement;
-
-            // Rotate the player to face the movement direction
-            if (movement != Vector3.zero)
-            {
-                var targetRotation = Quaternion.LookRotation(movement.normalized, Vector3.up);
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, _rotationSpeed * Time.deltaTime);
-            }
-        }
-
-        /// <summary>
-        /// Handle interact input.
-        /// </summary>
-        private void HandleInteract()
-        {
-            if (!IsLocalPlayer)
-            {
-                return;
-            }
-
-            // Find interactable objects in range
-            Collider[] colliders = Physics.OverlapSphere(transform.position, _interactionRadius, _interactionLayer);
-
-            // Find the closest interactable
-            float closestDistance = float.MaxValue;
-            IInteractable closestInteractable = null;
-
-            foreach (Collider collider in colliders)
-            {
-                IInteractable interactable = collider.GetComponent<IInteractable>();
-                if (interactable != null)
-                {
-                    float distance = Vector3.Distance(transform.position, collider.transform.position);
-                    if (distance < closestDistance)
-                    {
-                        closestDistance = distance;
-                        closestInteractable = interactable;
-                    }
-                }
-            }
-
-            // Interact with the closest interactable
-            if (closestInteractable != null)
-            {
-                closestInteractable.Interact(this);
-                OnInteraction?.Invoke(closestInteractable);
-
-                // Sync to server
-                InteractServerRpc();
-            }
-        }
-
-        /// <summary>
-        /// Handle ability input.
-        /// </summary>
-        private void HandleAbility()
-        {
-            if (!IsLocalPlayer || PrimaryAbility == null)
-            {
-                return;
-            }
-
-            // Activate the ability
-            if (PrimaryAbility.Activate())
-            {
-                OnAbilityUsed?.Invoke(PrimaryAbility);
-
-                // Sync to server
-                UseAbilityServerRpc();
-            }
-        }
-
-        /// <summary>
-        /// Notify the server that the player interacted.
-        /// </summary>
-        [ServerRpc]
-        private void InteractServerRpc()
-        {
-            // Notify clients
-            InteractClientRpc();
-        }
-
-        /// <summary>
-        /// Notify all clients that the player interacted.
-        /// </summary>
-        [ClientRpc]
-        private void InteractClientRpc()
-        {
-            // Skip the local player (already handled)
-            if (IsLocalPlayer)
-            {
-            }
-
-            // Play interaction animation or effects
-            // TODO: Implement interaction animation
-        }
-
-        /// <summary>
-        /// Notify the server that the player used their ability.
-        /// </summary>
-        [ServerRpc]
-        private void UseAbilityServerRpc()
-        {
-            // Notify clients
-            UseAbilityClientRpc();
-        }
-
-        /// <summary>
-        /// Notify all clients that the player used their ability.
-        /// </summary>
-        [ClientRpc]
-        private void UseAbilityClientRpc()
-        {
-            // Skip the local player (already handled)
-            if (IsLocalPlayer)
-            {
-            }
-
-            // Play ability animation or effects
-            // TODO: Implement ability animation
-        }
-
-        /// <summary>
-        /// Pick up an object.
-        /// </summary>
-        /// <param name="obj"> The object to pick up </param>
-        /// <returns> True if the object was picked up </returns>
+        #region Object Carrying
+        
         public bool PickUpObject(GameObject obj)
         {
-            if (_heldObject != null)
-            {
-                Debug.Log("[PlayerController] Cannot pick up object: already holding an object");
-                return false;
-            }
+            if (_heldObject != null || _holdPoint == null) return false;
 
-            if (_holdPoint == null)
-            {
-                Debug.LogError("[PlayerController] Cannot pick up object: hold point not set");
-                return false;
-            }
-
-            // Set the held object
             _heldObject = obj;
-
-            // Parent the object to the hold point
             obj.transform.SetParent(_holdPoint);
             obj.transform.localPosition = Vector3.zero;
             obj.transform.localRotation = Quaternion.identity;
 
-            // Disable physics
-            Rigidbody objRigidbody = obj.GetComponent<Rigidbody>();
+            var objRigidbody = obj.GetComponent<Rigidbody>();
             if (objRigidbody != null)
             {
                 objRigidbody.isKinematic = true;
             }
 
-            Debug.Log($"[PlayerController] Picked up object: {obj.name}");
-
             return true;
         }
 
-        /// <summary>
-        /// Drop the held object.
-        /// </summary>
-        /// <returns> The dropped object, or null if no object was held </returns>
         public GameObject DropObject()
         {
-            if (_heldObject == null)
-            {
-                return null;
-            }
+            if (_heldObject == null) return null;
 
             GameObject obj = _heldObject;
             _heldObject = null;
-
-            // Unparent the object
             obj.transform.SetParent(null);
 
-            // Enable physics
-            Rigidbody objRigidbody = obj.GetComponent<Rigidbody>();
+            var objRigidbody = obj.GetComponent<Rigidbody>();
             if (objRigidbody != null)
             {
                 objRigidbody.isKinematic = false;
             }
 
-            Debug.Log($"[PlayerController] Dropped object: {obj.name}");
-
             return obj;
         }
 
-        /// <summary>
-        /// Get the held object.
-        /// </summary>
-        /// <returns> The held object, or null if no object is held </returns>
-        public GameObject GetHeldObject()
+        public GameObject GetHeldObject() => _heldObject;
+        public bool IsHoldingObject() => _heldObject != null;
+        
+        #endregion
+
+        #region Public API
+        
+        // Movement State
+        public PlayerMovementState GetMovementState() => _stateController.CurrentState;
+        public void SetMovementState(PlayerMovementState state) => _stateController.SetState(state);
+        public bool IsMoving() => _stateController.IsMoving();
+        
+        // Movement Speed
+        public float GetCurrentSpeed() => _movementController.GetCurrentSpeed();
+        public Vector3 GetVelocity() => _movementController.GetVelocity();
+        public float MovementSpeed
         {
-            return _heldObject;
+            get => _movementController.MovementSpeed;
+            set => _movementController.MovementSpeed = value;
+        }
+        
+        public void Stun(float duration)
+        {
+            _stateController.SetState(PlayerMovementState.Stunned);
+            Invoke(nameof(ClearStun), duration);
         }
 
-        /// <summary>
-        /// Check if the player is holding an object.
-        /// </summary>
-        /// <returns> True if the player is holding an object </returns>
-        public bool IsHoldingObject()
+        private void ClearStun()
         {
-            return _heldObject != null;
+            if (_stateController.CurrentState == PlayerMovementState.Stunned)
+            {
+                _stateController.SetState(PlayerMovementState.Idle);
+            }
         }
+
+        public void SetPredictionEnabled(bool enabled)
+        {
+            _enableClientPrediction = enabled;
+        }
+
+        public void SetInputSmoothingEnabled(bool enabled)
+        {
+            _enableInputSmoothing = enabled;
+        }
+
+        public string GetDebugInfo()
+        {
+            return $"State: {_stateController.CurrentState}\n" +
+                   $"Speed: {GetCurrentSpeed():F2} m/s\n" +
+                   $"Input: {_inputHandler.GetSmoothedInput()}\n" +
+                   _networkController.GetDebugInfo();
+        }
+        
+        #endregion
     }
 }

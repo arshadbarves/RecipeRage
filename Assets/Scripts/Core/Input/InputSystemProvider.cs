@@ -13,63 +13,66 @@ namespace Core.Input
         /// Event triggered when movement input changes.
         /// </summary>
         public event Action<Vector2> OnMovementInput;
-        
+
         /// <summary>
         /// Event triggered when interaction input is detected.
         /// </summary>
         public event Action OnInteractionInput;
-        
+
         /// <summary>
         /// Event triggered when special ability input is detected.
         /// </summary>
         public event Action OnSpecialAbilityInput;
-        
+
         /// <summary>
         /// Event triggered when pause input is detected.
         /// </summary>
         public event Action OnPauseInput;
-        
+
         /// <summary>
         /// Flag to track if the input provider is enabled.
         /// </summary>
         private bool _isEnabled = false;
-        
+
         /// <summary>
         /// Current movement input vector.
         /// </summary>
         private Vector2 _movementInput = Vector2.zero;
-        
+
         /// <summary>
         /// Flag to track if interaction input is active.
         /// </summary>
         private bool _isInteractionActive = false;
-        
+
         /// <summary>
         /// Flag to track if special ability input is active.
         /// </summary>
         private bool _isSpecialAbilityActive = false;
-        
+
         /// <summary>
         /// Reference to the input actions asset.
         /// </summary>
         private PlayerInputActions _inputActions;
-        
+
         /// <summary>
         /// Initialize the input provider.
         /// </summary>
         public void Initialize()
         {
             Debug.Log("[InputSystemProvider] Initializing input system provider");
-            
+
             // Create the input actions asset
             _inputActions = new PlayerInputActions();
-            
+
             // Set up callbacks
             _inputActions.Player.SetCallbacks(this);
-            
+
+            // Enable the actions
+            _inputActions.Player.Enable();
+
             _isEnabled = true;
         }
-        
+
         /// <summary>
         /// Update the input provider.
         /// </summary>
@@ -77,7 +80,7 @@ namespace Core.Input
         {
             // No need to update, the Input System handles this automatically
         }
-        
+
         /// <summary>
         /// Enable the input provider.
         /// </summary>
@@ -87,11 +90,11 @@ namespace Core.Input
             {
                 return;
             }
-            
+
             _inputActions.Player.Enable();
             Debug.Log("[InputSystemProvider] Input system provider enabled");
         }
-        
+
         /// <summary>
         /// Disable the input provider.
         /// </summary>
@@ -101,7 +104,7 @@ namespace Core.Input
             ResetInput();
             Debug.Log("[InputSystemProvider] Input system provider disabled");
         }
-        
+
         /// <summary>
         /// Get the current movement input.
         /// </summary>
@@ -110,7 +113,7 @@ namespace Core.Input
         {
             return _movementInput;
         }
-        
+
         /// <summary>
         /// Check if interaction input is active.
         /// </summary>
@@ -119,7 +122,7 @@ namespace Core.Input
         {
             return _isInteractionActive;
         }
-        
+
         /// <summary>
         /// Check if special ability input is active.
         /// </summary>
@@ -128,7 +131,7 @@ namespace Core.Input
         {
             return _isSpecialAbilityActive;
         }
-        
+
         /// <summary>
         /// Reset all input to default values.
         /// </summary>
@@ -138,7 +141,7 @@ namespace Core.Input
             _isInteractionActive = false;
             _isSpecialAbilityActive = false;
         }
-        
+
         /// <summary>
         /// Handle move input from the Input System.
         /// </summary>
@@ -147,11 +150,11 @@ namespace Core.Input
         {
             // Get the input value
             _movementInput = context.ReadValue<Vector2>();
-            
+
             // Trigger the event
             OnMovementInput?.Invoke(_movementInput);
         }
-        
+
         /// <summary>
         /// Handle interact input from the Input System.
         /// </summary>
@@ -169,7 +172,7 @@ namespace Core.Input
                 _isInteractionActive = false;
             }
         }
-        
+
         /// <summary>
         /// Handle special ability input from the Input System.
         /// </summary>
@@ -187,7 +190,7 @@ namespace Core.Input
                 _isSpecialAbilityActive = false;
             }
         }
-        
+
         /// <summary>
         /// Handle pause input from the Input System.
         /// </summary>
