@@ -1,4 +1,5 @@
 using UnityEngine;
+using Core.Logging;
 
 namespace Core.Input
 {
@@ -24,7 +25,7 @@ namespace Core.Input
             
             if (_inputProvider == null)
             {
-                Debug.LogError("[InputDebugger] Failed to create input provider!");
+                GameLogger.LogError("Failed to create input provider!");
                 enabled = false;
                 return;
             }
@@ -45,7 +46,7 @@ namespace Core.Input
                 _inputProvider.OnSpecialAbilityInput += OnAbilityInput;
             }
 
-            Debug.Log("[InputDebugger] Started - watching for input events");
+            GameLogger.Log("Started - watching for input events");
         }
 
         private void Update()
@@ -63,24 +64,24 @@ namespace Core.Input
                 Vector2 movement = _inputProvider.GetMovementInput();
                 if (movement.sqrMagnitude > 0.01f)
                 {
-                    Debug.Log($"[InputDebugger] Current Movement: {movement} (magnitude: {movement.magnitude:F2})");
+                    GameLogger.Log($"Current Movement: {movement} (magnitude: {movement.magnitude:F2})");
                 }
             }
         }
 
         private void OnMovementInput(Vector2 input)
         {
-            Debug.Log($"[InputDebugger] Movement Event: {input} (magnitude: {input.magnitude:F2})");
+            GameLogger.Log($"Movement Event: {input} (magnitude: {input.magnitude:F2})");
         }
 
         private void OnInteractionInput()
         {
-            Debug.Log("[InputDebugger] Interaction Event!");
+            GameLogger.Log("Interaction Event!");
         }
 
         private void OnAbilityInput()
         {
-            Debug.Log("[InputDebugger] Ability Event!");
+            GameLogger.Log("Ability Event!");
         }
 
         private void OnDestroy()

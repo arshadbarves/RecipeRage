@@ -14,7 +14,7 @@ namespace Core.Networking.Services
         private readonly ILoggingService _logger;
         private readonly IPlayerNetworkManager _playerNetworkManager;
         private readonly INetworkGameManager _networkGameManager;
-        
+
         /// <summary>
         /// Initialize the connection handler.
         /// </summary>
@@ -30,15 +30,15 @@ namespace Core.Networking.Services
             _playerNetworkManager = playerNetworkManager;
             _networkGameManager = networkGameManager;
         }
-        
+
         /// <summary>
         /// Handle a client connection.
         /// </summary>
         /// <param name="clientId">The client ID that connected</param>
         public void OnClientConnected(ulong clientId)
         {
-            GameLogger.Network.Log($"[ConnectionHandler] Client {clientId} connected");
-            
+            GameLogger.Log($"[ConnectionHandler] Client {clientId} connected");
+
             // Spawn player if game is active
             if (_networkGameManager.IsGameActive)
             {
@@ -46,28 +46,28 @@ namespace Core.Networking.Services
                 _networkGameManager.SpawnPlayer(clientId, spawnPosition);
             }
         }
-        
+
         /// <summary>
         /// Handle a client disconnection.
         /// </summary>
         /// <param name="clientId">The client ID that disconnected</param>
         public void OnClientDisconnected(ulong clientId)
         {
-            GameLogger.Network.Log($"[ConnectionHandler] Client {clientId} disconnected");
-            
+            GameLogger.Log($"[ConnectionHandler] Client {clientId} disconnected");
+
             // Clean up player objects
             CleanupPlayerObjects(clientId);
-            
+
             // Unregister player
             if (_playerNetworkManager.IsPlayerRegistered(clientId))
             {
                 _playerNetworkManager.UnregisterPlayer(clientId);
             }
-            
+
             // Redistribute owned objects
             RedistributeOwnedObjects(clientId);
         }
-        
+
         /// <summary>
         /// Clean up all objects owned by a disconnected player.
         /// </summary>
@@ -78,20 +78,20 @@ namespace Core.Networking.Services
             {
                 return;
             }
-            
+
             List<NetworkObject> objectsToCleanup = new List<NetworkObject>();
-            
+
             // Find all objects owned by this client
             foreach (var kvp in NetworkManager.Singleton.SpawnManager.SpawnedObjects)
             {
                 NetworkObject networkObject = kvp.Value;
-                
+
                 if (networkObject.OwnerClientId == clientId)
                 {
                     objectsToCleanup.Add(networkObject);
                 }
             }
-            
+
             // Clean up objects
             foreach (NetworkObject networkObject in objectsToCleanup)
             {
@@ -107,10 +107,10 @@ namespace Core.Networking.Services
                     _networkGameManager.DespawnNetworkObject(networkObject);
                 }
             }
-            
-            GameLogger.Network.Log($"[ConnectionHandler] Cleaned up {objectsToCleanup.Count} objects for client {clientId}");
+
+            GameLogger.Log($"[ConnectionHandler] Cleaned up {objectsToCleanup.Count} objects for client {clientId}");
         }
-        
+
         /// <summary>
         /// Redistribute objects owned by a disconnected player.
         /// For example, ingredients being held should be dropped.
@@ -122,16 +122,16 @@ namespace Core.Networking.Services
             {
                 return;
             }
-            
+
             // In a more complex implementation, you might want to:
             // 1. Drop held ingredients at player's last position
             // 2. Release locked stations
             // 3. Cancel in-progress orders
             // 4. Transfer team ownership
-            
-            GameLogger.Network.Log($"[ConnectionHandler] Redistributed objects for client {clientId}");
+
+            GameLogger.Log($"[ConnectionHandler] Redistributed objects for client {clientId}");
         }
-        
+
         /// <summary>
         /// Get a spawn position for a player.
         /// </summary>
@@ -144,7 +144,7 @@ namespace Core.Networking.Services
             int playerCount = _playerNetworkManager.GetPlayerCount();
             float angle = (playerCount * 90f) * Mathf.Deg2Rad;
             float radius = 5f;
-            
+
             return new Vector3(
                 Mathf.Cos(angle) * radius,
                 0f,

@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Core.Logging;
 
 namespace Core.Input
 {
@@ -59,7 +60,7 @@ namespace Core.Input
         /// </summary>
         public void Initialize()
         {
-            Debug.Log("[InputSystemProvider] Initializing input system provider");
+            GameLogger.Log("Initializing input system provider");
 
             // Create the input actions asset
             _inputActions = new PlayerInputActions();
@@ -92,7 +93,7 @@ namespace Core.Input
             }
 
             _inputActions.Player.Enable();
-            Debug.Log("[InputSystemProvider] Input system provider enabled");
+            GameLogger.Log("Input system provider enabled");
         }
 
         /// <summary>
@@ -102,7 +103,7 @@ namespace Core.Input
         {
             _inputActions.Player.Disable();
             ResetInput();
-            Debug.Log("[InputSystemProvider] Input system provider disabled");
+            GameLogger.Log("Input system provider disabled");
         }
 
         /// <summary>

@@ -5,6 +5,7 @@ using Gameplay.Scoring;
 using UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Core.Logging;
 
 namespace Core.State.States
 {
@@ -41,7 +42,7 @@ namespace Core.State.States
             {
                 // Start the current game mode if available
                 // Note: GameModeService interface may need StartCurrentGameMode method
-                Debug.Log("[GameplayState] Game mode service initialized");
+                GameLogger.Log("Game mode service initialized");
             }
 
             // Initialize the order system
@@ -65,10 +66,10 @@ namespace Core.State.States
                 var bots = networkingServices.MatchmakingService.GetActiveBots();
                 if (bots.Count > 0)
                 {
-                    Debug.Log($"[GameplayState] Starting game with {bots.Count} bots");
+                    GameLogger.Log($"Starting game with {bots.Count} bots");
                     foreach (var bot in bots)
                     {
-                        Debug.Log($"[GameplayState] Bot: {bot.BotName} (Team {bot.TeamId})");
+                        GameLogger.Log($"Bot: {bot.BotName} (Team {bot.TeamId})");
                     }
                 }
             }
@@ -90,7 +91,7 @@ namespace Core.State.States
             if (gameModeService != null)
             {
                 // Stop the current game mode if available
-                Debug.Log("[GameplayState] Game mode service stopped");
+                GameLogger.Log("Game mode service stopped");
             }
 
             // Stop the order system

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine;
+using Core.Logging;
 
 namespace Core.Utilities
 {
@@ -23,7 +24,7 @@ namespace Core.Utilities
             
             if (task.IsFaulted)
             {
-                Debug.LogError($"Task failed with exception: {task.Exception}");
+                GameLogger.LogError($"Task failed with exception: {task.Exception}");
             }
         }
         
@@ -42,7 +43,7 @@ namespace Core.Utilities
             
             if (task.IsFaulted)
             {
-                Debug.LogError($"Task failed with exception: {task.Exception}");
+                GameLogger.LogError($"Task failed with exception: {task.Exception}");
             }
         }
     }

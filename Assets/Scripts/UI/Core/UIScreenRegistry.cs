@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Core.Logging;
 using UI;
 using UnityEngine;
 
@@ -31,7 +32,7 @@ namespace UI.Core
             ScanForScreenClasses();
 
             _isInitialized = true;
-            Debug.Log($"[UIScreenRegistry] Initialized with {_screenTypes.Count} screen types");
+            GameLogger.Log($"Initialized with {_screenTypes.Count} screen types");
         }
 
         /// <summary>
@@ -40,7 +41,7 @@ namespace UI.Core
         private static void ScanForScreenClasses()
         {
             Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            
+
             foreach (Assembly assembly in assemblies)
             {
                 try
@@ -60,7 +61,7 @@ namespace UI.Core
                 }
                 catch (ReflectionTypeLoadException ex)
                 {
-                    Debug.LogWarning($"[UIScreenRegistry] Could not load types from assembly {assembly.FullName}: {ex.Message}");
+                    GameLogger.LogWarning($"Could not load types from assembly {assembly.FullName}: {ex.Message}");
                 }
             }
         }
@@ -72,14 +73,14 @@ namespace UI.Core
         {
             if (!screenClass.IsSubclassOf(typeof(BaseUIScreen)))
             {
-                Debug.LogError($"[UIScreenRegistry] {screenClass.Name} must inherit from BaseUIScreen");
+                GameLogger.LogError($"{screenClass.Name} must inherit from BaseUIScreen");
                 return;
             }
 
             _screenTypes[screenType] = screenClass;
             _screenAttributes[screenType] = attribute ?? new UIScreenAttribute(screenType, UIScreenPriority.Menu);
 
-            Debug.Log($"[UIScreenRegistry] Registered {screenType} -> {screenClass.Name}");
+            GameLogger.Log($"Registered {screenType} -> {screenClass.Name}");
         }
 
         /// <summary>
@@ -89,7 +90,7 @@ namespace UI.Core
         {
             if (!_screenTypes.TryGetValue(screenType, out Type screenClass))
             {
-                Debug.LogError($"[UIScreenRegistry] No screen class registered for {screenType}");
+                GameLogger.LogError($"No screen class registered for {screenType}");
                 return null;
             }
 
@@ -100,7 +101,7 @@ namespace UI.Core
             }
             catch (Exception ex)
             {
-                Debug.LogError($"[UIScreenRegistry] Failed to create screen {screenType}: {ex.Message}");
+                GameLogger.LogError($"Failed to create screen {screenType}: {ex.Message}");
                 return null;
             }
         }

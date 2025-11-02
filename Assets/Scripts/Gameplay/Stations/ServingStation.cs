@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using Core.Logging;
 using Gameplay.Cooking;
+using Gameplay.Scoring;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -7,6 +9,7 @@ namespace Gameplay.Stations
 {
     /// <summary>
     /// A station for serving completed dishes to fulfill orders.
+    /// Integrates with NetworkScoreManager for score tracking and IDishValidator for validation.
     /// </summary>
     public class ServingStation : CookingStation
     {
@@ -16,6 +19,21 @@ namespace Gameplay.Stations
         [SerializeField] private GameObject _failureVisual;
         [SerializeField] private AudioClip _successSound;
         [SerializeField] private AudioClip _failureSound;
+
+        /// <summary>
+        /// Network score manager for tracking scores.
+        /// </summary>
+        private NetworkScoreManager _scoreManager;
+
+        /// <summary>
+        /// Dish validator for validating completed dishes.
+        /// </summary>
+        private IDishValidator _validator;
+
+        /// <summary>
+        /// Round timer for time bonus calculation.
+        /// </summary>
+        private RoundTimer _roundTimer;
 
         /// <summary>
         /// Initialize the serving station.
@@ -32,6 +50,19 @@ namespace Gameplay.Stations
             {
                 _orderManager = FindFirstObjectByType<OrderManager>();
             }
+
+            // Find network score manager
+            _scoreManager = FindFirstObjectByType<NetworkScoreManager>();
+            if (_scoreManager == null)
+            {
+                GameLogger.LogWarning("NetworkScoreManager not found. Scoring will not work.");
+            }
+
+            // Create dish validator (using standard validation strategy)
+            _validator = new StandardDishValidator();
+
+            // Find round timer
+            _roundTimer = FindFirstObjectByType<RoundTimer>();
         }
 
         /// <summary>
@@ -41,12 +72,13 @@ namespace Gameplay.Stations
         /// <returns>True if the ingredient can be processed</returns>
         protected override bool CanProcessIngredient(IngredientItem ingredientItem)
         {
-            // Only accept ingredients (in a real implementation, we would check if it's a completed dish)
+            // Accept plates with assembled dishes or individual ingredients
+            // In a full implementation, you'd only accept completed plates
             return ingredientItem != null;
         }
 
         /// <summary>
-        /// Process the ingredient.
+        /// Process the ingredient (serve the dish).
         /// </summary>
         /// <param name="ingredientItem">The ingredient to process</param>
         /// <returns>True if the ingredient was processed successfully</returns>
@@ -57,42 +89,132 @@ namespace Gameplay.Stations
                 return false;
             }
 
-            // We don't actually need to check the dish type here since CanProcessIngredient already does that
-            // Just complete the processing
+            // Try to get plate component (for assembled dishes)
+            PlateItem plate = ingredientItem.GetComponent<PlateItem>();
 
-            // Try to find a matching order
-            bool orderFound = false;
+            bool orderCompleted = false;
+            int scoreAwarded = 0;
+            ulong playerId = ingredientItem.GetComponent<NetworkObject>()?.OwnerClientId ?? 0;
 
-            // Get all active orders
-            IReadOnlyList<RecipeOrderState> activeOrders = _orderManager.GetActiveOrders();
-
-            foreach (RecipeOrderState order in activeOrders)
+            if (plate != null && plate.IngredientCount > 0)
             {
-                // Check if the ingredient matches what's needed for the order
-                // In a real implementation, you would check if the ingredient matches the recipe
-                // For now, we'll just assume any dish can complete any order
+                // This is an assembled dish on a plate
+                orderCompleted = ProcessPlate(plate, playerId, out scoreAwarded);
+            }
+            else
+            {
+                // This is a single ingredient (simplified serving)
+                orderCompleted = ProcessSingleIngredient(ingredientItem, playerId, out scoreAwarded);
+            }
+
+            // Show visual feedback
+            if (orderCompleted)
+            {
+                ShowSuccessVisual();
+                GameLogger.Log($"Order completed! Player {playerId} earned {scoreAwarded} points");
+            }
+            else
+            {
+                ShowFailureVisual();
+                GameLogger.Log("Order failed - no matching order or invalid dish");
+            }
+
+            // Despawn the ingredient/plate
+            if (ingredientItem.NetworkObject != null && ingredientItem.NetworkObject.IsSpawned)
+            {
+                ingredientItem.NetworkObject.Despawn();
+            }
+
+            return orderCompleted;
+        }
+
+        /// <summary>
+        /// Process a plate with assembled ingredients.
+        /// </summary>
+        private bool ProcessPlate(PlateItem plate, ulong playerId, out int scoreAwarded)
+        {
+            scoreAwarded = 0;
+
+            // Get the recipe for this plate
+            Recipe recipe = _orderManager?.GetRecipeById(plate.RecipeId);
+            if (recipe == null)
+            {
+                GameLogger.LogWarning($"Recipe not found for plate (RecipeId: {plate.RecipeId})");
+                return false;
+            }
+
+            // Get ingredients on the plate
+            List<IngredientItem> ingredients = plate.GetIngredients();
+
+            // Validate the dish
+            if (_validator != null && _validator.ValidateDish(ingredients, recipe))
+            {
+                // Calculate score with time bonus
+                float timeRemaining = _roundTimer != null ? _roundTimer.TimeRemaining : 0f;
+                scoreAwarded = _validator.CalculateScore(ingredients, recipe, timeRemaining);
+
+                // Get dish quality for bonus scoring
+                DishQuality quality = _validator.GetDishQuality(ingredients, recipe);
+
+                // Add score via NetworkScoreManager
+                if (_scoreManager != null)
+                {
+                    ScoreReason reason = quality == DishQuality.Perfect
+                        ? ScoreReason.PerfectDish
+                        : ScoreReason.DishCompleted;
+
+                    _scoreManager.AddScoreServerRpc(playerId, scoreAwarded, reason);
+                }
 
                 // Complete the order
-                _orderManager.CompleteOrder(order.OrderId);
-                orderFound = true;
+                if (_orderManager != null)
+                {
+                    _orderManager.CompleteOrder(plate.RecipeId);
+                }
 
-                // Show success visual
-                ShowSuccessVisual();
-
-                break;
+                return true;
             }
 
-            // If no matching order was found
-            if (!orderFound)
+            return false;
+        }
+
+        /// <summary>
+        /// Process a single ingredient (simplified serving).
+        /// </summary>
+        private bool ProcessSingleIngredient(IngredientItem ingredientItem, ulong playerId, out int scoreAwarded)
+        {
+            scoreAwarded = 0;
+
+            // Get all active orders
+            IReadOnlyList<RecipeOrderState> activeOrders = _orderManager?.GetActiveOrders();
+            if (activeOrders == null || activeOrders.Count == 0)
             {
-                // Show failure visual
-                ShowFailureVisual();
+                return false;
             }
 
-            // Destroy the ingredient
-            ingredientItem.NetworkObject.Despawn();
+            // Try to match with any order (simplified logic)
+            foreach (RecipeOrderState order in activeOrders)
+            {
+                Recipe recipe = _orderManager.GetRecipeById(order.RecipeId);
+                if (recipe != null)
+                {
+                    // Award base points for any ingredient served
+                    scoreAwarded = recipe.PointValue / 2; // Half points for incomplete dish
 
-            return true;
+                    // Add score
+                    if (_scoreManager != null)
+                    {
+                        _scoreManager.AddScoreServerRpc(playerId, scoreAwarded, ScoreReason.DishCompleted);
+                    }
+
+                    // Complete the order
+                    _orderManager.CompleteOrder(order.OrderId);
+
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>

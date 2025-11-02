@@ -3,6 +3,7 @@ using Core.Animation;
 using Core.Authentication;
 using Core.Bootstrap;
 using Core.Events;
+using Core.Logging;
 using Core.Utilities;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
@@ -48,7 +49,7 @@ namespace UI.Screens
 
             _loginCard.style.translate = new Translate(new Length(100, LengthUnit.Percent), 0);
 
-            Debug.Log("[LoginScreen] Initialized");
+            GameLogger.Log("Initialized");
         }
 
         protected override void OnShow()
@@ -154,23 +155,23 @@ namespace UI.Screens
             // Log missing elements for debugging
             if (_loginCard == null)
             {
-                Debug.LogWarning("[LoginScreen] login-card not found");
+                GameLogger.LogWarning("login-card not found");
             }
             if (_facebookLoginButton == null)
             {
-                Debug.LogWarning("[LoginScreen] facebook-login-button not found");
+                GameLogger.LogWarning("facebook-login-button not found");
             }
             if (_guestLoginButton == null)
             {
-                Debug.LogWarning("[LoginScreen] guest-login-button not found");
+                GameLogger.LogWarning("guest-login-button not found");
             }
             if (_statusText == null)
             {
-                Debug.LogWarning("[LoginScreen] status-text not found");
+                GameLogger.LogWarning("status-text not found");
             }
             if (_loadingIndicator == null)
             {
-                Debug.LogWarning("[LoginScreen] loading-indicator not found");
+                GameLogger.LogWarning("loading-indicator not found");
             }
         }
 
@@ -191,7 +192,7 @@ namespace UI.Screens
         {
             if (GameBootstrap.Services.AuthenticationService == null)
             {
-                Debug.LogWarning("[LoginScreen] AuthenticationManager not available yet, will retry when needed");
+                GameLogger.LogWarning("AuthenticationManager not available yet, will retry when needed");
                 return;
             }
 
@@ -204,7 +205,7 @@ namespace UI.Screens
                 eventBus.Subscribe<LoginStatusChangedEvent>(HandleStatusChanged);
             }
 
-            Debug.Log("[LoginScreen] Connected to EventBus");
+            GameLogger.Log("Connected to EventBus");
         }
 
         private void UpdateUI()
@@ -234,7 +235,7 @@ namespace UI.Screens
                 _statusText.text = message;
             }
 
-            Debug.Log($"[LoginScreen] {message}");
+            GameLogger.Log($"{message}");
         }
 
         #endregion
@@ -250,7 +251,7 @@ namespace UI.Screens
                 return;
             }
 
-            Debug.Log("[LoginScreen] Facebook login clicked");
+            GameLogger.Log("Facebook login clicked");
 
             _isLoggingIn = true;
             UpdateUI();
@@ -266,7 +267,7 @@ namespace UI.Screens
                 return;
             }
 
-            Debug.Log("[LoginScreen] Guest login clicked");
+            GameLogger.Log("Guest login clicked");
 
             _isLoggingIn = true;
             UpdateUI();
@@ -291,7 +292,7 @@ namespace UI.Screens
                     {
                         if (Time.time - startTime > timeout.TotalSeconds)
                         {
-                            Debug.LogError("[LoginScreen] AuthenticationService not available!");
+                            GameLogger.LogError("AuthenticationService not available!");
                             UpdateStatus("Authentication system not available");
                             _isLoggingIn = false;
                             UpdateUI();
@@ -310,7 +311,7 @@ namespace UI.Screens
             }
             catch (Exception ex)
             {
-                Debug.LogError($"[LoginScreen] Facebook login error: {ex.Message}");
+                GameLogger.LogError($"Facebook login error: {ex.Message}");
                 UpdateStatus("Login failed");
                 _isLoggingIn = false;
                 UpdateUI();
@@ -333,7 +334,7 @@ namespace UI.Screens
                     {
                         if (Time.time - startTime > timeout.TotalSeconds)
                         {
-                            Debug.LogError("[LoginScreen] AuthenticationService not available!");
+                            GameLogger.LogError("AuthenticationService not available!");
                             UpdateStatus("Authentication system not available");
                             _isLoggingIn = false;
                             UpdateUI();
@@ -352,7 +353,7 @@ namespace UI.Screens
             }
             catch (Exception ex)
             {
-                Debug.LogError($"[LoginScreen] Guest login error: {ex.Message}");
+                GameLogger.LogError($"Guest login error: {ex.Message}");
                 UpdateStatus("Login failed");
                 _isLoggingIn = false;
                 UpdateUI();
@@ -368,7 +369,7 @@ namespace UI.Screens
             _isLoggingIn = false;
             UpdateUI();
 
-            Debug.Log($"[LoginScreen] Login successful for user: {evt.UserId}");
+            GameLogger.Log($"Login successful for user: {evt.UserId}");
 
             // Hide login screen after a short delay
             HideAfterDelayAsync(1f).Forget();
@@ -379,7 +380,7 @@ namespace UI.Screens
             _isLoggingIn = false;
             UpdateUI();
 
-            Debug.LogWarning($"[LoginScreen] Login failed: {evt.Error}");
+            GameLogger.LogWarning($"Login failed: {evt.Error}");
         }
 
         private void HandleStatusChanged(LoginStatusChangedEvent evt)

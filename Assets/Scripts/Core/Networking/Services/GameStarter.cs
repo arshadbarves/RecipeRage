@@ -1,4 +1,5 @@
 using Core.Bootstrap;
+using Core.Logging;
 using Core.State.States;
 using Epic.OnlineServices;
 using PlayEveryWare.EpicOnlineServices;
@@ -35,13 +36,13 @@ namespace Core.Networking.Services
 
             if (matchLobby == null)
             {
-                Debug.LogError("[GameStarter] No match lobby found!");
+                GameLogger.LogError("No match lobby found!");
                 return;
             }
 
             if (NetworkManager.Singleton == null)
             {
-                Debug.LogError("[GameStarter] NetworkManager not found in scene!");
+                GameLogger.LogError("NetworkManager not found in scene!");
                 return;
             }
 
@@ -49,7 +50,7 @@ namespace Core.Networking.Services
             var localUserId = EOSManager.Instance.GetProductUserId();
             bool isHost = matchLobby.IsOwner(localUserId);
 
-            Debug.Log($"[GameStarter] Starting game - IsHost: {isHost}, Lobby: {matchLobby.LobbyId}");
+            GameLogger.Log($"Starting game - IsHost: {isHost}, Lobby: {matchLobby.LobbyId}");
 
             if (isHost)
             {
@@ -66,19 +67,19 @@ namespace Core.Networking.Services
         /// </summary>
         private void StartAsHost()
         {
-            Debug.Log("[GameStarter] Starting as host...");
+            GameLogger.Log("Starting as host...");
 
             // Start Unity Netcode as host
             bool success = NetworkManager.Singleton.StartHost();
 
             if (success)
             {
-                Debug.Log("[GameStarter] Successfully started as host");
+                GameLogger.Log("Successfully started as host");
                 OnGameStarted(true);
             }
             else
             {
-                Debug.LogError("[GameStarter] Failed to start as host");
+                GameLogger.LogError("Failed to start as host");
                 OnGameStartFailed("Failed to start host");
             }
         }
@@ -88,14 +89,14 @@ namespace Core.Networking.Services
         /// </summary>
         private void StartAsClient(ProductUserId hostUserId)
         {
-            Debug.Log($"[GameStarter] Starting as client, connecting to host: {hostUserId}");
+            GameLogger.Log($"Starting as client, connecting to host: {hostUserId}");
 
             // Get EOSTransport component
             var transport = NetworkManager.Singleton.GetComponent<PlayEveryWare.EpicOnlineServices.Samples.Network.EOSTransport>();
 
             if (transport == null)
             {
-                Debug.LogError("[GameStarter] EOSTransport component not found on NetworkManager!");
+                GameLogger.LogError("EOSTransport component not found on NetworkManager!");
                 OnGameStartFailed("EOSTransport not configured");
                 return;
             }
@@ -108,12 +109,12 @@ namespace Core.Networking.Services
 
             if (success)
             {
-                Debug.Log("[GameStarter] Successfully started as client");
+                GameLogger.Log("Successfully started as client");
                 OnGameStarted(false);
             }
             else
             {
-                Debug.LogError("[GameStarter] Failed to start as client");
+                GameLogger.LogError("Failed to start as client");
                 OnGameStartFailed("Failed to start client");
             }
         }
@@ -123,7 +124,7 @@ namespace Core.Networking.Services
         /// </summary>
         public void EndGame()
         {
-            Debug.Log("[GameStarter] Ending game...");
+            GameLogger.Log("Ending game...");
 
             _isGameActive = false;
 
@@ -134,7 +135,7 @@ namespace Core.Networking.Services
             {
                 // Shutdown Unity Netcode
                 NetworkManager.Singleton.Shutdown();
-                Debug.Log("[GameStarter] NetworkManager shutdown");
+                GameLogger.Log("NetworkManager shutdown");
             }
 
             // Leave match lobby and return to party
@@ -146,7 +147,7 @@ namespace Core.Networking.Services
         /// </summary>
         private void ReturnToLobby()
         {
-            Debug.Log("[GameStarter] Returning to lobby...");
+            GameLogger.Log("Returning to lobby...");
 
             // Leave match lobby
             _networkingServices.LobbyManager.LeaveMatchLobby();
@@ -154,7 +155,7 @@ namespace Core.Networking.Services
             // Check if player is in a party
             if (_networkingServices.LobbyManager.IsInParty)
             {
-                Debug.Log("[GameStarter] Returning to party lobby");
+                GameLogger.Log("Returning to party lobby");
 
                 // Show party lobby UI
                 var uiService = GameBootstrap.Services?.UIService;
@@ -163,7 +164,7 @@ namespace Core.Networking.Services
             }
             else
             {
-                Debug.Log("[GameStarter] Returning to main menu");
+                GameLogger.Log("Returning to main menu");
 
                 // Show main menu
                 var uiService = GameBootstrap.Services?.UIService;
@@ -176,7 +177,7 @@ namespace Core.Networking.Services
         /// </summary>
         private void OnGameStarted(bool isHost)
         {
-            Debug.Log($"[GameStarter] Game started successfully - IsHost: {isHost}");
+            GameLogger.Log($"Game started successfully - IsHost: {isHost}");
 
             _isGameActive = true;
 
@@ -224,7 +225,7 @@ namespace Core.Networking.Services
             // Host disconnected?
             if (clientId == NetworkManager.ServerClientId)
             {
-                Debug.LogWarning("[GameStarter] Host disconnected - ending match for all players");
+                GameLogger.LogWarning("Host disconnected - ending match for all players");
 
                 // Show message to players
                 var uiService = GameBootstrap.Services?.UIService;
@@ -236,7 +237,7 @@ namespace Core.Networking.Services
             }
             else
             {
-                Debug.Log($"[GameStarter] Client {clientId} disconnected");
+                GameLogger.Log($"Client {clientId} disconnected");
                 // Client disconnect handled by game logic (remove player, etc.)
             }
         }
@@ -246,7 +247,7 @@ namespace Core.Networking.Services
         /// </summary>
         private void OnGameStartFailed(string reason)
         {
-            Debug.LogError($"[GameStarter] Game start failed: {reason}");
+            GameLogger.LogError($"Game start failed: {reason}");
 
             // Show error message
             var uiService = GameBootstrap.Services?.UIService;

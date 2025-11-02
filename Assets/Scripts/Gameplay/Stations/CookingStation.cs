@@ -1,5 +1,6 @@
 using System;
 using Core.Characters;
+using Core.Logging;
 using Gameplay.Cooking;
 using Unity.Netcode;
 using UnityEngine;
@@ -18,57 +19,62 @@ namespace Gameplay.Stations
         [SerializeField] protected GameObject _progressBarPrefab;
         [SerializeField] protected AudioClip _startProcessingSound;
         [SerializeField] protected AudioClip _finishProcessingSound;
-        
+
         /// <summary>
         /// Event triggered when processing starts.
         /// </summary>
         public event Action<CookingStation, IngredientItem> OnProcessingStarted;
-        
+
         /// <summary>
         /// Event triggered when processing completes.
         /// </summary>
         public event Action<CookingStation, IngredientItem> OnProcessingCompleted;
-        
+
         /// <summary>
         /// Event triggered when processing is canceled.
         /// </summary>
         public event Action<CookingStation> OnProcessingCanceled;
-        
+
         /// <summary>
         /// The current ingredient being processed.
         /// </summary>
         protected IngredientItem _currentIngredient;
-        
+
         /// <summary>
         /// The current processing progress (0-1).
         /// </summary>
         protected float _processingProgress;
-        
+
         /// <summary>
         /// Whether the station is currently processing an ingredient.
         /// </summary>
         protected bool _isProcessing;
-        
+
         /// <summary>
         /// The progress bar UI.
         /// </summary>
         protected GameObject _progressBar;
-        
+
         /// <summary>
         /// The audio source for station sounds.
         /// </summary>
         protected AudioSource _audioSource;
-        
+
         /// <summary>
         /// The network variable for processing state.
         /// </summary>
         protected NetworkVariable<bool> _isProcessingNetVar = new NetworkVariable<bool>(false);
-        
+
         /// <summary>
         /// The network variable for processing progress.
         /// </summary>
         protected NetworkVariable<float> _processingProgressNetVar = new NetworkVariable<float>(0f);
-        
+
+        /// <summary>
+        /// The station network controller for managing station access.
+        /// </summary>
+        protected StationNetworkController _networkController;
+
         /// <summary>
         /// Initialize the cooking station.
         /// </summary>
@@ -80,7 +86,14 @@ namespace Gameplay.Stations
             {
                 _audioSource = gameObject.AddComponent<AudioSource>();
             }
-            
+
+            // Get network controller
+            _networkController = GetComponent<StationNetworkController>();
+            if (_networkController == null)
+            {
+                GameLogger.LogWarning($"{_stationName} is missing StationNetworkController component. Station locking will not work.");
+            }
+
             // Create progress bar if prefab is set
             if (_progressBarPrefab != null && _ingredientPlacementPoint != null)
             {
@@ -89,31 +102,31 @@ namespace Gameplay.Stations
                 _progressBar.SetActive(false);
             }
         }
-        
+
         /// <summary>
         /// Set up network variables when the network object spawns.
         /// </summary>
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
-            
+
             // Subscribe to network variable changes
             _isProcessingNetVar.OnValueChanged += OnIsProcessingChanged;
             _processingProgressNetVar.OnValueChanged += OnProcessingProgressChanged;
         }
-        
+
         /// <summary>
         /// Clean up when the network object despawns.
         /// </summary>
         public override void OnNetworkDespawn()
         {
             base.OnNetworkDespawn();
-            
+
             // Unsubscribe from network variable changes
             _isProcessingNetVar.OnValueChanged -= OnIsProcessingChanged;
             _processingProgressNetVar.OnValueChanged -= OnProcessingProgressChanged;
         }
-        
+
         /// <summary>
         /// Update the cooking station.
         /// </summary>
@@ -124,18 +137,18 @@ namespace Gameplay.Stations
             {
                 return;
             }
-            
+
             // Update processing progress
             _processingProgress += Time.deltaTime / _processingTime;
             _processingProgressNetVar.Value = _processingProgress;
-            
+
             // Check if processing is complete
             if (_processingProgress >= 1f)
             {
                 CompleteProcessing();
             }
         }
-        
+
         /// <summary>
         /// Handle interaction from a player.
         /// </summary>
@@ -148,23 +161,50 @@ namespace Gameplay.Stations
                 InteractServerRpc(player.NetworkObject);
                 return;
             }
-            
+
+            // Check if player can use this station (not locked by another player)
+            if (_networkController != null && !_networkController.CanPlayerUse(player.OwnerClientId))
+            {
+                GameLogger.Log($"{_stationName} is locked by another player");
+                return;
+            }
+
+            // Lock the station for this player
+            if (_networkController != null)
+            {
+                _networkController.RequestUseStationServerRpc(player.OwnerClientId);
+            }
+
             // If the player is holding an ingredient
             if (player.IsHoldingObject())
             {
                 GameObject heldObject = player.GetHeldObject();
                 IngredientItem ingredientItem = heldObject.GetComponent<IngredientItem>();
-                
+
                 if (ingredientItem != null && CanProcessIngredient(ingredientItem))
                 {
                     // Take the ingredient from the player
                     player.DropObject();
-                    
+
                     // Place the ingredient on the station
                     PlaceIngredient(ingredientItem);
-                    
+
                     // Start processing
                     StartProcessing(ingredientItem);
+
+                    // Update station state
+                    if (_networkController != null)
+                    {
+                        _networkController.SetState(StationState.Processing);
+                    }
+                }
+                else
+                {
+                    // Release station if ingredient can't be processed
+                    if (_networkController != null)
+                    {
+                        _networkController.ReleaseStationServerRpc(player.OwnerClientId);
+                    }
                 }
             }
             // If the station has a processed ingredient
@@ -174,10 +214,22 @@ namespace Gameplay.Stations
                 if (player.PickUpObject(_currentIngredient.gameObject))
                 {
                     _currentIngredient = null;
+
+                    // Update station state
+                    if (_networkController != null)
+                    {
+                        _networkController.SetState(StationState.Idle);
+                    }
                 }
             }
+
+            // Release the station lock
+            if (_networkController != null)
+            {
+                _networkController.ReleaseStationServerRpc(player.OwnerClientId);
+            }
         }
-        
+
         /// <summary>
         /// Get the interaction prompt text.
         /// </summary>
@@ -197,7 +249,7 @@ namespace Gameplay.Stations
                 return $"Use {_stationName}";
             }
         }
-        
+
         /// <summary>
         /// Check if the station can be interacted with.
         /// </summary>
@@ -210,40 +262,40 @@ namespace Gameplay.Stations
             {
                 return false;
             }
-            
+
             // If the player is holding an ingredient
             if (player.IsHoldingObject())
             {
                 GameObject heldObject = player.GetHeldObject();
                 IngredientItem ingredientItem = heldObject.GetComponent<IngredientItem>();
-                
+
                 // Check if the ingredient can be processed
                 if (ingredientItem != null)
                 {
                     return CanProcessIngredient(ingredientItem);
                 }
-                
+
                 return false;
             }
-            
+
             // If the station has a processed ingredient
             return _currentIngredient != null && !_isProcessing;
         }
-        
+
         /// <summary>
         /// Check if the ingredient can be processed by this station.
         /// </summary>
         /// <param name="ingredientItem">The ingredient to check</param>
         /// <returns>True if the ingredient can be processed</returns>
         protected abstract bool CanProcessIngredient(IngredientItem ingredientItem);
-        
+
         /// <summary>
         /// Process the ingredient.
         /// </summary>
         /// <param name="ingredientItem">The ingredient to process</param>
         /// <returns>True if the ingredient was processed</returns>
         protected abstract bool ProcessIngredient(IngredientItem ingredientItem);
-        
+
         /// <summary>
         /// Place an ingredient on the station.
         /// </summary>
@@ -254,16 +306,16 @@ namespace Gameplay.Stations
             {
                 return;
             }
-            
+
             // Place the ingredient at the placement point
             ingredientItem.transform.SetParent(_ingredientPlacementPoint);
             ingredientItem.transform.localPosition = Vector3.zero;
             ingredientItem.transform.localRotation = Quaternion.identity;
-            
+
             // Set the current ingredient
             _currentIngredient = ingredientItem;
         }
-        
+
         /// <summary>
         /// Start processing an ingredient.
         /// </summary>
@@ -274,29 +326,29 @@ namespace Gameplay.Stations
             {
                 return;
             }
-            
+
             // Set processing state
             _isProcessing = true;
             _isProcessingNetVar.Value = true;
             _processingProgress = 0f;
             _processingProgressNetVar.Value = 0f;
-            
+
             // Show progress bar
             if (_progressBar != null)
             {
                 _progressBar.SetActive(true);
             }
-            
+
             // Play sound
             if (_audioSource != null && _startProcessingSound != null)
             {
                 _audioSource.PlayOneShot(_startProcessingSound);
             }
-            
+
             // Trigger event
             OnProcessingStarted?.Invoke(this, ingredientItem);
         }
-        
+
         /// <summary>
         /// Complete processing an ingredient.
         /// </summary>
@@ -306,28 +358,34 @@ namespace Gameplay.Stations
             {
                 return;
             }
-            
+
             // Process the ingredient
             bool success = ProcessIngredient(_currentIngredient);
-            
+
             // Set processing state
             _isProcessing = false;
             _isProcessingNetVar.Value = false;
             _processingProgress = 0f;
             _processingProgressNetVar.Value = 0f;
-            
+
             // Hide progress bar
             if (_progressBar != null)
             {
                 _progressBar.SetActive(false);
             }
-            
+
             // Play sound
             if (success && _audioSource != null && _finishProcessingSound != null)
             {
                 _audioSource.PlayOneShot(_finishProcessingSound);
             }
-            
+
+            // Update station state
+            if (_networkController != null)
+            {
+                _networkController.SetState(success ? StationState.Complete : StationState.Error);
+            }
+
             // Trigger event
             if (success)
             {
@@ -338,7 +396,7 @@ namespace Gameplay.Stations
                 OnProcessingCanceled?.Invoke(this);
             }
         }
-        
+
         /// <summary>
         /// Cancel processing an ingredient.
         /// </summary>
@@ -348,23 +406,23 @@ namespace Gameplay.Stations
             {
                 return;
             }
-            
+
             // Set processing state
             _isProcessing = false;
             _isProcessingNetVar.Value = false;
             _processingProgress = 0f;
             _processingProgressNetVar.Value = 0f;
-            
+
             // Hide progress bar
             if (_progressBar != null)
             {
                 _progressBar.SetActive(false);
             }
-            
+
             // Trigger event
             OnProcessingCanceled?.Invoke(this);
         }
-        
+
         /// <summary>
         /// Handle changes to the processing state network variable.
         /// </summary>
@@ -374,14 +432,14 @@ namespace Gameplay.Stations
         {
             // Update local processing state
             _isProcessing = newValue;
-            
+
             // Show/hide progress bar
             if (_progressBar != null)
             {
                 _progressBar.SetActive(newValue);
             }
         }
-        
+
         /// <summary>
         /// Handle changes to the processing progress network variable.
         /// </summary>
@@ -391,14 +449,14 @@ namespace Gameplay.Stations
         {
             // Update local processing progress
             _processingProgress = newValue;
-            
+
             // Update progress bar
             if (_progressBar != null)
             {
                 // TODO: Update progress bar UI
             }
         }
-        
+
         /// <summary>
         /// Request interaction from the server.
         /// </summary>

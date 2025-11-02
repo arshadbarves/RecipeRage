@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Core.Bootstrap;
+using Core.Logging;
 using Core.SaveSystem;
 using UI.Screens;
 using UnityEngine;
@@ -60,22 +61,22 @@ namespace UI.Components.Tabs
 
         public void Initialize(VisualElement root)
         {
-            Debug.Log("[SettingsTabComponent] Initialize called");
+            GameLogger.Log("Initialize called");
 
             if (root == null)
             {
-                Debug.LogError("[SettingsTabComponent] Root is null!");
+                GameLogger.LogError("Root is null!");
                 return;
             }
 
             _root = root;
 
-            Debug.Log($"[SettingsTabComponent] Root element: {_root.name}");
+            GameLogger.Log($"Root element: {_root.name}");
 
             // Query all elements
             QueryElements();
 
-            Debug.Log($"[SettingsTabComponent] Elements found - Music: {_musicVolumeSlider != null}, SFX: {_sfxVolumeSlider != null}, Quality: {_qualityDropdown != null}");
+            GameLogger.Log($"Elements found - Music: {_musicVolumeSlider != null}, SFX: {_sfxVolumeSlider != null}, Quality: {_qualityDropdown != null}");
 
             // Setup callbacks BEFORE loading settings
             InitializeDropdowns();
@@ -86,7 +87,7 @@ namespace UI.Components.Tabs
             LoadSettings();
             UpdateVersionInfo();
 
-            Debug.Log("[SettingsTabComponent] Initialization complete");
+            GameLogger.Log("Initialization complete");
         }
 
         private void QueryElements()
@@ -121,7 +122,7 @@ namespace UI.Components.Tabs
 
         private void InitializeDropdowns()
         {
-            Debug.Log("[SettingsTabComponent] Initializing dropdowns");
+            GameLogger.Log("Initializing dropdowns");
 
             // Quality dropdown
             if (_qualityDropdown != null)
@@ -129,11 +130,11 @@ namespace UI.Components.Tabs
                 string[] qualityNames = QualitySettings.names;
                 _qualityDropdown.choices = new List<string>(qualityNames);
                 _qualityDropdown.index = QualitySettings.GetQualityLevel();
-                Debug.Log($"[SettingsTabComponent] Quality dropdown initialized with {qualityNames.Length} options, current: {_qualityDropdown.index}");
+                GameLogger.Log($"Quality dropdown initialized with {qualityNames.Length} options, current: {_qualityDropdown.index}");
             }
             else
             {
-                Debug.LogWarning("[SettingsTabComponent] Quality dropdown not found!");
+                GameLogger.LogWarning("Quality dropdown not found!");
             }
 
             // Resolution dropdown
@@ -157,11 +158,11 @@ namespace UI.Components.Tabs
 
                 _resolutionDropdown.choices = resolutionStrings;
                 _resolutionDropdown.index = currentResolutionIndex;
-                Debug.Log($"[SettingsTabComponent] Resolution dropdown initialized with {resolutionStrings.Count} options, current: {currentResolutionIndex}");
+                GameLogger.Log($"Resolution dropdown initialized with {resolutionStrings.Count} options, current: {currentResolutionIndex}");
             }
             else
             {
-                Debug.LogWarning("[SettingsTabComponent] Resolution dropdown not found!");
+                GameLogger.LogWarning("Resolution dropdown not found!");
             }
 
             // Language dropdown
@@ -174,19 +175,19 @@ namespace UI.Components.Tabs
                 };
                 var settings = _saveService.GetSettings();
                 _languageDropdown.index = settings.LanguageIndex;
-                Debug.Log($"[SettingsTabComponent] Language dropdown initialized with 10 options, current: {settings.LanguageIndex}");
+                GameLogger.Log($"Language dropdown initialized with 10 options, current: {settings.LanguageIndex}");
             }
             else
             {
-                Debug.LogWarning("[SettingsTabComponent] Language dropdown not found!");
+                GameLogger.LogWarning("Language dropdown not found!");
             }
 
-            Debug.Log("[SettingsTabComponent] Dropdown initialization complete");
+            GameLogger.Log("Dropdown initialization complete");
         }
 
         private void SetupButtons()
         {
-            Debug.Log("[SettingsTabComponent] Setting up buttons");
+            GameLogger.Log("Setting up buttons");
 
             // Control buttons
             Button editJoystickButton = _root.Q<Button>("edit-joystick-button");
@@ -206,24 +207,24 @@ namespace UI.Components.Tabs
             Button resetButton = _root.Q<Button>("reset-button");
             Button clearDataButton = _root.Q<Button>("clear-data-button");
 
-            Debug.Log($"[SettingsTabComponent] Buttons found - Joystick: {editJoystickButton != null}, Help: {helpButton != null}, Support: {supportButton != null}, Logout: {logoutButton != null}, Reset: {resetButton != null}");
+            GameLogger.Log($"Buttons found - Joystick: {editJoystickButton != null}, Help: {helpButton != null}, Support: {supportButton != null}, Logout: {logoutButton != null}, Reset: {resetButton != null}");
 
             if (editJoystickButton != null)
             {
                 editJoystickButton.clicked += OnEditJoystickClicked;
-                Debug.Log("[SettingsTabComponent] Edit joystick button listener added");
+                GameLogger.Log("Edit joystick button listener added");
             }
 
             if (helpButton != null)
             {
                 helpButton.clicked += OnHelpClicked;
-                Debug.Log("[SettingsTabComponent] Help button listener added");
+                GameLogger.Log("Help button listener added");
             }
 
             if (supportButton != null)
             {
                 supportButton.clicked += OnSupportClicked;
-                Debug.Log("[SettingsTabComponent] Support button listener added");
+                GameLogger.Log("Support button listener added");
             }
 
             if (privacyButton != null) privacyButton.clicked += OnPrivacyClicked;
@@ -234,34 +235,34 @@ namespace UI.Components.Tabs
             if (logoutButton != null)
             {
                 logoutButton.clicked += OnLogoutClicked;
-                Debug.Log("[SettingsTabComponent] Logout button listener added");
+                GameLogger.Log("Logout button listener added");
             }
 
             if (resetButton != null)
             {
                 resetButton.clicked += OnResetClicked;
-                Debug.Log("[SettingsTabComponent] Reset button listener added");
+                GameLogger.Log("Reset button listener added");
             }
 
             if (clearDataButton != null)
             {
                 clearDataButton.clicked += OnClearDataClicked;
-                Debug.Log("[SettingsTabComponent] Clear data button listener added");
+                GameLogger.Log("Clear data button listener added");
             }
 
-            Debug.Log("[SettingsTabComponent] Button setup complete");
+            GameLogger.Log("Button setup complete");
         }
 
         private void SetupValueChangeCallbacks()
         {
-            Debug.Log("[SettingsTabComponent] Setting up value change callbacks");
+            GameLogger.Log("Setting up value change callbacks");
 
             // Audio callbacks
             if (_musicVolumeSlider != null)
             {
                 _musicVolumeSlider.RegisterValueChangedCallback(evt =>
                 {
-                    Debug.Log($"[SettingsTabComponent] Music volume changed to {evt.newValue}");
+                    GameLogger.Log($"Music volume changed to {evt.newValue}");
                     _previousMusicVolume = evt.newValue;
                     if (_muteToggle != null && !_muteToggle.value)
                     {
@@ -270,19 +271,19 @@ namespace UI.Components.Tabs
                     }
                     UpdateVolumeLabel(_musicVolumeLabel, evt.newValue);
                 });
-                Debug.Log("[SettingsTabComponent] Music volume callback registered");
+                GameLogger.Log("Music volume callback registered");
             }
 
             if (_sfxVolumeSlider != null)
             {
                 _sfxVolumeSlider.RegisterValueChangedCallback(evt =>
                 {
-                    Debug.Log($"[SettingsTabComponent] SFX volume changed to {evt.newValue}");
+                    GameLogger.Log($"SFX volume changed to {evt.newValue}");
                     _previousSfxVolume = evt.newValue;
                     _saveService.UpdateSettings(s => s.SFXVolume = evt.newValue);
                     UpdateVolumeLabel(_sfxVolumeLabel, evt.newValue);
                 });
-                Debug.Log("[SettingsTabComponent] SFX volume callback registered");
+                GameLogger.Log("SFX volume callback registered");
             }
 
             if (_muteToggle != null)
@@ -376,7 +377,7 @@ namespace UI.Components.Tabs
                 _languageDropdown.RegisterValueChangedCallback(evt =>
                 {
                     _saveService.UpdateSettings(s => s.LanguageIndex = _languageDropdown.index);
-                    Debug.Log($"[SettingsTabComponent] Language changed to: {_languageDropdown.value}");
+                    GameLogger.Log($"Language changed to: {_languageDropdown.value}");
                 });
             }
 
@@ -476,7 +477,7 @@ namespace UI.Components.Tabs
 
         private void OnEditJoystickClicked()
         {
-            Debug.Log("[SettingsTabComponent] Opening joystick editor");
+            GameLogger.Log("Opening joystick editor");
 
             // Show the joystick editor screen using UIService
             var uiService = GameBootstrap.Services?.UIService;
@@ -490,54 +491,54 @@ namespace UI.Components.Tabs
                 }
                 else
                 {
-                    Debug.LogWarning("[SettingsTabComponent] JoystickEditorUI screen not found in UIService");
+                    GameLogger.LogWarning("JoystickEditorUI screen not found in UIService");
                 }
             }
             else
             {
-                Debug.LogWarning("[SettingsTabComponent] UIService not available or not initialized");
+                GameLogger.LogWarning("UIService not available or not initialized");
             }
         }
 
         private void OnHelpClicked()
         {
-            Debug.Log("[SettingsTabComponent] Opening help");
+            GameLogger.Log("Opening help");
             Application.OpenURL("https://yourwebsite.com/help");
         }
 
         private void OnSupportClicked()
         {
-            Debug.Log("[SettingsTabComponent] Opening support");
+            GameLogger.Log("Opening support");
             Application.OpenURL("https://yourwebsite.com/support");
         }
 
         private void OnPrivacyClicked()
         {
-            Debug.Log("[SettingsTabComponent] Opening privacy policy");
+            GameLogger.Log("Opening privacy policy");
             Application.OpenURL("https://yourwebsite.com/privacy");
         }
 
         private void OnTermsClicked()
         {
-            Debug.Log("[SettingsTabComponent] Opening terms and conditions");
+            GameLogger.Log("Opening terms and conditions");
             Application.OpenURL("https://yourwebsite.com/terms");
         }
 
         private void OnParentGuideClicked()
         {
-            Debug.Log("[SettingsTabComponent] Opening parent guide");
+            GameLogger.Log("Opening parent guide");
             Application.OpenURL("https://yourwebsite.com/parent-guide");
         }
 
         private void OnCreditsClicked()
         {
-            Debug.Log("[SettingsTabComponent] Opening credits");
+            GameLogger.Log("Opening credits");
             Application.OpenURL("https://yourwebsite.com/credits");
         }
 
         private async void OnResetClicked()
         {
-            Debug.Log("[SettingsTabComponent] Resetting settings to defaults");
+            GameLogger.Log("Resetting settings to defaults");
 
             // Reset all settings to defaults using SaveService
             _saveService.UpdateSettings(s =>
@@ -574,39 +575,39 @@ namespace UI.Components.Tabs
             var uiService = GameBootstrap.Services?.UIService;
             uiService?.ShowToast("Settings reset to defaults", ToastType.Success, 2f);
 
-            Debug.Log("[SettingsTabComponent] Settings reset complete");
+            GameLogger.Log("Settings reset complete");
         }
 
         private async void OnLogoutClicked()
         {
-            Debug.Log("[SettingsTabComponent] Logout button clicked");
+            GameLogger.Log("Logout button clicked");
 
             var authService = GameBootstrap.Services?.AuthenticationService;
             if (authService != null)
             {
                 await authService.LogoutAsync();
-                Debug.Log("[SettingsTabComponent] User logged out successfully");
+                GameLogger.Log("User logged out successfully");
             }
             else
             {
-                Debug.LogError("[SettingsTabComponent] AuthenticationService not available");
+                GameLogger.LogError("AuthenticationService not available");
             }
         }
 
         private void OnClearDataClicked()
         {
-            Debug.Log("[SettingsTabComponent] Clear data requested");
+            GameLogger.Log("Clear data requested");
 
             // Show confirmation dialog (you can implement a proper dialog system)
             if (Application.isEditor)
             {
-                Debug.LogWarning("[SettingsTabComponent] Clear all data - This would delete all player progress!");
+                GameLogger.LogWarning("Clear all data - This would delete all player progress!");
                 // In a real implementation, show a confirmation dialog
                 // For now, just log the action
             }
             else
             {
-                Debug.LogWarning("[SettingsTabComponent] Data clearing disabled in build - implement confirmation dialog first");
+                GameLogger.LogWarning("Data clearing disabled in build - implement confirmation dialog first");
             }
         }
     }

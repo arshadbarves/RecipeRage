@@ -1,4 +1,5 @@
 using Core.Characters;
+using Core.Logging;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -94,7 +95,7 @@ namespace Gameplay.Cooking
         {
             if (!IsServer)
             {
-                Debug.LogWarning("[IngredientItem] Only the server can set the ingredient data.");
+                GameLogger.LogWarning("Only the server can set the ingredient data.");
                 return;
             }
 
@@ -225,7 +226,7 @@ namespace Gameplay.Cooking
         {
             if (!IsServer)
             {
-                Debug.LogWarning("[IngredientItem] Only the server can pick up ingredients.");
+                GameLogger.LogWarning("Only the server can pick up ingredients.");
                 return;
             }
 
@@ -240,7 +241,7 @@ namespace Gameplay.Cooking
         {
             if (!IsServer)
             {
-                Debug.LogWarning("[IngredientItem] Only the server can drop ingredients.");
+                GameLogger.LogWarning("Only the server can drop ingredients.");
                 return;
             }
 
@@ -255,7 +256,7 @@ namespace Gameplay.Cooking
         {
             if (!IsServer)
             {
-                Debug.LogWarning("[IngredientItem] Only the server can apply cutting to ingredients.");
+                GameLogger.LogWarning("Only the server can apply cutting to ingredients.");
                 return;
             }
 
@@ -287,7 +288,7 @@ namespace Gameplay.Cooking
         {
             if (!IsServer)
             {
-                Debug.LogWarning("[IngredientItem] Only the server can apply cooking to ingredients.");
+                GameLogger.LogWarning("Only the server can apply cooking to ingredients.");
                 return;
             }
 

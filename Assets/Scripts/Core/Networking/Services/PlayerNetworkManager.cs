@@ -13,17 +13,17 @@ namespace Core.Networking.Services
     {
         private readonly ILoggingService _logger;
         private readonly Dictionary<ulong, PlayerController> _players;
-        
+
         /// <summary>
         /// Event triggered when a player is registered.
         /// </summary>
         public event Action<PlayerController> OnPlayerRegistered;
-        
+
         /// <summary>
         /// Event triggered when a player is unregistered.
         /// </summary>
         public event Action<ulong> OnPlayerUnregistered;
-        
+
         /// <summary>
         /// Initialize the player network manager.
         /// </summary>
@@ -33,7 +33,7 @@ namespace Core.Networking.Services
             _logger = logger;
             _players = new Dictionary<ulong, PlayerController>();
         }
-        
+
         /// <summary>
         /// Register a player.
         /// </summary>
@@ -43,22 +43,22 @@ namespace Core.Networking.Services
         {
             if (player == null)
             {
-                GameLogger.Network.LogWarning($"[PlayerNetworkManager] Cannot register null player for client {clientId}");
+                GameLogger.LogWarning($"[PlayerNetworkManager] Cannot register null player for client {clientId}");
                 return;
             }
-            
+
             if (_players.ContainsKey(clientId))
             {
-                GameLogger.Network.LogWarning($"[PlayerNetworkManager] Player {clientId} is already registered");
+                GameLogger.LogWarning($"[PlayerNetworkManager] Player {clientId} is already registered");
                 return;
             }
-            
+
             _players[clientId] = player;
-            GameLogger.Network.Log($"[PlayerNetworkManager] Registered player {clientId}");
-            
+            GameLogger.Log($"[PlayerNetworkManager] Registered player {clientId}");
+
             OnPlayerRegistered?.Invoke(player);
         }
-        
+
         /// <summary>
         /// Unregister a player.
         /// </summary>
@@ -67,16 +67,16 @@ namespace Core.Networking.Services
         {
             if (!_players.ContainsKey(clientId))
             {
-                GameLogger.Network.LogWarning($"[PlayerNetworkManager] Player {clientId} is not registered");
+                GameLogger.LogWarning($"[PlayerNetworkManager] Player {clientId} is not registered");
                 return;
             }
-            
+
             _players.Remove(clientId);
-            GameLogger.Network.Log($"[PlayerNetworkManager] Unregistered player {clientId}");
-            
+            GameLogger.Log($"[PlayerNetworkManager] Unregistered player {clientId}");
+
             OnPlayerUnregistered?.Invoke(clientId);
         }
-        
+
         /// <summary>
         /// Get a player by client ID.
         /// </summary>
@@ -88,10 +88,10 @@ namespace Core.Networking.Services
             {
                 return player;
             }
-            
+
             return null;
         }
-        
+
         /// <summary>
         /// Get all registered players.
         /// </summary>
@@ -100,7 +100,7 @@ namespace Core.Networking.Services
         {
             return new List<PlayerController>(_players.Values);
         }
-        
+
         /// <summary>
         /// Get the number of registered players.
         /// </summary>
@@ -109,7 +109,7 @@ namespace Core.Networking.Services
         {
             return _players.Count;
         }
-        
+
         /// <summary>
         /// Check if a player is registered.
         /// </summary>

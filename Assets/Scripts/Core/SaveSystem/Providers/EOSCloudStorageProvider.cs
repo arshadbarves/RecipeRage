@@ -1,4 +1,5 @@
 using System;
+using Core.Logging;
 using Cysharp.Threading.Tasks;
 using Epic.OnlineServices;
 using Epic.OnlineServices.PlayerDataStorage;
@@ -26,7 +27,7 @@ namespace Core.SaveSystem
 
             // Check if already logged in
             _isInitialized = IsUserLoggedIn();
-            
+
             // Refresh file list if already logged in
             if (_isInitialized)
             {
@@ -38,7 +39,7 @@ namespace Core.SaveSystem
         {
             if (!IsAvailable)
             {
-                Debug.LogWarning("[EOSCloudStorageProvider] Cannot read - user not logged in");
+                GameLogger.LogWarning("Cannot read - user not logged in");
                 return null;
             }
 
@@ -51,7 +52,7 @@ namespace Core.SaveSystem
 
             // Synchronous read not recommended for cloud storage
             // Return null and log warning
-            Debug.LogWarning($"[EOSCloudStorageProvider] Synchronous read for {key} - use ReadAsync instead");
+            GameLogger.LogWarning($"Synchronous read for {key} - use ReadAsync instead");
             return null;
         }
 
@@ -59,13 +60,13 @@ namespace Core.SaveSystem
         {
             if (!IsAvailable)
             {
-                Debug.LogWarning("[EOSCloudStorageProvider] Cannot write - user not logged in");
+                GameLogger.LogWarning("Cannot write - user not logged in");
                 return;
             }
 
             // Synchronous write not recommended for cloud storage
             // Queue async write instead
-            Debug.LogWarning($"[EOSCloudStorageProvider] Synchronous write for {key} - use WriteAsync instead");
+            GameLogger.LogWarning($"Synchronous write for {key} - use WriteAsync instead");
             WriteAsync(key, content).Forget();
         }
 
@@ -73,7 +74,7 @@ namespace Core.SaveSystem
         {
             if (!IsAvailable)
             {
-                Debug.LogWarning("[EOSCloudStorageProvider] Cannot read - user not logged in");
+                GameLogger.LogWarning("Cannot read - user not logged in");
                 return null;
             }
 
@@ -101,12 +102,12 @@ namespace Core.SaveSystem
             }
             catch (TimeoutException)
             {
-                Debug.LogError($"[EOSCloudStorageProvider] Timeout reading {key}");
+                GameLogger.LogError($"Timeout reading {key}");
                 return null;
             }
             catch (Exception e)
             {
-                Debug.LogError($"[EOSCloudStorageProvider] Error reading {key}: {e.Message}");
+                GameLogger.LogError($"Error reading {key}: {e.Message}");
                 return null;
             }
         }
@@ -115,7 +116,7 @@ namespace Core.SaveSystem
         {
             if (!IsAvailable)
             {
-                Debug.LogWarning("[EOSCloudStorageProvider] Cannot write - user not logged in");
+                GameLogger.LogWarning("Cannot write - user not logged in");
                 return;
             }
 
@@ -133,11 +134,11 @@ namespace Core.SaveSystem
             }
             catch (TimeoutException)
             {
-                Debug.LogError($"[EOSCloudStorageProvider] Timeout writing {key}");
+                GameLogger.LogError($"Timeout writing {key}");
             }
             catch (Exception e)
             {
-                Debug.LogError($"[EOSCloudStorageProvider] Error writing {key}: {e.Message}");
+                GameLogger.LogError($"Error writing {key}: {e.Message}");
             }
         }
 
@@ -157,7 +158,7 @@ namespace Core.SaveSystem
         {
             if (!IsAvailable)
             {
-                Debug.LogWarning("[EOSCloudStorageProvider] Cannot delete - user not logged in");
+                GameLogger.LogWarning("Cannot delete - user not logged in");
                 return;
             }
 
@@ -200,7 +201,7 @@ namespace Core.SaveSystem
         public void OnUserLoggedIn()
         {
             _isInitialized = IsUserLoggedIn();
-            
+
             if (_isInitialized)
             {
                 RefreshFileList();
@@ -213,8 +214,8 @@ namespace Core.SaveSystem
         /// </summary>
         public void OnUserLoggedOut()
         {
-            Debug.Log("[EOSCloudStorageProvider] User logged out - clearing cached cloud data");
-            
+            GameLogger.Log("User logged out - clearing cached cloud data");
+
             // Clear cached file data from EOS storage service
             if (_eosStorage != null)
             {
@@ -224,11 +225,11 @@ namespace Core.SaveSystem
                     cachedData.Clear();
                 }
             }
-            
+
             // Mark as not initialized (will re-initialize on next login)
             _isInitialized = false;
-            
-            Debug.Log("[EOSCloudStorageProvider] Cloud cache cleared");
+
+            GameLogger.Log("Cloud cache cleared");
         }
     }
 }

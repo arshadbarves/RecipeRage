@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Core.Logging;
 using UnityEngine;
 
 namespace Core.Audio
@@ -12,22 +13,22 @@ namespace Core.Audio
     {
         [Header("Music")]
         [SerializeField] private List<AudioClipReference> _musicClips = new List<AudioClipReference>();
-        
+
         [Header("Sound Effects")]
         [SerializeField] private List<AudioClipReference> _sfxClips = new List<AudioClipReference>();
-        
+
         [Header("Voice")]
         [SerializeField] private List<AudioClipReference> _voiceClips = new List<AudioClipReference>();
-        
+
         [Header("UI Sounds")]
         [SerializeField] private List<AudioClipReference> _uiClips = new List<AudioClipReference>();
-        
+
         // Cached dictionaries for faster lookup
         private Dictionary<string, AudioClip> _musicDict;
         private Dictionary<string, AudioClip> _sfxDict;
         private Dictionary<string, AudioClip> _voiceDict;
         private Dictionary<string, AudioClip> _uiDict;
-        
+
         /// <summary>
         /// Initialize the dictionaries.
         /// </summary>
@@ -35,7 +36,7 @@ namespace Core.Audio
         {
             InitializeDictionaries();
         }
-        
+
         /// <summary>
         /// Initialize the dictionaries.
         /// </summary>
@@ -50,7 +51,7 @@ namespace Core.Audio
                     _musicDict[reference.Id] = reference.Clip;
                 }
             }
-            
+
             // Initialize SFX dictionary
             _sfxDict = new Dictionary<string, AudioClip>();
             foreach (AudioClipReference reference in _sfxClips)
@@ -60,7 +61,7 @@ namespace Core.Audio
                     _sfxDict[reference.Id] = reference.Clip;
                 }
             }
-            
+
             // Initialize voice dictionary
             _voiceDict = new Dictionary<string, AudioClip>();
             foreach (AudioClipReference reference in _voiceClips)
@@ -70,7 +71,7 @@ namespace Core.Audio
                     _voiceDict[reference.Id] = reference.Clip;
                 }
             }
-            
+
             // Initialize UI dictionary
             _uiDict = new Dictionary<string, AudioClip>();
             foreach (AudioClipReference reference in _uiClips)
@@ -81,7 +82,7 @@ namespace Core.Audio
                 }
             }
         }
-        
+
         /// <summary>
         /// Get a music clip by ID.
         /// </summary>
@@ -93,16 +94,16 @@ namespace Core.Audio
             {
                 InitializeDictionaries();
             }
-            
+
             if (_musicDict.TryGetValue(id, out AudioClip clip))
             {
                 return clip;
             }
-            
-            Debug.LogWarning($"[AudioDatabase] Music clip not found: {id}");
+
+            GameLogger.LogWarning($"Music clip not found: {id}");
             return null;
         }
-        
+
         /// <summary>
         /// Get a SFX clip by ID.
         /// </summary>
@@ -114,16 +115,16 @@ namespace Core.Audio
             {
                 InitializeDictionaries();
             }
-            
+
             if (_sfxDict.TryGetValue(id, out AudioClip clip))
             {
                 return clip;
             }
-            
-            Debug.LogWarning($"[AudioDatabase] SFX clip not found: {id}");
+
+            GameLogger.LogWarning($"SFX clip not found: {id}");
             return null;
         }
-        
+
         /// <summary>
         /// Get a voice clip by ID.
         /// </summary>
@@ -135,16 +136,16 @@ namespace Core.Audio
             {
                 InitializeDictionaries();
             }
-            
+
             if (_voiceDict.TryGetValue(id, out AudioClip clip))
             {
                 return clip;
             }
-            
-            Debug.LogWarning($"[AudioDatabase] Voice clip not found: {id}");
+
+            GameLogger.LogWarning($"Voice clip not found: {id}");
             return null;
         }
-        
+
         /// <summary>
         /// Get a UI clip by ID.
         /// </summary>
@@ -156,17 +157,17 @@ namespace Core.Audio
             {
                 InitializeDictionaries();
             }
-            
+
             if (_uiDict.TryGetValue(id, out AudioClip clip))
             {
                 return clip;
             }
-            
-            Debug.LogWarning($"[AudioDatabase] UI clip not found: {id}");
+
+            GameLogger.LogWarning($"UI clip not found: {id}");
             return null;
         }
     }
-    
+
     /// <summary>
     /// Reference to an audio clip with an ID.
     /// </summary>
@@ -175,10 +176,10 @@ namespace Core.Audio
     {
         [Tooltip("Unique identifier for the audio clip")]
         public string Id;
-        
+
         [Tooltip("The audio clip")]
         public AudioClip Clip;
-        
+
         [Tooltip("Description of the audio clip")]
         [TextArea(1, 3)]
         public string Description;

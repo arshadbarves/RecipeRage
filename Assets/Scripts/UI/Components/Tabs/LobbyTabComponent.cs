@@ -9,6 +9,7 @@ using UI.Popups;
 using UI.Screens;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Core.Logging;
 
 namespace UI.Components.Tabs
 {
@@ -50,33 +51,33 @@ namespace UI.Components.Tabs
         public void Initialize(
             VisualElement root)
         {
-            Debug.Log("[LobbyTabComponent] Initialize called");
+            GameLogger.Log("Initialize called");
 
             if (root == null)
             {
-                Debug.LogError("[LobbyTabComponent] Root is null!");
+                GameLogger.LogError("Root is null!");
                 return;
             }
 
             _root = root;
-            Debug.Log($"[LobbyTabComponent] Root element: {_root.name}");
+            GameLogger.Log($"Root element: {_root.name}");
 
             // Query all elements first
             QueryElements();
 
-            Debug.Log($"[LobbyTabComponent] Elements found - Play: {_playButton != null}, Map: {_mapButton != null}, Friends: {_friendsButton != null}");
+            GameLogger.Log($"Elements found - Play: {_playButton != null}, Map: {_mapButton != null}, Friends: {_friendsButton != null}");
 
             // Setup in order
             SetupButtons();
             LoadMapDatabase();
             LoadMapInfo();
 
-            Debug.Log("[LobbyTabComponent] Initialization complete");
+            GameLogger.Log("Initialization complete");
         }
 
         private void QueryElements()
         {
-            Debug.Log("[LobbyTabComponent] Querying UI elements");
+            GameLogger.Log("Querying UI elements");
 
             // Cache UI elements
             _playButton = _root.Q<Button>("play-button");
@@ -87,7 +88,7 @@ namespace UI.Components.Tabs
             _timerLabel = _root.Q<Label>("timer-text");
             _partyDisplay = _root.Q<VisualElement>("party-display");
 
-            Debug.Log($"[LobbyTabComponent] Query complete - Play: {_playButton != null}, Map: {_mapButton != null}, Friends: {_friendsButton != null}, MapName: {_mapNameLabel != null}, Timer: {_timerLabel != null}, Party: {_partyDisplay != null}");
+            GameLogger.Log($"Query complete - Play: {_playButton != null}, Map: {_mapButton != null}, Friends: {_friendsButton != null}, MapName: {_mapNameLabel != null}, Timer: {_timerLabel != null}, Party: {_partyDisplay != null}");
         }
 
         private void SetupButtons()
@@ -95,19 +96,19 @@ namespace UI.Components.Tabs
             if (_playButton != null)
             {
                 _playButton.clicked += OnPlayClicked;
-                Debug.Log("[LobbyTabComponent] Play button listener added");
+                GameLogger.Log("Play button listener added");
             }
 
             if (_mapButton != null)
             {
                 _mapButton.clicked += OnMapClicked;
-                Debug.Log("[LobbyTabComponent] Map button listener added");
+                GameLogger.Log("Map button listener added");
             }
 
             if (_friendsButton != null)
             {
                 _friendsButton.clicked += OnFriendsClicked;
-                Debug.Log("[LobbyTabComponent] Friends button listener added");
+                GameLogger.Log("Friends button listener added");
             }
         }
 
@@ -117,11 +118,11 @@ namespace UI.Components.Tabs
             if (jsonFile != null)
             {
                 _mapDatabase = JsonUtility.FromJson<MapDatabase>(jsonFile.text);
-                Debug.Log($"[LobbyTabComponent] Loaded map database with {_mapDatabase.maps.Count} maps");
+                GameLogger.Log($"Loaded map database with {_mapDatabase.maps.Count} maps");
             }
             else
             {
-                Debug.LogError("[LobbyTabComponent] Failed to load Maps.json");
+                GameLogger.LogError("Failed to load Maps.json");
             }
         }
 
@@ -164,7 +165,7 @@ namespace UI.Components.Tabs
             if (_mapSubtitleLabel != null)
                 _mapSubtitleLabel.text = map.subtitle;
 
-            Debug.Log($"[LobbyTabComponent] Updated map display: {map.name}");
+            GameLogger.Log($"Updated map display: {map.name}");
         }
 
         private void UpdateMapTimer()
@@ -188,7 +189,7 @@ namespace UI.Components.Tabs
 
         private void OnPlayClicked()
         {
-            Debug.Log("[LobbyTabComponent] Play button clicked - Transitioning to MatchmakingState");
+            GameLogger.Log("Play button clicked - Transitioning to MatchmakingState");
 
             // Transition to MatchmakingState (it will handle everything)
             if (_stateManager != null)
@@ -198,13 +199,13 @@ namespace UI.Components.Tabs
             }
             else
             {
-                Debug.LogError("[LobbyTabComponent] StateManager not available!");
+                GameLogger.LogError("StateManager not available!");
             }
         }
 
         private void OnMapClicked()
         {
-            Debug.Log("[LobbyTabComponent] Map button clicked - Opening map selection screen");
+            GameLogger.Log("Map button clicked - Opening map selection screen");
 
             var uiService = GameBootstrap.Services?.UIService;
             if (uiService != null)
@@ -216,7 +217,7 @@ namespace UI.Components.Tabs
                 }
                 else
                 {
-                    Debug.LogError("[LobbyTabComponent] MapSelectionScreen not found");
+                    GameLogger.LogError("MapSelectionScreen not found");
                 }
             }
         }
@@ -224,7 +225,7 @@ namespace UI.Components.Tabs
         private void OnMapSelected(
             MapInfo map)
         {
-            Debug.Log($"[LobbyTabComponent] Map selected: {map.name}");
+            GameLogger.Log($"Map selected: {map.name}");
 
             _currentMap = map;
             UpdateMapDisplay(map);
@@ -233,7 +234,7 @@ namespace UI.Components.Tabs
 
         private void OnFriendsClicked()
         {
-            Debug.Log("[LobbyTabComponent] Friends button clicked - Opening friends popup");
+            GameLogger.Log("Friends button clicked - Opening friends popup");
 
             var uiService = GameBootstrap.Services?.UIService;
             if (uiService != null)
@@ -246,7 +247,7 @@ namespace UI.Components.Tabs
                 }
                 else
                 {
-                    Debug.LogError("[LobbyTabComponent] FriendsPopup not found");
+                    GameLogger.LogError("FriendsPopup not found");
                     uiService.ShowToast("Friends popup not available",
                         ToastType.Error,
                         2f);
@@ -282,7 +283,7 @@ namespace UI.Components.Tabs
                 _friendsButton.clicked -= OnFriendsClicked;
             }
 
-            Debug.Log("[LobbyTabComponent] Disposed");
+            GameLogger.Log("Disposed");
         }
     }
 }

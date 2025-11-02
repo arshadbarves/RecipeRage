@@ -23,8 +23,8 @@ namespace Core.Bootstrap
     /// Central service container with lazy loading support
     /// Follows Pyramid Architecture:
     /// - Foundation services (eager): EventBus, Animation, UI
-    /// - Core services (eager): Save, Auth
-    /// - Application services (lazy): Currency, Audio, Input, Logging
+    /// - Core services (eager): Logging, Save, Auth, Maintenance
+    /// - Application services (lazy): Currency, Audio, Input
     /// - Game systems (lazy): GameMode, Character, Network, State
     /// </summary>
     public class ServiceContainer : IDisposable
@@ -41,6 +41,7 @@ namespace Core.Bootstrap
         // CORE SERVICES (Eager - Pre-Auth)
         // ============================================
 
+        public ILoggingService LoggingService { get; private set; }
         public ISaveService SaveService { get; private set; }
         public IAuthenticationService AuthenticationService { get; private set; }
         public IMaintenanceService MaintenanceService { get; private set; }
@@ -60,10 +61,6 @@ namespace Core.Bootstrap
         private IInputService _inputService;
         public IInputService InputService =>
             _inputService ??= CreateInputService();
-
-        private ILoggingService _loggingService;
-        public ILoggingService LoggingService =>
-            _loggingService ??= CreateLoggingService();
 
         // ============================================
         // GAME SYSTEMS (Lazy - On-Demand)
@@ -108,6 +105,7 @@ namespace Core.Bootstrap
         public void RegisterEventBus(IEventBus eventBus) => EventBus = eventBus;
         public void RegisterAnimationService(IAnimationService service) => AnimationService = service;
         public void RegisterUIService(IUIService service) => UIService = service;
+        public void RegisterLoggingService(ILoggingService service) => LoggingService = service;
         public void RegisterSaveService(ISaveService service) => SaveService = service;
         public void RegisterAuthenticationService(IAuthenticationService service) => AuthenticationService = service;
         public void RegisterMaintenanceService(IMaintenanceService service) => MaintenanceService = service;
@@ -118,13 +116,13 @@ namespace Core.Bootstrap
 
         private ICurrencyService CreateCurrencyService()
         {
-            Debug.Log("[ServiceContainer] Lazy-loading CurrencyService");
+            GameLogger.Log("Lazy-loading CurrencyService");
             return new CurrencyService(SaveService, EventBus);
         }
 
         private IAudioService CreateAudioService()
         {
-            Debug.Log("[ServiceContainer] Lazy-loading AudioService");
+            GameLogger.Log("Lazy-loading AudioService");
             var poolManager = new AudioPoolManager(GameBootstrap.Instance.transform);
             var volumeController = new AudioVolumeController(SaveService);
             var musicPlayer = new MusicPlayer(volumeController);
@@ -134,56 +132,50 @@ namespace Core.Bootstrap
 
         private IInputService CreateInputService()
         {
-            Debug.Log("[ServiceContainer] Lazy-loading InputService");
+            GameLogger.Log("Lazy-loading InputService");
             var provider = InputProviderFactory.CreateForPlatform();
             return new InputService(provider);
         }
 
-        private ILoggingService CreateLoggingService()
-        {
-            Debug.Log("[ServiceContainer] Lazy-loading LoggingService");
-            return new LoggingService(maxLogEntries: 5000);
-        }
-
         private IGameModeService CreateGameModeService()
         {
-            Debug.Log("[ServiceContainer] Lazy-loading GameModeService");
+            GameLogger.Log("Lazy-loading GameModeService");
             return new GameModeService();
         }
 
         private ICharacterService CreateCharacterService()
         {
-            Debug.Log("[ServiceContainer] Lazy-loading CharacterService");
+            GameLogger.Log("Lazy-loading CharacterService");
             return new CharacterService();
         }
 
         private INetworkingServices CreateNetworkingServices()
         {
-            Debug.Log("[ServiceContainer] Lazy-loading NetworkingServices");
+            GameLogger.Log("Lazy-loading NetworkingServices");
             return new NetworkingServiceContainer();
         }
 
         private IGameStateManager CreateStateManager()
         {
-            Debug.Log("[ServiceContainer] Lazy-loading StateManager");
+            GameLogger.Log("Lazy-loading StateManager");
             return new GameStateManager();
         }
 
         private INetworkGameManager CreateNetworkGameManager()
         {
-            Debug.Log("[ServiceContainer] Lazy-loading NetworkGameManager");
+            GameLogger.Log("Lazy-loading NetworkGameManager");
             return new NetworkGameManager(LoggingService, PlayerNetworkManager);
         }
 
         private IPlayerNetworkManager CreatePlayerNetworkManager()
         {
-            Debug.Log("[ServiceContainer] Lazy-loading PlayerNetworkManager");
+            GameLogger.Log("Lazy-loading PlayerNetworkManager");
             return new PlayerNetworkManager(LoggingService);
         }
 
         private INetworkObjectPool CreateNetworkObjectPool()
         {
-            Debug.Log("[ServiceContainer] Lazy-loading NetworkObjectPool");
+            GameLogger.Log("Lazy-loading NetworkObjectPool");
             return new NetworkObjectPool(LoggingService);
         }
 
@@ -197,7 +189,7 @@ namespace Core.Bootstrap
         /// </summary>
         public void ResetUserServices()
         {
-            Debug.Log("[ServiceContainer] Resetting user services...");
+            GameLogger.Log("Resetting user services...");
 
             // Reset resettable services
             (_currencyService as IResettableService)?.Reset();
@@ -214,7 +206,7 @@ namespace Core.Bootstrap
             // Notify SaveService to switch to local storage
             SaveService?.OnUserLoggedOut();
 
-            Debug.Log("[ServiceContainer] User services reset complete");
+            GameLogger.Log("User services reset complete");
         }
 
         private void DisposeService<T>(ref T service, string serviceName) where T : class
@@ -223,7 +215,7 @@ namespace Core.Bootstrap
             {
                 (service as IDisposable)?.Dispose();
                 service = null;
-                Debug.Log($"[ServiceContainer] Disposed {serviceName}");
+                GameLogger.Log($"Disposed {serviceName}");
             }
         }
 
@@ -236,7 +228,7 @@ namespace Core.Bootstrap
             _inputService?.Update(deltaTime);
             _stateManager?.Update(deltaTime);
             UIService?.Update(deltaTime);
-            
+
             // Update networking services (for matchmaking and P2P)
             if (_networkingServices is NetworkingServiceContainer networkingContainer)
             {
@@ -257,13 +249,12 @@ namespace Core.Bootstrap
         /// </summary>
         public void Dispose()
         {
-            Debug.Log("[ServiceContainer] Disposing all services");
+            GameLogger.Log("Disposing all services");
 
             // Dispose lazy services
             DisposeService(ref _currencyService, "CurrencyService");
             DisposeService(ref _audioService, "AudioService");
             DisposeService(ref _inputService, "InputService");
-            DisposeService(ref _loggingService, "LoggingService");
             DisposeService(ref _gameModeService, "GameModeService");
             DisposeService(ref _characterService, "CharacterService");
             DisposeService(ref _networkingServices, "NetworkingServices");
@@ -273,6 +264,7 @@ namespace Core.Bootstrap
             DisposeService(ref _networkObjectPool, "NetworkObjectPool");
 
             // Dispose eager services
+            (LoggingService as IDisposable)?.Dispose();
             (SaveService as IDisposable)?.Dispose();
             (UIService as IDisposable)?.Dispose();
             (AnimationService as IDisposable)?.Dispose();
@@ -280,7 +272,7 @@ namespace Core.Bootstrap
             // Clear event bus
             EventBus?.ClearAllSubscriptions();
 
-            Debug.Log("[ServiceContainer] All services disposed");
+            GameLogger.Log("All services disposed");
         }
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using Core.Logging;
 
 namespace Core.SaveSystem
 {
@@ -41,7 +42,7 @@ namespace Core.SaveSystem
             }
             catch (Exception e)
             {
-                Debug.LogError($"[LocalStorageProvider] Error reading {key}: {e.Message}");
+                GameLogger.LogError($"Error reading {key}: {e.Message}");
                 return null;
             }
         }
@@ -56,7 +57,7 @@ namespace Core.SaveSystem
             }
             catch (Exception e)
             {
-                Debug.LogError($"[LocalStorageProvider] Error writing {key}: {e.Message}");
+                GameLogger.LogError($"Error writing {key}: {e.Message}");
             }
         }
         
@@ -90,7 +91,7 @@ namespace Core.SaveSystem
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError($"[LocalStorageProvider] Error deleting {key}: {e.Message}");
+                    GameLogger.LogError($"Error deleting {key}: {e.Message}");
                 }
             }
         }

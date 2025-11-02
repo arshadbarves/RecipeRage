@@ -1,5 +1,6 @@
 using System;
 using Core.Animation;
+using Core.Logging;
 using UI.Core;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -55,7 +56,7 @@ namespace UI
             SetupEventHandlers();
             LoadJoystickSettings();
 
-            Debug.Log("[JoystickEditorUI] Initialized with BaseUIScreen architecture");
+            GameLogger.Log("Initialized with BaseUIScreen architecture");
         }
 
         protected override void OnShow()
@@ -94,9 +95,9 @@ namespace UI
 
             // Log missing elements
             if (_closeButton == null)
-                Debug.LogWarning("[JoystickEditorUI] close-button not found in template");
+                GameLogger.LogWarning("close-button not found in template");
             if (_joystickSizeSlider == null)
-                Debug.LogWarning("[JoystickEditorUI] joystick-size slider not found in template");
+                GameLogger.LogWarning("joystick-size slider not found in template");
         }
 
         private void SetupEventHandlers()
@@ -159,7 +160,7 @@ namespace UI
             UpdateUIFromSettings();
             OnSettingsReset?.Invoke();
 
-            Debug.Log("[JoystickEditorUI] Settings reset to defaults");
+            GameLogger.Log("Settings reset to defaults");
             return this;
         }
 
@@ -177,7 +178,7 @@ namespace UI
             ApplySettingsToJoysticks();
             OnSettingsSaved?.Invoke();
 
-            Debug.Log("[JoystickEditorUI] Settings saved");
+            GameLogger.Log("Settings saved");
             return this;
         }
 
@@ -239,7 +240,7 @@ namespace UI
             if (controlsManager != null)
             {
                 // Trigger joystick refresh with new settings
-                Debug.Log("[JoystickEditorUI] Applied settings to mobile controls");
+                GameLogger.Log("Applied settings to mobile controls");
             }
         }
 
@@ -249,20 +250,20 @@ namespace UI
 
         private void HandleCloseClicked()
         {
-            Debug.Log("[JoystickEditorUI] Close button clicked");
+            GameLogger.Log("Close button clicked");
             OnEditorClosed?.Invoke();
             Hide(true);
         }
 
         private void HandleResetClicked()
         {
-            Debug.Log("[JoystickEditorUI] Reset button clicked");
+            GameLogger.Log("Reset button clicked");
             ResetToDefaults();
         }
 
         private void HandleSaveClicked()
         {
-            Debug.Log("[JoystickEditorUI] Save button clicked");
+            GameLogger.Log("Save button clicked");
             SaveSettings();
             Hide(true);
         }
@@ -271,26 +272,26 @@ namespace UI
         {
             JoystickSize = value;
             UpdateJoystickPreview();
-            Debug.Log($"[JoystickEditorUI] Size changed to {value:F2}");
+            GameLogger.Log($"Size changed to {value:F2}");
         }
 
         private void HandleOpacityChanged(float value)
         {
             JoystickOpacity = value;
             UpdateJoystickPreview();
-            Debug.Log($"[JoystickEditorUI] Opacity changed to {value:F2}");
+            GameLogger.Log($"Opacity changed to {value:F2}");
         }
 
         private void HandleDeadZoneChanged(float value)
         {
             DeadZone = value;
-            Debug.Log($"[JoystickEditorUI] Dead zone changed to {value:F2}");
+            GameLogger.Log($"Dead zone changed to {value:F2}");
         }
 
         private void HandleFixedToggleChanged(bool value)
         {
             FixedJoystick = value;
-            Debug.Log($"[JoystickEditorUI] Fixed joystick changed to {value}");
+            GameLogger.Log($"Fixed joystick changed to {value}");
         }
 
         #endregion

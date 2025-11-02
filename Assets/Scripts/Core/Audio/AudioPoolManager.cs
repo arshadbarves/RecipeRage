@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Core.Logging;
 
 namespace Core.Audio
 {
@@ -38,7 +39,7 @@ namespace Core.Audio
                 _sfxPool.Enqueue(source);
             }
 
-            Debug.Log($"[AudioPoolManager] Initialized pool with {_initialPoolSize} audio sources");
+            GameLogger.Log($"Initialized pool with {_initialPoolSize} audio sources");
         }
 
         private AudioSource CreateAudioSource(string name)

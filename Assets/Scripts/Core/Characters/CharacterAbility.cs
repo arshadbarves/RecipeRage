@@ -1,6 +1,7 @@
 using System;
 using Newtonsoft.Json;
 using UnityEngine;
+using Core.Logging;
 
 namespace Core.Characters
 {
@@ -143,11 +144,11 @@ namespace Core.Characters
         {
             if (IsOnCooldown)
             {
-                Debug.Log($"[CharacterAbility] Cannot activate ability: on cooldown ({CooldownTimer:F1}s remaining)");
+                GameLogger.Log($"Cannot activate ability: on cooldown ({CooldownTimer:F1}s remaining)");
                 return false;
             }
             
-            Debug.Log($"[CharacterAbility] Activating ability: {AbilityType}");
+            GameLogger.Log($"Activating ability: {AbilityType}");
             
             // Start cooldown
             CooldownTimer = Cooldown;
@@ -175,7 +176,7 @@ namespace Core.Characters
                 return;
             }
             
-            Debug.Log($"[CharacterAbility] Deactivating ability: {AbilityType}");
+            GameLogger.Log($"Deactivating ability: {AbilityType}");
             
             // Reset duration timer
             DurationTimer = 0f;
@@ -243,7 +244,7 @@ namespace Core.Characters
                     ability = new IngredientMagnetAbility();
                     break;
                 default:
-                    Debug.LogError($"[CharacterAbility] Unknown ability type: {abilityType}");
+                    GameLogger.LogError($"Unknown ability type: {abilityType}");
                     ability = new NoneAbility();
                     break;
             }
@@ -296,7 +297,7 @@ namespace Core.Characters
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError($"[SpeedBoostAbility] Failed to parse parameters: {e.Message}");
+                    GameLogger.LogError($"Failed to parse parameters: {e.Message}");
                 }
             }
         }
@@ -469,7 +470,7 @@ namespace Core.Characters
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError($"[PushOtherPlayersAbility] Failed to parse parameters: {e.Message}");
+                    GameLogger.LogError($"Failed to parse parameters: {e.Message}");
                 }
             }
         }
@@ -518,7 +519,7 @@ namespace Core.Characters
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError($"[StealIngredientAbility] Failed to parse parameters: {e.Message}");
+                    GameLogger.LogError($"Failed to parse parameters: {e.Message}");
                 }
             }
         }
@@ -618,7 +619,7 @@ namespace Core.Characters
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError($"[IngredientMagnetAbility] Failed to parse parameters: {e.Message}");
+                    GameLogger.LogError($"Failed to parse parameters: {e.Message}");
                 }
             }
         }

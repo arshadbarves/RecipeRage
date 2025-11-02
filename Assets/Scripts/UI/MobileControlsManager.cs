@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using Core.Logging;
 
 namespace UI
 {
@@ -66,25 +67,25 @@ namespace UI
         
         private void OnJumpPressed()
         {
-            Debug.Log("[MobileControls] Jump pressed");
+            GameLogger.Log("Jump pressed");
             // Trigger jump action
         }
         
         private void OnAttackPressed()
         {
-            Debug.Log("[MobileControls] Attack pressed");
+            GameLogger.Log("Attack pressed");
             // Trigger attack action
         }
         
         private void OnSpecialPressed()
         {
-            Debug.Log("[MobileControls] Special pressed");
+            GameLogger.Log("Special pressed");
             // Trigger special action
         }
         
         private void OnInteractPressed()
         {
-            Debug.Log("[MobileControls] Interact pressed");
+            GameLogger.Log("Interact pressed");
             // Trigger interact action
         }
         

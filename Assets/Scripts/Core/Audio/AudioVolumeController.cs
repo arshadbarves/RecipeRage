@@ -1,3 +1,4 @@
+using Core.Logging;
 using Core.SaveSystem;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -28,7 +29,7 @@ namespace Core.Audio
             _audioMixer = Resources.Load<AudioMixer>("Audio/MainMixer");
             if (_audioMixer == null)
             {
-                Debug.LogWarning("[AudioVolumeController] MainMixer not found in Resources/Audio");
+                GameLogger.LogWarning("MainMixer not found in Resources/Audio");
             }
         }
 

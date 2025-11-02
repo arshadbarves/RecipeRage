@@ -1,5 +1,6 @@
 using Core.Bootstrap;
 using Core.Events;
+using Core.Logging;
 using Core.Networking;
 using Core.Networking.Interfaces;
 using UI.Components;
@@ -44,7 +45,7 @@ namespace UI.Screens
             InitializeTabContent();
             SubscribeToEvents();
 
-            Debug.Log("[MainMenuScreen] Initialized");
+            GameLogger.Log("Initialized");
         }
 
         protected override void OnShow()
@@ -182,7 +183,7 @@ namespace UI.Screens
 
         private void OnPlayerCardClicked()
         {
-            Debug.Log("[MainMenuScreen] Player card clicked - showing profile");
+            GameLogger.Log("Player card clicked - showing profile");
 
             var uiService = GameBootstrap.Services?.UIService;
             if (uiService != null)
@@ -201,23 +202,23 @@ namespace UI.Screens
             }
             else
             {
-                Debug.LogError("[MainMenuScreen] TabView not found!");
+                GameLogger.LogError("TabView not found!");
             }
         }
 
         private void OnTabChanged(ChangeEvent<int> evt)
         {
-            Debug.Log($"[MainMenuScreen] Tab changed to index: {evt.newValue}");
+            GameLogger.Log($"Tab changed to index: {evt.newValue}");
         }
 
         private void InitializeAllTabs()
         {
-            Debug.Log("[MainMenuScreen] Initializing all tabs...");
+            GameLogger.Log("Initializing all tabs...");
 
             var services = GameBootstrap.Services;
             if (services == null)
             {
-                Debug.LogError("[MainMenuScreen] GameBootstrap.Services is null!");
+                GameLogger.LogError("GameBootstrap.Services is null!");
                 return;
             }
 
@@ -232,16 +233,16 @@ namespace UI.Screens
                 {
                     _lobbyTab = new LobbyTabComponent(matchmakingService, services.StateManager);
                     _lobbyTab.Initialize(lobbyRoot);
-                    Debug.Log("[MainMenuScreen] Initialized Lobby tab");
+                    GameLogger.Log("Initialized Lobby tab");
                 }
                 else
                 {
-                    Debug.LogError("[MainMenuScreen] Failed to get required services for LobbyTab");
+                    GameLogger.LogError("Failed to get required services for LobbyTab");
                 }
             }
             else
             {
-                Debug.LogWarning("[MainMenuScreen] Lobby root not found");
+                GameLogger.LogWarning("Lobby root not found");
             }
 
             // Skins tab
@@ -250,11 +251,11 @@ namespace UI.Screens
             {
                 _skinsTab = new SkinsTabComponent();
                 _skinsTab.Initialize(skinsRoot);
-                Debug.Log("[MainMenuScreen] Initialized Skins tab");
+                GameLogger.Log("Initialized Skins tab");
             }
             else
             {
-                Debug.LogWarning("[MainMenuScreen] Skins root not found");
+                GameLogger.LogWarning("Skins root not found");
             }
 
             // Shop tab
@@ -263,11 +264,11 @@ namespace UI.Screens
             {
                 _shopTab = new ShopTabComponent();
                 _shopTab.Initialize(shopRoot);
-                Debug.Log("[MainMenuScreen] Initialized Shop tab");
+                GameLogger.Log("Initialized Shop tab");
             }
             else
             {
-                Debug.LogWarning("[MainMenuScreen] Shop root not found");
+                GameLogger.LogWarning("Shop root not found");
             }
 
             // Settings tab
@@ -278,16 +279,16 @@ namespace UI.Screens
                 {
                     _settingsTab = new SettingsTabComponent(services.SaveService);
                     _settingsTab.Initialize(settingsRoot);
-                    Debug.Log("[MainMenuScreen] Initialized Settings tab");
+                    GameLogger.Log("Initialized Settings tab");
                 }
                 else
                 {
-                    Debug.LogError("[MainMenuScreen] SaveService not available!");
+                    GameLogger.LogError("SaveService not available!");
                 }
             }
             else
             {
-                Debug.LogWarning("[MainMenuScreen] Settings root not found");
+                GameLogger.LogWarning("Settings root not found");
             }
         }
 

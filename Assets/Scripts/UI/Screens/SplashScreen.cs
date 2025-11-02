@@ -1,5 +1,6 @@
 using System;
 using Core.Bootstrap;
+using Core.Logging;
 using Cysharp.Threading.Tasks;
 using UI.Core;
 using UnityEngine;
@@ -25,7 +26,7 @@ namespace UI.Screens
         protected override void OnInitialize()
         {
             CacheUIElements();
-            Debug.Log("[SplashScreen] Initialized");
+            GameLogger.Log("Initialized");
         }
 
         protected override void OnShow()
@@ -65,11 +66,11 @@ namespace UI.Screens
 
             if (_splashContent == null)
             {
-                Debug.LogWarning("[SplashScreen] splash-content not found");
+                GameLogger.LogWarning("splash-content not found");
             }
             if (_companyName == null)
             {
-                Debug.LogWarning("[SplashScreen] company-name not found");
+                GameLogger.LogWarning("company-name not found");
             }
         }
 

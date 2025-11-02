@@ -1,6 +1,7 @@
 using System;
 using Core.Animation;
 using Core.Authentication;
+using Core.Logging;
 using Core.Maintenance;
 using Core.SaveSystem;
 using Core.State.States;
@@ -45,14 +46,23 @@ namespace Core.Bootstrap
         }
         private void InitializeGame()
         {
-            Debug.Log("[GameBootstrap] Starting game initialization...");
+            // Use Debug.Log here since LoggingService isn't initialized yet
+            Debug.Log("Starting game initialization...");
             Services = new ServiceContainer();
             InitializeFoundation();
             InitializeAsync().Forget();
         }
         private void InitializeFoundation()
         {
-            Debug.Log("[GameBootstrap] Initializing foundation services");
+            // Use Debug.Log here since LoggingService isn't initialized yet
+            Debug.Log("Initializing foundation services");
+
+            // Initialize logging first so other services can use it
+            Services.RegisterLoggingService(new LoggingService(maxLogEntries: 10000));
+
+            // Now we can use GameLogger for all subsequent logs
+            GameLogger.Log("Logging service initialized");
+
             Services.RegisterEventBus(new Events.EventBus());
 
             var storageFactory = new StorageProviderFactory();
@@ -62,7 +72,7 @@ namespace Core.Bootstrap
             Services.RegisterUIService(CreateUIService());
             Services.UIService.InitializeScreens();
 
-            Debug.Log("[GameBootstrap] Foundation services initialized");
+            GameLogger.Log("Foundation services initialized");
         }
         private async UniTaskVoid InitializeAsync()
         {
@@ -73,7 +83,7 @@ namespace Core.Bootstrap
                 {
                     await ShowSplashScreenAsync();
                 }
-                Debug.Log("[GameBootstrap] Initializing core services");
+                GameLogger.Log("Initializing core services");
                 InitializeCoreServices();
 
                 bool isAuthenticated = await Services.AuthenticationService.InitializeAsync();
@@ -90,7 +100,7 @@ namespace Core.Bootstrap
             }
             catch (Exception ex)
             {
-                Debug.LogError($"[GameBootstrap] Initialization failed: {ex.Message}");
+                GameLogger.LogException(ex);
                 ShowErrorScreen($"Initialization failed: {ex.Message}");
             }
         }
@@ -102,11 +112,11 @@ namespace Core.Bootstrap
             var authService = new AuthenticationService(Services.SaveService, Services.EventBus, Services.UIService);
             Services.RegisterAuthenticationService(authService);
             authService.OnLogoutComplete += HandleLogout;
-            Debug.Log("[GameBootstrap] Core services initialized");
+            GameLogger.Log("Core services initialized");
         }
         private async UniTask InitializePostLoginAsync()
         {
-            Debug.Log("[GameBootstrap] Post-login initialization");
+            GameLogger.Log("Post-login initialization");
             LoadingScreen loadingScreen = null;
             if (_showLoadingScreen)
             {
@@ -121,7 +131,7 @@ namespace Core.Bootstrap
             {
                 await loadingScreen.CompleteAsync();
             }
-            Debug.Log("[GameBootstrap] Post-login initialization complete");
+            GameLogger.Log("Post-login initialization complete");
         }
         private async UniTask ShowSplashScreenAsync()
         {
@@ -138,7 +148,7 @@ namespace Core.Bootstrap
             }
             else
             {
-                Debug.LogError("[GameBootstrap] SplashScreen not found in UIService");
+                GameLogger.LogError("SplashScreen not found in UIService");
             }
         }
         private LoadingScreen ShowLoadingScreen()
@@ -154,7 +164,7 @@ namespace Core.Bootstrap
         private async void OnLoginSuccess(Events.LoginSuccessEvent evt)
         {
             Services.EventBus.Unsubscribe<Events.LoginSuccessEvent>(OnLoginSuccess);
-            Debug.Log($"[GameBootstrap] Login successful for user: {evt.UserId}");
+            GameLogger.Log($"Login successful for user: {evt.UserId}");
 
             // Check maintenance status after successful login
             if (Services.MaintenanceService != null)
@@ -162,7 +172,7 @@ namespace Core.Bootstrap
                 bool maintenanceCheckSuccess = await Services.MaintenanceService.CheckMaintenanceStatusAsync();
                 if (!maintenanceCheckSuccess)
                 {
-                    Debug.LogWarning("[GameBootstrap] Maintenance check failed, but proceeding with login");
+                    GameLogger.LogWarning("Maintenance check failed, but proceeding with login");
                 }
             }
 
@@ -171,7 +181,7 @@ namespace Core.Bootstrap
         }
         private async void HandleLogout()
         {
-            Debug.Log("[GameBootstrap] User logged out - performing full reboot");
+            GameLogger.Log("User logged out - performing full reboot");
 
             // Dispose all services
             Services?.Dispose();
@@ -192,7 +202,7 @@ namespace Core.Bootstrap
             Services.EventBus.Subscribe<Events.LoginSuccessEvent>(OnLoginSuccess);
 
             _isInitialized = true;
-            Debug.Log("[GameBootstrap] Reboot complete - ready for new login");
+            GameLogger.Log("Reboot complete - ready for new login");
         }
         private void ProceedToMainMenu()
         {
@@ -200,7 +210,7 @@ namespace Core.Bootstrap
         }
         private void ShowErrorScreen(string errorMessage)
         {
-            Debug.LogError($"[GameBootstrap] {errorMessage}");
+            GameLogger.LogError(errorMessage);
             Services.UIService?.ShowScreen(UIScreenType.Login);
             Services.EventBus.Subscribe<Events.LoginSuccessEvent>(OnLoginSuccess);
         }

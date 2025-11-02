@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Core.Logging;
 
 namespace Core.GameModes
 {
@@ -49,7 +50,7 @@ namespace Core.GameModes
                 }
             }
 
-            Debug.Log($"[GameModeService] Loaded {_gameModes.Count} game modes");
+            GameLogger.Log($"Loaded {_gameModes.Count} game modes");
         }
 
         public GameMode[] GetAvailableGameModes()
@@ -78,13 +79,13 @@ namespace Core.GameModes
             _selectedGameMode = mode;
             OnGameModeChanged?.Invoke(mode);
             
-            Debug.Log($"[GameModeService] Selected: {mode.DisplayName}");
+            GameLogger.Log($"Selected: {mode.DisplayName}");
             return true;
         }
 
         public void Dispose()
         {
-            Debug.Log("[GameModeService] Disposing");
+            GameLogger.Log("Disposing");
             _gameModes.Clear();
             _selectedGameMode = null;
         }

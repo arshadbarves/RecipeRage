@@ -1,6 +1,7 @@
 using Core.Bootstrap;
 using Core.Currency;
 using Core.Events;
+using Core.Logging;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -33,7 +34,7 @@ namespace UI.Components
 
         private void Initialize()
         {
-            Debug.Log("[CurrencyDisplay] Initializing");
+            GameLogger.Log("Initializing");
 
             // Cache UI elements
             _coinsLabel = _root.Q<Label>("coins-amount");
@@ -43,9 +44,9 @@ namespace UI.Components
 
             // Log missing elements
             if (_coinsLabel == null)
-                Debug.LogWarning("[CurrencyDisplay] coins-amount label not found");
+                GameLogger.LogWarning("coins-amount label not found");
             if (_gemsLabel == null)
-                Debug.LogWarning("[CurrencyDisplay] gems-amount label not found");
+                GameLogger.LogWarning("gems-amount label not found");
 
             // Subscribe to currency events
             _eventBus.Subscribe<CurrencyChangedEvent>(OnCurrencyChanged);
@@ -57,7 +58,7 @@ namespace UI.Components
             // Initial update
             UpdateUI(_currencyService.Coins, _currencyService.Gems);
 
-            Debug.Log("[CurrencyDisplay] Initialized successfully");
+            GameLogger.Log("Initialized successfully");
         }
 
         private void SetupButtons()
@@ -88,40 +89,40 @@ namespace UI.Components
             if (_coinsLabel != null)
             {
                 _coinsLabel.text = _currencyService.FormatCurrency(coins);
-                Debug.Log($"[CurrencyDisplay] Updated coins label to: {_coinsLabel.text}");
+                GameLogger.Log($"Updated coins label to: {_coinsLabel.text}");
             }
 
             if (_gemsLabel != null)
             {
                 _gemsLabel.text = _currencyService.FormatCurrency(gems);
-                Debug.Log($"[CurrencyDisplay] Updated gems label to: {_gemsLabel.text}");
+                GameLogger.Log($"Updated gems label to: {_gemsLabel.text}");
             }
         }
 
         private void OnAddCoinsClicked()
         {
-            Debug.Log("[CurrencyDisplay] Add coins clicked");
+            GameLogger.Log("Add coins clicked");
 
 #if UNITY_EDITOR
             // Editor only - add test currency
             _currencyService.AddCoins(500);
 #else
             // Production - open store
-            Debug.Log("[CurrencyDisplay] Opening store for coins purchase");
+            GameLogger.Log($"Opening store for coins purchase");
             // TODO: Open in-app purchase dialog
 #endif
         }
 
         private void OnAddGemsClicked()
         {
-            Debug.Log("[CurrencyDisplay] Add gems clicked");
+            GameLogger.Log("Add gems clicked");
 
 #if UNITY_EDITOR
             // Editor only - add test currency
             _currencyService.AddGems(50);
 #else
             // Production - open store
-            Debug.Log("[CurrencyDisplay] Opening store for gems purchase");
+            GameLogger.Log($"Opening store for gems purchase");
             // TODO: Open in-app purchase dialog
 #endif
         }
@@ -144,7 +145,7 @@ namespace UI.Components
                 _addGemsButton.clicked -= OnAddGemsClicked;
             }
 
-            Debug.Log("[CurrencyDisplay] Disposed");
+            GameLogger.Log("Disposed");
         }
     }
 }

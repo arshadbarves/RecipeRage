@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Core.Logging;
 
 namespace UI.Data
 {
@@ -78,7 +79,7 @@ namespace UI.Data
             }
             catch (Exception e)
             {
-                Debug.LogError($"[MapDatabase] Error calculating rotation time: {e.Message}");
+                GameLogger.LogError($"Error calculating rotation time: {e.Message}");
                 return TimeSpan.Zero;
             }
         }

@@ -4,6 +4,7 @@ using Core.Networking.Interfaces;
 using UI.Core;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Core.Logging;
 
 namespace UI.Screens
 {
@@ -52,7 +53,7 @@ namespace UI.Screens
                 _matchmakingService.OnMatchFound += OnMatchFound;
             }
 
-            Debug.Log("[MatchmakingScreen] Initialized");
+            GameLogger.Log("Initialized");
         }
 
         protected override void OnShow()
@@ -71,12 +72,12 @@ namespace UI.Screens
                 _statusIndicator.AddToClassList("searching");
             }
 
-            Debug.Log("[MatchmakingScreen] Shown");
+            GameLogger.Log("Shown");
         }
 
         protected override void OnHide()
         {
-            Debug.Log("[MatchmakingScreen] Hidden");
+            GameLogger.Log("Hidden");
         }
 
         public override void Update(float deltaTime)
@@ -104,14 +105,14 @@ namespace UI.Screens
                 _cancelButton.clicked -= OnCancelClicked;
             }
 
-            Debug.Log("[MatchmakingScreen] Disposed");
+            GameLogger.Log("Disposed");
         }
 
         #region Event Handlers
 
         private void OnCancelClicked()
         {
-            Debug.Log("[MatchmakingScreen] Cancel button clicked");
+            GameLogger.Log("Cancel button clicked");
 
             // Cancel matchmaking via service
             if (_matchmakingService != null)
@@ -129,12 +130,12 @@ namespace UI.Screens
                 _playerCountText.text = $"{current}/{required}";
             }
 
-            Debug.Log($"[MatchmakingScreen] Players: {current}/{required}");
+            GameLogger.Log($"Players: {current}/{required}");
         }
 
         private void OnMatchFound(LobbyInfo lobbyInfo)
         {
-            Debug.Log($"[MatchmakingScreen] Match found! Lobby: {lobbyInfo.LobbyId}");
+            GameLogger.Log($"Match found! Lobby: {lobbyInfo.LobbyId}");
 
             if (_statusText != null)
             {

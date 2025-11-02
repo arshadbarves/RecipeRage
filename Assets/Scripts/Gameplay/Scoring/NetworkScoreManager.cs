@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using Core.Logging;
 
 namespace Gameplay.Scoring
 {
@@ -121,7 +122,7 @@ namespace Gameplay.Scoring
             // Show score popup on all clients
             ShowScorePopupClientRpc(playerId, points, reason);
             
-            Debug.Log($"[NetworkScoreManager] Added {points} points to player {playerId} for {reason}");
+            GameLogger.Log($"Added {points} points to player {playerId} for {reason}");
         }
         
         /// <summary>
@@ -143,7 +144,7 @@ namespace Gameplay.Scoring
                 _teamBScore.Value += points;
             }
             
-            Debug.Log($"[NetworkScoreManager] Added {points} points to team {teamId} for {reason}");
+            GameLogger.Log($"Added {points} points to team {teamId} for {reason}");
         }
         
         /// <summary>
@@ -191,7 +192,7 @@ namespace Gameplay.Scoring
             _teamAScore.Value = 0;
             _teamBScore.Value = 0;
             
-            Debug.Log("[NetworkScoreManager] Reset all scores");
+            GameLogger.Log("Reset all scores");
         }
         
         /// <summary>
@@ -249,7 +250,7 @@ namespace Gameplay.Scoring
         private void ShowScorePopupClientRpc(ulong playerId, int points, ScoreReason reason)
         {
             // UI can subscribe to this to show score popups
-            Debug.Log($"[NetworkScoreManager] Player {playerId} earned {points} points for {reason}");
+            GameLogger.Log($"Player {playerId} earned {points} points for {reason}");
         }
         
         /// <summary>

@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace Core.Logging
 {
@@ -16,17 +18,19 @@ namespace Core.Logging
         private readonly HashSet<string> _disabledCategories = new HashSet<string>();
         private readonly int _maxLogEntries;
         private LogLevel _minLogLevel = LogLevel.Verbose;
+        private bool _isLoggingInternally = false; // Prevent infinite loop
 
         public event Action<LogEntry> OnLogAdded;
 
         public LoggingService(int maxLogEntries = 5000)
         {
             _maxLogEntries = maxLogEntries;
-            
+
             // Capture Unity's built-in logs
             Application.logMessageReceived += HandleUnityLog;
         }
 
+        [HideInCallstack]
         public void Log(string message, LogLevel level = LogLevel.Info, string category = "General")
         {
             if (level < _minLogLevel) return;
@@ -34,23 +38,30 @@ namespace Core.Logging
 
             var entry = new LogEntry(message, level, category);
             AddLogEntry(entry);
+
+            // Output to Unity Console
+            OutputToUnityConsole(entry);
         }
 
-        public void LogInfo(string message, string category = "General")
+        [HideInCallstack]
+        public void  LogInfo(string message, string category = "General")
         {
             Log(message, LogLevel.Info, category);
         }
 
+        [HideInCallstack]
         public void LogWarning(string message, string category = "General")
         {
             Log(message, LogLevel.Warning, category);
         }
 
+        [HideInCallstack]
         public void LogError(string message, string category = "General")
         {
             Log(message, LogLevel.Error, category);
         }
 
+        [HideInCallstack]
         public void LogException(Exception exception, string category = "General")
         {
             var entry = new LogEntry(
@@ -60,10 +71,14 @@ namespace Core.Logging
                 exception.StackTrace
             );
             AddLogEntry(entry);
+
+            // Output exception to Unity Console
+            Debug.LogException(exception);
         }
 
         private void HandleUnityLog(string logString, string stackTrace, LogType type)
         {
+            // Only capture Unity logs, don't re-output them (would cause infinite loop)
             LogLevel level = type switch
             {
                 LogType.Error => LogLevel.Error,
@@ -75,7 +90,18 @@ namespace Core.Logging
             };
 
             var entry = new LogEntry(logString, level, "Unity", stackTrace);
-            AddLogEntry(entry);
+
+            // Only add to our log storage, don't output to console (already there)
+            lock (_logs)
+            {
+                _logs.Add(entry);
+                if (_logs.Count > _maxLogEntries)
+                {
+                    _logs.RemoveAt(0);
+                }
+            }
+
+            OnLogAdded?.Invoke(entry);
         }
 
         private void AddLogEntry(LogEntry entry)
@@ -159,11 +185,11 @@ namespace Core.Logging
             {
                 var content = ExportLogs();
                 File.WriteAllText(filePath, content);
-                Debug.Log($"[LoggingService] Logs saved to: {filePath}");
+                Debug.Log($"Logs saved to: {filePath}");
             }
             catch (Exception ex)
             {
-                Debug.LogError($"[LoggingService] Failed to save logs: {ex.Message}");
+                Debug.LogError($"Failed to save logs: {ex.Message}");
             }
         }
 
@@ -180,6 +206,31 @@ namespace Core.Logging
         public void DisableCategory(string category)
         {
             _disabledCategories.Add(category);
+        }
+
+        /// <summary>
+        /// Outputs log entry to Unity Console with proper formatting
+        /// </summary>
+        [HideInCallstack]
+        [Conditional("DEVELOPMENT_BUILD"), Conditional("UNITY_EDITOR")]
+        private void OutputToUnityConsole(LogEntry entry)
+        {
+            string formattedMessage = $"[RecipeRage] - [{entry.Category}] {entry.Message}";
+
+            switch (entry.Level)
+            {
+                case LogLevel.Verbose:
+                case LogLevel.Info:
+                    Debug.Log(formattedMessage);
+                    break;
+                case LogLevel.Warning:
+                    Debug.LogWarning(formattedMessage);
+                    break;
+                case LogLevel.Error:
+                case LogLevel.Critical:
+                    Debug.LogError(formattedMessage);
+                    break;
+            }
         }
 
         public void Dispose()

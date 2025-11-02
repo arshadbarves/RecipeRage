@@ -1,5 +1,6 @@
 using System;
 using Core.Events;
+using Core.Logging;
 using Cysharp.Threading.Tasks;
 using Epic.OnlineServices;
 using PlayEveryWare.EpicOnlineServices;
@@ -34,7 +35,7 @@ namespace Core.Maintenance
         {
             if (_isChecking)
             {
-                Debug.LogWarning("[MaintenanceService] Already checking maintenance status");
+                GameLogger.LogWarning("Already checking maintenance status");
                 return false;
             }
 
@@ -46,12 +47,12 @@ namespace Core.Maintenance
                 ProductUserId userId = EOSManager.Instance?.GetProductUserId();
                 if (userId == null || !userId.IsValid())
                 {
-                    Debug.LogWarning("[MaintenanceService] User not logged in, cannot check maintenance status");
+                    GameLogger.LogWarning("User not logged in, cannot check maintenance status");
                     _isChecking = false;
                     return false;
                 }
 
-                Debug.Log("[MaintenanceService] Querying maintenance file from Title Storage...");
+                GameLogger.Log("Querying maintenance file from Title Storage...");
 
                 // Query file list with maintenance tags
                 bool querySuccess = false;
@@ -71,7 +72,7 @@ namespace Core.Maintenance
                 {
                     if (DateTime.UtcNow - startTime > timeout)
                     {
-                        Debug.LogWarning("[MaintenanceService] Query file list timed out");
+                        GameLogger.LogWarning("Query file list timed out");
                         _eventBus?.Publish(new MaintenanceCheckFailedEvent
                         {
                             Error = "Maintenance check timed out"
@@ -85,7 +86,7 @@ namespace Core.Maintenance
 
                 if (!querySuccess)
                 {
-                    Debug.LogWarning($"[MaintenanceService] Query file list failed: {queryResult}");
+                    GameLogger.LogWarning($"Query file list failed: {queryResult}");
                     _eventBus?.Publish(new MaintenanceCheckFailedEvent
                     {
                         Error = $"Failed to query maintenance data: {queryResult}"
@@ -98,13 +99,13 @@ namespace Core.Maintenance
                 var fileNames = TitleStorageService.Instance.GetCachedCurrentFileNames();
                 if (!fileNames.Contains(MAINTENANCE_FILE_NAME))
                 {
-                    Debug.Log("[MaintenanceService] No maintenance file found - service is operational");
+                    GameLogger.Log("No maintenance file found - service is operational");
                     PublishNoMaintenanceEvent();
                     _isChecking = false;
                     return true;
                 }
 
-                Debug.Log("[MaintenanceService] Maintenance file found, downloading...");
+                GameLogger.Log("Maintenance file found, downloading...");
 
                 // Download maintenance file
                 bool downloadSuccess = false;
@@ -123,7 +124,7 @@ namespace Core.Maintenance
                 {
                     if (DateTime.UtcNow - startTime > timeout)
                     {
-                        Debug.LogWarning("[MaintenanceService] Download file timed out");
+                        GameLogger.LogWarning("Download file timed out");
                         _eventBus?.Publish(new MaintenanceCheckFailedEvent
                         {
                             Error = "Maintenance file download timed out"
@@ -137,7 +138,7 @@ namespace Core.Maintenance
 
                 if (!downloadSuccess)
                 {
-                    Debug.LogWarning($"[MaintenanceService] Download file failed: {downloadResult}");
+                    GameLogger.LogWarning($"Download file failed: {downloadResult}");
                     _eventBus?.Publish(new MaintenanceCheckFailedEvent
                     {
                         Error = $"Failed to download maintenance data: {downloadResult}"
@@ -155,7 +156,7 @@ namespace Core.Maintenance
                 }
                 else
                 {
-                    Debug.LogError("[MaintenanceService] Failed to retrieve downloaded file from cache");
+                    GameLogger.LogError("Failed to retrieve downloaded file from cache");
                     _eventBus?.Publish(new MaintenanceCheckFailedEvent
                     {
                         Error = "Failed to retrieve maintenance data from cache"
@@ -166,7 +167,7 @@ namespace Core.Maintenance
             }
             catch (Exception ex)
             {
-                Debug.LogError($"[MaintenanceService] Exception during maintenance check: {ex.Message}");
+                GameLogger.LogError($"Exception during maintenance check: {ex.Message}");
                 _eventBus?.Publish(new MaintenanceCheckFailedEvent
                 {
                     Error = $"Maintenance check error: {ex.Message}"
@@ -181,7 +182,7 @@ namespace Core.Maintenance
         /// </summary>
         public void ShowServerDownMaintenance(string error)
         {
-            Debug.Log($"[MaintenanceService] Showing server down maintenance: {error}");
+            GameLogger.Log($"Showing server down maintenance: {error}");
 
             _eventBus?.Publish(new MaintenanceModeEvent
             {
@@ -207,7 +208,7 @@ namespace Core.Maintenance
                 var data = JsonUtility.FromJson<MaintenanceData>(jsonContent);
                 _cachedMaintenanceData = data;
 
-                Debug.Log($"[MaintenanceService] Parsed maintenance data - IsMaintenanceMode: {data.isMaintenanceMode}");
+                GameLogger.Log($"Parsed maintenance data - IsMaintenanceMode: {data.isMaintenanceMode}");
 
                 _eventBus?.Publish(new MaintenanceModeEvent
                 {
@@ -219,7 +220,7 @@ namespace Core.Maintenance
             }
             catch (Exception ex)
             {
-                Debug.LogError($"[MaintenanceService] Failed to parse maintenance JSON: {ex.Message}");
+                GameLogger.LogError($"Failed to parse maintenance JSON: {ex.Message}");
                 _eventBus?.Publish(new MaintenanceCheckFailedEvent
                 {
                     Error = "Failed to parse maintenance data"

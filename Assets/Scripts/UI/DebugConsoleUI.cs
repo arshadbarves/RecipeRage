@@ -65,7 +65,7 @@ namespace UI
             
             if (_loggingService == null)
             {
-                Debug.LogError("[DebugConsoleUI] LoggingService not found in ServiceContainer!");
+                GameLogger.LogError("LoggingService not found in ServiceContainer!");
                 enabled = false;
                 return;
             }
@@ -78,9 +78,9 @@ namespace UI
             
             // Show mobile instructions
 #if UNITY_ANDROID || UNITY_IOS
-            Debug.Log($"[DebugConsole] Hold {_touchCount} fingers for {_touchHoldTime}s to toggle console");
+            GameLogger.Log($"Hold {_touchCount} fingers for {_touchHoldTime}s to toggle console");
 #else
-            Debug.Log($"[DebugConsole] Press {_toggleKey} to toggle console");
+            GameLogger.Log($"Press {_toggleKey} to toggle console");
 #endif
         }
 
@@ -360,7 +360,7 @@ namespace UI
             
             _loggingService.SaveLogsToFile(filePath);
             
-            Debug.Log($"Logs exported to: {filePath}");
+            GameLogger.Log($"Logs exported to: {filePath}");
             
             // Show notification (you could add a toast notification here)
             _statsLabel.text = $"Logs exported to: {filePath}";

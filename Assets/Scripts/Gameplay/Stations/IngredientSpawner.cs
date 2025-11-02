@@ -1,4 +1,5 @@
 using Core.Characters;
+using Core.Logging;
 using Gameplay.Cooking;
 using Unity.Netcode;
 using UnityEngine;
@@ -7,6 +8,7 @@ namespace Gameplay.Stations
 {
     /// <summary>
     /// A station that spawns ingredients.
+    /// Uses IngredientNetworkSpawner for efficient network object pooling.
     /// </summary>
     public class IngredientSpawner : CookingStation
     {
@@ -27,6 +29,11 @@ namespace Gameplay.Stations
         private float _cooldownTimer;
 
         /// <summary>
+        /// Reference to the network ingredient spawner service.
+        /// </summary>
+        private IngredientNetworkSpawner _ingredientNetworkSpawner;
+
+        /// <summary>
         /// Initialize the ingredient spawner.
         /// </summary>
         protected override void Awake()
@@ -35,6 +42,13 @@ namespace Gameplay.Stations
 
             // Set station name
             _stationName = $"{_ingredientToSpawn?.DisplayName ?? "Ingredient"} Spawner";
+
+            // Find the network ingredient spawner service
+            _ingredientNetworkSpawner = FindObjectOfType<IngredientNetworkSpawner>();
+            if (_ingredientNetworkSpawner == null)
+            {
+                GameLogger.LogWarning("IngredientNetworkSpawner not found in scene. Ingredient spawning may not work properly.");
+            }
         }
 
         /// <summary>
@@ -119,19 +133,28 @@ namespace Gameplay.Stations
             if (!IsServer)
             {
                 // Request interaction from the server
-                InteractServerRpc();
+                InteractServerRpc(player.NetworkObject);
                 return;
             }
 
             // Check if the spawner is on cooldown
             if (_isOnCooldown.Value)
             {
+                GameLogger.Log($"Spawner is on cooldown ({_cooldownTimer:F1}s remaining)");
                 return;
             }
 
             // Check if the player is already holding an item
             if (player.IsHoldingObject())
             {
+                GameLogger.Log("Player is already holding an item");
+                return;
+            }
+
+            // Check if player can use this station (network controller check)
+            if (_networkController != null && !_networkController.CanPlayerUse(player.OwnerClientId))
+            {
+                GameLogger.Log("Station is locked by another player");
                 return;
             }
 
@@ -144,54 +167,48 @@ namespace Gameplay.Stations
         }
 
         /// <summary>
-        /// Spawn an ingredient.
+        /// Spawn an ingredient using the network spawner service.
         /// </summary>
         /// <param name="player">The player to give the ingredient to</param>
         private void SpawnIngredient(PlayerController player)
         {
             if (_ingredientToSpawn == null)
             {
-                Debug.LogWarning("[IngredientSpawner] No ingredient to spawn");
+                GameLogger.LogWarning("No ingredient to spawn");
                 return;
             }
 
-            // Create the ingredient prefab
-            GameObject ingredientPrefab = _ingredientToSpawn.Prefab;
-            if (ingredientPrefab == null)
+            // Check if we have the network spawner service
+            if (_ingredientNetworkSpawner == null)
             {
-                Debug.LogWarning("[IngredientSpawner] Ingredient prefab is null");
+                GameLogger.LogError("IngredientNetworkSpawner service not available. Cannot spawn ingredient.");
                 return;
             }
 
-            // Instantiate the ingredient
-            GameObject ingredientObject = Instantiate(ingredientPrefab, _ingredientPlacementPoint.position, Quaternion.identity);
+            // Use the network spawner service to spawn the ingredient
+            // This uses object pooling for better performance
+            Vector3 spawnPosition = _ingredientPlacementPoint != null
+                ? _ingredientPlacementPoint.position
+                : transform.position + Vector3.up;
+
+            NetworkObject ingredientNetworkObject = _ingredientNetworkSpawner.SpawnIngredient(_ingredientToSpawn, spawnPosition);
+
+            if (ingredientNetworkObject == null)
+            {
+                GameLogger.LogError("Failed to spawn ingredient via network spawner");
+                return;
+            }
 
             // Get the ingredient item component
-            IngredientItem ingredientItem = ingredientObject.GetComponent<IngredientItem>();
+            IngredientItem ingredientItem = ingredientNetworkObject.GetComponent<IngredientItem>();
             if (ingredientItem == null)
             {
-                Debug.LogWarning("[IngredientSpawner] Ingredient item component not found");
-                Destroy(ingredientObject);
+                GameLogger.LogWarning("Spawned object doesn't have IngredientItem component");
                 return;
             }
 
-            // Set the ingredient
-            ingredientItem.SetIngredient(_ingredientToSpawn);
-
-            // Spawn the ingredient on the network
-            NetworkObject networkObject = ingredientObject.GetComponent<NetworkObject>();
-            if (networkObject != null)
-            {
-                networkObject.Spawn();
-
-                // Give the ingredient to the player
-                player.PickUpObject(ingredientObject);
-            }
-            else
-            {
-                Debug.LogWarning("[IngredientSpawner] Network object component not found");
-                Destroy(ingredientObject);
-            }
+            // Give the ingredient to the player
+            player.PickUpObject(ingredientNetworkObject.gameObject);
 
             // Play sound
             if (_audioSource != null && _startProcessingSound != null)
@@ -199,6 +216,8 @@ namespace Gameplay.Stations
                 _audioSource.clip = _startProcessingSound;
                 _audioSource.Play();
             }
+
+            GameLogger.Log($"Spawned {_ingredientToSpawn.DisplayName} for player {player.OwnerClientId}");
         }
 
         /// <summary>
@@ -231,14 +250,28 @@ namespace Gameplay.Stations
         /// <summary>
         /// Request interaction from the server.
         /// </summary>
+        /// <param name="playerNetworkObject">The player's network object</param>
         [ServerRpc(RequireOwnership = false)]
-        private void InteractServerRpc()
+        private void InteractServerRpc(NetworkObjectReference playerNetworkObject)
         {
-            // Get the local player
-            PlayerController player = NetworkManager.Singleton.LocalClient.PlayerObject.GetComponent<PlayerController>();
-
-            // Interact with the spawner
-            Interact(player);
+            // Get the player controller
+            if (playerNetworkObject.TryGet(out NetworkObject networkObject))
+            {
+                PlayerController player = networkObject.GetComponent<PlayerController>();
+                if (player != null)
+                {
+                    // Interact with the spawner
+                    Interact(player);
+                }
+                else
+                {
+                    GameLogger.LogWarning("Player controller not found on network object");
+                }
+            }
+            else
+            {
+                GameLogger.LogWarning("Failed to get network object from reference");
+            }
         }
     }
 }

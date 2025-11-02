@@ -4,6 +4,7 @@ using Core.Animation;
 using Core.Bootstrap;
 using Core.Currency;
 using Core.Events;
+using Core.Logging;
 using Core.SaveSystem;
 using UI.Core;
 using UI.Screens;
@@ -53,7 +54,7 @@ namespace UI.Popups
             // Setup callbacks
             SetupCallbacks();
 
-            Debug.Log("[UsernamePopup] Initialized");
+            GameLogger.Log("Initialized");
         }
 
         private void QueryElements()
@@ -232,7 +233,7 @@ namespace UI.Popups
                     return;
                 }
 
-                Debug.Log($"[UsernamePopup] Deducted {USERNAME_CHANGE_COST} gems for username change");
+                GameLogger.Log($"Deducted {USERNAME_CHANGE_COST} gems for username change");
             }
 
             // Update player stats
@@ -242,7 +243,7 @@ namespace UI.Popups
                 stats.UsernameChangeCount++;
             });
 
-            Debug.Log($"[UsernamePopup] Username set to: {username} (Change count: {_saveService.GetPlayerStats().UsernameChangeCount})");
+            GameLogger.Log($"Username set to: {username} (Change count: {_saveService.GetPlayerStats().UsernameChangeCount})");
 
             // Publish event to notify other UI components
             GameBootstrap.Services?.EventBus?.Publish(new PlayerStatsChangedEvent
@@ -323,7 +324,7 @@ namespace UI.Popups
             // Show error toast
             _ = GameBootstrap.Services?.UIService?.ShowToast(message, ToastType.Error, 3f);
 
-            Debug.LogWarning($"[UsernamePopup] Validation error: {message}");
+            GameLogger.LogWarning($"Validation error: {message}");
         }
 
         protected override void OnDispose()

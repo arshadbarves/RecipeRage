@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Core.Logging;
 
 namespace Core.Input
 {
@@ -73,7 +74,7 @@ namespace Core.Input
         /// </summary>
         public void Initialize()
         {
-            Debug.Log("[TouchInputProvider] Initializing touch input provider");
+            GameLogger.Log("Initializing touch input provider");
             
             // Find joystick area in the UI
             // In a real implementation, this would be passed in or found in the UI
@@ -104,7 +105,7 @@ namespace Core.Input
         public void Enable()
         {
             _isEnabled = true;
-            Debug.Log("[TouchInputProvider] Touch input provider enabled");
+            GameLogger.Log("Touch input provider enabled");
         }
         
         /// <summary>
@@ -114,7 +115,7 @@ namespace Core.Input
         {
             _isEnabled = false;
             ResetInput();
-            Debug.Log("[TouchInputProvider] Touch input provider disabled");
+            GameLogger.Log("Touch input provider disabled");
         }
         
         /// <summary>

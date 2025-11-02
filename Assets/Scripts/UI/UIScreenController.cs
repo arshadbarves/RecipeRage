@@ -2,6 +2,7 @@ using System;
 using Core.Animation;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Core.Logging;
 
 namespace UI
 {
@@ -92,7 +93,7 @@ namespace UI
             }
             catch (Exception e)
             {
-                Debug.LogError($"[UIScreenController] Failed to load template for {ScreenType}: {e.Message}");
+                GameLogger.LogError($"Failed to load template for {ScreenType}: {e.Message}");
             }
         }
 

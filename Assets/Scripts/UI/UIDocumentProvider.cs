@@ -1,6 +1,7 @@
 using Core.Bootstrap;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Core.Logging;
 
 namespace UI
 {
@@ -21,7 +22,7 @@ namespace UI
 
             if (_uiDocument == null)
             {
-                Debug.LogError("[UIDocumentProvider] UIDocument component not found!");
+                GameLogger.LogError("UIDocument component not found!");
                 return;
             }
         }
@@ -31,7 +32,7 @@ namespace UI
             // Get the UI service
             if (uiService == null)
             {
-                Debug.LogError("[UIDocumentProvider] UIService not found or is not of type UIService");
+                GameLogger.LogError("UIService not found or is not of type UIService");
                 return;
             }
 
@@ -39,7 +40,7 @@ namespace UI
             uiService.Initialize(_uiDocument);
             _isInitialized = true;
 
-            Debug.Log("[UIDocumentProvider] ✅ UIService initialized with UIDocument");
+            GameLogger.Log("✅ UIService initialized with UIDocument");
         }
 
         /// <summary>

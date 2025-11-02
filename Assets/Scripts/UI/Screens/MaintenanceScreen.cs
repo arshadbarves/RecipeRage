@@ -1,6 +1,7 @@
 using System;
 using Core.Bootstrap;
 using Core.Events;
+using Core.Logging;
 using Core.Maintenance;
 using Cysharp.Threading.Tasks;
 using UI.Core;
@@ -48,7 +49,7 @@ namespace UI.Screens
             SetupButtonHandlers();
             SubscribeToEvents();
 
-            Debug.Log("[MaintenanceScreen] Initialized");
+            GameLogger.Log("Initialized");
         }
 
         protected override void OnShow()
@@ -56,14 +57,14 @@ namespace UI.Screens
             _isRetrying = false;
             UpdateUI();
 
-            Debug.Log("[MaintenanceScreen] Showing maintenance screen");
+            GameLogger.Log("Showing maintenance screen");
         }
 
         protected override void OnHide()
         {
             _isRetrying = false;
 
-            Debug.Log("[MaintenanceScreen] Hiding maintenance screen");
+            GameLogger.Log("Hiding maintenance screen");
         }
 
         public override void Update(float deltaTime)
@@ -100,17 +101,17 @@ namespace UI.Screens
 
             // Log missing elements
             if (_maintenanceCard == null)
-                Debug.LogWarning("[MaintenanceScreen] maintenance-card not found");
+                GameLogger.LogWarning("maintenance-card not found");
             if (_titleLabel == null)
-                Debug.LogWarning("[MaintenanceScreen] maintenance-title not found");
+                GameLogger.LogWarning("maintenance-title not found");
             if (_messageLabel == null)
-                Debug.LogWarning("[MaintenanceScreen] maintenance-message not found");
+                GameLogger.LogWarning("maintenance-message not found");
             if (_countdownContainer == null)
-                Debug.LogWarning("[MaintenanceScreen] countdown-container not found");
+                GameLogger.LogWarning("countdown-container not found");
             if (_countdownLabel == null)
-                Debug.LogWarning("[MaintenanceScreen] countdown-label not found");
+                GameLogger.LogWarning("countdown-label not found");
             if (_retryButton == null)
-                Debug.LogWarning("[MaintenanceScreen] retry-button not found");
+                GameLogger.LogWarning("retry-button not found");
         }
 
         private void SetupButtonHandlers()
@@ -222,7 +223,7 @@ namespace UI.Screens
 
         private void HandleMaintenanceModeEvent(MaintenanceModeEvent evt)
         {
-            Debug.Log($"[MaintenanceScreen] Maintenance mode event received - IsMaintenanceMode: {evt.IsMaintenanceMode}");
+            GameLogger.Log($"Maintenance mode event received - IsMaintenanceMode: {evt.IsMaintenanceMode}");
 
             if (!evt.IsMaintenanceMode)
             {
@@ -245,11 +246,11 @@ namespace UI.Screens
                 try
                 {
                     _estimatedEndTime = DateTime.Parse(evt.EstimatedEndTime, null, System.Globalization.DateTimeStyles.RoundtripKind);
-                    Debug.Log($"[MaintenanceScreen] Estimated end time: {_estimatedEndTime}");
+                    GameLogger.Log($"Estimated end time: {_estimatedEndTime}");
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError($"[MaintenanceScreen] Failed to parse estimated end time: {ex.Message}");
+                    GameLogger.LogError($"Failed to parse estimated end time: {ex.Message}");
                     _hasEstimatedTime = false;
                 }
             }
@@ -265,7 +266,7 @@ namespace UI.Screens
 
         private void HandleMaintenanceCheckFailed(MaintenanceCheckFailedEvent evt)
         {
-            Debug.LogWarning($"[MaintenanceScreen] Maintenance check failed: {evt.Error}");
+            GameLogger.LogWarning($"Maintenance check failed: {evt.Error}");
             // This could indicate server is down - but we don't show maintenance screen here
             // AuthenticationService will handle showing maintenance for login failures
         }
@@ -274,7 +275,7 @@ namespace UI.Screens
         {
             if (_isRetrying) return;
 
-            Debug.Log("[MaintenanceScreen] Retry button clicked");
+            GameLogger.Log("Retry button clicked");
             _isRetrying = true;
             UpdateUI();
 
@@ -292,7 +293,7 @@ namespace UI.Screens
                 var authService = GameBootstrap.Services?.AuthenticationService;
                 if (authService == null)
                 {
-                    Debug.LogError("[MaintenanceScreen] AuthenticationService not available");
+                    GameLogger.LogError("AuthenticationService not available");
                     _isRetrying = false;
                     UpdateUI();
                     return;
@@ -303,7 +304,7 @@ namespace UI.Screens
 
                 if (success)
                 {
-                    Debug.Log("[MaintenanceScreen] Reconnect successful");
+                    GameLogger.Log("Reconnect successful");
 
                     // Check maintenance status again
                     var maintenanceService = GameBootstrap.Services?.MaintenanceService;
@@ -314,14 +315,14 @@ namespace UI.Screens
                 }
                 else
                 {
-                    Debug.LogWarning("[MaintenanceScreen] Reconnect failed");
+                    GameLogger.LogWarning("Reconnect failed");
                     _isRetrying = false;
                     UpdateUI();
                 }
             }
             catch (Exception ex)
             {
-                Debug.LogError($"[MaintenanceScreen] Reconnect error: {ex.Message}");
+                GameLogger.LogError($"Reconnect error: {ex.Message}");
                 _isRetrying = false;
                 UpdateUI();
             }

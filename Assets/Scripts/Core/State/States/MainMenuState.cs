@@ -4,6 +4,7 @@ using UI;
 using UI.Popups;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Core.Logging;
 
 namespace Core.State.States
 {
@@ -49,7 +50,7 @@ namespace Core.State.States
             // If no username set, show mandatory popup
             if (string.IsNullOrEmpty(stats.PlayerName))
             {
-                Debug.Log("[MainMenuState] First time user - showing mandatory username popup");
+                GameLogger.Log("First time user - showing mandatory username popup");
 
                 // Wait a bit for UI to be ready
                 await UniTask.Delay(500);
@@ -62,17 +63,17 @@ namespace Core.State.States
                         isFirstTime: true,
                         onConfirm: (newUsername) =>
                         {
-                            Debug.Log($"[MainMenuState] Username set to: {newUsername}");
+                            GameLogger.Log($"Username set to: {newUsername}");
                         },
                         onCancel: () =>
                         {
-                            Debug.Log("[MainMenuState] Username setup cancelled");
+                            GameLogger.Log("Username setup cancelled");
                         }
                     );
                 }
                 else
                 {
-                    Debug.LogError("[MainMenuState] UsernamePopup screen not found");
+                    GameLogger.LogError("UsernamePopup screen not found");
                 }
             }
         }

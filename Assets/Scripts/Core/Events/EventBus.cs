@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Core.Logging;
 using UnityEngine;
 
 namespace Core.Events
@@ -21,7 +22,7 @@ namespace Core.Events
         {
             if (handler == null)
             {
-                Debug.LogWarning("[EventBus] Attempted to subscribe with null handler");
+                GameLogger.LogWarning("Attempted to subscribe with null handler");
                 return;
             }
 
@@ -38,7 +39,7 @@ namespace Core.Events
                 if (!_subscriptions[eventType].Contains(handler))
                 {
                     _subscriptions[eventType].Add(handler);
-                    Debug.Log($"[EventBus] Subscribed to {eventType.Name} (Total: {_subscriptions[eventType].Count})");
+                    GameLogger.Log($"Subscribed to {eventType.Name} (Total: {_subscriptions[eventType].Count})");
                 }
             }
         }
@@ -57,7 +58,7 @@ namespace Core.Events
                 if (_subscriptions.TryGetValue(eventType, out List<Delegate> handlers))
                 {
                     handlers.Remove(handler);
-                    Debug.Log($"[EventBus] Unsubscribed from {eventType.Name} (Remaining: {handlers.Count})");
+                    GameLogger.Log($"Unsubscribed from {eventType.Name} (Remaining: {handlers.Count})");
 
                     // Clean up empty lists
                     if (handlers.Count == 0)
@@ -75,7 +76,7 @@ namespace Core.Events
         {
             if (eventData == null)
             {
-                Debug.LogWarning("[EventBus] Attempted to publish null event data");
+                GameLogger.LogWarning("Attempted to publish null event data");
                 return;
             }
 
@@ -103,11 +104,11 @@ namespace Core.Events
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError($"[EventBus] Error invoking handler for {eventType.Name}: {ex.Message}\n{ex.StackTrace}");
+                    GameLogger.LogError($"Error invoking handler for {eventType.Name}: {ex.Message}\n{ex.StackTrace}");
                 }
             }
 
-            Debug.Log($"[EventBus] Published {eventType.Name} to {handlersCopy.Count} subscribers");
+            GameLogger.Log($"Published {eventType.Name} to {handlersCopy.Count} subscribers");
         }
 
         /// <summary>
@@ -120,7 +121,7 @@ namespace Core.Events
                 Type eventType = typeof(T);
                 if (_subscriptions.Remove(eventType))
                 {
-                    Debug.Log($"[EventBus] Cleared all subscriptions for {eventType.Name}");
+                    GameLogger.Log($"Cleared all subscriptions for {eventType.Name}");
                 }
             }
         }
@@ -134,7 +135,7 @@ namespace Core.Events
             {
                 int count = _subscriptions.Count;
                 _subscriptions.Clear();
-                Debug.Log($"[EventBus] Cleared all subscriptions ({count} event types)");
+                GameLogger.Log($"Cleared all subscriptions ({count} event types)");
             }
         }
 

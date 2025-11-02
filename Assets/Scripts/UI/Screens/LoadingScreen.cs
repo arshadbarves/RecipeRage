@@ -1,5 +1,6 @@
 using System;
 using Core.Bootstrap;
+using Core.Logging;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UI.Core;
@@ -50,7 +51,7 @@ namespace UI.Screens
             CacheUIElements();
             SetRandomTip();
             SetVersionInfo();
-            Debug.Log("[LoadingScreen] Initialized");
+            GameLogger.Log("Initialized");
         }
 
         protected override void OnShow()
@@ -64,7 +65,7 @@ namespace UI.Screens
         {
             // Kill any ongoing animations
             _progressTween?.Kill();
-            
+
             // Fade out
             if (Container != null)
             {
@@ -95,15 +96,15 @@ namespace UI.Screens
 
             if (_loadingProgress == null)
             {
-                Debug.LogWarning("[LoadingScreen] loading-progress not found");
+                GameLogger.LogWarning("loading-progress not found");
             }
             if (_progressText == null)
             {
-                Debug.LogWarning("[LoadingScreen] progress-text not found");
+                GameLogger.LogWarning("progress-text not found");
             }
             if (_loadingTip == null)
             {
-                Debug.LogWarning("[LoadingScreen] loading-tip not found");
+                GameLogger.LogWarning("loading-tip not found");
             }
         }
 
@@ -136,7 +137,7 @@ namespace UI.Screens
         public void UpdateProgress(float progress, string message = null)
         {
             progress = Mathf.Clamp01(progress);
-            
+
             // Animate progress bar
             if (_loadingProgress != null)
             {
@@ -152,7 +153,7 @@ namespace UI.Screens
                     0.3f
                 ).SetEase(Ease.OutQuad);
             }
-            
+
             // Update status message
             if (_progressText != null && !string.IsNullOrEmpty(message))
             {

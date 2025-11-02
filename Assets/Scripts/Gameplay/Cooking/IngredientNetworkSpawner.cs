@@ -1,4 +1,5 @@
 using Core.Bootstrap;
+using Core.Logging;
 using Core.Networking.Services;
 using Unity.Netcode;
 using UnityEngine;
@@ -13,10 +14,10 @@ namespace Gameplay.Cooking
     {
         [Header("Ingredient Prefabs")]
         [SerializeField] private GameObject _ingredientPrefab;
-        
+
         private INetworkObjectPool _objectPool;
         private INetworkGameManager _networkGameManager;
-        
+
         /// <summary>
         /// Initialize the spawner.
         /// </summary>
@@ -30,7 +31,7 @@ namespace Gameplay.Cooking
                 _networkGameManager = services.NetworkGameManager;
             }
         }
-        
+
         /// <summary>
         /// Spawn an ingredient at the specified position.
         /// </summary>
@@ -41,16 +42,16 @@ namespace Gameplay.Cooking
         {
             if (!IsServer)
             {
-                Debug.LogWarning("[IngredientNetworkSpawner] Only the server can spawn ingredients");
+                GameLogger.LogWarning("Only the server can spawn ingredients");
                 return null;
             }
-            
+
             if (ingredientData == null)
             {
-                Debug.LogError("[IngredientNetworkSpawner] Cannot spawn null ingredient");
+                GameLogger.LogError("Cannot spawn null ingredient");
                 return null;
             }
-            
+
             // Get ingredient from pool or create new
             NetworkObject ingredientObject;
             if (_objectPool != null)
@@ -62,23 +63,23 @@ namespace Gameplay.Cooking
                 // Fallback to direct spawning if pool not available
                 ingredientObject = _networkGameManager?.SpawnNetworkObject(_ingredientPrefab, position, Quaternion.identity);
             }
-            
+
             if (ingredientObject == null)
             {
-                Debug.LogError("[IngredientNetworkSpawner] Failed to spawn ingredient");
+                GameLogger.LogError("Failed to spawn ingredient");
                 return null;
             }
-            
+
             // Set the ingredient data
             IngredientItem ingredientItem = ingredientObject.GetComponent<IngredientItem>();
             if (ingredientItem != null)
             {
                 ingredientItem.SetIngredient(ingredientData);
             }
-            
+
             return ingredientObject;
         }
-        
+
         /// <summary>
         /// Despawn an ingredient.
         /// </summary>
@@ -87,16 +88,16 @@ namespace Gameplay.Cooking
         {
             if (!IsServer)
             {
-                Debug.LogWarning("[IngredientNetworkSpawner] Only the server can despawn ingredients");
+                GameLogger.LogWarning("Only the server can despawn ingredients");
                 return;
             }
-            
+
             if (ingredientObject == null)
             {
-                Debug.LogWarning("[IngredientNetworkSpawner] Cannot despawn null ingredient");
+                GameLogger.LogWarning("Cannot despawn null ingredient");
                 return;
             }
-            
+
             // Return to pool or despawn
             if (_objectPool != null)
             {
@@ -107,7 +108,7 @@ namespace Gameplay.Cooking
                 _networkGameManager?.DespawnNetworkObject(ingredientObject);
             }
         }
-        
+
         /// <summary>
         /// Spawn an ingredient at a specific station.
         /// </summary>
@@ -118,17 +119,18 @@ namespace Gameplay.Cooking
         {
             if (!IsServer)
             {
-                Debug.LogWarning("[IngredientNetworkSpawner] Only the server can spawn ingredients");
+
+                GameLogger.LogWarning("Only the server can spawn ingredients");
                 return null;
             }
-            
+
             // Find the station
             if (!NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(stationNetworkId, out NetworkObject stationObject))
             {
-                Debug.LogError($"[IngredientNetworkSpawner] Station with ID {stationNetworkId} not found");
+                GameLogger.LogError($"Station with ID {stationNetworkId} not found");
                 return null;
             }
-            
+
             // Spawn at station position
             Vector3 spawnPosition = stationObject.transform.position + Vector3.up * 0.5f;
             return SpawnIngredient(ingredientData, spawnPosition);

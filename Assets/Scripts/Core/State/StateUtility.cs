@@ -1,3 +1,4 @@
+using Core.Logging;
 using UnityEngine;
 
 namespace Core.State
@@ -14,7 +15,7 @@ namespace Core.State
         /// <param name="message">Warning message</param>
         public static void LogStateWarning(string stateName, string message)
         {
-            Debug.LogWarning($"[{stateName}] {message}");
+            GameLogger.LogWarning($"[{stateName}] {message}");
         }
 
         /// <summary>
@@ -24,7 +25,7 @@ namespace Core.State
         /// <param name="message">Error message</param>
         public static void LogStateError(string stateName, string message)
         {
-            Debug.LogError($"[{stateName}] {message}");
+            GameLogger.LogError($"[{stateName}] {message}");
         }
 
         /// <summary>
@@ -33,7 +34,7 @@ namespace Core.State
         /// <param name="stateName">Name of the state</param>
         public static void LogStateEnter(string stateName)
         {
-            Debug.Log($"[{stateName}] Entered");
+            GameLogger.Log($"[{stateName}] Entered");
         }
 
         /// <summary>
@@ -42,7 +43,7 @@ namespace Core.State
         /// <param name="stateName">Name of the state</param>
         public static void LogStateExit(string stateName)
         {
-            Debug.Log($"[{stateName}] Exited");
+            GameLogger.Log($"[{stateName}] Exited");
         }
 
         /// <summary>
@@ -52,7 +53,7 @@ namespace Core.State
         /// <param name="toState">Name of the target state</param>
         public static void LogStateTransition(string fromState, string toState)
         {
-            Debug.Log($"State transition: {fromState} -> {toState}");
+            GameLogger.Log($"State transition: {fromState} -> {toState}");
         }
 
         /// <summary>
@@ -62,7 +63,7 @@ namespace Core.State
         /// <param name="action">Action being performed</param>
         public static void LogStateAction(string stateName, string action)
         {
-            Debug.Log($"[{stateName}] {action}");
+            GameLogger.Log($"[{stateName}] {action}");
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using Core.Logging;
 using Core.Networking.Interfaces;
 using Core.Networking.Services;
 using PlayEveryWare.EpicOnlineServices;
@@ -50,7 +51,7 @@ namespace Core.Networking
         {
             if (_isInitialized)
             {
-                Debug.LogWarning("[NetworkingServiceContainer] Already initialized");
+                GameLogger.LogWarning("Already initialized");
                 return;
             }
 
@@ -59,11 +60,11 @@ namespace Core.Networking
 
             if (eosLobbyManager == null)
             {
-                Debug.LogError("[NetworkingServiceContainer] EOSLobbyManager not available");
+                GameLogger.LogError("EOSLobbyManager not available");
                 return;
             }
 
-            Debug.Log("[NetworkingServiceContainer] Initializing services...");
+            GameLogger.Log("Initializing services...");
 
             // Create services in dependency order
 
@@ -93,14 +94,14 @@ namespace Core.Networking
             }
             else
             {
-                Debug.LogWarning("[NetworkingServiceContainer] SupabaseConfig not found or invalid - Friends system disabled");
+                GameLogger.LogWarning("SupabaseConfig not found or invalid - Friends system disabled");
             }
 
             // P2P networking now handled by Unity Netcode + EOSTransport
             // No need for custom P2PService
 
             _isInitialized = true;
-            Debug.Log("[NetworkingServiceContainer] Initialized successfully");
+            GameLogger.Log("Initialized successfully");
         }
 
         #endregion
@@ -131,7 +132,7 @@ namespace Core.Networking
             if (!_isInitialized)
                 return;
 
-            Debug.Log("[NetworkingServiceContainer] Disposing - leaving lobbies, closing connections");
+            GameLogger.Log("Disposing - leaving lobbies, closing connections");
 
             try
             {
@@ -156,7 +157,7 @@ namespace Core.Networking
             }
             catch (Exception ex)
             {
-                Debug.LogError($"[NetworkingServiceContainer] Error during disposal: {ex.Message}");
+                GameLogger.LogError($"Error during disposal: {ex.Message}");
             }
 
             // Clear references
@@ -168,7 +169,7 @@ namespace Core.Networking
             TeamManager = null;
 
             _isInitialized = false;
-            Debug.Log("[NetworkingServiceContainer] Disposed");
+            GameLogger.Log("Disposed");
         }
 
         #endregion

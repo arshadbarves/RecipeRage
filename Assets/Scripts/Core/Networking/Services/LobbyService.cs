@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Core.Logging;
 using Core.Networking.Common;
 using Core.Networking.Interfaces;
 using Epic.OnlineServices;
@@ -17,24 +18,24 @@ namespace Core.Networking.Services
     public class LobbyService : ILobbyManager
     {
         #region Events
-        
+
         public event Action<Result, LobbyInfo> OnPartyCreated;
         public event Action<PlayerInfo> OnPartyMemberJoined;
         public event Action<PlayerInfo> OnPartyMemberLeft;
         public event Action OnPartyUpdated;
-        
+
         public event Action<Result, LobbyInfo> OnMatchLobbyCreated;
         public event Action<Result, LobbyInfo> OnMatchLobbyJoined;
         public event Action OnMatchLobbyLeft;
         public event Action OnMatchLobbyUpdated;
-        
+
         public event Action<LobbyState> OnLobbyStateChanged;
         public event Action<string> OnError;
-        
+
         #endregion
-        
+
         #region Properties
-        
+
         public LobbyInfo CurrentPartyLobby { get; private set; }
         public LobbyInfo CurrentMatchLobby { get; private set; }
         public LobbyState CurrentState { get; private set; } = LobbyState.Idle;
@@ -42,24 +43,24 @@ namespace Core.Networking.Services
         public bool IsInMatchLobby => CurrentMatchLobby != null;
         public bool IsPartyLeader => CurrentPartyLobby?.IsPartyLeader(EOSManager.Instance.GetProductUserId()) ?? false;
         public bool IsMatchLobbyOwner => CurrentMatchLobby?.IsOwner(EOSManager.Instance.GetProductUserId()) ?? false;
-        
+
         #endregion
-        
+
         #region Private Fields
-        
+
         private EOSLobbyManager _eosLobbyManager;
         private ITeamManager _teamManager;
         private bool _isInitialized;
-        
+
         // Notification handles
         private ulong _lobbyUpdateNotification;
         private ulong _lobbyMemberUpdateNotification;
         private ulong _lobbyInviteAcceptedNotification;
-        
+
         #endregion
-        
+
         #region Initialization
-        
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -68,7 +69,7 @@ namespace Core.Networking.Services
             _eosLobbyManager = eosLobbyManager ?? throw new ArgumentNullException(nameof(eosLobbyManager));
             _teamManager = teamManager ?? throw new ArgumentNullException(nameof(teamManager));
         }
-        
+
         /// <summary>
         /// Initialize the lobby service
         /// </summary>
@@ -76,21 +77,21 @@ namespace Core.Networking.Services
         {
             if (_isInitialized)
             {
-                Debug.LogWarning("[LobbyService] Already initialized");
+                GameLogger.LogWarning("Already initialized");
                 return;
             }
-            
+
             // Subscribe to EOS lobby notifications
             SubscribeToLobbyNotifications();
-            
+
             _isInitialized = true;
-            Debug.Log("[LobbyService] Initialized");
+            GameLogger.Log("Initialized");
         }
-        
+
         #endregion
-        
+
         #region Party Lobby Methods
-        
+
         /// <summary>
         /// Create a new party lobby
         /// </summary>
@@ -101,29 +102,29 @@ namespace Core.Networking.Services
                 OnError?.Invoke("LobbyService not initialized");
                 return;
             }
-            
+
             if (IsInParty)
             {
                 OnError?.Invoke("Already in a party. Leave current party first.");
                 return;
             }
-            
+
             // Set defaults for party lobby
             config.Type = LobbyType.Party;
             config.IsPrivate = true; // Party lobbies are always private
             config.AllowInvites = true;
-            
+
             // Add party-specific attributes
             config.CustomAttributes["Type"] = "Party";
             config.CustomAttributes["PartyLeader"] = EOSManager.Instance.GetProductUserId().ToString();
             config.CustomAttributes["IsSearching"] = "false";
-            
-            Debug.Log($"[LobbyService] Creating party lobby: {config.LobbyName}");
-            
+
+            GameLogger.Log($"Creating party lobby: {config.LobbyName}");
+
             // Create lobby via EOS
             CreateLobbyInternal(config, LobbyType.Party);
         }
-        
+
         /// <summary>
         /// Invite a friend to the party
         /// </summary>
@@ -134,19 +135,19 @@ namespace Core.Networking.Services
                 OnError?.Invoke("Not in a party");
                 return;
             }
-            
+
             if (!IsPartyLeader)
             {
                 OnError?.Invoke("Only party leader can invite");
                 return;
             }
-            
-            Debug.Log($"[LobbyService] Inviting friend to party: {friendId}");
-            
+
+            GameLogger.Log($"Inviting friend to party: {friendId}");
+
             // Send invite via EOS
             _eosLobbyManager.SendInvite(friendId);
         }
-        
+
         /// <summary>
         /// Leave the current party
         /// </summary>
@@ -154,21 +155,21 @@ namespace Core.Networking.Services
         {
             if (!IsInParty)
             {
-                Debug.LogWarning("[LobbyService] Not in a party");
+                GameLogger.LogWarning("Not in a party");
                 return;
             }
-            
-            Debug.Log("[LobbyService] Leaving party");
-            
+
+            GameLogger.Log("Leaving party");
+
             string lobbyId = CurrentPartyLobby.LobbyId;
             CurrentPartyLobby = null;
-            
+
             // Leave via EOS
             _eosLobbyManager.LeaveLobby(null);
-            
+
             ChangeState(LobbyState.Idle);
         }
-        
+
         /// <summary>
         /// Update party lobby settings
         /// </summary>
@@ -179,23 +180,23 @@ namespace Core.Networking.Services
                 OnError?.Invoke("Not in a party");
                 return;
             }
-            
+
             if (!IsPartyLeader)
             {
                 OnError?.Invoke("Only party leader can update settings");
                 return;
             }
-            
-            Debug.Log("[LobbyService] Updating party settings");
-            
+
+            GameLogger.Log("Updating party settings");
+
             // Update lobby attributes via EOS
             UpdateLobbyAttributes(CurrentPartyLobby.LobbyId, config);
         }
-        
+
         #endregion
-        
+
         #region Match Lobby Methods
-        
+
         /// <summary>
         /// Create a new match lobby
         /// </summary>
@@ -206,23 +207,23 @@ namespace Core.Networking.Services
                 OnError?.Invoke("LobbyService not initialized");
                 return;
             }
-            
+
             // Set defaults for match lobby
             config.Type = LobbyType.Match;
             config.IsPrivate = false; // Match lobbies are public for matchmaking
-            
+
             // Add match-specific attributes
             config.CustomAttributes["Type"] = "Match";
             config.CustomAttributes["Status"] = "Filling";
             config.CustomAttributes["TeamA_Count"] = "0";
             config.CustomAttributes["TeamB_Count"] = "0";
-            
-            Debug.Log($"[LobbyService] Creating match lobby: {config.LobbyName}");
-            
+
+            GameLogger.Log($"Creating match lobby: {config.LobbyName}");
+
             // Create lobby via EOS
             CreateLobbyInternal(config, LobbyType.Match);
         }
-        
+
         /// <summary>
         /// Join an existing match lobby
         /// </summary>
@@ -233,19 +234,19 @@ namespace Core.Networking.Services
                 OnError?.Invoke("LobbyService not initialized");
                 return;
             }
-            
+
             if (IsInMatchLobby)
             {
                 OnError?.Invoke("Already in a match lobby");
                 return;
             }
-            
-            Debug.Log($"[LobbyService] Joining match lobby: {lobbyId}");
-            
+
+            GameLogger.Log($"Joining match lobby: {lobbyId}");
+
             // Join via EOS
             JoinLobbyInternal(lobbyId, LobbyType.Match);
         }
-        
+
         /// <summary>
         /// Leave the current match lobby
         /// </summary>
@@ -253,34 +254,34 @@ namespace Core.Networking.Services
         {
             if (!IsInMatchLobby)
             {
-                Debug.LogWarning("[LobbyService] Not in a match lobby");
+                GameLogger.LogWarning("Not in a match lobby");
                 return;
             }
-            
-            Debug.Log("[LobbyService] Leaving match lobby");
-            
+
+            GameLogger.Log("Leaving match lobby");
+
             string lobbyId = CurrentMatchLobby.LobbyId;
             bool wasOwner = IsMatchLobbyOwner;
             bool wasLastPlayer = CurrentMatchLobby.CurrentPlayers <= 1;
-            
+
             CurrentMatchLobby = null;
-            
+
             // Leave via EOS
             // Note: EOS automatically destroys the lobby if the last player leaves
             // or if the owner leaves (depending on lobby settings)
             _eosLobbyManager.LeaveLobby(null);
-            
+
             if (wasOwner || wasLastPlayer)
             {
-                Debug.Log($"[LobbyService] Left match lobby as {(wasOwner ? "owner" : "last player")} - lobby will be destroyed by EOS");
+                GameLogger.Log($"Left match lobby as {(wasOwner ? "owner" : "last player")} - lobby will be destroyed by EOS");
             }
-            
+
             OnMatchLobbyLeft?.Invoke();
-            
+
             // Return to party state if in party, otherwise idle
             ChangeState(IsInParty ? LobbyState.InParty : LobbyState.Idle);
         }
-        
+
         /// <summary>
         /// Destroy the current match lobby (owner only)
         /// Explicitly destroys the lobby instead of just leaving
@@ -289,51 +290,51 @@ namespace Core.Networking.Services
         {
             if (!IsInMatchLobby)
             {
-                Debug.LogWarning("[LobbyService] Not in a match lobby");
+                GameLogger.LogWarning("Not in a match lobby");
                 return;
             }
-            
+
             if (!IsMatchLobbyOwner)
             {
-                Debug.LogWarning("[LobbyService] Only the lobby owner can destroy the lobby. Use LeaveMatchLobby() instead.");
+                GameLogger.LogWarning("Only the lobby owner can destroy the lobby. Use LeaveMatchLobby() instead.");
                 LeaveMatchLobby();
                 return;
             }
-            
-            Debug.Log("[LobbyService] Destroying match lobby (owner)");
-            
+
+            GameLogger.Log("Destroying match lobby (owner)");
+
             string lobbyId = CurrentMatchLobby.LobbyId;
-            
+
             // Destroy the lobby via EOS
             var destroyOptions = new DestroyLobbyOptions
             {
                 LocalUserId = EOSManager.Instance.GetProductUserId(),
                 LobbyId = lobbyId
             };
-            
+
             EOSManager.Instance.GetEOSLobbyInterface().DestroyLobby(ref destroyOptions, null, (ref DestroyLobbyCallbackInfo data) =>
             {
                 if (data.ResultCode == Result.Success)
                 {
-                    Debug.Log($"[LobbyService] Match lobby destroyed successfully: {lobbyId}");
+                    GameLogger.Log($"Match lobby destroyed successfully: {lobbyId}");
                 }
                 else
                 {
-                    Debug.LogError($"[LobbyService] Failed to destroy match lobby: {data.ResultCode}");
+                    GameLogger.LogError($"Failed to destroy match lobby: {data.ResultCode}");
                 }
             });
-            
+
             CurrentMatchLobby = null;
             OnMatchLobbyLeft?.Invoke();
-            
+
             // Return to party state if in party, otherwise idle
             ChangeState(IsInParty ? LobbyState.InParty : LobbyState.Idle);
         }
-        
+
         #endregion
-        
+
         #region Game Settings
-        
+
         /// <summary>
         /// Set the game mode
         /// </summary>
@@ -344,7 +345,7 @@ namespace Core.Networking.Services
                 OnError?.Invoke("Only party leader can change game mode");
                 return;
             }
-            
+
             if (CurrentPartyLobby != null)
             {
                 CurrentPartyLobby.GameMode = gameMode;
@@ -352,7 +353,7 @@ namespace Core.Networking.Services
                 OnPartyUpdated?.Invoke();
             }
         }
-        
+
         /// <summary>
         /// Set the map name
         /// </summary>
@@ -363,7 +364,7 @@ namespace Core.Networking.Services
                 OnError?.Invoke("Only party leader can change map");
                 return;
             }
-            
+
             if (CurrentPartyLobby != null)
             {
                 CurrentPartyLobby.MapName = mapName;
@@ -371,11 +372,11 @@ namespace Core.Networking.Services
                 OnPartyUpdated?.Invoke();
             }
         }
-        
+
         #endregion
-        
+
         #region Utility Methods
-        
+
         /// <summary>
         /// Check if all players are ready
         /// </summary>
@@ -384,16 +385,16 @@ namespace Core.Networking.Services
             var lobby = CurrentMatchLobby ?? CurrentPartyLobby;
             if (lobby == null || lobby.Players.Count == 0)
                 return false;
-            
+
             foreach (var player in lobby.Players)
             {
                 if (!player.IsReady)
                     return false;
             }
-            
+
             return true;
         }
-        
+
         /// <summary>
         /// Get lobby info by ID
         /// </summary>
@@ -401,17 +402,17 @@ namespace Core.Networking.Services
         {
             if (CurrentPartyLobby?.LobbyId == lobbyId)
                 return CurrentPartyLobby;
-            
+
             if (CurrentMatchLobby?.LobbyId == lobbyId)
                 return CurrentMatchLobby;
-            
+
             return null;
         }
-        
+
         #endregion
-        
+
         #region Private Helper Methods - EOS Integration
-        
+
         /// <summary>
         /// Create a lobby internally using EOS
         /// </summary>
@@ -423,23 +424,23 @@ namespace Core.Networking.Services
                 OnError?.Invoke("Invalid user ID");
                 return;
             }
-            
-            Debug.Log($"[LobbyService] Creating {type} lobby: {config.LobbyName}");
-            
+
+            GameLogger.Log($"Creating {type} lobby: {config.LobbyName}");
+
             // Create EOS lobby options
             var createOptions = new CreateLobbyOptions
             {
                 LocalUserId = localUserId,
                 MaxLobbyMembers = (uint)config.MaxPlayers,
-                PermissionLevel = config.IsPrivate ? 
-                    LobbyPermissionLevel.Inviteonly : 
+                PermissionLevel = config.IsPrivate ?
+                    LobbyPermissionLevel.Inviteonly :
                     LobbyPermissionLevel.Publicadvertised,
                 PresenceEnabled = config.PresenceEnabled,
                 AllowInvites = config.AllowInvites,
                 BucketId = config.GameMode.ToString(),
                 EnableRTCRoom = config.RTCEnabled
             };
-            
+
             // Create lobby via EOS
             var lobbyInterface = EOSManager.Instance.GetEOSLobbyInterface();
             lobbyInterface.CreateLobby(ref createOptions, null, (ref CreateLobbyCallbackInfo callbackData) =>
@@ -447,7 +448,7 @@ namespace Core.Networking.Services
                 OnCreateLobbyCallback(callbackData, config, type);
             });
         }
-        
+
         /// <summary>
         /// Callback when lobby is created
         /// </summary>
@@ -455,8 +456,8 @@ namespace Core.Networking.Services
         {
             if (data.ResultCode != Result.Success)
             {
-                Debug.LogError($"[LobbyService] Failed to create lobby: {data.ResultCode}");
-                
+                GameLogger.LogError($"Failed to create lobby: {data.ResultCode}");
+
                 if (type == LobbyType.Party)
                 {
                     OnPartyCreated?.Invoke(data.ResultCode, null);
@@ -467,9 +468,9 @@ namespace Core.Networking.Services
                 }
                 return;
             }
-            
-            Debug.Log($"[LobbyService] Lobby created successfully: {data.LobbyId}");
-            
+
+            GameLogger.Log($"Lobby created successfully: {data.LobbyId}");
+
             // Create lobby info
             var lobbyInfo = new LobbyInfo
             {
@@ -486,10 +487,10 @@ namespace Core.Networking.Services
                 PartyLeaderId = EOSManager.Instance.GetProductUserId(),
                 Status = "Active"
             };
-            
+
             // Set lobby attributes
             SetLobbyAttributes(data.LobbyId, config);
-            
+
             // Store lobby
             if (type == LobbyType.Party)
             {
@@ -503,11 +504,11 @@ namespace Core.Networking.Services
                 ChangeState(LobbyState.InMatchLobby);
                 OnMatchLobbyCreated?.Invoke(Result.Success, lobbyInfo);
             }
-            
+
             // Refresh lobby details
             RefreshLobbyDetails(data.LobbyId);
         }
-        
+
         /// <summary>
         /// Join a lobby internally using EOS
         /// </summary>
@@ -519,30 +520,30 @@ namespace Core.Networking.Services
                 OnError?.Invoke("Invalid user ID");
                 return;
             }
-            
-            Debug.Log($"[LobbyService] Joining {type} lobby: {lobbyId}");
-            
+
+            GameLogger.Log($"Joining {type} lobby: {lobbyId}");
+
             // Get lobby details first
             var copyOptions = new CopyLobbyDetailsHandleOptions
             {
                 LobbyId = lobbyId,
                 LocalUserId = localUserId
             };
-            
+
             var lobbyInterface = EOSManager.Instance.GetEOSLobbyInterface();
             Result result = lobbyInterface.CopyLobbyDetailsHandle(ref copyOptions, out LobbyDetails lobbyDetails);
-            
+
             if (result != Result.Success || lobbyDetails == null)
             {
-                Debug.LogError($"[LobbyService] Failed to get lobby details: {result}");
-                
+                GameLogger.LogError($"Failed to get lobby details: {result}");
+
                 if (type == LobbyType.Match)
                 {
                     OnMatchLobbyJoined?.Invoke(result, null);
                 }
                 return;
             }
-            
+
             // Join lobby
             var joinOptions = new JoinLobbyOptions
             {
@@ -550,14 +551,14 @@ namespace Core.Networking.Services
                 LocalUserId = localUserId,
                 PresenceEnabled = true
             };
-            
+
             lobbyInterface.JoinLobby(ref joinOptions, null, (ref JoinLobbyCallbackInfo callbackData) =>
             {
                 OnJoinLobbyCallback(callbackData, type);
                 lobbyDetails.Release();
             });
         }
-        
+
         /// <summary>
         /// Callback when lobby is joined
         /// </summary>
@@ -565,17 +566,17 @@ namespace Core.Networking.Services
         {
             if (data.ResultCode != Result.Success)
             {
-                Debug.LogError($"[LobbyService] Failed to join lobby: {data.ResultCode}");
-                
+                GameLogger.LogError($"Failed to join lobby: {data.ResultCode}");
+
                 if (type == LobbyType.Match)
                 {
                     OnMatchLobbyJoined?.Invoke(data.ResultCode, null);
                 }
                 return;
             }
-            
-            Debug.Log($"[LobbyService] Joined lobby successfully: {data.LobbyId}");
-            
+
+            GameLogger.Log($"Joined lobby successfully: {data.LobbyId}");
+
             // Get lobby details
             RefreshLobbyDetails(data.LobbyId, (lobbyInfo) =>
             {
@@ -587,7 +588,7 @@ namespace Core.Networking.Services
                 }
             });
         }
-        
+
         /// <summary>
         /// Refresh lobby details from EOS
         /// </summary>
@@ -599,30 +600,30 @@ namespace Core.Networking.Services
                 LobbyId = lobbyId,
                 LocalUserId = localUserId
             };
-            
+
             var lobbyInterface = EOSManager.Instance.GetEOSLobbyInterface();
             Result result = lobbyInterface.CopyLobbyDetailsHandle(ref copyOptions, out LobbyDetails lobbyDetails);
-            
+
             if (result != Result.Success || lobbyDetails == null)
             {
-                Debug.LogError($"[LobbyService] Failed to refresh lobby details: {result}");
+                GameLogger.LogError($"Failed to refresh lobby details: {result}");
                 return;
             }
-            
+
             // Copy lobby info
             var infoOptions = new LobbyDetailsCopyInfoOptions();
             LobbyDetailsInfo? lobbyDetailsInfo;
             result = lobbyDetails.CopyInfo(ref infoOptions, out lobbyDetailsInfo);
-            
+
             if (result != Result.Success || !lobbyDetailsInfo.HasValue)
             {
-                Debug.LogError($"[LobbyService] Failed to copy lobby info: {result}");
+                GameLogger.LogError($"Failed to copy lobby info: {result}");
                 lobbyDetails.Release();
                 return;
             }
-            
+
             var info = lobbyDetailsInfo.Value;
-            
+
             // Create lobby info
             var lobbyInfo = new LobbyInfo
             {
@@ -631,24 +632,24 @@ namespace Core.Networking.Services
                 CurrentPlayers = (int)(info.MaxMembers - info.AvailableSlots),
                 OwnerId = GetLobbyOwner(lobbyDetails)
             };
-            
+
             // Get attributes
             var attrCountOptions = new LobbyDetailsGetAttributeCountOptions();
             uint attrCount = lobbyDetails.GetAttributeCount(ref attrCountOptions);
-            
+
             for (uint i = 0; i < attrCount; i++)
             {
                 var attrOptions = new LobbyDetailsCopyAttributeByIndexOptions { AttrIndex = i };
                 result = lobbyDetails.CopyAttributeByIndex(ref attrOptions, out Epic.OnlineServices.Lobby.Attribute? attribute);
-                
+
                 if (result == Result.Success && attribute.HasValue)
                 {
                     var attrData = attribute.Value.Data;
                     string key = attrData.Value.Key;
                     string value = attrData.Value.Value.AsUtf8;
-                    
+
                     lobbyInfo.Attributes[key] = value;
-                    
+
                     // Parse known attributes
                     switch (key)
                     {
@@ -670,12 +671,12 @@ namespace Core.Networking.Services
                     }
                 }
             }
-            
+
             lobbyDetails.Release();
-            
+
             callback?.Invoke(lobbyInfo);
         }
-        
+
         /// <summary>
         /// Set lobby attributes
         /// </summary>
@@ -687,44 +688,44 @@ namespace Core.Networking.Services
                 LobbyId = lobbyId,
                 LocalUserId = localUserId
             };
-            
+
             var lobbyInterface = EOSManager.Instance.GetEOSLobbyInterface();
             Result result = lobbyInterface.UpdateLobbyModification(ref modOptions, out LobbyModification modification);
-            
+
             if (result != Result.Success || modification == null)
             {
-                Debug.LogError($"[LobbyService] Failed to create lobby modification: {result}");
+                GameLogger.LogError($"Failed to create lobby modification: {result}");
                 return;
             }
-            
+
             // Add custom attributes
             foreach (var kvp in config.CustomAttributes)
             {
                 AddLobbyAttribute(modification, kvp.Key, kvp.Value);
             }
-            
+
             // Add standard attributes
             AddLobbyAttribute(modification, "GameMode", config.GameMode.ToString());
             AddLobbyAttribute(modification, "MapName", config.MapName ?? "");
             AddLobbyAttribute(modification, "TeamSize", config.TeamSize.ToString());
-            
+
             // Update lobby
             var updateOptions = new UpdateLobbyOptions
             {
                 LobbyModificationHandle = modification
             };
-            
+
             lobbyInterface.UpdateLobby(ref updateOptions, null, (ref UpdateLobbyCallbackInfo data) =>
             {
                 if (data.ResultCode != Result.Success)
                 {
-                    Debug.LogError($"[LobbyService] Failed to update lobby attributes: {data.ResultCode}");
+                    GameLogger.LogError($"Failed to update lobby attributes: {data.ResultCode}");
                 }
-                
+
                 modification.Release();
             });
         }
-        
+
         /// <summary>
         /// Add a lobby attribute
         /// </summary>
@@ -735,21 +736,21 @@ namespace Core.Networking.Services
                 Key = key,
                 Value = new AttributeDataValue { AsUtf8 = value }
             };
-            
+
             var addOptions = new LobbyModificationAddAttributeOptions
             {
                 Attribute = attributeData,
                 Visibility = LobbyAttributeVisibility.Public
             };
-            
+
             Result result = modification.AddAttribute(ref addOptions);
-            
+
             if (result != Result.Success)
             {
-                Debug.LogWarning($"[LobbyService] Failed to add attribute {key}: {result}");
+                GameLogger.LogWarning($"Failed to add attribute {key}: {result}");
             }
         }
-        
+
         /// <summary>
         /// Update lobby attributes
         /// </summary>
@@ -757,7 +758,7 @@ namespace Core.Networking.Services
         {
             SetLobbyAttributes(lobbyId, config);
         }
-        
+
         /// <summary>
         /// Update a single lobby attribute
         /// </summary>
@@ -767,37 +768,37 @@ namespace Core.Networking.Services
             config.CustomAttributes[key] = value;
             SetLobbyAttributes(lobbyId, config);
         }
-        
+
         /// <summary>
         /// Subscribe to EOS lobby notifications
         /// </summary>
         private void SubscribeToLobbyNotifications()
         {
             var lobbyInterface = EOSManager.Instance.GetEOSLobbyInterface();
-            
+
             // Subscribe to lobby updates
             var updateOptions = new AddNotifyLobbyUpdateReceivedOptions();
             _lobbyUpdateNotification = lobbyInterface.AddNotifyLobbyUpdateReceived(ref updateOptions, null, OnLobbyUpdateReceived);
-            
+
             // Subscribe to member updates
             var memberOptions = new AddNotifyLobbyMemberUpdateReceivedOptions();
             _lobbyMemberUpdateNotification = lobbyInterface.AddNotifyLobbyMemberUpdateReceived(ref memberOptions, null, OnLobbyMemberUpdateReceived);
-            
+
             // Subscribe to invite accepted
             var inviteOptions = new AddNotifyLobbyInviteAcceptedOptions();
             _lobbyInviteAcceptedNotification = lobbyInterface.AddNotifyLobbyInviteAccepted(ref inviteOptions, null, OnLobbyInviteAccepted);
-            
-            Debug.Log("[LobbyService] Subscribed to lobby notifications");
+
+            GameLogger.Log("Subscribed to lobby notifications");
         }
-        
+
         /// <summary>
         /// Callback when lobby is updated
         /// </summary>
         private void OnLobbyUpdateReceived(ref LobbyUpdateReceivedCallbackInfo data)
         {
             string lobbyId = data.LobbyId; // Copy to local variable to use in lambda
-            Debug.Log($"[LobbyService] Lobby update received: {lobbyId}");
-            
+            GameLogger.Log($"Lobby update received: {lobbyId}");
+
             // Refresh lobby details
             RefreshLobbyDetails(lobbyId, (lobbyInfo) =>
             {
@@ -813,29 +814,29 @@ namespace Core.Networking.Services
                 }
             });
         }
-        
+
         /// <summary>
         /// Callback when lobby member is updated
         /// </summary>
         private void OnLobbyMemberUpdateReceived(ref LobbyMemberUpdateReceivedCallbackInfo data)
         {
-            Debug.Log($"[LobbyService] Lobby member update: {data.LobbyId}, Member: {data.TargetUserId}");
-            
+            GameLogger.Log($"Lobby member update: {data.LobbyId}, Member: {data.TargetUserId}");
+
             // Refresh lobby details
             RefreshLobbyDetails(data.LobbyId);
         }
-        
+
         /// <summary>
         /// Callback when lobby invite is accepted
         /// </summary>
         private void OnLobbyInviteAccepted(ref LobbyInviteAcceptedCallbackInfo data)
         {
-            Debug.Log($"[LobbyService] Lobby invite accepted: {data.LobbyId}");
-            
+            GameLogger.Log($"Lobby invite accepted: {data.LobbyId}");
+
             // Join the lobby
             JoinLobbyInternal(data.LobbyId, LobbyType.Party);
         }
-        
+
         /// <summary>
         /// Get lobby owner (helper to avoid ref in expression)
         /// </summary>
@@ -844,7 +845,7 @@ namespace Core.Networking.Services
             LobbyDetailsGetLobbyOwnerOptions options = new LobbyDetailsGetLobbyOwnerOptions();
             return lobbyDetails.GetLobbyOwner(ref options);
         }
-        
+
         /// <summary>
         /// Change lobby state
         /// </summary>
@@ -852,14 +853,14 @@ namespace Core.Networking.Services
         {
             if (CurrentState == newState)
                 return;
-            
+
             var oldState = CurrentState;
             CurrentState = newState;
-            
-            Debug.Log($"[LobbyService] State changed: {oldState} -> {newState}");
+
+            GameLogger.Log($"State changed: {oldState} -> {newState}");
             OnLobbyStateChanged?.Invoke(newState);
         }
-        
+
         #endregion
     }
 }

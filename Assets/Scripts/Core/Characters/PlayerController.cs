@@ -3,6 +3,7 @@ using Core.Bootstrap;
 using Core.Input;
 using Unity.Netcode;
 using UnityEngine;
+using Core.Logging;
 
 namespace Core.Characters
 {
@@ -163,6 +164,14 @@ namespace Core.Characters
         {
             base.OnNetworkSpawn();
 
+            // Register with PlayerNetworkManager
+            var services = GameBootstrap.Services;
+            if (services?.PlayerNetworkManager != null)
+            {
+                services.PlayerNetworkManager.RegisterPlayer(OwnerClientId, this);
+                GameLogger.Log($"Registered player {OwnerClientId} with PlayerNetworkManager");
+            }
+
             if (IsLocalPlayer)
             {
                 SetupInput();
@@ -174,6 +183,14 @@ namespace Core.Characters
         public override void OnNetworkDespawn()
         {
             base.OnNetworkDespawn();
+
+            // Unregister from PlayerNetworkManager
+            var services = GameBootstrap.Services;
+            if (services?.PlayerNetworkManager != null)
+            {
+                services.PlayerNetworkManager.UnregisterPlayer(OwnerClientId);
+                GameLogger.Log($"Unregistered player {OwnerClientId} from PlayerNetworkManager");
+            }
 
             if (IsLocalPlayer && _inputProvider != null)
             {
@@ -192,7 +209,7 @@ namespace Core.Characters
             _inputProvider = InputProviderFactory.CreateForPlatform();
             if (_inputProvider == null)
             {
-                Debug.LogError("[PlayerController] Input provider not found");
+                GameLogger.LogError("Input provider not found");
                 return;
             }
 
@@ -200,7 +217,7 @@ namespace Core.Characters
             _inputProvider.OnInteractionInput += HandleInteractInput;
             _inputProvider.OnSpecialAbilityInput += HandleAbilityInput;
 
-            Debug.Log("[PlayerController] Local player initialized");
+            GameLogger.Log("Local player initialized");
         }
 
         private void HandleMoveInput(Vector2 input)
@@ -326,7 +343,7 @@ namespace Core.Characters
             var services = GameBootstrap.Services;
             if (services?.CharacterService == null)
             {
-                Debug.LogError("[PlayerController] Character service not available");
+                GameLogger.LogError("Character service not available");
                 return;
             }
 
@@ -344,7 +361,7 @@ namespace Core.Characters
                 CarryingCapacity = Mathf.RoundToInt(CharacterClass.CarryingCapacityModifier);
                 PrimaryAbility = CharacterAbility.CreateAbility(CharacterClass.PrimaryAbilityType, CharacterClass, this);
                 
-                Debug.Log($"[PlayerController] Character: {CharacterClass.DisplayName}");
+                GameLogger.Log($"Character: {CharacterClass.DisplayName}");
             }
         }
 

@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Core.Logging;
 
 namespace Core.State
 {
@@ -49,7 +50,7 @@ namespace Core.State
 
         public void Dispose()
         {
-            Debug.Log("[GameStateManager] Disposing");
+            GameLogger.Log("Disposing");
 
             // Exit current state
             CurrentState?.Exit();

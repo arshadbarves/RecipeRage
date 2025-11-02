@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Core.Logging;
 
 namespace Core.Input
 {
@@ -68,7 +69,7 @@ namespace Core.Input
         /// </summary>
         public void Initialize()
         {
-            Debug.Log("[KeyboardInputProvider] Initializing keyboard input provider");
+            GameLogger.Log("Initializing keyboard input provider");
             _isEnabled = true;
         }
         
@@ -92,7 +93,7 @@ namespace Core.Input
         public void Enable()
         {
             _isEnabled = true;
-            Debug.Log("[KeyboardInputProvider] Keyboard input provider enabled");
+            GameLogger.Log("Keyboard input provider enabled");
         }
         
         /// <summary>
@@ -102,7 +103,7 @@ namespace Core.Input
         {
             _isEnabled = false;
             ResetInput();
-            Debug.Log("[KeyboardInputProvider] Keyboard input provider disabled");
+            GameLogger.Log("Keyboard input provider disabled");
         }
         
         /// <summary>

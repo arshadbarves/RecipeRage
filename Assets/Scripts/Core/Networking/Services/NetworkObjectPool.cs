@@ -14,7 +14,7 @@ namespace Core.Networking.Services
         private readonly ILoggingService _logger;
         private readonly Dictionary<GameObject, Queue<NetworkObject>> _pools;
         private readonly HashSet<NetworkObject> _activeObjects;
-        
+
         /// <summary>
         /// Initialize the network object pool.
         /// </summary>
@@ -25,7 +25,7 @@ namespace Core.Networking.Services
             _pools = new Dictionary<GameObject, Queue<NetworkObject>>();
             _activeObjects = new HashSet<NetworkObject>();
         }
-        
+
         /// <summary>
         /// Get a network object from the pool.
         /// </summary>
@@ -37,19 +37,19 @@ namespace Core.Networking.Services
         {
             if (!NetworkManager.Singleton.IsServer)
             {
-                GameLogger.Network.LogWarning("[NetworkObjectPool] Only the server can get objects from the pool");
+                GameLogger.LogWarning("[NetworkObjectPool] Only the server can get objects from the pool");
                 return null;
             }
-            
+
             // Get or create pool for this prefab
             if (!_pools.TryGetValue(prefab, out Queue<NetworkObject> pool))
             {
                 pool = new Queue<NetworkObject>();
                 _pools[prefab] = pool;
             }
-            
+
             NetworkObject networkObject;
-            
+
             // Try to get from pool
             if (pool.Count > 0)
             {
@@ -57,36 +57,36 @@ namespace Core.Networking.Services
                 networkObject.transform.position = position;
                 networkObject.transform.rotation = rotation;
                 networkObject.gameObject.SetActive(true);
-                
+
                 // Spawn if not already spawned
                 if (!networkObject.IsSpawned)
                 {
                     networkObject.Spawn(true);
                 }
-                
-                GameLogger.Network.Log($"[NetworkObjectPool] Reused pooled object {prefab.name}");
+
+                GameLogger.Log($"[NetworkObjectPool] Reused pooled object {prefab.name}");
             }
             else
             {
                 // Create new instance
                 GameObject instance = Object.Instantiate(prefab, position, rotation);
                 networkObject = instance.GetComponent<NetworkObject>();
-                
+
                 if (networkObject == null)
                 {
-                    GameLogger.Network.LogError($"[NetworkObjectPool] Prefab {prefab.name} does not have a NetworkObject component");
+                    GameLogger.LogError($"[NetworkObjectPool] Prefab {prefab.name} does not have a NetworkObject component");
                     Object.Destroy(instance);
                     return null;
                 }
-                
+
                 networkObject.Spawn(true);
-                GameLogger.Network.Log($"[NetworkObjectPool] Created new pooled object {prefab.name}");
+                GameLogger.Log($"[NetworkObjectPool] Created new pooled object {prefab.name}");
             }
-            
+
             _activeObjects.Add(networkObject);
             return networkObject;
         }
-        
+
         /// <summary>
         /// Return a network object to the pool.
         /// </summary>
@@ -95,28 +95,28 @@ namespace Core.Networking.Services
         {
             if (!NetworkManager.Singleton.IsServer)
             {
-                GameLogger.Network.LogWarning("[NetworkObjectPool] Only the server can return objects to the pool");
+                GameLogger.LogWarning("[NetworkObjectPool] Only the server can return objects to the pool");
                 return;
             }
-            
+
             if (networkObject == null)
             {
-                GameLogger.Network.LogWarning("[NetworkObjectPool] Cannot return null network object");
+                GameLogger.LogWarning("[NetworkObjectPool] Cannot return null network object");
                 return;
             }
-            
+
             // Remove from active objects
             _activeObjects.Remove(networkObject);
-            
+
             // Despawn but don't destroy
             if (networkObject.IsSpawned)
             {
                 networkObject.Despawn(false);
             }
-            
+
             // Deactivate
             networkObject.gameObject.SetActive(false);
-            
+
             // Find the prefab this object belongs to
             // Note: This is a simplified approach. In production, you might want to track the prefab reference
             GameObject prefab = FindPrefabForObject(networkObject);
@@ -127,18 +127,18 @@ namespace Core.Networking.Services
                     pool = new Queue<NetworkObject>();
                     _pools[prefab] = pool;
                 }
-                
+
                 pool.Enqueue(networkObject);
-                GameLogger.Network.Log($"[NetworkObjectPool] Returned object to pool");
+                GameLogger.Log("[NetworkObjectPool] Returned object to pool");
             }
             else
             {
                 // If we can't find the prefab, just destroy it
                 Object.Destroy(networkObject.gameObject);
-                GameLogger.Network.LogWarning($"[NetworkObjectPool] Could not find prefab for object, destroying instead");
+                GameLogger.LogWarning("[NetworkObjectPool] Could not find prefab for object, destroying instead");
             }
         }
-        
+
         /// <summary>
         /// Prewarm the pool with a specific prefab.
         /// </summary>
@@ -148,37 +148,37 @@ namespace Core.Networking.Services
         {
             if (!NetworkManager.Singleton.IsServer)
             {
-                GameLogger.Network.LogWarning("[NetworkObjectPool] Only the server can prewarm the pool");
+                GameLogger.LogWarning("[NetworkObjectPool] Only the server can prewarm the pool");
                 return;
             }
-            
+
             // Get or create pool for this prefab
             if (!_pools.TryGetValue(prefab, out Queue<NetworkObject> pool))
             {
                 pool = new Queue<NetworkObject>();
                 _pools[prefab] = pool;
             }
-            
+
             // Create instances
             for (int i = 0; i < count; i++)
             {
                 GameObject instance = Object.Instantiate(prefab);
                 NetworkObject networkObject = instance.GetComponent<NetworkObject>();
-                
+
                 if (networkObject == null)
                 {
-                    GameLogger.Network.LogError($"[NetworkObjectPool] Prefab {prefab.name} does not have a NetworkObject component");
+                    GameLogger.LogError($"[NetworkObjectPool] Prefab {prefab.name} does not have a NetworkObject component");
                     Object.Destroy(instance);
                     continue;
                 }
-                
+
                 instance.SetActive(false);
                 pool.Enqueue(networkObject);
             }
-            
-            GameLogger.Network.Log($"[NetworkObjectPool] Prewarmed pool with {count} instances of {prefab.name}");
+
+            GameLogger.Log($"[NetworkObjectPool] Prewarmed pool with {count} instances of {prefab.name}");
         }
-        
+
         /// <summary>
         /// Clear all pooled objects.
         /// </summary>
@@ -186,10 +186,10 @@ namespace Core.Networking.Services
         {
             if (!NetworkManager.Singleton.IsServer)
             {
-                GameLogger.Network.LogWarning("[NetworkObjectPool] Only the server can clear the pool");
+                GameLogger.LogWarning("[NetworkObjectPool] Only the server can clear the pool");
                 return;
             }
-            
+
             // Destroy all pooled objects
             foreach (var pool in _pools.Values)
             {
@@ -202,13 +202,13 @@ namespace Core.Networking.Services
                     }
                 }
             }
-            
+
             _pools.Clear();
             _activeObjects.Clear();
-            
-            GameLogger.Network.Log("[NetworkObjectPool] Cleared all pooled objects");
+
+            GameLogger.Log("[NetworkObjectPool] Cleared all pooled objects");
         }
-        
+
         /// <summary>
         /// Find the prefab for a network object.
         /// This is a simplified implementation - in production you might want to track this explicitly.
@@ -227,7 +227,7 @@ namespace Core.Networking.Services
                     return kvp.Key;
                 }
             }
-            
+
             return null;
         }
     }

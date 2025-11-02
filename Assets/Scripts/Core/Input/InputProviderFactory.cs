@@ -1,3 +1,5 @@
+using Core.Logging;
+
 namespace Core.Input
 {
     /// <summary>
@@ -11,13 +13,13 @@ namespace Core.Input
 
 #if UNITY_EDITOR || UNITY_STANDALONE
             provider = new InputSystemProvider();
-            UnityEngine.Debug.Log("[InputProviderFactory] Created InputSystemProvider for Editor/Standalone");
+            GameLogger.Log("Created InputSystemProvider for Editor/Standalone");
 #elif UNITY_IOS || UNITY_ANDROID
             provider = new TouchInputProvider();
-            UnityEngine.Debug.Log("[InputProviderFactory] Created TouchInputProvider for Mobile");
+            GameLogger.Log($"Created TouchInputProvider for Mobile");
 #else
             provider = new InputSystemProvider();
-            UnityEngine.Debug.Log("[InputProviderFactory] Created InputSystemProvider (fallback)");
+            GameLogger.Log($"Created InputSystemProvider (fallback)");
 #endif
 
             // Initialize the provider

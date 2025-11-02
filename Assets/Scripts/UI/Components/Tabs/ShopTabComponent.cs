@@ -1,4 +1,5 @@
 using Core.Bootstrap;
+using Core.Logging;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UI.Data;
@@ -18,26 +19,26 @@ namespace UI.Components.Tabs
 
         public void Initialize(VisualElement root)
         {
-            Debug.Log("[ShopTabComponent] Initialize called");
+            GameLogger.Log("Initialize called");
 
             if (root == null)
             {
-                Debug.LogError("[ShopTabComponent] Root is null!");
+                GameLogger.LogError("Root is null!");
                 return;
             }
 
             _root = root;
-            Debug.Log($"[ShopTabComponent] Root element: {_root.name}");
+            GameLogger.Log($"Root element: {_root.name}");
 
             _shopItemsGrid = _root.Q<VisualElement>("shop-items-grid");
 
             if (_shopItemsGrid == null)
             {
-                Debug.LogError("[ShopTabComponent] Shop items grid not found");
+                GameLogger.LogError("Shop items grid not found");
                 return;
             }
 
-            Debug.Log("[ShopTabComponent] Shop items grid found");
+            GameLogger.Log("Shop items grid found");
 
             LoadShopData();
             SetupCategoryButtons();
@@ -50,11 +51,11 @@ namespace UI.Components.Tabs
             if (jsonFile != null)
             {
                 _shopData = JsonUtility.FromJson<ShopData>(jsonFile.text);
-                Debug.Log($"[ShopTabComponent] Loaded {_shopData.categories.Count} shop categories");
+                GameLogger.Log($"Loaded {_shopData.categories.Count} shop categories");
             }
             else
             {
-                Debug.LogError("[ShopTabComponent] Failed to load ShopItems.json from Resources/Data");
+                GameLogger.LogError("Failed to load ShopItems.json from Resources/Data");
             }
         }
 
@@ -65,27 +66,27 @@ namespace UI.Components.Tabs
             Button weaponsButton = _root.Q<Button>("weapons-button");
             Button bundlesButton = _root.Q<Button>("bundles-button");
 
-            Debug.Log($"[ShopTabComponent] Setting up category buttons - Featured: {featuredButton != null}, Skins: {skinsButton != null}, Weapons: {weaponsButton != null}, Bundles: {bundlesButton != null}");
+            GameLogger.Log($"Setting up category buttons - Featured: {featuredButton != null}, Skins: {skinsButton != null}, Weapons: {weaponsButton != null}, Bundles: {bundlesButton != null}");
 
             if (featuredButton != null)
             {
                 featuredButton.clicked += () => OnCategorySelected("featured", featuredButton);
-                Debug.Log("[ShopTabComponent] Featured button listener added");
+                GameLogger.Log("Featured button listener added");
             }
             if (skinsButton != null)
             {
                 skinsButton.clicked += () => OnCategorySelected("skins", skinsButton);
-                Debug.Log("[ShopTabComponent] Skins button listener added");
+                GameLogger.Log("Skins button listener added");
             }
             if (weaponsButton != null)
             {
                 weaponsButton.clicked += () => OnCategorySelected("weapons", weaponsButton);
-                Debug.Log("[ShopTabComponent] Weapons button listener added");
+                GameLogger.Log("Weapons button listener added");
             }
             if (bundlesButton != null)
             {
                 bundlesButton.clicked += () => OnCategorySelected("bundles", bundlesButton);
-                Debug.Log("[ShopTabComponent] Bundles button listener added");
+                GameLogger.Log("Bundles button listener added");
             }
         }
 
@@ -106,7 +107,7 @@ namespace UI.Components.Tabs
 
             selectedButton?.AddToClassList("category-active");
 
-            Debug.Log($"[ShopTabComponent] Category selected: {category}");
+            GameLogger.Log($"Category selected: {category}");
             PopulateShopItems();
         }
 
@@ -120,7 +121,7 @@ namespace UI.Components.Tabs
             ShopCategory category = _shopData.categories.Find(c => c.id == _currentCategory);
             if (category == null)
             {
-                Debug.LogWarning($"[ShopTabComponent] Category not found: {_currentCategory}");
+                GameLogger.LogWarning($"Category not found: {_currentCategory}");
                 return;
             }
 
@@ -131,7 +132,7 @@ namespace UI.Components.Tabs
                 _shopItemsGrid.Add(shopItem);
             }
 
-            Debug.Log($"[ShopTabComponent] Populated {category.items.Count} items for category: {_currentCategory}");
+            GameLogger.Log($"Populated {category.items.Count} items for category: {_currentCategory}");
         }
 
         private VisualElement CreateShopItem(ShopItem itemData)
@@ -183,12 +184,12 @@ namespace UI.Components.Tabs
 
         private void OnBuyItem(ShopItem item)
         {
-            Debug.Log($"[ShopTabComponent] Attempting to buy {item.name} for {item.price} {item.currency}");
+            GameLogger.Log($"Attempting to buy {item.name} for {item.price} {item.currency}");
 
             var currencyService = GameBootstrap.Services?.CurrencyService;
             if (currencyService == null)
             {
-                Debug.LogError("[ShopTabComponent] CurrencyService not found");
+                GameLogger.LogError("CurrencyService not found");
                 return;
             }
 
@@ -205,7 +206,7 @@ namespace UI.Components.Tabs
 
             if (purchaseSuccess)
             {
-                Debug.Log($"[ShopTabComponent] Successfully purchased {item.name}");
+                GameLogger.Log($"Successfully purchased {item.name}");
 
                 PlayerPrefs.SetInt($"Owned_{item.id}", 1);
 
@@ -219,13 +220,13 @@ namespace UI.Components.Tabs
             }
             else
             {
-                Debug.LogWarning($"[ShopTabComponent] Not enough {item.currency} to buy {item.name}");
+                GameLogger.LogWarning($"Not enough {item.currency} to buy {item.name}");
             }
         }
 
         public void Dispose()
         {
-            Debug.Log("[ShopTabComponent] Disposed");
+            GameLogger.Log("Disposed");
         }
     }
 }

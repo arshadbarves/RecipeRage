@@ -1,5 +1,6 @@
 using System;
 using Core.Bootstrap;
+using Core.Logging;
 using Core.SaveSystem;
 using Cysharp.Threading.Tasks;
 using Epic.OnlineServices;
@@ -47,14 +48,14 @@ namespace Core.Authentication
         /// </summary>
         public async UniTask<bool> InitializeAsync()
         {
-            Debug.Log("[AuthenticationService] Initializing authentication...");
+            GameLogger.Log("Initializing authentication...");
 
             // Try auto-login
             bool loginSuccess = await AttemptAutoLoginAsync();
 
             if (loginSuccess)
             {
-                Debug.Log("[AuthenticationService] Auto-login successful");
+                GameLogger.Log("Auto-login successful");
 
                 // Notify save service that user logged in
                 _saveService.OnUserLoggedIn();
@@ -63,7 +64,7 @@ namespace Core.Authentication
             }
             else
             {
-                Debug.Log("[AuthenticationService] Auto-login failed - showing login screen");
+                GameLogger.Log("Auto-login failed - showing login screen");
                 ShowLoginScreen();
                 return false;
             }
@@ -83,7 +84,7 @@ namespace Core.Authentication
             }
             else
             {
-                Debug.LogError("[AuthenticationService] UIService not available to show login screen");
+                GameLogger.LogError("UIService not available to show login screen");
             }
         }
 
@@ -95,7 +96,7 @@ namespace Core.Authentication
             // Unsubscribe
             _eventBus?.Unsubscribe<Core.Events.LoginSuccessEvent>(OnLoginSuccessInternal);
 
-            Debug.Log($"[AuthenticationService] Login successful for user: {evt.UserId}");
+            GameLogger.Log($"Login successful for user: {evt.UserId}");
 
             // Notify save service that user logged in
             _saveService.OnUserLoggedIn();
@@ -128,7 +129,7 @@ namespace Core.Authentication
                 return false;
             }
 
-            Debug.Log($"[AuthenticationService] Attempting auto-login with method: {lastLoginMethod}");
+            GameLogger.Log($"Attempting auto-login with method: {lastLoginMethod}");
 
             switch (lastLoginMethod)
             {
@@ -145,14 +146,14 @@ namespace Core.Authentication
 
         public async UniTask<bool> LoginAsGuestAsync()
         {
-            Debug.Log("[AuthenticationService] Guest login requested");
+            GameLogger.Log("Guest login requested");
             UpdateStatus("Logging in as guest...");
             return await LoginWithDeviceIdInternalAsync(false);
         }
 
         public async UniTask<bool> LoginWithFacebookAsync()
         {
-            Debug.Log("[AuthenticationService] Facebook login requested");
+            GameLogger.Log("Facebook login requested");
             UpdateStatus("Facebook login requires Facebook SDK integration");
             await UniTask.Delay(1000);
 
@@ -166,7 +167,7 @@ namespace Core.Authentication
 
         public void Logout()
         {
-            Debug.Log("[AuthenticationService] Logging out user (sync)");
+            GameLogger.Log("Logging out user (sync)");
 
             // Clear login method from save service
             _saveService?.UpdateSettings(s => s.LastLoginMethod = "");
@@ -177,7 +178,7 @@ namespace Core.Authentication
             // Clear all UI screens and history
             if (_uiService != null)
             {
-                Debug.Log("[AuthenticationService] Clearing all UI screens and history");
+                GameLogger.Log("Clearing all UI screens and history");
                 _uiService.HideAllScreens(animate: false);
                 _uiService.ClearHistory();
             }
@@ -218,12 +219,12 @@ namespace Core.Authentication
                     if (createInfo.ResultCode == Result.Success || createInfo.ResultCode == Result.DuplicateNotAllowed)
                     {
                         createSuccess = true;
-                        Debug.Log("[AuthenticationService] Device ID ready");
+                        GameLogger.Log("Device ID ready");
                     }
                     else
                     {
                         errorMessage = $"Failed to create Device ID: {createInfo.ResultCode}";
-                        Debug.LogError($"[AuthenticationService] {errorMessage}");
+                        GameLogger.LogError($"{errorMessage}");
                     }
                 });
 
@@ -279,12 +280,12 @@ namespace Core.Authentication
                     if (callbackInfo.ResultCode == Result.Success)
                     {
                         loginSuccess = true;
-                        Debug.Log("[AuthenticationService] Device ID login successful");
+                        GameLogger.Log("Device ID login successful");
                     }
                     else
                     {
                         errorMessage = $"Login failed: {callbackInfo.ResultCode}";
-                        Debug.LogError($"[AuthenticationService] {errorMessage}");
+                        GameLogger.LogError($"{errorMessage}");
                     }
                 }
             );
@@ -359,7 +360,7 @@ namespace Core.Authentication
 
         private void UpdateStatus(string message)
         {
-            Debug.Log($"[AuthenticationService] {message}");
+            GameLogger.Log($"{message}");
 
             // Publish event via EventBus
             _eventBus?.Publish(new Core.Events.LoginStatusChangedEvent
@@ -376,7 +377,7 @@ namespace Core.Authentication
 
         public async UniTask LogoutAsync()
         {
-            Debug.Log("[AuthenticationService] Logging out...");
+            GameLogger.Log("Logging out...");
             UpdateStatus("Logging out...");
 
             try
@@ -392,7 +393,7 @@ namespace Core.Authentication
                 // Clear all UI screens and history
                 if (_uiService != null)
                 {
-                    Debug.Log("[AuthenticationService] Clearing all UI screens and history");
+                    GameLogger.Log("Clearing all UI screens and history");
                     _uiService.HideAllScreens(animate: false);
                     _uiService.ClearHistory();
                 }
@@ -405,7 +406,7 @@ namespace Core.Authentication
                     {
                         EOSManager.Instance.ClearConnectId(productUserId);
                     }
-                    Debug.Log("[AuthenticationService] EOS session cleared");
+                    GameLogger.Log("EOS session cleared");
                 }
 
                 await UniTask.Delay(500);
@@ -418,11 +419,11 @@ namespace Core.Authentication
                 // Trigger logout complete event - GameBootstrap will handle full reboot
                 OnLogoutComplete?.Invoke();
 
-                Debug.Log("[AuthenticationService] Logout complete");
+                GameLogger.Log("Logout complete");
             }
             catch (Exception ex)
             {
-                Debug.LogError($"[AuthenticationService] Logout failed: {ex.Message}");
+                GameLogger.LogError($"Logout failed: {ex.Message}");
                 UpdateStatus($"Logout failed: {ex.Message}");
 
                 // Show error toast

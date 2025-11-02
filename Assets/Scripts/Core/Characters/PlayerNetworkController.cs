@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using Core.Logging;
 
 namespace Core.Characters
 {
@@ -111,7 +112,7 @@ namespace Core.Characters
             // Reconcile if error is significant
             if (positionError > _reconciliationThreshold)
             {
-                Debug.Log($"[PlayerNetworkController] Reconciling: error = {positionError:F3}m");
+                GameLogger.Log($"Reconciling: error = {positionError:F3}m");
                 
                 // Snap to server position
                 ApplyServerState(serverState, transform, rigidbody);

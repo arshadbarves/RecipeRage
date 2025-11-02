@@ -1,5 +1,6 @@
 using System;
 using Core.GameModes;
+using Core.Logging;
 using Gameplay.Cooking;
 using Unity.Netcode;
 using UnityEngine;
@@ -143,7 +144,7 @@ namespace Gameplay.Scoring
             _lastOrderCompletionTime = Time.time;
 
             // Log the score breakdown
-            Debug.Log($"[ScoreManager] Order completed: Base={basePoints}, Time={timeBonus}, Combo={comboBonus}, Total={totalPoints}");
+            GameLogger.Log($"Order completed: Base={basePoints}, Time={timeBonus}, Combo={comboBonus}, Total={totalPoints}");
         }
 
         /// <summary>
@@ -247,11 +248,11 @@ namespace Gameplay.Scoring
         {
             if (!IsServer)
             {
-                Debug.LogWarning("[ScoreManager] Only the server can reset all scores.");
+                GameLogger.LogWarning(" Only the server can reset all scores.");
                 return;
             }
 
-            Debug.Log("[ScoreManager] Resetting all scores");
+            GameLogger.Log("Resetting all scores");
 
             // Reset the main score
             ResetScore();

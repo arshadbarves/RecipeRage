@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Core.Logging;
 
 namespace Core.Characters
 {
@@ -51,7 +52,7 @@ namespace Core.Characters
                 _selectedCharacter = _characters[firstUnlocked];
             }
 
-            Debug.Log($"[CharacterService] Loaded {_characters.Count} characters, {_unlockedCharacters.Count} unlocked");
+            GameLogger.Log($"Loaded {_characters.Count} characters, {_unlockedCharacters.Count} unlocked");
         }
 
         public CharacterClass[] GetAvailableCharacters()
@@ -85,7 +86,7 @@ namespace Core.Characters
             _unlockedCharacters.Add(characterId);
             OnCharacterUnlocked?.Invoke(characterId);
 
-            Debug.Log($"[CharacterService] Unlocked: {_characters[characterId].DisplayName}");
+            GameLogger.Log($"Unlocked: {_characters[characterId].DisplayName}");
             return true;
         }
 
@@ -100,13 +101,13 @@ namespace Core.Characters
             _selectedCharacter = character;
             OnCharacterSelected?.Invoke(character);
 
-            Debug.Log($"[CharacterService] Selected: {character.DisplayName}");
+            GameLogger.Log($"Selected: {character.DisplayName}");
             return true;
         }
 
         public void Dispose()
         {
-            Debug.Log("[CharacterService] Disposing");
+            GameLogger.Log("Disposing");
             _characters.Clear();
             _unlockedCharacters.Clear();
             _selectedCharacter = null;

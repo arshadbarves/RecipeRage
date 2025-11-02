@@ -31,7 +31,8 @@ namespace Core.Input
     /// // Example of using an InputActionMap named "Player" from a UnityEngine.MonoBehaviour implementing callback interface.
     /// public class Example : MonoBehaviour, MyActions.IPlayerActions
     /// {
-    ///     private MyActions_Actions m_Actions;                  // Source code representation of asset.
+    ///     private MyActions_Actions m_Actions;
+using Core.Logging;                  // Source code representation of asset.
     ///     private MyActions_Actions.PlayerActions m_Player;     // Source code representation of action map.
     ///
     ///     void Awake()
@@ -61,13 +62,13 @@ namespace Core.Input
     ///     // Invoked when "Move" action is either started, performed or canceled.
     ///     public void OnMove(InputAction.CallbackContext context)
     ///     {
-    ///         Debug.Log($"OnMove: {context.ReadValue&lt;Vector2&gt;()}");
+    ///         GameLogger.Log($"OnMove: {context.ReadValue&lt;Vector2&gt;()}");
     ///     }
     ///
     ///     // Invoked when "Attack" action is either started, performed or canceled.
     ///     public void OnAttack(InputAction.CallbackContext context)
     ///     {
-    ///         Debug.Log($"OnAttack: {context.ReadValue&lt;float&gt;()}");
+    ///         GameLogger.Log($"OnAttack: {context.ReadValue&lt;float&gt;()}");
     ///     }
     ///
     ///     #endregion

@@ -1,4 +1,5 @@
 using System;
+using Core.Logging;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -14,59 +15,59 @@ namespace Gameplay
         /// The time remaining in the round.
         /// </summary>
         private NetworkVariable<float> _timeRemaining = new NetworkVariable<float>(0f);
-        
+
         /// <summary>
         /// Whether the timer is running.
         /// </summary>
         private NetworkVariable<bool> _isRunning = new NetworkVariable<bool>(false);
-        
+
         /// <summary>
         /// The duration of the round.
         /// </summary>
         private float _duration;
-        
+
         /// <summary>
         /// Event triggered when the timer updates.
         /// </summary>
         public event Action<float> OnTimeUpdated;
-        
+
         /// <summary>
         /// Event triggered when the timer expires.
         /// </summary>
         public event Action OnTimerExpired;
-        
+
         /// <summary>
         /// Get the time remaining.
         /// </summary>
         public float TimeRemaining => _timeRemaining.Value;
-        
+
         /// <summary>
         /// Get whether the timer is running.
         /// </summary>
         public bool IsRunning => _isRunning.Value;
-        
+
         /// <summary>
         /// Set up network variable callbacks.
         /// </summary>
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
-            
+
             _timeRemaining.OnValueChanged += OnTimeRemainingChanged;
             _isRunning.OnValueChanged += OnIsRunningChanged;
         }
-        
+
         /// <summary>
         /// Clean up network variable callbacks.
         /// </summary>
         public override void OnNetworkDespawn()
         {
             base.OnNetworkDespawn();
-            
+
             _timeRemaining.OnValueChanged -= OnTimeRemainingChanged;
             _isRunning.OnValueChanged -= OnIsRunningChanged;
         }
-        
+
         /// <summary>
         /// Update the timer.
         /// </summary>
@@ -77,21 +78,21 @@ namespace Gameplay
             {
                 return;
             }
-            
+
             // Decrease time
             _timeRemaining.Value -= Time.deltaTime;
-            
+
             // Check if timer expired
             if (_timeRemaining.Value <= 0)
             {
                 _timeRemaining.Value = 0;
                 _isRunning.Value = false;
-                
+
                 // Notify clients
                 TimerExpiredClientRpc();
             }
         }
-        
+
         /// <summary>
         /// Start the timer.
         /// </summary>
@@ -103,10 +104,10 @@ namespace Gameplay
             _duration = duration;
             _timeRemaining.Value = duration;
             _isRunning.Value = true;
-            
-            Debug.Log($"[RoundTimer] Started timer for {duration} seconds");
+
+            GameLogger.Log($"Started timer for {duration} seconds");
         }
-        
+
         /// <summary>
         /// Pause the timer.
         /// </summary>
@@ -115,10 +116,10 @@ namespace Gameplay
         public void PauseTimerServerRpc(ServerRpcParams rpcParams = default)
         {
             _isRunning.Value = false;
-            
-            Debug.Log("[RoundTimer] Paused timer");
+
+            GameLogger.Log("Paused timer");
         }
-        
+
         /// <summary>
         /// Resume the timer.
         /// </summary>
@@ -129,10 +130,10 @@ namespace Gameplay
             if (_timeRemaining.Value > 0)
             {
                 _isRunning.Value = true;
-                Debug.Log("[RoundTimer] Resumed timer");
+                GameLogger.Log("Resumed timer");
             }
         }
-        
+
         /// <summary>
         /// Stop the timer.
         /// </summary>
@@ -142,10 +143,10 @@ namespace Gameplay
         {
             _timeRemaining.Value = 0;
             _isRunning.Value = false;
-            
-            Debug.Log("[RoundTimer] Stopped timer");
+
+            GameLogger.Log("Stopped timer");
         }
-        
+
         /// <summary>
         /// Add time to the timer.
         /// </summary>
@@ -154,14 +155,14 @@ namespace Gameplay
         {
             if (!IsServer)
             {
-                Debug.LogWarning("[RoundTimer] Only the server can add time");
+                GameLogger.LogWarning("Only the server can add time");
                 return;
             }
-            
+
             _timeRemaining.Value += seconds;
-            Debug.Log($"[RoundTimer] Added {seconds} seconds to timer");
+            GameLogger.Log($"Added {seconds} seconds to timer");
         }
-        
+
         /// <summary>
         /// Sync time to all clients.
         /// </summary>
@@ -176,7 +177,7 @@ namespace Gameplay
                 _timeRemaining.Value = timeRemaining;
             }
         }
-        
+
         /// <summary>
         /// Handle time remaining changes.
         /// </summary>
@@ -184,7 +185,7 @@ namespace Gameplay
         {
             OnTimeUpdated?.Invoke(newValue);
         }
-        
+
         /// <summary>
         /// Handle running state changes.
         /// </summary>
@@ -195,7 +196,7 @@ namespace Gameplay
                 OnTimerExpired?.Invoke();
             }
         }
-        
+
         /// <summary>
         /// Notify clients that the timer expired.
         /// </summary>
@@ -203,7 +204,7 @@ namespace Gameplay
         private void TimerExpiredClientRpc()
         {
             OnTimerExpired?.Invoke();
-            Debug.Log("[RoundTimer] Timer expired");
+            GameLogger.Log("Timer expired");
         }
     }
 }

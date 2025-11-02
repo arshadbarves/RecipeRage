@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Core.Networking.Common;
 using UnityEngine;
+using Core.Logging;
 
 namespace Core.Networking.Bot
 {
@@ -37,7 +38,7 @@ namespace Core.Networking.Bot
                 newBots.Add(bot);
                 _activeBots.Add(bot);
                 
-                Debug.Log($"[BotManager] Created bot: {botName} (Team {teamId})");
+                GameLogger.Log($"Created bot: {botName} (Team {teamId})");
             }
             
             return newBots;
@@ -66,7 +67,7 @@ namespace Core.Networking.Bot
         /// </summary>
         public void ClearBots()
         {
-            Debug.Log($"[BotManager] Clearing {_activeBots.Count} bots");
+            GameLogger.Log($"Clearing {_activeBots.Count} bots");
             _activeBots.Clear();
         }
         

@@ -1,5 +1,8 @@
 using System.Collections.Generic;
 using Core.Characters;
+using Core.Logging;
+using Core.State;
+using Gameplay;
 using Gameplay.Cooking;
 using Gameplay.Scoring;
 using TMPro;
@@ -10,14 +13,19 @@ using UnityEngine.UI;
 namespace UI
 {
     /// <summary>
-    /// Manages the gameplay UI.
+    /// Manages the gameplay UI with network synchronization.
+    /// Integrates with NetworkScoreManager, RoundTimer, and NetworkGameStateManager.
     /// </summary>
     public class GameplayUIManager : MonoBehaviour
     {
         [Header("References")]
         [SerializeField] private PlayerController _localPlayer;
         [SerializeField] private OrderManager _orderManager;
-        [SerializeField] private ScoreManager _scoreManager;
+
+        [Header("Network Managers (Auto-found)")]
+        private NetworkScoreManager _networkScoreManager;
+        private RoundTimer _roundTimer;
+        private NetworkGameStateManager _networkGameStateManager;
 
         [Header("Interaction UI")]
         [SerializeField] private GameObject _interactionPromptPanel;
@@ -66,14 +74,22 @@ namespace UI
         private void Start()
         {
             // Initialize UI
-            _interactionPromptPanel.SetActive(false);
+            if (_interactionPromptPanel != null)
+            {
+                _interactionPromptPanel.SetActive(false);
+            }
             _score = 0;
             _gameTime = _totalGameTime;
 
             UpdateScoreUI();
             UpdateTimerUI();
 
-            // Subscribe to events
+            // Find network managers
+            _networkScoreManager = FindFirstObjectByType<NetworkScoreManager>();
+            _roundTimer = FindFirstObjectByType<RoundTimer>();
+            _networkGameStateManager = FindFirstObjectByType<NetworkGameStateManager>();
+
+            // Subscribe to order manager events
             if (_orderManager != null)
             {
                 _orderManager.OnOrderCreated += HandleOrderCreated;
@@ -81,11 +97,39 @@ namespace UI
                 _orderManager.OnOrderExpired += HandleOrderExpired;
             }
 
-            // Subscribe to score manager events
-            if (_scoreManager != null)
+            // Subscribe to network score manager events
+            if (_networkScoreManager != null)
             {
-                _scoreManager.OnScoreChanged += HandleScoreChanged;
-                _scoreManager.OnComboAchieved += HandleComboAchieved;
+                _networkScoreManager.OnPlayerScoreUpdated += HandleNetworkScoreUpdated;
+                _networkScoreManager.OnScoreboardUpdated += HandleScoreboardUpdated;
+                GameLogger.Log("Subscribed to NetworkScoreManager events");
+            }
+            else
+            {
+                GameLogger.LogWarning("NetworkScoreManager not found. Network score updates will not work.");
+            }
+
+            // Subscribe to round timer events
+            if (_roundTimer != null)
+            {
+                _roundTimer.OnTimeUpdated += HandleTimeUpdated;
+                _roundTimer.OnTimerExpired += HandleTimerExpired;
+                GameLogger.Log("Subscribed to RoundTimer events");
+            }
+            else
+            {
+                GameLogger.LogWarning("RoundTimer not found. Timer updates will not work.");
+            }
+
+            // Subscribe to game state manager events
+            if (_networkGameStateManager != null)
+            {
+                _networkGameStateManager.OnPhaseChanged += HandlePhaseChanged;
+                GameLogger.Log("Subscribed to NetworkGameStateManager events");
+            }
+            else
+            {
+                GameLogger.LogWarning("NetworkGameStateManager not found. Phase updates will not work.");
             }
         }
 
@@ -94,7 +138,7 @@ namespace UI
         /// </summary>
         private void OnDestroy()
         {
-            // Unsubscribe from events
+            // Unsubscribe from order manager events
             if (_orderManager != null)
             {
                 _orderManager.OnOrderCreated -= HandleOrderCreated;
@@ -102,11 +146,24 @@ namespace UI
                 _orderManager.OnOrderExpired -= HandleOrderExpired;
             }
 
-            // Unsubscribe from score manager events
-            if (_scoreManager != null)
+            // Unsubscribe from network score manager events
+            if (_networkScoreManager != null)
             {
-                _scoreManager.OnScoreChanged -= HandleScoreChanged;
-                _scoreManager.OnComboAchieved -= HandleComboAchieved;
+                _networkScoreManager.OnPlayerScoreUpdated -= HandleNetworkScoreUpdated;
+                _networkScoreManager.OnScoreboardUpdated -= HandleScoreboardUpdated;
+            }
+
+            // Unsubscribe from round timer events
+            if (_roundTimer != null)
+            {
+                _roundTimer.OnTimeUpdated -= HandleTimeUpdated;
+                _roundTimer.OnTimerExpired -= HandleTimerExpired;
+            }
+
+            // Unsubscribe from game state manager events
+            if (_networkGameStateManager != null)
+            {
+                _networkGameStateManager.OnPhaseChanged -= HandlePhaseChanged;
             }
         }
 
@@ -169,23 +226,27 @@ namespace UI
         }
 
         /// <summary>
-        /// Update the game timer.
+        /// Update the game timer (legacy - now handled by RoundTimer).
         /// </summary>
         private void UpdateGameTimer()
         {
-            // Update the game time
+            // If we have a network round timer, use that instead
+            if (_roundTimer != null && _roundTimer.IsRunning)
+            {
+                _gameTime = _roundTimer.TimeRemaining;
+                UpdateTimerUI();
+                return;
+            }
+
+            // Fallback to local timer
             _gameTime -= Time.deltaTime;
-
-            // Clamp the game time
             _gameTime = Mathf.Max(0f, _gameTime);
-
-            // Update the timer UI
             UpdateTimerUI();
 
-            // Check if the game is over
             if (_gameTime <= 0f)
             {
-                // TODO: End the game
+                // Game over
+                GameLogger.Log("Game time expired");
             }
         }
 
@@ -261,32 +322,6 @@ namespace UI
         }
 
         /// <summary>
-        /// Handle score changed event.
-        /// </summary>
-        /// <param name="newScore">The new score.</param>
-        private void HandleScoreChanged(int newScore)
-        {
-            // Update the score
-            _score = newScore;
-
-            // Update the score UI
-            UpdateScoreUI();
-        }
-
-        /// <summary>
-        /// Handle combo achieved event.
-        /// </summary>
-        /// <param name="comboCount">The combo count.</param>
-        private void HandleComboAchieved(int comboCount)
-        {
-            // Update the combo count
-            _comboCount = comboCount;
-
-            // Show combo notification
-            // TODO: Implement combo notification
-        }
-
-        /// <summary>
         /// Handle order expired event.
         /// </summary>
         /// <param name="order">The order that expired.</param>
@@ -299,5 +334,83 @@ namespace UI
                 _orderUIItems.Remove(order.OrderId);
             }
         }
+
+        #region Network Event Handlers
+
+        /// <summary>
+        /// Handle network score updated event.
+        /// </summary>
+        /// <param name="playerId">The player ID whose score was updated</param>
+        /// <param name="score">The new score</param>
+        private void HandleNetworkScoreUpdated(ulong playerId, int score)
+        {
+            // Only update UI for local player
+            if (NetworkManager.Singleton != null && playerId == NetworkManager.Singleton.LocalClientId)
+            {
+                _score = score;
+                UpdateScoreUI();
+                GameLogger.Log($"Local player score updated: {score}");
+            }
+        }
+
+        /// <summary>
+        /// Handle scoreboard updated event.
+        /// </summary>
+        private void HandleScoreboardUpdated()
+        {
+            // Refresh scoreboard display
+            // In a full implementation, you'd update a leaderboard UI here
+            GameLogger.Log("Scoreboard updated");
+        }
+
+        /// <summary>
+        /// Handle time updated event from RoundTimer.
+        /// </summary>
+        /// <param name="timeRemaining">The time remaining in seconds</param>
+        private void HandleTimeUpdated(float timeRemaining)
+        {
+            _gameTime = timeRemaining;
+            UpdateTimerUI();
+        }
+
+        /// <summary>
+        /// Handle timer expired event.
+        /// </summary>
+        private void HandleTimerExpired()
+        {
+            GameLogger.Log("Round timer expired - Game Over!");
+            // Show game over UI
+            // TODO: Implement game over screen
+        }
+
+        /// <summary>
+        /// Handle game phase changed event.
+        /// </summary>
+        /// <param name="newPhase">The new game phase</param>
+        private void HandlePhaseChanged(GamePhase newPhase)
+        {
+            GameLogger.Log($"Game phase changed to: {newPhase}");
+
+            switch (newPhase)
+            {
+                case GamePhase.Waiting:
+                    // Show waiting for players UI
+                    break;
+
+                case GamePhase.Preparation:
+                    // Show countdown UI
+                    break;
+
+                case GamePhase.Playing:
+                    // Show gameplay UI
+                    break;
+
+                case GamePhase.Results:
+                    // Show results/scoreboard UI
+                    break;
+            }
+        }
+
+        #endregion
     }
 }

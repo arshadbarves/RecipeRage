@@ -1,6 +1,7 @@
 using Core.Bootstrap;
 using Core.Events;
 using Core.Interfaces;
+using Core.Logging;
 using Core.SaveSystem;
 using UI.Screens;
 using UnityEngine;
@@ -33,14 +34,14 @@ namespace Core.Currency
             _eventBus = eventBus;
 
             LoadFromSave();
-            Debug.Log($"[CurrencyService] Initialized with {_coins} coins, {_gems} gems");
+            GameLogger.Log($"Initialized with {_coins} coins, {_gems} gems");
         }
 
         public void AddCoins(int amount)
         {
             if (amount <= 0)
             {
-                Debug.LogWarning($"[CurrencyService] Attempted to add invalid coin amount: {amount}");
+                GameLogger.LogWarning($"Attempted to add invalid coin amount: {amount}");
                 return;
             }
 
@@ -48,7 +49,7 @@ namespace Core.Currency
             SaveToDisk();
             PublishCurrencyChanged();
 
-            Debug.Log($"[CurrencyService] Added {amount} coins. Total: {_coins}");
+            GameLogger.Log($"Added {amount} coins. Total: {_coins}");
 
             // Show reward toast
             _ = GameBootstrap.Services?.UIService?.ShowToast($"+{amount} coins earned!", ToastType.Success, 2f);
@@ -58,7 +59,7 @@ namespace Core.Currency
         {
             if (amount <= 0)
             {
-                Debug.LogWarning($"[CurrencyService] Attempted to add invalid gem amount: {amount}");
+                GameLogger.LogWarning($"Attempted to add invalid gem amount: {amount}");
                 return;
             }
 
@@ -66,7 +67,7 @@ namespace Core.Currency
             SaveToDisk();
             PublishCurrencyChanged();
 
-            Debug.Log($"[CurrencyService] Added {amount} gems. Total: {_gems}");
+            GameLogger.Log($"Added {amount} gems. Total: {_gems}");
 
             // Show reward toast
             _ = GameBootstrap.Services?.UIService?.ShowToast($"+{amount} gems earned!", ToastType.Success, 2f);
@@ -76,7 +77,7 @@ namespace Core.Currency
         {
             if (amount <= 0)
             {
-                Debug.LogWarning($"[CurrencyService] Attempted to spend invalid coin amount: {amount}");
+                GameLogger.LogWarning($"Attempted to spend invalid coin amount: {amount}");
                 return false;
             }
 
@@ -86,7 +87,7 @@ namespace Core.Currency
                 SaveToDisk();
                 PublishCurrencyChanged();
 
-                Debug.Log($"[CurrencyService] Spent {amount} coins. Remaining: {_coins}");
+                GameLogger.Log($"Spent {amount} coins. Remaining: {_coins}");
 
                 // Show success toast
                 _ = GameBootstrap.Services?.UIService?.ShowToast($"Purchased for {amount} coins", ToastType.Success, 2f);
@@ -94,7 +95,7 @@ namespace Core.Currency
                 return true;
             }
 
-            Debug.LogWarning($"[CurrencyService] Not enough coins. Need {amount}, have {_coins}");
+            GameLogger.LogWarning($"Not enough coins. Need {amount}, have {_coins}");
 
             // Show error toast
             _ = GameBootstrap.Services?.UIService?.ShowToast("Not enough coins", ToastType.Error, 2.5f);
@@ -106,7 +107,7 @@ namespace Core.Currency
         {
             if (amount <= 0)
             {
-                Debug.LogWarning($"[CurrencyService] Attempted to spend invalid gem amount: {amount}");
+                GameLogger.LogWarning($"Attempted to spend invalid gem amount: {amount}");
                 return false;
             }
 
@@ -116,7 +117,7 @@ namespace Core.Currency
                 SaveToDisk();
                 PublishCurrencyChanged();
 
-                Debug.Log($"[CurrencyService] Spent {amount} gems. Remaining: {_gems}");
+                GameLogger.Log($"Spent {amount} gems. Remaining: {_gems}");
 
                 // Show success toast
                 _ = GameBootstrap.Services?.UIService?.ShowToast($"Purchased for {amount} gems", ToastType.Success, 2f);
@@ -124,7 +125,7 @@ namespace Core.Currency
                 return true;
             }
 
-            Debug.LogWarning($"[CurrencyService] Not enough gems. Need {amount}, have {_gems}");
+            GameLogger.LogWarning($"Not enough gems. Need {amount}, have {_gems}");
 
             // Show error toast
             _ = GameBootstrap.Services?.UIService?.ShowToast("Not enough gems", ToastType.Error, 2.5f);
@@ -140,7 +141,7 @@ namespace Core.Currency
             {
                 _coins = data.Coins;
                 _gems = data.Gems;
-                Debug.Log($"[CurrencyService] Loaded from save: {_coins} coins, {_gems} gems");
+                GameLogger.Log($"Loaded from save: {_coins} coins, {_gems} gems");
             }
             else
             {
@@ -148,7 +149,7 @@ namespace Core.Currency
                 _coins = DEFAULT_COINS;
                 _gems = DEFAULT_GEMS;
                 SaveToDisk();
-                Debug.Log($"[CurrencyService] No save data found, using defaults: {_coins} coins, {_gems} gems");
+                GameLogger.Log($"No save data found, using defaults: {_coins} coins, {_gems} gems");
             }
 
             PublishCurrencyChanged();
@@ -175,7 +176,7 @@ namespace Core.Currency
 
         public void Reset()
         {
-            Debug.Log("[CurrencyService] Resetting currency data");
+            GameLogger.Log("Resetting currency data");
 
             _coins = 0;
             _gems = 0;

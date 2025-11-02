@@ -1,6 +1,7 @@
 using System;
 using Core.Animation;
 using Core.Bootstrap;
+using Core.Logging;
 using Core.SaveSystem;
 using UI.Core;
 using UI.Popups;
@@ -49,7 +50,7 @@ namespace UI.Screens
             // Load and display stats
             RefreshStats();
 
-            Debug.Log("[ProfileScreen] Initialized");
+            GameLogger.Log("Initialized");
         }
 
         private void QueryElements()
@@ -206,7 +207,7 @@ namespace UI.Screens
 
         private void OnChangeNameClicked()
         {
-            Debug.Log("[ProfileScreen] Change name button clicked");
+            GameLogger.Log("Change name button clicked");
             ShowUsernamePopup(isFirstTime: false);
         }
 
@@ -214,29 +215,29 @@ namespace UI.Screens
         {
             if (_uiService == null)
             {
-                Debug.LogError("[ProfileScreen] UIService is null");
+                GameLogger.LogError("UIService is null");
                 return;
             }
 
             if (_saveService == null)
             {
-                Debug.LogError("[ProfileScreen] SaveService is null");
+                GameLogger.LogError("SaveService is null");
                 return;
             }
 
-            Debug.Log("[ProfileScreen] Getting UsernamePopup screen...");
+            GameLogger.Log("Getting UsernamePopup screen...");
 
             // Get the username popup screen
             var usernamePopup = _uiService.GetScreen<UsernamePopup>();
             if (usernamePopup != null)
             {
-                Debug.Log("[ProfileScreen] UsernamePopup found, showing...");
+                GameLogger.Log("UsernamePopup found, showing...");
 
                 usernamePopup.ShowForUsername(
                     isFirstTime,
                     onConfirm: (newUsername) =>
                     {
-                        Debug.Log($"[ProfileScreen] Username changed to: {newUsername}");
+                        GameLogger.Log($"Username changed to: {newUsername}");
                         RefreshStats();
 
                         // Show success toast
@@ -257,13 +258,13 @@ namespace UI.Screens
                     },
                     onCancel: () =>
                     {
-                        Debug.Log("[ProfileScreen] Username change cancelled");
+                        GameLogger.Log("Username change cancelled");
                     }
                 );
             }
             else
             {
-                Debug.LogError("[ProfileScreen] UsernamePopup screen not found in UIService - it may not be registered");
+                GameLogger.LogError("UsernamePopup screen not found in UIService - it may not be registered");
             }
         }
 
@@ -274,7 +275,7 @@ namespace UI.Screens
 
             if (friendsService == null || !friendsService.IsInitialized)
             {
-                Debug.LogWarning("[ProfileScreen] Friends service not available");
+                GameLogger.LogWarning("Friends service not available");
                 return;
             }
 
@@ -284,7 +285,7 @@ namespace UI.Screens
             var uiService = GameBootstrap.Services?.UIService;
             uiService?.ShowToast($"Friend Code copied: {code}", ToastType.Success, 2f);
 
-            Debug.Log($"[ProfileScreen] Copied friend code: {code}");
+            GameLogger.Log($"Copied friend code: {code}");
         }
 
         protected override void OnShow()

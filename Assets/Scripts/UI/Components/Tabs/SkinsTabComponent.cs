@@ -1,3 +1,4 @@
+using Core.Logging;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UI.Data;
@@ -20,59 +21,59 @@ namespace UI.Components.Tabs
 
         public void Initialize(VisualElement root)
         {
-            Debug.Log("[SkinsTabComponent] Initialize called");
-            
+            GameLogger.Log("Initialize called");
+
             if (root == null)
             {
-                Debug.LogError("[SkinsTabComponent] Root is null!");
+                GameLogger.LogError("Root is null!");
                 return;
             }
-            
+
             _root = root;
-            Debug.Log($"[SkinsTabComponent] Root element: {_root.name}");
-            
+            GameLogger.Log($"Root element: {_root.name}");
+
             _skinsGrid = _root.Q<VisualElement>("skins-grid");
             _skinNameLabel = _root.Q<Label>("skin-name");
             _equipButton = _root.Q<Button>("equip-button");
 
-            Debug.Log($"[SkinsTabComponent] Elements found - Grid: {_skinsGrid != null}, Label: {_skinNameLabel != null}, Button: {_equipButton != null}");
+            GameLogger.Log($"Elements found - Grid: {_skinsGrid != null}, Label: {_skinNameLabel != null}, Button: {_equipButton != null}");
 
             if (_skinsGrid == null)
             {
-                Debug.LogError("[SkinsTabComponent] Skins grid not found");
+                GameLogger.LogError("Skins grid not found");
                 return;
             }
 
             LoadSkinsData();
-            
+
             _equippedSkinId = PlayerPrefs.GetString("EquippedSkin", "classic_chef");
             _selectedSkinId = _equippedSkinId;
 
             if (_equipButton != null)
             {
                 _equipButton.clicked += OnEquipButtonClicked;
-                Debug.Log("[SkinsTabComponent] Equip button listener added");
+                GameLogger.Log("Equip button listener added");
             }
 
             UpdateSkinNameDisplay();
             PopulateSkins();
             UpdateEquipButton();
         }
-        
+
         private void LoadSkinsData()
         {
             TextAsset jsonFile = Resources.Load<TextAsset>("Data/Skins");
             if (jsonFile != null)
             {
                 _skinsData = JsonUtility.FromJson<SkinsData>(jsonFile.text);
-                Debug.Log($"[SkinsTabComponent] Loaded {_skinsData.skins.Count} skins");
+                GameLogger.Log($"Loaded {_skinsData.skins.Count} skins");
             }
             else
             {
-                Debug.LogError("[SkinsTabComponent] Failed to load Skins.json from Resources/Data");
+                GameLogger.LogError("Failed to load Skins.json from Resources/Data");
             }
         }
-        
+
         private void UpdateSkinNameDisplay()
         {
             if (_skinNameLabel != null && _skinsData != null)
@@ -96,14 +97,14 @@ namespace UI.Components.Tabs
                 VisualElement skinItem = CreateSkinItem(skin);
                 _skinsGrid.Add(skinItem);
             }
-            
-            Debug.Log($"[SkinsTabComponent] Populated {_skinsData.skins.Count} skins");
+
+            GameLogger.Log($"Populated {_skinsData.skins.Count} skins");
         }
 
         private VisualElement CreateSkinItem(SkinItem skin)
         {
             bool isUnlocked = skin.unlocked || PlayerPrefs.GetInt($"Unlocked_{skin.id}", 0) == 1;
-            
+
             Button skinItem = new Button(() => OnSkinSelected(skin));
             skinItem.AddToClassList("skin-item");
 
@@ -111,7 +112,7 @@ namespace UI.Components.Tabs
             {
                 skinItem.AddToClassList("selected");
             }
-            
+
             if (!isUnlocked)
             {
                 skinItem.AddToClassList("skin-locked");
@@ -120,7 +121,7 @@ namespace UI.Components.Tabs
             VisualElement image = new VisualElement();
             image.AddToClassList("skin-item-image");
             skinItem.Add(image);
-            
+
             if (!isUnlocked)
             {
                 VisualElement lockIcon = new VisualElement();
@@ -138,19 +139,19 @@ namespace UI.Components.Tabs
         private void OnSkinSelected(SkinItem skin)
         {
             bool isUnlocked = skin.unlocked || PlayerPrefs.GetInt($"Unlocked_{skin.id}", 0) == 1;
-            
+
             if (!isUnlocked)
             {
-                Debug.Log($"[SkinsTabComponent] Skin is locked: {skin.name}");
+                GameLogger.Log($"Skin is locked: {skin.name}");
                 return;
             }
-            
+
             _selectedSkinId = skin.id;
             UpdateSkinNameDisplay();
             UpdateEquipButton();
             PopulateSkins();
 
-            Debug.Log($"[SkinsTabComponent] Skin selected: {skin.name}");
+            GameLogger.Log($"Skin selected: {skin.name}");
         }
 
         private void UpdateEquipButton()
@@ -182,13 +183,13 @@ namespace UI.Components.Tabs
                     bool isUnlocked = skin.unlocked || PlayerPrefs.GetInt($"Unlocked_{skin.id}", 0) == 1;
                     if (!isUnlocked)
                     {
-                        Debug.LogWarning($"[SkinsTabComponent] Cannot equip locked skin: {skin.name}");
+                        GameLogger.LogWarning($"Cannot equip locked skin: {skin.name}");
                         return;
                     }
                 }
             }
 
-            Debug.Log($"[SkinsTabComponent] Equipping skin: {_selectedSkinId}");
+            GameLogger.Log($"Equipping skin: {_selectedSkinId}");
             _equippedSkinId = _selectedSkinId;
             PlayerPrefs.SetString("EquippedSkin", _selectedSkinId);
             PlayerPrefs.Save();
@@ -196,15 +197,15 @@ namespace UI.Components.Tabs
             UpdateEquipButton();
             PopulateSkins();
         }
-        
+
         public void Dispose()
         {
             if (_equipButton != null)
             {
                 _equipButton.clicked -= OnEquipButtonClicked;
             }
-            
-            Debug.Log("[SkinsTabComponent] Disposed");
+
+            GameLogger.Log("Disposed");
         }
     }
 }

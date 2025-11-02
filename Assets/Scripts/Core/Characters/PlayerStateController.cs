@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Core.Logging;
 
 namespace Core.Characters
 {
@@ -94,7 +95,7 @@ namespace Core.Characters
             
             OnStateChanged?.Invoke(_previousState, _currentState);
             
-            Debug.Log($"[PlayerStateController] State: {_previousState} → {_currentState}");
+            GameLogger.Log($"State: {_previousState} → {_currentState}");
         }
         
         /// <summary>

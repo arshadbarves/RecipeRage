@@ -1,6 +1,7 @@
 using System;
 using Core.Animation;
 using Core.Bootstrap;
+using Core.Logging;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UI.Core;
@@ -55,22 +56,22 @@ namespace UI.Screens
                 Container.style.width = Length.Percent(100);
                 Container.style.height = Length.Percent(100);
                 Container.pickingMode = PickingMode.Ignore;
-                
+
                 // Initially hidden
                 Container.style.opacity = 1; // Keep container visible
                 Container.style.display = DisplayStyle.None;
             }
 
-            Debug.Log("[ToastScreen] Initialized");
+            GameLogger.Log("Initialized");
         }
 
         public async UniTask Show(string message, ToastType type = ToastType.Info, float duration = 3f)
         {
-            Debug.Log($"[ToastScreen] Show called - Message: '{message}', Type: {type}, Duration: {duration}s");
-            
+            GameLogger.Log($"Show called - Message: '{message}', Type: {type}, Duration: {duration}s");
+
             if (_isShowing)
             {
-                Debug.Log("[ToastScreen] Already showing, hiding previous toast");
+                GameLogger.Log("Already showing, hiding previous toast");
                 await HideInternal();
             }
 
@@ -79,11 +80,11 @@ namespace UI.Screens
             if (_messageLabel != null)
             {
                 _messageLabel.text = message;
-                Debug.Log($"[ToastScreen] Message label updated: '{message}'");
+                GameLogger.Log($"Message label updated: '{message}'");
             }
             else
             {
-                Debug.LogWarning("[ToastScreen] Message label is null!");
+                GameLogger.LogWarning("Message label is null!");
             }
 
             if (_toastContent != null)
@@ -110,29 +111,29 @@ namespace UI.Screens
                         _toastContent.AddToClassList("toast-warning");
                         break;
                 }
-                Debug.Log($"[ToastScreen] Toast type class added: toast-{type.ToString().ToLower()}");
+                GameLogger.Log($"Toast type class added: toast-{type.ToString().ToLower()}");
             }
             else
             {
-                Debug.LogWarning("[ToastScreen] Toast content is null!");
+                GameLogger.LogWarning("Toast content is null!");
             }
 
             // Reset position before showing
             if (_toastContainer != null)
             {
                 _toastContainer.style.translate = new Translate(0, new Length(-150, LengthUnit.Pixel));
-                Debug.Log("[ToastScreen] Reset toast position to off-screen");
+                GameLogger.Log("Reset toast position to off-screen");
             }
 
             // Show the screen (triggers OnShow and animations)
             if (Container != null)
             {
                 Container.style.display = DisplayStyle.Flex;
-                Debug.Log("[ToastScreen] Container display set to Flex");
+                GameLogger.Log("Container display set to Flex");
             }
             else
             {
-                Debug.LogError("[ToastScreen] Container is null!");
+                GameLogger.LogError("Container is null!");
             }
 
             // Small delay to ensure display is set before animation
@@ -142,11 +143,11 @@ namespace UI.Screens
             await SlideInAnimation();
 
             // Wait for duration
-            Debug.Log($"[ToastScreen] Waiting {duration}s before hiding");
+            GameLogger.Log($"Waiting {duration}s before hiding");
             await UniTask.Delay((int)(duration * 1000));
 
             // Hide
-            Debug.Log("[ToastScreen] Hiding toast");
+            GameLogger.Log("Hiding toast");
             await HideInternal();
         }
 
@@ -154,11 +155,11 @@ namespace UI.Screens
         {
             if (_toastContainer == null)
             {
-                Debug.LogError("[ToastScreen] Toast container is null!");
+                GameLogger.LogError("Toast container is null!");
                 return;
             }
 
-            Debug.Log("[ToastScreen] Starting slide in animation with DOTween");
+            GameLogger.Log("Starting slide in animation with DOTween");
 
             // Use DOTween directly for more control
             var tween = DOTween.To(
@@ -169,7 +170,7 @@ namespace UI.Screens
             ).SetEase(Ease.OutCubic);
 
             await tween.AsyncWaitForCompletion();
-            Debug.Log("[ToastScreen] Slide in animation complete");
+            GameLogger.Log("Slide in animation complete");
         }
 
         private async UniTask HideInternal()
@@ -178,7 +179,7 @@ namespace UI.Screens
 
             if (_toastContainer == null) return;
 
-            Debug.Log("[ToastScreen] Starting slide out animation with DOTween");
+            GameLogger.Log("Starting slide out animation with DOTween");
 
             // Use DOTween directly for slide out
             var tween = DOTween.To(
@@ -189,7 +190,7 @@ namespace UI.Screens
             ).SetEase(Ease.InCubic);
 
             await tween.AsyncWaitForCompletion();
-            Debug.Log("[ToastScreen] Slide out animation complete");
+            GameLogger.Log("Slide out animation complete");
 
             if (Container != null)
             {

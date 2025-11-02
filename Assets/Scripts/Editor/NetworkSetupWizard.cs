@@ -7,6 +7,7 @@ using Gameplay.Cooking;
 using Gameplay.Scoring;
 using Gameplay.Stations;
 using System.Collections.Generic;
+using Core.Logging;
 
 namespace Editor
 {
@@ -107,11 +108,11 @@ namespace Editor
             {
                 _networkManagersObject = new GameObject("NetworkManagers");
                 Undo.RegisterCreatedObjectUndo(_networkManagersObject, "Create NetworkManagers");
-                Debug.Log("[NetworkSetup] Created NetworkManagers GameObject");
+                GameLogger.Log($"Created NetworkManagers GameObject");
             }
             else
             {
-                Debug.Log("[NetworkSetup] NetworkManagers GameObject already exists");
+                GameLogger.Log($"NetworkManagers GameObject already exists");
             }
             
             // Add components if they don't exist
@@ -121,7 +122,7 @@ namespace Editor
             AddComponentIfMissing<IngredientNetworkSpawner>(_networkManagersObject);
             
             EditorUtility.SetDirty(_networkManagersObject);
-            Debug.Log("[NetworkSetup] Added all network manager components");
+            GameLogger.Log($"Added all network manager components");
         }
         
         private void SetupNetworkManager()
@@ -133,18 +134,18 @@ namespace Editor
                 GameObject nmObject = new GameObject("NetworkManager");
                 _networkManager = nmObject.AddComponent<NetworkManager>();
                 Undo.RegisterCreatedObjectUndo(nmObject, "Create NetworkManager");
-                Debug.Log("[NetworkSetup] Created NetworkManager");
+                GameLogger.Log($"Created NetworkManager");
             }
             else
             {
-                Debug.Log("[NetworkSetup] NetworkManager already exists");
+                GameLogger.Log($"NetworkManager already exists");
             }
             
             // Configure NetworkManager settings
             _networkManager.NetworkConfig.TickRate = 30;
             
             EditorUtility.SetDirty(_networkManager);
-            Debug.Log("[NetworkSetup] Configured NetworkManager settings");
+            GameLogger.Log($"Configured NetworkManager settings");
         }
         
         private void AddStationControllers()
@@ -173,7 +174,7 @@ namespace Editor
                     {
                         prefabInstance.AddComponent<StationNetworkController>();
                         addedCount++;
-                        Debug.Log($"[NetworkSetup] Added StationNetworkController to {prefab.name}");
+                        GameLogger.Log($"Added StationNetworkController to {prefab.name}");
                     }
                     
                     // Save prefab
@@ -185,7 +186,7 @@ namespace Editor
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             
-            Debug.Log($"[NetworkSetup] Added StationNetworkController to {addedCount} stations");
+            GameLogger.Log($"Added StationNetworkController to {addedCount} stations");
         }
         
         private void ConfigurePrefabs()
@@ -216,7 +217,7 @@ namespace Editor
                     {
                         prefabInstance.AddComponent<NetworkObject>();
                         configuredCount++;
-                        Debug.Log($"[NetworkSetup] Added NetworkObject to {prefab.name}");
+                        GameLogger.Log($"Added NetworkObject to {prefab.name}");
                     }
                     
                     // Save prefab
@@ -228,7 +229,7 @@ namespace Editor
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             
-            Debug.Log($"[NetworkSetup] Configured {configuredCount} prefabs with NetworkObject");
+            GameLogger.Log($"Configured {configuredCount} prefabs with NetworkObject");
         }
         
         private void RegisterPrefabsInNetworkManager()
@@ -240,7 +241,7 @@ namespace Editor
             
             if (_networkManager == null)
             {
-                Debug.LogError("[NetworkSetup] NetworkManager not found! Run Step 2 first.");
+                GameLogger.LogError($"NetworkManager not found! Run Step 2 first.");
                 return;
             }
             
@@ -287,7 +288,7 @@ namespace Editor
                 {
                     networkPrefabs.Add(new NetworkPrefab { Prefab = prefab });
                     addedCount++;
-                    Debug.Log($"[NetworkSetup] Registered {prefab.name} in NetworkManager");
+                    GameLogger.Log($"Registered {prefab.name} in NetworkManager");
                 }
             }
             
@@ -296,13 +297,13 @@ namespace Editor
             if (playerPrefab != null)
             {
                 _networkManager.NetworkConfig.PlayerPrefab = playerPrefab;
-                Debug.Log("[NetworkSetup] Set Player prefab as PlayerPrefab in NetworkManager");
+                GameLogger.Log($"Set Player prefab as PlayerPrefab in NetworkManager");
             }
             
             EditorUtility.SetDirty(_networkManager);
             AssetDatabase.SaveAssets();
             
-            Debug.Log($"[NetworkSetup] Registered {addedCount} new prefabs in NetworkManager");
+            GameLogger.Log($"Registered {addedCount} new prefabs in NetworkManager");
         }
         
         private T AddComponentIfMissing<T>(GameObject obj) where T : Component
@@ -311,7 +312,7 @@ namespace Editor
             if (component == null)
             {
                 component = obj.AddComponent<T>();
-                Debug.Log($"[NetworkSetup] Added {typeof(T).Name} to {obj.name}");
+                GameLogger.Log($"Added {typeof(T).Name} to {obj.name}");
             }
             return component;
         }

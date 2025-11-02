@@ -4,6 +4,7 @@ using UI.Core;
 using UI.Data;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Core.Logging;
 
 namespace UI.Screens
 {
@@ -27,7 +28,7 @@ namespace UI.Screens
             SetupButtons();
             LoadMapDatabase();
 
-            Debug.Log("[MapSelectionScreen] Initialized");
+            GameLogger.Log("Initialized");
         }
 
         private void CacheUIElements()
@@ -56,11 +57,11 @@ namespace UI.Screens
             if (jsonFile != null)
             {
                 _mapDatabase = JsonUtility.FromJson<MapDatabase>(jsonFile.text);
-                Debug.Log($"[MapSelectionScreen] Loaded {_mapDatabase.maps.Count} maps");
+                GameLogger.Log($"Loaded {_mapDatabase.maps.Count} maps");
             }
             else
             {
-                Debug.LogError("[MapSelectionScreen] Failed to load Maps.json from Resources/Data");
+                GameLogger.LogError("Failed to load Maps.json from Resources/Data");
             }
         }
 
@@ -92,7 +93,7 @@ namespace UI.Screens
                 _mapGrid.Add(mapCard);
             }
 
-            Debug.Log($"[MapSelectionScreen] Populated {availableMaps.Count} maps");
+            GameLogger.Log($"Populated {availableMaps.Count} maps");
         }
 
         private VisualElement CreateMapCard(MapInfo map)
@@ -160,7 +161,7 @@ namespace UI.Screens
 
         private void OnMapCardClicked(MapInfo map)
         {
-            Debug.Log($"[MapSelectionScreen] Map selected: {map.name}");
+            GameLogger.Log($"Map selected: {map.name}");
 
             // Update current map in database
             _mapDatabase.currentMapId = map.id;

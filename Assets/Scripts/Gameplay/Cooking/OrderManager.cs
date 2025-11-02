@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Core.GameModes;
+using Core.Logging;
 using Unity.Netcode;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -127,7 +128,7 @@ namespace Gameplay.Cooking
         {
             if (_availableRecipes.Count == 0)
             {
-                Debug.LogWarning("[OrderManager] No available recipes to generate an order from.");
+                GameLogger.LogWarning("No available recipes to generate an order from.");
                 return;
             }
 
@@ -149,7 +150,7 @@ namespace Gameplay.Cooking
             // Add the order to the active orders list
             _activeOrders.Add(orderState);
 
-            Debug.Log($"[OrderManager] Generated new order: {recipe.DisplayName} (ID: {orderState.OrderId})");
+            GameLogger.Log($"Generated new order: {recipe.DisplayName} (ID: {orderState.OrderId})");
         }
 
         /// <summary>
@@ -174,7 +175,7 @@ namespace Gameplay.Cooking
                     order.IsExpired = true;
                     _activeOrders[i] = order;
 
-                    Debug.Log($"[OrderManager] Order expired: ID {order.OrderId}");
+                    GameLogger.Log($"Order expired: ID {order.OrderId}");
                 }
             }
         }
@@ -188,7 +189,7 @@ namespace Gameplay.Cooking
         {
             if (!IsServer)
             {
-                Debug.LogWarning("[OrderManager] Only the server can complete orders.");
+                GameLogger.LogWarning("Only the server can complete orders.");
                 return false;
             }
 
@@ -203,12 +204,12 @@ namespace Gameplay.Cooking
                     order.IsCompleted = true;
                     _activeOrders[i] = order;
 
-                    Debug.Log($"[OrderManager] Order completed: ID {order.OrderId}");
+                    GameLogger.Log($"Order completed: ID {order.OrderId}");
                     return true;
                 }
             }
 
-            Debug.LogWarning($"[OrderManager] Failed to complete order: ID {orderId} not found or already completed/expired.");
+            GameLogger.LogWarning($"Failed to complete order: ID {orderId} not found or already completed/expired.");
             return false;
         }
 
@@ -305,7 +306,7 @@ namespace Gameplay.Cooking
             // Get the client ID that sent the RPC
             ulong clientId = serverRpcParams.Receive.SenderClientId;
 
-            Debug.Log($"[OrderManager] Client {clientId} is trying to complete order {orderId}");
+            GameLogger.Log($"Client {clientId} is trying to complete order {orderId}");
 
             // Try to complete the order
             bool success = CompleteOrder(orderId);
@@ -322,7 +323,7 @@ namespace Gameplay.Cooking
         [ClientRpc]
         private void CompleteOrderResultClientRpc(int orderId, bool success)
         {
-            Debug.Log($"[OrderManager] Order completion result: ID {orderId}, Success: {success}");
+            GameLogger.Log($"Order completion result: ID {orderId}, Success: {success}");
         }
 
         /// <summary>
@@ -332,11 +333,11 @@ namespace Gameplay.Cooking
         {
             if (!IsServer)
             {
-                Debug.LogWarning("[OrderManager] Only the server can start generating orders.");
+                GameLogger.LogWarning("Only the server can start generating orders.");
                 return;
             }
 
-            Debug.Log("[OrderManager] Starting to generate orders");
+            GameLogger.Log("Starting to generate orders");
 
             // Reset the order timer
             _orderTimer = 0f;
@@ -359,11 +360,11 @@ namespace Gameplay.Cooking
         {
             if (!IsServer)
             {
-                Debug.LogWarning("[OrderManager] Only the server can stop generating orders.");
+                GameLogger.LogWarning("Only the server can stop generating orders.");
                 return;
             }
 
-            Debug.Log("[OrderManager] Stopping order generation");
+            GameLogger.Log("Stopping order generation");
 
             // Clear any existing orders
             if (_activeOrders != null && _activeOrders.Count > 0)

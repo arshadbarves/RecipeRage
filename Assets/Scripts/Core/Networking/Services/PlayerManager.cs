@@ -1,4 +1,5 @@
 using System;
+using Core.Logging;
 using Core.Networking.Common;
 using Core.Networking.Interfaces;
 using Epic.OnlineServices;
@@ -35,88 +36,88 @@ namespace Core.Networking.Services
         {
             if (_currentLobby == null)
             {
-                Debug.LogError("[PlayerManager] No current lobby");
+                GameLogger.LogError("No current lobby");
                 return;
             }
 
             ProductUserId localUserId = EOSManager.Instance.GetProductUserId();
             if (!IsPlayerInLobby(localUserId))
             {
-                Debug.LogError("[PlayerManager] Local player not found in lobby");
+                GameLogger.LogError("Local player not found in lobby");
                 return;
             }
 
             AddMemberAttribute("IsReady", isReady.ToString());
-            Debug.Log($"[PlayerManager] Setting player ready: {isReady}");
+            GameLogger.Log($"Setting player ready: {isReady}");
         }
 
         public void SetPlayerTeam(TeamId teamId)
         {
             if (_currentLobby == null)
             {
-                Debug.LogError("[PlayerManager] No current lobby");
+                GameLogger.LogError("No current lobby");
                 return;
             }
 
             ProductUserId localUserId = EOSManager.Instance.GetProductUserId();
             if (!IsPlayerInLobby(localUserId))
             {
-                Debug.LogError("[PlayerManager] Local player not found in lobby");
+                GameLogger.LogError("Local player not found in lobby");
                 return;
             }
 
             AddMemberAttribute("TeamId", ((int)teamId).ToString());
-            Debug.Log($"[PlayerManager] Setting player team: {teamId}");
+            GameLogger.Log($"Setting player team: {teamId}");
         }
 
         public void SetPlayerCharacterClass(CharacterClass characterClass)
         {
             if (_currentLobby == null)
             {
-                Debug.LogError("[PlayerManager] No current lobby");
+                GameLogger.LogError("No current lobby");
                 return;
             }
 
             ProductUserId localUserId = EOSManager.Instance.GetProductUserId();
             if (!IsPlayerInLobby(localUserId))
             {
-                Debug.LogError("[PlayerManager] Local player not found in lobby");
+                GameLogger.LogError("Local player not found in lobby");
                 return;
             }
 
             AddMemberAttribute("CharacterClass", ((int)characterClass).ToString());
-            Debug.Log($"[PlayerManager] Setting player character class: {characterClass}");
+            GameLogger.Log($"Setting player character class: {characterClass}");
         }
 
         public void InviteFriend(ProductUserId friendId)
         {
             if (_currentLobby == null)
             {
-                Debug.LogError("[PlayerManager] No current lobby to invite to");
+                GameLogger.LogError("No current lobby to invite to");
                 return;
             }
 
             if (!friendId.IsValid())
             {
-                Debug.LogError("[PlayerManager] Invalid friend ProductUserId");
+                GameLogger.LogError("Invalid friend ProductUserId");
                 return;
             }
 
             _eosLobbyManager.SendInvite(friendId);
-            Debug.Log($"[PlayerManager] Sent invite to friend: {friendId}");
+            GameLogger.Log($"Sent invite to friend: {friendId}");
         }
 
         public void KickPlayer(ProductUserId playerId)
         {
             if (_currentLobby == null || !_currentLobby.IsOwner(EOSManager.Instance.GetProductUserId()))
             {
-                Debug.LogWarning("[PlayerManager] Only lobby owner can kick players");
+                GameLogger.LogWarning("Only lobby owner can kick players");
                 return;
             }
 
             if (!playerId.IsValid())
             {
-                Debug.LogError("[PlayerManager] Invalid player ProductUserId");
+                GameLogger.LogError("Invalid player ProductUserId");
                 return;
             }
 
@@ -124,11 +125,11 @@ namespace Core.Networking.Services
             {
                 if (result == Result.Success)
                 {
-                    Debug.Log($"[PlayerManager] Kicked player: {playerId}");
+                    GameLogger.Log($"Kicked player: {playerId}");
                 }
                 else
                 {
-                    Debug.LogError($"[PlayerManager] Failed to kick player: {result}");
+                    GameLogger.LogError($"Failed to kick player: {result}");
                 }
             });
         }
