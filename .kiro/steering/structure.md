@@ -109,10 +109,6 @@ public class MyBehaviour : MonoBehaviour
 Use category-specific logging:
 ```csharp
 GameLogger.Log("General message");
-GameLogger.Network.Log("Network event");
-GameLogger.Audio.Log("Audio event");
-GameLogger.UI.Log("UI event");
-GameLogger.Gameplay.Log("Gameplay event");
 ```
 
 Log levels:

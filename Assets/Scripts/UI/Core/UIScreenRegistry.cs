@@ -78,7 +78,7 @@ namespace UI.Core
             }
 
             _screenTypes[screenType] = screenClass;
-            _screenAttributes[screenType] = attribute ?? new UIScreenAttribute(screenType, UIScreenPriority.Menu);
+            _screenAttributes[screenType] = attribute ?? new UIScreenAttribute(screenType, UIScreenCategory.Screen);
 
             GameLogger.Log($"Registered {screenType} -> {screenClass.Name}");
         }

@@ -12,7 +12,7 @@ namespace UI.Screens
     /// Dedicated matchmaking screen shown during player search
     /// Replaces the widget overlay approach with a full screen
     /// </summary>
-    [UIScreen(UIScreenType.Matchmaking, UIScreenPriority.Menu, "Screens/MatchmakingTemplate")]
+    [UIScreen(UIScreenType.Matchmaking, UIScreenCategory.Screen, "Screens/MatchmakingTemplate")]
     public class MatchmakingScreen : BaseUIScreen
     {
         // UI Elements

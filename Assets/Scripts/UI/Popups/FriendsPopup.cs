@@ -14,7 +14,7 @@ namespace UI.Popups
     /// Friends popup - Production version with friend requests
     /// Shows: My code, pending requests, friends list, add friend
     /// </summary>
-    [UIScreen(UIScreenType.FriendsPopup, UIScreenPriority.Popup, "Popups/FriendsPopupTemplate")]
+    [UIScreen(UIScreenType.FriendsPopup, UIScreenCategory.Popup, "Popups/FriendsPopupTemplate")]
     public class FriendsPopup : BaseUIScreen
     {
         // UI Elements

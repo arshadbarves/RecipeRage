@@ -19,7 +19,7 @@ namespace UI.Popups
     /// Subsequent changes: Costs gems
     /// Now properly extends BaseUIScreen for UIService integration
     /// </summary>
-    [UIScreen(UIScreenType.UsernamePopup, UIScreenPriority.Popup, "Popups/UsernamePopupTemplate")]
+    [UIScreen(UIScreenType.UsernamePopup, UIScreenCategory.Popup, "Popups/UsernamePopupTemplate")]
     public class UsernamePopup : BaseUIScreen
     {
         private const int USERNAME_CHANGE_COST = 100; // Gems

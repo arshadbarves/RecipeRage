@@ -1,0 +1,15 @@
+
+@import url("DesignSystem.uss");
+
+/* ============================================
+   RECIPE RAGE - BRAWL STARS THEME FILE
+   Unity App UI Theme System (.tss file)
+   
+   This file references the stylesheet and is used
+   in PanelSettings of UIDocument components
+   ============================================ */
+
+/* Import the theme stylesheet */
+
+/* Root element - required by Unity App UI */
+VisualElement {}

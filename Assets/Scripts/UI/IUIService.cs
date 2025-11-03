@@ -17,6 +17,7 @@ namespace UI
         void HideScreen(UIScreenType screenType, bool animate = true);
         void HideScreensOfType(UIScreenType screenType, bool animate = true);
         void HideAllPopups(bool animate = true);
+        void HideAllModals(bool animate = true);
         void HideAllGameScreens(bool animate = true);
         void HideAllScreens(bool animate = false);
 
@@ -29,6 +30,9 @@ namespace UI
 
         bool GoBack(bool animate = true);
         void ClearHistory();
+
+        UIScreenCategory GetScreenCategory(UIScreenType screenType);
+        bool IsInteractionBlocked(UIScreenType screenType);
 
         UniTask ShowToast(string message, ToastType type = ToastType.Info, float duration = 3f);
 

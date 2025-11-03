@@ -1,12 +1,13 @@
 <UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd" editor-extension-mode="False">
-    <Template name="SkinsTemplate" src="project://database/Assets/Resources/UI/Templates/Screens/SkinsTemplate.uxml?fileID=9197481963319205126&amp;guid=d13a1062b3b204f4997e9bead26a7b01&amp;type=3#SkinsTemplate" />
+    <Template name="LobbyTemplate" src="project://database/Assets/Resources/UI/Templates/Screens/LobbyTemplate.uxml?fileID=9197481963319205126&amp;guid=3da2194908d8a4d65b7a6a67f37ee6f6&amp;type=3#LobbyTemplate" />
+    <Template name="CharacterTabTemplate" src="project://database/Assets/Resources/UI/Templates/Screens/CharacterTabTemplate.uxml?fileID=9197481963319205126&amp;guid=ac8e05f0b8d6c4ef79f194a1f70828d2&amp;type=3#CharacterTabTemplate" />
     <Template name="ShopTemplate" src="project://database/Assets/Resources/UI/Templates/Screens/ShopTemplate.uxml?fileID=9197481963319205126&amp;guid=0824e79abae0447b990331c5e433d706&amp;type=3#ShopTemplate" />
     <Template name="SettingsTemplate" src="project://database/Assets/Resources/UI/Templates/Screens/SettingsTemplate.uxml?fileID=9197481963319205126&amp;guid=2cd1b3db03fd841fa89c38e06c5d5b88&amp;type=3#SettingsTemplate" />
-    <Template name="LobbyTemplate" src="project://database/Assets/Resources/UI/Templates/Screens/LobbyTemplate.uxml?fileID=9197481963319205126&amp;guid=3da2194908d8a4d65b7a6a67f37ee6f6&amp;type=3#LobbyTemplate" />
     <Style src="project://database/Assets/Resources/UI/Styles/Screens/MainMenu.uss?fileID=7433441132597879392&amp;guid=15bb364f81be046f5a66a2cf721fada9&amp;type=3#MainMenu" />
     <Style src="project://database/Assets/Resources/UI/Styles/Screens/Settings.uss?fileID=7433441132597879392&amp;guid=ce13c355a0e3346d586ee254f45c6391&amp;type=3#Settings" />
     <Style src="project://database/Assets/Resources/UI/Styles/Screens/Shop.uss?fileID=7433441132597879392&amp;guid=4e442d0be92504d63986397556b8d066&amp;type=3#Shop" />
-    <Style src="project://database/Assets/Resources/UI/Styles/Screens/Skins.uss?fileID=7433441132597879392&amp;guid=8c10812b05e234486a139274877d4a9e&amp;type=3#Skins" />
+    <Style src="project://database/Assets/Resources/UI/Styles/Components/CharacterTab.uss?fileID=7433441132597879392&amp;guid=aa9123e71487e4e7788a3c50b3c86c73&amp;type=3#CharacterTab" />
+    <Style src="project://database/Assets/Resources/UI/Themes/DesignSystem.uss?fileID=7433441132597879392&amp;guid=74282f7acd0164afea4d8dc9dc05a968&amp;type=3#DesignSystem" />
     <Style src="project://database/Assets/Resources/UI/Styles/Core/GlobalButtons.uss?fileID=7433441132597879392&amp;guid=99c9eb48eb2e144a1af685d58c2a6d9b&amp;type=3#GlobalButtons" />
     <VisualElement name="bottom-background-bar" class="bottom-background-bar" style="flex-grow: 1;" />
     <VisualElement name="main-menu-root" class="main-menu-root">
@@ -14,8 +15,8 @@
             <Tab name="chef-tab" icon-image="project://database/Assets/Textures/Icons/Badges/icons8-home-96.png?fileID=2800000&amp;guid=2be65e77c79024ee1a42cef702ecd4bc&amp;type=3#icons8-home-96" class="chef-tab">
                 <Instance template="LobbyTemplate" />
             </Tab>
-            <Tab name="skins-tab" icon-image="project://database/Assets/Textures/Icons/Badges/icons8-chef-96.png?fileID=2800000&amp;guid=02588443caf3d42c7970590d186fe793&amp;type=3#icons8-chef-96">
-                <Instance template="SkinsTemplate" />
+            <Tab name="character-tab" icon-image="project://database/Assets/Textures/Icons/Badges/icons8-home-96.png?fileID=2800000&amp;guid=2be65e77c79024ee1a42cef702ecd4bc&amp;type=3#icons8-home-96" class="chef-tab">
+                <Instance template="CharacterTabTemplate" />
             </Tab>
             <Tab name="shop-tab" icon-image="project://database/Assets/Textures/Icons/Badges/icons8-shop-96.png?fileID=2800000&amp;guid=8bddd360023be43369db1644138f5fdb&amp;type=3#icons8-shop-96">
                 <Instance template="ShopTemplate" />

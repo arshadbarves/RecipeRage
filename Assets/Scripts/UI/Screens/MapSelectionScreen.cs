@@ -11,7 +11,7 @@ namespace UI.Screens
     /// <summary>
     /// Map selection screen - full screen for selecting maps
     /// </summary>
-    [UIScreen(UIScreenType.MapSelection, UIScreenPriority.Menu, "Screens/MapSelectionTemplate")]
+    [UIScreen(UIScreenType.MapSelection, UIScreenCategory.Screen, "Screens/MapSelectionTemplate")]
     public class MapSelectionScreen : BaseUIScreen
     {
         private MapDatabase _mapDatabase;

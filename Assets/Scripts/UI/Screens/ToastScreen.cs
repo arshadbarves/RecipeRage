@@ -22,7 +22,7 @@ namespace UI.Screens
     /// Toast notification screen - displays temporary messages
     /// Uses BaseUIScreen architecture for consistency
     /// </summary>
-    [UIScreen(UIScreenType.Toast, UIScreenPriority.Notification, "Popups/ToastTemplate")]
+    [UIScreen(UIScreenType.Toast, UIScreenCategory.Popup, "Popups/ToastTemplate")]
     public class ToastScreen : BaseUIScreen
     {
         private Label _messageLabel;

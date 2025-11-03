@@ -1,9 +1,13 @@
-/* Map Selection Screen Styles */
+/* ============================================
+   MAP SELECTION SCREEN - Uses Design System
+   Include DesignSystem.uss in UXML template
+   ============================================ */
 
 .map-selection-screen {
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.95);
+    background-color: var(--color-background-primary);
+    -unity-font-definition: var(--font-primary);
 }
 
 /* Header */
@@ -11,33 +15,33 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding: 20px;
-    background-color: rgba(0, 0, 0, 0.8);
-    border-bottom-width: 2px;
-    border-bottom-color: rgba(255, 215, 0, 0.3);
+    padding: var(--spacing-lg);
+    background-color: var(--color-overlay-dark);
 }
 
 .back-button {
     width: 120px;
     height: 50px;
-    font-size: 18px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 5px;
-    border-width: 2px;
-    border-color: rgba(255, 255, 255, 0.3);
-    color: white;
+    font-size: var(--font-size-lg);
+    background-color: var(--color-card-bg);
+    border-radius: var(--radius-sm);
+    border-width: var(--border-width-normal);
+    border-color: var(--color-card-border);
+    color: var(--color-text-primary);
+    transition-property: scale;
+    transition-duration: var(--transition-fast);
 }
 
-.back-button:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.5);
+.back-button:active {
+    scale: 0.95;
 }
 
 .screen-title {
     font-size: 36px;
     -unity-font-style: bold;
-    color: white;
+    color: var(--color-text-light);
     -unity-text-align: middle-center;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 /* Map Grid */
@@ -45,82 +49,85 @@
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
-    padding: 30px;
+    padding: var(--spacing-xxl);
 }
 
 /* Map Card */
 .map-card {
     width: 320px;
     height: 450px;
-    margin: 15px;
-    background-color: rgba(30, 30, 30, 0.9);
-    border-radius: 10px;
-    border-width: 2px;
-    border-color: rgba(255, 255, 255, 0.2);
+    margin: var(--spacing-md);
+    background-color: var(--color-card-bg);
+    border-radius: var(--radius-lg);
+    border-width: var(--border-width-normal);
+    border-color: var(--color-card-border);
     overflow: hidden;
+    transition-property: scale, border-color;
+    transition-duration: var(--transition-normal);
 }
 
-.map-card:hover {
-    border-color: rgba(255, 255, 255, 0.5);
+.map-card:active {
+    border-color: var(--color-accent-red);
     scale: 1.03;
-    transition-duration: 0.2s;
 }
 
 .current-map {
-    border-color: rgb(255, 215, 0);
-    border-width: 3px;
+    border-color: var(--color-warning);
+    border-width: var(--border-width-thick);
 }
 
 /* Map Thumbnail */
 .map-thumbnail {
     width: 100%;
     height: 200px;
-    background-color: rgb(51, 51, 51);
+    background-color: rgb(220, 220, 220);
     position: relative;
 }
 
 .current-label {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    background-color: rgb(255, 215, 0);
-    color: black;
-    padding: 5px 15px;
-    font-size: 14px;
+    top: var(--spacing-sm);
+    right: var(--spacing-sm);
+    background-color: var(--color-warning);
+    color: var(--color-text-primary);
+    padding: 5px var(--spacing-md);
+    font-size: var(--font-size-sm);
     -unity-font-style: bold;
-    border-radius: 3px;
+    border-radius: var(--radius-xs);
+    border-width: var(--border-width-thin);
+    border-color: var(--color-card-border);
 }
 
 /* Map Info */
 .map-info {
-    padding: 20px;
+    padding: var(--spacing-lg);
     flex-grow: 1;
 }
 
 .map-name {
-    font-size: 22px;
+    font-size: var(--font-size-xxl);
     -unity-font-style: bold;
-    color: white;
-    margin-bottom: 8px;
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-xs);
 }
 
 .map-subtitle {
-    font-size: 14px;
-    color: rgb(255, 215, 0);
-    margin-bottom: 12px;
+    font-size: var(--font-size-sm);
+    color: var(--color-accent-red);
+    margin-bottom: var(--spacing-sm);
     -unity-font-style: bold;
 }
 
 .map-description {
-    font-size: 13px;
-    color: rgba(255, 255, 255, 0.7);
-    margin-bottom: 12px;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-sm);
     white-space: normal;
 }
 
 .map-players {
-    font-size: 12px;
-    color: rgba(255, 255, 255, 0.5);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
 }
 
 /* Select Button */
@@ -129,17 +136,21 @@
     height: 45px;
     margin-left: 5%;
     margin-right: 5%;
-    margin-bottom: 15px;
-    background-color: rgb(76, 175, 80);
-    color: white;
-    font-size: 16px;
+    margin-bottom: var(--spacing-md);
+    background-color: var(--color-accent-green);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-md);
     -unity-font-style: bold;
-    border-radius: 5px;
-    border-width: 0;
+    border-radius: var(--radius-sm);
+    border-width: var(--border-width-normal);
+    border-color: var(--color-card-border);
+    transition-property: scale;
+    transition-duration: var(--transition-fast);
 }
 
-.select-button:hover {
-    background-color: rgb(69, 160, 73);
+.select-button:active {
+    scale: 0.95;
+    background-color: rgb(80, 210, 130);
 }
 
 .select-button:disabled {

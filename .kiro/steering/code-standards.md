@@ -225,3 +225,32 @@ public IEnumerator Initialize()
 - Use StringBuilder for string concatenation
 - Prefer structs for small data types
 - Use readonly when possible
+
+## Code Replacement Policy
+
+When updating or replacing code:
+
+- **Remove legacy code completely** - Don't leave old implementations
+- **No backward compatibility** - Replace, don't add alongside
+- **No deprecation warnings** - Just remove and replace
+- **Clean slate approach** - New implementation replaces old entirely
+- **Update all references** - Find and update all usages immediately
+
+```csharp
+// ❌ Don't do this - keeping old code with deprecation
+[Obsolete("Use NewMethod instead")]
+public void OldMethod() { }
+
+public void NewMethod() { }
+
+// ✅ Do this - complete replacement
+public void NewMethod() { }
+// OldMethod is completely removed
+```
+
+When refactoring:
+1. Identify all usages of old code
+2. Replace with new implementation
+3. Delete old code entirely
+4. No compatibility layers or bridges
+5. Clean commit with complete replacement

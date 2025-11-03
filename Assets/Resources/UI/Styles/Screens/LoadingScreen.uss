@@ -1,3 +1,8 @@
+/* ============================================
+   LOADING SCREEN - Uses Design System
+   Include DesignSystem.uss in UXML template
+   ============================================ */
+
 .loading-screen {
     position: absolute;
     width: 100%;
@@ -28,15 +33,15 @@
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    padding-top: 15px;
+    padding-top: var(--spacing-md);
     padding-bottom: 0;
-    background-color: rgb(0, 0, 0);
+    background-color: var(--color-black);
 }
 
 .progress-text {
-    font-size: 24px;
-    color: rgb(255, 255, 255);
-    margin-bottom: 10px;
+    font-size: var(--font-size-xxl);
+    color: var(--color-text-light);
+    margin-bottom: var(--spacing-sm);
     -unity-text-align: middle-center;
     -unity-text-outline-width: 2px;
     -unity-text-outline-color: rgba(0, 0, 0, 0.9);
@@ -62,7 +67,7 @@
 }
 
 .loading-progress .unity-progress-bar__progress {
-    background-color: rgb(255, 107, 53);
+    background-color: var(--color-accent-orange);
     border-radius: 0;
     margin: 0;
     min-height: 15px;
@@ -79,19 +84,16 @@
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    background-color: rgb(0, 0, 0);
-    border-radius: 15px;
-    padding-top: 18px;
-    padding-bottom: 18px;
-    padding-left: 20px;
-    padding-right: 20px;
-    margin-bottom: 15px;
+    background-color: var(--color-black);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-lg) var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
 }
 
 .tip-header {
-    font-size: 20px;
-    color: rgb(255, 107, 53);
-    margin-bottom: 8px;
+    font-size: var(--font-size-xl);
+    color: var(--color-accent-orange);
+    margin-bottom: var(--spacing-xs);
     letter-spacing: 1px;
     -unity-text-outline-width: 1px;
     -unity-text-outline-color: rgba(0, 0, 0, 0.8);
@@ -110,9 +112,9 @@
 
 .version-info {
     position: absolute;
-    top: 15px;
-    right: 20px;
-    font-size: 12px;
+    top: var(--spacing-md);
+    right: var(--spacing-lg);
+    font-size: var(--font-size-xs);
     color: rgba(255, 255, 255, 0.4);
     -unity-text-align: middle-right;
     text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);

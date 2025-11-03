@@ -1,0 +1,25 @@
+<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/Resources/UI/Styles/Screens/CharacterDetails.uss?fileID=7433441132597879392&amp;guid=a377e5a78a41b4608b6a4e451aaa0964&amp;type=3#CharacterDetails" />
+    <Style src="project://database/Assets/Resources/UI/Styles/Screens/Skins.uss?fileID=7433441132597879392&amp;guid=8c10812b05e234486a139274877d4a9e&amp;type=3#Skins" />
+    <Style src="project://database/Assets/Resources/UI/Styles/Core/DesignSystem.uss?fileID=7433441132597879392&amp;guid=74282f7acd0164afea4d8dc9dc05a968&amp;type=3#DesignSystem" />
+    <VisualElement name="character-details-root" class="character-details-root">
+        <VisualElement name="character-details-header" class="character-details-header">
+            <Button name="back-button" text="← BACK" class="back-button" />
+            <Label name="character-name" text="CHEF" class="character-details-title" />
+        </VisualElement>
+        <VisualElement name="character-details-content" class="character-details-content">
+            <VisualElement name="character-info-panel" class="character-info-panel">
+                <VisualElement name="character-preview-model" class="character-preview-model" />
+                <Label name="character-description" text="A balanced chef with the ability to instantly cook ingredients." class="character-description-text" />
+                <VisualElement name="character-stats" class="character-stats-container" />
+                <Button name="select-button" text="SELECT" class="select-character-button" />
+            </VisualElement>
+            <VisualElement name="skins-panel" class="skins-panel">
+                <Label text="SKINS" class="skins-panel-title" />
+                <ScrollView name="skins-scroll" class="skins-scroll">
+                    <VisualElement name="skins-grid" class="skins-grid" />
+                </ScrollView>
+            </VisualElement>
+        </VisualElement>
+    </VisualElement>
+</UXML>

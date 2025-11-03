@@ -1,10 +1,15 @@
+/* ============================================
+   MAIN MENU SCREEN - Uses Design System
+   Include DesignSystem.uss in UXML template
+   ============================================ */
+
 .main-menu-root {
     width: 100%;
     height: 100%;
     flex-direction: column;
     justify-content: space-between;
-    padding: 20px;
-    -unity-font-definition: url("project://database/Assets/Fonts/LilitaOne-Regular.ttf?fileID=12800000&guid=2309d3a0e6c55446ea2d106abff555fe&type=3#LilitaOne-Regular");
+    padding: var(--spacing-lg);
+    -unity-font-definition: var(--font-primary);
 }
 
 .top-bar {
@@ -12,31 +17,29 @@
     align-items: stretch;
     position: absolute;
     width: 100%;
-    padding-top: 20px;
-    padding-right: 20px;
-    padding-bottom: 20px;
-    padding-left: 20px;
+    padding: var(--spacing-lg);
     justify-content: space-between;
-    -unity-font-definition: url("project://database/Assets/Fonts/LilitaOne-Regular.ttf?fileID=12800000&guid=2309d3a0e6c55446ea2d106abff555fe&type=3#LilitaOne-Regular");
+    -unity-font-definition: var(--font-primary);
 }
 
+/* Player Card uses design system .player-card */
 .player-card {
     flex-direction: row;
     align-items: center;
-    background-color: rgb(245, 240, 235);
-    border-radius: 30px;
-    padding: 15px 35px 15px 15px;
-    border-width: 6px;
-    border-color: rgb(40, 30, 25);
+    background-color: var(--color-card-bg);
+    border-radius: var(--radius-xxl);
+    padding: var(--spacing-md) var(--spacing-xl) var(--spacing-md) var(--spacing-md);
+    border-width: var(--border-width-extra-thick);
+    border-color: var(--color-card-border);
     min-width: 320px;
 }
 
 .star-icon {
     width: 90px;
     height: 90px;
-    background-color: rgb(40, 30, 25);
-    border-radius: 50%;
-    margin-right: 20px;
+    background-color: var(--color-card-border);
+    border-radius: var(--radius-round);
+    margin-right: var(--spacing-lg);
     -unity-background-scale-mode: scale-to-fit;
 }
 
@@ -46,16 +49,16 @@
 }
 
 .player-title {
-    font-size: 20px;
-    color: rgb(40, 30, 25);
+    font-size: var(--font-size-xl);
+    color: var(--color-text-primary);
     margin: 0;
     padding: 0;
     -unity-text-align: upper-left;
 }
 
 .player-number {
-    font-size: 42px;
-    color: rgb(40, 30, 25);
+    font-size: var(--font-size-display);
+    color: var(--color-text-primary);
     margin: 0;
     padding: 0;
     margin-top: -5px;
@@ -63,74 +66,44 @@
 }
 
 .currency-container {
-    gap: 15px;
+    gap: var(--spacing-md);
     align-items: flex-start;
     flex-direction: column;
 }
 
+/* Currency Display uses design system .currency-display */
 .currency-display {
-    flex-direction: row;
-    align-items: center;
-    background-color: rgb(245, 240, 235);
-    border-radius: 30px;
-    padding: 10px 18px;
-    border-width: 5px;
-    border-color: rgb(40, 30, 25);
-    max-width: 300px;
-    min-width: 180px;
-    width: 100%;
-    border-top-left-radius: 35px;
-    border-top-right-radius: 35px;
-    border-bottom-right-radius: 35px;
-    border-bottom-left-radius: 35px;
-    margin-left: 15px;
+    margin-left: var(--spacing-md);
 }
 
-.currency-icon {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    margin-right: 10px;
-    -unity-background-scale-mode: scale-to-fit;
-    min-width: 34px;
-    min-height: 34px;
-}
-
+/* Currency Icons use design system .currency-icon-coin and .currency-icon-gem */
 .coin-icon {
-    background-color: rgb(255, 200, 60);
-    border-width: 4px;
-    border-color: rgb(40, 30, 25);
+    background-color: var(--color-warning);
+    border-width: var(--border-width-normal);
+    border-color: var(--color-card-border);
 }
 
 .gem-icon {
-    background-color: rgb(100, 200, 255);
-    border-width: 4px;
-    border-color: rgb(40, 30, 25);
+    background-color: var(--color-accent-blue);
+    border-width: var(--border-width-normal);
+    border-color: var(--color-card-border);
 }
 
-.currency-amount {
-    font-size: 24px;
-    color: rgb(40, 30, 25);
-    margin: 0;
-    padding: 0;
-    flex-grow: 1;
-    -unity-text-align: middle-left;
-}
-
+/* Add Currency Button uses design system .icon-button-small */
 .add-currency-button {
     width: 40px;
     height: 40px;
     min-width: 40px;
     min-height: 40px;
-    background-color: rgb(100, 230, 150);
-    border-radius: 50%;
-    border-width: 4px;
-    border-color: rgb(40, 30, 25);
+    background-color: var(--color-accent-green);
+    border-radius: var(--radius-round);
+    border-width: var(--border-width-normal);
+    border-color: var(--color-card-border);
     padding: 0;
     margin: 0;
-    margin-left: 10px;
+    margin-left: var(--spacing-sm);
     transition-property: scale;
-    transition-duration: 0.1s;
+    transition-duration: var(--transition-fast);
 }
 
 .add-currency-button:active {
@@ -138,22 +111,23 @@
 }
 
 .add-button-text {
-    font-size: 28px;
-    color: rgb(40, 30, 25);
+    font-size: var(--font-size-title);
+    color: var(--color-text-primary);
     margin: 0;
     padding: 0;
     -unity-text-align: middle-center;
 }
 
+/* Main Tabs */
 .main-tabs {
     flex-grow: 1;
 }
 
 .main-tabs .unity-tab-view__header-container {
-    background-color: rgb(0, 0, 0);
+    background-color: var(--color-black);
     border-radius: 60px;
-    padding: 20px;
-    margin: 0 20px;
+    padding: var(--spacing-lg);
+    margin: 0 var(--spacing-lg);
     justify-content: center;
     align-self: center;
     align-items: center;
@@ -175,16 +149,16 @@
 .main-tabs .unity-tab__header {
     width: 90px;
     height: 90px;
-    border-radius: 20px;
-    margin: 0 15px;
+    border-radius: var(--radius-xl);
+    margin: 0 var(--spacing-md);
     border-width: 0;
-    background-color: rgb(100, 201, 255);
+    background-color: var(--color-accent-blue);
     transition-property: scale, background-color;
-    transition-duration: 0.1s;
+    transition-duration: var(--transition-fast);
 }
 
 .main-tabs .unity-tab__header:checked {
-    background-color: rgb(255, 100, 100);
+    background-color: var(--color-accent-red);
 }
 
 .main-tabs .unity-tab__header-underline {
@@ -204,7 +178,7 @@
 }
 
 .scissors-tab {
-    background-color: rgb(255, 180, 70);
+    background-color: var(--color-accent-orange);
 }
 
 .cart-tab {
@@ -213,16 +187,16 @@
 }
 
 .settings-tab {
-    background-color: rgb(150, 100, 230);
+    background-color: var(--color-accent-purple);
 }
 
 .cart-badge {
     width: 28px;
     height: 28px;
-    background-color: rgb(255, 200, 60);
-    border-radius: 50%;
-    border-width: 3px;
-    border-color: rgb(40, 30, 25);
+    background-color: var(--color-warning);
+    border-radius: var(--radius-round);
+    border-width: var(--border-width-thin);
+    border-color: var(--color-card-border);
     align-items: center;
     justify-content: center;
     top: -20px;
@@ -231,13 +205,14 @@
 }
 
 .badge-text {
-    font-size: 16px;
-    color: rgb(40, 30, 25);
+    font-size: var(--font-size-md);
+    color: var(--color-text-primary);
     -unity-text-align: middle-center;
     margin: 0;
     padding: 0;
 }
 
+/* Bottom Bar */
 .bottom-bar {
     flex-direction: column;
     align-items: flex-end;
@@ -247,17 +222,17 @@
     width: 100%;
     height: 75px;
     bottom: 0;
-    background-color: rgb(0, 0, 0);
+    background-color: var(--color-black);
     position: absolute;
 }
 
 .map-button {
     flex-direction: column;
-    background-color: rgb(255, 100, 100);
-    border-radius: 20px;
-    padding: 20px 25px;
-    border-width: 5px;
-    border-color: rgb(40, 30, 25);
+    background-color: var(--color-accent-red);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-lg) var(--spacing-xl);
+    border-width: var(--border-width-thick);
+    border-color: var(--color-card-border);
     min-width: 280px;
     overflow: visible;
 }
@@ -268,15 +243,15 @@
 }
 
 .timer-text {
-    font-size: 14px;
-    color: rgb(255, 255, 255);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
     margin: 0;
     padding: 0;
 }
 
 .map-name {
-    font-size: 28px;
-    color: rgb(255, 255, 255);
+    font-size: var(--font-size-title);
+    color: var(--color-text-light);
     margin: 0;
     padding: 0;
     -unity-text-align: upper-left;
@@ -284,8 +259,8 @@
 }
 
 .map-subtitle {
-    font-size: 14px;
-    color: rgb(255, 255, 255);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
     margin: 0;
     padding: 0;
     margin-top: 2px;
@@ -296,15 +271,15 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    background-color: rgb(100, 230, 150);
-    border-radius: 20px;
-    padding: 25px 50px;
-    border-width: 5px;
-    border-color: rgb(40, 30, 25);
+    background-color: var(--color-accent-green);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-xl) 50px;
+    border-width: var(--border-width-thick);
+    border-color: var(--color-card-border);
     min-width: 280px;
     overflow: visible;
     transition-property: scale;
-    transition-duration: 0.1s;
+    transition-duration: var(--transition-fast);
 }
 
 .play-button:active {
@@ -314,7 +289,7 @@
 .timer-icon {
     width: 65px;
     height: 65px;
-    margin-right: 15px;
+    margin-right: var(--spacing-md);
     -unity-background-scale-mode: scale-to-fit;
     position: absolute;
     background-image: url("project://database/Assets/Textures/Icons/Badges/icons8-timer-96.png?fileID=2800000&guid=f5f11bd0df651408197f353a0ed6729a&type=3#icons8-timer-96");
@@ -324,8 +299,8 @@
 }
 
 .play-text {
-    font-size: 48px;
-    color: rgb(40, 30, 25);
+    font-size: var(--font-size-hero);
+    color: var(--color-text-primary);
     margin: 0;
     padding: 0;
     -unity-text-align: middle-center;
@@ -335,47 +310,37 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    background-color: rgb(0, 0, 0);
+    background-color: var(--color-black);
     width: 250px;
-    padding-top: 10px;
-    padding-right: 10px;
-    padding-bottom: 10px;
-    padding-left: 10px;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
+    padding: var(--spacing-sm);
+    border-top-left-radius: var(--radius-sm);
+    border-top-right-radius: var(--radius-sm);
     position: absolute;
     top: -40px;
-    left: 10px;
+    left: var(--spacing-sm);
 }
 
 /* Lobby Tab / Party Section */
 .party-section {
-    background-color: rgba(0, 0, 0, 0.3);
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 16px;
+    background-color: var(--color-overlay-dark);
+    border-radius: var(--radius-sm);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
 }
 
 .party-header {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
-}
-
-.section-title {
-    font-size: 16px;
-    color: #FFD700;
-    -unity-font-style: bold;
-    letter-spacing: 1px;
+    margin-bottom: var(--spacing-sm);
 }
 
 .friends-button {
     background-color: #4A90E2;
     color: white;
-    border-radius: 8px;
-    padding: 8px 16px;
-    font-size: 14px;
+    border-radius: var(--radius-xs);
+    padding: var(--spacing-xs) var(--spacing-md);
+    font-size: var(--font-size-sm);
     -unity-font-style: bold;
     border-width: 0;
     transition-property: background-color;
@@ -394,40 +359,12 @@
     max-height: 200px;
 }
 
-.player-card {
-    flex-direction: row;
-    align-items: center;
-    background-color: rgba(255, 255, 255, 0.05);
-    border-radius: 8px;
-    padding: 12px;
-    margin-bottom: 8px;
-}
-
 .player-card.solo {
     border-width: 2px;
     border-color: #4A90E2;
 }
 
-.player-avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 24px;
-    background-color: #4A90E2;
-    margin-right: 12px;
-}
-
-.player-info {
-    flex-grow: 1;
-}
-
-.player-name {
-    font-size: 16px;
-    color: white;
-    -unity-font-style: bold;
-    margin-bottom: 4px;
-}
-
 .player-status {
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     color: rgba(255, 255, 255, 0.6);
 }

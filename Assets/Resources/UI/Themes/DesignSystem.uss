@@ -1,0 +1,643 @@
+/* ============================================
+   RECIPE RAGE - UNIFIED DESIGN SYSTEM
+   Brawl Stars Inspired - Playful & Bold
+   ============================================ */
+
+/* ============================================
+   DESIGN TOKENS - Color Palette
+   ============================================ */
+:root {
+    /* Primary Colors - Brawl Stars Style */
+    --color-card-bg: rgb(245, 240, 235);
+    --color-card-border: rgb(40, 30, 25);
+    --color-background-primary: rgb(100, 150, 255);
+    --color-background-secondary: rgb(80, 180, 230);
+    
+    /* Accent Colors */
+    --color-accent-red: rgb(255, 100, 100);
+    --color-accent-green: rgb(100, 230, 150);
+    --color-accent-yellow: rgb(255, 200, 60);
+    --color-accent-blue: rgb(100, 201, 255);
+    --color-accent-purple: rgb(150, 100, 230);
+    --color-accent-orange: rgb(255, 180, 70);
+    --color-accent-pink: rgb(255, 150, 200);
+    
+    /* Text Colors */
+    --color-text-primary: rgb(40, 30, 25);
+    --color-text-secondary: rgb(100, 100, 100);
+    --color-text-light: rgb(255, 255, 255);
+    --color-text-muted: rgb(120, 110, 105);
+    
+    /* Functional Colors */
+    --color-success: rgb(100, 230, 150);
+    --color-warning: rgb(255, 200, 60);
+    --color-danger: rgb(255, 100, 100);
+    --color-info: rgb(100, 201, 255);
+    
+    /* Overlay Colors */
+    --color-overlay-dark: rgba(0, 0, 0, 0.3);
+    --color-overlay-darker: rgba(0, 0, 0, 0.5);
+    --color-overlay-light: rgba(255, 255, 255, 0.5);
+    --color-black: rgb(0, 0, 0);
+    
+    /* Border & Shadow */
+    --border-width-thin: 3px;
+    --border-width-normal: 4px;
+    --border-width-thick: 5px;
+    --border-width-extra-thick: 6px;
+    
+    /* Border Radius */
+    --radius-xs: 8px;
+    --radius-sm: 12px;
+    --radius-md: 15px;
+    --radius-lg: 18px;
+    --radius-xl: 20px;
+    --radius-xxl: 22px;
+    --radius-round: 50%;
+    
+    /* Spacing */
+    --spacing-xs: 5px;
+    --spacing-sm: 10px;
+    --spacing-md: 15px;
+    --spacing-lg: 20px;
+    --spacing-xl: 25px;
+    --spacing-xxl: 30px;
+    
+    /* Typography */
+    --font-size-xs: 12px;
+    --font-size-sm: 14px;
+    --font-size-md: 16px;
+    --font-size-lg: 18px;
+    --font-size-xl: 20px;
+    --font-size-xxl: 22px;
+    --font-size-title: 28px;
+    --font-size-display: 42px;
+    --font-size-hero: 48px;
+    
+    /* Font Family */
+    --font-primary: url("project://database/Assets/Fonts/LilitaOne-Regular.ttf?fileID=12800000&guid=2309d3a0e6c55446ea2d106abff555fe&type=3#LilitaOne-Regular");
+    
+    /* Transitions */
+    --transition-fast: 0.1s;
+    --transition-normal: 0.15s;
+    --transition-slow: 0.25s;
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+.screen-root {
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    -unity-font-definition: var(--font-primary);
+}
+
+.background-gradient {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: var(--color-background-primary);
+}
+
+/* ============================================
+   LAYOUT COMPONENTS
+   ============================================ */
+
+/* Top Bar */
+.top-bar {
+    flex-direction: row;
+    align-items: center;
+    padding: var(--spacing-md) var(--spacing-lg);
+    background-color: var(--color-overlay-dark);
+}
+
+/* Content Scroll */
+.content-scroll {
+    flex-grow: 1;
+    padding: 0 var(--spacing-md) var(--spacing-lg) var(--spacing-md);
+}
+
+/* Scrollbar Styling */
+.content-scroll > .unity-scroll-view__content-viewport > .unity-scroller--vertical {
+    width: 12px;
+    margin-left: 5px;
+}
+
+.content-scroll > .unity-scroll-view__content-viewport > .unity-scroller--vertical > .unity-base-slider__dragger {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    border-width: 0;
+    margin: 2px;
+}
+
+.content-scroll > .unity-scroll-view__content-viewport > .unity-scroller--vertical > .unity-base-slider__dragger:hover {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.content-scroll > .unity-scroll-view__content-viewport > .unity-scroller--vertical > .unity-base-slider__dragger:active {
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.content-scroll > .unity-scroll-view__content-viewport > .unity-scroller--vertical > .unity-base-slider__tracker {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    border-width: 0;
+    margin: 0;
+}
+
+.content-scroll .unity-scroller__low-button,
+.content-scroll .unity-scroller__high-button {
+    display: none;
+}
+
+/* ============================================
+   CARD COMPONENTS
+   ============================================ */
+
+/* Standard Card */
+.card {
+    background-color: var(--color-card-bg);
+    border-radius: var(--radius-lg);
+    border-width: var(--border-width-thick);
+    border-color: var(--color-card-border);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+}
+
+/* Card Variants */
+.card-compact {
+    padding: var(--spacing-md);
+}
+
+.card-spacious {
+    padding: var(--spacing-xl);
+}
+
+.card-danger {
+    background-color: rgb(255, 240, 240);
+    border-color: var(--color-danger);
+}
+
+/* Player Card */
+.player-card {
+    flex-direction: row;
+    align-items: center;
+    background-color: var(--color-card-bg);
+    border-radius: var(--radius-xxl);
+    padding: var(--spacing-md) var(--spacing-xl) var(--spacing-md) var(--spacing-md);
+    border-width: var(--border-width-extra-thick);
+    border-color: var(--color-card-border);
+    min-width: 320px;
+}
+
+/* Stat Card */
+.stat-card {
+    width: 31.5%;
+    min-width: 140px;
+    flex-grow: 1;
+    margin-bottom: var(--spacing-md);
+    background-color: var(--color-card-bg);
+    border-radius: var(--radius-lg);
+    border-width: var(--border-width-thick);
+    border-color: var(--color-card-border);
+    padding: var(--spacing-lg) var(--spacing-sm);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ============================================
+   BUTTON COMPONENTS
+   ============================================ */
+
+/* Base Button */
+.btn {
+    border-radius: var(--radius-md);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-width: var(--border-width-normal);
+    border-color: var(--color-card-border);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-primary);
+    transition-property: scale, background-color;
+    transition-duration: var(--transition-fast);
+}
+
+.btn:active {
+    scale: 0.93;
+}
+
+/* Button Variants */
+.btn-primary {
+    background-color: var(--color-accent-green);
+}
+
+.btn-primary:active {
+    background-color: rgb(80, 210, 130);
+}
+
+.btn-secondary {
+    background-color: var(--color-accent-blue);
+}
+
+.btn-secondary:active {
+    background-color: rgb(80, 181, 235);
+}
+
+.btn-danger {
+    background-color: var(--color-danger);
+    color: var(--color-text-light);
+}
+
+.btn-danger:active {
+    background-color: rgb(235, 80, 80);
+}
+
+.btn-warning {
+    background-color: var(--color-warning);
+}
+
+.btn-warning:active {
+    background-color: rgb(235, 180, 40);
+}
+
+/* Button Sizes */
+.btn-small {
+    font-size: var(--font-size-md);
+    padding: var(--spacing-xs) var(--spacing-md);
+}
+
+.btn-large {
+    font-size: var(--font-size-xxl);
+    padding: var(--spacing-md) var(--spacing-xxl);
+}
+
+.btn-full {
+    width: 100%;
+}
+
+/* Icon Button */
+.icon-button {
+    width: 50px;
+    height: 50px;
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: var(--radius-round);
+    border-width: 0;
+    margin-right: var(--spacing-md);
+    transition-property: scale;
+    transition-duration: var(--transition-fast);
+}
+
+.icon-button:active {
+    scale: 0.9;
+}
+
+.icon-button-small {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+    background-color: var(--color-accent-green);
+    border-radius: var(--radius-round);
+    border-width: var(--border-width-normal);
+    border-color: var(--color-card-border);
+    padding: 0;
+    margin: 0;
+}
+
+.icon-button-small:active {
+    scale: 0.88;
+}
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+
+/* Screen Title */
+.screen-title {
+    font-size: var(--font-size-title);
+    color: var(--color-text-light);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.screen-title-dark {
+    font-size: var(--font-size-display);
+    color: var(--color-text-primary);
+    -unity-text-align: middle-center;
+    margin-bottom: 5px;
+}
+
+/* Section Header */
+.section-header {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-light);
+    background-color: var(--color-overlay-dark);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--spacing-sm);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.section-title {
+    font-size: var(--font-size-title);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-sm);
+    border-bottom-width: var(--border-width-thin);
+    border-bottom-color: rgba(40, 30, 25, 0.3);
+}
+
+/* Text Styles */
+.text-primary {
+    font-size: var(--font-size-md);
+    color: var(--color-text-primary);
+}
+
+.text-secondary {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+.text-muted {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+}
+
+.text-light {
+    color: var(--color-text-light);
+}
+
+.text-center {
+    -unity-text-align: middle-center;
+}
+
+.text-large {
+    font-size: var(--font-size-display);
+    color: var(--color-text-primary);
+}
+
+/* ============================================
+   FORM CONTROLS
+   ============================================ */
+
+/* Slider */
+.control-slider {
+    width: 200px;
+    min-width: 200px;
+    align-items: center;
+}
+
+.control-slider .unity-base-slider__dragger {
+    background-color: var(--color-accent-green);
+    border-radius: var(--radius-round);
+    border-width: var(--border-width-thick);
+    border-color: var(--color-card-border);
+    width: 36px;
+    height: 36px;
+    margin: -12px;
+}
+
+.control-slider .unity-base-slider__tracker {
+    background-color: rgb(210, 210, 210);
+    border-radius: var(--radius-xs);
+    height: 15px;
+    border-width: var(--border-width-thin);
+    border-color: var(--color-card-border);
+}
+
+.control-slider .unity-base-slider__drag-container {
+    background-color: var(--color-accent-green);
+    border-radius: var(--radius-sm);
+}
+
+/* Toggle */
+.control-toggle .unity-toggle__input {
+    background-color: var(--color-danger);
+    border-radius: var(--radius-xl);
+    border-width: var(--border-width-normal);
+    border-color: var(--color-card-border);
+    width: 75px;
+    height: 40px;
+    transition-property: all;
+    transition-duration: var(--transition-slow);
+    justify-content: flex-start;
+    align-items: center;
+    padding: 1px;
+}
+
+.control-toggle:checked .unity-toggle__input {
+    background-color: var(--color-success);
+    justify-content: flex-end;
+}
+
+.control-toggle .unity-toggle__checkmark {
+    background-color: rgb(255, 255, 255);
+    border-radius: var(--radius-round);
+    width: 30px;
+    height: 30px;
+    border-width: var(--border-width-normal);
+    border-color: var(--color-card-border);
+    margin: 0;
+    padding: 0;
+}
+
+/* Dropdown */
+.control-dropdown {
+    width: 400px;
+    min-width: 200px;
+    background-color: rgb(255, 255, 255);
+    border-radius: var(--radius-md);
+    border-width: var(--border-width-normal);
+    border-color: var(--color-card-border);
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-xl);
+    color: var(--color-text-primary);
+    flex-shrink: 0;
+    max-width: 400px;
+}
+
+.control-dropdown .unity-base-popup-field__text {
+    color: var(--color-text-primary);
+    font-size: var(--font-size-xl);
+}
+
+.control-dropdown .unity-base-popup-field__arrow {
+    width: 18px;
+    height: 18px;
+    -unity-background-image-tint-color: var(--color-text-primary);
+}
+
+/* Control Row */
+.control-row {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background-color: var(--color-overlay-light);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--spacing-xs);
+}
+
+.control-label {
+    font-size: var(--font-size-xxl);
+    color: var(--color-text-primary);
+    flex-shrink: 0;
+    margin-right: var(--spacing-md);
+}
+
+/* ============================================
+   ICON & BADGE COMPONENTS
+   ============================================ */
+
+/* Avatar */
+.avatar {
+    width: 120px;
+    height: 120px;
+    background-color: var(--color-accent-blue);
+    border-radius: var(--radius-round);
+    border-width: var(--border-width-thick);
+    border-color: var(--color-card-border);
+}
+
+.avatar-small {
+    width: 90px;
+    height: 90px;
+}
+
+/* Icon */
+.icon {
+    width: 40px;
+    height: 40px;
+    background-color: var(--color-danger);
+    border-radius: var(--radius-round);
+    border-width: var(--border-width-thin);
+    border-color: var(--color-card-border);
+}
+
+.icon-small {
+    width: 30px;
+    height: 30px;
+}
+
+.icon-large {
+    width: 50px;
+    height: 50px;
+    border-width: var(--border-width-normal);
+}
+
+/* Badge */
+.badge {
+    width: 45px;
+    height: 45px;
+    background-color: var(--color-warning);
+    border-radius: var(--radius-round);
+    border-width: var(--border-width-normal);
+    border-color: var(--color-card-border);
+    align-items: center;
+    justify-content: center;
+}
+
+/* Currency Display */
+.currency-display {
+    flex-direction: row;
+    align-items: center;
+    background-color: var(--color-card-bg);
+    border-radius: var(--radius-xxl);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-width: var(--border-width-thick);
+    border-color: var(--color-card-border);
+    max-width: 300px;
+    min-width: 180px;
+    width: 100%;
+}
+
+.currency-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: var(--radius-round);
+    margin-right: var(--spacing-sm);
+    -unity-background-scale-mode: scale-to-fit;
+    min-width: 34px;
+    min-height: 34px;
+}
+
+.currency-icon-coin {
+    background-color: var(--color-warning);
+    border-width: var(--border-width-normal);
+    border-color: var(--color-card-border);
+}
+
+.currency-icon-gem {
+    background-color: var(--color-accent-blue);
+    border-width: var(--border-width-normal);
+    border-color: var(--color-card-border);
+}
+
+.currency-amount {
+    font-size: var(--font-size-xxl);
+    color: var(--color-text-primary);
+    margin: 0;
+    padding: 0;
+    flex-grow: 1;
+    -unity-text-align: middle-left;
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+.spacer {
+    flex-grow: 1;
+}
+
+.divider {
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.2);
+    margin: var(--spacing-md) 0;
+}
+
+.hidden {
+    display: none;
+}
+
+.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.selected {
+    border-color: var(--color-accent-red);
+    border-width: var(--border-width-thick);
+}
+
+/* Grid Layouts */
+.grid-2col {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+}
+
+.grid-3col {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.button-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    justify-content: flex-start;
+}
+
+/* ============================================
+   GLOBAL BUTTON ANIMATIONS
+   ============================================ */
+.unity-button {
+    transition-property: scale;
+    transition-duration: var(--transition-fast);
+}
+
+.unity-button:active {
+    scale: 0.92 0.92 1;
+}

@@ -44,14 +44,12 @@ namespace Core.State.States
         /// </summary>
         public override void Update()
         {
-            // Lobby update logic
-
             // Check if all players are ready and the host can start the game
             var services = GameBootstrap.Services;
             var networking = services?.NetworkingServices;
-            
-            if (networking != null && 
-                networking.LobbyManager.IsMatchLobbyOwner && 
+
+            if (networking != null &&
+                networking.LobbyManager.IsMatchLobbyOwner &&
                 networking.LobbyManager.AreAllPlayersReady())
             {
                 // Transition to the game state

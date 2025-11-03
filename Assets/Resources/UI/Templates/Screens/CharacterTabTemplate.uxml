@@ -1,0 +1,13 @@
+<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/Resources/UI/Styles/Components/CharacterTab.uss?fileID=7433441132597879392&amp;guid=aa9123e71487e4e7788a3c50b3c86c73&amp;type=3#CharacterTab" />
+    <VisualElement name="character-root" class="character-root">
+        <VisualElement name="character-header" class="character-header">
+            <Label text="YOUR CHEF" class="character-title" />
+        </VisualElement>
+        <VisualElement name="character-content" class="character-content">
+            <ScrollView name="character-scroll" class="character-scroll">
+                <VisualElement name="character-grid" class="character-grid" />
+            </ScrollView>
+        </VisualElement>
+    </VisualElement>
+</UXML>

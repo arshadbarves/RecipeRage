@@ -14,9 +14,6 @@ namespace Core.State.States
     /// </summary>
     public class MainMenuState : BaseState
     {
-        /// <summary>
-        /// Called when the state is entered.
-        /// </summary>
         public override void Enter()
         {
             base.Enter();

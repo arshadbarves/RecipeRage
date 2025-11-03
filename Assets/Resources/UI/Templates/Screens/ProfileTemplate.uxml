@@ -1,5 +1,8 @@
 <UXML xmlns="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
-    <Style src="project://database/Assets/UI/USS/Profile.uss?fileID=7433441132597879392&amp;guid=d042c2af8f69c49a1a16869c99153cd5&amp;type=3#Profile" />
+    <!-- Design System - Include FIRST for design tokens -->
+    <Style src="project://database/Assets/Resources/UI/Styles/Core/DesignSystem.uss" />
+    <!-- Screen-specific styles -->
+    <Style src="project://database/Assets/Resources/UI/Styles/Screens/Profile.uss" />
     <VisualElement name="profile-root" class="profile-root">
         <VisualElement name="background" class="background" />
         <VisualElement name="top-bar" class="top-bar">

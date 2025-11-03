@@ -13,7 +13,7 @@ namespace UI.Screens
     /// <summary>
     /// Profile screen - displays player stats and allows username changes
     /// </summary>
-    [UIScreen(UIScreenType.Profile, UIScreenPriority.Menu, "Screens/ProfileTemplate")]
+    [UIScreen(UIScreenType.Profile, UIScreenCategory.Screen, "Screens/ProfileTemplate")]
     public class ProfileScreen : BaseUIScreen
     {
         private ISaveService _saveService;
@@ -190,18 +190,16 @@ namespace UI.Screens
 
         private void OnBackClicked()
         {
-            // Use UI navigation history to go back
+            // Use GoBack to return to previous screen in navigation stack
             if (_uiService != null)
             {
                 bool wentBack = _uiService.GoBack(true);
 
-                // if (!wentBack)
-                // {
-                //     // If no history, go to main menu
-                //     _uiService.ShowScreen(UIScreenType.Menu, true, false);
-                // }
-
-                _uiService.HideScreen(this.ScreenType, true);
+                if (!wentBack)
+                {
+                    // If no history, manually show MainMenu
+                    _uiService.ShowScreen(UIScreenType.MainMenu, true, false);
+                }
             }
         }
 

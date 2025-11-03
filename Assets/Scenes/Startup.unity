@@ -135,12 +135,12 @@ PrefabInstance:
     - target: {fileID: 417808214242561093, guid: 4e8b0094d2ec0451195daa369d1aae17,
         type: 3}
       propertyPath: _showSplashScreen
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 417808214242561093, guid: 4e8b0094d2ec0451195daa369d1aae17,
         type: 3}
       propertyPath: _showLoadingScreen
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 417808214242561093, guid: 4e8b0094d2ec0451195daa369d1aae17,
         type: 3}

@@ -1,84 +1,65 @@
+/* ============================================
+   SETTINGS SCREEN - Uses Design System
+   Include DesignSystem.uss in UXML template
+   ============================================ */
+
 .settings-root {
     width: 100%;
     height: 100%;
     flex-direction: column;
-    -unity-font-definition: url("project://database/Assets/Fonts/LilitaOne-Regular.ttf?fileID=12800000&guid=2309d3a0e6c55446ea2d106abff555fe&type=3#LilitaOne-Regular");
+    -unity-font-definition: var(--font-primary);
 }
 
 .settings-header {
-    padding: 20px 20px 10px 20px;
+    padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-sm) var(--spacing-lg);
     align-items: center;
 }
 
 .settings-title {
-    font-size: 42px;
-    color: rgb(40, 30, 25);
+    font-size: var(--font-size-display);
+    color: var(--color-text-primary);
     -unity-text-align: middle-center;
     margin-bottom: 5px;
 }
 
 .settings-subtitle {
-    font-size: 18px;
-    color: rgb(100, 90, 85);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-muted);
     -unity-text-align: middle-center;
 }
 
 .settings-scroll {
     flex-grow: 1;
-    padding: 15px;
-    padding-bottom: 30px;
+    padding: var(--spacing-md);
+    padding-bottom: var(--spacing-xxl);
 }
 
+/* Settings Section uses design system .card */
 .settings-section {
-    background-color: rgb(245, 240, 235);
-    border-radius: 20px;
-    border-width: 5px;
-    border-color: rgb(40, 30, 25);
-    padding: 20px;
-    margin-bottom: 15px;
+    background-color: var(--color-card-bg);
+    border-radius: var(--radius-xl);
+    border-width: var(--border-width-thick);
+    border-color: var(--color-card-border);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
 }
 
 .settings-section-danger {
     background-color: rgb(255, 240, 240);
-    border-color: rgb(255, 100, 100);
+    border-color: var(--color-danger);
 }
 
-.section-title {
-    font-size: 28px;
-    color: rgb(40, 30, 25);
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom-width: 3px;
-    border-bottom-color: rgba(40, 30, 25, 0.3);
-}
+/* Section Title uses design system .section-title */
 
 .controls-group {
-    gap: 8px;
+    gap: var(--spacing-xs);
 }
 
-.button-grid {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: flex-start;
-}
-
-.control-row {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 15px;
-    background-color: rgba(255, 255, 255, 0.5);
-    border-radius: 14px;
-    margin-bottom: 8px;
-}
-
-.control-label {
-    font-size: 22px;
-    color: rgb(40, 30, 25);
-    flex-shrink: 0;
-    margin-right: 15px;
-}
+/* Control Row uses design system .control-row */
+/* Control Slider uses design system .control-slider */
+/* Control Toggle uses design system .control-toggle */
+/* Control Dropdown uses design system .control-dropdown */
+/* Control Label uses design system .control-label */
 
 .slider-container {
     flex-direction: row;
@@ -86,121 +67,27 @@
     flex-shrink: 0;
 }
 
-.control-slider {
-    width: 200px;
-    min-width: 200px;
-    align-items: center;
-}
-
 .value-label {
-    font-size: 20px;
-    color: rgb(40, 30, 25);
+    font-size: var(--font-size-xl);
+    color: var(--color-text-primary);
     min-width: 55px;
     -unity-text-align: middle-right;
     background-color: rgba(40, 30, 25, 0.1);
-    border-radius: 10px;
-    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    padding: 4px var(--spacing-xs);
 }
 
-.control-slider .unity-base-slider__dragger {
-    background-color: rgb(100, 230, 150);
-    border-radius: 50%;
-    border-width: 5px;
-    border-color: rgb(40, 30, 25);
-    width: 36px;
-    height: 36px;
-    margin: -12px;
-}
-
-.control-slider .unity-base-slider__tracker {
-    background-color: rgb(210, 210, 210);
-    border-radius: 8px;
-    height: 15px;
-    border-width: 3px;
-    border-color: rgb(40, 30, 25);
-}
-
-.control-slider .unity-base-slider__drag-container {
-    background-color: rgb(100, 230, 150);
-    border-radius: 12px;
-}
-
-.control-dropdown {
-    width: 400px;
-    min-width: 200px;
-    background-color: rgb(255, 255, 255);
-    border-radius: 15px;
-    border-width: 4px;
-    border-color: rgb(40, 30, 25);
-    padding: 10px 15px;
-    font-size: 20px;
-    color: rgb(40, 30, 25);
-    flex-shrink: 0;
-    max-width: 400px;
-}
-
-.control-dropdown .unity-base-popup-field__text {
-    color: rgb(40, 30, 25);
-    font-size: 20px;
-}
-
-.control-dropdown .unity-base-popup-field__arrow {
-    width: 18px;
-    height: 18px;
-    -unity-background-image-tint-color: rgb(40, 30, 25);
-}
-
-.control-dropdown:focus {
-    border-color: rgb(40, 30, 25);
-}
-
-.control-dropdown .unity-base-popup-field__input {
-    background-color: transparent;
-    border-width: 0;
-    color: rgb(40, 30, 25);
-    font-size: 20px;
-}
-
-.control-toggle .unity-toggle__input {
-    background-color: rgb(255, 100, 100);
-    border-radius: 20px;
-    border-width: 4px;
-    border-color: rgb(40, 30, 25);
-    width: 75px;
-    height: 40px;
-    transition-property: all;
-    transition-duration: 0.25s;
-    justify-content: flex-start;
-    align-items: center;
-    padding: 1px;
-}
-
-.control-toggle:checked .unity-toggle__input {
-    background-color: rgb(100, 230, 150);
-    justify-content: flex-end;
-}
-
-.control-toggle .unity-toggle__checkmark {
-    background-color: rgb(255, 255, 255);
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    border-width: 4px;
-    border-color: rgb(40, 30, 25);
-    margin: 0;
-    padding: 0;
-}
-
+/* Settings Buttons */
 .settings-button {
-    background-color: rgb(100, 201, 255);
-    border-radius: 15px;
-    padding: 12px 18px;
-    border-width: 4px;
-    border-color: rgb(40, 30, 25);
-    font-size: 16px;
-    color: rgb(40, 30, 25);
+    background-color: var(--color-accent-blue);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-width: var(--border-width-normal);
+    border-color: var(--color-card-border);
+    font-size: var(--font-size-md);
+    color: var(--color-text-primary);
     transition-property: scale;
-    transition-duration: 0.1s;
+    transition-duration: var(--transition-fast);
     flex-grow: 0;
     flex-shrink: 0;
     width: auto;
@@ -212,61 +99,63 @@
 
 .settings-button-full {
     width: 100%;
-    font-size: 18px;
-    padding: 14px 20px;
+    font-size: var(--font-size-lg);
+    padding: var(--spacing-sm) var(--spacing-lg);
 }
 
 .settings-button-primary {
-    background-color: rgb(100, 230, 150);
-    font-size: 20px;
-    padding: 14px 20px;
+    background-color: var(--color-accent-green);
+    font-size: var(--font-size-xl);
+    padding: var(--spacing-sm) var(--spacing-lg);
 }
 
 .settings-button-warning {
-    background-color: rgb(255, 200, 60);
+    background-color: var(--color-warning);
 }
 
 .settings-button-danger {
-    background-color: rgb(255, 100, 100);
-    color: rgb(255, 255, 255);
+    background-color: var(--color-danger);
+    color: var(--color-text-light);
     border-color: rgb(200, 50, 50);
 }
 
+/* Version Info */
 .version-info {
-    padding: 15px;
+    padding: var(--spacing-md);
     align-items: center;
-    margin-top: 10px;
-    margin-bottom: 15px;
+    margin-top: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
 }
 
 .version-text {
-    font-size: 16px;
-    color: rgb(100, 90, 85);
+    font-size: var(--font-size-md);
+    color: var(--color-text-muted);
     -unity-text-align: middle-center;
     margin-bottom: 5px;
 }
 
 .credits-text {
-    font-size: 14px;
-    color: rgb(120, 110, 105);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
     -unity-text-align: middle-center;
 }
 
+/* Scrollbar Styling */
 .settings-scroll .unity-scroller--vertical {
     width: 20px;
-    margin-left: 10px;
+    margin-left: var(--spacing-sm);
 }
 
 .settings-scroll .unity-scroller--vertical .unity-base-slider__tracker {
     background-color: rgba(40, 30, 25, 0.1);
-    border-radius: 10px;
+    border-radius: var(--radius-sm);
     border-width: 0;
     margin: 5px;
 }
 
 .settings-scroll .unity-scroller--vertical .unity-base-slider__dragger {
-    background-color: rgb(40, 30, 25);
-    border-radius: 10px;
+    background-color: var(--color-card-border);
+    border-radius: var(--radius-sm);
     border-width: 0;
     margin: 2px;
     min-height: 40px;

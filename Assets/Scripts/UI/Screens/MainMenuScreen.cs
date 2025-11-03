@@ -15,14 +15,14 @@ namespace UI.Screens
     /// Main menu screen - container for tab-based navigation
     /// Delegates content to tab components (MainMenuUI, ShopUI, SkinsUI, SettingsUI)
     /// </summary>
-    [UIScreen(UIScreenType.MainMenu, UIScreenPriority.Menu, "Screens/MainMenuTemplate")]
+    [UIScreen(UIScreenType.MainMenu, UIScreenCategory.Screen, "Screens/MainMenuTemplate")]
     public class MainMenuScreen : BaseUIScreen
     {
         #region Tab Components
 
         private LobbyTabComponent _lobbyTab;
         private ShopTabComponent _shopTab;
-        private SkinsTabComponent _skinsTab;
+        private CharacterTabComponent _characterTab;
         private SettingsTabComponent _settingsTab;
 
         #endregion
@@ -245,17 +245,17 @@ namespace UI.Screens
                 GameLogger.LogWarning("Lobby root not found");
             }
 
-            // Skins tab
-            VisualElement skinsRoot = GetElement<VisualElement>("skins-root");
-            if (skinsRoot != null)
+            // Character tab
+            VisualElement characterRoot = GetElement<VisualElement>("character-root");
+            if (characterRoot != null)
             {
-                _skinsTab = new SkinsTabComponent();
-                _skinsTab.Initialize(skinsRoot);
-                GameLogger.Log("Initialized Skins tab");
+                _characterTab = new CharacterTabComponent();
+                _characterTab.Initialize(characterRoot);
+                GameLogger.Log("Initialized Character tab");
             }
             else
             {
-                GameLogger.LogWarning("Skins root not found");
+                GameLogger.LogWarning("Character root not found");
             }
 
             // Shop tab

@@ -1,0 +1,131 @@
+/* ============================================
+   CHARACTER DETAILS SCREEN - Uses Design System
+   Include DesignSystem.uss in UXML template
+   ============================================ */
+
+.character-details-root {
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    -unity-font-definition: var(--font-primary);
+}
+
+.character-details-header {
+    padding: var(--spacing-md) var(--spacing-lg);
+    flex-direction: row;
+    align-items: center;
+    gap: var(--spacing-lg);
+}
+
+.back-button {
+    background-color: var(--color-card-bg);
+    border-radius: var(--radius-sm);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-width: var(--border-width-normal);
+    border-color: var(--color-card-border);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-primary);
+    transition-property: scale;
+    transition-duration: var(--transition-normal);
+}
+
+.back-button:active {
+    scale: 0.95;
+}
+
+.character-details-title {
+    font-size: var(--font-size-display);
+    color: var(--color-text-primary);
+    flex-grow: 1;
+    -unity-text-align: middle-center;
+}
+
+.character-details-content {
+    flex-direction: row;
+    flex-grow: 1;
+    gap: var(--spacing-lg);
+    padding: 0 var(--spacing-lg) var(--spacing-xxl) var(--spacing-lg);
+}
+
+/* Left Panel - Character Info */
+.character-info-panel {
+    width: 400px;
+    min-width: 400px;
+    background-color: var(--color-card-bg);
+    border-radius: var(--radius-lg);
+    border-width: var(--border-width-thick);
+    border-color: var(--color-card-border);
+    padding: var(--spacing-lg);
+    align-items: center;
+}
+
+.character-preview-model {
+    width: 100%;
+    height: 300px;
+    background-color: rgb(220, 220, 220);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--spacing-lg);
+    border-width: var(--border-width-thin);
+    border-color: var(--color-card-border);
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.character-description-text {
+    font-size: var(--font-size-md);
+    color: rgb(100, 80, 70);
+    -unity-text-align: middle-center;
+    white-space: normal;
+    margin-bottom: var(--spacing-lg);
+    line-height: 22px;
+}
+
+.character-stats-container {
+    width: 100%;
+    background-color: rgba(40, 30, 25, 0.1);
+    border-radius: var(--radius-sm);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.select-character-button {
+    background-color: var(--color-accent-green);
+    border-radius: var(--radius-sm);
+    padding: var(--spacing-sm) 40px;
+    border-width: var(--border-width-normal);
+    border-color: var(--color-card-border);
+    font-size: var(--font-size-xxl);
+    color: var(--color-text-primary);
+    transition-property: scale, background-color;
+    transition-duration: var(--transition-normal);
+    width: 100%;
+}
+
+.select-character-button:active {
+    scale: 0.92;
+    background-color: rgb(80, 210, 130);
+}
+
+.select-character-button.selected {
+    background-color: var(--color-warning);
+}
+
+.select-character-button.selected:active {
+    background-color: rgb(235, 180, 40);
+}
+
+/* Right Panel - Skins */
+.skins-panel {
+    flex-grow: 1;
+    background-color: var(--color-card-bg);
+    border-radius: var(--radius-lg);
+    border-width: var(--border-width-thick);
+    border-color: var(--color-card-border);
+    padding: var(--spacing-lg);
+}
+
+.skins-panel-title {
+    font-size: 32px;
+    color: var(--color-text-primary);
+    -unity-text-align: middle-center;
+    margin-bottom: var(--spacing-md);
+}

@@ -12,8 +12,9 @@ using UnityEngine.UIElements;
 namespace UI
 {
     /// <summary>
-    /// Professional UI Service using single UIDocument with priority-based sorting
-    /// Supports Splash, Loading, Popup, Modal, and regular screens
+    /// Professional UI Service using category-based stack management
+    /// Each category (System, Overlay, Modal, Popup, Screen, Persistent) has its own stack
+    /// Eliminates priority conflicts and scales to 100+ screens
     /// Follows service-based architecture - no MonoBehaviour dependency
     /// </summary>
     public class UIService : IUIService, IDisposable
@@ -22,8 +23,7 @@ namespace UI
         private VisualElement _root;
         private readonly Dictionary<UIScreenType, UIScreenController> _controllers = new();
         private readonly Dictionary<UIScreenType, BaseUIScreen> _screens = new();
-        private readonly List<BaseUIScreen> _visibleScreens = new();
-        private readonly Stack<BaseUIScreen> _screenHistory = new();
+        private readonly UIScreenStackManager _stackManager;
         private readonly IAnimationService _animationService;
 
         // Events
@@ -36,6 +36,7 @@ namespace UI
         public UIService(IAnimationService animationService)
         {
             _animationService = animationService ?? throw new ArgumentNullException(nameof(animationService));
+            _stackManager = new UIScreenStackManager();
         }
 
         public void Initialize(UIDocument uiDocument)
@@ -136,7 +137,7 @@ namespace UI
             var controller = new UIScreenController(screenType, attribute.Priority, template, _root);
             _controllers[screenType] = controller;
 
-            SortScreensByPriority();
+            SortScreensByCategory();
 
             BaseUIScreen screen = UIScreenRegistry.CreateScreen(screenType);
             if (screen != null)
@@ -193,8 +194,7 @@ namespace UI
 
             _screens.Clear();
             _controllers.Clear();
-            _visibleScreens.Clear();
-            _screenHistory.Clear();
+            _stackManager.ClearAll();
 
             _isInitialized = false;
         }
@@ -211,15 +211,49 @@ namespace UI
                 return;
             }
 
-            if (addToHistory && _visibleScreens.Count > 0)
+            // Get category for this screen
+            UIScreenCategory category = _stackManager.GetCategory(screenType);
+
+            GameLogger.Log($"Showing {screenType} in category {category}");
+
+            // Handle category-specific logic
+            switch (category)
             {
-                BaseUIScreen currentScreen = _visibleScreens.LastOrDefault();
-                if (currentScreen != null && currentScreen != screen)
-                {
-                    _screenHistory.Push(currentScreen);
-                }
+                case UIScreenCategory.System:
+                    // System screens replace all other UI
+                    HideAllScreens(animate: false);
+                    _stackManager.ClearAll();
+                    break;
+
+                case UIScreenCategory.Screen:
+                    // Only one main screen at a time
+                    UIScreenType? currentScreen = _stackManager.Peek(UIScreenCategory.Screen);
+                    if (currentScreen.HasValue && currentScreen.Value != screenType)
+                    {
+                        if (_screens.TryGetValue(currentScreen.Value, out BaseUIScreen current))
+                        {
+                            HideScreenInternal(current, animate);
+                        }
+                    }
+                    break;
+
+                case UIScreenCategory.Overlay:
+                case UIScreenCategory.Modal:
+                case UIScreenCategory.Popup:
+                case UIScreenCategory.Persistent:
+                    // These can stack or coexist
+                    break;
             }
 
+            // Push to stack
+            bool pushed = _stackManager.Push(screenType, category);
+            if (!pushed)
+            {
+                GameLogger.LogWarning($"Failed to push {screenType} to stack");
+                return;
+            }
+
+            // Show the screen visually
             ShowScreenInternal(screen, animate);
         }
 
@@ -253,73 +287,153 @@ namespace UI
                 return;
             }
 
+            // Remove from stack
+            UIScreenCategory category = _stackManager.GetCategory(screenType);
+            bool removed = _stackManager.PopSpecific(screenType, category);
+
+            if (!removed)
+            {
+                GameLogger.LogWarning($"Screen {screenType} not in stack");
+            }
+
+            // Hide the screen visually
             HideScreenInternal(screen, animate);
         }
 
         public void HideScreensOfType(UIScreenType screenType, bool animate = true)
         {
-            var screensToHide = _visibleScreens.Where(s => s.ScreenType == screenType).ToList();
-            foreach (BaseUIScreen screen in screensToHide)
+            if (_stackManager.IsVisible(screenType))
             {
-                HideScreenInternal(screen, animate);
+                HideScreen(screenType, animate);
             }
         }
 
         public void HideAllPopups(bool animate = true)
         {
-            UIScreenType[] popupTypes = new[] { UIScreenType.Popup, UIScreenType.Modal, UIScreenType.Notification };
-            var popupsToHide = _visibleScreens.Where(s => popupTypes.Contains(s.ScreenType)).ToList();
-
-            foreach (BaseUIScreen popup in popupsToHide)
+            var popups = _stackManager.GetVisibleInCategory(UIScreenCategory.Popup);
+            foreach (UIScreenType popupType in popups)
             {
-                HideScreenInternal(popup, animate);
+                if (_screens.TryGetValue(popupType, out BaseUIScreen popup))
+                {
+                    HideScreenInternal(popup, animate);
+                }
             }
+            _stackManager.ClearCategory(UIScreenCategory.Popup);
+        }
+
+        public void HideAllModals(bool animate = true)
+        {
+            var modals = _stackManager.GetVisibleInCategory(UIScreenCategory.Modal);
+            foreach (UIScreenType modalType in modals)
+            {
+                if (_screens.TryGetValue(modalType, out BaseUIScreen modal))
+                {
+                    HideScreenInternal(modal, animate);
+                }
+            }
+            _stackManager.ClearCategory(UIScreenCategory.Modal);
         }
 
         public void HideAllGameScreens(bool animate = true)
         {
-            UIScreenType[] systemTypes = new[] { UIScreenType.Splash, UIScreenType.Loading };
-            var screensToHide = _visibleScreens.Where(s => !systemTypes.Contains(s.ScreenType)).ToList();
+            // Clear all categories except System and Persistent
+            _stackManager.ClearCategory(UIScreenCategory.Screen);
+            _stackManager.ClearCategory(UIScreenCategory.Overlay);
+            _stackManager.ClearCategory(UIScreenCategory.Modal);
+            _stackManager.ClearCategory(UIScreenCategory.Popup);
 
-            foreach (BaseUIScreen screen in screensToHide)
+            // Hide visually
+            var allVisible = _stackManager.GetAllVisible();
+            foreach (UIScreenType screenType in allVisible)
             {
-                HideScreenInternal(screen, animate);
+                UIScreenCategory category = _stackManager.GetCategory(screenType);
+                if (category != UIScreenCategory.Persistent && category != UIScreenCategory.System)
+                {
+                    if (_screens.TryGetValue(screenType, out BaseUIScreen screen))
+                    {
+                        HideScreenInternal(screen, animate);
+                    }
+                }
             }
         }
 
         public void HideAllScreens(bool animate = false)
         {
-            var screensToHide = _visibleScreens.ToList();
-            foreach (BaseUIScreen screen in screensToHide)
+            var allVisible = _stackManager.GetAllVisible();
+            foreach (UIScreenType screenType in allVisible)
             {
-                HideScreenInternal(screen, animate);
+                if (_screens.TryGetValue(screenType, out BaseUIScreen screen))
+                {
+                    HideScreenInternal(screen, animate);
+                }
             }
+            _stackManager.ClearAll();
         }
 
         public bool GoBack(bool animate = true)
         {
-            if (_screenHistory.Count == 0) return false;
+            GameLogger.Log("GoBack called");
 
-            BaseUIScreen previousScreen = _screenHistory.Pop();
-
-            if (_visibleScreens.Count > 0)
+            // Try to go back in each category (highest priority first)
+            UIScreenCategory[] categories = new[]
             {
-                BaseUIScreen currentScreen = _visibleScreens.Last();
-                HideScreenInternal(currentScreen, animate);
+                UIScreenCategory.Modal,
+                UIScreenCategory.Popup,
+                UIScreenCategory.Overlay,
+                UIScreenCategory.Screen
+            };
+
+            foreach (UIScreenCategory category in categories)
+            {
+                int depth = _stackManager.GetStackDepth(category);
+                GameLogger.Log($"Category {category} stack depth: {depth}");
+
+                if (depth > 1)
+                {
+                    // Pop current screen
+                    UIScreenType? current = _stackManager.Pop(category);
+                    GameLogger.Log($"Popped {current} from {category}");
+
+                    if (current.HasValue && _screens.TryGetValue(current.Value, out BaseUIScreen currentScreen))
+                    {
+                        HideScreenInternal(currentScreen, animate);
+                    }
+
+                    // Show previous screen
+                    UIScreenType? previous = _stackManager.Peek(category);
+                    GameLogger.Log($"Showing previous screen: {previous}");
+
+                    if (previous.HasValue && _screens.TryGetValue(previous.Value, out BaseUIScreen previousScreen))
+                    {
+                        ShowScreenInternal(previousScreen, animate);
+                        return true;
+                    }
+                }
             }
 
-            ShowScreenInternal(previousScreen, animate);
-            return true;
+            GameLogger.LogWarning("No screen to go back to");
+            return false;
         }
 
         public bool IsScreenVisible(UIScreenType screenType)
         {
-            return _screens.TryGetValue(screenType, out BaseUIScreen screen) && screen.IsVisible;
+            return _stackManager.IsVisible(screenType);
         }
 
         public IReadOnlyList<BaseUIScreen> GetVisibleScreens()
         {
-            return _visibleScreens.AsReadOnly();
+            var visibleTypes = _stackManager.GetAllVisible();
+            var visibleScreens = new List<BaseUIScreen>();
+
+            foreach (UIScreenType screenType in visibleTypes)
+            {
+                if (_screens.TryGetValue(screenType, out BaseUIScreen screen))
+                {
+                    visibleScreens.Add(screen);
+                }
+            }
+
+            return visibleScreens.AsReadOnly();
         }
 
         public IReadOnlyList<BaseUIScreen> GetScreensByPriority()
@@ -329,7 +443,18 @@ namespace UI
 
         public void ClearHistory()
         {
-            _screenHistory.Clear();
+            _stackManager.ClearAll();
+        }
+
+        public UIScreenCategory GetScreenCategory(UIScreenType screenType)
+        {
+            return _stackManager.GetCategory(screenType);
+        }
+
+        public bool IsInteractionBlocked(UIScreenType screenType)
+        {
+            UIScreenCategory category = _stackManager.GetCategory(screenType);
+            return _stackManager.IsBlockedByHigherCategory(category);
         }
 
         public async UniTask ShowToast(string message, ToastType type = ToastType.Info, float duration = 3f)
@@ -358,19 +483,13 @@ namespace UI
                 return;
             }
 
-            SortScreensByPriority();
+            SortScreensByCategory();
 
             float duration = screen.GetAnimationDuration();
             screen.OnBeforeShowAnimation();
 
             controller.Show(_animationService.UI, screen.AnimateShow, duration, animate, () =>
             {
-                if (!_visibleScreens.Contains(screen))
-                {
-                    _visibleScreens.Add(screen);
-                    _visibleScreens.Sort((a, b) => ((int)b.Priority).CompareTo((int)a.Priority));
-                }
-
                 screen.OnAfterShowAnimation();
                 OnScreenShown?.Invoke(screen.ScreenType);
             });
@@ -391,11 +510,10 @@ namespace UI
 
             controller.Hide(_animationService.UI, screen.AnimateHide, duration, animate, () =>
             {
-                _visibleScreens.Remove(screen);
                 screen.OnAfterHideAnimation();
                 OnScreenHidden?.Invoke(screen.ScreenType);
 
-                if (_visibleScreens.Count == 0)
+                if (_stackManager.GetAllVisible().Count == 0)
                 {
                     OnAllScreensHidden?.Invoke();
                 }
@@ -404,15 +522,20 @@ namespace UI
 
         public void Update(float deltaTime)
         {
-            foreach (BaseUIScreen screen in _visibleScreens)
+            var visibleScreens = GetVisibleScreens();
+            foreach (BaseUIScreen screen in visibleScreens)
             {
                 screen.Update(deltaTime);
             }
         }
 
-        private void SortScreensByPriority()
+        private void SortScreensByCategory()
         {
-            var sortedControllers = _controllers.Values.OrderBy(c => (int)c.Priority).ToList();
+            // Sort controllers by category priority (System > Overlay > Modal > Popup > Screen > Persistent)
+            var sortedControllers = _controllers.Values
+                .OrderBy(c => (int)_stackManager.GetCategory(c.ScreenType))
+                .ThenBy(c => (int)c.Priority)
+                .ToList();
 
             foreach (UIScreenController controller in sortedControllers)
             {
@@ -422,7 +545,7 @@ namespace UI
                 }
             }
 
-            GameLogger.Log($"Sorted {sortedControllers.Count} screens by priority");
+            GameLogger.Log($"Sorted {sortedControllers.Count} screens by category");
         }
 
         #endregion
@@ -432,17 +555,7 @@ namespace UI
         [ContextMenu("Debug UI State")]
         public void DebugUIState()
         {
-            GameLogger.Log($"Visible Screens ({_visibleScreens.Count}):");
-            foreach (BaseUIScreen screen in _visibleScreens)
-            {
-                GameLogger.Log($"  - {screen.ScreenType} (Priority: {screen.Priority})");
-            }
-
-            GameLogger.Log($"Screen History ({_screenHistory.Count}):");
-            foreach (BaseUIScreen screen in _screenHistory)
-            {
-                GameLogger.Log($"  - {screen.ScreenType}");
-            }
+            _stackManager.DebugPrintState();
         }
 
         [ContextMenu("Debug Screen Sizes")]
