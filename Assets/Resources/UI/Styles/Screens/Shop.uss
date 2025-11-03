@@ -28,7 +28,6 @@
 .shop-categories {
     flex-direction: row;
     justify-content: center;
-    gap: var(--spacing-sm);
     padding: var(--spacing-md) var(--spacing-lg);
     flex-wrap: wrap;
 }
@@ -44,6 +43,8 @@
     transition-property: scale, background-color;
     transition-duration: var(--transition-normal);
     min-width: 110px;
+    margin-right: var(--spacing-sm);
+    margin-bottom: var(--spacing-sm);
 }
 
 .category-button:active {
@@ -61,7 +62,6 @@
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
-    gap: var(--spacing-lg);
     padding: var(--spacing-md) var(--spacing-lg) var(--spacing-xxl) var(--spacing-lg);
 }
 
@@ -72,6 +72,8 @@
     border-width: var(--border-width-thick);
     border-color: var(--color-card-border);
     padding: var(--spacing-lg);
+    margin-right: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
     transition-property: scale, border-color;
     transition-duration: var(--transition-normal);
 }
@@ -103,8 +105,12 @@
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    gap: var(--spacing-sm);
 }
+
+.shop-item-price > * {
+    margin-right: var(--spacing-sm);
+}
+
 
 .price-icon {
     width: 30px;

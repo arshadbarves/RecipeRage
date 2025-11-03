@@ -1,52 +1,232 @@
 {
+    "version": "1.0.0",
     "skins": [
         {
-            "id": "classic_chef",
+            "id": "chef_classic",
             "name": "Classic Chef",
             "description": "The original chef outfit",
+            "characterId": 1,
+            "characterName": "Chef",
             "rarity": "common",
-            "unlocked": true,
-            "icon": ""
+            "unlockedByDefault": true,
+            "unlockCost": 0,
+            "unlockType": "default",
+            "prefabAddress": "Skins/Chef/Classic",
+            "iconAddress": "Icons/Skins/ChefClassic",
+            "tags": [
+                "default",
+                "starter"
+            ]
         },
         {
-            "id": "master_chef",
+            "id": "chef_golden",
+            "name": "Golden Chef",
+            "description": "Shine like gold in the kitchen",
+            "characterId": 1,
+            "characterName": "Chef",
+            "rarity": "legendary",
+            "unlockedByDefault": false,
+            "unlockCost": 5000,
+            "unlockType": "purchase",
+            "prefabAddress": "Skins/Chef/Golden",
+            "iconAddress": "Icons/Skins/ChefGolden",
+            "tags": [
+                "premium",
+                "shiny",
+                "gold"
+            ]
+        },
+        {
+            "id": "chef_master",
             "name": "Master Chef",
             "description": "Professional chef outfit",
+            "characterId": 1,
+            "characterName": "Chef",
             "rarity": "rare",
-            "unlocked": false,
-            "icon": ""
+            "unlockedByDefault": false,
+            "unlockCost": 2000,
+            "unlockType": "purchase",
+            "prefabAddress": "Skins/Chef/Master",
+            "iconAddress": "Icons/Skins/ChefMaster",
+            "tags": [
+                "professional"
+            ]
         },
         {
-            "id": "pirate_chef",
-            "name": "Pirate Chef",
-            "description": "Sail the culinary seas",
-            "rarity": "rare",
-            "unlocked": false,
-            "icon": ""
-        },
-        {
-            "id": "space_chef",
-            "name": "Space Chef",
-            "description": "Cook among the stars",
-            "rarity": "epic",
-            "unlocked": false,
-            "icon": ""
-        },
-        {
-            "id": "ninja_chef",
-            "name": "Ninja Chef",
-            "description": "Silent but deadly cooking",
-            "rarity": "epic",
-            "unlocked": false,
-            "icon": ""
-        },
-        {
-            "id": "royal_chef",
+            "id": "chef_royal",
             "name": "Royal Chef",
             "description": "Fit for a king",
+            "characterId": 1,
+            "characterName": "Chef",
             "rarity": "legendary",
-            "unlocked": false,
-            "icon": ""
+            "unlockedByDefault": false,
+            "unlockCost": 4000,
+            "unlockType": "purchase",
+            "prefabAddress": "Skins/Chef/Royal",
+            "iconAddress": "Icons/Skins/ChefRoyal",
+            "tags": [
+                "premium",
+                "royal"
+            ]
+        },
+        {
+            "id": "speedster_racer",
+            "name": "Speed Racer",
+            "description": "Fast and furious cooking",
+            "characterId": 2,
+            "characterName": "Speedster",
+            "rarity": "common",
+            "unlockedByDefault": true,
+            "unlockCost": 0,
+            "unlockType": "default",
+            "prefabAddress": "Skins/Speedster/Racer",
+            "iconAddress": "Icons/Skins/SpeedsterRacer",
+            "tags": [
+                "default",
+                "starter",
+                "speed"
+            ]
+        },
+        {
+            "id": "speedster_ninja",
+            "name": "Ninja Speedster",
+            "description": "Silent but deadly fast",
+            "characterId": 2,
+            "characterName": "Speedster",
+            "rarity": "epic",
+            "unlockedByDefault": false,
+            "unlockCost": 3500,
+            "unlockType": "purchase",
+            "prefabAddress": "Skins/Speedster/Ninja",
+            "iconAddress": "Icons/Skins/SpeedsterNinja",
+            "tags": [
+                "ninja",
+                "stealth",
+                "premium"
+            ]
+        },
+        {
+            "id": "speedster_cyber",
+            "name": "Cyber Speedster",
+            "description": "Futuristic speed demon",
+            "characterId": 2,
+            "characterName": "Speedster",
+            "rarity": "legendary",
+            "unlockedByDefault": false,
+            "unlockCost": 4500,
+            "unlockType": "purchase",
+            "prefabAddress": "Skins/Speedster/Cyber",
+            "iconAddress": "Icons/Skins/SpeedsterCyber",
+            "tags": [
+                "futuristic",
+                "cyber",
+                "premium"
+            ]
+        },
+        {
+            "id": "butcher_classic",
+            "name": "Classic Butcher",
+            "description": "Traditional butcher outfit",
+            "characterId": 3,
+            "characterName": "Butcher",
+            "rarity": "common",
+            "unlockedByDefault": true,
+            "unlockCost": 0,
+            "unlockType": "default",
+            "prefabAddress": "Skins/Butcher/Classic",
+            "iconAddress": "Icons/Skins/ButcherClassic",
+            "tags": [
+                "default",
+                "starter"
+            ]
+        },
+        {
+            "id": "butcher_viking",
+            "name": "Viking Butcher",
+            "description": "Raid the kitchen like a Viking",
+            "characterId": 3,
+            "characterName": "Butcher",
+            "rarity": "epic",
+            "unlockedByDefault": false,
+            "unlockCost": 2500,
+            "unlockType": "purchase",
+            "prefabAddress": "Skins/Butcher/Viking",
+            "iconAddress": "Icons/Skins/ButcherViking",
+            "tags": [
+                "viking",
+                "warrior",
+                "premium"
+            ]
+        },
+        {
+            "id": "butcher_zombie",
+            "name": "Zombie Butcher",
+            "description": "Undead cooking master",
+            "characterId": 3,
+            "characterName": "Butcher",
+            "rarity": "legendary",
+            "unlockedByDefault": false,
+            "unlockCost": 5000,
+            "unlockType": "purchase",
+            "prefabAddress": "Skins/Butcher/Zombie",
+            "iconAddress": "Icons/Skins/ButcherZombie",
+            "tags": [
+                "zombie",
+                "horror",
+                "premium"
+            ]
+        },
+        {
+            "id": "carrier_classic",
+            "name": "Classic Carrier",
+            "description": "Strong and reliable",
+            "characterId": 4,
+            "characterName": "Carrier",
+            "rarity": "common",
+            "unlockedByDefault": true,
+            "unlockCost": 0,
+            "unlockType": "default",
+            "prefabAddress": "Skins/Carrier/Classic",
+            "iconAddress": "Icons/Skins/CarrierClassic",
+            "tags": [
+                "default",
+                "starter"
+            ]
+        },
+        {
+            "id": "carrier_mech",
+            "name": "Mech Carrier",
+            "description": "Mechanical strength enhanced",
+            "characterId": 4,
+            "characterName": "Carrier",
+            "rarity": "legendary",
+            "unlockedByDefault": false,
+            "unlockCost": 4500,
+            "unlockType": "purchase",
+            "prefabAddress": "Skins/Carrier/Mech",
+            "iconAddress": "Icons/Skins/CarrierMech",
+            "tags": [
+                "mech",
+                "robot",
+                "premium"
+            ]
+        },
+        {
+            "id": "carrier_strongman",
+            "name": "Strongman Carrier",
+            "description": "Maximum carrying power",
+            "characterId": 4,
+            "characterName": "Carrier",
+            "rarity": "rare",
+            "unlockedByDefault": false,
+            "unlockCost": 2000,
+            "unlockType": "purchase",
+            "prefabAddress": "Skins/Carrier/Strongman",
+            "iconAddress": "Icons/Skins/CarrierStrongman",
+            "tags": [
+                "strong",
+                "muscle"
+            ]
         }
     ]
 }

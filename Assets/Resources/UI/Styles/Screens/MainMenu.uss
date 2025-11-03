@@ -66,10 +66,14 @@
 }
 
 .currency-container {
-    gap: var(--spacing-md);
     align-items: flex-start;
     flex-direction: column;
 }
+
+.currency-container > * {
+    margin-bottom: var(--spacing-md);
+}
+
 
 /* Currency Display uses design system .currency-display */
 .currency-display {

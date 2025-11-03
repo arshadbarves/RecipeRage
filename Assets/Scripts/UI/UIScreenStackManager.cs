@@ -282,7 +282,6 @@ namespace UI
                 UIScreenType.FriendsPopup => UIScreenCategory.Popup,
                 UIScreenType.UsernamePopup => UIScreenCategory.Popup,
                 UIScreenType.Notification => UIScreenCategory.Popup,
-                UIScreenType.Toast => UIScreenCategory.Popup,
 
                 UIScreenType.HUD => UIScreenCategory.Persistent,
                 UIScreenType.Background => UIScreenCategory.Persistent,

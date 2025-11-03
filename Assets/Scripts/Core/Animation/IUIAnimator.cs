@@ -16,6 +16,10 @@ namespace Core.Animation
         void SlideOut(VisualElement element, SlideDirection direction, float duration, Action onComplete = null);
         void ScaleIn(VisualElement element, float duration, Action onComplete = null);
         void ScaleOut(VisualElement element, float duration, Action onComplete = null);
+        void BounceIn(VisualElement element, float duration, Action onComplete = null);
+        void BounceOut(VisualElement element, float duration, Action onComplete = null);
+        void PopupIn(VisualElement container, float duration, Action onComplete = null);
+        void PopupOut(VisualElement container, float duration, Action onComplete = null);
         void Pulse(VisualElement element, float duration, Action onComplete = null);
         void Shake(VisualElement element, float duration, float intensity, Action onComplete = null);
     }

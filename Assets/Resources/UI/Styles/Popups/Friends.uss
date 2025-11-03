@@ -1,23 +1,34 @@
-/* Friends Popup Styles */
+/* ============================================
+   FRIENDS POPUP - Brawl Stars Style
+   ============================================ */
 
-.friends-popup-overlay {
+/* Popup Root & Overlay */
+.popup-root {
     position: absolute;
     width: 100%;
     height: 100%;
     left: 0;
     top: 0;
-    background-color: rgba(0, 0, 0, 0.7);
     justify-content: center;
     align-items: center;
 }
 
-.friends-popup {
-    width: 650px;
-    height: 750px;
-    background-color: rgba(20, 20, 20, 0.98);
-    border-radius: 10px;
-    border-width: 2px;
-    border-color: rgba(255, 255, 255, 0.3);
+.popup-overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+/* Popup Container */
+.popup-container {
+    width: 700px;
+    max-height: 85%;
+    background-color: var(--color-card-bg);
+    border-radius: var(--radius-xxl);
+    border-width: var(--border-width-extra-thick);
+    border-color: var(--color-card-border);
+    flex-direction: column;
 }
 
 /* Header */
@@ -25,174 +36,520 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding: 20px;
-    background-color: rgba(0, 0, 0, 0.5);
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-    border-bottom-width: 2px;
-    border-bottom-color: rgba(255, 215, 0, 0.3);
+    padding: var(--spacing-lg) var(--spacing-xl);
+    background-color: var(--color-accent-purple);
+    border-top-left-radius: var(--radius-lg);
+    border-top-right-radius: var(--radius-lg);
+    border-bottom-width: var(--border-width-thick);
+    border-bottom-color: var(--color-card-border);
 }
 
 .popup-title {
-    font-size: 26px;
-    -unity-font-style: bold;
-    color: white;
+    font-size: var(--font-size-title);
+    color: var(--color-text-light);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-.close-button {
-    width: 45px;
-    height: 45px;
-    font-size: 28px;
-    background-color: rgba(255, 0, 0, 0.3);
-    border-radius: 5px;
+.popup-close-button {
+    width: 50px;
+    height: 50px;
+    min-width: 50px;
+    min-height: 50px;
+    background-color: var(--color-danger);
+    border-radius: var(--radius-round);
+    border-width: var(--border-width-normal);
+    border-color: var(--color-card-border);
+    padding: 0;
+}
+
+.popup-close-button:active {
+    scale: 0.88;
+}
+
+.close-icon {
+    font-size: var(--font-size-title);
+    color: var(--color-text-light);
+    -unity-text-align: middle-center;
+}
+
+/* Scroll Content */
+.popup-scroll {
+    flex-grow: 1;
+    padding: var(--spacing-lg);
+}
+
+.popup-scroll > .unity-scroll-view__content-viewport > .unity-scroller--vertical {
+    width: 12px;
+    margin-left: 5px;
+}
+
+.popup-scroll > .unity-scroll-view__content-viewport > .unity-scroller--vertical > .unity-base-slider__dragger {
+    background-color: rgba(40, 30, 25, 0.3);
+    border-radius: 6px;
     border-width: 0;
-    color: white;
+    margin: 2px;
 }
 
-.close-button:hover {
-    background-color: rgba(255, 0, 0, 0.6);
+.popup-scroll > .unity-scroll-view__content-viewport > .unity-scroller--vertical > .unity-base-slider__tracker {
+    background-color: rgba(40, 30, 25, 0.1);
+    border-radius: 6px;
+    border-width: 0;
 }
 
-/* Content */
-.popup-content {
-    padding: 20px;
+.popup-scroll .unity-scroller__low-button,
+.popup-scroll .unity-scroller__high-button {
+    display: none;
+}
+
+/* Header Left Section */
+.header-left {
+    flex-direction: row;
+    align-items: center;
     flex-grow: 1;
 }
 
-.section {
-    margin-bottom: 30px;
+.header-left .icon-button-small {
+    margin-left: var(--spacing-md);
+}
+
+.icon-label {
+    font-size: var(--font-size-lg);
+    -unity-text-align: middle-center;
+}
+
+/* My Code Section */
+.my-code-section {
+    background-color: rgb(255, 255, 255);
+    border-radius: var(--radius-lg);
+    border-width: var(--border-width-normal);
+    border-color: var(--color-card-border);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+.my-code-section .section-title {
+    font-size: var(--font-size-md);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.code-card {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--color-accent-blue);
+    border-radius: var(--radius-md);
+    border-width: var(--border-width-normal);
+    border-color: var(--color-card-border);
+    padding: var(--spacing-md) var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+}
+
+.code-label {
+    font-size: var(--font-size-xxl);
+    color: var(--color-text-light);
+    letter-spacing: 2px;
+}
+
+/* Sections */
+.friends-section {
+    margin-bottom: var(--spacing-xl);
+}
+
+.section-header-row {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-sm);
+    border-bottom-width: var(--border-width-thin);
+    border-bottom-color: rgba(40, 30, 25, 0.2);
 }
 
 .section-title {
-    font-size: 20px;
-    -unity-font-style: bold;
-    color: rgb(255, 215, 0);
-    margin-bottom: 15px;
+    font-size: var(--font-size-xl);
+    color: var(--color-text-primary);
 }
 
-.party-list,
-.friends-list {
-    max-height: 250px;
+.count-label {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+.friends-list-scroll {
     min-height: 100px;
+    max-height: 400px;
 }
 
-/* Friend Entry */
+.friends-list-scroll > .unity-scroll-view__content-viewport > .unity-scroller--vertical {
+    width: 8px;
+    margin-left: 3px;
+}
+
+.friends-list-scroll > .unity-scroll-view__content-viewport > .unity-scroller--vertical > .unity-base-slider__dragger {
+    background-color: rgba(40, 30, 25, 0.3);
+    border-radius: 4px;
+    border-width: 0;
+    margin: 1px;
+}
+
+.friends-list-scroll > .unity-scroll-view__content-viewport > .unity-scroller--vertical > .unity-base-slider__tracker {
+    background-color: rgba(40, 30, 25, 0.1);
+    border-radius: 4px;
+    border-width: 0;
+}
+
+.friends-list-scroll .unity-scroller__low-button,
+.friends-list-scroll .unity-scroller__high-button {
+    display: none;
+}
+
+/* Friend Entry Card */
 .friend-entry {
     flex-direction: row;
     align-items: center;
-    padding: 12px;
-    margin-bottom: 8px;
-    background-color: rgba(255, 255, 255, 0.05);
-    border-radius: 5px;
-    border-width: 1px;
-    border-color: rgba(255, 255, 255, 0.1);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+    background-color: rgb(255, 255, 255);
+    border-radius: var(--radius-md);
+    border-width: var(--border-width-normal);
+    border-color: var(--color-card-border);
+    transition-property: scale;
+    transition-duration: var(--transition-fast);
 }
 
-.friend-entry:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.2);
+.friend-entry:active {
+    scale: 0.98;
 }
 
 .friend-avatar {
-    width: 45px;
-    height: 45px;
-    background-color: rgb(102, 102, 102);
-    border-radius: 22px;
-    margin-right: 15px;
+    width: 60px;
+    height: 60px;
+    min-width: 60px;
+    min-height: 60px;
+    background-color: var(--color-accent-blue);
+    border-radius: var(--radius-round);
+    border-width: var(--border-width-normal);
+    border-color: var(--color-card-border);
+    margin-right: var(--spacing-md);
 }
 
 .friend-info {
     flex-grow: 1;
+    flex-direction: column;
 }
 
 .friend-name {
-    font-size: 16px;
-    color: white;
-    margin-bottom: 4px;
-    -unity-font-style: bold;
+    font-size: var(--font-size-lg);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-xs);
 }
 
 .friend-status {
-    font-size: 13px;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
 }
 
 .friend-status.online {
-    color: rgb(0, 255, 0);
+    color: var(--color-success);
 }
 
 .friend-status.offline {
-    color: rgb(136, 136, 136);
+    color: var(--color-text-muted);
 }
 
 .invite-button {
-    width: 90px;
-    height: 35px;
-    background-color: rgb(76, 175, 80);
-    color: white;
-    font-size: 14px;
-    -unity-font-style: bold;
-    border-radius: 5px;
-    border-width: 0;
+    width: 110px;
+    height: 45px;
+    min-width: 110px;
+    min-height: 45px;
+    background-color: var(--color-accent-green);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-md);
+    border-radius: var(--radius-md);
+    border-width: var(--border-width-normal);
+    border-color: var(--color-card-border);
+    padding: 0;
 }
 
-.invite-button:hover {
-    background-color: rgb(69, 160, 73);
+.invite-button:active {
+    scale: 0.92;
+    background-color: rgb(80, 210, 130);
 }
 
-/* Party Member Entry */
+/* Party Member Entry Card */
 .party-member-entry {
     flex-direction: row;
     align-items: center;
-    padding: 12px;
-    margin-bottom: 8px;
-    background-color: rgba(255, 215, 0, 0.1);
-    border-radius: 5px;
-    border-width: 2px;
-    border-color: rgba(255, 215, 0, 0.3);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+    background-color: rgb(255, 250, 235);
+    border-radius: var(--radius-md);
+    border-width: var(--border-width-normal);
+    border-color: var(--color-accent-yellow);
+    transition-property: scale;
+    transition-duration: var(--transition-fast);
+}
+
+.party-member-entry:active {
+    scale: 0.98;
 }
 
 .party-avatar {
-    width: 45px;
-    height: 45px;
-    background-color: rgb(255, 215, 0);
-    border-radius: 22px;
-    margin-right: 15px;
+    width: 60px;
+    height: 60px;
+    min-width: 60px;
+    min-height: 60px;
+    background-color: var(--color-accent-yellow);
+    border-radius: var(--radius-round);
+    border-width: var(--border-width-normal);
+    border-color: var(--color-card-border);
+    margin-right: var(--spacing-md);
 }
 
 .party-info {
     flex-grow: 1;
+    flex-direction: column;
 }
 
 .party-name {
-    font-size: 16px;
-    color: white;
-    margin-bottom: 4px;
-    -unity-font-style: bold;
+    font-size: var(--font-size-lg);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-xs);
 }
 
 .party-ready {
-    font-size: 13px;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
 }
 
 .party-ready.ready {
-    color: rgb(0, 255, 0);
+    color: var(--color-success);
 }
 
 .party-ready.not-ready {
-    color: rgb(255, 107, 107);
+    color: var(--color-danger);
 }
 
 .kick-button {
-    width: 70px;
-    height: 35px;
-    background-color: rgba(255, 0, 0, 0.5);
-    color: white;
-    font-size: 14px;
-    -unity-font-style: bold;
-    border-radius: 5px;
-    border-width: 0;
+    width: 90px;
+    height: 45px;
+    min-width: 90px;
+    min-height: 45px;
+    background-color: var(--color-danger);
+    color: var(--color-text-light);
+    font-size: var(--font-size-md);
+    border-radius: var(--radius-md);
+    border-width: var(--border-width-normal);
+    border-color: var(--color-card-border);
+    padding: 0;
 }
 
-.kick-button:hover {
-    background-color: rgba(255, 0, 0, 0.7);
+.kick-button:active {
+    scale: 0.92;
+    background-color: rgb(235, 80, 80);
+}
+
+/* Friend Request Entry */
+.friend-request-entry {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+    background-color: rgb(255, 250, 240);
+    border-radius: var(--radius-md);
+    border-width: var(--border-width-normal);
+    border-color: var(--color-accent-orange);
+}
+
+.request-info {
+    flex-grow: 1;
+    flex-direction: column;
+}
+
+.request-name {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.request-code {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+.request-buttons {
+    flex-direction: row;
+}
+
+.accept-button {
+    width: 90px;
+    height: 40px;
+    min-width: 90px;
+    min-height: 40px;
+    background-color: var(--color-success);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-sm);
+    border-radius: var(--radius-md);
+    border-width: var(--border-width-normal);
+    border-color: var(--color-card-border);
+    margin-right: var(--spacing-xs);
+    padding: 0;
+}
+
+.accept-button:active {
+    scale: 0.92;
+    background-color: rgb(80, 210, 130);
+}
+
+.reject-button {
+    width: 90px;
+    height: 40px;
+    min-width: 90px;
+    min-height: 40px;
+    background-color: var(--color-danger);
+    color: var(--color-text-light);
+    font-size: var(--font-size-sm);
+    border-radius: var(--radius-md);
+    border-width: var(--border-width-normal);
+    border-color: var(--color-card-border);
+    padding: 0;
+}
+
+.reject-button:active {
+    scale: 0.92;
+    background-color: rgb(235, 80, 80);
+}
+
+/* Status Dot */
+.status-dot {
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
+    min-height: 16px;
+    border-radius: var(--radius-round);
+    margin-right: var(--spacing-sm);
+    border-width: var(--border-width-thin);
+    border-color: var(--color-card-border);
+}
+
+.status-dot.online {
+    background-color: var(--color-success);
+}
+
+.status-dot.offline {
+    background-color: var(--color-text-muted);
+}
+
+.friend-code {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+/* Section Headers */
+.friends-section-header {
+    font-size: var(--font-size-md);
+    color: var(--color-text-secondary);
+    margin-top: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background-color: rgba(40, 30, 25, 0.05);
+    border-radius: var(--radius-sm);
+}
+
+/* No Friends Message */
+.no-friends-message {
+    font-size: var(--font-size-md);
+    color: var(--color-text-muted);
+    -unity-text-align: middle-center;
+    padding: var(--spacing-xxl);
+}
+
+/* Dialog Styles */
+.dialog-overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.dialog {
+    width: 500px;
+    background-color: var(--color-card-bg);
+    border-radius: var(--radius-lg);
+    border-width: var(--border-width-extra-thick);
+    border-color: var(--color-card-border);
+    padding: var(--spacing-xl);
+}
+
+.dialog-title {
+    font-size: var(--font-size-title);
+    color: var(--color-text-primary);
+    -unity-text-align: middle-center;
+    margin-bottom: var(--spacing-md);
+}
+
+.dialog-instruction {
+    font-size: var(--font-size-md);
+    color: var(--color-text-secondary);
+    -unity-text-align: middle-center;
+    margin-bottom: var(--spacing-lg);
+}
+
+.dialog-input {
+    width: 100%;
+    height: 60px;
+    font-size: var(--font-size-xxl);
+    -unity-text-align: middle-center;
+    background-color: rgb(255, 255, 255);
+    border-radius: var(--radius-md);
+    border-width: var(--border-width-normal);
+    border-color: var(--color-card-border);
+    margin-bottom: var(--spacing-lg);
+    padding: var(--spacing-md);
+    letter-spacing: 2px;
+}
+
+.dialog-input .unity-text-field__input {
+    font-size: var(--font-size-xxl);
+    color: var(--color-text-primary);
+    -unity-text-align: middle-center;
+    letter-spacing: 2px;
+}
+
+.dialog-buttons {
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.dialog-button {
+    width: 48%;
+    height: 55px;
+    font-size: var(--font-size-lg);
+    border-radius: var(--radius-md);
+    border-width: var(--border-width-normal);
+    border-color: var(--color-card-border);
+}
+
+.dialog-button.cancel-button {
+    background-color: var(--color-text-muted);
+    color: var(--color-text-light);
+}
+
+.dialog-button.cancel-button:active {
+    scale: 0.92;
+    background-color: rgb(100, 90, 85);
+}
+
+.dialog-button.add-button {
+    background-color: var(--color-accent-green);
+    color: var(--color-text-primary);
+}
+
+.dialog-button.add-button:active {
+    scale: 0.92;
+    background-color: rgb(80, 210, 130);
 }

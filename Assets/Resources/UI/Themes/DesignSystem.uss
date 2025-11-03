@@ -614,7 +614,11 @@
 .grid-2col {
     flex-direction: row;
     flex-wrap: wrap;
-    gap: var(--spacing-md);
+}
+
+.grid-2col > * {
+    margin-right: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
 }
 
 .grid-3col {
@@ -626,8 +630,12 @@
 .button-grid {
     flex-direction: row;
     flex-wrap: wrap;
-    gap: var(--spacing-sm);
     justify-content: flex-start;
+}
+
+.button-grid > * {
+    margin-right: var(--spacing-sm);
+    margin-bottom: var(--spacing-sm);
 }
 
 /* ============================================

@@ -1,5 +1,6 @@
 <UXML xmlns="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
-    <Style src="project://database/Assets/UI/USS/Popup.uss?fileID=7433441132597879392&amp;guid=d74de88c89f184d749e7dbc03c84d505&amp;type=3#Popup" />
+    <Style src="project://database/Assets/Resources/UI/Styles/Popups/Popup.uss?fileID=7433441132597879392&amp;guid=d74de88c89f184d749e7dbc03c84d505&amp;type=3#Popup" />
+    <Style src="project://database/Assets/Resources/UI/Themes/DesignSystem.uss?fileID=7433441132597879392&amp;guid=74282f7acd0164afea4d8dc9dc05a968&amp;type=3#DesignSystem" />
     <VisualElement name="username-popup-root" class="popup-root-fullscreen">
         <VisualElement name="popup-overlay" class="popup-overlay" />
         <VisualElement name="popup-container" class="popup-container">

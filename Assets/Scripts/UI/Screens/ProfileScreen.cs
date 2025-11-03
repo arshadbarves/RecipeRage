@@ -239,7 +239,7 @@ namespace UI.Screens
                         RefreshStats();
 
                         // Show success toast
-                        _ = _uiService?.ShowToast($"Username changed to {newUsername}", ToastType.Success, 2.5f);
+                        _ = _uiService?.ShowNotification($"Username changed to {newUsername}", NotificationType.Success, 2.5f);
 
                         // Update main menu player name
                         var mainMenu = _uiService.GetScreen<MainMenuScreen>();
@@ -281,7 +281,7 @@ namespace UI.Screens
             GUIUtility.systemCopyBuffer = code;
 
             var uiService = GameBootstrap.Services?.UIService;
-            uiService?.ShowToast($"Friend Code copied: {code}", ToastType.Success, 2f);
+            uiService?.ShowNotification($"Friend Code copied: {code}", NotificationType.Success, 2f);
 
             GameLogger.Log($"Copied friend code: {code}");
         }

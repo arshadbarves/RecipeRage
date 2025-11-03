@@ -573,7 +573,7 @@ namespace UI.Components.Tabs
 
             // Show success toast
             var uiService = GameBootstrap.Services?.UIService;
-            uiService?.ShowToast("Settings reset to defaults", ToastType.Success, 2f);
+            uiService?.ShowNotification("Settings reset to defaults", NotificationType.Success, 2f);
 
             GameLogger.Log("Settings reset complete");
         }

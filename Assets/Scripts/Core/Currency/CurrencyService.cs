@@ -52,7 +52,7 @@ namespace Core.Currency
             GameLogger.Log($"Added {amount} coins. Total: {_coins}");
 
             // Show reward toast
-            _ = GameBootstrap.Services?.UIService?.ShowToast($"+{amount} coins earned!", ToastType.Success, 2f);
+            _ = GameBootstrap.Services?.UIService?.ShowNotification($"+{amount} coins earned!", NotificationType.Success, 2f);
         }
 
         public void AddGems(int amount)
@@ -70,7 +70,7 @@ namespace Core.Currency
             GameLogger.Log($"Added {amount} gems. Total: {_gems}");
 
             // Show reward toast
-            _ = GameBootstrap.Services?.UIService?.ShowToast($"+{amount} gems earned!", ToastType.Success, 2f);
+            _ = GameBootstrap.Services?.UIService?.ShowNotification($"+{amount} gems earned!", NotificationType.Success, 2f);
         }
 
         public bool SpendCoins(int amount)
@@ -90,7 +90,7 @@ namespace Core.Currency
                 GameLogger.Log($"Spent {amount} coins. Remaining: {_coins}");
 
                 // Show success toast
-                _ = GameBootstrap.Services?.UIService?.ShowToast($"Purchased for {amount} coins", ToastType.Success, 2f);
+                _ = GameBootstrap.Services?.UIService?.ShowNotification($"Purchased for {amount} coins", NotificationType.Success, 2f);
 
                 return true;
             }
@@ -98,7 +98,7 @@ namespace Core.Currency
             GameLogger.LogWarning($"Not enough coins. Need {amount}, have {_coins}");
 
             // Show error toast
-            _ = GameBootstrap.Services?.UIService?.ShowToast("Not enough coins", ToastType.Error, 2.5f);
+            _ = GameBootstrap.Services?.UIService?.ShowNotification("Not enough coins", NotificationType.Error, 2.5f);
 
             return false;
         }
@@ -120,7 +120,7 @@ namespace Core.Currency
                 GameLogger.Log($"Spent {amount} gems. Remaining: {_gems}");
 
                 // Show success toast
-                _ = GameBootstrap.Services?.UIService?.ShowToast($"Purchased for {amount} gems", ToastType.Success, 2f);
+                _ = GameBootstrap.Services?.UIService?.ShowNotification($"Purchased for {amount} gems", NotificationType.Success, 2f);
 
                 return true;
             }
@@ -128,7 +128,7 @@ namespace Core.Currency
             GameLogger.LogWarning($"Not enough gems. Need {amount}, have {_gems}");
 
             // Show error toast
-            _ = GameBootstrap.Services?.UIService?.ShowToast("Not enough gems", ToastType.Error, 2.5f);
+            _ = GameBootstrap.Services?.UIService?.ShowNotification("Not enough gems", NotificationType.Error, 2.5f);
 
             return false;
         }

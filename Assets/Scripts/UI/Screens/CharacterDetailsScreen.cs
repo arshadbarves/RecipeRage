@@ -3,6 +3,7 @@ using Core.Animation;
 using Core.Bootstrap;
 using Core.Characters;
 using Core.Logging;
+using Core.Skins;
 using UI.Core;
 using UI.Data;
 using UnityEngine;
@@ -18,6 +19,7 @@ namespace UI.Screens
     public class CharacterDetailsScreen : BaseUIScreen
     {
         private ICharacterService _characterService;
+        private ISkinsService _skinsService;
         private IUIService _uiService;
 
         // Current character
@@ -33,24 +35,25 @@ namespace UI.Screens
         private VisualElement _skinsGrid;
 
         // Skins data
-        private SkinsData _skinsData;
         private string _selectedSkinId;
-        private string _equippedSkinId;
 
         protected override void OnInitialize()
         {
             // Get services
             _characterService = GameBootstrap.Services?.CharacterService;
+            _skinsService = GameBootstrap.Services?.SkinsService;
             _uiService = GameBootstrap.Services?.UIService;
+
+            if (_skinsService == null)
+            {
+                GameLogger.LogError("SkinsService is null!");
+            }
 
             // Query elements
             QueryElements();
 
             // Setup callbacks
             SetupCallbacks();
-
-            // Load skins data
-            LoadSkinsData();
 
             GameLogger.Log("Initialized");
         }
@@ -79,22 +82,7 @@ namespace UI.Screens
             }
         }
 
-        private void LoadSkinsData()
-        {
-            TextAsset jsonFile = Resources.Load<TextAsset>("Data/Skins");
-            if (jsonFile != null)
-            {
-                _skinsData = JsonUtility.FromJson<SkinsData>(jsonFile.text);
-                GameLogger.Log($"Loaded {_skinsData.skins.Count} skins");
-            }
-            else
-            {
-                GameLogger.LogError("Failed to load Skins.json from Resources/Data");
-            }
 
-            _equippedSkinId = PlayerPrefs.GetString("EquippedSkin", "classic_chef");
-            _selectedSkinId = _equippedSkinId;
-        }
 
         /// <summary>
         /// Show this screen for a specific character
@@ -102,6 +90,11 @@ namespace UI.Screens
         public void ShowForCharacter(CharacterClass character)
         {
             _currentCharacter = character;
+
+            // Get equipped skin for this character
+            var equippedSkin = _skinsService?.GetEquippedSkin(character.Id);
+            _selectedSkinId = equippedSkin?.id;
+
             UpdateCharacterDisplay();
             PopulateSkins();
             Show(animate: true, addToHistory: true);
@@ -230,22 +223,26 @@ namespace UI.Screens
 
         private void PopulateSkins()
         {
-            if (_skinsGrid == null || _skinsData == null) return;
+            if (_skinsGrid == null || _skinsService == null || _currentCharacter == null) return;
 
             _skinsGrid.Clear();
 
-            foreach (SkinItem skin in _skinsData.skins)
+            // Get only skins for this character
+            var characterSkins = _skinsService.GetSkinsForCharacter(_currentCharacter.Id);
+
+            foreach (SkinItem skin in characterSkins)
             {
                 VisualElement skinItem = CreateSkinItem(skin);
                 _skinsGrid.Add(skinItem);
             }
 
-            GameLogger.Log($"Populated {_skinsData.skins.Count} skins");
+            GameLogger.Log($"Populated {characterSkins.Count} skins for {_currentCharacter.DisplayName}");
         }
 
         private VisualElement CreateSkinItem(SkinItem skin)
         {
-            bool isUnlocked = skin.unlocked || PlayerPrefs.GetInt($"Unlocked_{skin.id}", 0) == 1;
+            bool isUnlocked = _skinsService.IsSkinUnlocked(skin.id);
+            bool isEquipped = _skinsService.GetEquippedSkin(_currentCharacter.Id)?.id == skin.id;
 
             Button skinItem = new Button(() => OnSkinSelected(skin));
             skinItem.AddToClassList("skin-item");
@@ -269,30 +266,62 @@ namespace UI.Screens
                 VisualElement lockIcon = new VisualElement();
                 lockIcon.AddToClassList("lock-icon");
                 image.Add(lockIcon);
+
+                // Add cost label
+                Label costLabel = new Label($"{skin.unlockCost} 💰");
+                costLabel.style.position = Position.Absolute;
+                costLabel.style.bottom = 5;
+                costLabel.style.width = new Length(100, LengthUnit.Percent);
+                costLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
+                costLabel.style.color = new Color(1f, 0.8f, 0.2f);
+                costLabel.style.fontSize = 12;
+                costLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
+                image.Add(costLabel);
             }
 
             Label nameLabel = new Label(skin.name.ToUpper());
             nameLabel.AddToClassList("skin-item-name");
             skinItem.Add(nameLabel);
 
+            // Add equipped indicator
+            if (isEquipped)
+            {
+                Label equippedLabel = new Label("EQUIPPED");
+                equippedLabel.style.fontSize = 10;
+                equippedLabel.style.color = new Color(0.4f, 0.8f, 0.4f);
+                equippedLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
+                equippedLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
+                skinItem.Add(equippedLabel);
+            }
+
             return skinItem;
         }
 
         private void OnSkinSelected(SkinItem skin)
         {
-            bool isUnlocked = skin.unlocked || PlayerPrefs.GetInt($"Unlocked_{skin.id}", 0) == 1;
+            bool isUnlocked = _skinsService.IsSkinUnlocked(skin.id);
 
             if (!isUnlocked)
             {
                 GameLogger.Log($"Skin is locked: {skin.name}");
-                _uiService?.ShowToast($"{skin.name} is locked!", ToastType.Info, 2f);
+                _uiService?.ShowNotification($"{skin.name} is locked! Cost: {skin.unlockCost} coins", NotificationType.Info, 3f);
                 return;
             }
 
-            _selectedSkinId = skin.id;
-            PopulateSkins();
+            // Equip the skin
+            bool success = _skinsService.EquipSkin(_currentCharacter.Id, skin.id);
 
-            GameLogger.Log($"Skin selected: {skin.name}");
+            if (success)
+            {
+                _selectedSkinId = skin.id;
+                _uiService?.ShowNotification($"Equipped {skin.name}", NotificationType.Success, 2f);
+                PopulateSkins();
+                GameLogger.Log($"Skin equipped: {skin.name}");
+            }
+            else
+            {
+                _uiService?.ShowNotification("Failed to equip skin", NotificationType.Error, 2f);
+            }
         }
 
         private void OnBackClicked()
@@ -301,7 +330,7 @@ namespace UI.Screens
             {
                 // Use GoBack to return to previous screen in history
                 bool wentBack = _uiService.GoBack(true);
-                
+
                 if (!wentBack)
                 {
                     // If no history, manually show MainMenu
@@ -324,7 +353,7 @@ namespace UI.Screens
             if (success)
             {
                 GameLogger.Log($"Character selected: {_currentCharacter.DisplayName}");
-                _uiService?.ShowToast($"Selected {_currentCharacter.DisplayName}", ToastType.Success, 2f);
+                _uiService?.ShowNotification($"Selected {_currentCharacter.DisplayName}", NotificationType.Success, 2f);
 
                 // Update button state
                 UpdateSelectButton();
@@ -335,7 +364,7 @@ namespace UI.Screens
             else
             {
                 GameLogger.LogError($"Failed to select character: {_currentCharacter.DisplayName}");
-                _uiService?.ShowToast("Failed to select character", ToastType.Error, 2f);
+                _uiService?.ShowNotification("Failed to select character", NotificationType.Error, 2f);
             }
         }
 

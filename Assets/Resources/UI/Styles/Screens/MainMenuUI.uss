@@ -52,8 +52,12 @@
 .currencies {
     flex-direction: row;
     align-items: center;
-    gap: 12px;
 }
+
+.currencies > * {
+    margin-right: 12px;
+}
+
 
 .currency-container {
     flex-direction: row;
@@ -391,8 +395,12 @@
     align-items: flex-end;
     width: 250px;
     height: 100%;
-    gap: 10px;
 }
+
+.nav-buttons-group > * {
+    margin-right: 10px;
+}
+
 
 .nav-button {
     width: 70px;
@@ -639,8 +647,12 @@
     flex-direction: column;
     align-items: stretch;
     width: 400px;
-    gap: 20px;
 }
+
+.settings-container > * {
+    margin-bottom: 20px;
+}
+
 
 .back-button {
     background-color: #FF1493;

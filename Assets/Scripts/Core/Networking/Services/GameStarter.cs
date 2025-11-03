@@ -230,7 +230,7 @@ namespace Core.Networking.Services
                 // Show message to players
                 var uiService = GameBootstrap.Services?.UIService;
                 // TODO: Show toast "Host left the match"
-                // uiService?.ShowToast("Host left the match. Returning to lobby...");
+                // uiService?.ShowNotification("Host left the match. Returning to lobby...");
 
                 // End game and return to lobby
                 EndGame();
@@ -252,7 +252,7 @@ namespace Core.Networking.Services
             // Show error message
             var uiService = GameBootstrap.Services?.UIService;
             // TODO: Show error toast when UI is ready
-            // uiService?.ShowToast($"Failed to start game: {reason}");
+            // uiService?.ShowNotification($"Failed to start game: {reason}");
 
             // Return to lobby
             ReturnToLobby();

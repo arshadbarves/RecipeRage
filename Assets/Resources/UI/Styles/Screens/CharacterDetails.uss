@@ -14,8 +14,12 @@
     padding: var(--spacing-md) var(--spacing-lg);
     flex-direction: row;
     align-items: center;
-    gap: var(--spacing-lg);
 }
+
+.character-details-header > * {
+    margin-right: var(--spacing-lg);
+}
+
 
 .back-button {
     background-color: var(--color-card-bg);
@@ -43,9 +47,13 @@
 .character-details-content {
     flex-direction: row;
     flex-grow: 1;
-    gap: var(--spacing-lg);
     padding: 0 var(--spacing-lg) var(--spacing-xxl) var(--spacing-lg);
 }
+
+.character-details-content > * {
+    margin-right: var(--spacing-lg);
+}
+
 
 /* Left Panel - Character Info */
 .character-info-panel {

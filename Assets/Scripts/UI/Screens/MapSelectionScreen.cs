@@ -177,7 +177,7 @@ namespace UI.Screens
 
             // Show toast
             var uiService = GameBootstrap.Services?.UIService;
-            uiService?.ShowToast($"Map changed to {map.name}", ToastType.Success, 2f);
+            uiService?.ShowNotification($"Map changed to {map.name}", NotificationType.Success, 2f);
 
             // Go back
             OnBackClicked();

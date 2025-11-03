@@ -1,34 +1,41 @@
-/* Notification Styles */
+/* Notification Styles - Non-interactable, auto-closing notifications */
+/* Uses Recipe Rage Design System Variables */
+
 .notification-overlay {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    height: auto;
+    bottom: 0;
+    height: 100%;
+    width: 100%;
     justify-content: flex-start;
     align-items: center;
-    padding-top: 20px;
+    padding-top: var(--spacing-lg);
+    pointer-events: none;
 }
 
 .notification-content {
     flex-direction: row;
     align-items: center;
-    background-color: rgba(40, 40, 50, 0.95);
-    border-radius: 8px;
-    border-width: 1px;
-    border-color: rgba(255, 255, 255, 0.2);
-    padding: 15px 20px;
+    background-color: var(--color-card-bg);
+    border-radius: var(--radius-md);
+    border-width: var(--border-width-normal);
+    border-color: var(--color-card-border);
+    padding: var(--spacing-md) var(--spacing-lg);
     min-width: 300px;
     max-width: 500px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    pointer-events: none;
 }
 
 .notification-icon {
-    width: 24px;
-    height: 24px;
-    background-color: rgb(100, 150, 255);
-    border-radius: 12px;
-    margin-right: 15px;
+    width: 32px;
+    height: 32px;
+    background-color: var(--color-info);
+    border-radius: var(--radius-round);
+    border-width: var(--border-width-thin);
+    border-color: var(--color-card-border);
+    margin-right: var(--spacing-md);
     flex-shrink: 0;
 }
 
@@ -38,30 +45,47 @@
 }
 
 .notification-title {
-    font-size: 16px;
-    color: white;
-    margin-bottom: 5px;
+    font-size: var(--font-size-lg);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-xs);
+    -unity-font-style: bold;
 }
 
 .notification-message {
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.8);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
     white-space: normal;
 }
 
-.notification-close {
-    width: 24px;
-    height: 24px;
-    border-radius: 12px;
-    background-color: rgba(255, 100, 100, 0.8);
-    border-width: 0;
-    color: white;
-    font-size: 14px;
-    margin-left: 15px;
-    flex-shrink: 0;
+/* Type-specific styles */
+.notification-success .notification-content {
+    background-color: rgb(240, 255, 245);
 }
 
-.notification-close:hover {
-    background-color: rgb(255, 100, 100);
-    scale: 1.1;
+.notification-success .notification-icon {
+    background-color: var(--color-success);
+}
+
+.notification-error .notification-content {
+    background-color: rgb(255, 240, 240);
+}
+
+.notification-error .notification-icon {
+    background-color: var(--color-danger);
+}
+
+.notification-info .notification-content {
+    background-color: rgb(240, 248, 255);
+}
+
+.notification-info .notification-icon {
+    background-color: var(--color-info);
+}
+
+.notification-warning .notification-content {
+    background-color: rgb(255, 250, 240);
+}
+
+.notification-warning .notification-icon {
+    background-color: var(--color-warning);
 }

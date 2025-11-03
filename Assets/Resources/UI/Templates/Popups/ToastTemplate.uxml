@@ -1,9 +1,0 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
-    <Style src="project://database/Assets/UI/USS/Toast.uss?fileID=7433441132597879392&amp;guid=9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f&amp;type=3#Toast" />
-    <ui:VisualElement name="toast-container" picking-mode="Ignore">
-        <ui:VisualElement name="toast-content">
-            <ui:VisualElement name="toast-icon" />
-            <ui:Label name="toast-message" text="Toast message" />
-        </ui:VisualElement>
-    </ui:VisualElement>
-</ui:UXML>

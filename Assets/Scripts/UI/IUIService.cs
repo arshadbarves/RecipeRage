@@ -34,7 +34,8 @@ namespace UI
         UIScreenCategory GetScreenCategory(UIScreenType screenType);
         bool IsInteractionBlocked(UIScreenType screenType);
 
-        UniTask ShowToast(string message, ToastType type = ToastType.Info, float duration = 3f);
+        UniTask ShowNotification(string message, NotificationType type = NotificationType.Info, float duration = 3f);
+        UniTask ShowNotification(string title, string message, NotificationType type = NotificationType.Info, float duration = 3f);
 
         event Action<UIScreenType> OnScreenShown;
         event Action<UIScreenType> OnScreenHidden;

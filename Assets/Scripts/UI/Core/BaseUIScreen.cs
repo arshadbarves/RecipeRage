@@ -20,6 +20,11 @@ namespace UI.Core
         public UIScreenType ScreenType { get; private set; }
 
         /// <summary>
+        /// Screen category for animation and layering
+        /// </summary>
+        public UIScreenCategory Category { get; private set; }
+
+        /// <summary>
         /// Screen priority for layering
         /// </summary>
         public UIScreenPriority Priority { get; private set; }
@@ -81,6 +86,13 @@ namespace UI.Core
             ScreenType = screenType;
             Priority = priority;
             Controller = controller;
+
+            // Get category from UIService
+            var uiService = GameBootstrap.Services?.UIService;
+            if (uiService != null)
+            {
+                Category = uiService.GetScreenCategory(screenType);
+            }
 
             // Subscribe to controller events
             if (Controller != null)
@@ -269,29 +281,40 @@ namespace UI.Core
 
         /// <summary>
         /// Override this to customize show animations
-        /// Calls the appropriate animation method on the animator directly
+        /// Uses screen category for consistent animation behavior
         /// </summary>
         public virtual void AnimateShow(IUIAnimator animator, VisualElement element, float duration, Action onComplete)
         {
-            switch (ScreenType)
+            switch (Category)
             {
-                case UIScreenType.Splash:
-                case UIScreenType.Loading:
+                case UIScreenCategory.System:
+                    // System screens (Splash, Maintenance) - simple fade
                     animator.FadeIn(element, duration, onComplete);
                     break;
 
-                case UIScreenType.Popup:
-                case UIScreenType.Modal:
-                    animator.ScaleIn(element, duration, onComplete);
+                case UIScreenCategory.Overlay:
+                    // Overlay screens (Loading, Login) - fade in
+                    animator.FadeIn(element, duration, onComplete);
                     break;
 
-                case UIScreenType.Notification:
-                    animator.SlideIn(element, SlideDirection.Top, duration, onComplete);
+                case UIScreenCategory.Modal:
+                    // Modal dialogs - overlay fades, content bounces
+                    animator.PopupIn(element, duration, onComplete);
                     break;
 
-                case UIScreenType.Settings:
-                case UIScreenType.Pause:
-                    animator.SlideIn(element, SlideDirection.Right, duration, onComplete);
+                case UIScreenCategory.Popup:
+                    // Popups - overlay fades, content bounces (playful, Brawl Stars style)
+                    animator.PopupIn(element, duration, onComplete);
+                    break;
+
+                case UIScreenCategory.Screen:
+                    // Main screens - fade in
+                    animator.FadeIn(element, duration, onComplete);
+                    break;
+
+                case UIScreenCategory.Persistent:
+                    // Persistent UI (HUD) - instant or fade
+                    animator.FadeIn(element, duration, onComplete);
                     break;
 
                 default:
@@ -302,29 +325,40 @@ namespace UI.Core
 
         /// <summary>
         /// Override this to customize hide animations
-        /// Calls the appropriate animation method on the animator directly
+        /// Uses screen category for consistent animation behavior
         /// </summary>
         public virtual void AnimateHide(IUIAnimator animator, VisualElement element, float duration, Action onComplete)
         {
-            switch (ScreenType)
+            switch (Category)
             {
-                case UIScreenType.Splash:
-                case UIScreenType.Loading:
+                case UIScreenCategory.System:
+                    // System screens - simple fade
                     animator.FadeOut(element, duration, onComplete);
                     break;
 
-                case UIScreenType.Popup:
-                case UIScreenType.Modal:
-                    animator.ScaleOut(element, duration, onComplete);
+                case UIScreenCategory.Overlay:
+                    // Overlay screens - fade out
+                    animator.FadeOut(element, duration, onComplete);
                     break;
 
-                case UIScreenType.Notification:
-                    animator.SlideOut(element, SlideDirection.Top, duration, onComplete);
+                case UIScreenCategory.Modal:
+                    // Modal dialogs - content bounces out, overlay fades
+                    animator.PopupOut(element, duration, onComplete);
                     break;
 
-                case UIScreenType.Settings:
-                case UIScreenType.Pause:
-                    animator.SlideOut(element, SlideDirection.Right, duration, onComplete);
+                case UIScreenCategory.Popup:
+                    // Popups - content bounces out, overlay fades (playful, Brawl Stars style)
+                    animator.PopupOut(element, duration, onComplete);
+                    break;
+
+                case UIScreenCategory.Screen:
+                    // Main screens - fade out
+                    animator.FadeOut(element, duration, onComplete);
+                    break;
+
+                case UIScreenCategory.Persistent:
+                    // Persistent UI - instant or fade
+                    animator.FadeOut(element, duration, onComplete);
                     break;
 
                 default:
@@ -335,14 +369,18 @@ namespace UI.Core
 
         /// <summary>
         /// Get the animation duration for this screen
-        /// Override this to customize animation timing
+        /// Uses screen category for consistent timing
         /// </summary>
         public virtual float GetAnimationDuration()
         {
-            return ScreenType switch
+            return Category switch
             {
-                UIScreenType.Splash or UIScreenType.Loading => 0.5f, // Slow
-                UIScreenType.Notification => 0.15f, // Fast
+                UIScreenCategory.System => 0.5f, // Slow (Splash, Maintenance)
+                UIScreenCategory.Overlay => 0.3f, // Medium (Loading, Login)
+                UIScreenCategory.Modal => 0.4f, // Bouncy (needs time for elastic effect)
+                UIScreenCategory.Popup => 0.4f, // Bouncy (needs time for elastic effect)
+                UIScreenCategory.Screen => 0.3f, // Medium (Main screens)
+                UIScreenCategory.Persistent => 0.2f, // Fast (HUD)
                 _ => 0.3f // Default
             };
         }

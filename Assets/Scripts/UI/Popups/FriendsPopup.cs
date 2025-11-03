@@ -339,7 +339,7 @@ namespace UI.Popups
                 await _friendsService.AcceptFriendRequestAsync(request.Id);
 
                 var uiService = GameBootstrap.Services?.UIService;
-                uiService?.ShowToast($"You are now friends with {request.FromUserName}!", ToastType.Success, 2f);
+                uiService?.ShowNotification($"You are now friends with {request.FromUserName}!", NotificationType.Success, 2f);
 
                 // Reload
                 LoadFriendRequests();
@@ -350,7 +350,7 @@ namespace UI.Popups
                 GameLogger.LogError($"Error accepting request: {ex.Message}");
 
                 var uiService = GameBootstrap.Services?.UIService;
-                uiService?.ShowToast("Failed to accept friend request", ToastType.Error, 2f);
+                uiService?.ShowNotification("Failed to accept friend request", NotificationType.Error, 2f);
             }
         }
 
@@ -363,7 +363,7 @@ namespace UI.Popups
                 await _friendsService.RejectFriendRequestAsync(request.Id);
 
                 var uiService = GameBootstrap.Services?.UIService;
-                uiService?.ShowToast("Friend request rejected", ToastType.Info, 2f);
+                uiService?.ShowNotification("Friend request rejected", NotificationType.Info, 2f);
 
                 // Reload
                 LoadFriendRequests();
@@ -373,7 +373,7 @@ namespace UI.Popups
                 GameLogger.LogError($"Error rejecting request: {ex.Message}");
 
                 var uiService = GameBootstrap.Services?.UIService;
-                uiService?.ShowToast("Failed to reject friend request", ToastType.Error, 2f);
+                uiService?.ShowNotification("Failed to reject friend request", NotificationType.Error, 2f);
             }
         }
 
@@ -390,7 +390,7 @@ namespace UI.Popups
             _friendsService.InviteToParty(friend.FriendCode);
 
             var uiService = GameBootstrap.Services?.UIService;
-            uiService?.ShowToast($"Invited {friend.DisplayName} to party", ToastType.Info, 2f);
+            uiService?.ShowNotification($"Invited {friend.DisplayName} to party", NotificationType.Info, 2f);
         }
 
         private async void OnRefreshClicked()
@@ -398,7 +398,7 @@ namespace UI.Popups
             GameLogger.Log("Refreshing...");
 
             var uiService = GameBootstrap.Services?.UIService;
-            uiService?.ShowToast("Refreshing...", ToastType.Info, 1f);
+            uiService?.ShowNotification("Refreshing...", NotificationType.Info, 1f);
 
             LoadFriendRequests();
             LoadFriends();
@@ -419,7 +419,7 @@ namespace UI.Popups
             GUIUtility.systemCopyBuffer = code;
 
             var uiService = GameBootstrap.Services?.UIService;
-            uiService?.ShowToast($"Friend Code copied: {code}", ToastType.Success, 2f);
+            uiService?.ShowNotification($"Friend Code copied: {code}", NotificationType.Success, 2f);
 
             GameLogger.Log($"Copied friend code: {code}");
         }
@@ -465,7 +465,7 @@ namespace UI.Popups
                 if (string.IsNullOrEmpty(code) || code.Length != 8)
                 {
                     var uiService = GameBootstrap.Services?.UIService;
-                    uiService?.ShowToast("Please enter a valid 8-character code", ToastType.Error, 2f);
+                    uiService?.ShowNotification("Please enter a valid 8-character code", NotificationType.Error, 2f);
                     return;
                 }
 
@@ -474,7 +474,7 @@ namespace UI.Popups
                     await _friendsService.SendFriendRequestAsync(code);
 
                     var uiService = GameBootstrap.Services?.UIService;
-                    uiService?.ShowToast("Friend request sent!", ToastType.Success, 2f);
+                    uiService?.ShowNotification("Friend request sent!", NotificationType.Success, 2f);
 
                     Container.Remove(overlay);
                 }
@@ -483,7 +483,7 @@ namespace UI.Popups
                     GameLogger.LogError($"Error sending request: {ex.Message}");
 
                     var uiService = GameBootstrap.Services?.UIService;
-                    uiService?.ShowToast(ex.Message, ToastType.Error, 3f);
+                    uiService?.ShowNotification(ex.Message, NotificationType.Error, 3f);
                 }
             });
             addButton.text = "SEND REQUEST";
@@ -511,7 +511,7 @@ namespace UI.Popups
             LoadFriendRequests();
 
             var uiService = GameBootstrap.Services?.UIService;
-            uiService?.ShowToast($"Friend request from {request.FromUserName}", ToastType.Info, 3f);
+            uiService?.ShowNotification($"Friend request from {request.FromUserName}", NotificationType.Info, 3f);
         }
 
         private void OnCloseClicked()

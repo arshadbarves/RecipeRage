@@ -15,7 +15,6 @@ namespace UI
         Modal,
         Popup,
         Notification,
-        Toast,
         FriendsPopup,
         UsernamePopup,
 

@@ -322,7 +322,7 @@ namespace UI.Popups
             }
 
             // Show error toast
-            _ = GameBootstrap.Services?.UIService?.ShowToast(message, ToastType.Error, 3f);
+            _ = GameBootstrap.Services?.UIService?.ShowNotification(message, NotificationType.Error, 3f);
 
             GameLogger.LogWarning($"Validation error: {message}");
         }
@@ -353,19 +353,6 @@ namespace UI.Popups
             {
                 _overlay.UnregisterCallback<ClickEvent>(OnOverlayClicked);
             }
-        }
-
-        // Override animations for popup behavior
-        public override void AnimateShow(IUIAnimator animator, VisualElement element, float duration, Action onComplete)
-        {
-            // Scale in popup
-            animator.ScaleIn(element, duration, onComplete);
-        }
-
-        public override void AnimateHide(IUIAnimator animator, VisualElement element, float duration, Action onComplete)
-        {
-            // Scale out popup
-            animator.ScaleOut(element, duration, onComplete);
         }
     }
 }

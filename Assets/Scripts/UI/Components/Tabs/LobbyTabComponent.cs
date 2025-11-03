@@ -248,8 +248,8 @@ namespace UI.Components.Tabs
                 else
                 {
                     GameLogger.LogError("FriendsPopup not found");
-                    uiService.ShowToast("Friends popup not available",
-                        ToastType.Error,
+                    uiService.ShowNotification("Friends popup not available",
+                        NotificationType.Error,
                         2f);
                 }
             }

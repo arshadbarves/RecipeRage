@@ -24,9 +24,13 @@
 .skins-content {
     flex-direction: row;
     flex-grow: 1;
-    gap: var(--spacing-md);
     padding: var(--spacing-md) var(--spacing-lg) var(--spacing-xxl) var(--spacing-lg);
 }
+
+.skins-content > * {
+    margin-right: var(--spacing-md);
+}
+
 
 .character-preview {
     width: 380px;
@@ -90,7 +94,6 @@
 .skins-grid {
     flex-direction: row;
     flex-wrap: wrap;
-    gap: var(--spacing-md);
     justify-content: flex-start;
     padding-bottom: var(--spacing-lg);
 }
@@ -102,6 +105,8 @@
     border-width: var(--border-width-normal);
     border-color: var(--color-card-border);
     padding: var(--spacing-sm);
+    margin-right: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
     transition-property: scale, border-color, border-width;
     transition-duration: var(--transition-normal);
 }

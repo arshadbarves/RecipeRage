@@ -8,21 +8,20 @@
     <Style src="project://database/Assets/Resources/UI/Styles/Screens/Shop.uss?fileID=7433441132597879392&amp;guid=4e442d0be92504d63986397556b8d066&amp;type=3#Shop" />
     <Style src="project://database/Assets/Resources/UI/Styles/Components/CharacterTab.uss?fileID=7433441132597879392&amp;guid=aa9123e71487e4e7788a3c50b3c86c73&amp;type=3#CharacterTab" />
     <Style src="project://database/Assets/Resources/UI/Themes/DesignSystem.uss?fileID=7433441132597879392&amp;guid=74282f7acd0164afea4d8dc9dc05a968&amp;type=3#DesignSystem" />
-    <Style src="project://database/Assets/Resources/UI/Styles/Core/GlobalButtons.uss?fileID=7433441132597879392&amp;guid=99c9eb48eb2e144a1af685d58c2a6d9b&amp;type=3#GlobalButtons" />
     <VisualElement name="bottom-background-bar" class="bottom-background-bar" style="flex-grow: 1;" />
     <VisualElement name="main-menu-root" class="main-menu-root">
         <TabView name="main-tabs" class="main-tabs">
             <Tab name="chef-tab" icon-image="project://database/Assets/Textures/Icons/Badges/icons8-home-96.png?fileID=2800000&amp;guid=2be65e77c79024ee1a42cef702ecd4bc&amp;type=3#icons8-home-96" class="chef-tab">
-                <Instance template="LobbyTemplate" />
+                <Instance template="LobbyTemplate" name="TemplateContainer" style="flex-grow: 1;" />
             </Tab>
             <Tab name="character-tab" icon-image="project://database/Assets/Textures/Icons/Badges/icons8-home-96.png?fileID=2800000&amp;guid=2be65e77c79024ee1a42cef702ecd4bc&amp;type=3#icons8-home-96" class="chef-tab">
-                <Instance template="CharacterTabTemplate" />
+                <Instance template="CharacterTabTemplate" style="flex-grow: 1;" />
             </Tab>
             <Tab name="shop-tab" icon-image="project://database/Assets/Textures/Icons/Badges/icons8-shop-96.png?fileID=2800000&amp;guid=8bddd360023be43369db1644138f5fdb&amp;type=3#icons8-shop-96">
-                <Instance template="ShopTemplate" />
+                <Instance template="ShopTemplate" style="flex-grow: 1;" />
             </Tab>
             <Tab name="settings-tab" icon-image="project://database/Assets/Textures/Icons/Badges/icons8-settings-96.png?fileID=2800000&amp;guid=f3f55e28fe7084597817e02bc52799e0&amp;type=3#icons8-settings-96">
-                <Instance template="SettingsTemplate" />
+                <Instance template="SettingsTemplate" style="flex-grow: 1;" />
             </Tab>
         </TabView>
     </VisualElement>

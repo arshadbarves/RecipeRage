@@ -49,3 +49,12 @@
     color: rgb(251, 82, 72);
     top: -30px;
 }
+
+.unity-button {
+    transition-property: scale;
+    transition-duration: 0.1s;
+}
+
+.unity-button:active {
+    scale: 0.92 0.92 1;
+}

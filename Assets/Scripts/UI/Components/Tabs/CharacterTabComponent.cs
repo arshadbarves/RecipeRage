@@ -167,7 +167,7 @@ namespace UI.Components.Tabs
             if (!isUnlocked)
             {
                 GameLogger.Log($"Locked character clicked: {character.DisplayName}");
-                _uiService?.ShowToast($"{character.DisplayName} is locked! Cost: {character.UnlockCost} coins", ToastType.Info, 3f);
+                _uiService?.ShowNotification($"{character.DisplayName} is locked! Cost: {character.UnlockCost} coins", NotificationType.Info, 3f);
                 return;
             }
 

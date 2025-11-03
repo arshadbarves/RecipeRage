@@ -120,6 +120,9 @@ namespace UI
                 CreateScreen(screenType);
             }
 
+            // Sort screens by category after all are created to ensure proper layering
+            SortScreensByCategory();
+
             GameLogger.Log($"Created {_screens.Count} screens from registry");
         }
 
@@ -457,16 +460,28 @@ namespace UI
             return _stackManager.IsBlockedByHigherCategory(category);
         }
 
-        public async UniTask ShowToast(string message, ToastType type = ToastType.Info, float duration = 3f)
+        public async UniTask ShowNotification(string message, NotificationType type = NotificationType.Info, float duration = 3f)
         {
-            var toastScreen = GetScreen<ToastScreen>(UIScreenType.Toast);
-            if (toastScreen == null)
+            var notificationScreen = GetScreen<NotificationScreen>(UIScreenType.Notification);
+            if (notificationScreen == null)
             {
-                GameLogger.LogWarning("ToastScreen not found - make sure it's registered");
+                GameLogger.LogWarning("NotificationScreen not found - make sure it's registered");
                 return;
             }
 
-            await toastScreen.Show(message, type, duration);
+            await notificationScreen.Show(message, type, duration);
+        }
+
+        public async UniTask ShowNotification(string title, string message, NotificationType type = NotificationType.Info, float duration = 3f)
+        {
+            var notificationScreen = GetScreen<NotificationScreen>(UIScreenType.Notification);
+            if (notificationScreen == null)
+            {
+                GameLogger.LogWarning("NotificationScreen not found - make sure it's registered");
+                return;
+            }
+
+            await notificationScreen.Show(title, message, type, duration);
         }
 
         #endregion
@@ -483,6 +498,7 @@ namespace UI
                 return;
             }
 
+            // Ensure proper layering before showing
             SortScreensByCategory();
 
             float duration = screen.GetAnimationDuration();
@@ -531,12 +547,15 @@ namespace UI
 
         private void SortScreensByCategory()
         {
-            // Sort controllers by category priority (System > Overlay > Modal > Popup > Screen > Persistent)
+            // Sort controllers by category priority
+            // Lower category enum value = higher visual priority (appears on top)
+            // Order: Persistent(5) -> Screen(4) -> Popup(3) -> Modal(2) -> Overlay(1) -> System(0)
             var sortedControllers = _controllers.Values
-                .OrderBy(c => (int)_stackManager.GetCategory(c.ScreenType))
+                .OrderByDescending(c => (int)_stackManager.GetCategory(c.ScreenType))
                 .ThenBy(c => (int)c.Priority)
                 .ToList();
 
+            // BringToFront in order so highest priority categories are on top
             foreach (UIScreenController controller in sortedControllers)
             {
                 if (controller.Container?.parent != null)
@@ -545,7 +564,7 @@ namespace UI
                 }
             }
 
-            GameLogger.Log($"Sorted {sortedControllers.Count} screens by category");
+            GameLogger.Log($"Sorted {sortedControllers.Count} screens by category (Popups/Modals on top)");
         }
 
         #endregion

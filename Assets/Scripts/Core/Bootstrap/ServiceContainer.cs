@@ -13,6 +13,7 @@ using Core.Maintenance;
 using Core.Networking;
 using Core.Networking.Services;
 using Core.SaveSystem;
+using Core.Skins;
 using Core.State;
 using UI;
 using UnityEngine;
@@ -73,6 +74,10 @@ namespace Core.Bootstrap
         private ICharacterService _characterService;
         public ICharacterService CharacterService =>
             _characterService ??= CreateCharacterService();
+
+        private ISkinsService _skinsService;
+        public ISkinsService SkinsService =>
+            _skinsService ??= CreateSkinsService();
 
         private INetworkingServices _networkingServices;
         public INetworkingServices NetworkingServices =>
@@ -149,6 +154,12 @@ namespace Core.Bootstrap
             return new CharacterService();
         }
 
+        private ISkinsService CreateSkinsService()
+        {
+            GameLogger.Log("Lazy-loading SkinsService");
+            return new SkinsService();
+        }
+
         private INetworkingServices CreateNetworkingServices()
         {
             GameLogger.Log("Lazy-loading NetworkingServices");
@@ -197,6 +208,7 @@ namespace Core.Bootstrap
             // Dispose and nullify disposable services (will be recreated on next access)
             DisposeService(ref _gameModeService, "GameModeService");
             DisposeService(ref _characterService, "CharacterService");
+            DisposeService(ref _skinsService, "SkinsService");
             DisposeService(ref _networkingServices, "NetworkingServices");
             DisposeService(ref _stateManager, "StateManager");
             DisposeService(ref _networkGameManager, "NetworkGameManager");
@@ -257,6 +269,7 @@ namespace Core.Bootstrap
             DisposeService(ref _inputService, "InputService");
             DisposeService(ref _gameModeService, "GameModeService");
             DisposeService(ref _characterService, "CharacterService");
+            DisposeService(ref _skinsService, "SkinsService");
             DisposeService(ref _networkingServices, "NetworkingServices");
             DisposeService(ref _stateManager, "StateManager");
             DisposeService(ref _networkGameManager, "NetworkGameManager");

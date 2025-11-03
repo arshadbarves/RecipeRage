@@ -302,7 +302,7 @@ namespace Core.Authentication
                 UpdateStatus(errorMessage);
 
                 // Show error toast
-                _ = _uiService?.ShowToast(errorMessage, ToastType.Error, 4f);
+                _ = _uiService?.ShowNotification(errorMessage, NotificationType.Error, 4f);
 
                 _eventBus?.Publish(new Core.Events.LoginFailedEvent
                 {
@@ -414,7 +414,7 @@ namespace Core.Authentication
                 UpdateStatus("Logged out successfully");
 
                 // Show success toast
-                _ = _uiService?.ShowToast("Logged out successfully", ToastType.Success, 2f);
+                _ = _uiService?.ShowNotification("Logged out successfully", NotificationType.Success, 2f);
 
                 // Trigger logout complete event - GameBootstrap will handle full reboot
                 OnLogoutComplete?.Invoke();
@@ -427,7 +427,7 @@ namespace Core.Authentication
                 UpdateStatus($"Logout failed: {ex.Message}");
 
                 // Show error toast
-                _ = _uiService?.ShowToast("Logout failed", ToastType.Error, 3f);
+                _ = _uiService?.ShowNotification("Logout failed", NotificationType.Error, 3f);
             }
         }
     }

@@ -290,8 +290,12 @@
 
 .battle-cards-row {
     flex-direction: row;
-    gap: var(--spacing-sm);
 }
+
+.battle-cards-row > * {
+    margin-right: var(--spacing-sm);
+}
+
 
 .battle-card-slot {
     flex-grow: 1;

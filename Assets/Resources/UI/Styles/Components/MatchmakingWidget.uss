@@ -19,15 +19,23 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    gap: 20px;
 }
+
+.widget-content > * {
+    margin-right: 20px;
+}
+
 
 /* Status Section */
 .status-section {
     flex-direction: row;
     align-items: center;
-    gap: 15px;
 }
+
+.status-section > * {
+    margin-right: 15px;
+}
+
 
 .status-dot {
     width: 20px;
@@ -55,8 +63,12 @@
 .info-section {
     flex-direction: row;
     align-items: center;
-    gap: 20px;
 }
+
+.info-section > * {
+    margin-right: 20px;
+}
+
 
 .player-count-text {
     font-size: 28px;

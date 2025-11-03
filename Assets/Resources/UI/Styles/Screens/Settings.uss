@@ -52,8 +52,12 @@
 /* Section Title uses design system .section-title */
 
 .controls-group {
-    gap: var(--spacing-xs);
 }
+
+.controls-group > * {
+    margin-bottom: var(--spacing-xs);
+}
+
 
 /* Control Row uses design system .control-row */
 /* Control Slider uses design system .control-slider */
