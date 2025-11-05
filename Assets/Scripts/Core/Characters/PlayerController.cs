@@ -1,6 +1,7 @@
 using System;
 using Core.Bootstrap;
 using Core.Input;
+using Gameplay;
 using Unity.Netcode;
 using UnityEngine;
 using Core.Logging;
@@ -175,14 +176,43 @@ namespace Core.Characters
             if (IsLocalPlayer)
             {
                 SetupInput();
+                SetupCamera();
             }
 
             SetupCharacterClass();
         }
 
+        /// <summary>
+        /// Setup camera to follow this player (local player only)
+        /// </summary>
+        private void SetupCamera()
+        {
+            var cameraController = GameplayContext.CameraController;
+            if (cameraController != null && cameraController.IsInitialized)
+            {
+                cameraController.SetFollowTarget(transform);
+                GameLogger.Log($"Camera set to follow local player: {gameObject.name}");
+            }
+            else
+            {
+                GameLogger.LogWarning("Camera controller not available - camera will not follow player");
+            }
+        }
+
         public override void OnNetworkDespawn()
         {
             base.OnNetworkDespawn();
+
+            // Clear camera target if this is the local player
+            if (IsLocalPlayer)
+            {
+                var cameraController = GameplayContext.CameraController;
+                if (cameraController != null)
+                {
+                    cameraController.ClearFollowTarget();
+                    GameLogger.Log("Camera follow target cleared");
+                }
+            }
 
             // Unregister from PlayerNetworkManager
             var services = GameBootstrap.Services;

@@ -74,8 +74,15 @@ namespace Core.Networking.Services
         /// <param name="clientId">The client ID</param>
         private void CleanupPlayerObjects(ulong clientId)
         {
-            if (!NetworkManager.Singleton.IsServer)
+            // Null checks for shutdown scenarios
+            if (NetworkManager.Singleton == null || !NetworkManager.Singleton.IsServer)
             {
+                return;
+            }
+
+            if (NetworkManager.Singleton.SpawnManager == null || NetworkManager.Singleton.SpawnManager.SpawnedObjects == null)
+            {
+                GameLogger.LogWarning("[ConnectionHandler] SpawnManager or SpawnedObjects is null during cleanup");
                 return;
             }
 
@@ -86,7 +93,7 @@ namespace Core.Networking.Services
             {
                 NetworkObject networkObject = kvp.Value;
 
-                if (networkObject.OwnerClientId == clientId)
+                if (networkObject != null && networkObject.OwnerClientId == clientId)
                 {
                     objectsToCleanup.Add(networkObject);
                 }
@@ -95,6 +102,8 @@ namespace Core.Networking.Services
             // Clean up objects
             foreach (NetworkObject networkObject in objectsToCleanup)
             {
+                if (networkObject == null) continue;
+
                 // Check if it's a player object
                 if (networkObject.IsPlayerObject)
                 {

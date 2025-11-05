@@ -1,4 +1,5 @@
 using System;
+using Core.Networking.Bot;
 using Core.Networking.Interfaces;
 using Core.Networking.Services;
 
@@ -34,6 +35,11 @@ namespace Core.Networking
         /// Game starter service for Unity Netcode integration
         /// </summary>
         GameStarter GameStarter { get; }
+        
+        /// <summary>
+        /// Bot spawner service for spawning AI bots
+        /// </summary>
+        BotSpawner BotSpawner { get; }
         
         /// <summary>
         /// Friends service for EOS friends management

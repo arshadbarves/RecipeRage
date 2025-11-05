@@ -1,5 +1,6 @@
 using System;
 using Core.Logging;
+using Core.Networking.Bot;
 using Core.Networking.Interfaces;
 using Core.Networking.Services;
 using PlayEveryWare.EpicOnlineServices;
@@ -22,6 +23,7 @@ namespace Core.Networking
         public IMatchmakingService MatchmakingService { get; private set; }
         public ITeamManager TeamManager { get; private set; }
         public GameStarter GameStarter { get; private set; }
+        public BotSpawner BotSpawner { get; set; } // Settable - initialized when bot prefab is available
         public IFriendsService FriendsService { get; private set; }
 
         // P2P networking now handled by Unity Netcode + EOSTransport
@@ -85,7 +87,11 @@ namespace Core.Networking
             // 5. Game Starter (depends on all services)
             GameStarter = new GameStarter(this);
 
-            // 6. Friends Service (depends on LobbyManager and Supabase)
+            // 6. Bot Spawner (needs bot prefab - will be set later)
+            // BotSpawner will be initialized when bot prefab is available
+            BotSpawner = null; // Set this in GameplayState when prefab is loaded
+
+            // 7. Friends Service (depends on LobbyManager and Supabase)
             var supabaseConfig = UnityEngine.Resources.Load<SupabaseConfig>("SupabaseConfig");
             if (supabaseConfig != null && supabaseConfig.IsValid())
             {
@@ -160,8 +166,12 @@ namespace Core.Networking
                 GameLogger.LogError($"Error during disposal: {ex.Message}");
             }
 
+            // Despawn bots if any
+            BotSpawner?.DespawnAllBots();
+
             // Clear references
             FriendsService = null;
+            BotSpawner = null;
             GameStarter = null;
             MatchmakingService = null;
             LobbyManager = null;

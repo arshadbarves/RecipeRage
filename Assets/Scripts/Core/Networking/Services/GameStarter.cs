@@ -1,5 +1,6 @@
 using Core.Bootstrap;
 using Core.Logging;
+using Core.Networking.Bot;
 using Core.State.States;
 using Epic.OnlineServices;
 using PlayEveryWare.EpicOnlineServices;
@@ -75,6 +76,10 @@ namespace Core.Networking.Services
             if (success)
             {
                 GameLogger.Log("Successfully started as host");
+                
+                // Spawn bots immediately (before OnGameStarted)
+                SpawnBotsIfNeeded();
+                
                 OnGameStarted(true);
             }
             else
@@ -82,6 +87,42 @@ namespace Core.Networking.Services
                 GameLogger.LogError("Failed to start as host");
                 OnGameStartFailed("Failed to start host");
             }
+        }
+
+        /// <summary>
+        /// Spawn bots if there are any in the match
+        /// </summary>
+        private void SpawnBotsIfNeeded()
+        {
+            var bots = _networkingServices.MatchmakingService.GetActiveBots();
+            if (bots.Count == 0)
+            {
+                return;
+            }
+
+            GameLogger.Log($"Spawning {bots.Count} bots immediately with players");
+
+            // Get player prefab from NetworkManager
+            GameObject botPrefab = NetworkManager.Singleton.NetworkConfig.PlayerPrefab;
+            if (botPrefab == null)
+            {
+                GameLogger.LogError("Player prefab not configured in NetworkManager - cannot spawn bots");
+                return;
+            }
+
+            // Create and initialize BotSpawner
+            var botSpawner = new Bot.BotSpawner(botPrefab);
+            
+            // Set in networking services (cast to container)
+            if (_networkingServices is NetworkingServiceContainer container)
+            {
+                container.BotSpawner = botSpawner;
+            }
+
+            // Spawn bots immediately
+            botSpawner.SpawnBots(bots);
+            
+            GameLogger.Log($"Spawned {bots.Count} bots - players won't know who's a bot!");
         }
 
         /// <summary>
@@ -184,12 +225,8 @@ namespace Core.Networking.Services
             // Subscribe to disconnect events
             SubscribeToNetworkEvents();
 
-            // Transition to gameplay state
-            var services = GameBootstrap.Services;
-            if (services?.StateManager != null)
-            {
-                services.StateManager.ChangeState(new GameplayState());
-            }
+            // Note: We're already in GameplayState (transitioned from MatchmakingState)
+            // No need to transition again
         }
 
         /// <summary>

@@ -155,6 +155,9 @@ namespace Core.State.States
 
             _isMatchmakingInProgress = false;
 
+            // Leave the lobby before returning to main menu
+            CleanupLobby();
+
             // Return to main menu
             ReturnToMainMenu();
         }
@@ -171,6 +174,9 @@ namespace Core.State.States
 
             _isMatchmakingInProgress = false;
 
+            // Leave the lobby before returning to main menu
+            CleanupLobby();
+
             // Return to main menu
             ReturnToMainMenu();
         }
@@ -178,6 +184,22 @@ namespace Core.State.States
         #endregion
 
         #region Helper Methods
+
+        private void CleanupLobby()
+        {
+            var services = GameBootstrap.Services;
+            if (services?.NetworkingServices?.LobbyManager == null)
+                return;
+
+            var lobbyManager = services.NetworkingServices.LobbyManager;
+
+            // Leave match lobby if we're in one
+            if (lobbyManager.IsInMatchLobby)
+            {
+                LogMessage("Leaving match lobby due to matchmaking failure/cancellation");
+                lobbyManager.LeaveMatchLobby();
+            }
+        }
 
         private void ReturnToMainMenu()
         {
