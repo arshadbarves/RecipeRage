@@ -1,14 +1,10 @@
 using Core.Bootstrap;
-using Core.GameModes;
 using Core.Networking;
-using Core.Networking.Bot;
 using Cysharp.Threading.Tasks;
 using Gameplay;
 using Gameplay.Camera;
 using Gameplay.Cooking;
 using Gameplay.Scoring;
-using UI;
-using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Core.Logging;
@@ -47,7 +43,7 @@ namespace Core.State.States
                 var settings = Resources.Load<CameraSettings>("Data/CameraSettings/CameraSettings");
                 if (settings == null)
                 {
-                    GameLogger.LogWarning("CameraSettings not found in Resources/Data/, using defaults");
+                    GameLogger.LogWarning("CameraSettings not found in Resources/Data/CameraSettings/CameraSettings, using defaults");
                     settings = CameraSettings.CreateDefault();
                 }
 
@@ -118,7 +114,7 @@ namespace Core.State.States
             }
 
             // Initialize the game mode
-            var gameModeService = GameBootstrap.Services.GameModeService;
+            var gameModeService = GameBootstrap.Services?.GameModeService;
             if (gameModeService != null)
             {
                 GameLogger.Log("Game mode service initialized");
@@ -164,10 +160,6 @@ namespace Core.State.States
             GameplayContext.Reset();
 
             GameLogger.Log("Camera system disposed");
-
-            // Hide the gameplay UI
-            // Note: GameplayUIManager handles its own cleanup
-            // No need to hide UI Toolkit screens here
 
             // Stop the game mode
             var gameModeService = GameBootstrap.Services.GameModeService;

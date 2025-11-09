@@ -194,6 +194,9 @@ namespace Core.Networking.Services
             AddSearchFilter("GameMode", gameMode.ToString(), ComparisonOp.Equal);
             AddSearchFilter("TeamSize", teamSize.ToString(), ComparisonOp.Equal);
             AddSearchFilter("Status", "Filling", ComparisonOp.Equal);
+            
+            // Additional safety filters
+            // Note: EOS will automatically filter out full lobbies via AvailableSlots
 
             // Search for lobbies with available slots
             var findOptions = new LobbySearchFindOptions
@@ -346,6 +349,29 @@ namespace Core.Networking.Services
 
             GameLogger.Log($"Found lobby {lobbyId} with {availableSlots} available slots");
 
+            // Get lobby attributes to verify status
+            string lobbyStatus = GetLobbyAttribute(lobbyDetails, "Status");
+            
+            // Safety check: Don't join if status is not "Filling"
+            if (lobbyStatus != "Filling" && !string.IsNullOrEmpty(lobbyStatus))
+            {
+                GameLogger.LogWarning($"Skipping lobby {lobbyId} - Status is '{lobbyStatus}', not 'Filling'");
+                
+                // Try next lobby
+                var getCountOptions = new LobbySearchGetSearchResultCountOptions();
+                uint resultCount = _currentSearch.GetSearchResultCount(ref getCountOptions);
+
+                if (index + 1 < resultCount)
+                {
+                    TryJoinSearchResult(index + 1);
+                }
+                else
+                {
+                    CreateAndWaitForPlayers(_currentGameMode, _currentTeamSize);
+                }
+                return;
+            }
+
             // Check if lobby has enough space for our party
             if (availableSlots >= _partySize)
             {
@@ -376,6 +402,32 @@ namespace Core.Networking.Services
             }
 
             lobbyDetails.Release();
+        }
+
+        /// <summary>
+        /// Get a lobby attribute value
+        /// </summary>
+        private string GetLobbyAttribute(LobbyDetails lobbyDetails, string key)
+        {
+            var attrCountOptions = new LobbyDetailsGetAttributeCountOptions();
+            uint attrCount = lobbyDetails.GetAttributeCount(ref attrCountOptions);
+
+            for (uint i = 0; i < attrCount; i++)
+            {
+                var attrOptions = new LobbyDetailsCopyAttributeByIndexOptions { AttrIndex = i };
+                Result result = lobbyDetails.CopyAttributeByIndex(ref attrOptions, out Epic.OnlineServices.Lobby.Attribute? attribute);
+
+                if (result == Result.Success && attribute.HasValue)
+                {
+                    var attrData = attribute.Value.Data;
+                    if (attrData.Value.Key == key)
+                    {
+                        return attrData.Value.Value.AsUtf8;
+                    }
+                }
+            }
+
+            return null;
         }
 
         #endregion
@@ -463,11 +515,17 @@ namespace Core.Networking.Services
         }
 
         /// <summary>
-        /// Handle when match is ready (lobby full)
+        /// Handle when match is ready (lobby full or filled with bots)
         /// </summary>
-        private void HandleMatchReady(LobbyInfo lobbyInfo)
+        private void HandleMatchReady(LobbyInfo lobbyInfo, bool alreadyUpdatedStatus = false)
         {
-            GameLogger.Log($"Match ready! Lobby full: {lobbyInfo.LobbyId}");
+            GameLogger.Log($"Match ready! Lobby: {lobbyInfo.LobbyId}");
+
+            // Update lobby status to prevent new players from joining (if not already done)
+            if (!alreadyUpdatedStatus && _lobbyManager.IsMatchLobbyOwner)
+            {
+                UpdateMatchLobbyStatus(lobbyInfo.LobbyId, "InProgress");
+            }
 
             // Unsubscribe from updates
             _lobbyManager.OnMatchLobbyUpdated -= OnMatchLobbyUpdatedDuringMatchmaking;
@@ -477,6 +535,70 @@ namespace Core.Networking.Services
 
             // Reset matchmaking state
             ResetMatchmakingState();
+        }
+
+        /// <summary>
+        /// Update match lobby status attribute
+        /// </summary>
+        private void UpdateMatchLobbyStatus(string lobbyId, string status)
+        {
+            var localUserId = EOSManager.Instance.GetProductUserId();
+            var modOptions = new UpdateLobbyModificationOptions
+            {
+                LobbyId = lobbyId,
+                LocalUserId = localUserId
+            };
+
+            var lobbyInterface = EOSManager.Instance.GetEOSLobbyInterface();
+            Result result = lobbyInterface.UpdateLobbyModification(ref modOptions, out LobbyModification modification);
+
+            if (result != Result.Success || modification == null)
+            {
+                GameLogger.LogError($"Failed to create lobby modification for status update: {result}");
+                return;
+            }
+
+            // Update Status attribute
+            var attributeData = new AttributeData
+            {
+                Key = "Status",
+                Value = new AttributeDataValue { AsUtf8 = status }
+            };
+
+            var addOptions = new LobbyModificationAddAttributeOptions
+            {
+                Attribute = attributeData,
+                Visibility = LobbyAttributeVisibility.Public
+            };
+
+            result = modification.AddAttribute(ref addOptions);
+
+            if (result != Result.Success)
+            {
+                GameLogger.LogWarning($"Failed to add Status attribute: {result}");
+                modification.Release();
+                return;
+            }
+
+            // Apply the update
+            var updateOptions = new UpdateLobbyOptions
+            {
+                LobbyModificationHandle = modification
+            };
+
+            lobbyInterface.UpdateLobby(ref updateOptions, null, (ref UpdateLobbyCallbackInfo data) =>
+            {
+                if (data.ResultCode == Result.Success)
+                {
+                    GameLogger.Log($"Match lobby status updated to: {status}");
+                }
+                else
+                {
+                    GameLogger.LogError($"Failed to update lobby status: {data.ResultCode}");
+                }
+
+                modification.Release();
+            });
         }
 
         /// <summary>
@@ -552,6 +674,16 @@ namespace Core.Networking.Services
 
             GameLogger.Log($"Creating {neededBots} bots to fill match ({currentPlayers}/{RequiredPlayers} players)");
 
+            // CRITICAL: Update lobby status IMMEDIATELY to prevent new players from joining
+            // Bots don't take lobby slots in EOS, so we must mark the lobby as InProgress manually
+            bool statusUpdated = false;
+            if (_lobbyManager.IsMatchLobbyOwner)
+            {
+                GameLogger.Log("Updating lobby status to InProgress (bot-filled match)");
+                UpdateMatchLobbyStatus(matchLobby.LobbyId, "InProgress");
+                statusUpdated = true;
+            }
+
             // Create bots
             var bots = _botManager.CreateBots(neededBots, startingTeamId: 0);
 
@@ -561,8 +693,8 @@ namespace Core.Networking.Services
 
             GameLogger.Log($"Match filled with bots! Starting game with {currentPlayers} human players and {neededBots} bots");
 
-            // Start the match
-            HandleMatchReady(matchLobby);
+            // Start the match (pass flag to avoid double status update)
+            HandleMatchReady(matchLobby, alreadyUpdatedStatus: statusUpdated);
         }
 
         /// <summary>

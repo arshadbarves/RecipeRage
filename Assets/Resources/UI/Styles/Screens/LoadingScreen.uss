@@ -1,7 +1,4 @@
-/* ============================================
-   LOADING SCREEN - Uses Design System
-   Include DesignSystem.uss in UXML template
-   ============================================ */
+@import url("../../Themes/DesignSystem.uss");
 
 .loading-screen {
     position: absolute;
@@ -10,7 +7,7 @@
     align-items: center;
     justify-content: flex-end;
     flex-direction: column;
-    -unity-font-definition: url("project://database/Assets/Fonts/BlackHanSans-Regular.ttf?fileID=12800000&guid=728719a2ad09249de8ea4878b88d19cf&type=3#BlackHanSans-Regular");
+    -unity-font-definition: var(--font-primary);
 }
 
 .background {
@@ -29,13 +26,15 @@
 }
 
 .loading-container {
-    width: 100%;
+    width: 85%;
+    max-width: 1000px;
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    padding-top: var(--spacing-md);
-    padding-bottom: 0;
     background-color: var(--color-black);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-lg) var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
 }
 
 .progress-text {
@@ -43,14 +42,12 @@
     color: var(--color-text-light);
     margin-bottom: var(--spacing-sm);
     -unity-text-align: middle-center;
-    -unity-text-outline-width: 2px;
-    -unity-text-outline-color: rgba(0, 0, 0, 0.9);
-    text-shadow: 2px 3px 0 rgba(0, 0, 0, 0.6);
     letter-spacing: 3px;
 }
 
 .loading-progress {
-    width: 100%;
+    width: 95%;
+    min-height: 35px;
 }
 
 .loading-progress .unity-progress-bar__title {
@@ -58,16 +55,18 @@
 }
 
 .loading-progress .unity-progress-bar__background {
-    background-color: rgba(0, 0, 0, 0.9);
-    border-radius: 0;
-    border-width: 0;
+    background-color: var(--color-accent-blue);
+    border-radius: var(--radius-xs);
+    border-width: var(--border-width-normal);
+    margin: var(--spacing-xs);
+    border-color: white;
     overflow: hidden;
-    min-height: 15px;
-    height: 15px;
+    min-height: 25px;
+    height: 25px;
 }
 
 .loading-progress .unity-progress-bar__progress {
-    background-color: var(--color-accent-orange);
+    background-color: var(--color-accent-red);
     border-radius: 0;
     margin: 0;
     min-height: 15px;
@@ -86,28 +85,26 @@
     flex-direction: column;
     background-color: var(--color-black);
     border-radius: var(--radius-md);
+    border-color: var(--color-black);
+    border-width: var(--border-width-normal);
     padding: var(--spacing-lg) var(--spacing-lg);
     margin-bottom: var(--spacing-md);
 }
 
 .tip-header {
     font-size: var(--font-size-xl);
+    text-shadow: var(--text-shadow-md);
     color: var(--color-accent-orange);
     margin-bottom: var(--spacing-xs);
     letter-spacing: 1px;
-    -unity-text-outline-width: 1px;
-    -unity-text-outline-color: rgba(0, 0, 0, 0.8);
-    text-shadow: 1px 2px 0 rgba(0, 0, 0, 0.7);
 }
 
 .loading-tip {
-    font-size: 17px;
-    color: rgba(255, 255, 255, 0.95);
+    font-size: var(--font-size-xl);
+    color: var(--color-text-secondary);
     -unity-text-align: middle-center;
     white-space: normal;
     max-width: 650px;
-    line-height: 22px;
-    text-shadow: 1px 2px 0 rgba(0, 0, 0, 0.5);
 }
 
 .version-info {
@@ -115,7 +112,10 @@
     top: var(--spacing-md);
     right: var(--spacing-lg);
     font-size: var(--font-size-xs);
-    color: rgba(255, 255, 255, 0.4);
+    color: var(--color-text-light);
     -unity-text-align: middle-right;
-    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
 }
+
+
+
+

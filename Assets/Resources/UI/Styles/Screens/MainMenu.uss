@@ -1,28 +1,21 @@
-/* ============================================
-   MAIN MENU SCREEN - Uses Design System
-   Include DesignSystem.uss in UXML template
-   ============================================ */
+@import url("project://database/Assets/Resources/UI/Themes/DesignSystem.uss?fileID=7433441132597879392&guid=74282f7acd0164afea4d8dc9dc05a968&type=3#DesignSystem");
 
 .main-menu-root {
     width: 100%;
     height: 100%;
     flex-direction: column;
     justify-content: space-between;
-    padding: var(--spacing-lg);
     -unity-font-definition: var(--font-primary);
 }
 
 .top-bar {
     flex-direction: row;
-    align-items: stretch;
-    position: absolute;
-    width: 100%;
-    padding: var(--spacing-lg);
+    align-items: center;
+    padding: var(--spacing-xs);
     justify-content: space-between;
     -unity-font-definition: var(--font-primary);
 }
 
-/* Player Card uses design system .player-card */
 .player-card {
     flex-direction: row;
     align-items: center;
@@ -30,15 +23,15 @@
     border-radius: var(--radius-xxl);
     padding: var(--spacing-md) var(--spacing-xl) var(--spacing-md) var(--spacing-md);
     border-width: var(--border-width-extra-thick);
-    border-color: var(--color-card-border);
-    min-width: 320px;
+    border-color: var(--color-black);
+    min-width: 425px;
 }
 
 .star-icon {
-    width: 90px;
-    height: 90px;
+    width: 100px;
+    height: 100px;
     background-color: var(--color-card-border);
-    border-radius: var(--radius-round);
+    border-radius: var(--radius-md);
     margin-right: var(--spacing-lg);
     -unity-background-scale-mode: scale-to-fit;
 }
@@ -49,7 +42,7 @@
 }
 
 .player-title {
-    font-size: var(--font-size-xl);
+    font-size: var(--font-size-title);
     color: var(--color-text-primary);
     margin: 0;
     padding: 0;
@@ -71,20 +64,61 @@
 }
 
 .currency-container > * {
-    margin-bottom: var(--spacing-md);
-}
-
-
-/* Currency Display uses design system .currency-display */
-.currency-display {
     margin-left: var(--spacing-md);
 }
 
-/* Currency Icons use design system .currency-icon-coin and .currency-icon-gem */
+.currency-amount {
+    margin-right: var(--spacing-md);
+    margin-left: var(--spacing-md);
+}
+
 .coin-icon {
     background-color: var(--color-warning);
     border-width: var(--border-width-normal);
     border-color: var(--color-card-border);
+}
+
+.currency-display {
+    flex-direction: row;
+    align-items: center;
+    background-color: var(--color-card-bg);
+    border-radius: var(--radius-xxl);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-width: var(--border-width-thick);
+    border-color: var(--color-card-border);
+    max-width: 225px;
+    min-width: 225px;
+}
+
+.currency-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: var(--radius-round);
+    margin-right: var(--spacing-sm);
+    -unity-background-scale-mode: scale-to-fit;
+    min-width: 34px;
+    min-height: 34px;
+}
+
+.currency-icon-coin {
+    background-color: var(--color-warning);
+    border-width: var(--border-width-normal);
+    border-color: var(--color-card-border);
+}
+
+.currency-icon-gem {
+    background-color: var(--color-accent-blue);
+    border-width: var(--border-width-normal);
+    border-color: var(--color-card-border);
+}
+
+.currency-amount {
+    font-size: var(--font-size-xxl);
+    color: var(--color-text-primary);
+    margin: 0;
+    padding: 0;
+    flex-grow: 1;
+    -unity-text-align: middle-left;
 }
 
 .gem-icon {
@@ -93,7 +127,6 @@
     border-color: var(--color-card-border);
 }
 
-/* Add Currency Button uses design system .icon-button-small */
 .add-currency-button {
     width: 40px;
     height: 40px;
@@ -110,10 +143,6 @@
     transition-duration: var(--transition-fast);
 }
 
-.add-currency-button:active {
-    scale: 0.88;
-}
-
 .add-button-text {
     font-size: var(--font-size-title);
     color: var(--color-text-primary);
@@ -122,20 +151,23 @@
     -unity-text-align: middle-center;
 }
 
-/* Main Tabs */
 .main-tabs {
     flex-grow: 1;
 }
 
 .main-tabs .unity-tab-view__header-container {
     background-color: var(--color-black);
-    border-radius: 60px;
+    border-radius: var(--radius-xxl);
     padding: var(--spacing-lg);
-    margin: 0 var(--spacing-lg);
+    margin: 0 var(--spacing-lg) var(--spacing-lg) var(--spacing-lg);
+    border-width: var(--border-width-thin);
+    border-color: var(--color-card-border);
     justify-content: center;
     align-self: center;
     align-items: center;
     align-content: center;
+    position: absolute;
+    top: -150;
 }
 
 .main-tabs .unity-tab-view__content-container {
@@ -151,8 +183,8 @@
 }
 
 .main-tabs .unity-tab__header {
-    width: 90px;
-    height: 90px;
+    width: 100px;
+    height: 100px;
     border-radius: var(--radius-xl);
     margin: 0 var(--spacing-md);
     border-width: 0;
@@ -163,14 +195,12 @@
 
 .main-tabs .unity-tab__header:checked {
     background-color: var(--color-accent-red);
+    scale: 1.1;
+    rotate: 10deg;
 }
 
 .main-tabs .unity-tab__header-underline {
     display: none;
-}
-
-.main-tabs .unity-tab__header:active {
-    scale: 0.92 0.92 1;
 }
 
 .main-tabs .unity-tab__header-image {
@@ -216,7 +246,6 @@
     padding: 0;
 }
 
-/* Bottom Bar */
 .bottom-bar {
     flex-direction: column;
     align-items: flex-end;
@@ -228,147 +257,4 @@
     bottom: 0;
     background-color: var(--color-black);
     position: absolute;
-}
-
-.map-button {
-    flex-direction: column;
-    background-color: var(--color-accent-red);
-    border-radius: var(--radius-xl);
-    padding: var(--spacing-lg) var(--spacing-xl);
-    border-width: var(--border-width-thick);
-    border-color: var(--color-card-border);
-    min-width: 280px;
-    overflow: visible;
-}
-
-.timer-icon {
-    flex-direction: row;
-    align-items: center;
-}
-
-.timer-text {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-light);
-    margin: 0;
-    padding: 0;
-}
-
-.map-name {
-    font-size: var(--font-size-title);
-    color: var(--color-text-light);
-    margin: 0;
-    padding: 0;
-    -unity-text-align: upper-left;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-.map-subtitle {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-light);
-    margin: 0;
-    padding: 0;
-    margin-top: 2px;
-    -unity-text-align: upper-left;
-}
-
-.play-button {
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--color-accent-green);
-    border-radius: var(--radius-xl);
-    padding: var(--spacing-xl) 50px;
-    border-width: var(--border-width-thick);
-    border-color: var(--color-card-border);
-    min-width: 280px;
-    overflow: visible;
-    transition-property: scale;
-    transition-duration: var(--transition-fast);
-}
-
-.play-button:active {
-    scale: 0.93;
-}
-
-.timer-icon {
-    width: 65px;
-    height: 65px;
-    margin-right: var(--spacing-md);
-    -unity-background-scale-mode: scale-to-fit;
-    position: absolute;
-    background-image: url("project://database/Assets/Textures/Icons/Badges/icons8-timer-96.png?fileID=2800000&guid=f5f11bd0df651408197f353a0ed6729a&type=3#icons8-timer-96");
-    rotate: -15deg;
-    left: -45px;
-    top: 0;
-}
-
-.play-text {
-    font-size: var(--font-size-hero);
-    color: var(--color-text-primary);
-    margin: 0;
-    padding: 0;
-    -unity-text-align: middle-center;
-}
-
-.timer-content {
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--color-black);
-    width: 250px;
-    padding: var(--spacing-sm);
-    border-top-left-radius: var(--radius-sm);
-    border-top-right-radius: var(--radius-sm);
-    position: absolute;
-    top: -40px;
-    left: var(--spacing-sm);
-}
-
-/* Lobby Tab / Party Section */
-.party-section {
-    background-color: var(--color-overlay-dark);
-    border-radius: var(--radius-sm);
-    padding: var(--spacing-md);
-    margin-bottom: var(--spacing-md);
-}
-
-.party-header {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--spacing-sm);
-}
-
-.friends-button {
-    background-color: #4A90E2;
-    color: white;
-    border-radius: var(--radius-xs);
-    padding: var(--spacing-xs) var(--spacing-md);
-    font-size: var(--font-size-sm);
-    -unity-font-style: bold;
-    border-width: 0;
-    transition-property: background-color;
-    transition-duration: 0.2s;
-}
-
-.friends-button:hover {
-    background-color: #357ABD;
-}
-
-.friends-button:active {
-    background-color: #2868A8;
-}
-
-.party-members-list {
-    max-height: 200px;
-}
-
-.player-card.solo {
-    border-width: 2px;
-    border-color: #4A90E2;
-}
-
-.player-status {
-    font-size: var(--font-size-xs);
-    color: rgba(255, 255, 255, 0.6);
 }

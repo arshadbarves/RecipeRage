@@ -140,7 +140,7 @@ PrefabInstance:
     - target: {fileID: 417808214242561093, guid: 4e8b0094d2ec0451195daa369d1aae17,
         type: 3}
       propertyPath: _showLoadingScreen
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 417808214242561093, guid: 4e8b0094d2ec0451195daa369d1aae17,
         type: 3}
@@ -161,8 +161,7 @@ PrefabInstance:
         type: 3}
       propertyPath: NetworkConfig.PlayerPrefab
       value: 
-      objectReference: {fileID: 5437331493710153341, guid: 4ca9ba6b7971a4be2865feedcac09c00,
-        type: 3}
+      objectReference: {fileID: 0}
     - target: {fileID: 6887119164124692602, guid: 4e8b0094d2ec0451195daa369d1aae17,
         type: 3}
       propertyPath: m_LocalPosition.x

@@ -1,4 +1,5 @@
-/* Main Screen Container */
+@import url("../../Themes/DesignSystem.uss");
+
 .maintenance-screen {
     position: absolute;
     width: 100%;

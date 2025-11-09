@@ -50,18 +50,15 @@ namespace UI.Screens
 
         protected override void OnShow()
         {
-            // Update player name when screen is shown
             UpdatePlayerName();
         }
 
         protected override void OnHide()
         {
-            // Screen is being hidden
         }
 
         public override void Update(float deltaTime)
         {
-            // Update logic if needed
             _lobbyTab?.Update(deltaTime);
         }
 

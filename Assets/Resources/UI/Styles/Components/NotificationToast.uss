@@ -1,0 +1,97 @@
+@import url("../../Themes/DesignSystem.uss");
+
+/* ============================================
+   NOTIFICATION TOAST COMPONENT
+   Reusable toast notification
+   ============================================ */
+
+.notification-toast {
+    flex-direction: row;
+    align-items: center;
+    padding: var(--spacing-lg) var(--spacing-xl);
+    background-color: rgba(0, 0, 0, 0.9);
+    border-radius: var(--radius-xl);
+    border-width: var(--border-width-thick);
+    border-color: var(--color-card-border);
+    min-width: 300px;
+    max-width: 500px;
+    margin-bottom: var(--spacing-md);
+}
+
+/* Notification Types */
+.notification-toast.success {
+    border-color: var(--color-success);
+    background-color: rgba(80, 210, 130, 0.2);
+}
+
+.notification-toast.error {
+    border-color: var(--color-danger);
+    background-color: rgba(255, 80, 80, 0.2);
+}
+
+.notification-toast.warning {
+    border-color: var(--color-warning);
+    background-color: rgba(255, 200, 0, 0.2);
+}
+
+.notification-toast.info {
+    border-color: var(--color-accent-blue);
+    background-color: rgba(60, 140, 255, 0.2);
+}
+
+/* Notification Icon */
+.notification-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-round);
+    margin-right: var(--spacing-lg);
+    background-color: var(--color-text-light);
+}
+
+.notification-toast.success .notification-icon {
+    background-color: var(--color-success);
+}
+
+.notification-toast.error .notification-icon {
+    background-color: var(--color-danger);
+}
+
+.notification-toast.warning .notification-icon {
+    background-color: var(--color-warning);
+}
+
+.notification-toast.info .notification-icon {
+    background-color: var(--color-accent-blue);
+}
+
+/* Notification Message */
+.notification-message {
+    flex-grow: 1;
+    font-size: var(--font-size-lg);
+    color: var(--color-text-light);
+    -unity-font-style: bold;
+    white-space: normal;
+    -unity-text-align: middle-left;
+}
+
+/* Close Button */
+.close-button {
+    width: 30px;
+    height: 30px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-round);
+    border-width: 0;
+    color: var(--color-text-light);
+    font-size: var(--font-size-xl);
+    -unity-font-style: bold;
+    margin-left: var(--spacing-md);
+}
+
+.close-button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.close-button:active {
+    scale: 0.9;
+    background-color: rgba(255, 255, 255, 0.3);
+}

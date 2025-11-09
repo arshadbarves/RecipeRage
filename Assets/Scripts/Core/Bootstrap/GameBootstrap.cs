@@ -8,7 +8,6 @@ using Core.State.States;
 using Cysharp.Threading.Tasks;
 using UI;
 using UI.Screens;
-using UI;
 using UnityEngine;
 
 namespace Core.Bootstrap
@@ -33,6 +32,7 @@ namespace Core.Bootstrap
         private bool _isInitialized;
 
         public static GameBootstrap Instance { get; private set; }
+
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -44,23 +44,21 @@ namespace Core.Bootstrap
             DontDestroyOnLoad(gameObject);
             InitializeGame();
         }
+
         private void InitializeGame()
         {
-            // Use Debug.Log here since LoggingService isn't initialized yet
             Debug.Log("Starting game initialization...");
             Services = new ServiceContainer();
             InitializeFoundation();
             InitializeAsync().Forget();
         }
+
         private void InitializeFoundation()
         {
-            // Use Debug.Log here since LoggingService isn't initialized yet
             Debug.Log("Initializing foundation services");
 
-            // Initialize logging first so other services can use it
             Services.RegisterLoggingService(new LoggingService(maxLogEntries: 10000));
 
-            // Now we can use GameLogger for all subsequent logs
             GameLogger.Log("Logging service initialized");
 
             Services.RegisterEventBus(new Events.EventBus());
@@ -74,6 +72,7 @@ namespace Core.Bootstrap
 
             GameLogger.Log("Foundation services initialized");
         }
+
         private async UniTaskVoid InitializeAsync()
         {
             try
@@ -90,7 +89,6 @@ namespace Core.Bootstrap
                 if (isAuthenticated)
                 {
                     await InitializePostLoginAsync();
-                    ProceedToMainMenu();
                 }
                 else
                 {
@@ -104,6 +102,7 @@ namespace Core.Bootstrap
                 ShowErrorScreen($"Initialization failed: {ex.Message}");
             }
         }
+
         private void InitializeCoreServices()
         {
             var maintenanceService = new MaintenanceService(Services.EventBus);
@@ -111,9 +110,10 @@ namespace Core.Bootstrap
 
             var authService = new AuthenticationService(Services.SaveService, Services.EventBus, Services.UIService);
             Services.RegisterAuthenticationService(authService);
-            authService.OnLogoutComplete += HandleLogout;
+            authService.OnLogoutComplete += HandleLogoutAsync;
             GameLogger.Log("Core services initialized");
         }
+
         private async UniTask InitializePostLoginAsync()
         {
             GameLogger.Log("Post-login initialization");
@@ -133,15 +133,16 @@ namespace Core.Bootstrap
             }
             GameLogger.Log("Post-login initialization complete");
         }
+
         private async UniTask ShowSplashScreenAsync()
         {
-            var uiService = Services?.UIService;
+            IUIService uiService = Services?.UIService;
             if (uiService == null)
             {
                 return;
             }
             uiService.ShowScreen(UIScreenType.Splash, false, true);
-            var splashScreen = uiService.GetScreen<SplashScreen>(UIScreenType.Splash);
+            SplashScreen splashScreen = uiService.GetScreen<SplashScreen>(UIScreenType.Splash);
             if (splashScreen != null)
             {
                 await splashScreen.ShowForDurationAsync(_splashDuration);
@@ -151,9 +152,10 @@ namespace Core.Bootstrap
                 GameLogger.LogError("SplashScreen not found in UIService");
             }
         }
+
         private LoadingScreen ShowLoadingScreen()
         {
-            var uiService = Services?.UIService;
+            IUIService uiService = Services?.UIService;
             if (uiService == null)
             {
                 return null;
@@ -161,6 +163,7 @@ namespace Core.Bootstrap
             uiService.ShowScreen(UIScreenType.Loading, false, true);
             return uiService.GetScreen<LoadingScreen>(UIScreenType.Loading);
         }
+
         private async void OnLoginSuccess(Events.LoginSuccessEvent evt)
         {
             Services.EventBus.Unsubscribe<Events.LoginSuccessEvent>(OnLoginSuccess);
@@ -177,9 +180,9 @@ namespace Core.Bootstrap
             }
 
             await InitializePostLoginAsync();
-            ProceedToMainMenu();
         }
-        private async void HandleLogout()
+
+        private async void HandleLogoutAsync()
         {
             GameLogger.Log("User logged out - performing full reboot");
 
@@ -204,40 +207,43 @@ namespace Core.Bootstrap
             _isInitialized = true;
             GameLogger.Log("Reboot complete - ready for new login");
         }
-        private void ProceedToMainMenu()
-        {
-            Services.StateManager.Initialize(new MainMenuState());
-        }
+
         private void ShowErrorScreen(string errorMessage)
         {
             GameLogger.LogError(errorMessage);
             Services.UIService?.ShowScreen(UIScreenType.Login);
             Services.EventBus.Subscribe<Events.LoginSuccessEvent>(OnLoginSuccess);
         }
+
         private IAnimationService CreateAnimationService()
         {
             var uiAnimator = new DOTweenUIAnimator();
             var transformAnimator = new DOTweenTransformAnimator();
             return new AnimationService(uiAnimator, transformAnimator);
         }
+
         private IUIService CreateUIService()
         {
             var uiService = new UIService(Services.AnimationService);
             _uiDocumentProvider.Initialize(uiService);
             return uiService;
         }
+
         private void Update()
         {
             Services?.Update(Time.deltaTime);
         }
+
         private void FixedUpdate()
         {
             Services?.FixedUpdate(Time.fixedDeltaTime);
         }
+
         private void OnDestroy()
         {
             Services?.Dispose();
         }
+
         public static ServiceContainer Services { get; private set; }
         public bool IsInitialized => _isInitialized;
         public bool IsHealthy => _isInitialized && Services != null;

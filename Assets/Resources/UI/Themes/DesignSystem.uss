@@ -9,10 +9,10 @@
 :root {
     /* Primary Colors - Brawl Stars Style */
     --color-card-bg: rgb(245, 240, 235);
-    --color-card-border: rgb(40, 30, 25);
+    --color-card-border: var(--color-black);
     --color-background-primary: rgb(100, 150, 255);
     --color-background-secondary: rgb(80, 180, 230);
-    
+
     /* Accent Colors */
     --color-accent-red: rgb(255, 100, 100);
     --color-accent-green: rgb(100, 230, 150);
@@ -21,31 +21,31 @@
     --color-accent-purple: rgb(150, 100, 230);
     --color-accent-orange: rgb(255, 180, 70);
     --color-accent-pink: rgb(255, 150, 200);
-    
+
     /* Text Colors */
-    --color-text-primary: rgb(40, 30, 25);
-    --color-text-secondary: rgb(100, 100, 100);
+    --color-text-primary: var(--color-black);
+    --color-text-secondary: rgb(245, 240, 235);
     --color-text-light: rgb(255, 255, 255);
     --color-text-muted: rgb(120, 110, 105);
-    
+
     /* Functional Colors */
     --color-success: rgb(100, 230, 150);
     --color-warning: rgb(255, 200, 60);
     --color-danger: rgb(255, 100, 100);
     --color-info: rgb(100, 201, 255);
-    
+
     /* Overlay Colors */
     --color-overlay-dark: rgba(0, 0, 0, 0.3);
     --color-overlay-darker: rgba(0, 0, 0, 0.5);
     --color-overlay-light: rgba(255, 255, 255, 0.5);
     --color-black: rgb(0, 0, 0);
-    
+
     /* Border & Shadow */
     --border-width-thin: 3px;
     --border-width-normal: 4px;
     --border-width-thick: 5px;
     --border-width-extra-thick: 6px;
-    
+
     /* Border Radius */
     --radius-xs: 8px;
     --radius-sm: 12px;
@@ -54,7 +54,7 @@
     --radius-xl: 20px;
     --radius-xxl: 22px;
     --radius-round: 50%;
-    
+
     /* Spacing */
     --spacing-xs: 5px;
     --spacing-sm: 10px;
@@ -62,7 +62,7 @@
     --spacing-lg: 20px;
     --spacing-xl: 25px;
     --spacing-xxl: 30px;
-    
+
     /* Typography */
     --font-size-xs: 12px;
     --font-size-sm: 14px;
@@ -73,10 +73,20 @@
     --font-size-title: 28px;
     --font-size-display: 42px;
     --font-size-hero: 48px;
-    
+
+    /* Text Shadow */
+    --text-shadow-xs: 1px 1px 0 rgb(0, 0, 0);
+    --text-shadow-sm: 1px 2px 0 rgb(0, 0, 0);
+    --text-shadow-md: 2px 3px 0 rgb(0, 0, 0);
+
+    --text-secondary-shadow-xs: 1px 1px 0 rgb(255, 255, 255);
+    --text-secondary-shadow-sm: 1px 2px 0 rgb(255, 255, 255);
+    --text-secondary-shadow-md: 2px 3px 0 rgb(255, 255, 255);
+
     /* Font Family */
     --font-primary: url("project://database/Assets/Fonts/LilitaOne-Regular.ttf?fileID=12800000&guid=2309d3a0e6c55446ea2d106abff555fe&type=3#LilitaOne-Regular");
-    
+    --font-playcenter-logo: url("project://database/Assets/Fonts/Comfortaa-VariableFont_wght.ttf?fileID=12800000&guid=117db0856501649d4b3f3eae688e87e5&type=3#Comfortaa-VariableFont_wght");
+
     /* Transitions */
     --transition-fast: 0.1s;
     --transition-normal: 0.15s;
@@ -100,17 +110,21 @@
     background-color: var(--color-background-primary);
 }
 
+.header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin: var(--spacing-sm);
+    padding: var(--spacing-xxl);
+    background-color: var(--color-black);
+    border-radius: var(--radius-lg);
+    min-height: 80px;
+    flex-shrink: 0;
+}
+
 /* ============================================
    LAYOUT COMPONENTS
    ============================================ */
-
-/* Top Bar */
-.top-bar {
-    flex-direction: row;
-    align-items: center;
-    padding: var(--spacing-md) var(--spacing-lg);
-    background-color: var(--color-overlay-dark);
-}
 
 /* Content Scroll */
 .content-scroll {
@@ -118,36 +132,70 @@
     padding: 0 var(--spacing-md) var(--spacing-lg) var(--spacing-md);
 }
 
-/* Scrollbar Styling */
-.content-scroll > .unity-scroll-view__content-viewport > .unity-scroller--vertical {
+/* ============================================
+   SCROLLBAR STYLING - BLACK THEME
+   Apply to any ScrollView for consistent styling
+   ============================================ */
+
+/* Vertical Scrollbar */
+.unity-scroll-view > .unity-scroll-view__content-viewport > .unity-scroller--vertical {
     width: 12px;
     margin-left: 5px;
 }
 
-.content-scroll > .unity-scroll-view__content-viewport > .unity-scroller--vertical > .unity-base-slider__dragger {
-    background-color: rgba(0, 0, 0, 0.2);
+.unity-scroll-view > .unity-scroll-view__content-viewport > .unity-scroller--vertical > .unity-base-slider__dragger {
+    background-color: rgb(0, 0, 0);
     border-radius: 6px;
     border-width: 0;
     margin: 2px;
 }
 
-.content-scroll > .unity-scroll-view__content-viewport > .unity-scroller--vertical > .unity-base-slider__dragger:hover {
-    background-color: rgba(0, 0, 0, 0.3);
+.unity-scroll-view > .unity-scroll-view__content-viewport > .unity-scroller--vertical > .unity-base-slider__dragger:hover {
+    background-color: rgb(40, 40, 40);
 }
 
-.content-scroll > .unity-scroll-view__content-viewport > .unity-scroller--vertical > .unity-base-slider__dragger:active {
-    background-color: rgba(0, 0, 0, 0.4);
+.unity-scroll-view > .unity-scroll-view__content-viewport > .unity-scroller--vertical > .unity-base-slider__dragger:active {
+    background-color: rgb(60, 60, 60);
 }
 
-.content-scroll > .unity-scroll-view__content-viewport > .unity-scroller--vertical > .unity-base-slider__tracker {
-    background-color: rgba(255, 255, 255, 0.1);
+.unity-scroll-view > .unity-scroll-view__content-viewport > .unity-scroller--vertical > .unity-base-slider__tracker {
+    background-color: rgba(0, 0, 0, 0.15);
     border-radius: 6px;
     border-width: 0;
     margin: 0;
 }
 
-.content-scroll .unity-scroller__low-button,
-.content-scroll .unity-scroller__high-button {
+/* Horizontal Scrollbar */
+.unity-scroll-view > .unity-scroll-view__content-viewport > .unity-scroller--horizontal {
+    height: 12px;
+    margin-top: 5px;
+}
+
+.unity-scroll-view > .unity-scroll-view__content-viewport > .unity-scroller--horizontal > .unity-base-slider__dragger {
+    background-color: rgb(0, 0, 0);
+    border-radius: 6px;
+    border-width: 0;
+    margin: 2px;
+}
+
+.unity-scroll-view > .unity-scroll-view__content-viewport > .unity-scroller--horizontal > .unity-base-slider__dragger:hover {
+    background-color: rgb(40, 40, 40);
+}
+
+.unity-scroll-view > .unity-scroll-view__content-viewport > .unity-scroller--horizontal > .unity-base-slider__dragger:active {
+    background-color: rgb(60, 60, 60);
+}
+
+.unity-scroll-view > .unity-scroll-view__content-viewport > .unity-scroller--horizontal > .unity-base-slider__tracker {
+    background-color: rgba(0, 0, 0, 0.15);
+    border-radius: 6px;
+    border-width: 0;
+    margin: 0;
+}
+
+/* Hide scrollbar arrows */
+.unity-scroll-view .unity-scroller__low-button,
+.unity-scroll-view .unity-scroller__high-button {
     display: none;
 }
 
@@ -177,18 +225,6 @@
 .card-danger {
     background-color: rgb(255, 240, 240);
     border-color: var(--color-danger);
-}
-
-/* Player Card */
-.player-card {
-    flex-direction: row;
-    align-items: center;
-    background-color: var(--color-card-bg);
-    border-radius: var(--radius-xxl);
-    padding: var(--spacing-md) var(--spacing-xl) var(--spacing-md) var(--spacing-md);
-    border-width: var(--border-width-extra-thick);
-    border-color: var(--color-card-border);
-    min-width: 320px;
 }
 
 /* Stat Card */
@@ -535,51 +571,6 @@
     border-color: var(--color-card-border);
     align-items: center;
     justify-content: center;
-}
-
-/* Currency Display */
-.currency-display {
-    flex-direction: row;
-    align-items: center;
-    background-color: var(--color-card-bg);
-    border-radius: var(--radius-xxl);
-    padding: var(--spacing-sm) var(--spacing-lg);
-    border-width: var(--border-width-thick);
-    border-color: var(--color-card-border);
-    max-width: 300px;
-    min-width: 180px;
-    width: 100%;
-}
-
-.currency-icon {
-    width: 34px;
-    height: 34px;
-    border-radius: var(--radius-round);
-    margin-right: var(--spacing-sm);
-    -unity-background-scale-mode: scale-to-fit;
-    min-width: 34px;
-    min-height: 34px;
-}
-
-.currency-icon-coin {
-    background-color: var(--color-warning);
-    border-width: var(--border-width-normal);
-    border-color: var(--color-card-border);
-}
-
-.currency-icon-gem {
-    background-color: var(--color-accent-blue);
-    border-width: var(--border-width-normal);
-    border-color: var(--color-card-border);
-}
-
-.currency-amount {
-    font-size: var(--font-size-xxl);
-    color: var(--color-text-primary);
-    margin: 0;
-    padding: 0;
-    flex-grow: 1;
-    -unity-text-align: middle-left;
 }
 
 /* ============================================

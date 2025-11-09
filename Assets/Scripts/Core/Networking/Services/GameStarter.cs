@@ -3,6 +3,8 @@ using Core.Logging;
 using Core.Networking.Bot;
 using Core.State.States;
 using Epic.OnlineServices;
+using Gameplay;
+using Gameplay.Spawning;
 using PlayEveryWare.EpicOnlineServices;
 using UI;
 using Unity.Netcode;
@@ -19,6 +21,8 @@ namespace Core.Networking.Services
     {
         private INetworkingServices _networkingServices;
         private bool _isGameActive;
+        private SpawnManager _spawnManager;
+        private GameObject _playerPrefab; // Store player prefab for bot spawning
 
         /// <summary>
         /// Constructor
@@ -70,22 +74,90 @@ namespace Core.Networking.Services
         {
             GameLogger.Log("Starting as host...");
 
+            // Get SpawnManager
+            _spawnManager = SpawnManagerIntegration.GetSpawnManager();
+
+            // Store player prefab before disabling automatic spawning (needed for bots)
+            if (NetworkManager.Singleton.NetworkConfig != null)
+            {
+                _playerPrefab = NetworkManager.Singleton.NetworkConfig.PlayerPrefab;
+                
+                // Disable automatic spawning by clearing player prefab
+                NetworkManager.Singleton.NetworkConfig.PlayerPrefab = null;
+                
+                GameLogger.Log("Disabled automatic player spawning - using manual spawning");
+            }
+
+            // Subscribe to connection approval for manual spawning
+            NetworkManager.Singleton.ConnectionApprovalCallback = ApprovalCheck;
+
             // Start Unity Netcode as host
             bool success = NetworkManager.Singleton.StartHost();
 
             if (success)
             {
                 GameLogger.Log("Successfully started as host");
-                
-                // Spawn bots immediately (before OnGameStarted)
+
+                // Spawn the host player (client ID 0)
+                // ConnectionApprovalCallback is NOT called for the host, so we spawn manually
+                ulong hostClientId = NetworkManager.ServerClientId;
+                GameLogger.Log($"Spawning host player (client ID: {hostClientId})");
+                SpawnPlayerForClient(hostClientId);
+
+                // Spawn bots immediately
                 SpawnBotsIfNeeded();
-                
+
                 OnGameStarted(true);
             }
             else
             {
                 GameLogger.LogError("Failed to start as host");
                 OnGameStartFailed("Failed to start host");
+            }
+        }
+
+        /// <summary>
+        /// Connection approval callback - approves all connections and spawns players manually
+        /// </summary>
+        private void ApprovalCheck(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
+        {
+            // Approve the connection
+            response.Approved = true;
+            response.CreatePlayerObject = false; // We'll spawn manually
+            response.Pending = false;
+
+            GameLogger.Log($"Connection approved for client {request.ClientNetworkId}");
+
+            // Spawn player manually after approval
+            SpawnPlayerForClient(request.ClientNetworkId);
+        }
+
+        /// <summary>
+        /// Spawn player for a specific client
+        /// </summary>
+        private void SpawnPlayerForClient(ulong clientId)
+        {
+            if (!NetworkManager.Singleton.IsServer)
+                return;
+
+            GameLogger.Log($"Spawning player for client {clientId}");
+
+            // Use SpawnManager if available
+            if (_spawnManager != null)
+            {
+                bool spawned = _spawnManager.SpawnPlayer(clientId, TeamCategory.Neutral);
+                if (spawned)
+                {
+                    GameLogger.Log($"Player {clientId} spawned via SpawnManager");
+                }
+                else
+                {
+                    GameLogger.LogError($"Failed to spawn player {clientId} via SpawnManager");
+                }
+            }
+            else
+            {
+                GameLogger.LogError("SpawnManager not found - cannot spawn player!");
             }
         }
 
@@ -97,33 +169,35 @@ namespace Core.Networking.Services
             var bots = _networkingServices.MatchmakingService.GetActiveBots();
             if (bots.Count == 0)
             {
+                GameLogger.Log("No bots to spawn");
                 return;
             }
 
             GameLogger.Log($"Spawning {bots.Count} bots immediately with players");
 
-            // Get player prefab from NetworkManager
-            GameObject botPrefab = NetworkManager.Singleton.NetworkConfig.PlayerPrefab;
-            if (botPrefab == null)
+            // Use stored player prefab (we cleared it from NetworkManager for manual spawning)
+            if (_playerPrefab == null)
             {
-                GameLogger.LogError("Player prefab not configured in NetworkManager - cannot spawn bots");
+                GameLogger.LogError("Player prefab not available - cannot spawn bots");
                 return;
             }
 
             // Create and initialize BotSpawner
-            var botSpawner = new Bot.BotSpawner(botPrefab);
-            
+            var botSpawner = new Bot.BotSpawner(_playerPrefab);
+
             // Set in networking services (cast to container)
             if (_networkingServices is NetworkingServiceContainer container)
             {
                 container.BotSpawner = botSpawner;
             }
 
-            // Spawn bots immediately
-            botSpawner.SpawnBots(bots);
-            
+            // Spawn bots immediately (using SpawnManager if available)
+            botSpawner.SpawnBots(bots, TeamCategory.Neutral);
+
             GameLogger.Log($"Spawned {bots.Count} bots - players won't know who's a bot!");
         }
+
+
 
         /// <summary>
         /// Start as client
@@ -131,6 +205,9 @@ namespace Core.Networking.Services
         private void StartAsClient(ProductUserId hostUserId)
         {
             GameLogger.Log($"Starting as client, connecting to host: {hostUserId}");
+
+            // Get SpawnManager (clients need it too for reference)
+            _spawnManager = SpawnManagerIntegration.GetSpawnManager();
 
             // Get EOSTransport component
             var transport = NetworkManager.Singleton.GetComponent<PlayEveryWare.EpicOnlineServices.Samples.Network.EOSTransport>();
@@ -194,22 +271,33 @@ namespace Core.Networking.Services
             _networkingServices.LobbyManager.LeaveMatchLobby();
 
             // Check if player is in a party
-            if (_networkingServices.LobbyManager.IsInParty)
-            {
-                GameLogger.Log("Returning to party lobby");
+            // if (_networkingServices.LobbyManager.IsInParty)
+            // {
+            //     GameLogger.Log("Returning to party lobby");
+            //
+            //     // Show party lobby UI
+            //     var uiService = GameBootstrap.Services?.UIService;
+            //     // TODO: Show party lobby screen when UI is ready
+            //     // uiService?.ShowScreen(UIScreenType.PartyLobby);
+            // }
+            // else
+            // {
+            //     GameLogger.Log("Returning to main menu");
+            //
+            //     // Show main menu
+            //     var uiService = GameBootstrap.Services?.UIService;
+            //     uiService?.ShowScreen(UIScreenType.MainMenu);
+            // }
 
-                // Show party lobby UI
-                var uiService = GameBootstrap.Services?.UIService;
-                // TODO: Show party lobby screen when UI is ready
-                // uiService?.ShowScreen(UIScreenType.PartyLobby);
+            // Return to main menu
+            var stateManager = GameBootstrap.Services?.StateManager;
+            if (stateManager != null)
+            {
+                stateManager.ChangeState(new MainMenuState());
             }
             else
             {
-                GameLogger.Log("Returning to main menu");
-
-                // Show main menu
-                var uiService = GameBootstrap.Services?.UIService;
-                uiService?.ShowScreen(UIScreenType.MainMenu);
+                GameLogger.LogError("StateManager not available - cannot return to Main Menu");
             }
         }
 
@@ -248,6 +336,7 @@ namespace Core.Networking.Services
             if (NetworkManager.Singleton != null)
             {
                 NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnected;
+                NetworkManager.Singleton.ConnectionApprovalCallback = null;
             }
         }
 
@@ -258,6 +347,12 @@ namespace Core.Networking.Services
         {
             if (!_isGameActive)
                 return;
+
+            // Release spawn point if using SpawnManager
+            if (_spawnManager != null && NetworkManager.Singleton.IsServer)
+            {
+                _spawnManager.ReleaseSpawnPoint(clientId);
+            }
 
             // Host disconnected?
             if (clientId == NetworkManager.ServerClientId)

@@ -1,5 +1,4 @@
-/* Notification Styles - Non-interactable, auto-closing notifications */
-/* Uses Recipe Rage Design System Variables */
+@import url("../../Themes/DesignSystem.uss");
 
 .notification-overlay {
     position: absolute;
@@ -12,7 +11,6 @@
     justify-content: flex-start;
     align-items: center;
     padding-top: var(--spacing-lg);
-    pointer-events: none;
 }
 
 .notification-content {
@@ -25,7 +23,7 @@
     padding: var(--spacing-md) var(--spacing-lg);
     min-width: 300px;
     max-width: 500px;
-    pointer-events: none;
+    -unity-font-definition: var(--font-primary);
 }
 
 .notification-icon {
@@ -53,7 +51,7 @@
 
 .notification-message {
     font-size: var(--font-size-sm);
-    color: var(--color-text-secondary);
+    color: var(--color-text-primary);
     white-space: normal;
 }
 

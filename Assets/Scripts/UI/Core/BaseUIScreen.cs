@@ -49,6 +49,11 @@ namespace UI.Core
         /// </summary>
         public VisualElement Container => Controller?.Container;
 
+        /// <summary>
+        /// The template container element for this screen (for controlling picking mode, etc.)
+        /// </summary>
+        public TemplateContainer TemplateContainer => Controller?.TemplateContainer;
+
         #endregion
 
         #region Events

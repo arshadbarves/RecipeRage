@@ -217,7 +217,7 @@ namespace UI
             // Get category for this screen
             UIScreenCategory category = _stackManager.GetCategory(screenType);
 
-            GameLogger.Log($"Showing {screenType} in category {category}");
+            GameLogger.Log($"Showing {screenType} in category {category} (addToHistory: {addToHistory})");
 
             // Handle category-specific logic
             switch (category)
@@ -248,12 +248,16 @@ namespace UI
                     break;
             }
 
-            // Push to stack
-            bool pushed = _stackManager.Push(screenType, category);
-            if (!pushed)
+            // Push to stack only if addToHistory is true
+            // TODO: Fix this once got time(This cause stacking Issue)
+            // if (addToHistory)
             {
-                GameLogger.LogWarning($"Failed to push {screenType} to stack");
-                return;
+                bool pushed = _stackManager.Push(screenType, category);
+                if (!pushed)
+                {
+                    GameLogger.LogWarning($"Failed to push {screenType} to stack");
+                    return;
+                }
             }
 
             // Show the screen visually

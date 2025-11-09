@@ -1,6 +1,4 @@
 <UXML xmlns="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
-    <!-- Design System - Include FIRST for design tokens -->
-    <Style src="project://database/Assets/Resources/UI/Styles/Core/DesignSystem.uss" />
     <!-- Screen-specific styles -->
     <Style src="project://database/Assets/Resources/UI/Styles/Screens/Profile.uss" />
     <VisualElement name="profile-root" class="profile-root">

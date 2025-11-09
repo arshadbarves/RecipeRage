@@ -1,7 +1,4 @@
-/* ============================================
-   SETTINGS SCREEN - Uses Design System
-   Include DesignSystem.uss in UXML template
-   ============================================ */
+@import url("project://database/Assets/Resources/UI/Themes/DesignSystem.uss?fileID=7433441132597879392&guid=74282f7acd0164afea4d8dc9dc05a968&type=3#DesignSystem");
 
 .settings-root {
     width: 100%;

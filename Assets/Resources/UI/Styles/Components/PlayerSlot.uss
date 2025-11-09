@@ -1,0 +1,243 @@
+@import url("../../Themes/DesignSystem.uss");
+
+.player-slot {
+    flex-direction: column;
+    align-items: center;
+    margin: 0 var(--spacing-md);
+    min-width: 160px;
+    -unity-font-definition: var(--font-primary);
+}
+
+/* Player Slot Stats (Above Character) */
+.player-slot-stats {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--spacing-sm);
+}
+
+.player-level-badge {
+    background-color: var(--color-accent-green);
+    border-radius: var(--radius-xs);
+    padding: 4px 10px;
+    border-width: var(--border-width-normal);
+    border-color: var(--color-card-border);
+    margin-right: var(--spacing-sm);
+}
+
+.player-level-text {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-primary);
+    -unity-font-style: bold;
+}
+
+.player-trophies {
+    flex-direction: row;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: var(--radius-xs);
+    padding: 4px 10px;
+    border-width: 2px;
+    border-color: rgba(0, 0, 0, 0.5);
+}
+
+.small-trophy-icon {
+    width: 20px;
+    height: 20px;
+    background-color: var(--color-accent-yellow);
+    border-radius: var(--radius-round);
+    margin-right: 4px;
+}
+
+.small-trophy-count {
+    font-size: var(--font-size-md);
+    color: var(--color-text-light);
+    -unity-font-style: bold;
+}
+
+/* Player Character Display */
+.player-character {
+    position: relative;
+    width: 160px;
+    height: 200px;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--spacing-sm);
+}
+
+.character-avatar {
+    width: 150px;
+    height: 180px;
+    background-color: var(--color-accent-blue);
+    border-radius: var(--radius-xl);
+    border-width: var(--border-width-thick);
+    border-color: var(--color-card-border);
+}
+
+.ready-indicator {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background-color: var(--color-success);
+    border-radius: var(--radius-round);
+    border-width: var(--border-width-thick);
+    border-color: var(--color-card-border);
+    top: -10px;
+    right: -10px;
+}
+
+/* Crown Icon (Team Leader) */
+.crown-icon {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background-color: var(--color-accent-yellow);
+    border-radius: var(--radius-round);
+    border-width: 4px;
+    border-color: var(--color-black);
+    top: -20px;
+    left: 50%;
+    translate: -50% 0;
+}
+
+/* Player Name Container */
+.player-name-container {
+    flex-direction: column;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-xs) var(--spacing-md);
+    min-width: 120px;
+}
+
+.player-name-label {
+    font-size: var(--font-size-md);
+    color: var(--color-text-light);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+}
+
+.player-status-label {
+    font-size: var(--font-size-xs);
+    color: rgba(255, 255, 255, 0.7);
+    -unity-text-align: middle-center;
+    margin-top: 2px;
+}
+
+/* Empty Slot Content (ADD Button) */
+.empty-slot-content {
+    width: 160px;
+    height: 200px;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--spacing-sm);
+}
+
+.add-player-button {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100px;
+    height: 100px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-xl);
+    border-width: var(--border-width-thick);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.add-player-button:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+.add-player-button:active {
+    scale: 0.93;
+    background-color: rgba(255, 255, 255, 0.4);
+}
+
+.add-player-icon {
+    font-size: 50px;
+    color: var(--color-text-light);
+    -unity-font-style: bold;
+    margin-bottom: var(--spacing-xs);
+}
+
+/* Local Player Styles (Larger) */
+.player-slot.local-player {
+    min-width: 280px;
+    margin: 0 var(--spacing-xxl);
+}
+
+.player-slot.local-player .player-slot-stats {
+    margin-bottom: var(--spacing-md);
+}
+
+.player-slot.local-player .player-level-badge {
+    padding: 6px 12px;
+    border-width: var(--border-width-thick);
+}
+
+.player-slot.local-player .player-level-text {
+    font-size: var(--font-size-xl);
+}
+
+.player-slot.local-player .player-trophies {
+    padding: 6px 12px;
+    border-width: var(--border-width-normal);
+}
+
+.player-slot.local-player .small-trophy-icon {
+    width: 28px;
+    height: 28px;
+    margin-right: 6px;
+}
+
+.player-slot.local-player .small-trophy-count {
+    font-size: var(--font-size-lg);
+}
+
+.player-slot.local-player .player-character {
+    width: 240px;
+    height: 300px;
+}
+
+.player-slot.local-player .character-avatar {
+    width: 220px;
+    height: 280px;
+    border-width: var(--border-width-extra-thick);
+    border-radius: var(--radius-xxl);
+}
+
+.player-slot.local-player .ready-indicator {
+    width: 60px;
+    height: 60px;
+    border-width: var(--border-width-extra-thick);
+    top: -15px;
+    right: -15px;
+}
+
+.player-slot.local-player .player-name-container {
+    min-width: 200px;
+    padding: var(--spacing-md) var(--spacing-xl);
+    border-radius: var(--radius-lg);
+}
+
+.player-slot.local-player .player-name-label {
+    font-size: var(--font-size-xxl);
+}
+
+.player-slot.local-player .player-status-label {
+    font-size: var(--font-size-md);
+}
+
+.player-slot.local-player .crown-icon {
+    width: 70px;
+    height: 70px;
+    border-width: 5px;
+    top: -30px;
+}
+
+/* Hidden utility */
+.hidden {
+    display: none;
+}

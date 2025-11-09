@@ -16,6 +16,7 @@ namespace UI.Components.Tabs
         private VisualElement _shopItemsGrid;
         private string _currentCategory = "featured";
         private ShopData _shopData;
+        private VisualTreeAsset _shopItemTemplate;
 
         public void Initialize(VisualElement root)
         {
@@ -40,9 +41,23 @@ namespace UI.Components.Tabs
 
             GameLogger.Log("Shop items grid found");
 
+            LoadTemplate();
             LoadShopData();
             SetupCategoryButtons();
             PopulateShopItems();
+        }
+
+        private void LoadTemplate()
+        {
+            _shopItemTemplate = Resources.Load<VisualTreeAsset>("UI/Templates/Components/ShopItem");
+            if (_shopItemTemplate == null)
+            {
+                GameLogger.LogError("Failed to load ShopItem template!");
+            }
+            else
+            {
+                GameLogger.Log("ShopItem template loaded successfully");
+            }
         }
 
         private void LoadShopData()
@@ -137,49 +152,88 @@ namespace UI.Components.Tabs
 
         private VisualElement CreateShopItem(ShopItem itemData)
         {
+            if (_shopItemTemplate == null)
+            {
+                GameLogger.LogError("ShopItem template is null!");
+                return new VisualElement();
+            }
+
             bool isOwned = PlayerPrefs.GetInt($"Owned_{itemData.id}", 0) == 1;
 
-            VisualElement item = new VisualElement();
-            item.AddToClassList("shop-item");
+            // Clone template
+            TemplateContainer itemContainer = _shopItemTemplate.CloneTree();
+            Button shopItemButton = itemContainer.Q<Button>("shop-item");
 
-            VisualElement image = new VisualElement();
-            image.AddToClassList("shop-item-image");
-            item.Add(image);
-
-            Label nameLabel = new Label(itemData.name.ToUpper());
-            nameLabel.AddToClassList("shop-item-name");
-            item.Add(nameLabel);
-
-            VisualElement priceContainer = new VisualElement();
-            priceContainer.AddToClassList("shop-item-price");
-
-            VisualElement priceIcon = new VisualElement();
-            priceIcon.AddToClassList("price-icon");
-            if (itemData.currency == "gems")
+            if (shopItemButton == null)
             {
-                priceIcon.AddToClassList("gem-icon");
+                GameLogger.LogError("Failed to find 'shop-item' button in template!");
+                return itemContainer;
             }
-            priceContainer.Add(priceIcon);
 
-            Label priceLabel = new Label(itemData.price.ToString());
-            priceLabel.AddToClassList("price-text");
-            priceContainer.Add(priceLabel);
+            // Add rarity class
+            string rarityClass = GetRarityClass(itemData.rarity);
+            shopItemButton.AddToClassList(rarityClass);
 
-            item.Add(priceContainer);
+            // Setup click handler
+            shopItemButton.clicked += () => OnBuyItem(itemData);
 
-            Button buyButton = new Button(() => OnBuyItem(itemData));
-            buyButton.text = isOwned ? "OWNED" : "BUY";
-            buyButton.AddToClassList("buy-button");
-            buyButton.SetEnabled(!isOwned);
+            // Get elements from template
+            Label itemBadge = itemContainer.Q<Label>("item-badge");
+            Label itemName = itemContainer.Q<Label>("item-name");
+            Label itemDescription = itemContainer.Q<Label>("item-description");
+            Label priceValue = itemContainer.Q<Label>("price-value");
 
+            // Populate data
+            if (itemName != null)
+                itemName.text = itemData.name.ToUpper();
+
+            if (itemDescription != null)
+                itemDescription.text = itemData.description;
+
+            if (priceValue != null)
+                priceValue.text = isOwned ? "OWNED" : itemData.price.ToString();
+
+            // Show/hide badge
+            if (itemBadge != null)
+            {
+                if (!string.IsNullOrEmpty(itemData.badge))
+                {
+                    itemBadge.text = itemData.badge.ToUpper();
+                    itemBadge.RemoveFromClassList("hidden");
+                    
+                    // Add badge type class
+                    if (itemData.badge.ToLower() == "sale")
+                        itemBadge.AddToClassList("sale");
+                    else if (itemData.badge.ToLower() == "new")
+                        itemBadge.AddToClassList("new");
+                    else if (itemData.badge.ToLower() == "limited")
+                        itemBadge.AddToClassList("limited");
+                }
+                else
+                {
+                    itemBadge.AddToClassList("hidden");
+                }
+            }
+
+            // Disable if owned
             if (isOwned)
             {
-                buyButton.style.backgroundColor = new StyleColor(new Color(0.7f, 0.7f, 0.7f));
+                shopItemButton.SetEnabled(false);
             }
 
-            item.Add(buyButton);
+            return itemContainer;
+        }
 
-            return item;
+        private string GetRarityClass(string rarity)
+        {
+            return rarity?.ToLower() switch
+            {
+                "common" => "common",
+                "rare" => "rare",
+                "epic" => "epic",
+                "legendary" => "legendary",
+                _ => "common"
+            };
         }
 
         private void OnBuyItem(ShopItem item)

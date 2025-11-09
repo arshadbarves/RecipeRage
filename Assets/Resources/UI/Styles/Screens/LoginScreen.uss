@@ -1,7 +1,4 @@
-/* ============================================
-   LOGIN SCREEN - Uses Design System
-   Include DesignSystem.uss in UXML template
-   ============================================ */
+@import url("../../Themes/DesignSystem.uss");
 
 .login-screen {
     position: absolute;

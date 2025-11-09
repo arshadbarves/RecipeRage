@@ -1,0 +1,28 @@
+<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Resources/UI/Styles/Components/PlayerSlot.uss?fileID=7433441132597879392&amp;guid=120245a65f5c140f686c52b13c640110&amp;type=3#PlayerSlot" />
+    <VisualElement name="player-slot" class="player-slot">
+        <VisualElement name="player-slot-stats" class="player-slot-stats">
+            <VisualElement name="player-level-badge" class="player-level-badge">
+                <Label name="player-level-text" text="10" class="player-level-text" />
+            </VisualElement>
+            <VisualElement name="player-trophies" class="player-trophies">
+                <VisualElement name="small-trophy-icon" class="small-trophy-icon" />
+                <Label name="small-trophy-count" text="500" class="small-trophy-count" />
+            </VisualElement>
+        </VisualElement>
+        <VisualElement name="player-character" class="player-character">
+            <VisualElement name="character-avatar" class="character-avatar" />
+            <VisualElement name="ready-indicator" class="ready-indicator hidden" />
+            <VisualElement name="crown-icon" class="crown-icon hidden" />
+        </VisualElement>
+        <VisualElement name="player-name-container" class="player-name-container">
+            <Label name="player-name" text="You" class="player-name-label" />
+            <Label name="player-status" class="player-status-label" />
+        </VisualElement>
+        <VisualElement name="empty-slot-content" class="empty-slot-content hidden">
+            <Button name="add-player-button" class="add-player-button">
+                <Label text="+" class="add-player-icon" />
+            </Button>
+        </VisualElement>
+    </VisualElement>
+</UXML>

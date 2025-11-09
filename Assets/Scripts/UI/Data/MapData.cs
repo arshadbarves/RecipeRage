@@ -18,8 +18,22 @@ namespace UI.Data
         public string icon;
         public string thumbnail;
         public int maxPlayers;
+        public string gameMode; // "2v2", "3v3", "4v4"
         public int rotationTime; // in seconds
+        public string timerText; // "New Event in: 20h 45m"
         public bool isAvailable;
+    }
+
+    /// <summary>
+    /// Map category (like Brawl Stars)
+    /// </summary>
+    [Serializable]
+    public class MapCategory
+    {
+        public string id;
+        public string name;
+        public string backgroundColor;
+        public List<MapInfo> maps;
     }
 
     /// <summary>
@@ -28,16 +42,23 @@ namespace UI.Data
     [Serializable]
     public class MapDatabase
     {
-        public List<MapInfo> maps;
+        public List<MapCategory> categories;
         public string currentMapId;
         public string rotationStartTime; // ISO 8601 format
         
         /// <summary>
-        /// Get map by ID
+        /// Get map by ID (search all categories)
         /// </summary>
         public MapInfo GetMapById(string mapId)
         {
-            return maps?.Find(m => m.id == mapId);
+            if (categories == null) return null;
+            
+            foreach (var category in categories)
+            {
+                var map = category.maps?.Find(m => m.id == mapId);
+                if (map != null) return map;
+            }
+            return null;
         }
         
         /// <summary>
@@ -49,11 +70,29 @@ namespace UI.Data
         }
         
         /// <summary>
-        /// Get available maps
+        /// Get available maps from all categories
         /// </summary>
         public List<MapInfo> GetAvailableMaps()
         {
-            return maps?.FindAll(m => m.isAvailable) ?? new List<MapInfo>();
+            var allMaps = new List<MapInfo>();
+            if (categories == null) return allMaps;
+            
+            foreach (var category in categories)
+            {
+                if (category.maps != null)
+                {
+                    allMaps.AddRange(category.maps.FindAll(m => m.isAvailable));
+                }
+            }
+            return allMaps;
+        }
+        
+        /// <summary>
+        /// Get category by ID
+        /// </summary>
+        public MapCategory GetCategoryById(string categoryId)
+        {
+            return categories?.Find(c => c.id == categoryId);
         }
         
         /// <summary>

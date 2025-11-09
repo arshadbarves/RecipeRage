@@ -1,7 +1,4 @@
-/* ============================================
-   SHOP SCREEN - Uses Design System
-   Include DesignSystem.uss in UXML template
-   ============================================ */
+@import url("../../Themes/DesignSystem.uss");
 
 .shop-root {
     width: 100%;

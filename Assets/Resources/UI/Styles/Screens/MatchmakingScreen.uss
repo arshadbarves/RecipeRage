@@ -1,7 +1,4 @@
-/* ============================================
-   MATCHMAKING SCREEN - Uses Design System
-   Include DesignSystem.uss in UXML template
-   ============================================ */
+@import url("../../Themes/DesignSystem.uss");
 
 .matchmaking-content {
     flex-grow: 1;

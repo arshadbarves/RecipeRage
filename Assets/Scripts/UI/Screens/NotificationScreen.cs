@@ -60,10 +60,16 @@ namespace UI.Screens
                 _notificationContent.pickingMode = PickingMode.Ignore;
             }
 
-            // Setup main Container - non-interactable overlay
+            // Setup main Container - non-interactable overlay (clicks pass through)
             if (Container != null)
             {
                 Container.pickingMode = PickingMode.Ignore;
+            }
+
+            // Setup TemplateContainer - also non-interactable (clicks pass through)
+            if (TemplateContainer != null)
+            {
+                TemplateContainer.pickingMode = PickingMode.Ignore;
             }
 
             GameLogger.Log("NotificationScreen initialized");

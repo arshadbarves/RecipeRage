@@ -1,48 +1,136 @@
 {
-    "maps": [
+    "categories": [
         {
-            "id": "crumb_haven",
-            "name": "CRUMB HAVEN",
-            "subtitle": "COOPERATIVE CHAOS",
-            "description": "A cozy kitchen with tight spaces and multiple cooking stations. Perfect for teamwork!",
-            "icon": "Textures/Maps/crumb_haven_icon",
-            "thumbnail": "Textures/Maps/crumb_haven_thumb",
-            "maxPlayers": 4,
-            "rotationTime": 108000,
-            "isAvailable": true
+            "id": "special",
+            "name": "SPECIAL EVENTS",
+            "backgroundColor": "rgb(255, 100, 150)",
+            "maps": [
+                {
+                    "id": "crumb_haven",
+                    "name": "CRUMB HAVEN",
+                    "subtitle": "COOPERATIVE CHAOS",
+                    "description": "A cozy kitchen with tight spaces and multiple cooking stations. Perfect for teamwork!",
+                    "icon": "Textures/Maps/crumb_haven_icon",
+                    "thumbnail": "Textures/Maps/crumb_haven_thumb",
+                    "maxPlayers": 2,
+                    "gameMode": "2v2",
+                    "rotationTime": 108000,
+                    "timerText": "",
+                    "isAvailable": true
+                },
+                {
+                    "id": "pizza_party",
+                    "name": "PIZZA PARTY",
+                    "subtitle": "SLICE & DICE",
+                    "description": "Fast-paced pizza making madness. Coming next week!",
+                    "icon": "Textures/Maps/pizza_party_icon",
+                    "thumbnail": "Textures/Maps/pizza_party_thumb",
+                    "maxPlayers": 4,
+                    "gameMode": "4v4",
+                    "rotationTime": 108000,
+                    "timerText": "",
+                    "isAvailable": false
+                }
+            ]
         },
         {
-            "id": "spice_station",
-            "name": "SPICE STATION",
-            "subtitle": "FAST & FURIOUS",
-            "description": "A large restaurant with multiple stations. Speed is key!",
-            "icon": "Textures/Maps/spice_station_icon",
-            "thumbnail": "Textures/Maps/spice_station_thumb",
-            "maxPlayers": 4,
-            "rotationTime": 108000,
-            "isAvailable": true
+            "id": "trophies",
+            "name": "TROPHY EVENTS",
+            "backgroundColor": "rgb(100, 200, 255)",
+            "maps": [
+                {
+                    "id": "spice_station",
+                    "name": "SPICE STATION",
+                    "subtitle": "FAST & FURIOUS",
+                    "description": "A large restaurant with multiple stations. Speed is key!",
+                    "icon": "Textures/Maps/spice_station_icon",
+                    "thumbnail": "Textures/Maps/spice_station_thumb",
+                    "maxPlayers": 4,
+                    "gameMode": "4v4",
+                    "rotationTime": 108000,
+                    "timerText": "",
+                    "isAvailable": true
+                },
+                {
+                    "id": "grill_masters",
+                    "name": "GRILL MASTERS",
+                    "subtitle": "BBQ BONANZA",
+                    "description": "Outdoor grilling paradise. Master the flames!",
+                    "icon": "Textures/Maps/grill_masters_icon",
+                    "thumbnail": "Textures/Maps/grill_masters_thumb",
+                    "maxPlayers": 4,
+                    "gameMode": "4v4",
+                    "rotationTime": 108000,
+                    "timerText": "",
+                    "isAvailable": true
+                },
+                {
+                    "id": "dessert_dash",
+                    "name": "DESSERT DASH",
+                    "subtitle": "SWEET VICTORY",
+                    "description": "Pastry perfection awaits. Create delicious desserts!",
+                    "icon": "Textures/Maps/dessert_dash_icon",
+                    "thumbnail": "Textures/Maps/dessert_dash_thumb",
+                    "maxPlayers": 4,
+                    "gameMode": "4v4",
+                    "rotationTime": 108000,
+                    "timerText": "",
+                    "isAvailable": true
+                }
+            ]
         },
         {
-            "id": "grill_masters",
-            "name": "GRILL MASTERS",
-            "subtitle": "BBQ BONANZA",
-            "description": "Outdoor grilling paradise. Master the flames!",
-            "icon": "Textures/Maps/grill_masters_icon",
-            "thumbnail": "Textures/Maps/grill_masters_thumb",
-            "maxPlayers": 4,
-            "rotationTime": 108000,
-            "isAvailable": true
+            "id": "ranked",
+            "name": "RANKED",
+            "backgroundColor": "rgb(255, 200, 0)",
+            "maps": [
+                {
+                    "id": "sushi_central",
+                    "name": "SUSHI CENTRAL",
+                    "subtitle": "PRECISION REQUIRED",
+                    "description": "Japanese cuisine at its finest. Precision and timing matter!",
+                    "icon": "Textures/Maps/sushi_central_icon",
+                    "thumbnail": "Textures/Maps/sushi_central_thumb",
+                    "maxPlayers": 4,
+                    "gameMode": "3v3",
+                    "rotationTime": 108000,
+                    "timerText": "",
+                    "isAvailable": true
+                },
+                {
+                    "id": "elite_kitchen",
+                    "name": "ELITE KITCHEN",
+                    "subtitle": "CHAMPIONS ONLY",
+                    "description": "The ultimate test of culinary skill. Are you ready?",
+                    "icon": "Textures/Maps/elite_kitchen_icon",
+                    "thumbnail": "Textures/Maps/elite_kitchen_thumb",
+                    "maxPlayers": 4,
+                    "gameMode": "3v3",
+                    "rotationTime": 108000,
+                    "timerText": "",
+                    "isAvailable": false
+                }
+            ]
         },
         {
-            "id": "sushi_central",
-            "name": "SUSHI CENTRAL",
-            "subtitle": "PRECISION REQUIRED",
-            "description": "Japanese cuisine at its finest. Precision and timing matter!",
-            "icon": "Textures/Maps/sushi_central_icon",
-            "thumbnail": "Textures/Maps/sushi_central_thumb",
-            "maxPlayers": 4,
-            "rotationTime": 108000,
-            "isAvailable": false
+            "id": "community",
+            "name": "COMMUNITY",
+            "backgroundColor": "rgb(150, 100, 255)",
+            "maps": [
+                {
+                    "id": "food_truck",
+                    "name": "FOOD TRUCK",
+                    "subtitle": "STREET FOOD",
+                    "description": "Serve customers from your mobile kitchen. Fast and fun!",
+                    "icon": "Textures/Maps/food_truck_icon",
+                    "thumbnail": "Textures/Maps/food_truck_thumb",
+                    "maxPlayers": 2,
+                    "gameMode": "2v2",
+                    "rotationTime": 108000,
+                    "timerText": "",
+                    "isAvailable": true
+                }
+            ]
         }
     ],
     "currentMapId": "crumb_haven",

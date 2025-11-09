@@ -1,36 +1,29 @@
-<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/Resources/UI/Styles/Components/LobbyTab.uss?fileID=7433441132597879392&amp;guid=0b4fb89eabeab43bd805d6c1d380c4e1&amp;type=3#LobbyTab" />
-    <VisualElement name="lobby-root" class="lobby-root" style="flex-grow: 1;">
-        <VisualElement name="lobby-view" style="flex-grow: 1; padding: 20px;">
-            <VisualElement name="party-display" class="party-section">
-                <VisualElement name="party-header" class="party-header">
-                    <Label text="YOUR PARTY" class="section-title" />
-                    <Button name="friends-button" text="FRIENDS" class="friends-button" />
-                </VisualElement>
-                <ScrollView name="party-members" class="party-members-list">
-                    <VisualElement name="solo-player-card" class="player-card solo">
-                        <VisualElement name="player-avatar" class="player-avatar" />
-                        <VisualElement name="player-info-container" class="player-info">
-                            <Label name="party-player-name" text="You (Solo)" class="player-name" />
-                            <Label name="party-player-status" text="Ready to play" class="player-status" />
-                        </VisualElement>
-                    </VisualElement>
-                </ScrollView>
+<UXML xmlns="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Resources/UI/Styles/Screens/Lobby.uss?fileID=7433441132597879392&amp;guid=0dc93b02b55854976be67fbd874f44ac&amp;type=3#Lobby" />
+    <VisualElement name="lobby-root" class="lobby-root">
+        <VisualElement name="team-controls" class="team-controls hidden" style="display: flex;">
+            <VisualElement name="team-code-display" class="team-code-display">
+                <Label text="Team Code:" class="team-code-label" />
+                <Label name="team-code" text="XEZLSP57" class="team-code-text" />
             </VisualElement>
+            <Button name="leave-button" text="LEAVE" class="leave-button" />
+        </VisualElement>
+        <VisualElement name="player-display-area" class="player-display-area">
+            <VisualElement name="player-slots" class="player-slots" />
         </VisualElement>
         <VisualElement name="bottom-bar" class="bottom-bar">
             <Button name="map-button" class="map-button">
                 <VisualElement name="timer-content" class="timer-content">
-                    <Label name="timer-text" text="NEW MAP IN : 30h 12m" class="timer-text" />
                     <VisualElement name="timer-icon" class="timer-icon" />
+                    <Label name="timer-text" text="NEW MAP IN : 30h 12m" class="timer-text" />
                 </VisualElement>
-                <VisualElement name="map-card">
+                <VisualElement name="map-card" class="map-card">
                     <Label name="map-name" text="CRUMB HAVEN" class="map-name" />
                     <Label name="map-subtitle" text="COOPERATIVE CHAOS" class="map-subtitle" />
                 </VisualElement>
             </Button>
             <Button name="play-button" class="play-button">
-                <Label text="PLAY!" class="play-text" />
+                <Label name="action-button-text" text="PLAY!" class="play-text" />
             </Button>
         </VisualElement>
     </VisualElement>

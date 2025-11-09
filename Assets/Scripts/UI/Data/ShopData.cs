@@ -27,5 +27,7 @@ namespace UI.Data
         public string currency; // "coins" or "gems"
         public string type; // "skin", "weapon", "bundle"
         public string icon;
+        public string rarity; // "common", "rare", "epic", "legendary"
+        public string badge; // "sale", "new", "limited"
     }
 }

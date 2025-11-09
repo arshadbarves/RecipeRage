@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" 
+      xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd"
+      xsi:schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd">
+    
+    <!-- Leaderboard Entry Template -->
+    <VisualElement name="leaderboard-entry" class="leaderboard-entry">
+        <!-- Rank -->
+        <VisualElement name="rank-container" class="rank-container">
+            <Label name="rank-number" text="1" class="rank-number" />
+        </VisualElement>
+        
+        <!-- Player Avatar -->
+        <VisualElement name="player-avatar" class="player-avatar" />
+        
+        <!-- Player Info -->
+        <VisualElement name="player-info" class="player-info">
+            <Label name="player-name" text="PlayerName" class="player-name" />
+            <Label name="player-subtitle" text="Level 10" class="player-subtitle" />
+        </VisualElement>
+        
+        <!-- Score/Trophies -->
+        <VisualElement name="score-container" class="score-container">
+            <VisualElement name="trophy-icon" class="trophy-icon" />
+            <Label name="score-value" text="1000" class="score-value" />
+        </VisualElement>
+    </VisualElement>
+    
+</UXML>

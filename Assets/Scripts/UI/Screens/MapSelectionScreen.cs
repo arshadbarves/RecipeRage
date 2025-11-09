@@ -9,7 +9,7 @@ using Core.Logging;
 namespace UI.Screens
 {
     /// <summary>
-    /// Map selection screen - full screen for selecting maps
+    /// Map selection screen - shows all maps grouped by category
     /// </summary>
     [UIScreen(UIScreenType.MapSelection, UIScreenCategory.Screen, "Screens/MapSelectionTemplate")]
     public class MapSelectionScreen : BaseUIScreen
@@ -19,11 +19,15 @@ namespace UI.Screens
 
         // UI Elements
         private Button _backButton;
-        private ScrollView _mapGrid;
+        private ScrollView _categoriesScroll;
         private Label _screenTitle;
+
+        // Template
+        private VisualTreeAsset _mapCardTemplate;
 
         protected override void OnInitialize()
         {
+            LoadTemplate();
             CacheUIElements();
             SetupButtons();
             LoadMapDatabase();
@@ -31,15 +35,28 @@ namespace UI.Screens
             GameLogger.Log("Initialized");
         }
 
+        private void LoadTemplate()
+        {
+            _mapCardTemplate = Resources.Load<VisualTreeAsset>("UI/Templates/Components/MapCard");
+            if (_mapCardTemplate == null)
+            {
+                GameLogger.LogError("Failed to load MapCard template!");
+            }
+            else
+            {
+                GameLogger.Log("MapCard template loaded successfully");
+            }
+        }
+
         private void CacheUIElements()
         {
             _backButton = GetElement<Button>("back-button");
-            _mapGrid = GetElement<ScrollView>("map-grid");
+            _categoriesScroll = GetElement<ScrollView>("categories-scroll");
             _screenTitle = GetElement<Label>("screen-title");
 
             if (_screenTitle != null)
             {
-                _screenTitle.text = "SELECT MAP";
+                _screenTitle.text = "CHOOSE EVENT";
             }
         }
 
@@ -57,7 +74,15 @@ namespace UI.Screens
             if (jsonFile != null)
             {
                 _mapDatabase = JsonUtility.FromJson<MapDatabase>(jsonFile.text);
-                GameLogger.Log($"Loaded {_mapDatabase.maps.Count} maps");
+                int totalMaps = 0;
+                if (_mapDatabase.categories != null)
+                {
+                    foreach (var category in _mapDatabase.categories)
+                    {
+                        totalMaps += category.maps?.Count ?? 0;
+                    }
+                }
+                GameLogger.Log($"Loaded {totalMaps} maps from {_mapDatabase.categories?.Count ?? 0} categories");
             }
             else
             {
@@ -76,87 +101,222 @@ namespace UI.Screens
         public void ShowWithCallback(Action<MapInfo> onMapSelected)
         {
             _onMapSelected = onMapSelected;
-            Show(true, true);
+            Show(false, true);
         }
 
         private void PopulateMaps()
         {
-            if (_mapGrid == null || _mapDatabase == null) return;
+            if (_categoriesScroll == null || _mapDatabase == null) return;
 
-            _mapGrid.Clear();
+            _categoriesScroll.Clear();
 
-            var availableMaps = _mapDatabase.GetAvailableMaps();
-
-            foreach (MapInfo map in availableMaps)
+            if (_mapDatabase.categories == null || _mapDatabase.categories.Count == 0)
             {
-                VisualElement mapCard = CreateMapCard(map);
-                _mapGrid.Add(mapCard);
+                GameLogger.LogWarning("No categories found in map database");
+                return;
             }
 
-            GameLogger.Log($"Populated {availableMaps.Count} maps");
+            // Create a container for each category
+            foreach (var category in _mapDatabase.categories)
+            {
+                if (category.maps == null || category.maps.Count == 0)
+                    continue;
+
+                VisualElement categoryContainer = CreateCategoryContainer(category);
+                _categoriesScroll.Add(categoryContainer);
+            }
+
+            GameLogger.Log($"Populated {_mapDatabase.categories.Count} categories");
         }
 
+        private VisualElement CreateCategoryContainer(MapCategory category)
+        {
+            // Main category container
+            VisualElement container = new VisualElement();
+            container.AddToClassList("category-container");
+            
+            // Add category-specific class for background color
+            container.AddToClassList(GetCategoryClass(category.id));
+
+            // Category header
+            VisualElement header = new VisualElement();
+            header.AddToClassList("category-header");
+
+            // Category title (centered, no icon)
+            Label title = new Label(category.name.ToUpper());
+            title.AddToClassList("category-title");
+            header.Add(title);
+
+            container.Add(header);
+
+            // Maps grid for this category
+            VisualElement mapsGrid = new VisualElement();
+            mapsGrid.AddToClassList("category-maps-grid");
+
+            // Get all maps (including coming soon ones)
+            var allMaps = category.maps;
+            int mapCount = allMaps.Count;
+
+            // Add maps to grid with spacing
+            for (int i = 0; i < allMaps.Count; i++)
+            {
+                VisualElement mapCard = CreateMapCard(allMaps[i]);
+                
+                // Add spacing class if there are multiple cards and this is not the last one
+                if (mapCount > 1 && i < mapCount - 1)
+                {
+                    mapCard.AddToClassList("has-spacing");
+                }
+                
+                mapsGrid.Add(mapCard);
+            }
+
+            container.Add(mapsGrid);
+
+            return container;
+        }
+
+        private string GetCategoryClass(string categoryId)
+        {
+            return categoryId?.ToLower() switch
+            {
+                "special" => "special-events",
+                "trophies" => "trophy-events",
+                "ranked" => "ranked",
+                "community" => "community",
+                _ => "trophy-events"
+            };
+        }
+
+        /// <summary>
+        /// Create map card from template and populate with data
+        /// </summary>
         private VisualElement CreateMapCard(MapInfo map)
         {
+            if (_mapCardTemplate == null)
+            {
+                GameLogger.LogError("MapCard template is null!");
+                return new VisualElement();
+            }
+
             bool isCurrentMap = map.id == _mapDatabase.currentMapId;
 
-            VisualElement card = new VisualElement();
-            card.AddToClassList("map-card");
+            // Clone template
+            TemplateContainer cardContainer = _mapCardTemplate.CloneTree();
+            Button card = cardContainer.Q<Button>("map-card");
 
+            if (card == null)
+            {
+                GameLogger.LogError("Failed to find map-card button in template!");
+                return cardContainer;
+            }
+
+            // Assign color based on map ID (Brawl Stars style)
+            string colorClass = GetMapColorClass(map.id);
+            card.AddToClassList(colorClass);
+
+            // Setup click handler
+            card.clicked += () => OnMapCardClicked(map);
+
+            // Mark as current map
             if (isCurrentMap)
             {
                 card.AddToClassList("current-map");
+                card.SetEnabled(false);
             }
 
-            // Thumbnail
-            VisualElement thumbnail = new VisualElement();
-            thumbnail.AddToClassList("map-thumbnail");
-            // TODO: Load actual thumbnail image
-            // thumbnail.style.backgroundImage = new StyleBackground(Resources.Load<Texture2D>(map.thumbnail));
-            card.Add(thumbnail);
-
-            // Current map indicator
-            if (isCurrentMap)
+            // Check if map is coming soon (not yet available)
+            bool isComingSoon = !map.isAvailable;
+            
+            // Add coming soon styling
+            if (isComingSoon)
             {
-                Label currentLabel = new Label("CURRENT");
-                currentLabel.AddToClassList("current-label");
-                thumbnail.Add(currentLabel);
+                card.AddToClassList("coming-soon");
+                card.SetEnabled(false);
+                
+                // Add "COMING SOON" label overlay
+                Label comingSoonLabel = new Label("COMING SOON");
+                comingSoonLabel.AddToClassList("coming-soon-label");
+                cardContainer.Q<VisualElement>("map-thumbnail")?.Add(comingSoonLabel);
             }
 
-            // Info container
-            VisualElement infoContainer = new VisualElement();
-            infoContainer.AddToClassList("map-info");
+            // Populate data from template elements
+            PopulateCardData(cardContainer, map, isCurrentMap, isComingSoon);
 
-            // Name
-            Label nameLabel = new Label(map.name);
-            nameLabel.AddToClassList("map-name");
-            infoContainer.Add(nameLabel);
+            return cardContainer;
+        }
 
-            // Subtitle
-            Label subtitleLabel = new Label(map.subtitle);
-            subtitleLabel.AddToClassList("map-subtitle");
-            infoContainer.Add(subtitleLabel);
+        /// <summary>
+        /// Populate card template with map data
+        /// </summary>
+        private void PopulateCardData(VisualElement cardContainer, MapInfo map, bool isCurrentMap, bool isComingSoon = false)
+        {
+            // Mode text
+            Label modeText = cardContainer.Q<Label>("mode-text");
+            if (modeText != null)
+            {
+                modeText.text = !string.IsNullOrEmpty(map.gameMode) ? map.gameMode : $"{map.maxPlayers}v{map.maxPlayers}";
+            }
 
-            // Description
-            Label descLabel = new Label(map.description);
-            descLabel.AddToClassList("map-description");
-            infoContainer.Add(descLabel);
+            // Selected label visibility
+            Label currentLabel = cardContainer.Q<Label>("current-label");
+            if (currentLabel != null)
+            {
+                if (isCurrentMap)
+                {
+                    currentLabel.RemoveFromClassList("hidden");
+                }
+                else
+                {
+                    currentLabel.AddToClassList("hidden");
+                }
+            }
 
-            // Players
-            Label playersLabel = new Label($"Max Players: {map.maxPlayers}");
-            playersLabel.AddToClassList("map-players");
-            infoContainer.Add(playersLabel);
+            // Map name
+            Label mapName = cardContainer.Q<Label>("map-name");
+            if (mapName != null)
+            {
+                mapName.text = map.name.ToUpper();
+            }
 
-            card.Add(infoContainer);
+            // Map subtitle
+            Label mapSubtitle = cardContainer.Q<Label>("map-subtitle");
+            if (mapSubtitle != null)
+            {
+                mapSubtitle.text = map.subtitle;
+            }
 
-            // Select button
-            Button selectButton = new Button(() => OnMapCardClicked(map));
-            selectButton.text = isCurrentMap ? "SELECTED" : "SELECT";
-            selectButton.AddToClassList("select-button");
-            selectButton.SetEnabled(!isCurrentMap);
-            card.Add(selectButton);
+            // Map description
+            Label mapDescription = cardContainer.Q<Label>("map-description");
+            if (mapDescription != null)
+            {
+                if (!string.IsNullOrEmpty(map.description))
+                {
+                    mapDescription.text = map.description;
+                }
+                else
+                {
+                    mapDescription.AddToClassList("hidden");
+                }
+            }
 
-            return card;
+            // Player count
+            Label mapPlayers = cardContainer.Q<Label>("map-players");
+            if (mapPlayers != null)
+            {
+                mapPlayers.text = $"👥 {map.maxPlayers} PLAYERS";
+            }
+        }
+
+        /// <summary>
+        /// Get color class for map based on ID (Brawl Stars style)
+        /// </summary>
+        private string GetMapColorClass(string mapId)
+        {
+            // Assign colors based on map ID hash for consistency
+            int hash = mapId.GetHashCode();
+            string[] colors = { "color-orange", "color-green", "color-purple", "color-pink", "color-blue", "color-red" };
+            return colors[Math.Abs(hash) % colors.Length];
         }
 
         private void OnMapCardClicked(MapInfo map)
@@ -188,7 +348,7 @@ namespace UI.Screens
             var uiService = GameBootstrap.Services?.UIService;
             if (uiService != null)
             {
-                bool wentBack = uiService.GoBack(true);
+                bool wentBack = uiService.GoBack(false);
 
                 if (!wentBack)
                 {

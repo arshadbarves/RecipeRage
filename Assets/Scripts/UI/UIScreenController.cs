@@ -14,6 +14,7 @@ namespace UI
         public UIScreenType ScreenType { get; private set; }
         public UIScreenPriority Priority { get; private set; }
         public VisualElement Container { get; private set; }
+        public TemplateContainer TemplateContainer { get; private set; }
         public bool IsVisible { get; private set; }
         public bool IsAnimating { get; private set; }
 
@@ -68,21 +69,21 @@ namespace UI
         {
             try
             {
-                TemplateContainer templateInstance = _template.Instantiate();
+                TemplateContainer = _template.Instantiate();
                 
                 // Ensure template instance fills the container
-                templateInstance.style.width = Length.Percent(100);
-                templateInstance.style.height = Length.Percent(100);
-                templateInstance.style.position = Position.Absolute;
-                templateInstance.style.left = 0;
-                templateInstance.style.top = 0;
-                templateInstance.style.right = 0;
-                templateInstance.style.bottom = 0;
+                TemplateContainer.style.width = Length.Percent(100);
+                TemplateContainer.style.height = Length.Percent(100);
+                TemplateContainer.style.position = Position.Absolute;
+                TemplateContainer.style.left = 0;
+                TemplateContainer.style.top = 0;
+                TemplateContainer.style.right = 0;
+                TemplateContainer.style.bottom = 0;
                 
-                Container.Add(templateInstance);
+                Container.Add(TemplateContainer);
                 
                 // Find the main screen container within the template
-                VisualElement screenContainer = templateInstance.Q<VisualElement>("screen-container");
+                VisualElement screenContainer = TemplateContainer.Q<VisualElement>("screen-container");
                 if (screenContainer != null)
                 {
                     // Apply screen-specific styling and ensure full coverage

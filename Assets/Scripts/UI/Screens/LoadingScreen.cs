@@ -1,6 +1,7 @@
 using System;
 using Core.Bootstrap;
 using Core.Logging;
+using Core.State.States;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UI.Core;
@@ -167,9 +168,17 @@ namespace UI.Screens
         public async UniTask CompleteAsync()
         {
             UpdateProgress(1f, "Complete");
+
+            ProceedToMainMenu();
             await UniTask.Delay(500);
             Hide(true);
             await UniTask.Delay(300);
+        }
+
+
+        private void ProceedToMainMenu()
+        {
+            GameBootstrap.Services.StateManager.Initialize(new MainMenuState());
         }
 
         #endregion

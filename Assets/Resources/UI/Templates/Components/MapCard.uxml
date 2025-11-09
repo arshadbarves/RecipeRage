@@ -1,0 +1,21 @@
+<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Resources/UI/Styles/Components/MapCard.uss?fileID=7433441132597879392&amp;guid=76fcd37772d834024a2a794b51a19e62&amp;type=3#MapCard" />
+    <Button name="map-card" class="map-card">
+        <VisualElement name="timer-badge" class="timer-badge hidden">
+            <Label name="timer-text" text="New Event in: 20h 45m" class="timer-text" />
+        </VisualElement>
+        <VisualElement name="map-thumbnail" class="map-thumbnail">
+            <VisualElement name="mode-badge" class="mode-badge">
+                <VisualElement name="mode-icon" class="mode-icon" />
+                <Label name="mode-text" text="4v4" class="mode-text" />
+            </VisualElement>
+            <Label name="current-label" text="✓ SELECTED" class="current-label hidden" />
+        </VisualElement>
+        <VisualElement name="map-info" class="map-info">
+            <Label name="map-name" text="CRUMB HAVEN" class="map-name" />
+            <Label name="map-subtitle" text="COOPERATIVE CHAOS" class="map-subtitle" />
+            <Label name="map-description" text="A cozy kitchen with tight spaces" class="map-description" />
+            <Label name="map-players" text="👥 4 PLAYERS" class="map-players" />
+        </VisualElement>
+    </Button>
+</UXML>

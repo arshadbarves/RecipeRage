@@ -1,0 +1,25 @@
+<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Resources/UI/Styles/Components/FriendListItem.uss?fileID=7433441132597879392&amp;guid=e5e4a2ccba2a345bd806ad5c3b425609&amp;type=3#FriendListItem" />
+    <VisualElement name="friend-item" class="friend-item">
+        <VisualElement name="friend-avatar" class="friend-avatar">
+            <VisualElement name="online-indicator" class="online-indicator hidden" />
+        </VisualElement>
+        <VisualElement name="friend-info" class="friend-info">
+            <Label name="friend-name" text="PlayerName" class="friend-name" />
+            <Label name="friend-status" text="Online" class="friend-status" />
+        </VisualElement>
+        <VisualElement name="friend-stats" class="friend-stats">
+            <VisualElement name="friend-level-badge" class="friend-level-badge">
+                <Label name="friend-level" text="10" class="friend-level-text" />
+            </VisualElement>
+            <VisualElement name="friend-trophies" class="friend-trophies">
+                <VisualElement name="trophy-icon-small" class="trophy-icon-small" />
+                <Label name="trophy-count" text="500" class="trophy-count-text" />
+            </VisualElement>
+        </VisualElement>
+        <VisualElement name="friend-actions" class="friend-actions">
+            <Button name="invite-button" text="INVITE" class="invite-button" />
+            <Button name="remove-button" text="✕" class="remove-button" />
+        </VisualElement>
+    </VisualElement>
+</UXML>

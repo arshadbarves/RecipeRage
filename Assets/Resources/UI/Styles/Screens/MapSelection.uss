@@ -1,159 +1,197 @@
-/* ============================================
-   MAP SELECTION SCREEN - Uses Design System
-   Include DesignSystem.uss in UXML template
-   ============================================ */
+@import url("../../Themes/DesignSystem.uss");
 
 .map-selection-screen {
     width: 100%;
     height: 100%;
-    background-color: var(--color-background-primary);
+    background-color: var(--color-accent-yellow);
     -unity-font-definition: var(--font-primary);
-}
-
-/* Header */
-.header {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--spacing-lg);
-    background-color: var(--color-overlay-dark);
+    flex-direction: column;
 }
 
 .back-button {
-    width: 120px;
-    height: 50px;
-    font-size: var(--font-size-lg);
-    background-color: var(--color-card-bg);
-    border-radius: var(--radius-sm);
-    border-width: var(--border-width-normal);
-    border-color: var(--color-card-border);
-    color: var(--color-text-primary);
+    width: 100px;
+    height: 60px;
+    font-size: var(--font-size-xl);
+    background-color: var(--color-accent-red);
+    border-radius: var(--radius-lg);
+    border-width: 0;
+    color: var(--color-text-light);
+    -unity-font-style: bold;
     transition-property: scale;
     transition-duration: var(--transition-fast);
-}
-
-.back-button:active {
-    scale: 0.95;
+    margin-right: var(--spacing-xl);
 }
 
 .screen-title {
-    font-size: 36px;
+    font-size: 48px;
     -unity-font-style: bold;
     color: var(--color-text-light);
     -unity-text-align: middle-center;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.8);
+    letter-spacing: 2px;
+    position: absolute;
+    left: 50%;
+    translate: -50% -25px;
 }
 
-/* Map Grid */
-.map-grid {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
+.header-spacer {
+    width: 100px;
+}
+
+.categories-scroll {
+    flex-grow: 1;
     padding: var(--spacing-xxl);
-}
-
-/* Map Card */
-.map-card {
-    width: 320px;
-    height: 450px;
-    margin: var(--spacing-md);
-    background-color: var(--color-card-bg);
+    margin: var(--spacing-xxl);
     border-radius: var(--radius-lg);
     border-width: var(--border-width-normal);
     border-color: var(--color-card-border);
-    overflow: hidden;
-    transition-property: scale, border-color;
-    transition-duration: var(--transition-normal);
 }
 
-.map-card:active {
-    border-color: var(--color-accent-red);
-    scale: 1.03;
+.categories-scroll > #unity-content-container {
+    flex-direction: row;
+    align-items: flex-start;
+    padding: 0;
 }
 
-.current-map {
-    border-color: var(--color-warning);
-    border-width: var(--border-width-thick);
+.category-container {
+    flex-direction: column;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: var(--radius-xxl);
+    border-width: 4px;
+    border-color: rgba(255, 255, 255, 0.2);
+    padding: var(--spacing-xl) var(--spacing-xxl);
+    margin-right: var(--spacing-xxl);
+    flex-shrink: 0;
+    align-self: stretch;
+    min-height: 420px;
 }
 
-/* Map Thumbnail */
-.map-thumbnail {
-    width: 100%;
-    height: 200px;
-    background-color: rgb(220, 220, 220);
-    position: relative;
+.category-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+    border-bottom-width: 2px;
+    border-bottom-color: rgba(255, 255, 255, 0.25);
+    flex-shrink: 0;
 }
 
-.current-label {
-    position: absolute;
-    top: var(--spacing-sm);
-    right: var(--spacing-sm);
-    background-color: var(--color-warning);
-    color: var(--color-text-primary);
-    padding: 5px var(--spacing-md);
-    font-size: var(--font-size-sm);
+.category-icon {
+    display: none;
+}
+
+.category-title {
+    font-size: 28px;
     -unity-font-style: bold;
-    border-radius: var(--radius-xs);
-    border-width: var(--border-width-thin);
-    border-color: var(--color-card-border);
+    color: var(--color-text-light);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    letter-spacing: 1px;
+    white-space: nowrap;
+    -unity-text-align: middle-center;
 }
 
-/* Map Info */
-.map-info {
-    padding: var(--spacing-lg);
+.category-maps-grid {
+    flex-direction: row;
+    align-items: stretch;
     flex-grow: 1;
 }
 
-.map-name {
-    font-size: var(--font-size-xxl);
+.category-maps-grid .map-card {
+    flex-grow: 1;
+    margin: var(--spacing-md);
+}
+
+/* Spacing between cards */
+.category-maps-grid .map-card.has-spacing {
+    margin-right: var(--spacing-xl);
+}
+
+/* Coming Soon / Locked state */
+.category-maps-grid .map-card.coming-soon {
+    opacity: 0.5;
+}
+
+.category-maps-grid .map-card.coming-soon .map-thumbnail {
+    background-color: rgba(100, 100, 100, 0.5);
+}
+
+/* Adjust card internals for better proportions */
+.category-maps-grid .map-card .map-thumbnail {
+    height: 140px;
+    flex-shrink: 0;
+}
+
+.category-maps-grid .map-card .map-info {
+    padding: var(--spacing-md) var(--spacing-lg);
+    flex-grow: 1;
+}
+
+.category-maps-grid .map-card .map-name {
+    font-size: 24px;
+}
+
+.category-maps-grid .map-card .map-subtitle {
+    font-size: var(--font-size-sm);
+}
+
+.category-maps-grid .map-card .map-description {
+    font-size: var(--font-size-xs);
+    max-height: 50px;
+}
+
+.category-maps-grid .map-card .map-players {
+    font-size: var(--font-size-sm);
+    padding: 6px var(--spacing-md);
+}
+
+/* Coming Soon label */
+.coming-soon-label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    background-color: rgba(0, 0, 0, 0.9);
+    color: var(--color-text-light);
+    padding: var(--spacing-md) var(--spacing-xl);
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-lg);
     -unity-font-style: bold;
-    color: var(--color-text-primary);
+    border-width: 3px;
+    border-color: var(--color-warning);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.category-maps-grid .map-card.has-spacing {
+    margin-right: var(--spacing-lg);
+}
+
+.category-maps-grid .map-card .map-thumbnail {
+    height: 180px;
+}
+
+.category-maps-grid .map-card .map-info {
+    padding: var(--spacing-lg);
+}
+
+.category-maps-grid .map-card .map-name {
+    font-size: 28px;
     margin-bottom: var(--spacing-xs);
 }
 
-.map-subtitle {
-    font-size: var(--font-size-sm);
-    color: var(--color-accent-red);
-    margin-bottom: var(--spacing-sm);
-    -unity-font-style: bold;
-}
-
-.map-description {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-secondary);
-    margin-bottom: var(--spacing-sm);
-    white-space: normal;
-}
-
-.map-players {
-    font-size: var(--font-size-xs);
-    color: var(--color-text-muted);
-}
-
-/* Select Button */
-.select-button {
-    width: 90%;
-    height: 45px;
-    margin-left: 5%;
-    margin-right: 5%;
-    margin-bottom: var(--spacing-md);
-    background-color: var(--color-accent-green);
-    color: var(--color-text-primary);
+.category-maps-grid .map-card .map-subtitle {
     font-size: var(--font-size-md);
-    -unity-font-style: bold;
-    border-radius: var(--radius-sm);
-    border-width: var(--border-width-normal);
-    border-color: var(--color-card-border);
-    transition-property: scale;
-    transition-duration: var(--transition-fast);
+    margin-bottom: var(--spacing-sm);
 }
 
-.select-button:active {
-    scale: 0.95;
-    background-color: rgb(80, 210, 130);
+.category-maps-grid .map-card .map-description {
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--spacing-sm);
+    max-height: 60px;
+    overflow: hidden;
 }
 
-.select-button:disabled {
-    background-color: rgba(100, 100, 100, 0.5);
-    color: rgba(255, 255, 255, 0.3);
+.category-maps-grid .map-card .map-players {
+    font-size: var(--font-size-md);
+    padding: var(--spacing-xs) var(--spacing-md);
 }

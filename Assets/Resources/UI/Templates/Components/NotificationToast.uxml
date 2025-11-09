@@ -1,0 +1,8 @@
+<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Resources/UI/Styles/Components/NotificationToast.uss?fileID=7433441132597879392&amp;guid=6d1a6de09cecb453fa9aec8fec7cdfa8&amp;type=3#NotificationToast" />
+    <VisualElement name="notification-toast" class="notification-toast">
+        <VisualElement name="notification-icon" class="notification-icon" />
+        <Label name="notification-message" text="Notification message" class="notification-message" />
+        <Button name="close-button" text="✕" class="close-button" />
+    </VisualElement>
+</UXML>

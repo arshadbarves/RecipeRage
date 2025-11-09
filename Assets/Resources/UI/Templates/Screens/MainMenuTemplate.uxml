@@ -7,9 +7,33 @@
     <Style src="project://database/Assets/Resources/UI/Styles/Screens/Settings.uss?fileID=7433441132597879392&amp;guid=ce13c355a0e3346d586ee254f45c6391&amp;type=3#Settings" />
     <Style src="project://database/Assets/Resources/UI/Styles/Screens/Shop.uss?fileID=7433441132597879392&amp;guid=4e442d0be92504d63986397556b8d066&amp;type=3#Shop" />
     <Style src="project://database/Assets/Resources/UI/Styles/Components/CharacterTab.uss?fileID=7433441132597879392&amp;guid=aa9123e71487e4e7788a3c50b3c86c73&amp;type=3#CharacterTab" />
-    <Style src="project://database/Assets/Resources/UI/Themes/DesignSystem.uss?fileID=7433441132597879392&amp;guid=74282f7acd0164afea4d8dc9dc05a968&amp;type=3#DesignSystem" />
     <VisualElement name="bottom-background-bar" class="bottom-background-bar" style="flex-grow: 1;" />
     <VisualElement name="main-menu-root" class="main-menu-root">
+        <VisualElement name="top-bar" class="top-bar header">
+            <Button name="player-card-button" class="player-card">
+                <VisualElement name="star-icon" class="star-icon" />
+                <VisualElement name="player-info" class="player-info">
+                    <Label name="player-title" text="Guest Player" class="player-title" />
+                    <Label name="player-number" text="#675" class="player-number" />
+                </VisualElement>
+            </Button>
+            <VisualElement name="currency-container" class="currency-container">
+                <VisualElement name="coins-display" class="currency-display">
+                    <VisualElement name="coin-icon" class="currency-icon coin-icon" />
+                    <Label name="coins-amount" text="1,250" class="currency-amount" />
+                    <Button name="add-coins-button" class="add-currency-button">
+                        <Label text="+" class="add-button-text" />
+                    </Button>
+                </VisualElement>
+                <VisualElement name="gems-display" class="currency-display">
+                    <VisualElement name="gem-icon" class="currency-icon gem-icon" />
+                    <Label name="gems-amount" text="85" class="currency-amount" />
+                    <Button name="add-gems-button" class="add-currency-button">
+                        <Label text="+" class="add-button-text" />
+                    </Button>
+                </VisualElement>
+            </VisualElement>
+        </VisualElement>
         <TabView name="main-tabs" class="main-tabs">
             <Tab name="chef-tab" icon-image="project://database/Assets/Textures/Icons/Badges/icons8-home-96.png?fileID=2800000&amp;guid=2be65e77c79024ee1a42cef702ecd4bc&amp;type=3#icons8-home-96" class="chef-tab">
                 <Instance template="LobbyTemplate" name="TemplateContainer" style="flex-grow: 1;" />
@@ -24,30 +48,5 @@
                 <Instance template="SettingsTemplate" style="flex-grow: 1;" />
             </Tab>
         </TabView>
-    </VisualElement>
-    <VisualElement name="top-bar" class="top-bar">
-        <Button name="player-card-button" class="player-card">
-            <VisualElement name="star-icon" class="star-icon" />
-            <VisualElement name="player-info" class="player-info">
-                <Label name="player-title" text="Guest Player" class="player-title" />
-                <Label name="player-number" text="#675" class="player-number" />
-            </VisualElement>
-        </Button>
-        <VisualElement name="currency-container" class="currency-container">
-            <VisualElement name="coins-display" class="currency-display">
-                <VisualElement name="coin-icon" class="currency-icon coin-icon" />
-                <Label name="coins-amount" text="1,250" class="currency-amount" />
-                <Button name="add-coins-button" class="add-currency-button">
-                    <Label text="+" class="add-button-text" />
-                </Button>
-            </VisualElement>
-            <VisualElement name="gems-display" class="currency-display">
-                <VisualElement name="gem-icon" class="currency-icon gem-icon" />
-                <Label name="gems-amount" text="85" class="currency-amount" />
-                <Button name="add-gems-button" class="add-currency-button">
-                    <Label text="+" class="add-button-text" />
-                </Button>
-            </VisualElement>
-        </VisualElement>
     </VisualElement>
 </UXML>

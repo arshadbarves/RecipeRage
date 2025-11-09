@@ -2,9 +2,11 @@
     <Style src="project://database/Assets/Resources/UI/Styles/Screens/MapSelection.uss?fileID=7433441132597879392&amp;guid=4e50b96f3ec364f3a9f4e3a01e1e0cb1&amp;type=3#MapSelection" />
     <VisualElement class="map-selection-screen">
         <VisualElement class="header">
-            <Button name="back-button" text="← BACK" class="back-button" />
-            <Label name="screen-title" text="SELECT MAP" class="screen-title" />
+            <Button name="back-button" text="&lt; BACK" class="back-button" />
+            <Label name="screen-title" text="SELECT KITCHEN" class="screen-title" />
+            <VisualElement name="VisualElement" class="header-spacer" />
         </VisualElement>
-        <ScrollView name="map-grid" mode="Vertical" class="map-grid" />
+        <ScrollView name="categories-scroll" mode="Horizontal" class="categories-scroll" />
+        <VisualElement class="header" />
     </VisualElement>
 </UXML>

@@ -1,18 +1,22 @@
 using System.Collections.Generic;
 using Core.Bootstrap;
 using Core.Logging;
+using Gameplay;
+using Gameplay.Spawning;
 using Unity.Netcode;
 using UnityEngine;
 
 namespace Core.Networking.Bot
 {
     /// <summary>
-    /// Spawns bot players as NetworkObjects on the server
+    /// Spawns bot players as NetworkObjects on the server.
+    /// Now integrates with SpawnManager for scene-based spawn points.
     /// </summary>
     public class BotSpawner
     {
         private readonly List<NetworkObject> _spawnedBots = new List<NetworkObject>();
         private readonly GameObject _botPrefab;
+        private SpawnManager _spawnManager;
 
         /// <summary>
         /// Constructor
@@ -26,7 +30,9 @@ namespace Core.Networking.Bot
         /// <summary>
         /// Spawn bots for the given bot players
         /// </summary>
-        public void SpawnBots(List<BotPlayer> botPlayers)
+        /// <param name="botPlayers">List of bot players to spawn</param>
+        /// <param name="team">Team category for spawn point selection</param>
+        public void SpawnBots(List<BotPlayer> botPlayers, TeamCategory team = TeamCategory.Neutral)
         {
             if (!NetworkManager.Singleton.IsServer)
             {
@@ -40,24 +46,60 @@ namespace Core.Networking.Bot
                 return;
             }
 
-            GameLogger.Log($"[BotSpawner] Spawning {botPlayers.Count} bots");
+            // Try to get SpawnManager
+            _spawnManager = SpawnManagerIntegration.GetSpawnManager();
+
+            GameLogger.Log($"[BotSpawner] Spawning {botPlayers.Count} bots (Team: {team})");
 
             foreach (var botPlayer in botPlayers)
             {
-                SpawnBot(botPlayer);
+                SpawnBot(botPlayer, team);
             }
         }
 
         /// <summary>
         /// Spawn a single bot
         /// </summary>
-        private void SpawnBot(BotPlayer botPlayer)
+        /// <param name="botPlayer">Bot player data</param>
+        /// <param name="team">Team category for spawn point selection</param>
+        private void SpawnBot(BotPlayer botPlayer, TeamCategory team)
         {
-            // Get spawn position
-            Vector3 spawnPosition = GetBotSpawnPosition(_spawnedBots.Count);
+            Vector3 spawnPosition;
+            Quaternion spawnRotation;
+
+            // Use SpawnManager if available, otherwise fallback to circular pattern
+            if (_spawnManager != null)
+            {
+                // Let SpawnManager handle the spawning
+                bool spawned = _spawnManager.SpawnBot(botPlayer, team);
+                if (spawned)
+                {
+                    // Track the spawned bot (SpawnManager already spawned it)
+                    // Find the bot that was just spawned
+                    var botObjects = Object.FindObjectsOfType<BotController>();
+                    foreach (var spawnedBotController in botObjects)
+                    {
+                        if (spawnedBotController.GetBotData() == botPlayer)
+                        {
+                            var spawnedNetworkObject = spawnedBotController.GetComponent<NetworkObject>();
+                            if (spawnedNetworkObject != null && !_spawnedBots.Contains(spawnedNetworkObject))
+                            {
+                                _spawnedBots.Add(spawnedNetworkObject);
+                                break;
+                            }
+                        }
+                    }
+                }
+                return;
+            }
+
+            // Fallback: Use circular spawn pattern if no SpawnManager
+            GameLogger.LogWarning("[BotSpawner] No SpawnManager found, using fallback spawn pattern");
+            spawnPosition = GetBotSpawnPosition(_spawnedBots.Count);
+            spawnRotation = Quaternion.identity;
 
             // Instantiate bot
-            GameObject botObject = Object.Instantiate(_botPrefab, spawnPosition, Quaternion.identity);
+            GameObject botObject = Object.Instantiate(_botPrefab, spawnPosition, spawnRotation);
             botObject.name = $"Bot_{botPlayer.BotName}";
 
             // Get NetworkObject component
@@ -85,7 +127,7 @@ namespace Core.Networking.Bot
         }
 
         /// <summary>
-        /// Get spawn position for a bot
+        /// Get spawn position for a bot (fallback when no SpawnManager)
         /// </summary>
         private Vector3 GetBotSpawnPosition(int botIndex)
         {

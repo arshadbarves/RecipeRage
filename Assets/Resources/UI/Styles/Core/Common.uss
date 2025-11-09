@@ -1,9 +1,4 @@
-/* ============================================
-   COMMON STYLES - LEGACY SUPPORT
-   Import DesignSystem.uss for new unified styles
-   ============================================ */
-
-/* Game Logo Specific Styles */
+@import url("../../Themes/DesignSystem.uss");
 
 .logo-container {
     width: 100%;
@@ -15,46 +10,33 @@
 
 .logo {
     -unity-background-scale-mode: scale-to-fit;
-    background-color: rgb(0, 0, 0);
-    border-radius: 25px;
-    border-width: 8px;
-    border-color: rgba(255, 255, 255, 0.95);
+    background-color: var(--color-black);
+    border-radius: var(--radius-xxl);
+    border-width: var(--border-width-thick);
+    border-color: var(--color-card-border);
     width: 600px;
     height: 250px;
-    border-top-width: 5px;
-    border-right-width: 5px;
-    border-bottom-width: 5px;
-    border-left-width: 5px;
 }
 
 .game-title-1 {
     font-size: 70px;
     -unity-text-align: middle-center;
     -unity-text-outline-width: 2px;
-    -unity-text-outline-color: rgba(0, 0, 0, 0.9);
-    text-shadow: 2px 3px 0 rgba(0, 0, 0, 0.6);
+    -unity-text-outline-color: var(--color-black);
+    text-shadow: var(--text-shadow-md);
     letter-spacing: 10px;
     -unity-font-definition: url("project://database/Assets/Fonts/Frijole-Regular.ttf?fileID=12800000&guid=3bf83f4b558ef4b4d93b067704e26004&type=3#Frijole-Regular");
-    color: rgb(72, 199, 250);
+    color: var(--color-accent-blue);
 }
 
 .game-title-2 {
     font-size: 150px;
     -unity-text-align: middle-center;
     -unity-text-outline-width: 2px;
-    -unity-text-outline-color: rgba(0, 0, 0, 0.9);
-    text-shadow: 2px 3px 0 rgba(0, 0, 0, 0.6);
+    -unity-text-outline-color: var(--color-black);
+    text-shadow: var(--text-shadow-md);
     letter-spacing: 3px;
     -unity-font-definition: url("project://database/Assets/Fonts/BlackHanSans-Regular.ttf?fileID=12800000&guid=728719a2ad09249de8ea4878b88d19cf&type=3#BlackHanSans-Regular");
-    color: rgb(251, 82, 72);
+    color: var(--color-accent-red);
     top: -30px;
-}
-
-.unity-button {
-    transition-property: scale;
-    transition-duration: 0.1s;
-}
-
-.unity-button:active {
-    scale: 0.92 0.92 1;
 }

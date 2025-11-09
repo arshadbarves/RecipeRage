@@ -1,0 +1,15 @@
+<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Resources/UI/Styles/Components/ShopItem.uss?fileID=7433441132597879392&amp;guid=736144d03f6cc400692f221dc9d044c0&amp;type=3#ShopItem" />
+    <Button name="shop-item" class="shop-item">
+        <Label name="item-badge" text="SALE" class="item-badge hidden" />
+        <VisualElement name="item-icon" class="item-icon" />
+        <VisualElement name="item-info" class="item-info">
+            <Label name="item-name" text="Item Name" class="item-name" />
+            <Label name="item-description" text="Item description" class="item-description" />
+        </VisualElement>
+        <VisualElement name="price-container" class="price-container">
+            <VisualElement name="currency-icon" class="currency-icon" />
+            <Label name="price-value" text="100" class="price-value" />
+        </VisualElement>
+    </Button>
+</UXML>
