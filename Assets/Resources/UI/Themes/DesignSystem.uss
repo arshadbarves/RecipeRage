@@ -137,56 +137,60 @@
    Apply to any ScrollView for consistent styling
    ============================================ */
 
-/* Vertical Scrollbar */
-.unity-scroll-view > .unity-scroll-view__content-viewport > .unity-scroller--vertical {
+/* Vertical Scrollbar Container */
+.unity-scroller--vertical {
     width: 12px;
     margin-left: 5px;
 }
 
-.unity-scroll-view > .unity-scroll-view__content-viewport > .unity-scroller--vertical > .unity-base-slider__dragger {
+/* Vertical Scrollbar Dragger (Thumb) */
+.unity-scroller--vertical .unity-base-slider__dragger {
     background-color: rgb(0, 0, 0);
     border-radius: 6px;
     border-width: 0;
     margin: 2px;
 }
 
-.unity-scroll-view > .unity-scroll-view__content-viewport > .unity-scroller--vertical > .unity-base-slider__dragger:hover {
+.unity-scroller--vertical .unity-base-slider__dragger:hover {
     background-color: rgb(40, 40, 40);
 }
 
-.unity-scroll-view > .unity-scroll-view__content-viewport > .unity-scroller--vertical > .unity-base-slider__dragger:active {
+.unity-scroller--vertical .unity-base-slider__dragger:active {
     background-color: rgb(60, 60, 60);
 }
 
-.unity-scroll-view > .unity-scroll-view__content-viewport > .unity-scroller--vertical > .unity-base-slider__tracker {
+/* Vertical Scrollbar Track */
+.unity-scroller--vertical .unity-base-slider__tracker {
     background-color: rgba(0, 0, 0, 0.15);
     border-radius: 6px;
     border-width: 0;
     margin: 0;
 }
 
-/* Horizontal Scrollbar */
-.unity-scroll-view > .unity-scroll-view__content-viewport > .unity-scroller--horizontal {
+/* Horizontal Scrollbar Container */
+.unity-scroller--horizontal {
     height: 12px;
     margin-top: 5px;
 }
 
-.unity-scroll-view > .unity-scroll-view__content-viewport > .unity-scroller--horizontal > .unity-base-slider__dragger {
+/* Horizontal Scrollbar Dragger (Thumb) */
+.unity-scroller--horizontal .unity-base-slider__dragger {
     background-color: rgb(0, 0, 0);
     border-radius: 6px;
     border-width: 0;
     margin: 2px;
 }
 
-.unity-scroll-view > .unity-scroll-view__content-viewport > .unity-scroller--horizontal > .unity-base-slider__dragger:hover {
+.unity-scroller--horizontal .unity-base-slider__dragger:hover {
     background-color: rgb(40, 40, 40);
 }
 
-.unity-scroll-view > .unity-scroll-view__content-viewport > .unity-scroller--horizontal > .unity-base-slider__dragger:active {
+.unity-scroller--horizontal .unity-base-slider__dragger:active {
     background-color: rgb(60, 60, 60);
 }
 
-.unity-scroll-view > .unity-scroll-view__content-viewport > .unity-scroller--horizontal > .unity-base-slider__tracker {
+/* Horizontal Scrollbar Track */
+.unity-scroller--horizontal .unity-base-slider__tracker {
     background-color: rgba(0, 0, 0, 0.15);
     border-radius: 6px;
     border-width: 0;
@@ -194,8 +198,8 @@
 }
 
 /* Hide scrollbar arrows */
-.unity-scroll-view .unity-scroller__low-button,
-.unity-scroll-view .unity-scroller__high-button {
+.unity-scroller__low-button,
+.unity-scroller__high-button {
     display: none;
 }
 
@@ -593,7 +597,6 @@
 
 .disabled {
     opacity: 0.5;
-    pointer-events: none;
 }
 
 .selected {
