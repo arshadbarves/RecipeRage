@@ -3,6 +3,7 @@ using Core.Animation;
 using Core.Authentication;
 using Core.Logging;
 using Core.Maintenance;
+using Core.RemoteConfig;
 using Core.SaveSystem;
 using Core.State.States;
 using Cysharp.Threading.Tasks;
@@ -105,6 +106,17 @@ namespace Core.Bootstrap
 
         private void InitializeCoreServices()
         {
+            // Initialize NTP Time Service
+            var ntpTimeService = new NTPTimeService();
+            Services.RegisterNTPTimeService(ntpTimeService);
+            
+            // Initialize Remote Config Service
+            var remoteConfigService = new RemoteConfigService();
+            Services.RegisterRemoteConfigService(remoteConfigService);
+            
+            // Initialize remote config asynchronously (don't block)
+            InitializeRemoteConfigAsync().Forget();
+            
             var maintenanceService = new MaintenanceService(Services.EventBus);
             Services.RegisterMaintenanceService(maintenanceService);
 
@@ -112,6 +124,37 @@ namespace Core.Bootstrap
             Services.RegisterAuthenticationService(authService);
             authService.OnLogoutComplete += HandleLogoutAsync;
             GameLogger.Log("Core services initialized");
+        }
+        
+        private async UniTaskVoid InitializeRemoteConfigAsync()
+        {
+            try
+            {
+                GameLogger.Log("Initializing Remote Config...");
+                
+                // Sync NTP time first
+                bool ntpSynced = await Services.NTPTimeService.SyncTime();
+                if (!ntpSynced)
+                {
+                    GameLogger.LogWarning("NTP sync failed, using local time");
+                }
+                
+                // Initialize Remote Config
+                bool configInitialized = await Services.RemoteConfigService.Initialize();
+                if (configInitialized)
+                {
+                    GameLogger.Log("Remote Config initialized successfully");
+                }
+                else
+                {
+                    GameLogger.LogWarning("Remote Config initialization failed, using fallback values");
+                }
+            }
+            catch (Exception ex)
+            {
+                GameLogger.LogException(ex);
+                GameLogger.LogWarning("Remote Config initialization error, continuing with defaults");
+            }
         }
 
         private async UniTask InitializePostLoginAsync()

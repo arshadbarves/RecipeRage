@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Core.Bootstrap;
 using Core.Logging;
+using Core.RemoteConfig;
+using Core.RemoteConfig.Models;
 using UI.Data;
 using UnityEngine;
 
@@ -9,7 +12,7 @@ namespace Core.Skins
 {
     /// <summary>
     /// Skins service - manages character skins
-    /// Loads from cloud (future) or local JSON
+    /// Loads from RemoteConfigService with fallback to local JSON
     /// </summary>
     public class SkinsService : ISkinsService, IDisposable
     {
@@ -29,11 +32,72 @@ namespace Core.Skins
         {
             LoadSkinsData();
             LoadPlayerProgress();
+            SubscribeToConfigUpdates();
         }
         
         private void LoadSkinsData()
         {
-            // Load from Resources (will be replaced with cloud loading)
+            // Try to load from RemoteConfigService first
+            var remoteConfigService = GameBootstrap.Services?.RemoteConfigService;
+            
+            if (remoteConfigService != null && remoteConfigService.TryGetConfig<SkinsConfig>(out var skinsConfig))
+            {
+                GameLogger.Log("Loading skins from RemoteConfigService");
+                LoadFromRemoteConfig(skinsConfig);
+                return;
+            }
+            
+            // Fallback to local JSON
+            GameLogger.LogWarning("RemoteConfigService not available, loading from local JSON");
+            LoadFromLocalJSON();
+        }
+        
+        private void LoadFromRemoteConfig(SkinsConfig skinsConfig)
+        {
+            _skinsData = new SkinsData { skins = new List<SkinItem>() };
+            
+            // Convert SkinsConfig to SkinsData
+            foreach (var skinDef in skinsConfig.Skins)
+            {
+                var skinItem = new SkinItem
+                {
+                    id = skinDef.SkinId,
+                    name = skinDef.SkinName,
+                    characterId = int.TryParse(skinDef.CharacterId, out int charId) ? charId : 0,
+                    characterName = skinDef.CharacterId, // Store as string
+                    rarity = skinDef.Rarity,
+                    description = skinDef.Description,
+                    unlockCost = skinDef.UnlockCost,
+                    unlockType = skinDef.UnlockCurrency, // Map currency to unlock type
+                    unlockedByDefault = skinDef.IsDefault,
+                    prefabAddress = skinDef.PrefabAddress,
+                    iconAddress = skinDef.IconAddress,
+                    tags = new List<string>() // Empty tags list
+                };
+                
+                // Add tags based on properties
+                if (skinDef.IsDefault)
+                {
+                    skinItem.tags.Add("default");
+                }
+                if (skinDef.IsLimitedEdition)
+                {
+                    skinItem.tags.Add("limited");
+                }
+                if (!string.IsNullOrEmpty(skinDef.SeasonId))
+                {
+                    skinItem.tags.Add($"season_{skinDef.SeasonId}");
+                }
+                
+                _skinsData.skins.Add(skinItem);
+            }
+            
+            BuildLookupDictionaries();
+            GameLogger.Log($"Loaded {_skinsData.skins.Count} skins from RemoteConfig");
+        }
+        
+        private void LoadFromLocalJSON()
+        {
             TextAsset jsonFile = Resources.Load<TextAsset>(SKINS_DATA_PATH);
             
             if (jsonFile == null)
@@ -52,7 +116,15 @@ namespace Core.Skins
                 return;
             }
             
-            // Build lookup dictionaries
+            BuildLookupDictionaries();
+            GameLogger.Log($"Loaded {_skinsData.skins.Count} skins from local JSON");
+        }
+        
+        private void BuildLookupDictionaries()
+        {
+            _skinsById.Clear();
+            _skinsByCharacter.Clear();
+            
             foreach (var skin in _skinsData.skins)
             {
                 // Add to ID lookup
@@ -71,8 +143,26 @@ namespace Core.Skins
                     _unlockedSkins.Add(skin.id);
                 }
             }
+        }
+        
+        private void SubscribeToConfigUpdates()
+        {
+            var remoteConfigService = GameBootstrap.Services?.RemoteConfigService;
             
-            GameLogger.Log($"Loaded {_skinsData.skins.Count} skins for {_skinsByCharacter.Count} characters");
+            if (remoteConfigService != null)
+            {
+                remoteConfigService.OnSpecificConfigUpdated += OnConfigUpdated;
+                GameLogger.Log("Subscribed to SkinsConfig updates");
+            }
+        }
+        
+        private void OnConfigUpdated(Type configType, IConfigModel config)
+        {
+            if (configType == typeof(SkinsConfig) && config is SkinsConfig skinsConfig)
+            {
+                GameLogger.Log("SkinsConfig updated, reloading skins data");
+                LoadFromRemoteConfig(skinsConfig);
+            }
         }
         
         private void LoadPlayerProgress()
@@ -244,6 +334,13 @@ namespace Core.Skins
         
         public void Dispose()
         {
+            // Unsubscribe from config updates
+            var remoteConfigService = GameBootstrap.Services?.RemoteConfigService;
+            if (remoteConfigService != null)
+            {
+                remoteConfigService.OnSpecificConfigUpdated -= OnConfigUpdated;
+            }
+            
             SavePlayerProgress();
             _skinsById.Clear();
             _skinsByCharacter.Clear();

@@ -12,6 +12,7 @@ using Core.Logging;
 using Core.Maintenance;
 using Core.Networking;
 using Core.Networking.Services;
+using Core.RemoteConfig;
 using Core.SaveSystem;
 using Core.Skins;
 using Core.State;
@@ -46,6 +47,8 @@ namespace Core.Bootstrap
         public ISaveService SaveService { get; private set; }
         public IAuthenticationService AuthenticationService { get; private set; }
         public IMaintenanceService MaintenanceService { get; private set; }
+        public IRemoteConfigService RemoteConfigService { get; private set; }
+        public INTPTimeService NTPTimeService { get; private set; }
 
         // ============================================
         // APPLICATION SERVICES (Lazy - Post-Auth)
@@ -114,6 +117,8 @@ namespace Core.Bootstrap
         public void RegisterSaveService(ISaveService service) => SaveService = service;
         public void RegisterAuthenticationService(IAuthenticationService service) => AuthenticationService = service;
         public void RegisterMaintenanceService(IMaintenanceService service) => MaintenanceService = service;
+        public void RegisterRemoteConfigService(IRemoteConfigService service) => RemoteConfigService = service;
+        public void RegisterNTPTimeService(INTPTimeService service) => NTPTimeService = service;
 
         // ============================================
         // LAZY SERVICE FACTORIES

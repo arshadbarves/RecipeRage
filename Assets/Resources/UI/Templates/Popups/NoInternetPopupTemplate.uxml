@@ -1,0 +1,32 @@
+<UXML xmlns="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <!-- Design System - Include FIRST for design tokens -->
+    <Style src="project://database/Assets/Resources/UI/Themes/DesignSystem.uss" />
+    <!-- Popup-specific styles -->
+    <Style src="project://database/Assets/Resources/UI/Styles/Popups/NoInternet.uss" />
+    
+    <VisualElement name="no-internet-popup-root" class="popup-root">
+        <VisualElement name="popup-overlay" class="popup-overlay" />
+        
+        <VisualElement name="popup-container" class="popup-container">
+            <!-- Header Card -->
+            <VisualElement name="popup-header" class="popup-header">
+                <Label name="title-label" text="No Internet Connection" class="popup-title" />
+            </VisualElement>
+            
+            <!-- Content Card -->
+            <VisualElement name="popup-content" class="popup-content">
+                <VisualElement name="icon-container" class="icon-container">
+                    <Label text="⚠" class="warning-icon" />
+                </VisualElement>
+                
+                <Label name="message-label" text="Please check your internet connection and try again." class="popup-message" />
+            </VisualElement>
+            
+            <!-- Footer Card -->
+            <VisualElement name="popup-footer" class="popup-footer">
+                <Button name="retry-button" text="Retry" class="button button-primary" />
+                <Button name="close-button" text="Close" class="button button-secondary" />
+            </VisualElement>
+        </VisualElement>
+    </VisualElement>
+</UXML>

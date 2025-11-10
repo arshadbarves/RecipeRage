@@ -1,0 +1,116 @@
+{
+    "configKey": "ShopConfig",
+    "version": "1.0.0",
+    "lastModified": "2024-01-15T10:00:00Z",
+    "categories": [
+        {
+            "categoryId": "characters",
+            "categoryName": "Characters",
+            "displayOrder": 1,
+            "items": [
+                {
+                    "itemId": "char_speedster",
+                    "itemName": "Speedster",
+                    "itemType": "character",
+                    "price": 500,
+                    "currencyType": "Coins",
+                    "iconAddress": "Icons/Characters/Speedster",
+                    "isFeatured": true,
+                    "isLimitedTime": false,
+                    "stock": -1,
+                    "maxPurchasePerPlayer": 1
+                },
+                {
+                    "itemId": "char_butcher",
+                    "itemName": "Butcher",
+                    "itemType": "character",
+                    "price": 750,
+                    "currencyType": "Coins",
+                    "iconAddress": "Icons/Characters/Butcher",
+                    "isFeatured": false,
+                    "isLimitedTime": false,
+                    "stock": -1,
+                    "maxPurchasePerPlayer": 1
+                }
+            ]
+        },
+        {
+            "categoryId": "skins",
+            "categoryName": "Skins",
+            "displayOrder": 2,
+            "items": [
+                {
+                    "itemId": "skin_golden_chef",
+                    "itemName": "Golden Chef",
+                    "itemType": "skin",
+                    "price": 5000,
+                    "currencyType": "Coins",
+                    "iconAddress": "Icons/Skins/GoldenChef",
+                    "isFeatured": true,
+                    "isLimitedTime": false,
+                    "stock": -1,
+                    "maxPurchasePerPlayer": 1
+                }
+            ]
+        },
+        {
+            "categoryId": "currency",
+            "categoryName": "Currency",
+            "displayOrder": 3,
+            "items": [
+                {
+                    "itemId": "gems_100",
+                    "itemName": "100 Gems",
+                    "itemType": "currency",
+                    "price": 99,
+                    "currencyType": "USD",
+                    "iconAddress": "Icons/Currency/Gems",
+                    "isFeatured": false,
+                    "isLimitedTime": false,
+                    "stock": -1,
+                    "maxPurchasePerPlayer": -1
+                },
+                {
+                    "itemId": "gems_500",
+                    "itemName": "500 Gems",
+                    "itemType": "currency",
+                    "price": 499,
+                    "currencyType": "USD",
+                    "iconAddress": "Icons/Currency/Gems",
+                    "isFeatured": true,
+                    "isLimitedTime": false,
+                    "stock": -1,
+                    "maxPurchasePerPlayer": -1
+                }
+            ]
+        }
+    ],
+    "rotationSchedule": {
+        "defaultRotationDurationHours": 24,
+        "rotationPeriods": [
+            {
+                "periodId": "week1",
+                "startTimestamp": 1705276800,
+                "endTimestamp": 1705881600,
+                "featuredItemIds": [
+                    "char_speedster",
+                    "skin_golden_chef",
+                    "gems_500"
+                ]
+            }
+        ]
+    },
+    "specialOffers": [
+        {
+            "offerId": "weekend_sale",
+            "offerName": "Weekend Sale",
+            "itemId": "gems_500",
+            "originalPrice": 499,
+            "discountedPrice": 399,
+            "discountPercentage": 20,
+            "startTimestamp": 1705622400,
+            "endTimestamp": 1705881600,
+            "currencyType": "USD"
+        }
+    ]
+}

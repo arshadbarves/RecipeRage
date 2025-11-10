@@ -1,0 +1,24 @@
+{
+    "configKey": "GameSettings",
+    "version": "1.0.0",
+    "lastModified": "2024-01-15T10:00:00Z",
+    "minPlayers": 2,
+    "maxPlayers": 4,
+    "matchDurationSeconds": 180,
+    "scoreMultiplier": 1.0,
+    "perfectDishBonus": 100,
+    "coinsPerWin": 50,
+    "coinsPerLoss": 10,
+    "gemsPerRankedWin": 5,
+    "dailyRewardCoins": 100,
+    "enableRankedMode": true,
+    "enableDailyRewards": true,
+    "enableSeasonPass": true,
+    "enableChatSystem": true,
+    "enableSpectatorMode": false,
+    "customGameRules": {
+        "allowFriendlyFire": false,
+        "enablePowerUps": true,
+        "maxRecipeComplexity": 5
+    }
+}

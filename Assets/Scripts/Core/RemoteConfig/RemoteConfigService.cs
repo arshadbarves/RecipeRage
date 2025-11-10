@@ -1,0 +1,292 @@
+using System;
+using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
+using Core.Logging;
+using Core.RemoteConfig.Providers;
+using UnityEngine;
+
+namespace Core.RemoteConfig
+{
+    /// <summary>
+    /// Core service for managing remote configuration
+    /// Provides centralized access to all configuration domains
+    /// </summary>
+    public class RemoteConfigService : IRemoteConfigService
+    {
+        private readonly Dictionary<Type, IConfigModel> _configCache;
+        private IConfigProvider _firebaseProvider;
+        
+        private ConfigHealthStatus _healthStatus;
+        private DateTime _lastUpdateTime;
+        private bool _isInitialized;
+        private bool _backgroundRefreshEnabled;
+        
+        public ConfigHealthStatus HealthStatus => _healthStatus;
+        public DateTime LastUpdateTime => _lastUpdateTime;
+        
+        public event Action<IConfigModel> OnConfigUpdated;
+        public event Action<Type, IConfigModel> OnSpecificConfigUpdated;
+        public event Action<ConfigHealthStatus> OnHealthStatusChanged;
+        
+        public RemoteConfigService()
+        {
+            _configCache = new Dictionary<Type, IConfigModel>();
+            _healthStatus = ConfigHealthStatus.Failed;
+            _lastUpdateTime = DateTime.MinValue;
+            _isInitialized = false;
+            _backgroundRefreshEnabled = false;
+        }
+        
+        /// <summary>
+        /// Enables background refresh of configurations
+        /// </summary>
+        public void EnableBackgroundRefresh(int intervalMinutes = 30)
+        {
+            if (_backgroundRefreshEnabled)
+            {
+                return;
+            }
+            
+            _backgroundRefreshEnabled = true;
+            StartBackgroundRefresh(intervalMinutes).Forget();
+            GameLogger.Log($"Background refresh enabled with {intervalMinutes} minute interval");
+        }
+        
+        /// <summary>
+        /// Disables background refresh
+        /// </summary>
+        public void DisableBackgroundRefresh()
+        {
+            _backgroundRefreshEnabled = false;
+            GameLogger.Log("Background refresh disabled");
+        }
+        
+        private async UniTaskVoid StartBackgroundRefresh(int intervalMinutes)
+        {
+            while (_backgroundRefreshEnabled && Application.isPlaying)
+            {
+                await UniTask.Delay(TimeSpan.FromMinutes(intervalMinutes));
+                
+                if (_backgroundRefreshEnabled && _isInitialized && Application.isPlaying)
+                {
+                    GameLogger.Log("Performing background config refresh...");
+                    await RefreshConfig();
+                }
+            }
+        }
+        
+        public async UniTask<bool> Initialize()
+        {
+            try
+            {
+                GameLogger.Log("Initializing RemoteConfigService...");
+                
+                // Initialize Firebase provider
+                _firebaseProvider = new FirebaseConfigProvider();
+                bool firebaseSuccess = await _firebaseProvider.Initialize();
+                
+                if (!firebaseSuccess || !_firebaseProvider.IsAvailable())
+                {
+                    GameLogger.LogError("Firebase provider failed to initialize");
+                    UpdateHealthStatus(ConfigHealthStatus.Failed);
+                    return false;
+                }
+                
+                GameLogger.Log("Firebase provider initialized successfully");
+                
+                // Fetch initial configuration
+                bool fetchSuccess = await FetchAllConfigs();
+                
+                if (fetchSuccess)
+                {
+                    UpdateHealthStatus(ConfigHealthStatus.Healthy);
+                    _isInitialized = true;
+                    GameLogger.Log("RemoteConfigService initialized successfully");
+                    return true;
+                }
+                else
+                {
+                    UpdateHealthStatus(ConfigHealthStatus.Degraded);
+                    GameLogger.LogWarning("RemoteConfigService initialized with degraded status");
+                    return true; // Still return true as service is functional
+                }
+            }
+            catch (Exception ex)
+            {
+                GameLogger.LogError($"Failed to initialize RemoteConfigService: {ex.Message}");
+                UpdateHealthStatus(ConfigHealthStatus.Failed);
+                return false;
+            }
+        }
+        
+        public T GetConfig<T>() where T : class, IConfigModel
+        {
+            if (_configCache.TryGetValue(typeof(T), out var config))
+            {
+                return config as T;
+            }
+            
+            GameLogger.LogWarning($"Config of type {typeof(T).Name} not found in cache");
+            return null;
+        }
+        
+        public bool TryGetConfig<T>(out T config) where T : class, IConfigModel
+        {
+            config = GetConfig<T>();
+            return config != null;
+        }
+        
+        public async UniTask<bool> RefreshConfig()
+        {
+            if (!_isInitialized || _firebaseProvider == null)
+            {
+                GameLogger.LogError("Cannot refresh config: Service not initialized");
+                return false;
+            }
+            
+            try
+            {
+                GameLogger.Log("Refreshing all configurations...");
+                return await FetchAllConfigs();
+            }
+            catch (Exception ex)
+            {
+                GameLogger.LogError($"Failed to refresh configurations: {ex.Message}");
+                UpdateHealthStatus(ConfigHealthStatus.Degraded);
+                return false;
+            }
+        }
+        
+        public async UniTask<bool> RefreshConfig<T>() where T : class, IConfigModel
+        {
+            if (!_isInitialized || _firebaseProvider == null)
+            {
+                GameLogger.LogError("Cannot refresh config: Service not initialized");
+                return false;
+            }
+            
+            try
+            {
+                GameLogger.Log($"Refreshing configuration: {typeof(T).Name}");
+                
+                string configKey = GetConfigKey<T>();
+                var config = await _firebaseProvider.FetchConfig<T>(configKey);
+                
+                if (config != null && config.Validate())
+                {
+                    UpdateConfig(config);
+                    return true;
+                }
+                else
+                {
+                    GameLogger.LogWarning($"Failed to refresh config: {typeof(T).Name}");
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                GameLogger.LogError($"Failed to refresh config {typeof(T).Name}: {ex.Message}");
+                return false;
+            }
+        }
+        
+        private async UniTask<bool> FetchAllConfigs()
+        {
+            try
+            {
+                var configs = await _firebaseProvider.FetchAllConfigs();
+                
+                if (configs == null || configs.Count == 0)
+                {
+                    GameLogger.LogWarning("No configurations fetched from provider");
+                    return false;
+                }
+                
+                int validCount = 0;
+                foreach (var kvp in configs)
+                {
+                    if (kvp.Value != null && kvp.Value.Validate())
+                    {
+                        UpdateConfig(kvp.Value);
+                        validCount++;
+                    }
+                    else
+                    {
+                        GameLogger.LogWarning($"Config validation failed: {kvp.Key}");
+                    }
+                }
+                
+                _lastUpdateTime = DateTime.UtcNow;
+                GameLogger.Log($"Fetched and validated {validCount}/{configs.Count} configurations");
+                
+                return validCount > 0;
+            }
+            catch (Exception ex)
+            {
+                GameLogger.LogError($"Failed to fetch all configs: {ex.Message}");
+                return false;
+            }
+        }
+        
+        private void UpdateConfig(IConfigModel config)
+        {
+            if (config == null)
+            {
+                return;
+            }
+            
+            var configType = config.GetType();
+            
+            // Check if config has changed
+            bool hasChanged = true;
+            if (_configCache.TryGetValue(configType, out var existingConfig))
+            {
+                hasChanged = !AreConfigsEqual(existingConfig, config);
+            }
+            
+            _configCache[configType] = config;
+            
+            if (hasChanged)
+            {
+                GameLogger.Log($"Config updated: {config.ConfigKey}");
+                OnConfigUpdated?.Invoke(config);
+                OnSpecificConfigUpdated?.Invoke(configType, config);
+            }
+        }
+        
+        private bool AreConfigsEqual(IConfigModel config1, IConfigModel config2)
+        {
+            if (config1 == null || config2 == null)
+            {
+                return false;
+            }
+            
+            return config1.Version == config2.Version && 
+                   config1.LastModified == config2.LastModified;
+        }
+        
+        private void UpdateHealthStatus(ConfigHealthStatus newStatus)
+        {
+            if (_healthStatus != newStatus)
+            {
+                var previousStatus = _healthStatus;
+                _healthStatus = newStatus;
+                GameLogger.Log($"Health status changed: {previousStatus} -> {newStatus}");
+                OnHealthStatusChanged?.Invoke(newStatus);
+            }
+        }
+        
+        private string GetConfigKey<T>() where T : IConfigModel
+        {
+            var typeName = typeof(T).Name;
+            
+            // Remove "Config" suffix if present
+            if (typeName.EndsWith("Config"))
+            {
+                return typeName;
+            }
+            
+            return typeName;
+        }
+    }
+}

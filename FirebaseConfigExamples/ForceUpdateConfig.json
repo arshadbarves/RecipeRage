@@ -1,0 +1,25 @@
+{
+    "configKey": "ForceUpdateConfig",
+    "version": "1.0.0",
+    "lastModified": "2024-01-15T10:00:00Z",
+    "platformRequirements": [
+        {
+            "platform": "iOS",
+            "minimumVersion": "1.0.0",
+            "recommendedVersion": "1.2.0",
+            "updateUrgency": "optional",
+            "updateTitle": "Update Available",
+            "updateMessage": "A new version of RecipeRage is available! Update now to get the latest features and improvements.",
+            "storeUrl": "https://apps.apple.com/app/reciperage/id123456789"
+        },
+        {
+            "platform": "Android",
+            "minimumVersion": "1.0.0",
+            "recommendedVersion": "1.2.0",
+            "updateUrgency": "optional",
+            "updateTitle": "Update Available",
+            "updateMessage": "A new version of RecipeRage is available! Update now to get the latest features and improvements.",
+            "storeUrl": "https://play.google.com/store/apps/details?id=com.yourcompany.reciperage"
+        }
+    ]
+}

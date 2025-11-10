@@ -1,18 +1,23 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Core.Bootstrap;
 using Core.Logging;
+using Core.RemoteConfig;
+using Core.RemoteConfig.Models;
 
 namespace Core.GameModes
 {
     /// <summary>
     /// Game mode service - pure C# class, no MonoBehaviour
     /// Implements IDisposable for proper cleanup on logout
+    /// Uses RemoteConfigService for game settings
     /// </summary>
     public class GameModeService : IGameModeService, IDisposable
     {
         private readonly Dictionary<string, GameMode> _gameModes = new Dictionary<string, GameMode>();
         private GameMode _selectedGameMode;
+        private GameSettingsConfig _gameSettings;
 
         public event Action<GameMode> OnGameModeChanged;
 
@@ -20,7 +25,51 @@ namespace Core.GameModes
 
         public GameModeService()
         {
+            LoadGameSettings();
             LoadGameModes();
+            SubscribeToConfigUpdates();
+        }
+        
+        private void LoadGameSettings()
+        {
+            var remoteConfigService = GameBootstrap.Services?.RemoteConfigService;
+            
+            if (remoteConfigService != null && remoteConfigService.TryGetConfig<GameSettingsConfig>(out var settings))
+            {
+                _gameSettings = settings;
+                GameLogger.Log("Loaded game settings from RemoteConfig");
+            }
+            else
+            {
+                GameLogger.LogWarning("RemoteConfig not available, using default settings");
+            }
+        }
+        
+        private void SubscribeToConfigUpdates()
+        {
+            var remoteConfigService = GameBootstrap.Services?.RemoteConfigService;
+            
+            if (remoteConfigService != null)
+            {
+                remoteConfigService.OnSpecificConfigUpdated += OnConfigUpdated;
+            }
+        }
+        
+        private void OnConfigUpdated(Type configType, IConfigModel config)
+        {
+            if (configType == typeof(GameSettingsConfig) && config is GameSettingsConfig settings)
+            {
+                _gameSettings = settings;
+                GameLogger.Log("Game settings updated from RemoteConfig");
+            }
+        }
+        
+        /// <summary>
+        /// Gets game settings from RemoteConfig
+        /// </summary>
+        public GameSettingsConfig GetGameSettings()
+        {
+            return _gameSettings;
         }
 
         private void LoadGameModes()
@@ -85,9 +134,17 @@ namespace Core.GameModes
 
         public void Dispose()
         {
+            // Unsubscribe from config updates
+            var remoteConfigService = GameBootstrap.Services?.RemoteConfigService;
+            if (remoteConfigService != null)
+            {
+                remoteConfigService.OnSpecificConfigUpdated -= OnConfigUpdated;
+            }
+            
             GameLogger.Log("Disposing");
             _gameModes.Clear();
             _selectedGameMode = null;
+            _gameSettings = null;
         }
     }
 }

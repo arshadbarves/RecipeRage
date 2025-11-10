@@ -1,0 +1,87 @@
+{
+    "configKey": "MapConfig",
+    "version": "1.0.0",
+    "lastModified": "2024-01-15T10:00:00Z",
+    "maps": [
+        {
+            "mapId": "kitchen_classic",
+            "mapName": "Classic Kitchen",
+            "description": "Traditional restaurant kitchen",
+            "difficulty": "Easy",
+            "matchDurationSeconds": 180,
+            "minPlayers": 2,
+            "maxPlayers": 4,
+            "trophyRewardWin": 30,
+            "trophyRewardLoss": -10,
+            "rotationConfig": {
+                "isInRotation": true,
+                "rotationDurationHours": 24,
+                "isAlwaysAvailable": true
+            },
+            "sceneAddress": "Scenes/Maps/KitchenClassic",
+            "thumbnailAddress": "Thumbnails/Maps/KitchenClassic",
+            "previewAddress": "Previews/Maps/KitchenClassic"
+        },
+        {
+            "mapId": "food_truck",
+            "mapName": "Food Truck Frenzy",
+            "description": "Compact cooking in a food truck",
+            "difficulty": "Medium",
+            "matchDurationSeconds": 150,
+            "minPlayers": 2,
+            "maxPlayers": 4,
+            "trophyRewardWin": 35,
+            "trophyRewardLoss": -12,
+            "rotationConfig": {
+                "isInRotation": true,
+                "rotationDurationHours": 48,
+                "isAlwaysAvailable": false
+            },
+            "sceneAddress": "Scenes/Maps/FoodTruck",
+            "thumbnailAddress": "Thumbnails/Maps/FoodTruck",
+            "previewAddress": "Previews/Maps/FoodTruck"
+        },
+        {
+            "mapId": "rooftop_restaurant",
+            "mapName": "Rooftop Restaurant",
+            "description": "High-stakes cooking with a view",
+            "difficulty": "Hard",
+            "matchDurationSeconds": 200,
+            "minPlayers": 2,
+            "maxPlayers": 4,
+            "trophyRewardWin": 40,
+            "trophyRewardLoss": -15,
+            "rotationConfig": {
+                "isInRotation": true,
+                "rotationDurationHours": 72,
+                "isAlwaysAvailable": false
+            },
+            "sceneAddress": "Scenes/Maps/RooftopRestaurant",
+            "thumbnailAddress": "Thumbnails/Maps/RooftopRestaurant",
+            "previewAddress": "Previews/Maps/RooftopRestaurant"
+        }
+    ],
+    "rotationSchedule": {
+        "defaultRotationDurationHours": 24,
+        "rotationPeriods": [
+            {
+                "periodId": "week1",
+                "startTimestamp": 1705276800,
+                "endTimestamp": 1705881600,
+                "activeMapIds": [
+                    "kitchen_classic",
+                    "food_truck"
+                ]
+            },
+            {
+                "periodId": "week2",
+                "startTimestamp": 1705881600,
+                "endTimestamp": 1706486400,
+                "activeMapIds": [
+                    "kitchen_classic",
+                    "rooftop_restaurant"
+                ]
+            }
+        ]
+    }
+}

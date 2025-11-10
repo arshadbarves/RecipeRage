@@ -15,6 +15,7 @@ namespace UI
         Modal,
         Popup,
         Notification,
+        NoInternet,
         FriendsPopup,
         UsernamePopup,
 
