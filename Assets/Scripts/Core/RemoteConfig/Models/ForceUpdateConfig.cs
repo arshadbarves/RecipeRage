@@ -10,22 +10,11 @@ namespace Core.RemoteConfig.Models
     [Serializable]
     public class ForceUpdateConfig : IConfigModel
     {
-        [JsonProperty("configKey")]
-        public string ConfigKey => "ForceUpdateConfig";
-        
-        [JsonProperty("version")]
-        public string Version { get; set; }
-        
-        [JsonProperty("lastModified")]
-        public DateTime LastModified { get; set; }
-        
         [JsonProperty("platformRequirements")]
         public List<PlatformVersionRequirement> PlatformRequirements { get; set; }
         
         public ForceUpdateConfig()
         {
-            Version = "1.0.0";
-            LastModified = DateTime.UtcNow;
             PlatformRequirements = new List<PlatformVersionRequirement>();
         }
         

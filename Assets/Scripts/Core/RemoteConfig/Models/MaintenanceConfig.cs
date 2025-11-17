@@ -9,15 +9,6 @@ namespace Core.RemoteConfig.Models
     [Serializable]
     public class MaintenanceConfig : IConfigModel
     {
-        [JsonProperty("configKey")]
-        public string ConfigKey => "MaintenanceConfig";
-        
-        [JsonProperty("version")]
-        public string Version { get; set; }
-        
-        [JsonProperty("lastModified")]
-        public DateTime LastModified { get; set; }
-        
         [JsonProperty("isMaintenanceActive")]
         public bool IsMaintenanceActive { get; set; }
         
@@ -41,8 +32,6 @@ namespace Core.RemoteConfig.Models
         
         public MaintenanceConfig()
         {
-            Version = "1.0.0";
-            LastModified = DateTime.UtcNow;
             IsMaintenanceActive = false;
             AllowCurrentMatches = true;
             MaintenanceTitle = "Scheduled Maintenance";

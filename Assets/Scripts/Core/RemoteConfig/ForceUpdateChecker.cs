@@ -32,6 +32,9 @@ namespace Core.RemoteConfig
             {
                 GameLogger.Log("Checking for force update...");
                 
+                // Refresh force update config to get latest data
+                await _configService.RefreshConfig<ForceUpdateConfig>();
+                
                 // Get force update config
                 if (!_configService.TryGetConfig<ForceUpdateConfig>(out var updateConfig))
                 {

@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using Core.Logging;
 using Core.RemoteConfig.Models;
-using Newtonsoft.Json;
-using UnityEngine;
+using PlayEveryWare.EpicOnlineServices.Utility;
 
 namespace Core.RemoteConfig.Providers
 {
@@ -14,40 +13,55 @@ namespace Core.RemoteConfig.Providers
     public class FirebaseConfigProvider : IConfigProvider
     {
         public string ProviderName => "Firebase";
-        
+
         private bool _isInitialized;
-        
+
         // Firebase Remote Config would be initialized here
         // For now, this is a placeholder for Firebase SDK integration
-        
+
         public FirebaseConfigProvider()
         {
             _isInitialized = false;
         }
-        
+
         public bool IsAvailable()
         {
             // Check if Firebase is available and initialized
             // This would check Firebase.RemoteConfig availability
             return _isInitialized;
         }
-        
+
         public async UniTask<bool> Initialize()
         {
             try
             {
                 GameLogger.Log("Initializing Firebase Remote Config provider...");
-                
-                // TODO: Initialize Firebase Remote Config SDK
-                // await Firebase.RemoteConfig.FirebaseRemoteConfig.DefaultInstance.FetchAsync();
-                // await Firebase.RemoteConfig.FirebaseRemoteConfig.DefaultInstance.ActivateAsync();
-                
+
                 // Detect platform and environment
                 string platform = GetPlatform();
                 string environment = GetEnvironment();
-                
+
+                var remoteConfig = Firebase.RemoteConfig.FirebaseRemoteConfig.DefaultInstance;
+
+                // Firebase will automatically match conditions based on device.os
+                // No need to set anything - it's automatic!
+
+                GameLogger.Log($"Firebase will use device.os for condition matching");
+
+                // Set default config values
+                var defaults = new Dictionary<string, object>
+                {
+                    // Add your default config values here if needed
+                };
+
+                await remoteConfig.SetDefaultsAsync(defaults);
+
+                // Fetch and activate configs
+                await remoteConfig.FetchAsync(TimeSpan.Zero);
+                await remoteConfig.ActivateAsync();
+
                 GameLogger.Log($"Firebase provider initialized for platform: {platform}, environment: {environment}");
-                
+
                 _isInitialized = true;
                 return true;
             }
@@ -58,26 +72,22 @@ namespace Core.RemoteConfig.Providers
                 return false;
             }
         }
-        
+
         public async UniTask<T> FetchConfig<T>(string key) where T : IConfigModel
         {
             if (!_isInitialized)
             {
                 throw new InvalidOperationException("Firebase provider not initialized");
             }
-            
+
             try
             {
                 GameLogger.Log($"Fetching config '{key}' from Firebase...");
-                
-                // TODO: Fetch from Firebase Remote Config
-                // var jsonString = Firebase.RemoteConfig.FirebaseRemoteConfig.DefaultInstance.GetValue(key).StringValue;
-                
-                // Placeholder: Return null for now until Firebase SDK is integrated
-                GameLogger.LogWarning($"Firebase SDK not integrated yet. Config '{key}' fetch skipped.");
-                
-                await UniTask.Yield();
-                return default(T);
+
+                var jsonString = Firebase.RemoteConfig.FirebaseRemoteConfig.DefaultInstance.GetValue(key).StringValue;
+
+                return JsonUtility.FromJson<T>(jsonString);
+
             }
             catch (Exception ex)
             {
@@ -85,42 +95,42 @@ namespace Core.RemoteConfig.Providers
                 throw;
             }
         }
-        
+
         public async UniTask<Dictionary<string, IConfigModel>> FetchAllConfigs()
         {
             if (!_isInitialized)
             {
                 throw new InvalidOperationException("Firebase provider not initialized");
             }
-            
+
             try
             {
                 GameLogger.Log("Fetching all configs from Firebase...");
-                
+
                 var configs = new Dictionary<string, IConfigModel>();
-                
+
                 // Fetch all config domains
                 var gameSettings = await FetchConfig<GameSettingsConfig>("GameSettings");
                 if (gameSettings != null) configs["GameSettings"] = gameSettings;
-                
+
                 var shopConfig = await FetchConfig<ShopConfig>("ShopConfig");
                 if (shopConfig != null) configs["ShopConfig"] = shopConfig;
-                
+
                 var characterConfig = await FetchConfig<CharacterConfig>("CharacterConfig");
                 if (characterConfig != null) configs["CharacterConfig"] = characterConfig;
-                
+
                 var mapConfig = await FetchConfig<MapConfig>("MapConfig");
                 if (mapConfig != null) configs["MapConfig"] = mapConfig;
-                
+
                 var skinsConfig = await FetchConfig<SkinsConfig>("SkinsConfig");
                 if (skinsConfig != null) configs["SkinsConfig"] = skinsConfig;
-                
+
                 var maintenanceConfig = await FetchConfig<MaintenanceConfig>("MaintenanceConfig");
                 if (maintenanceConfig != null) configs["MaintenanceConfig"] = maintenanceConfig;
-                
+
                 var forceUpdateConfig = await FetchConfig<ForceUpdateConfig>("ForceUpdateConfig");
                 if (forceUpdateConfig != null) configs["ForceUpdateConfig"] = forceUpdateConfig;
-                
+
                 GameLogger.Log($"Fetched {configs.Count} configs from Firebase");
                 return configs;
             }
@@ -130,28 +140,28 @@ namespace Core.RemoteConfig.Providers
                 throw;
             }
         }
-        
+
         private string GetPlatform()
         {
 #if UNITY_IOS
-            return "iOS";
+            return "ios";
 #elif UNITY_ANDROID
-            return "Android";
+            return "android";
 #elif UNITY_STANDALONE
-            return "PC";
+            return "pc";
 #else
-            return "Unknown";
+            return "unknown";
 #endif
         }
-        
+
         private string GetEnvironment()
         {
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
-            return "Development";
+            return "development";
 #elif STAGING
-            return "Staging";
+            return "staging";
 #else
-            return "Production";
+            return "production";
 #endif
         }
     }

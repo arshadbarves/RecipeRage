@@ -67,8 +67,18 @@ namespace Core.Bootstrap
             var storageFactory = new StorageProviderFactory();
             Services.RegisterSaveService(new SaveService(storageFactory, new EncryptionService()));
 
+            // Initialize NTP Time Service early
+            var ntpTimeService = new NTPTimeService();
+            Services.RegisterNTPTimeService(ntpTimeService);
+            
+            // Initialize Remote Config Service early (before UI)
+            var remoteConfigService = new RemoteConfigService();
+            Services.RegisterRemoteConfigService(remoteConfigService);
+
             Services.RegisterAnimationService(CreateAnimationService());
             Services.RegisterUIService(CreateUIService());
+            
+            // Initialize UI screens AFTER RemoteConfig so they can subscribe to events
             Services.UIService.InitializeScreens();
 
             GameLogger.Log("Foundation services initialized");
@@ -79,10 +89,15 @@ namespace Core.Bootstrap
             try
             {
                 await UniTask.Yield();
+                
+                // Initialize RemoteConfig early (before splash screen)
+                await InitializeRemoteConfigAsync();
+                
                 if (_showSplashScreen)
                 {
                     await ShowSplashScreenAsync();
                 }
+                
                 GameLogger.Log("Initializing core services");
                 InitializeCoreServices();
 
@@ -106,16 +121,7 @@ namespace Core.Bootstrap
 
         private void InitializeCoreServices()
         {
-            // Initialize NTP Time Service
-            var ntpTimeService = new NTPTimeService();
-            Services.RegisterNTPTimeService(ntpTimeService);
-            
-            // Initialize Remote Config Service
-            var remoteConfigService = new RemoteConfigService();
-            Services.RegisterRemoteConfigService(remoteConfigService);
-            
-            // Initialize remote config asynchronously (don't block)
-            InitializeRemoteConfigAsync().Forget();
+            // NTP and RemoteConfig already initialized in InitializeFoundation
             
             var maintenanceService = new MaintenanceService(Services.EventBus);
             Services.RegisterMaintenanceService(maintenanceService);
@@ -126,7 +132,7 @@ namespace Core.Bootstrap
             GameLogger.Log("Core services initialized");
         }
         
-        private async UniTaskVoid InitializeRemoteConfigAsync()
+        private async UniTask InitializeRemoteConfigAsync()
         {
             try
             {
@@ -166,15 +172,71 @@ namespace Core.Bootstrap
                 loadingScreen = ShowLoadingScreen();
             }
 
-            loadingScreen?.UpdateProgress(0.5f, "Loading game data...");
+            // Refresh remote config (already initialized, just refresh for latest data)
+            loadingScreen?.UpdateProgress(0.3f, "Loading configuration...");
+            await Services.RemoteConfigService.RefreshConfig();
+            
+            // Check for force update
+            loadingScreen?.UpdateProgress(0.5f, "Checking for updates...");
+            await CheckForceUpdateAsync();
+            
+            // Check maintenance mode
+            loadingScreen?.UpdateProgress(0.7f, "Checking server status...");
+            await CheckMaintenanceAsync();
+            
+            loadingScreen?.UpdateProgress(0.9f, "Loading game data...");
             await UniTask.Delay(200);
+            
             loadingScreen?.UpdateProgress(1f, "Ready!");
             await UniTask.Delay(200);
+            
             if (loadingScreen != null)
             {
                 await loadingScreen.CompleteAsync();
             }
             GameLogger.Log("Post-login initialization complete");
+        }
+        
+        private async UniTask CheckForceUpdateAsync()
+        {
+            try
+            {
+                var forceUpdateChecker = new ForceUpdateChecker(
+                    Services.RemoteConfigService,
+                    Services.UIService);
+                bool updateRequired = await forceUpdateChecker.CheckForUpdate();
+                
+                if (updateRequired)
+                {
+                    GameLogger.Log("Force update required - user must update to continue");
+                    // ForceUpdateChecker already shows the popup and blocks if needed
+                }
+            }
+            catch (Exception ex)
+            {
+                GameLogger.LogException(ex);
+                GameLogger.LogWarning("Force update check failed, continuing");
+            }
+        }
+        
+        private async UniTask CheckMaintenanceAsync()
+        {
+            try
+            {
+                if (Services.MaintenanceService != null)
+                {
+                    bool maintenanceCheckSuccess = await Services.MaintenanceService.CheckMaintenanceStatusAsync();
+                    if (!maintenanceCheckSuccess)
+                    {
+                        GameLogger.LogWarning("Maintenance check failed, but proceeding");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                GameLogger.LogException(ex);
+                GameLogger.LogWarning("Maintenance check error, continuing");
+            }
         }
 
         private async UniTask ShowSplashScreenAsync()
@@ -211,16 +273,6 @@ namespace Core.Bootstrap
         {
             Services.EventBus.Unsubscribe<Events.LoginSuccessEvent>(OnLoginSuccess);
             GameLogger.Log($"Login successful for user: {evt.UserId}");
-
-            // Check maintenance status after successful login
-            if (Services.MaintenanceService != null)
-            {
-                bool maintenanceCheckSuccess = await Services.MaintenanceService.CheckMaintenanceStatusAsync();
-                if (!maintenanceCheckSuccess)
-                {
-                    GameLogger.LogWarning("Maintenance check failed, but proceeding with login");
-                }
-            }
 
             await InitializePostLoginAsync();
         }

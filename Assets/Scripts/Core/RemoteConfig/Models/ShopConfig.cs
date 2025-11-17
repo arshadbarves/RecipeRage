@@ -11,15 +11,6 @@ namespace Core.RemoteConfig.Models
     [Serializable]
     public class ShopConfig : IConfigModel
     {
-        [JsonProperty("configKey")]
-        public string ConfigKey => "ShopConfig";
-        
-        [JsonProperty("version")]
-        public string Version { get; set; }
-        
-        [JsonProperty("lastModified")]
-        public DateTime LastModified { get; set; }
-        
         [JsonProperty("categories")]
         public List<ShopCategory> Categories { get; set; }
         
@@ -31,8 +22,6 @@ namespace Core.RemoteConfig.Models
         
         public ShopConfig()
         {
-            Version = "1.0.0";
-            LastModified = DateTime.UtcNow;
             Categories = new List<ShopCategory>();
             SpecialOffers = new List<SpecialOffer>();
         }

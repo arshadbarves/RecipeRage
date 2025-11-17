@@ -91,6 +91,9 @@ namespace Core.RemoteConfig
             {
                 _lastCheckTime = DateTime.UtcNow;
                 
+                // Refresh maintenance config to get latest data
+                await _configService.RefreshConfig<MaintenanceConfig>();
+                
                 // Get maintenance config
                 if (!_configService.TryGetConfig<MaintenanceConfig>(out var maintenanceConfig))
                 {

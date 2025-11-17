@@ -11,22 +11,11 @@ namespace Core.RemoteConfig.Models
     [Serializable]
     public class SkinsConfig : IConfigModel
     {
-        [JsonProperty("configKey")]
-        public string ConfigKey => "SkinsConfig";
-        
-        [JsonProperty("version")]
-        public string Version { get; set; }
-        
-        [JsonProperty("lastModified")]
-        public DateTime LastModified { get; set; }
-        
         [JsonProperty("skins")]
         public List<SkinDefinition> Skins { get; set; }
         
         public SkinsConfig()
         {
-            Version = "1.0.0";
-            LastModified = DateTime.UtcNow;
             Skins = new List<SkinDefinition>();
         }
         

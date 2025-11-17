@@ -15,19 +15,19 @@ namespace Core.RemoteConfig
     {
         private readonly Dictionary<Type, IConfigModel> _configCache;
         private IConfigProvider _firebaseProvider;
-        
+
         private ConfigHealthStatus _healthStatus;
         private DateTime _lastUpdateTime;
         private bool _isInitialized;
         private bool _backgroundRefreshEnabled;
-        
+
         public ConfigHealthStatus HealthStatus => _healthStatus;
         public DateTime LastUpdateTime => _lastUpdateTime;
-        
+
         public event Action<IConfigModel> OnConfigUpdated;
         public event Action<Type, IConfigModel> OnSpecificConfigUpdated;
         public event Action<ConfigHealthStatus> OnHealthStatusChanged;
-        
+
         public RemoteConfigService()
         {
             _configCache = new Dictionary<Type, IConfigModel>();
@@ -36,7 +36,7 @@ namespace Core.RemoteConfig
             _isInitialized = false;
             _backgroundRefreshEnabled = false;
         }
-        
+
         /// <summary>
         /// Enables background refresh of configurations
         /// </summary>
@@ -46,12 +46,12 @@ namespace Core.RemoteConfig
             {
                 return;
             }
-            
+
             _backgroundRefreshEnabled = true;
-            StartBackgroundRefresh(intervalMinutes).Forget();
+            StartBackgroundRefreshAsync(intervalMinutes).Forget();
             GameLogger.Log($"Background refresh enabled with {intervalMinutes} minute interval");
         }
-        
+
         /// <summary>
         /// Disables background refresh
         /// </summary>
@@ -60,13 +60,13 @@ namespace Core.RemoteConfig
             _backgroundRefreshEnabled = false;
             GameLogger.Log("Background refresh disabled");
         }
-        
-        private async UniTaskVoid StartBackgroundRefresh(int intervalMinutes)
+
+        private async UniTaskVoid StartBackgroundRefreshAsync(int intervalMinutes)
         {
             while (_backgroundRefreshEnabled && Application.isPlaying)
             {
                 await UniTask.Delay(TimeSpan.FromMinutes(intervalMinutes));
-                
+
                 if (_backgroundRefreshEnabled && _isInitialized && Application.isPlaying)
                 {
                     GameLogger.Log("Performing background config refresh...");
@@ -74,29 +74,29 @@ namespace Core.RemoteConfig
                 }
             }
         }
-        
+
         public async UniTask<bool> Initialize()
         {
             try
             {
                 GameLogger.Log("Initializing RemoteConfigService...");
-                
+
                 // Initialize Firebase provider
                 _firebaseProvider = new FirebaseConfigProvider();
                 bool firebaseSuccess = await _firebaseProvider.Initialize();
-                
+
                 if (!firebaseSuccess || !_firebaseProvider.IsAvailable())
                 {
                     GameLogger.LogError("Firebase provider failed to initialize");
                     UpdateHealthStatus(ConfigHealthStatus.Failed);
                     return false;
                 }
-                
+
                 GameLogger.Log("Firebase provider initialized successfully");
-                
+
                 // Fetch initial configuration
                 bool fetchSuccess = await FetchAllConfigs();
-                
+
                 if (fetchSuccess)
                 {
                     UpdateHealthStatus(ConfigHealthStatus.Healthy);
@@ -118,24 +118,24 @@ namespace Core.RemoteConfig
                 return false;
             }
         }
-        
+
         public T GetConfig<T>() where T : class, IConfigModel
         {
             if (_configCache.TryGetValue(typeof(T), out var config))
             {
                 return config as T;
             }
-            
+
             GameLogger.LogWarning($"Config of type {typeof(T).Name} not found in cache");
             return null;
         }
-        
+
         public bool TryGetConfig<T>(out T config) where T : class, IConfigModel
         {
             config = GetConfig<T>();
             return config != null;
         }
-        
+
         public async UniTask<bool> RefreshConfig()
         {
             if (!_isInitialized || _firebaseProvider == null)
@@ -143,7 +143,7 @@ namespace Core.RemoteConfig
                 GameLogger.LogError("Cannot refresh config: Service not initialized");
                 return false;
             }
-            
+
             try
             {
                 GameLogger.Log("Refreshing all configurations...");
@@ -156,7 +156,7 @@ namespace Core.RemoteConfig
                 return false;
             }
         }
-        
+
         public async UniTask<bool> RefreshConfig<T>() where T : class, IConfigModel
         {
             if (!_isInitialized || _firebaseProvider == null)
@@ -164,44 +164,49 @@ namespace Core.RemoteConfig
                 GameLogger.LogError("Cannot refresh config: Service not initialized");
                 return false;
             }
-            
+
             try
             {
                 GameLogger.Log($"Refreshing configuration: {typeof(T).Name}");
-                
+
                 string configKey = GetConfigKey<T>();
                 var config = await _firebaseProvider.FetchConfig<T>(configKey);
-                
+
                 if (config != null && config.Validate())
                 {
                     UpdateConfig(config);
+                    _lastUpdateTime = DateTime.UtcNow;
+                    UpdateHealthStatus(ConfigHealthStatus.Healthy);
+                    GameLogger.Log($"Successfully refreshed config: {typeof(T).Name}");
                     return true;
                 }
                 else
                 {
                     GameLogger.LogWarning($"Failed to refresh config: {typeof(T).Name}");
+                    UpdateHealthStatus(ConfigHealthStatus.Degraded);
                     return false;
                 }
             }
             catch (Exception ex)
             {
                 GameLogger.LogError($"Failed to refresh config {typeof(T).Name}: {ex.Message}");
+                UpdateHealthStatus(ConfigHealthStatus.Degraded);
                 return false;
             }
         }
-        
+
         private async UniTask<bool> FetchAllConfigs()
         {
             try
             {
                 var configs = await _firebaseProvider.FetchAllConfigs();
-                
+
                 if (configs == null || configs.Count == 0)
                 {
                     GameLogger.LogWarning("No configurations fetched from provider");
                     return false;
                 }
-                
+
                 int validCount = 0;
                 foreach (var kvp in configs)
                 {
@@ -215,10 +220,10 @@ namespace Core.RemoteConfig
                         GameLogger.LogWarning($"Config validation failed: {kvp.Key}");
                     }
                 }
-                
+
                 _lastUpdateTime = DateTime.UtcNow;
                 GameLogger.Log($"Fetched and validated {validCount}/{configs.Count} configurations");
-                
+
                 return validCount > 0;
             }
             catch (Exception ex)
@@ -227,44 +232,35 @@ namespace Core.RemoteConfig
                 return false;
             }
         }
-        
+
         private void UpdateConfig(IConfigModel config)
         {
             if (config == null)
             {
                 return;
             }
-            
+
             var configType = config.GetType();
-            
+
             // Check if config has changed
             bool hasChanged = true;
             if (_configCache.TryGetValue(configType, out var existingConfig))
             {
-                hasChanged = !AreConfigsEqual(existingConfig, config);
+                // Simple reference equality check - Firebase handles versioning
+                hasChanged = !ReferenceEquals(existingConfig, config);
             }
-            
+
             _configCache[configType] = config;
-            
+
             if (hasChanged)
             {
-                GameLogger.Log($"Config updated: {config.ConfigKey}");
+                GameLogger.Log($"Config updated: {configType}");
                 OnConfigUpdated?.Invoke(config);
                 OnSpecificConfigUpdated?.Invoke(configType, config);
             }
         }
-        
-        private bool AreConfigsEqual(IConfigModel config1, IConfigModel config2)
-        {
-            if (config1 == null || config2 == null)
-            {
-                return false;
-            }
-            
-            return config1.Version == config2.Version && 
-                   config1.LastModified == config2.LastModified;
-        }
-        
+
+
         private void UpdateHealthStatus(ConfigHealthStatus newStatus)
         {
             if (_healthStatus != newStatus)
@@ -275,17 +271,17 @@ namespace Core.RemoteConfig
                 OnHealthStatusChanged?.Invoke(newStatus);
             }
         }
-        
+
         private string GetConfigKey<T>() where T : IConfigModel
         {
             var typeName = typeof(T).Name;
-            
+
             // Remove "Config" suffix if present
             if (typeName.EndsWith("Config"))
             {
                 return typeName;
             }
-            
+
             return typeName;
         }
     }

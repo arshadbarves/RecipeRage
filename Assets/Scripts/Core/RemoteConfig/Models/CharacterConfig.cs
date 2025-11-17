@@ -10,22 +10,11 @@ namespace Core.RemoteConfig.Models
     [Serializable]
     public class CharacterConfig : IConfigModel
     {
-        [JsonProperty("configKey")]
-        public string ConfigKey => "CharacterConfig";
-        
-        [JsonProperty("version")]
-        public string Version { get; set; }
-        
-        [JsonProperty("lastModified")]
-        public DateTime LastModified { get; set; }
-        
         [JsonProperty("characters")]
         public List<CharacterDefinition> Characters { get; set; }
         
         public CharacterConfig()
         {
-            Version = "1.0.0";
-            LastModified = DateTime.UtcNow;
             Characters = new List<CharacterDefinition>();
         }
         

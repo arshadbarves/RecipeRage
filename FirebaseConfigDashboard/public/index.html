@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Remote Config Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎮 RecipeRage Config Dashboard</h1>
+            <div class="header-controls">
+                <div class="filter-group">
+                    <label for="platform-select">Platform:</label>
+                    <select id="platform-select" class="select-input">
+                        <option value="iOS">iOS</option>
+                        <option value="Android">Android</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="environment-select">Environment:</label>
+                    <select id="environment-select" class="select-input">
+                        <option value="production">Production</option>
+                        <option value="staging">Staging</option>
+                        <option value="development">Development</option>
+                    </select>
+                </div>
+                <div class="header-info">
+                    <span id="version-info">Version: Loading...</span>
+                    <button id="refresh-btn" class="btn btn-secondary">🔄 Refresh</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="map">🗺️ Maps</button>
+            <button class="tab-btn" data-tab="shop">🛒 Shop</button>
+            <button class="tab-btn" data-tab="character">👤 Characters</button>
+            <button class="tab-btn" data-tab="skins">🎨 Skins</button>
+            <button class="tab-btn" data-tab="maintenance">🔧 Maintenance</button>
+            <button class="tab-btn" data-tab="update">📱 Force Update</button>
+            <button class="tab-btn" data-tab="settings">⚙️ Game Settings</button>
+        </div>
+
+        <div class="content">
+            <!-- Map Config -->
+            <div id="map-tab" class="tab-content active">
+                <h2>Map Configuration</h2>
+                <div class="editor-container">
+                    <textarea id="map-editor" class="json-editor" placeholder="Loading..."></textarea>
+                </div>
+                <button class="btn btn-primary" onclick="updateConfig('MapConfig', 'map-editor')">💾 Save Map Config</button>
+            </div>
+
+            <!-- Shop Config -->
+            <div id="shop-tab" class="tab-content">
+                <h2>Shop Configuration</h2>
+                <div class="editor-container">
+                    <textarea id="shop-editor" class="json-editor" placeholder="Loading..."></textarea>
+                </div>
+                <button class="btn btn-primary" onclick="updateConfig('ShopConfig', 'shop-editor')">💾 Save Shop Config</button>
+            </div>
+
+            <!-- Character Config -->
+            <div id="character-tab" class="tab-content">
+                <h2>Character Configuration</h2>
+                <div class="editor-container">
+                    <textarea id="character-editor" class="json-editor" placeholder="Loading..."></textarea>
+                </div>
+                <button class="btn btn-primary" onclick="updateConfig('CharacterConfig', 'character-editor')">💾 Save Character Config</button>
+            </div>
+
+            <!-- Skins Config -->
+            <div id="skins-tab" class="tab-content">
+                <h2>Skins Configuration</h2>
+                <div class="editor-container">
+                    <textarea id="skins-editor" class="json-editor" placeholder="Loading..."></textarea>
+                </div>
+                <button class="btn btn-primary" onclick="updateConfig('SkinsConfig', 'skins-editor')">💾 Save Skins Config</button>
+            </div>
+
+            <!-- Maintenance Config -->
+            <div id="maintenance-tab" class="tab-content">
+                <h2>Maintenance Configuration</h2>
+                <div class="editor-container">
+                    <textarea id="maintenance-editor" class="json-editor" placeholder="Loading..."></textarea>
+                </div>
+                <div class="config-hint">
+                    <strong>Example:</strong>
+                    <pre>{
+  "enabled": false,
+  "message": "Server maintenance in progress",
+  "startTime": "2024-01-01T00:00:00Z",
+  "endTime": "2024-01-01T04:00:00Z"
+}</pre>
+                </div>
+                <button class="btn btn-primary" onclick="updateConfig('MaintenanceConfig', 'maintenance-editor')">💾 Save Maintenance Config</button>
+            </div>
+
+            <!-- Force Update Config -->
+            <div id="update-tab" class="tab-content">
+                <h2>Force Update Configuration</h2>
+                <div class="editor-container">
+                    <textarea id="update-editor" class="json-editor" placeholder="Loading..."></textarea>
+                </div>
+                <div class="config-hint">
+                    <strong>Example:</strong>
+                    <pre>{
+  "enabled": true,
+  "minVersionIOS": "1.2.0",
+  "minVersionAndroid": "1.1.5",
+  "message": "Please update to continue",
+  "forceUpdate": true
+}</pre>
+                </div>
+                <button class="btn btn-primary" onclick="updateConfig('ForceUpdateConfig', 'update-editor')">💾 Save Force Update Config</button>
+            </div>
+
+            <!-- Game Settings -->
+            <div id="settings-tab" class="tab-content">
+                <h2>Game Settings</h2>
+                <div class="editor-container">
+                    <textarea id="settings-editor" class="json-editor" placeholder="Loading..."></textarea>
+                </div>
+                <button class="btn btn-primary" onclick="updateConfig('GameSettings', 'settings-editor')">💾 Save Game Settings</button>
+            </div>
+        </div>
+
+        <div id="notification" class="notification"></div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

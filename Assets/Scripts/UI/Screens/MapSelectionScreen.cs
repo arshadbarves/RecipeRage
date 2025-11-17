@@ -5,6 +5,8 @@ using UI.Data;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Core.Logging;
+using Core.RemoteConfig;
+using Core.RemoteConfig.Models;
 
 namespace UI.Screens
 {
@@ -31,8 +33,34 @@ namespace UI.Screens
             CacheUIElements();
             SetupButtons();
             LoadMapDatabase();
+            SubscribeToRemoteConfig();
 
             GameLogger.Log("Initialized");
+        }
+
+        private void SubscribeToRemoteConfig()
+        {
+            var remoteConfig = GameBootstrap.Services?.RemoteConfigService;
+            if (remoteConfig != null)
+            {
+                // Subscribe to MapConfig updates
+                remoteConfig.OnSpecificConfigUpdated += OnMapConfigUpdated;
+                GameLogger.Log("Subscribed to MapConfig updates");
+            }
+        }
+
+        private void OnMapConfigUpdated(Type configType, IConfigModel config)
+        {
+            // Check if this is a MapConfig update
+            if (configType == typeof(MapConfig))
+            {
+                GameLogger.Log("MapConfig updated from RemoteConfig - refreshing UI");
+                // Refresh the UI with new map data
+                if (IsVisible)
+                {
+                    PopulateMaps();
+                }
+            }
         }
 
         private void LoadTemplate()
@@ -134,7 +162,7 @@ namespace UI.Screens
             // Main category container
             VisualElement container = new VisualElement();
             container.AddToClassList("category-container");
-            
+
             // Add category-specific class for background color
             container.AddToClassList(GetCategoryClass(category.id));
 
@@ -161,13 +189,13 @@ namespace UI.Screens
             for (int i = 0; i < allMaps.Count; i++)
             {
                 VisualElement mapCard = CreateMapCard(allMaps[i]);
-                
+
                 // Add spacing class if there are multiple cards and this is not the last one
                 if (mapCount > 1 && i < mapCount - 1)
                 {
                     mapCard.AddToClassList("has-spacing");
                 }
-                
+
                 mapsGrid.Add(mapCard);
             }
 
@@ -227,13 +255,13 @@ namespace UI.Screens
 
             // Check if map is coming soon (not yet available)
             bool isComingSoon = !map.isAvailable;
-            
+
             // Add coming soon styling
             if (isComingSoon)
             {
                 card.AddToClassList("coming-soon");
                 card.SetEnabled(false);
-                
+
                 // Add "COMING SOON" label overlay
                 Label comingSoonLabel = new Label("COMING SOON");
                 comingSoonLabel.AddToClassList("coming-soon-label");
@@ -363,6 +391,13 @@ namespace UI.Screens
             if (_backButton != null)
             {
                 _backButton.clicked -= OnBackClicked;
+            }
+
+            // Unsubscribe from RemoteConfig
+            var remoteConfig = GameBootstrap.Services?.RemoteConfigService;
+            if (remoteConfig != null)
+            {
+                remoteConfig.OnSpecificConfigUpdated -= OnMapConfigUpdated;
             }
         }
     }

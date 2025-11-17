@@ -1,7 +1,4 @@
 {
-    "configKey": "MaintenanceConfig",
-    "version": "1.0.0",
-    "lastModified": "2024-01-15T10:00:00Z",
     "isMaintenanceActive": false,
     "maintenanceStartTimestamp": 1705622400,
     "maintenanceEndTimestamp": 1705626000,

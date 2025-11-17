@@ -11,15 +11,6 @@ namespace Core.RemoteConfig.Models
     [Serializable]
     public class GameSettingsConfig : IConfigModel
     {
-        [JsonProperty("configKey")]
-        public string ConfigKey => "GameSettings";
-        
-        [JsonProperty("version")]
-        public string Version { get; set; }
-        
-        [JsonProperty("lastModified")]
-        public DateTime LastModified { get; set; }
-        
         // Game Rules
         [JsonProperty("minPlayers")]
         public int MinPlayers { get; set; }
@@ -70,8 +61,6 @@ namespace Core.RemoteConfig.Models
         
         public GameSettingsConfig()
         {
-            Version = "1.0.0";
-            LastModified = DateTime.UtcNow;
             CustomGameRules = new Dictionary<string, object>();
             
             // Default values

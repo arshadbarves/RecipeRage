@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "895670510894",
+    "project_id": "recipe-rage",
+    "storage_bucket": "recipe-rage.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:895670510894:android:69bbb0159428a05b7c06bf",
+        "android_client_info": {
+          "package_name": "com.playcenter.reciperage"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAlsXNbj6V_ye4UpVWiG_7qqtE9838Am9E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
