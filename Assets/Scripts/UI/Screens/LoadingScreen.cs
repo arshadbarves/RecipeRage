@@ -168,17 +168,8 @@ namespace UI.Screens
         public async UniTask CompleteAsync()
         {
             UpdateProgress(1f, "Complete");
-
-            ProceedToMainMenu();
             await UniTask.Delay(500);
-            Hide(true);
-            await UniTask.Delay(300);
-        }
-
-
-        private void ProceedToMainMenu()
-        {
-            GameBootstrap.Services.StateManager.Initialize(new MainMenuState());
+            // Hiding is now handled by the State or Service
         }
 
         #endregion

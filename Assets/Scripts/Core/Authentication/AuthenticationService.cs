@@ -6,8 +6,6 @@ using Cysharp.Threading.Tasks;
 using Epic.OnlineServices;
 using Epic.OnlineServices.Connect;
 using PlayEveryWare.EpicOnlineServices;
-using UI;
-using UI.Screens;
 using UnityEngine;
 
 namespace Core.Authentication
@@ -24,7 +22,6 @@ namespace Core.Authentication
 
         private readonly ISaveService _saveService;
         private readonly Core.Events.IEventBus _eventBus;
-        private readonly UI.IUIService _uiService;
 
         public bool IsLoggedIn => IsUserLoggedIn();
         public string LastLoginMethod => _saveService?.GetSettings().LastLoginMethod ?? "";
@@ -34,17 +31,15 @@ namespace Core.Authentication
         /// </summary>
         public AuthenticationService(
             ISaveService saveService,
-            Core.Events.IEventBus eventBus,
-            UI.IUIService uiService)
+            Core.Events.IEventBus eventBus)
         {
             _saveService = saveService ?? throw new ArgumentNullException(nameof(saveService));
             _eventBus = eventBus ?? throw new ArgumentNullException(nameof(eventBus));
-            _uiService = uiService ?? throw new ArgumentNullException(nameof(uiService));
         }
 
         /// <summary>
-        /// Initialize authentication - checks for existing session and shows appropriate UI
-        /// Returns true if user is authenticated, false if login screen is shown
+        /// Initialize authentication - checks for existing session
+        /// Returns true if user is authenticated
         /// </summary>
         public async UniTask<bool> InitializeAsync()
         {
@@ -64,42 +59,9 @@ namespace Core.Authentication
             }
             else
             {
-                GameLogger.Log("Auto-login failed - showing login screen");
-                ShowLoginScreen();
+                GameLogger.Log("Auto-login failed or no session");
                 return false;
             }
-        }
-
-        /// <summary>
-        /// Show login screen and subscribe to login events
-        /// </summary>
-        private void ShowLoginScreen()
-        {
-            if (_uiService != null)
-            {
-                _uiService.ShowScreen(UIScreenType.Login);
-
-                // Subscribe to login success via EventBus
-                _eventBus?.Subscribe<Core.Events.LoginSuccessEvent>(OnLoginSuccessInternal);
-            }
-            else
-            {
-                GameLogger.LogError("UIService not available to show login screen");
-            }
-        }
-
-        /// <summary>
-        /// Internal handler for login success event
-        /// </summary>
-        private void OnLoginSuccessInternal(Core.Events.LoginSuccessEvent evt)
-        {
-            // Unsubscribe
-            _eventBus?.Unsubscribe<Core.Events.LoginSuccessEvent>(OnLoginSuccessInternal);
-
-            GameLogger.Log($"Login successful for user: {evt.UserId}");
-
-            // Notify save service that user logged in
-            _saveService.OnUserLoggedIn();
         }
 
         public async UniTask<bool> AttemptAutoLoginAsync()
@@ -174,14 +136,6 @@ namespace Core.Authentication
 
             // Notify save service to clear user-specific cache
             _saveService?.OnUserLoggedOut();
-
-            // Clear all UI screens and history
-            if (_uiService != null)
-            {
-                GameLogger.Log("Clearing all UI screens and history");
-                _uiService.HideAllScreens(animate: false);
-                _uiService.ClearHistory();
-            }
 
             ProductUserId productUserId = EOSManager.Instance?.GetProductUserId();
             if (productUserId != null && productUserId.IsValid())
@@ -301,9 +255,6 @@ namespace Core.Authentication
                 errorMessage = "Login timeout - server not responding";
                 UpdateStatus(errorMessage);
 
-                // Show error toast
-                _ = _uiService?.ShowNotification(errorMessage, NotificationType.Error, 4f);
-
                 _eventBus?.Publish(new Core.Events.LoginFailedEvent
                 {
                     Error = errorMessage
@@ -390,14 +341,6 @@ namespace Core.Authentication
                 // Notify save service to clear user-specific cache
                 _saveService.OnUserLoggedOut();
 
-                // Clear all UI screens and history
-                if (_uiService != null)
-                {
-                    GameLogger.Log("Clearing all UI screens and history");
-                    _uiService.HideAllScreens(animate: false);
-                    _uiService.ClearHistory();
-                }
-
                 // EOS logout (if available)
                 if (EOSManager.Instance != null)
                 {
@@ -413,9 +356,6 @@ namespace Core.Authentication
 
                 UpdateStatus("Logged out successfully");
 
-                // Show success toast
-                _ = _uiService?.ShowNotification("Logged out successfully", NotificationType.Success, 2f);
-
                 // Trigger logout complete event - GameBootstrap will handle full reboot
                 OnLogoutComplete?.Invoke();
 
@@ -425,9 +365,6 @@ namespace Core.Authentication
             {
                 GameLogger.LogError($"Logout failed: {ex.Message}");
                 UpdateStatus($"Logout failed: {ex.Message}");
-
-                // Show error toast
-                _ = _uiService?.ShowNotification("Logout failed", NotificationType.Error, 3f);
             }
         }
     }

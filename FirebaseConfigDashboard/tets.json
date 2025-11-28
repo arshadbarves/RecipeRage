@@ -1,0 +1,681 @@
+{
+    "ads": {
+        "interstitial": {
+            "startDelay": 30000,
+            "globalCooldown": 20000,
+            "startDelayFirst": 45000,
+            "locations": [
+                {
+                    "location": "after_results",
+                    "canShow": true,
+                    "cooldown": 0,
+                    "probability": 0.0,
+                    "enableAdBreakPopup": false,
+                    "impressionsThreshold": [
+                        0.699999988079071
+                    ],
+                    "noFillImpressionsThreshold": []
+                },
+                {
+                    "location": "filler_complete",
+                    "canShow": true,
+                    "cooldown": 0,
+                    "probability": 0.0,
+                    "enableAdBreakPopup": false,
+                    "impressionsThreshold": [
+                        0.699999988079071
+                    ],
+                    "noFillImpressionsThreshold": []
+                },
+                {
+                    "location": "whitening_complete",
+                    "canShow": true,
+                    "cooldown": 0,
+                    "probability": 0.0,
+                    "enableAdBreakPopup": false,
+                    "impressionsThreshold": [
+                        0.699999988079071
+                    ],
+                    "noFillImpressionsThreshold": []
+                },
+                {
+                    "location": "foundation_complete",
+                    "canShow": true,
+                    "cooldown": 0,
+                    "probability": 0.0,
+                    "enableAdBreakPopup": false,
+                    "impressionsThreshold": [
+                        0.699999988079071
+                    ],
+                    "noFillImpressionsThreshold": []
+                },
+                {
+                    "location": "contour_complete",
+                    "canShow": true,
+                    "cooldown": 0,
+                    "probability": 0.0,
+                    "enableAdBreakPopup": false,
+                    "impressionsThreshold": [
+                        0.699999988079071
+                    ],
+                    "noFillImpressionsThreshold": []
+                },
+                {
+                    "location": "blending_complete",
+                    "canShow": true,
+                    "cooldown": 0,
+                    "probability": 0.0,
+                    "enableAdBreakPopup": false,
+                    "impressionsThreshold": [
+                        0.699999988079071
+                    ],
+                    "noFillImpressionsThreshold": []
+                },
+                {
+                    "location": "makeup_complete",
+                    "canShow": true,
+                    "cooldown": 0,
+                    "probability": 0.0,
+                    "enableAdBreakPopup": false,
+                    "impressionsThreshold": [
+                        0.699999988079071
+                    ],
+                    "noFillImpressionsThreshold": []
+                },
+                {
+                    "location": "hair_complete",
+                    "canShow": true,
+                    "cooldown": 0,
+                    "probability": 0.0,
+                    "enableAdBreakPopup": false,
+                    "impressionsThreshold": [
+                        0.699999988079071
+                    ],
+                    "noFillImpressionsThreshold": []
+                },
+                {
+                    "location": "hair_removal_complete",
+                    "canShow": true,
+                    "cooldown": 0,
+                    "probability": 0.0,
+                    "enableAdBreakPopup": false,
+                    "impressionsThreshold": [
+                        0.699999988079071
+                    ],
+                    "noFillImpressionsThreshold": []
+                },
+                {
+                    "location": "clothing_complete",
+                    "canShow": true,
+                    "cooldown": 0,
+                    "probability": 0.0,
+                    "enableAdBreakPopup": false,
+                    "impressionsThreshold": [
+                        0.699999988079071
+                    ],
+                    "noFillImpressionsThreshold": []
+                },
+                {
+                    "location": "vip_level",
+                    "canShow": true,
+                    "cooldown": 0,
+                    "probability": 0.0,
+                    "enableAdBreakPopup": false,
+                    "impressionsThreshold": [
+                        0.699999988079071
+                    ],
+                    "noFillImpressionsThreshold": []
+                },
+                {
+                    "location": "FreeUpgrade",
+                    "canShow": true,
+                    "cooldown": 0,
+                    "probability": 0.0,
+                    "enableAdBreakPopup": false,
+                    "impressionsThreshold": [
+                        0.699999988079071
+                    ],
+                    "noFillImpressionsThreshold": []
+                },
+                {
+                    "location": "double_currency",
+                    "canShow": true,
+                    "cooldown": 0,
+                    "probability": 0.0,
+                    "enableAdBreakPopup": false,
+                    "impressionsThreshold": [
+                        0.699999988079071
+                    ],
+                    "noFillImpressionsThreshold": []
+                },
+                {
+                    "location": "new_clothing",
+                    "canShow": true,
+                    "cooldown": 0,
+                    "probability": 0.0,
+                    "enableAdBreakPopup": false,
+                    "impressionsThreshold": [
+                        0.699999988079071
+                    ],
+                    "noFillImpressionsThreshold": []
+                },
+                {
+                    "location": "new_hairstyle",
+                    "canShow": true,
+                    "cooldown": 0,
+                    "probability": 0.0,
+                    "enableAdBreakPopup": false,
+                    "impressionsThreshold": [
+                        0.699999988079071
+                    ],
+                    "noFillImpressionsThreshold": []
+                },
+                {
+                    "location": "new_makeup",
+                    "canShow": true,
+                    "cooldown": 0,
+                    "probability": 0.0,
+                    "enableAdBreakPopup": false,
+                    "impressionsThreshold": [
+                        0.699999988079071
+                    ],
+                    "noFillImpressionsThreshold": []
+                },
+                {
+                    "location": "progress_reward",
+                    "canShow": true,
+                    "cooldown": 0,
+                    "probability": 0.0,
+                    "enableAdBreakPopup": false,
+                    "impressionsThreshold": [
+                        0.699999988079071
+                    ],
+                    "noFillImpressionsThreshold": []
+                },
+                {
+                    "location": "shelf_assistant",
+                    "canShow": true,
+                    "cooldown": 0,
+                    "probability": 0.0,
+                    "enableAdBreakPopup": false,
+                    "impressionsThreshold": [
+                        0.699999988079071
+                    ],
+                    "noFillImpressionsThreshold": []
+                },
+                {
+                    "location": "tool_unlock",
+                    "canShow": true,
+                    "cooldown": 0,
+                    "probability": 0.0,
+                    "enableAdBreakPopup": false,
+                    "impressionsThreshold": [
+                        0.699999988079071
+                    ],
+                    "noFillImpressionsThreshold": []
+                },
+                {
+                    "location": "triple_currency",
+                    "canShow": true,
+                    "cooldown": 0,
+                    "probability": 0.0,
+                    "enableAdBreakPopup": false,
+                    "impressionsThreshold": [
+                        0.699999988079071
+                    ],
+                    "noFillImpressionsThreshold": []
+                },
+                {
+                    "location": "undo_pressed",
+                    "canShow": true,
+                    "cooldown": 0,
+                    "probability": 0.0,
+                    "enableAdBreakPopup": false,
+                    "impressionsThreshold": [
+                        0.699999988079071
+                    ],
+                    "noFillImpressionsThreshold": []
+                },
+                {
+                    "location": "splash_interstitial",
+                    "canShow": false,
+                    "cooldown": 0,
+                    "probability": 0.0,
+                    "enableAdBreakPopup": false,
+                    "impressionsThreshold": [],
+                    "noFillImpressionsThreshold": []
+                }
+            ],
+            "splashSettings": {
+                "startShowingAfterBoots": 1,
+                "showEveryXBoots": 1
+            },
+            "enableDoubleIntSystem": false
+        },
+        "rewardAds": {
+            "interstitialCoolDown": 20000,
+            "rewardAdBlockerSettings": {
+                "enabled": true,
+                "duration": 3000,
+                "overtimeToKill": 0,
+                "retryInterval": 500
+            },
+            "enableRVAdText": true
+        },
+        "adsBreakPopup": {
+            "minRewardAmountInt": 5,
+            "minRewardAmountRV": 10,
+            "backgroundTransparency": 100,
+            "rewardPercentageInt": 10.0,
+            "rewardPercentageRV": 20.0,
+            "enableRVOption": false,
+            "noRewardOffered": false,
+            "autoplayIntAfterMs": 1750,
+            "delayUntilNoThanksMs": 3000,
+            "enableCollectButton": false,
+            "backgroundColorHexCode": "89CFF0",
+            "popupType": "FULLSCREEN"
+        },
+        "placementProviderWaterfall": {
+            "interstitial": [
+                "MAX",
+                "IronSource"
+            ],
+            "playable": [],
+            "reward": [
+                "MAX",
+                "IronSource"
+            ],
+            "banner": [
+                "MAX",
+                "IronSource"
+            ],
+            "native": [],
+            "appOpen": []
+        },
+        "playerAdScore": {
+            "maxAdTimeCompensationMs": 90000,
+            "noFillThresholdScaleFactor": 1.0,
+            "coefficients": [
+                {
+                    "metric": "",
+                    "weight": 0.0,
+                    "relativeWeight": 0.0,
+                    "timeInterval": 0
+                },
+                {
+                    "metric": "",
+                    "weight": 0.0,
+                    "relativeWeight": 0.0,
+                    "timeInterval": 0
+                },
+                {
+                    "metric": "",
+                    "weight": 0.0,
+                    "relativeWeight": 0.0,
+                    "timeInterval": 0
+                }
+            ]
+        },
+        "appOpenAds": {
+            "locations": [
+                {
+                    "location": "foreground_ad",
+                    "canShow": true,
+                    "probability": 1.0
+                }
+            ],
+            "showOnFirstBoot": false,
+            "showAfterXBoots": 2,
+            "showEveryXBoots": 1,
+            "adUnitAndroid": "",
+            "adUnitIos": ""
+        },
+        "enableMetricAdaptiveAdSystem": false,
+        "mediatorJsonMaxCount": 4000,
+        "shiftBannerCloseButtonPosition": false,
+        "enableSegmentedAdsAnalytics": true
+    },
+    "adSettingsIronsource": {
+        "aps": {
+            "iOS": {
+                "appKey": "9794bd52-7811-4a19-a9fe-db9e9a742188",
+                "interstitialKey": "8533af4f-b897-48c6-8c15-2f466e1ca050",
+                "rewardKey": "384a2d3a-afa4-406b-a7c7-c6a1933b6e24",
+                "bannerKey": "3d99e3c3-6baf-4c38-9d39-725169a57d1e"
+            },
+            "android": {
+                "appKey": "db68153b-2ac1-4d01-a73a-6667f90edd3f",
+                "interstitialKey": "428ecb45-e5be-43a3-8d66-c5feea4e1811",
+                "rewardKey": "2e826f82-1dc0-4e19-8ee8-4e8c507b6d30",
+                "bannerKey": "9fdfe362-92ba-484d-994b-4f7b71d465d3"
+            }
+        },
+        "appKeyIos": "ef1f9c19",
+        "appKeyAndroid": "f1cd43f1",
+        "appKeyChina": "f3408591"
+    },
+    "adsMediatorMAX": {
+        "waterfallData": {
+            "enableMultipleWaterfalls": true,
+            "enableWaterfallsShuffle": true,
+            "iosPlatform": {
+                "interstitial": [
+                    {
+                        "adUnit": "fde5fb0bdbc38066",
+                        "enabled": true
+                    }
+                ],
+                "reward": [
+                    {
+                        "adUnit": "7e7940d82919c89b",
+                        "enabled": true
+                    }
+                ],
+                "banner": [
+                    {
+                        "adUnit": "d4b82c31596f0c67",
+                        "enabled": true
+                    }
+                ]
+            },
+            "androidPlatform": {
+                "interstitial": [
+                    {
+                        "adUnit": "834d8e687aea4339",
+                        "enabled": true
+                    }
+                ],
+                "reward": [
+                    {
+                        "adUnit": "dfecb880cd584f15",
+                        "enabled": true
+                    }
+                ],
+                "banner": [
+                    {
+                        "adUnit": "e8ce444bb591f314",
+                        "enabled": true
+                    }
+                ]
+            }
+        },
+        "aps": {
+            "iOS": {
+                "appKey": "",
+                "interstitialKey": "",
+                "rewardKey": "",
+                "bannerKey": ""
+            },
+            "android": {
+                "appKey": "",
+                "interstitialKey": "",
+                "rewardKey": "",
+                "bannerKey": ""
+            }
+        }
+    },
+    "adsMediatorAlmada": {
+        "appIdAndroid": "",
+        "appIdIOS": "",
+        "bannerRefreshTimeInMs": 0,
+        "retryBannerAdsRequestTimeAfterLostBidInMs": 0
+    },
+    "audio": {
+        "enableMusic": true,
+        "enableSFX": true
+    },
+    "analytics": {
+        "countToSend": 0,
+        "apiEndPoint": "https://hyper.api.kwalee.com:743/",
+        "debugMode": false,
+        "enableEventsBlacklist": false,
+        "blackListedEvents": []
+    },
+    "appsFlyer": {
+        "customEvents": [
+            {
+                "eventName": "af_level{0}_completed",
+                "enabled": true,
+                "eventValues": [
+                    3,
+                    5,
+                    15,
+                    1,
+                    10,
+                    20
+                ]
+            },
+            {
+                "eventName": "af_{0}c_ads",
+                "enabled": true,
+                "eventValues": [
+                    10,
+                    30,
+                    50
+                ]
+            },
+            {
+                "eventName": "af_{0}_MinGameplay",
+                "enabled": true,
+                "eventValues": [
+                    5,
+                    10,
+                    15,
+                    30
+                ]
+            },
+            {
+                "eventName": "af_{0}_RV_Watched",
+                "enabled": true,
+                "eventValues": [
+                    2,
+                    4,
+                    6,
+                    10
+                ]
+            },
+            {
+                "eventName": "af_{0}_INT_Watched",
+                "enabled": true,
+                "eventValues": [
+                    5,
+                    10,
+                    15,
+                    20
+                ]
+            }
+        ],
+        "systemDisableAfterHours": 250000,
+        "attributionWindow": -1,
+        "sendRevenueData": true,
+        "idleThresholdSeconds": 20
+    },
+    "connectivity": {
+        "forceConnectionPopup": {
+            "showAfterXBoots": 0,
+            "showAfterXSessions": 0,
+            "showAfterXGames": 1,
+            "enabled": true
+        }
+    },
+    "gameCore": {
+        "enableBankAnalytics": false,
+        "showNoAds": true
+    },
+    "links": {
+        "appstoreIOSURL": "https://apps.apple.com/us/app/makeover-studio-3d/id1556676622",
+        "appstoreAndroidURL": "https://play.google.com/store/apps/details?id=com.kwalee.makeoverstudio",
+        "publishingLink": "https://www.kwalee.com/publishing",
+        "publishingBannerURI": "image-resources/creative-prod/UKCV_image_resource_1455_d88be2a27f77b9a792eeed7186b0330f882ca49b9f7a206c0f5460b646.png"
+    },
+    "userConsentForms": {
+        "gdpr": {
+            "euCountries": [
+                "GB",
+                "BE",
+                "BG",
+                "HR",
+                "CY",
+                "CZ",
+                "DK",
+                "EE",
+                "FI",
+                "FR",
+                "DE",
+                "GR",
+                "HU",
+                "IE",
+                "IT",
+                "LV",
+                "LT",
+                "LU",
+                "MT",
+                "NL",
+                "PL",
+                "PT",
+                "RO",
+                "SK",
+                "SI",
+                "ES",
+                "SE",
+                "CH",
+                "AT"
+            ],
+            "privacyPolicyLink": "https://www.kwalee.com/privacy-policy",
+            "termsAndConditionsLink": "https://www.kwalee.com/eula-mobile"
+        }
+    },
+    "pushNotifications": {
+        "messages": [
+            {
+                "timeMS": 86400000,
+                "title": "PushMessage.Title2",
+                "message": "PushMessage.Body2",
+                "messageId": "push_message_02"
+            },
+            {
+                "timeMS": 259199998,
+                "title": "PushMessage.Title3",
+                "message": "PushMessage.Body3",
+                "messageId": "push_message_03"
+            },
+            {
+                "timeMS": 604800000,
+                "title": "PushMessage.Title1",
+                "message": "PushMessage.Body1",
+                "messageId": "push_message_01"
+            }
+        ],
+        "pmManagerSettings": {
+            "enablePMMSystem": false,
+            "dailyPushLimit": 4,
+            "spamPreventionMinutes": 60,
+            "quietHoursStartHour": 0,
+            "quietHoursEndHour": 6,
+            "foregroundCancelSeconds": 60
+        }
+    },
+    "rating": {
+        "enabled": true,
+        "ratingReviewThreshold": 4,
+        "showAfterXGames": 1,
+        "appstoreAndroidURL": "https://play.google.com/store/apps/details?id=com.kwalee.makeoverstudio",
+        "appstoreIOSURL": "https://apps.apple.com/us/app/makeover-studio-3d/id1556676622"
+    },
+    "huq": {
+        "enabled": true,
+        "huqCountries": [
+            "US"
+        ]
+    },
+    "xPromo": {
+        "privacyURL": "https://www.kwalee.com/privacy-policy",
+        "graphicsMemorySize": 0,
+        "systemVersion": "10.0",
+        "appstoreWebsiteUserAgent": "",
+        "enableLowEndDeviceSupportTest": false
+    },
+    "facebookSettings": {
+        "customEventsAdapter": [
+            {
+                "eventName": "fb_ad_revenue_spend_{0}cents",
+                "enabled": true,
+                "eventValues": [
+                    10,
+                    25,
+                    50,
+                    100,
+                    250,
+                    500,
+                    1000,
+                    2500,
+                    5000,
+                    10000,
+                    25000,
+                    50000,
+                    99900
+                ]
+            },
+            {
+                "eventName": "fb_total_revenue_spend{0}_cents",
+                "enabled": true,
+                "eventValues": [
+                    10,
+                    25,
+                    50,
+                    100,
+                    250,
+                    500,
+                    1000,
+                    2500,
+                    5000,
+                    10000,
+                    25000,
+                    50000,
+                    99900
+                ]
+            }
+        ]
+    },
+    "subscription": {
+        "productClientIDWeekly": "makeoverstudio3d_subscription_week_03",
+        "productClientIDMonthly": "makeoverstudio3d_subscription_month_03",
+        "inventoryItemClientID": "vip",
+        "enabledIOS": true,
+        "enabledAndroid": false,
+        "firstShowAfterXBoots": 5,
+        "firstShowAfterXBootsThisVersion": 0,
+        "firstShowAfterXGames": 30,
+        "loopShowAfterXBoots": 2,
+        "loopShowAfterXBootsThisVersion": 0,
+        "loopShowAfterXGames": 5,
+        "privacyAndTermsLink": "http://privacy.servers.kwalee.com/privacy/MAKEOVERSTUDIO3DiOSEULA.html",
+        "trialPeriodLength": 3,
+        "subscriptionLink": "http://play.google.com/store/account/subscriptions"
+    },
+    "socialFollow": {
+        "enabled": true,
+        "showOnBoot": 2,
+        "showAfterXGames": 2,
+        "socialPlatform": "Tiktok",
+        "socialUrl": "https://www.tiktok.com/@kwaleeofficial",
+        "rewardType": "fixed",
+        "rewardAmount": 100,
+        "outOfAppMinTime": 1000,
+        "tiktokBanEnabled": false,
+        "tiktokBanCountries": [
+            "SO",
+            "IN",
+            "AF",
+            "IR",
+            "BD",
+            "KG"
+        ],
+        "tiktokBanFallbackPlatform": "Instagram",
+        "tiktokBanFallbackUrl": "https://www.instagram.com/kwalee/?hl=en"
+    },
+    "firebase": {
+        "validatePurchases": true
+    }
+}

@@ -79,13 +79,11 @@ namespace UI.Screens
         #region Public API
 
         /// <summary>
-        /// Show splash for specified duration then hide
+        /// Show splash screen
         /// </summary>
-        public async UniTask ShowForDurationAsync(float duration)
+        public void Show()
         {
-            await UniTask.Delay(TimeSpan.FromSeconds(duration));
-            Hide(true);
-            await UniTask.Delay(300); // Wait for fade out
+            base.Show(false);
         }
 
         #endregion
