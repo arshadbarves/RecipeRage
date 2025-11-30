@@ -63,3 +63,7 @@ crashlytics-build.properties
 
 # idea project folder
 .idea/
+
+# macOS metadata files
+.DS_Store
+**/.DS_Store
