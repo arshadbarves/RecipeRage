@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: UI_RadialGradientBackground
+  m_Shader: {fileID: 4800000, guid: e97e9745a6d714b33b17f20982c5b329, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _AnimationSpeed: 2
+    - _AspectRatio: 1.777
+    - _AuroraIntensity: 0.08
+    - _AuroraScale: 1.5
+    - _AuroraSpeed: 0.4
+    - _BokehCount: 6
+    - _BokehIntensity: 0.15
+    - _BokehSize: 0.08
+    - _BubbleCount: 8
+    - _BubbleSize: 0.01
+    - _BubbleSpeed: 0.05
+    - _CenterX: 0.5
+    - _CenterY: 0.5
+    - _GradientPower: 0.65
+    - _GradientScale: 1
+    - _PulseAmount: 0
+    - _RayCount: 8
+    - _RayIntensity: 0.12
+    - _RayLength: 0.7
+    - _SparkleIntensity: 1
+    - _SparklePosX: 0.415
+    - _SparklePosY: 0.922
+    - _SparkleSize: 0.0058
+    - _SparkleSpeed: 1
+    - _VignetteRadius: 0.8
+    - _VignetteStrength: 0.3
+    m_Colors:
+    - _BubbleColor: {r: 1, g: 1, b: 1, a: 0.15}
+    - _CenterColor: {r: 1, g: 0.95, b: 0.85, a: 1}
+    - _EdgeColor: {r: 1, g: 0.65, b: 0.65, a: 1}
+    - _SparkleColor: {r: 1, g: 1, b: 1, a: 0.8}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1
