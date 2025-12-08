@@ -43,8 +43,8 @@ namespace Core.Networking
                 return;
             }
 
-            _networkGameManager = services.NetworkGameManager;
-            _playerNetworkManager = services.PlayerNetworkManager;
+            _networkGameManager = services.Session?.NetworkGameManager;
+            _playerNetworkManager = services.Session?.PlayerNetworkManager;
 
             // Create connection handler
             _connectionHandler = new ConnectionHandler(

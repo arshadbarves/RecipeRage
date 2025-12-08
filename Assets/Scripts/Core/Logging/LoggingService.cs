@@ -20,18 +20,36 @@ namespace Core.Logging
         private LogLevel _minLogLevel = LogLevel.Verbose;
         private bool _isLoggingInternally = false; // Prevent infinite loop
 
+        private readonly int _mainThreadId;
+
         public event Action<LogEntry> OnLogAdded;
 
         public LoggingService(int maxLogEntries = 5000)
         {
+            _mainThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
             _maxLogEntries = maxLogEntries;
 
-            // Capture Unity's built-in logs
             Application.logMessageReceived += HandleUnityLog;
         }
 
         [HideInCallstack]
         public void Log(string message, LogLevel level = LogLevel.Info, string category = "General")
+        {
+            if (System.Threading.Thread.CurrentThread.ManagedThreadId == _mainThreadId)
+            {
+                LogInternal(message, level, category);
+            }
+            else
+            {
+                Cysharp.Threading.Tasks.UniTask.Post(async () =>
+                {
+                    await Cysharp.Threading.Tasks.UniTask.SwitchToMainThread();
+                    LogInternal(message, level, category);
+                }, Cysharp.Threading.Tasks.PlayerLoopTiming.Update);
+            }
+        }
+
+        private void LogInternal(string message, LogLevel level, string category)
         {
             if (level < _minLogLevel) return;
             if (_disabledCategories.Contains(category)) return;
@@ -39,12 +57,11 @@ namespace Core.Logging
             var entry = new LogEntry(message, level, category);
             AddLogEntry(entry);
 
-            // Output to Unity Console
             OutputToUnityConsole(entry);
         }
 
         [HideInCallstack]
-        public void  LogInfo(string message, string category = "General")
+        public void LogInfo(string message, string category = "General")
         {
             Log(message, LogLevel.Info, category);
         }
@@ -64,6 +81,22 @@ namespace Core.Logging
         [HideInCallstack]
         public void LogException(Exception exception, string category = "General")
         {
+            if (System.Threading.Thread.CurrentThread.ManagedThreadId == _mainThreadId)
+            {
+                LogExceptionInternal(exception, category);
+            }
+            else
+            {
+                Cysharp.Threading.Tasks.UniTask.Post(async () =>
+                {
+                    await Cysharp.Threading.Tasks.UniTask.SwitchToMainThread();
+                    LogExceptionInternal(exception, category);
+                }, Cysharp.Threading.Tasks.PlayerLoopTiming.Update);
+            }
+        }
+
+        private void LogExceptionInternal(Exception exception, string category)
+        {
             var entry = new LogEntry(
                 exception.Message,
                 LogLevel.Critical,
@@ -72,13 +105,11 @@ namespace Core.Logging
             );
             AddLogEntry(entry);
 
-            // Output exception to Unity Console
             Debug.LogException(exception);
         }
 
         private void HandleUnityLog(string logString, string stackTrace, LogType type)
         {
-            // Only capture Unity logs, don't re-output them (would cause infinite loop)
             LogLevel level = type switch
             {
                 LogType.Error => LogLevel.Error,
@@ -91,7 +122,6 @@ namespace Core.Logging
 
             var entry = new LogEntry(logString, level, "Unity", stackTrace);
 
-            // Only add to our log storage, don't output to console (already there)
             lock (_logs)
             {
                 _logs.Add(entry);
@@ -110,7 +140,6 @@ namespace Core.Logging
             {
                 _logs.Add(entry);
 
-                // Trim old logs if exceeding max
                 if (_logs.Count > _maxLogEntries)
                 {
                     _logs.RemoveAt(0);

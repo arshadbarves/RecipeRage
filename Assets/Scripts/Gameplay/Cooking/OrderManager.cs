@@ -64,20 +64,16 @@ namespace Gameplay.Cooking
                 return;
             }
 
-            // Update the order timer
             _orderTimer += Time.deltaTime;
 
-            // Check if it's time to generate a new order
             if (_orderTimer >= _timeUntilNextOrder && _activeOrders.Count < _maxActiveOrders)
             {
                 GenerateNewOrder();
 
-                // Reset the order timer
                 _orderTimer = 0f;
                 _timeUntilNextOrder = Random.Range(_minTimeBetweenOrders, _maxTimeBetweenOrders);
             }
 
-            // Check for expired orders
             CheckForExpiredOrders();
         }
 
@@ -103,12 +99,10 @@ namespace Gameplay.Cooking
         {
             if (IsServer)
             {
-                // Initialize the order timer
                 _orderTimer = 0f;
                 _timeUntilNextOrder = Random.Range(_minTimeBetweenOrders, _maxTimeBetweenOrders);
             }
 
-            // Subscribe to the active orders list changed event
             _activeOrders.OnListChanged += HandleActiveOrdersChanged;
         }
 
@@ -117,7 +111,6 @@ namespace Gameplay.Cooking
         /// </summary>
         public override void OnNetworkDespawn()
         {
-            // Unsubscribe from the active orders list changed event
             _activeOrders.OnListChanged -= HandleActiveOrdersChanged;
         }
 
@@ -132,10 +125,8 @@ namespace Gameplay.Cooking
                 return;
             }
 
-            // Select a random recipe
             Recipe recipe = _availableRecipes[Random.Range(0, _availableRecipes.Count)];
 
-            // Create a new order state
             var orderState = new RecipeOrderState
             {
                 RecipeId = recipe.Id,
@@ -147,7 +138,6 @@ namespace Gameplay.Cooking
                 PointValue = recipe.PointValue
             };
 
-            // Add the order to the active orders list
             _activeOrders.Add(orderState);
 
             GameLogger.Log($"Generated new order: {recipe.DisplayName} (ID: {orderState.OrderId})");
@@ -162,16 +152,13 @@ namespace Gameplay.Cooking
             {
                 RecipeOrderState order = _activeOrders[i];
 
-                // Skip completed or already expired orders
                 if (order.IsCompleted || order.IsExpired)
                 {
                     continue;
                 }
 
-                // Check if the order has expired
                 if (Time.time - order.CreationTime >= order.TimeLimit)
                 {
-                    // Mark the order as expired
                     order.IsExpired = true;
                     _activeOrders[i] = order;
 
@@ -193,14 +180,12 @@ namespace Gameplay.Cooking
                 return false;
             }
 
-            // Find the order with the specified ID
             for (int i = 0; i < _activeOrders.Count; i++)
             {
                 RecipeOrderState order = _activeOrders[i];
 
                 if (order.OrderId == orderId && !order.IsCompleted && !order.IsExpired)
                 {
-                    // Mark the order as completed
                     order.IsCompleted = true;
                     _activeOrders[i] = order;
 
@@ -221,13 +206,11 @@ namespace Gameplay.Cooking
         {
             if (changeEvent.Type == NetworkListEvent<RecipeOrderState>.EventType.Add)
             {
-                // A new order was added
                 RecipeOrderState newOrder = _activeOrders[changeEvent.Index];
                 OnOrderCreated?.Invoke(newOrder);
             }
             else if (changeEvent.Type == NetworkListEvent<RecipeOrderState>.EventType.Value)
             {
-                // An order was updated
                 RecipeOrderState updatedOrder = _activeOrders[changeEvent.Index];
 
                 if (updatedOrder.IsCompleted)
@@ -303,15 +286,12 @@ namespace Gameplay.Cooking
         [ServerRpc(RequireOwnership = false)]
         public void CompleteOrderServerRpc(int orderId, ServerRpcParams serverRpcParams = default)
         {
-            // Get the client ID that sent the RPC
             ulong clientId = serverRpcParams.Receive.SenderClientId;
 
             GameLogger.Log($"Client {clientId} is trying to complete order {orderId}");
 
-            // Try to complete the order
             bool success = CompleteOrder(orderId);
 
-            // Notify the client of the result
             CompleteOrderResultClientRpc(orderId, success);
         }
 
@@ -339,17 +319,14 @@ namespace Gameplay.Cooking
 
             GameLogger.Log("Starting to generate orders");
 
-            // Reset the order timer
             _orderTimer = 0f;
             _timeUntilNextOrder = Random.Range(_minTimeBetweenOrders, _maxTimeBetweenOrders);
 
-            // Clear any existing orders
             if (_activeOrders != null && _activeOrders.Count > 0)
             {
                 _activeOrders.Clear();
             }
 
-            // Reset the order ID counter
             _nextOrderId = 1;
         }
 

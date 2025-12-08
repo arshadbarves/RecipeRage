@@ -40,8 +40,8 @@ namespace UI.Screens
         protected override void OnInitialize()
         {
             // Get services
-            _characterService = GameBootstrap.Services?.CharacterService;
-            _skinsService = GameBootstrap.Services?.SkinsService;
+            _characterService = GameBootstrap.Services?.Session?.CharacterService;
+            _skinsService = GameBootstrap.Services?.Session?.SkinsService;
             _uiService = GameBootstrap.Services?.UIService;
 
             if (_skinsService == null)

@@ -1,6 +1,5 @@
 using Core.Bootstrap;
 using Core.Events;
-using Core.Interfaces;
 using Core.Logging;
 using Core.SaveSystem;
 using UI.Screens;
@@ -13,7 +12,7 @@ namespace Core.Currency
     /// Manages coins and gems with event-driven updates
     /// Uses SaveService for persistence (not PlayerPrefs)
     /// </summary>
-    public class CurrencyService : ICurrencyService, IResettableService
+    public class CurrencyService : ICurrencyService
     {
         private const string SAVE_KEY = "player_currency";
         private const int DEFAULT_COINS = 1250;
@@ -174,19 +173,7 @@ namespace Core.Currency
             return amount.ToString();
         }
 
-        public void Reset()
-        {
-            GameLogger.Log("Resetting currency data");
 
-            _coins = 0;
-            _gems = 0;
-
-            // Publish reset event
-            _eventBus.Publish(new CurrencyResetEvent());
-
-            // Also publish changed event with zero values
-            PublishCurrencyChanged();
-        }
 
         private void PublishCurrencyChanged()
         {

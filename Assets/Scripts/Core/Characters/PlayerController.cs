@@ -167,9 +167,9 @@ namespace Core.Characters
 
             // Register with PlayerNetworkManager
             var services = GameBootstrap.Services;
-            if (services?.PlayerNetworkManager != null)
+            if (services?.Session?.PlayerNetworkManager != null)
             {
-                services.PlayerNetworkManager.RegisterPlayer(OwnerClientId, this);
+                services.Session.PlayerNetworkManager.RegisterPlayer(OwnerClientId, this);
                 GameLogger.Log($"Registered player {OwnerClientId} with PlayerNetworkManager");
             }
 
@@ -216,9 +216,9 @@ namespace Core.Characters
 
             // Unregister from PlayerNetworkManager
             var services = GameBootstrap.Services;
-            if (services?.PlayerNetworkManager != null)
+            if (services?.Session?.PlayerNetworkManager != null)
             {
-                services.PlayerNetworkManager.UnregisterPlayer(OwnerClientId);
+                services.Session.PlayerNetworkManager.UnregisterPlayer(OwnerClientId);
                 GameLogger.Log($"Unregistered player {OwnerClientId} from PlayerNetworkManager");
             }
 
@@ -371,16 +371,16 @@ namespace Core.Characters
         private void SetupCharacterClass()
         {
             var services = GameBootstrap.Services;
-            if (services?.CharacterService == null)
+            if (GameBootstrap.Services?.Session?.CharacterService == null)
             {
                 GameLogger.LogError("Character service not available");
                 return;
             }
 
-            CharacterClass = services.CharacterService.GetCharacter(_characterClassId);
+            CharacterClass = services.Session.CharacterService.GetCharacter(_characterClassId);
             if (CharacterClass == null)
             {
-                CharacterClass = services.CharacterService.SelectedCharacter;
+                CharacterClass = services.Session.CharacterService.SelectedCharacter;
                 _characterClassId = CharacterClass?.Id ?? 0;
             }
 

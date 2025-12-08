@@ -10,11 +10,6 @@ using UnityEngine;
 
 namespace Core.Authentication
 {
-    /// <summary>
-    /// Authentication service - handles all auth logic and UI flow
-    /// Uses SaveService for persistence (SOLID compliant)
-    /// Publishes events via EventBus for decoupled communication
-    /// </summary>
     public class AuthenticationService : IAuthenticationService
     {
         private const string LOGIN_METHOD_DEVICE_ID = "DeviceID";
@@ -26,9 +21,6 @@ namespace Core.Authentication
         public bool IsLoggedIn => IsUserLoggedIn();
         public string LastLoginMethod => _saveService?.GetSettings().LastLoginMethod ?? "";
 
-        /// <summary>
-        /// Constructor with proper dependency injection
-        /// </summary>
         public AuthenticationService(
             ISaveService saveService,
             Core.Events.IEventBus eventBus)
@@ -37,10 +29,6 @@ namespace Core.Authentication
             _eventBus = eventBus ?? throw new ArgumentNullException(nameof(eventBus));
         }
 
-        /// <summary>
-        /// Initialize authentication - checks for existing session
-        /// Returns true if user is authenticated
-        /// </summary>
         public async UniTask<bool> InitializeAsync()
         {
             GameLogger.Log("Initializing authentication...");
@@ -52,7 +40,6 @@ namespace Core.Authentication
             {
                 GameLogger.Log("Auto-login successful");
 
-                // Notify save service that user logged in
                 _saveService.OnUserLoggedIn();
 
                 return true;
@@ -73,7 +60,6 @@ namespace Core.Authentication
                 UpdateStatus("Session found!");
                 await UniTask.Delay(500);
 
-                // Publish event via EventBus
                 _eventBus?.Publish(new Core.Events.LoginSuccessEvent
                 {
                     UserId = EOSManager.Instance?.GetProductUserId()?.ToString() ?? "unknown",
@@ -127,28 +113,6 @@ namespace Core.Authentication
             return false;
         }
 
-        public void Logout()
-        {
-            GameLogger.Log("Logging out user (sync)");
-
-            // Clear login method from save service
-            _saveService?.UpdateSettings(s => s.LastLoginMethod = "");
-
-            // Notify save service to clear user-specific cache
-            _saveService?.OnUserLoggedOut();
-
-            ProductUserId productUserId = EOSManager.Instance?.GetProductUserId();
-            if (productUserId != null && productUserId.IsValid())
-            {
-                EOSManager.Instance.ClearConnectId(productUserId);
-            }
-
-            UpdateStatus("Logged out");
-
-            // Trigger logout complete event - GameBootstrap will handle full reboot
-            OnLogoutComplete?.Invoke();
-        }
-
         private async UniTask<bool> LoginWithDeviceIdInternalAsync(bool isAutoLogin)
         {
             string errorMessage = "";
@@ -198,7 +162,6 @@ namespace Core.Authentication
                         Error = errorMessage
                     });
 
-                    // Show maintenance screen for server down scenario
                     GameBootstrap.Services?.MaintenanceService?.ShowServerDownMaintenance(errorMessage);
 
                     return false;
@@ -260,7 +223,6 @@ namespace Core.Authentication
                     Error = errorMessage
                 });
 
-                // Show maintenance screen for server down scenario
                 GameBootstrap.Services?.MaintenanceService?.ShowServerDownMaintenance(errorMessage);
 
                 return false;
@@ -268,12 +230,10 @@ namespace Core.Authentication
 
             if (loginSuccess)
             {
-                // Save login method using SaveService (secure and consistent)
                 _saveService?.UpdateSettings(s => s.LastLoginMethod = LOGIN_METHOD_DEVICE_ID);
 
                 UpdateStatus("Login successful!");
 
-                // Publish event via EventBus
                 _eventBus?.Publish(new Core.Events.LoginSuccessEvent
                 {
                     UserId = EOSManager.Instance?.GetProductUserId()?.ToString() ?? "unknown",
@@ -291,7 +251,6 @@ namespace Core.Authentication
 
                 UpdateStatus(errorMessage);
 
-                // Publish event via EventBus
                 _eventBus?.Publish(new Core.Events.LoginFailedEvent
                 {
                     Error = errorMessage
@@ -313,7 +272,6 @@ namespace Core.Authentication
         {
             GameLogger.Log($"{message}");
 
-            // Publish event via EventBus
             _eventBus?.Publish(new Core.Events.LoginStatusChangedEvent
             {
                 Status = message
@@ -323,9 +281,6 @@ namespace Core.Authentication
         // ============================================
         // LOGOUT SUPPORT
         // ============================================
-
-        public event Action OnLogoutComplete;
-
         public async UniTask LogoutAsync()
         {
             GameLogger.Log("Logging out...");
@@ -338,7 +293,6 @@ namespace Core.Authentication
                 settings.LastLoginMethod = "";
                 _saveService.SaveSettings(settings);
 
-                // Notify save service to clear user-specific cache
                 _saveService.OnUserLoggedOut();
 
                 // EOS logout (if available)
@@ -356,8 +310,10 @@ namespace Core.Authentication
 
                 UpdateStatus("Logged out successfully");
 
-                // Trigger logout complete event - GameBootstrap will handle full reboot
-                OnLogoutComplete?.Invoke();
+                _eventBus?.Publish(new Core.Events.LogoutEvent
+                {
+                    UserId = EOSManager.Instance?.GetProductUserId()?.ToString() ?? "unknown"
+                });
 
                 GameLogger.Log("Logout complete");
             }

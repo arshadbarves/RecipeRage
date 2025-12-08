@@ -91,21 +91,15 @@ namespace UI.Screens
 
         private void CacheUIElements()
         {
-            _maintenanceCard = GetElement<VisualElement>("maintenance-card");
             _titleLabel = GetElement<Label>("maintenance-title");
-            _messageLabel = GetElement<Label>("maintenance-message");
+            _messageLabel = GetElement<Label>("news-title");
             _countdownContainer = GetElement<VisualElement>("countdown-container");
             _countdownLabel = GetElement<Label>("countdown-label");
             _retryButton = GetElement<Button>("retry-button");
             _maintenanceIcon = GetElement<VisualElement>("maintenance-icon");
 
-            // Log missing elements
-            if (_maintenanceCard == null)
-                GameLogger.LogWarning("maintenance-card not found");
             if (_titleLabel == null)
                 GameLogger.LogWarning("maintenance-title not found");
-            if (_messageLabel == null)
-                GameLogger.LogWarning("maintenance-message not found");
             if (_countdownContainer == null)
                 GameLogger.LogWarning("countdown-container not found");
             if (_countdownLabel == null)

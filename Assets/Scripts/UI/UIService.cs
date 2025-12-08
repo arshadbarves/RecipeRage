@@ -26,7 +26,6 @@ namespace UI
         private readonly UIScreenStackManager _stackManager;
         private readonly IAnimationService _animationService;
 
-        // Events
         public event Action<UIScreenType> OnScreenShown;
         public event Action<UIScreenType> OnScreenHidden;
         public event Action OnAllScreensHidden;
@@ -248,7 +247,6 @@ namespace UI
                     break;
             }
 
-            // Push to stack only if addToHistory is true
             // TODO: Fix this once got time(This cause stacking Issue)
             // if (addToHistory)
             {
@@ -260,7 +258,6 @@ namespace UI
                 }
             }
 
-            // Show the screen visually
             ShowScreenInternal(screen, animate);
         }
 
@@ -294,7 +291,6 @@ namespace UI
                 return;
             }
 
-            // Remove from stack
             UIScreenCategory category = _stackManager.GetCategory(screenType);
             bool removed = _stackManager.PopSpecific(screenType, category);
 
@@ -303,7 +299,6 @@ namespace UI
                 GameLogger.LogWarning($"Screen {screenType} not in stack");
             }
 
-            // Hide the screen visually
             HideScreenInternal(screen, animate);
         }
 
@@ -349,7 +344,6 @@ namespace UI
             _stackManager.ClearCategory(UIScreenCategory.Modal);
             _stackManager.ClearCategory(UIScreenCategory.Popup);
 
-            // Hide visually
             var allVisible = _stackManager.GetAllVisible();
             foreach (UIScreenType screenType in allVisible)
             {
@@ -397,7 +391,6 @@ namespace UI
 
                 if (depth > 1)
                 {
-                    // Pop current screen
                     UIScreenType? current = _stackManager.Pop(category);
                     GameLogger.Log($"Popped {current} from {category}");
 
@@ -406,7 +399,6 @@ namespace UI
                         HideScreenInternal(currentScreen, animate);
                     }
 
-                    // Show previous screen
                     UIScreenType? previous = _stackManager.Peek(category);
                     GameLogger.Log($"Showing previous screen: {previous}");
 

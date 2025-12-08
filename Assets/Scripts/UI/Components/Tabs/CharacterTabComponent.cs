@@ -36,7 +36,7 @@ namespace UI.Components.Tabs
             }
 
             _root = root;
-            _characterService = GameBootstrap.Services?.CharacterService;
+            _characterService = GameBootstrap.Services?.Session?.CharacterService;
             _uiService = GameBootstrap.Services?.UIService;
 
             if (_characterService == null)

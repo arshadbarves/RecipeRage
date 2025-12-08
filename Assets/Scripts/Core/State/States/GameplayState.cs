@@ -95,7 +95,7 @@ namespace Core.State.States
             await UniTask.Yield();
 
             // Start network connection (host or client)
-            var networkingServices = GameBootstrap.Services?.NetworkingServices;
+            var networkingServices = GameBootstrap.Services?.Session?.NetworkingServices;
             if (networkingServices?.GameStarter != null)
             {
                 networkingServices.GameStarter.StartGame();
@@ -114,7 +114,7 @@ namespace Core.State.States
             }
 
             // Initialize the game mode
-            var gameModeService = GameBootstrap.Services?.GameModeService;
+            var gameModeService = GameBootstrap.Services?.Session?.GameModeService;
             if (gameModeService != null)
             {
                 GameLogger.Log("Game mode service initialized");
@@ -162,7 +162,7 @@ namespace Core.State.States
             GameLogger.Log("Camera system disposed");
 
             // Stop the game mode
-            var gameModeService = GameBootstrap.Services.GameModeService;
+            var gameModeService = GameBootstrap.Services?.Session?.GameModeService;
             if (gameModeService != null)
             {
                 // Stop the current game mode if available

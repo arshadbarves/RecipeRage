@@ -79,16 +79,13 @@ namespace Gameplay
                 return;
             }
 
-            // Decrease time
             _timeRemaining.Value -= Time.deltaTime;
 
-            // Check if timer expired
             if (_timeRemaining.Value <= 0)
             {
                 _timeRemaining.Value = 0;
                 _isRunning.Value = false;
 
-                // Notify clients
                 TimerExpiredClientRpc();
             }
         }

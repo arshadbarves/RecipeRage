@@ -30,7 +30,7 @@ namespace UI.Screens
         protected override void OnInitialize()
         {
             // Get matchmaking service
-            _matchmakingService = GameBootstrap.Services?.NetworkingServices?.MatchmakingService;
+            _matchmakingService = GameBootstrap.Services?.Session?.NetworkingServices?.MatchmakingService;
 
             // Query UI elements
             _statusText = GetElement<Label>("status-text");

@@ -26,7 +26,6 @@ namespace Gameplay
         /// </summary>
         private void Start()
         {
-            // Find network managers
             _networkGameStateManager = FindFirstObjectByType<NetworkGameStateManager>();
             _roundTimer = FindFirstObjectByType<RoundTimer>();
 
@@ -40,7 +39,6 @@ namespace Gameplay
                 GameLogger.LogWarning("RoundTimer not found in scene. Timer will not work.");
             }
 
-            // Auto-start if enabled and we're the host
             if (_autoStartOnHost && NetworkManager.Singleton != null && NetworkManager.Singleton.IsHost)
             {
                 Invoke(nameof(StartRound), 2f); // Delay to let everything initialize
@@ -78,8 +76,6 @@ namespace Gameplay
 
             _gameStarted = true;
 
-            // Start the round via NetworkGameStateManager
-            // This will trigger the Preparation phase (countdown) then Playing phase
             _networkGameStateManager.RequestStartGameServerRpc();
 
             GameLogger.Log("Round start requested");
@@ -123,7 +119,6 @@ namespace Gameplay
                 return;
             }
 
-            // Transition to Results phase
             _networkGameStateManager.ChangePhase(GamePhase.Results, 30f);
 
             GameLogger.Log("Round ended");

@@ -19,7 +19,7 @@ namespace Core.State.States
         // Timeout tracking
         private float _searchStartTime;
         private float _searchTime;
-        private const float SEARCH_TIMEOUT = 6f;
+        private const float SearchTimeout = 6f;
         private bool _hasFilledWithBots;
 
         // Matchmaking parameters
@@ -39,7 +39,7 @@ namespace Core.State.States
         {
             base.Enter();
 
-            _networkingServices = GameBootstrap.Services?.NetworkingServices;
+            _networkingServices = GameBootstrap.Services.Session.NetworkingServices;
 
             if (_networkingServices == null)
             {
@@ -118,7 +118,7 @@ namespace Core.State.States
             _searchTime = Time.time - _searchStartTime;
 
             // Check for timeout - trigger bot filling
-            if (_searchTime >= SEARCH_TIMEOUT && !_hasFilledWithBots)
+            if (_searchTime >= SearchTimeout && !_hasFilledWithBots)
             {
                 LogMessage($"Matchmaking timeout after {_searchTime:F1}s - filling with bots");
                 _hasFilledWithBots = true;
@@ -188,10 +188,11 @@ namespace Core.State.States
         private void CleanupLobby()
         {
             var services = GameBootstrap.Services;
-            if (services?.NetworkingServices?.LobbyManager == null)
+            // Access NetworkingServices via Session
+            if (services?.Session?.NetworkingServices?.LobbyManager == null)
                 return;
 
-            var lobbyManager = services.NetworkingServices.LobbyManager;
+            var lobbyManager = services.Session.NetworkingServices.LobbyManager;
 
             // Leave match lobby if we're in one
             if (lobbyManager.IsInMatchLobby)

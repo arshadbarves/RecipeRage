@@ -38,7 +38,7 @@ namespace UI.Popups
         protected override void OnInitialize()
         {
             // Get services
-            var networking = GameBootstrap.Services?.NetworkingServices;
+            var networking = GameBootstrap.Services?.Session?.NetworkingServices;
             _friendsService = networking?.FriendsService;
             _lobbyManager = networking?.LobbyManager;
 

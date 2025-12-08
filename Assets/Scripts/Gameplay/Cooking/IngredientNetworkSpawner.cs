@@ -24,12 +24,8 @@ namespace Gameplay.Cooking
         private void Awake()
         {
             // Get services from ServiceContainer
-            var services = GameBootstrap.Services;
-            if (services != null)
-            {
-                _objectPool = services.NetworkObjectPool;
-                _networkGameManager = services.NetworkGameManager;
-            }
+            _objectPool = GameBootstrap.Services?.Session?.NetworkObjectPool;
+            _networkGameManager = GameBootstrap.Services?.Session?.NetworkGameManager;
         }
 
         /// <summary>

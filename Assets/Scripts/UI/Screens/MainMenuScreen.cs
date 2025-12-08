@@ -37,20 +37,33 @@ namespace UI.Screens
 
         #region Lifecycle
 
+        private bool _isDataInitialized;
+
         protected override void OnInitialize()
         {
             ConfigureTopBarPointerEvents();
-            InitializeCurrencyDisplay();
-            InitializePlayerCard();
-            InitializeTabContent();
-            SubscribeToEvents();
-
-            GameLogger.Log("Initialized");
+            GameLogger.Log("UI Layout Initialized");
         }
 
         protected override void OnShow()
         {
+            if (!_isDataInitialized)
+            {
+                InitializeData();
+                _isDataInitialized = true;
+            }
+
             UpdatePlayerName();
+        }
+
+        private void InitializeData()
+        {
+            InitializeCurrencyDisplay();
+            InitializePlayerCard();
+            InitializeTabContent();
+            SubscribeToEvents();
+            
+            GameLogger.Log("Data Binding Initialized");
         }
 
         protected override void OnHide()
@@ -143,16 +156,17 @@ namespace UI.Screens
         private void InitializeCurrencyDisplay()
         {
             var services = GameBootstrap.Services;
-            if (services != null)
+            // Currency is in Session scope
+            if (services?.Session != null)
             {
                 _currencyDisplay = new CurrencyDisplay(
                     Container,
                     services.EventBus,
-                    services.CurrencyService
+                    services.Session.CurrencyService
                 );
             }
         }
-
+        
         private void InitializePlayerCard()
         {
             _playerCardButton = GetElement<Button>("player-card-button");
@@ -218,13 +232,19 @@ namespace UI.Screens
                 GameLogger.LogError("GameBootstrap.Services is null!");
                 return;
             }
+            
+            if (services.Session == null)
+            {
+                GameLogger.LogError("GameBootstrap.Services.Session is null! User not logged in?");
+                return;
+            }
 
             // Lobby tab (Main Menu/Home)
             VisualElement lobbyRoot = GetElement<VisualElement>("lobby-root");
             if (lobbyRoot != null)
             {
-                // Get matchmaking service from networking services
-                IMatchmakingService matchmakingService = services.NetworkingServices?.MatchmakingService;
+                // Get matchmaking service from networking services (In Session)
+                IMatchmakingService matchmakingService = services.Session.NetworkingServices?.MatchmakingService;
 
                 if (matchmakingService != null && services.StateManager != null)
                 {

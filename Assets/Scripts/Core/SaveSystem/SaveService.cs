@@ -56,7 +56,7 @@ namespace Core.SaveSystem
 
             // Initialize sync status
             _syncStatus = new Dictionary<string, SyncStatus>();
-            foreach (var config in _storageConfigs.Values)
+            foreach (StorageConfig config in _storageConfigs.Values)
             {
                 _syncStatus[config.Key] = new SyncStatus();
             }

@@ -22,7 +22,23 @@ namespace Core.Logging
             Category = category;
             Timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
             StackTrace = stackTrace;
-            FrameCount = UnityEngine.Time.frameCount;
+            
+            if (UnityEngine.Application.isPlaying) // Simple check, but doesn't guarantee thread safety
+            {
+                // We can use a try-catch for safety if we don't have a robust main-thread check
+                 try 
+                 {
+                     FrameCount = UnityEngine.Time.frameCount;
+                 }
+                 catch
+                 {
+                     FrameCount = -1;
+                 }
+            }
+            else
+            {
+                FrameCount = 0;
+            }
         }
 
         public override string ToString()

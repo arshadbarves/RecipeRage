@@ -46,7 +46,7 @@ namespace Core.State.States
         {
             // Check if all players are ready and the host can start the game
             var services = GameBootstrap.Services;
-            var networking = services?.NetworkingServices;
+            var networking = services?.Session?.NetworkingServices;
 
             if (networking != null &&
                 networking.LobbyManager.IsMatchLobbyOwner &&

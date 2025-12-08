@@ -157,7 +157,7 @@ namespace UI.Screens
             if (_friendCodeLabel == null)
                 return;
 
-            var networking = GameBootstrap.Services?.NetworkingServices;
+            var networking = GameBootstrap.Services?.Session?.NetworkingServices;
             var friendsService = networking?.FriendsService;
 
             if (friendsService != null && friendsService.IsInitialized)
@@ -268,7 +268,7 @@ namespace UI.Screens
 
         private void OnCopyFriendCodeClicked()
         {
-            var networking = GameBootstrap.Services?.NetworkingServices;
+            var networking = GameBootstrap.Services?.Session?.NetworkingServices;
             var friendsService = networking?.FriendsService;
 
             if (friendsService == null || !friendsService.IsInitialized)

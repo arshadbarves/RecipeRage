@@ -1,6 +1,9 @@
 using System;
+using Core.Authentication;
 using Core.Bootstrap;
+using Core.Events;
 using Core.Logging;
+using Core.Maintenance;
 using Core.RemoteConfig;
 using Cysharp.Threading.Tasks;
 using UI;
@@ -15,169 +18,158 @@ namespace Core.State.States
     /// </summary>
     public class BootstrapState : BaseState
     {
-        private const float SPLASH_DURATION = 2.0f;
-        private const float MIN_LOADING_TIME = 1.0f;
+        private const float SplashDuration = 2.0f;
+        private const float MinLoadingTime = 2.0f;
+        private readonly IUIService _uiService;
+        private readonly INTPTimeService _ntpTimeService;
+        private readonly IRemoteConfigService _remoteConfigService;
+        private readonly IAuthenticationService _authService;
+        private readonly IMaintenanceService _maintenanceService;
+        private readonly IGameStateManager _stateManager;
+        private readonly IEventBus _eventBus;
+        private readonly ServiceContainer _serviceContainer;
+
+        public BootstrapState(
+            IUIService uiService,
+            INTPTimeService ntpTimeService,
+            IRemoteConfigService remoteConfigService,
+            IAuthenticationService authService,
+            IMaintenanceService maintenanceService,
+            IGameStateManager stateManager,
+            IEventBus eventBus,
+            ServiceContainer serviceContainer)
+        {
+            _uiService = uiService;
+            _ntpTimeService = ntpTimeService;
+            _remoteConfigService = remoteConfigService;
+            _authService = authService;
+            _maintenanceService = maintenanceService;
+            _stateManager = stateManager;
+            _eventBus = eventBus;
+            _serviceContainer = serviceContainer;
+        }
 
         public override async void Enter()
         {
             base.Enter();
-            GameLogger.Log("[BootstrapState] Entering game initialization sequence");
+            GameLogger.Log("Entering game initialization sequence");
 
             try
             {
                 // 1. Show Splash Screen
-                await ShowSplashScreen();
+                await ShowSplashScreenAsync();
 
-                // 2. Initialize Remote Config & Time
-                await InitializeFoundation();
+                await InitializeFoundationAsync();
 
-                // 3. Initialize Authentication
-                bool isAuthenticated = await InitializeAuthentication();
+                bool isAuthenticated = await InitializeAuthenticationAsync();
 
-                // 4. Post-Auth Checks (Maintenance, Updates, etc.)
                 if (isAuthenticated)
                 {
-                    await PerformPostLoginChecks();
+                    // Create the GameSession immediately after successful authentication
+                    _serviceContainer.CreateSession();
 
-                    // 5. Transition to Main Menu
-                    GameLogger.Log("[BootstrapState] Initialization complete. Transitioning to MainMenu.");
-                    GameBootstrap.Services.StateManager.ChangeState(new MainMenuState());
+                    await PerformPostLoginChecksAsync();
+
+                    GameLogger.Log("Initialization complete. Transitioning to MainMenu.");
+                    _stateManager.ChangeState(new MainMenuState());
                 }
                 else
                 {
-                    // If not authenticated, go to Login screen
-                    GameLogger.Log("[BootstrapState] Not authenticated. Transitioning to Login.");
-                    // Note: LoginState isn't created yet in the plan, but we'll assume the UI Service handles the screen
-                    // For now, we'll just show the login screen via a LoginState if it existed,
-                    // or let the Auth service handle the UI trigger.
-                    // Based on existing code, we should probably transition to a LoginState.
-                    // Since LoginState might not exist in the file list I saw, I'll check if I need to create it or if I can just show the screen.
-                    // The original code did: Services.UIService.ShowScreen(UIScreenType.Login);
-                    // But we want to use States. Let's assume we'll create/use a LoginState or similar.
-                    // For now, I'll use a placeholder or direct UI call if State doesn't exist, but the goal is States.
-                    // Let's stick to the plan: "Transition to MainMenuState (or LoginState if auth fails)".
-                    // I will assume LoginState exists or I will create a simple one.
-                    // Actually, looking at the file list, I didn't see LoginState. I'll use direct UI for now to match previous behavior
-                    // but wrapped in a state if possible.
-                    // Wait, the original code had `Services.UIService.ShowScreen(UIScreenType.Login)`.
-                    // I'll create a simple LoginState in the next step if needed, or just use the UI service here for now
-                    // and leave the state transition for when the user actually logs in.
-                    // Actually, better to have a LoginState. I'll add it to the plan if it's missing, or just implement it.
-                    // For this file, I'll assume we transition to a LoginState.
-
-                    // For now, to be safe and not break compilation, I'll just show the screen and let the Auth service events drive the next step.
-                    // But wait, the StateManager needs a state.
-                    // I'll create a basic LoginState in this file or a separate one.
-                    // Let's just show the screen and stay in BootstrapState? No, that's bad.
-                    // I will create a LoginState.cs as well.
-
-                    // For this specific file, I'll refer to LoginState.
-                     GameBootstrap.Services.StateManager.ChangeState(new LoginState());
+                    GameLogger.Log("Not authenticated. Transitioning to Login.");
+                    _stateManager.ChangeState(new LoginState(_uiService, _eventBus, _stateManager, _serviceContainer));
                 }
             }
             catch (Exception ex)
             {
                 GameLogger.LogException(ex);
-                // In case of critical failure, try to go to Login
-                 GameBootstrap.Services.StateManager.ChangeState(new LoginState());
+                _stateManager.ChangeState(new LoginState(_uiService, _eventBus, _stateManager, _serviceContainer));
             }
         }
 
-        private async UniTask ShowSplashScreen()
+        private async UniTask ShowSplashScreenAsync()
         {
-            var uiService = GameBootstrap.Services.UIService;
-            uiService.ShowScreen(UIScreenType.Splash);
+            _uiService.ShowScreen(UIScreenType.Splash);
 
-            // Wait for duration
-            await UniTask.Delay(TimeSpan.FromSeconds(SPLASH_DURATION));
+            await UniTask.Delay(TimeSpan.FromSeconds(SplashDuration));
 
-            // The SplashScreen.cs logic handles hiding itself via FadeOut usually,
-            // or we can explicitly hide it.
-            // The original code called ShowForDurationAsync. We can replicate that or just wait here.
-            // Let's just wait here and then hide.
-            uiService.HideScreen(UIScreenType.Splash);
-            await UniTask.Delay(500); // Wait for fade
+            _uiService.HideScreen(UIScreenType.Splash);
+            await UniTask.Delay(500);
         }
 
-        private async UniTask InitializeFoundation()
+        private async UniTask InitializeFoundationAsync()
         {
-            GameLogger.Log("[BootstrapState] Initializing Foundation...");
-
-            // Sync NTP (non-critical - will fallback to local time if fails)
+            GameLogger.Log("Initializing Foundation...");
 
             try
             {
-                // Create a timeout task for 2 seconds
-                var timeoutTask = UniTask.Delay(TimeSpan.FromSeconds(2.0f));
-                var syncTask = GameBootstrap.Services.NTPTimeService.SyncTime();
+                var cts = new System.Threading.CancellationTokenSource();
+                cts.CancelAfter(TimeSpan.FromSeconds(10.0f));
 
-                // Wait for either sync to finish or timeout
-                // We convert syncTask to non-generic UniTask to get an index from WhenAny
-                int completedIndex = await UniTask.WhenAny(syncTask.AsUniTask(), timeoutTask);
+                var (isCanceled, ntpSynced) = await _ntpTimeService.SyncTime()
+                    .AttachExternalCancellation(cts.Token)
+                    .SuppressCancellationThrow();
 
-                if (completedIndex == 0) // Sync finished first
+                if (isCanceled)
                 {
-                    bool ntpSynced = await syncTask;
-                    if (!ntpSynced)
-                    {
-                        GameLogger.LogWarning("[BootstrapState] NTP sync failed, using local time.");
-                    }
+                    GameLogger.LogWarning("NTP sync timed out, using local time.");
                 }
-                else // Timeout
+                else if (!ntpSynced)
                 {
-                    GameLogger.LogWarning("[BootstrapState] NTP sync timed out (2s limit). Proceeding with local time.");
-                    // We let the sync task continue in background
-                    syncTask.Forget();
+                    GameLogger.LogWarning("NTP sync failed, using local time.");
                 }
+
+                cts.Dispose();
             }
             catch (Exception ex)
             {
-                GameLogger.LogWarning($"[BootstrapState] NTP sync exception (non-critical): {ex.Message}");
+                GameLogger.LogWarning($"NTP sync exception (non-critical): {ex.Message}");
             }
 
-            // Init Remote Config
-            await GameBootstrap.Services.RemoteConfigService.Initialize();
+            await _remoteConfigService.Initialize();
         }
 
-        private async UniTask<bool> InitializeAuthentication()
+        private async UniTask<bool> InitializeAuthenticationAsync()
         {
-            GameLogger.Log("[BootstrapState] Initializing Authentication...");
-            return await GameBootstrap.Services.AuthenticationService.InitializeAsync();
+            GameLogger.Log("Initializing Authentication...");
+            return await _authService.InitializeAsync();
         }
 
-        private async UniTask PerformPostLoginChecks()
+        private async UniTask PerformPostLoginChecksAsync()
         {
-            GameLogger.Log("[BootstrapState] Performing Post-Login Checks...");
+            GameLogger.Log("Performing Post-Login Checks...");
 
-            // Show Loading Screen
-            var uiService = GameBootstrap.Services.UIService;
-            uiService.ShowScreen(UIScreenType.Loading);
-            var loadingScreen = uiService.GetScreen<LoadingScreen>(UIScreenType.Loading);
+            var startTime = Time.realtimeSinceStartup;
 
-            // 1. Refresh Config
+            _uiService.ShowScreen(UIScreenType.Loading);
+            var loadingScreen = _uiService.GetScreen<LoadingScreen>(UIScreenType.Loading);
+
             loadingScreen?.UpdateProgress(0.3f, "Loading configuration...");
-            await GameBootstrap.Services.RemoteConfigService.RefreshConfig();
+            await _remoteConfigService.RefreshConfig();
 
-            // 2. Force Update Check
             loadingScreen?.UpdateProgress(0.5f, "Checking for updates...");
-            // (Logic extracted from GameBootstrap)
             var forceUpdateChecker = new ForceUpdateChecker(
-                GameBootstrap.Services.RemoteConfigService,
-                GameBootstrap.Services.UIService);
+                _remoteConfigService,
+                _uiService);
             await forceUpdateChecker.CheckForUpdate();
 
-            // 3. Maintenance Check
             loadingScreen?.UpdateProgress(0.7f, "Checking server status...");
-            if (GameBootstrap.Services.MaintenanceService != null)
+            if (_maintenanceService != null)
             {
-                await GameBootstrap.Services.MaintenanceService.CheckMaintenanceStatusAsync();
+                await _maintenanceService.CheckMaintenanceStatusAsync();
             }
 
-            // 4. Finalize
             loadingScreen?.UpdateProgress(1.0f, "Ready!");
             await UniTask.Delay(500);
 
-            uiService.HideScreen(UIScreenType.Loading);
+            var elapsedTime = Time.realtimeSinceStartup - startTime;
+            var remainingTime = MinLoadingTime - elapsedTime;
+            if (remainingTime > 0)
+            {
+                GameLogger.Log($"Waiting {remainingTime:F2}s to meet minimum loading time");
+                await UniTask.Delay(TimeSpan.FromSeconds(remainingTime));
+            }
+
+            _uiService.HideScreen(UIScreenType.Loading);
         }
     }
 }

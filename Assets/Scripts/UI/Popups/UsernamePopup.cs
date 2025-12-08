@@ -46,7 +46,7 @@ namespace UI.Popups
         {
             // Get services
             _saveService = GameBootstrap.Services?.SaveService;
-            _currencyService = GameBootstrap.Services?.CurrencyService;
+            _currencyService = GameBootstrap.Services?.Session?.CurrencyService;
 
             // Query elements
             QueryElements();

@@ -68,12 +68,10 @@ namespace Core.Configuration
         /// </summary>
         private void OnValidate()
         {
-            // Ensure minimum durations
             companySplashDuration = Mathf.Max(0.5f, companySplashDuration);
             minLoadingScreenDuration = Mathf.Max(1f, minLoadingScreenDuration);
             initializationTimeout = Mathf.Max(5f, initializationTimeout);
             
-            // Ensure we have at least one loading tip
             if (loadingTips == null || loadingTips.Length == 0)
             {
                 loadingTips = new[] { "Loading..." };

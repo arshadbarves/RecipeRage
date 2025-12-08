@@ -64,10 +64,8 @@ namespace UI.Screens
 
         protected override void OnHide()
         {
-            // Kill any ongoing animations
             _progressTween?.Kill();
 
-            // Fade out
             if (Container != null)
             {
                 var animationService = GameBootstrap.Services?.AnimationService;
@@ -139,7 +137,6 @@ namespace UI.Screens
         {
             progress = Mathf.Clamp01(progress);
 
-            // Animate progress bar
             if (_loadingProgress != null)
             {
                 _progressTween?.Kill();
@@ -155,7 +152,6 @@ namespace UI.Screens
                 ).SetEase(Ease.OutQuad);
             }
 
-            // Update status message
             if (_progressText != null && !string.IsNullOrEmpty(message))
             {
                 _progressText.text = message;

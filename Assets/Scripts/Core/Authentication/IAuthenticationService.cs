@@ -22,6 +22,5 @@ namespace Core.Authentication
         UniTask<bool> LoginWithFacebookAsync();
         UniTask LogoutAsync();
         
-        event Action OnLogoutComplete;
     }
 }

@@ -1,4 +1,4 @@
-@import url("../../Themes/DesignSystem.uss");
+@import url("project://database/Assets/Resources/UI/Themes/DesignSystem.uss?fileID=7433441132597879392&guid=74282f7acd0164afea4d8dc9dc05a968&type=3#DesignSystem");
 
 .loading-screen {
     position: absolute;
@@ -16,6 +16,7 @@
     height: 100%;
     -unity-background-scale-mode: scale-and-crop;
     background-image: url("project://database/Assets/Textures/Arts/bg-4.png?fileID=2800000&guid=c8ac88b81256647b3b39ad75f7081306&type=3#bg-4");
+    -unity-material: url("project://database/Assets/Shaders/UI_RadialGradientBackground.mat?fileID=2100000&guid=25e9f1c4a38b94089b942f58697c1318&type=2#UI_RadialGradientBackground");
 }
 
 .background-overlay {
@@ -115,7 +116,3 @@
     color: var(--color-text-light);
     -unity-text-align: middle-right;
 }
-
-
-
-

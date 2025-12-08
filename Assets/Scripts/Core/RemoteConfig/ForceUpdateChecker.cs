@@ -14,7 +14,7 @@ namespace Core.RemoteConfig
     {
         private readonly IRemoteConfigService _configService;
         private readonly IUIService _uiService;
-        
+
         public ForceUpdateChecker(
             IRemoteConfigService configService,
             IUIService uiService)
@@ -22,7 +22,7 @@ namespace Core.RemoteConfig
             _configService = configService;
             _uiService = uiService;
         }
-        
+
         /// <summary>
         /// Checks if app update is required
         /// </summary>
@@ -31,36 +31,36 @@ namespace Core.RemoteConfig
             try
             {
                 GameLogger.Log("Checking for force update...");
-                
+
                 // Refresh force update config to get latest data
                 await _configService.RefreshConfig<ForceUpdateConfig>();
-                
+
                 // Get force update config
                 if (!_configService.TryGetConfig<ForceUpdateConfig>(out var updateConfig))
                 {
                     GameLogger.LogWarning("ForceUpdateConfig not available");
                     return false;
                 }
-                
+
                 // Get current platform
                 string platform = GetCurrentPlatform();
                 string currentVersion = Application.version;
-                
+
                 GameLogger.Log($"Current platform: {platform}, version: {currentVersion}");
-                
+
                 // Get platform-specific requirements
                 var requirement = updateConfig.GetRequirementForPlatform(platform);
-                
+
                 if (requirement == null)
                 {
                     GameLogger.Log($"No update requirements for platform: {platform}");
                     return false;
                 }
-                
+
                 // Check if update is required
                 bool isRequired = requirement.IsUpdateRequired(currentVersion);
                 bool isRecommended = requirement.IsUpdateRecommended(currentVersion);
-                
+
                 if (isRequired)
                 {
                     GameLogger.Log($"Force update required: {currentVersion} < {requirement.MinimumVersion}");
@@ -73,7 +73,7 @@ namespace Core.RemoteConfig
                     await ShowForceUpdatePopup(requirement, false);
                     return false;
                 }
-                
+
                 GameLogger.Log("App version is up to date");
                 return false;
             }
@@ -83,20 +83,20 @@ namespace Core.RemoteConfig
                 return false;
             }
         }
-        
+
         private async UniTask ShowForceUpdatePopup(PlatformVersionRequirement requirement, bool isRequired)
         {
             try
             {
                 GameLogger.Log($"Showing update popup - Required: {isRequired}");
-                
+
                 string urgencyText = isRequired ? "REQUIRED" : "RECOMMENDED";
                 string message = $"{requirement.UpdateMessage}\n\n" +
                                 $"Current Version: {Application.version}\n" +
                                 $"Minimum Version: {requirement.MinimumVersion}";
-                
+
                 GameLogger.Log($"Update popup: {message}");
-                
+
                 // Show notification with update prompt
                 if (_uiService != null)
                 {
@@ -106,22 +106,22 @@ namespace Core.RemoteConfig
                     {
                         var notificationType = isRequired ? UI.Screens.NotificationType.Error : UI.Screens.NotificationType.Warning;
                         await notificationScreen.Show(requirement.UpdateTitle, message, notificationType, isRequired ? 0f : 10f);
-                        
+
                         // Open store URL
                         if (!string.IsNullOrEmpty(requirement.StoreUrl))
                         {
-                            OpenStoreUrl(requirement.StoreUrl);
+                            // OpenStoreUrl(requirement.StoreUrl);
                         }
                     }
                 }
-                
+
                 if (isRequired)
                 {
                     // Block app usage until update
                     GameLogger.Log("Blocking app usage - update required");
                     // Could show a blocking screen here
                 }
-                
+
                 await UniTask.Yield();
             }
             catch (Exception ex)
@@ -129,7 +129,7 @@ namespace Core.RemoteConfig
                 GameLogger.LogError($"Failed to show update popup: {ex.Message}");
             }
         }
-        
+
         private void OpenStoreUrl(string storeUrl)
         {
             if (string.IsNullOrEmpty(storeUrl))
@@ -137,7 +137,7 @@ namespace Core.RemoteConfig
                 GameLogger.LogError("Store URL is empty");
                 return;
             }
-            
+
             try
             {
                 GameLogger.Log($"Opening store URL: {storeUrl}");
@@ -148,7 +148,7 @@ namespace Core.RemoteConfig
                 GameLogger.LogError($"Failed to open store URL: {ex.Message}");
             }
         }
-        
+
         private string GetCurrentPlatform()
         {
 #if UNITY_IOS

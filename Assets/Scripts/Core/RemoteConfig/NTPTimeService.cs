@@ -136,9 +136,38 @@ namespace Core.RemoteConfig
                 throw new Exception($"Could not resolve NTP server: {ntpServer}");
             }
 
-            var ipEndPoint = new IPEndPoint(addresses[0], NTP_PORT);
+            // Prefer IPv4 addresses, fallback to IPv6
+            IPAddress selectedAddress = null;
+            foreach (var addr in addresses)
+            {
+                if (addr.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    selectedAddress = addr;
+                    break;
+                }
+            }
 
-            using (var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp))
+            // If no IPv4 found, try IPv6
+            if (selectedAddress == null)
+            {
+                foreach (var addr in addresses)
+                {
+                    if (addr.AddressFamily == AddressFamily.InterNetworkV6)
+                    {
+                        selectedAddress = addr;
+                        break;
+                    }
+                }
+            }
+
+            if (selectedAddress == null)
+            {
+                throw new Exception($"No suitable IP address found for: {ntpServer}");
+            }
+
+            var ipEndPoint = new IPEndPoint(selectedAddress, NTP_PORT);
+
+            using (var socket = new Socket(selectedAddress.AddressFamily, SocketType.Dgram, ProtocolType.Udp))
             {
                 socket.ReceiveTimeout = NTP_TIMEOUT_MS;
                 socket.SendTimeout = NTP_TIMEOUT_MS;

@@ -240,7 +240,7 @@ namespace UI.Components.Tabs
         {
             GameLogger.Log($"Attempting to buy {item.name} for {item.price} {item.currency}");
 
-            var currencyService = GameBootstrap.Services?.CurrencyService;
+            var currencyService = GameBootstrap.Services.Session.CurrencyService;
             if (currencyService == null)
             {
                 GameLogger.LogError("CurrencyService not found");
