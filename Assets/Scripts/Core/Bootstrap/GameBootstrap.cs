@@ -28,6 +28,7 @@ namespace Core.Bootstrap
             }
 
             Instance = this;
+            // Use gameObject (not this) to explicitly preserve the entire GameObject across scenes
             DontDestroyOnLoad(gameObject);
             InitializeGame();
         }
