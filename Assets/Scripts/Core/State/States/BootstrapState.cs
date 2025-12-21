@@ -19,7 +19,7 @@ namespace Core.State.States
     /// </summary>
     public class BootstrapState : BaseState
     {
-        private const float SplashDuration = 2.0f;
+        private const float SplashDuration = 3.5f;
         private const float MinLoadingTime = 2.0f;
         private readonly IUIService _uiService;
         private readonly INTPTimeService _ntpTimeService;

@@ -17,19 +17,20 @@ namespace UI.Screens
     [UIScreen(UIScreenType.Splash, UIScreenCategory.System, "Screens/SplashScreenTemplate")]
     public class SplashScreen : BaseUIScreen
     {
-        #region Constants - Exact values from HTML/CSS reference
+        #region Constants - Animation timings
 
-        // Animation Durations (in seconds)
-        private const float GLOBAL_SCALE_DURATION = 1.5f;
-        private const float BORDER_WIPE_DURATION = 1.0f;
-        private const float TEXT_FADE_DURATION = 1.0f;
-        private const float BOX_FADE_DURATION = 1.0f;
-        private const float BOX_SLIDE_DURATION = 0.8f;
-        private const float SUBTITLE_REVEAL_DURATION = 1.0f;
+        // Animation Durations (in seconds) - Slower for elegance
+        private const float GLOBAL_SCALE_DURATION = 2.0f;
+        private const float BORDER_WIPE_DURATION = 1.5f;
+        private const float TEXT_FADE_DURATION = 1.5f;
+        private const float BOX_FADE_DURATION = 1.5f;
+        private const float BOX_SLIDE_DURATION = 1.2f;
+        private const float SUBTITLE_REVEAL_DURATION = 1.5f;
+        private const float FADE_OUT_DURATION = 0.8f;
 
         // Animation Delays (in milliseconds)
-        private const int CENTER_BOX_DELAY_MS = 200;
-        private const int SUBTITLE_DELAY_MS = 600;
+        private const int CENTER_BOX_DELAY_MS = 300;
+        private const int SUBTITLE_DELAY_MS = 800;
 
         // Animation Values
         private const float INITIAL_SCALE = 0.9f;
@@ -67,8 +68,7 @@ namespace UI.Screens
             var anim = GameBootstrap.Services?.AnimationService;
             if (anim == null) return;
 
-            // 1. Global Scale: 0.9 -> 1.0 over 1.5s
-            // HTML: cubic-bezier(0.215, 0.610, 0.355, 1.000) = OutCubic
+            // 1. Global Scale
             if (_masterContainer != null)
             {
                 _masterContainer.style.scale = new StyleScale(new Vector2(INITIAL_SCALE, INITIAL_SCALE));
@@ -81,7 +81,7 @@ namespace UI.Screens
                 ).SetEase(Ease.OutCubic);
             }
 
-            // 2. Play Text Fade: 1s ease-out
+            // 2. Play Text Fade
             if (_playText != null)
             {
                 _playText.style.opacity = 0;
@@ -94,8 +94,7 @@ namespace UI.Screens
                 ).SetEase(Ease.OutQuad);
             }
 
-            // 3. Play Border Wipe: BorderProgress 0 -> 1 over 1s
-            // HTML: cubic-bezier(0.19, 1, 0.22, 1) ≈ OutExpo
+            // 3. Play Border Wipe
             if (_playSkewedBorder != null)
             {
                 _playSkewedBorder.BorderProgress = 0f;
@@ -108,8 +107,7 @@ namespace UI.Screens
                 ).SetEase(Ease.OutExpo);
             }
 
-            // 4. Center Box Fade & Slide: Delay 0.2s
-            // HTML: boxFade 1s ease-out, boxSlide 0.8s cubic-bezier(0.215, 0.610, 0.355, 1.000)
+            // 4. Center Box Fade & Slide
             if (_centerContainer != null)
             {
                 _centerContainer.style.opacity = 0;
@@ -125,7 +123,7 @@ namespace UI.Screens
                         BOX_FADE_DURATION
                     ).SetEase(Ease.OutQuad);
 
-                    // Slide from right (30px -> 0)
+                    // Slide from right
                     DOTween.To(
                         () => CENTER_BOX_SLIDE_OFFSET,
                         x => _centerContainer.style.translate = new Translate(x, 0),
@@ -136,8 +134,7 @@ namespace UI.Screens
                 }).Forget();
             }
 
-            // 5. Subtitle Reveal: Delay 0.6s
-            // HTML: subtitleReveal 1s ease-out (fade + slide up 20px -> 0)
+            // 5. Subtitle Reveal
             if (_subtitle != null)
             {
                 _subtitle.style.opacity = 0;
@@ -153,7 +150,7 @@ namespace UI.Screens
                         SUBTITLE_REVEAL_DURATION
                     ).SetEase(Ease.OutQuad);
 
-                    // Slide up (20px -> 0)
+                    // Slide up
                     DOTween.To(
                         () => SUBTITLE_SLIDE_OFFSET,
                         x => _subtitle.style.translate = new Translate(0, x),
@@ -167,13 +164,13 @@ namespace UI.Screens
 
         protected override void OnHide()
         {
-            // Fade out
+            // Fade out - longer duration for elegant exit
             if (Container != null)
             {
                 var animationService = GameBootstrap.Services?.AnimationService;
                 if (animationService != null)
                 {
-                    animationService.UI.FadeOut(Container, 0.3f);
+                    animationService.UI.FadeOut(Container, FADE_OUT_DURATION);
                 }
             }
         }
@@ -201,8 +198,8 @@ namespace UI.Screens
             if (_splashContent != null) _splashContent.style.opacity = 1;
             if (_masterContainer != null) _masterContainer.style.scale = new StyleScale(new Vector2(INITIAL_SCALE, INITIAL_SCALE));
             if (_playText != null) _playText.style.opacity = 0;
-            if (_centerContainer != null) _centerContainer.style.opacity = 0;
             if (_playSkewedBorder != null) _playSkewedBorder.BorderProgress = 0f;
+            if (_centerContainer != null) _centerContainer.style.opacity = 0;
             if (_subtitle != null) _subtitle.style.opacity = 0;
         }
 

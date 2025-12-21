@@ -174,7 +174,7 @@ namespace UI.Controls
                 painter.lineCap = LineCap.Round;
                 painter.lineJoin = LineJoin.Round;
 
-                if (_borderProgress >= 0.999f)
+                if (_borderProgress >= 0.9f)
                 {
                     DrawSkewedRoundedRect(painter, tl, tr, br, bl, radius);
                     painter.Stroke();
@@ -240,7 +240,7 @@ namespace UI.Controls
             radius = Mathf.Min(radius, topLen * 0.5f, rightLen * 0.5f, bottomLen * 0.5f, leftLen * 0.5f);
 
             float cornerLen = radius * 0.5f * Mathf.PI;
-            float totalLen = (topLen - 2 * radius) + (rightLen - 2 * radius) + 
+            float totalLen = (topLen - 2 * radius) + (rightLen - 2 * radius) +
                             (bottomLen - 2 * radius) + (leftLen - 2 * radius) + 4 * cornerLen;
             float targetLen = totalLen * progress;
 
