@@ -1,8 +1,9 @@
 using System;
+using Core.Bootstrap;
 
 namespace Core.State
 {
-    public interface IGameStateManager
+    public interface IGameStateManager : IInitializable
     {
         IState CurrentState { get; }
         IState PreviousState { get; }

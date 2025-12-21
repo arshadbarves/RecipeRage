@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Core.Logging;
+using Core.RemoteConfig;
 
 namespace UI.Data
 {
@@ -112,7 +113,7 @@ namespace UI.Data
                     return TimeSpan.Zero;
                 
                 DateTime nextRotation = startTime.AddSeconds(currentMap.rotationTime);
-                TimeSpan remaining = nextRotation - DateTime.UtcNow;
+                TimeSpan remaining = nextRotation - NTPTime.UtcNow;
                 
                 return remaining.TotalSeconds > 0 ? remaining : TimeSpan.Zero;
             }

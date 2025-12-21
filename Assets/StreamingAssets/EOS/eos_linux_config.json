@@ -8,12 +8,12 @@
   "clientCredentials": {
     "ClientId": "xyza7891a4duvFnuVg7ZJzUGcaf7vgHF",
     "ClientSecret": "nrxF4ykj1gZCoEyFldcNxRVExWvaWdP8QapATwubfC4",
-    "EncryptionKey": "2F1FA403E3404CC9F837181F49F89695D546E112CEF1A213B64B1416A846518E"
+    "EncryptionKey": "1F7E1FDC1CB5E23F92DA72430717CC405901C8FEF42B0E2E06A767905630F2D5"
   },
   "isServer": false,
   "platformOptionsFlags": "None",
-  "authScopeOptionsFlags": "NoFlags",
-  "integratedPlatformManagementFlags": 0,
+  "authScopeOptionsFlags": "BasicProfile, FriendsList, Presence",
+  "integratedPlatformManagementFlags": "Disabled",
   "tickBudgetInMilliseconds": 0,
   "taskNetworkTimeoutSeconds": 0.0,
   "threadAffinity": {

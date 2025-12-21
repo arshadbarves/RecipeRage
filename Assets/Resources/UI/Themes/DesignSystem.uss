@@ -86,6 +86,9 @@
     /* Font Family */
     --font-primary: url("project://database/Assets/Fonts/LilitaOne-Regular.ttf?fileID=12800000&guid=2309d3a0e6c55446ea2d106abff555fe&type=3#LilitaOne-Regular");
     --font-playcenter-logo: url("project://database/Assets/Fonts/Comfortaa-VariableFont_wght.ttf?fileID=12800000&guid=117db0856501649d4b3f3eae688e87e5&type=3#Comfortaa-VariableFont_wght");
+    --font-inter: url("project://database/Assets/Fonts/Inter-VariableFont_slnt,wght.ttf?fileID=12800000&guid=703215682885949d19451631742461d3&type=3#Inter-VariableFont_slnt,wght");
+    --font-hypebeast: url("project://database/Assets/Fonts/Burbank Big Condensed Black.otf?fileID=12800000&guid=5659727771765427184400ea05c87123&type=3#Burbank Big Condensed Black");
+    --font-anton: url("project://database/Assets/Fonts/Anton-Regular.ttf?fileID=12800000&guid=da2f07248f2244243b59345237337354&type=3#Anton-Regular");
 
     /* Transitions */
     --transition-fast: 0.1s;
@@ -115,10 +118,9 @@
     justify-content: space-between;
     align-items: flex-end;
     margin: var(--spacing-sm);
-    padding: var(--spacing-xxl);
     background-color: var(--color-black);
     border-radius: var(--radius-lg);
-    min-height: 80px;
+    min-height: 75px;
     flex-shrink: 0;
 }
 

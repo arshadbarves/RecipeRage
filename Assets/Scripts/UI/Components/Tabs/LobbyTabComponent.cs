@@ -515,7 +515,7 @@ namespace UI.Components.Tabs
 
                 GameLogger.Log($"Ready state: {_isReady}");
 
-                // TODO: If all players ready, start matchmaking
+                // If all players ready, start matchmaking
                 if (AreAllPlayersReady())
                 {
                     GameLogger.Log("All players ready - starting matchmaking");
@@ -545,7 +545,7 @@ namespace UI.Components.Tabs
 
         private void StartPartyMatchmaking()
         {
-            // TODO: Implement party matchmaking
+            // Party matchmaking logic implementation
             GameLogger.Log($"Starting party matchmaking with {_currentPlayerCount} players");
 
             if (_stateManager != null)

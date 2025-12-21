@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Core.Logging;
 using Core.Networking.Common;
 using Core.Networking.Interfaces;
+using Core.RemoteConfig;
 using Epic.OnlineServices;
 using Epic.OnlineServices.Lobby;
 using PlayEveryWare.EpicOnlineServices;
@@ -218,7 +219,7 @@ namespace Core.Networking.Services
             var config = new LobbyConfig
             {
                 Type = LobbyType.Match,
-                LobbyName = $"Match_{gameMode}_{DateTime.UtcNow.Ticks}",
+                LobbyName = $"Match_{gameMode}_{NTPTime.UtcNow.Ticks}",
                 MaxPlayers = teamSize * 2,
                 IsPrivate = false,
                 GameMode = gameMode,
@@ -231,7 +232,7 @@ namespace Core.Networking.Services
                     { "GameMode", gameMode.ToString() },
                     { "TeamSize", teamSize.ToString() },
                     { "Status", "Filling" },
-                    { "CreatedAt", DateTime.UtcNow.ToString("o") }
+                    { "CreatedAt", NTPTime.UtcNow.ToString("o") }
                 }
             };
 

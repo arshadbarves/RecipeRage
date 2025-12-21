@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Core.Animation;
+using Core.Bootstrap;
 using Core.Logging;
 using Cysharp.Threading.Tasks;
 using UI.Core;
@@ -36,6 +37,14 @@ namespace UI
         {
             _animationService = animationService ?? throw new ArgumentNullException(nameof(animationService));
             _stackManager = new UIScreenStackManager();
+        }
+
+        /// <summary>
+        /// Called after all services are constructed (IInitializable).
+        /// </summary>
+        void IInitializable.Initialize()
+        {
+            // UIService uses Initialize(UIDocument) for document-specific setup
         }
 
         public void Initialize(UIDocument uiDocument)
@@ -247,8 +256,7 @@ namespace UI
                     break;
             }
 
-            // TODO: Fix this once got time(This cause stacking Issue)
-            // if (addToHistory)
+            if (addToHistory)
             {
                 bool pushed = _stackManager.Push(screenType, category);
                 if (!pushed)

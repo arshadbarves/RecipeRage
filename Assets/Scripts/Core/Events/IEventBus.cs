@@ -1,4 +1,5 @@
 using System;
+using Core.Bootstrap;
 
 namespace Core.Events
 {
@@ -6,7 +7,7 @@ namespace Core.Events
     /// Event bus interface for decoupled communication between services
     /// Follows Observer Pattern and Dependency Inversion Principle
     /// </summary>
-    public interface IEventBus
+    public interface IEventBus : IInitializable
     {
         /// <summary>
         /// Subscribe to an event type

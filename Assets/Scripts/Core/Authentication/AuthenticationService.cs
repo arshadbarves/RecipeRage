@@ -10,23 +10,39 @@ using UnityEngine;
 
 namespace Core.Authentication
 {
-    public class AuthenticationService : IAuthenticationService
+    public class AuthenticationService : IAuthenticationService, IInitializable
     {
         private const string LOGIN_METHOD_DEVICE_ID = "DeviceID";
         private const string LOGIN_METHOD_FACEBOOK = "Facebook";
+        private const int TIMEOUT_SECONDS = 10;
 
         private readonly ISaveService _saveService;
         private readonly Core.Events.IEventBus _eventBus;
+        private readonly Core.Maintenance.IMaintenanceService _maintenanceService;
+        private readonly Action _onSessionCreate;
 
         public bool IsLoggedIn => IsUserLoggedIn();
         public string LastLoginMethod => _saveService?.GetSettings().LastLoginMethod ?? "";
 
         public AuthenticationService(
             ISaveService saveService,
-            Core.Events.IEventBus eventBus)
+            Core.Events.IEventBus eventBus,
+            Core.Maintenance.IMaintenanceService maintenanceService,
+            Action onSessionCreate)
         {
             _saveService = saveService ?? throw new ArgumentNullException(nameof(saveService));
             _eventBus = eventBus ?? throw new ArgumentNullException(nameof(eventBus));
+            _maintenanceService = maintenanceService;
+            _onSessionCreate = onSessionCreate ?? throw new ArgumentNullException(nameof(onSessionCreate));
+        }
+
+        /// <summary>
+        /// Called after all services are constructed.
+        /// Performs any cross-service setup that requires other services to be available.
+        /// </summary>
+        public void Initialize()
+        {
+            GameLogger.Log("AuthenticationService initialized - all services available");
         }
 
         public async UniTask<bool> InitializeAsync()
@@ -40,6 +56,7 @@ namespace Core.Authentication
             {
                 GameLogger.Log("Auto-login successful");
 
+                _onSessionCreate?.Invoke();
                 _saveService.OnUserLoggedIn();
 
                 return true;
@@ -147,7 +164,7 @@ namespace Core.Authentication
                 });
 
                 // Wait for completion with timeout
-                var timeoutTask = UniTask.Delay(TimeSpan.FromSeconds(10));
+                var timeoutTask = UniTask.Delay(TimeSpan.FromSeconds(TIMEOUT_SECONDS));
                 var waitTask = UniTask.WaitUntil(() => createCompleted);
 
                 var completedTask = await UniTask.WhenAny(waitTask, timeoutTask);
@@ -162,7 +179,7 @@ namespace Core.Authentication
                         Error = errorMessage
                     });
 
-                    GameBootstrap.Services?.MaintenanceService?.ShowServerDownMaintenance(errorMessage);
+                    _maintenanceService?.ShowServerDownMaintenance(errorMessage);
 
                     return false;
                 }
@@ -208,7 +225,7 @@ namespace Core.Authentication
             );
 
             // Wait for login completion with timeout
-            var loginTimeoutTask = UniTask.Delay(TimeSpan.FromSeconds(10));
+            var loginTimeoutTask = UniTask.Delay(TimeSpan.FromSeconds(TIMEOUT_SECONDS));
             var loginWaitTask = UniTask.WaitUntil(() => loginCompleted);
 
             var loginCompletedTask = await UniTask.WhenAny(loginWaitTask, loginTimeoutTask);
@@ -223,7 +240,7 @@ namespace Core.Authentication
                     Error = errorMessage
                 });
 
-                GameBootstrap.Services?.MaintenanceService?.ShowServerDownMaintenance(errorMessage);
+                _maintenanceService?.ShowServerDownMaintenance(errorMessage);
 
                 return false;
             }
@@ -231,6 +248,9 @@ namespace Core.Authentication
             if (loginSuccess)
             {
                 _saveService?.UpdateSettings(s => s.LastLoginMethod = LOGIN_METHOD_DEVICE_ID);
+
+                _onSessionCreate?.Invoke();
+                _saveService?.OnUserLoggedIn();
 
                 UpdateStatus("Login successful!");
 

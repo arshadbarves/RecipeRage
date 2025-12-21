@@ -23,6 +23,7 @@ namespace Core.Networking.Services
         private bool _isGameActive;
         private SpawnManager _spawnManager;
         private GameObject _playerPrefab; // Store player prefab for bot spawning
+        private Core.Networking.LatencyMonitor _latencyMonitor;
 
         /// <summary>
         /// Constructor
@@ -106,6 +107,9 @@ namespace Core.Networking.Services
 
                 // Spawn bots immediately
                 SpawnBotsIfNeeded();
+
+                // Spawn latency monitor
+                SpawnLatencyMonitor();
 
                 OnGameStarted(true);
             }
@@ -197,6 +201,25 @@ namespace Core.Networking.Services
             GameLogger.Log($"Spawned {bots.Count} bots - players won't know who's a bot!");
         }
 
+        /// <summary>
+        /// Spawns the latency monitor for RTT tracking
+        /// </summary>
+        private void SpawnLatencyMonitor()
+        {
+            // Clean up previous instance if any
+            if (_latencyMonitor != null)
+            {
+                _latencyMonitor.Dispose();
+                _latencyMonitor = null;
+            }
+
+            // Create pure C# monitor - works for both host and client
+            // It will hook into CustomMessagingManager internally
+            _latencyMonitor = new Core.Networking.LatencyMonitor();
+            
+            GameLogger.Log("LatencyMonitor initialized (Pure C#)");
+        }
+
 
 
         /// <summary>
@@ -248,6 +271,12 @@ namespace Core.Networking.Services
 
             // Unsubscribe from events
             UnsubscribeFromNetworkEvents();
+
+            if (_latencyMonitor != null)
+            {
+                _latencyMonitor.Dispose();
+                _latencyMonitor = null;
+            }
 
             if (NetworkManager.Singleton != null)
             {
@@ -312,6 +341,12 @@ namespace Core.Networking.Services
 
             // Subscribe to disconnect events
             SubscribeToNetworkEvents();
+
+            // Client needs monitor too!
+            if (!isHost)
+            {
+                SpawnLatencyMonitor();
+            }
 
             // Note: We're already in GameplayState (transitioned from MatchmakingState)
             // No need to transition again

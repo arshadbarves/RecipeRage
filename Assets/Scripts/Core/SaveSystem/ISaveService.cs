@@ -1,4 +1,5 @@
 using System;
+using Core.Bootstrap;
 using Cysharp.Threading.Tasks;
 
 namespace Core.SaveSystem
@@ -6,7 +7,7 @@ namespace Core.SaveSystem
     /// <summary>
     /// Interface for save/load operations with multi-provider support
     /// </summary>
-    public interface ISaveService
+    public interface ISaveService : IInitializable
     {
         // Settings
         GameSettingsData GetSettings();

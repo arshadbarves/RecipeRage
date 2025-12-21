@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Core.Bootstrap;
 using Cysharp.Threading.Tasks;
 using UI.Core;
 using UI.Screens;
@@ -7,7 +8,7 @@ using UnityEngine.UIElements;
 
 namespace UI
 {
-    public interface IUIService
+    public interface IUIService : IInitializable
     {
         bool IsInitialized { get; }
         void Initialize(UIDocument uiDocument);

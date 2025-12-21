@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Core.Logging;
 using Core.Networking.Interfaces;
+using Core.RemoteConfig;
 using Cysharp.Threading.Tasks;
 using Epic.OnlineServices;
 using PlayEveryWare.EpicOnlineServices;
@@ -155,7 +156,7 @@ namespace Core.Networking.Services
                 FromFriendCode = MyFriendCode,
                 ToUserId = targetUser.product_user_id,
                 Status = "pending",
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = NTPTime.UtcNow
             };
         }
 
@@ -345,7 +346,7 @@ namespace Core.Networking.Services
                 {
                     user_id = _myProductUserId,
                     recent_player_id = playerIdStr,
-                    last_played_at = DateTime.UtcNow.ToString("o")
+                    last_played_at = NTPTime.UtcNow.ToString("o")
                 };
 
                 var json = JsonUtility.ToJson(recentData);
@@ -365,7 +366,7 @@ namespace Core.Networking.Services
                     FriendCode = friendCode,
                     ProductUserId = productUserId,
                     DisplayName = displayName,
-                    LastSeen = DateTime.UtcNow,
+                    LastSeen = NTPTime.UtcNow,
                     IsOnline = true,
                     IsRecent = true
                 });
@@ -502,7 +503,7 @@ namespace Core.Networking.Services
         {
             try
             {
-                var updateData = new { last_seen = DateTime.UtcNow.ToString("o") };
+                var updateData = new { last_seen = NTPTime.UtcNow.ToString("o") };
                 var json = JsonUtility.ToJson(updateData);
                 var query = $"product_user_id=eq.{_myProductUserId}";
 
@@ -522,7 +523,7 @@ namespace Core.Networking.Services
             try
             {
                 var lastSeen = DateTime.Parse(lastSeenStr);
-                var timeSince = DateTime.UtcNow - lastSeen;
+                var timeSince = NTPTime.UtcNow - lastSeen;
                 return timeSince.TotalMinutes < 5; // Online if seen in last 5 minutes
             }
             catch

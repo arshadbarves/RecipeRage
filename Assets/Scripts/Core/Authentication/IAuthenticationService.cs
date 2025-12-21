@@ -1,4 +1,5 @@
 using System;
+using Core.Bootstrap;
 using Cysharp.Threading.Tasks;
 
 namespace Core.Authentication
@@ -6,7 +7,7 @@ namespace Core.Authentication
     /// <summary>
     /// Interface for authentication operations
     /// </summary>
-    public interface IAuthenticationService
+    public interface IAuthenticationService : IInitializable
     {
         bool IsLoggedIn { get; }
         string LastLoginMethod { get; }

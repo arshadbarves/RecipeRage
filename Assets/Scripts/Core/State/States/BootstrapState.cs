@@ -9,6 +9,7 @@ using Cysharp.Threading.Tasks;
 using UI;
 using UI.Screens;
 using UnityEngine;
+using Core.Update;
 
 namespace Core.State.States
 {
@@ -65,9 +66,7 @@ namespace Core.State.States
 
                 if (isAuthenticated)
                 {
-                    // Create the GameSession immediately after successful authentication
-                    _serviceContainer.CreateSession();
-
+                    // Session is created internally by AuthenticationService after successful auth
                     await PerformPostLoginChecksAsync();
 
                     GameLogger.Log("Initialization complete. Transitioning to MainMenu.");
@@ -105,7 +104,7 @@ namespace Core.State.States
                 var cts = new System.Threading.CancellationTokenSource();
                 cts.CancelAfter(TimeSpan.FromSeconds(10.0f));
 
-                var (isCanceled, ntpSynced) = await _ntpTimeService.SyncTime()
+                (bool isCanceled, bool ntpSynced) = await _ntpTimeService.SyncTime()
                     .AttachExternalCancellation(cts.Token)
                     .SuppressCancellationThrow();
 
@@ -138,10 +137,10 @@ namespace Core.State.States
         {
             GameLogger.Log("Performing Post-Login Checks...");
 
-            var startTime = Time.realtimeSinceStartup;
+            float startTime = Time.realtimeSinceStartup;
 
             _uiService.ShowScreen(UIScreenType.Loading);
-            var loadingScreen = _uiService.GetScreen<LoadingScreen>(UIScreenType.Loading);
+            LoadingScreen loadingScreen = _uiService.GetScreen<LoadingScreen>(UIScreenType.Loading);
 
             loadingScreen?.UpdateProgress(0.3f, "Loading configuration...");
             await _remoteConfigService.RefreshConfig();
@@ -150,7 +149,7 @@ namespace Core.State.States
             var forceUpdateChecker = new ForceUpdateChecker(
                 _remoteConfigService,
                 _uiService);
-            await forceUpdateChecker.CheckForUpdate();
+            await forceUpdateChecker.CheckForUpdateAsync();
 
             loadingScreen?.UpdateProgress(0.7f, "Checking server status...");
             if (_maintenanceService != null)
@@ -161,8 +160,8 @@ namespace Core.State.States
             loadingScreen?.UpdateProgress(1.0f, "Ready!");
             await UniTask.Delay(500);
 
-            var elapsedTime = Time.realtimeSinceStartup - startTime;
-            var remainingTime = MinLoadingTime - elapsedTime;
+            float elapsedTime = Time.realtimeSinceStartup - startTime;
+            float remainingTime = MinLoadingTime - elapsedTime;
             if (remainingTime > 0)
             {
                 GameLogger.Log($"Waiting {remainingTime:F2}s to meet minimum loading time");

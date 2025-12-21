@@ -280,6 +280,7 @@ namespace UI.Screens
         {
             try
             {
+                // TODO: We don't need to check for AuthenticationService availability, at this point it should be available
                 // Wait for AuthenticationService if not available
                 if (GameBootstrap.Services.AuthenticationService == null)
                 {

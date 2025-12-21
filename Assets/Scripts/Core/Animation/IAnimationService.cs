@@ -1,4 +1,5 @@
 using System;
+using Core.Bootstrap;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -8,7 +9,7 @@ namespace Core.Animation
     /// Animation service interface - supports both UI Toolkit and GameObject animations
     /// Follows Interface Segregation Principle - focused on animation concerns only
     /// </summary>
-    public interface IAnimationService
+    public interface IAnimationService : IInitializable
     {
         /// <summary>
         /// Animate UI element opacity

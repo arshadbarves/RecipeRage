@@ -1,23 +1,85 @@
-@import url("../../Themes/DesignSystem.uss");
-
 .splash-screen {
     width: 100%;
     height: 100%;
     justify-content: center;
     align-items: center;
-    background-color: var(--color-black);
 }
 
 .splash-content {
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    padding: var(--spacing-xxl);
 }
 
-.company-name {
-    font-size: var(--font-size-hero);
-    color: var(--color-text-light);
-    margin-bottom: var(--spacing-lg);
-    -unity-font-definition: var(--font-playcenter-logo);
+.master-container {
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.logo-row {
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.logo-text {
+    -unity-font-definition: url("project://database/Assets/Fonts/Anton-Regular%20SDF.asset?fileID=11400000&guid=aa820f8024bbb4ae08525ce0513021a5&type=2#Anton-Regular SDF");
+    -unity-font-style: normal;
+    text-transform: uppercase;
+}
+
+.play-container {
+    padding: 5px 25px;
+    margin-right: 15px;
+    justify-content: center;
+    align-items: center;
+}
+
+.play-skewed-border {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.play-text {
+    font-size: 80px;
+    color: rgb(255, 255, 255);
+    margin: 0;
+    padding: 0;
+    letter-spacing: 2px;
+}
+
+.center-container {
+    padding: 5px 25px;
+    justify-content: center;
+    align-items: center;
+}
+
+.center-skewed-box {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.center-text {
+    font-size: 80px;
+    color: rgb(255, 255, 255);
+    margin: 0;
+    padding: 0;
+    letter-spacing: 2px;
+}
+
+.subtitle {
+    -unity-font-definition: var(--font-anton);
+    font-size: 16px;
+    color: rgb(136, 136, 136);
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    margin-top: 0;
 }

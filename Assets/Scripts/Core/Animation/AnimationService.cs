@@ -1,4 +1,5 @@
 using System;
+using Core.Bootstrap;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -18,6 +19,14 @@ namespace Core.Animation
         {
             _uiAnimator = uiAnimator ?? throw new ArgumentNullException(nameof(uiAnimator));
             _transformAnimator = transformAnimator ?? throw new ArgumentNullException(nameof(transformAnimator));
+        }
+
+        /// <summary>
+        /// Called after all services are constructed.
+        /// </summary>
+        public void Initialize()
+        {
+            // AnimationService doesn't need cross-service setup
         }
 
         // UI Element animations

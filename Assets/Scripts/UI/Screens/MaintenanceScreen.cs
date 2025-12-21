@@ -3,6 +3,7 @@ using Core.Bootstrap;
 using Core.Events;
 using Core.Logging;
 using Core.Maintenance;
+using Core.RemoteConfig;
 using Cysharp.Threading.Tasks;
 using UI.Core;
 using UnityEngine;
@@ -175,7 +176,7 @@ namespace UI.Screens
         {
             if (_countdownLabel == null) return;
 
-            TimeSpan remaining = _estimatedEndTime - DateTime.UtcNow;
+            TimeSpan remaining = _estimatedEndTime - NTPTime.UtcNow;
 
             if (remaining.TotalSeconds <= 0)
             {
@@ -332,7 +333,7 @@ namespace UI.Screens
         public void ShowMaintenance(bool hasEstimate, DateTime? estimatedEndTime, string message, bool allowRetry)
         {
             _hasEstimatedTime = hasEstimate && estimatedEndTime.HasValue;
-            _estimatedEndTime = estimatedEndTime ?? DateTime.UtcNow;
+            _estimatedEndTime = estimatedEndTime ?? NTPTime.UtcNow;
             _maintenanceMessage = message;
             _allowRetry = allowRetry;
 

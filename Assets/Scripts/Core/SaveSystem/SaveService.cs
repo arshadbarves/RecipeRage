@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Core.Bootstrap;
 using Cysharp.Threading.Tasks;
 using Core.Logging;
 
@@ -64,6 +65,14 @@ namespace Core.SaveSystem
             LoadAllData();
 
             GameLogger.Log("SaveService initialized");
+        }
+
+        /// <summary>
+        /// Called after all services are constructed.
+        /// </summary>
+        public void Initialize()
+        {
+            // SaveService doesn't need cross-service setup
         }
 
         /// <summary>

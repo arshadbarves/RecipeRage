@@ -3,31 +3,19 @@ using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using Core.Logging;
 using Core.RemoteConfig.Models;
-using PlayEveryWare.EpicOnlineServices.Utility;
+using Firebase.RemoteConfig;
+using UnityEngine;
 
 namespace Core.RemoteConfig.Providers
 {
-    /// <summary>
-    /// Configuration provider that fetches data from Firebase Remote Config
-    /// </summary>
     public class FirebaseConfigProvider : IConfigProvider
     {
         public string ProviderName => "Firebase";
 
         private bool _isInitialized;
 
-        // Firebase Remote Config would be initialized here
-        // For now, this is a placeholder for Firebase SDK integration
-
-        public FirebaseConfigProvider()
-        {
-            _isInitialized = false;
-        }
-
         public bool IsAvailable()
         {
-            // Check if Firebase is available and initialized
-            // This would check Firebase.RemoteConfig availability
             return _isInitialized;
         }
 
@@ -37,18 +25,13 @@ namespace Core.RemoteConfig.Providers
             {
                 GameLogger.Log("Initializing Firebase Remote Config provider...");
 
-                // Detect platform and environment
-                string platform = GetPlatform();
-                string environment = GetEnvironment();
+                string platform = Core.Utilities.PlatformUtils.GetPlatform();
+                string environment = Core.Utilities.PlatformUtils.GetEnvironment();
 
-                var remoteConfig = Firebase.RemoteConfig.FirebaseRemoteConfig.DefaultInstance;
-
-                // Firebase will automatically match conditions based on device.os
-                // No need to set anything - it's automatic!
+                FirebaseRemoteConfig remoteConfig = Firebase.RemoteConfig.FirebaseRemoteConfig.DefaultInstance;
 
                 GameLogger.Log($"Firebase will use device.os for condition matching");
 
-                // Set default config values
                 var defaults = new Dictionary<string, object>
                 {
                     // Add your default config values here if needed
@@ -56,7 +39,6 @@ namespace Core.RemoteConfig.Providers
 
                 await remoteConfig.SetDefaultsAsync(defaults);
 
-                // Fetch and activate configs
                 await remoteConfig.FetchAsync(TimeSpan.Zero);
                 await remoteConfig.ActivateAsync();
 
@@ -84,7 +66,7 @@ namespace Core.RemoteConfig.Providers
             {
                 GameLogger.Log($"Fetching config '{key}' from Firebase...");
 
-                var jsonString = Firebase.RemoteConfig.FirebaseRemoteConfig.DefaultInstance.GetValue(key).StringValue;
+                string jsonString = FirebaseRemoteConfig.DefaultInstance.GetValue(key).StringValue;
 
                 return JsonUtility.FromJson<T>(jsonString);
 
@@ -109,6 +91,7 @@ namespace Core.RemoteConfig.Providers
 
                 var configs = new Dictionary<string, IConfigModel>();
 
+                // TODO: Make this auto detected instead of hardcoded
                 // Fetch all config domains
                 var gameSettings = await FetchConfig<GameSettingsConfig>("GameSettings");
                 if (gameSettings != null) configs["GameSettings"] = gameSettings;
@@ -139,30 +122,6 @@ namespace Core.RemoteConfig.Providers
                 GameLogger.LogError($"Failed to fetch all configs from Firebase: {ex.Message}");
                 throw;
             }
-        }
-
-        private string GetPlatform()
-        {
-#if UNITY_IOS
-            return "ios";
-#elif UNITY_ANDROID
-            return "android";
-#elif UNITY_STANDALONE
-            return "pc";
-#else
-            return "unknown";
-#endif
-        }
-
-        private string GetEnvironment()
-        {
-#if DEVELOPMENT_BUILD || UNITY_EDITOR
-            return "development";
-#elif STAGING
-            return "staging";
-#else
-            return "production";
-#endif
         }
     }
 }

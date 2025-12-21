@@ -1,3 +1,4 @@
+using System;
 using Core.Logging;
 using Core.State.States;
 using Cysharp.Threading.Tasks;
@@ -38,8 +39,8 @@ namespace Core.Bootstrap
 
             Services = new ServiceContainer(_uiDocumentProvider);
 
-            // Subscribe to logout handler for full reboot
-            Services.EventBus.Subscribe<Core.Events.LogoutEvent>(HandleLogoutAsync);
+            // Subscribe to log out handler for full reboot
+            Services.EventBus.Subscribe<Events.LogoutEvent>(HandleLogoutAsync);
 
             GameLogger.Log("Starting State Machine...");
 
@@ -57,26 +58,33 @@ namespace Core.Bootstrap
             Services.StateManager.Initialize(bootstrapState);
         }
 
-        private async void HandleLogoutAsync(Core.Events.LogoutEvent evt)
+        private async void HandleLogoutAsync(Events.LogoutEvent evt)
         {
-            GameLogger.Log($"User {evt.UserId} logged out - performing full reboot");
+            try
+            {
+                GameLogger.Log($"User {evt.UserId} logged out - performing full reboot");
 
-            Services?.Dispose();
+                Services?.Dispose();
 
-            await UniTask.Yield();
+                await UniTask.Yield();
 
-            // Re-initialize container
-            Services = new ServiceContainer(_uiDocumentProvider);
-            Services.EventBus.Subscribe<Core.Events.LogoutEvent>(HandleLogoutAsync);
+                // Re-initialize container
+                Services = new ServiceContainer(_uiDocumentProvider);
+                Services.EventBus.Subscribe<Events.LogoutEvent>(HandleLogoutAsync);
 
-            Services.StateManager.Initialize(new LoginState(
-                Services.UIService,
-                Services.EventBus,
-                Services.StateManager,
-                Services
-            ));
+                Services.StateManager.Initialize(new LoginState(
+                    Services.UIService,
+                    Services.EventBus,
+                    Services.StateManager,
+                    Services
+                ));
 
-            GameLogger.Log("Reboot complete - ready for new login");
+                GameLogger.Log("Reboot complete - ready for new login");
+            }
+            catch (Exception e)
+            {
+                GameLogger.LogException(e);
+            }
         }
 
         private void Update()

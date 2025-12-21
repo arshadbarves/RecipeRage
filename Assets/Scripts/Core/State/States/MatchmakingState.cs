@@ -39,6 +39,29 @@ namespace Core.State.States
         {
             base.Enter();
 
+            // Check maintenance before starting matchmaking
+            CheckMaintenanceAndStartAsync().Forget();
+        }
+
+        private async Cysharp.Threading.Tasks.UniTaskVoid CheckMaintenanceAndStartAsync()
+        {
+            var maintenanceService = GameBootstrap.Services?.MaintenanceService;
+            if (maintenanceService != null)
+            {
+                bool isInMaintenance = await maintenanceService.CheckMaintenanceStatusAsync();
+                if (isInMaintenance)
+                {
+                    LogMessage("Matchmaking blocked - server is in maintenance mode");
+                    ReturnToMainMenu();
+                    return;
+                }
+            }
+
+            StartMatchmaking();
+        }
+
+        private void StartMatchmaking()
+        {
             _networkingServices = GameBootstrap.Services.Session.NetworkingServices;
 
             if (_networkingServices == null)

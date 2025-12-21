@@ -1,4 +1,5 @@
 using System;
+using Core.Bootstrap;
 using UnityEngine;
 using Core.Logging;
 
@@ -21,6 +22,14 @@ namespace Core.State
         {
             _stateMachine = new StateMachine();
             _stateMachine.OnStateChanged += (prev, curr) => OnStateChanged?.Invoke(prev, curr);
+        }
+
+        /// <summary>
+        /// Called after all services are constructed (IInitializable).
+        /// </summary>
+        void IInitializable.Initialize()
+        {
+            // GameStateManager uses Initialize(IState) for state-specific setup
         }
 
         public void Initialize(IState initialState)

@@ -1,5 +1,5 @@
 {
-  "ProductName": "Receipe Rage",
+  "ProductName": "Recipe rage",
   "ProductId": "1fbb10d0979749e2a3eddf74edfb1745",
   "ProductVersion": "0.0.1",
   "imported": true,
@@ -8,7 +8,7 @@
       "Value": {
         "ClientId": "xyza7891a4duvFnuVg7ZJzUGcaf7vgHF",
         "ClientSecret": "nrxF4ykj1gZCoEyFldcNxRVExWvaWdP8QapATwubfC4",
-        "EncryptionKey": "EC38FC726520902DBFB5A73D730D08351434940F5A141CF2539A1B963024D82E"
+        "EncryptionKey": "2F1FA403E3404CC9F837181F49F89695D546E112CEF1A213B64B1416A846518E"
       },
       "Name": "Client"
     }
@@ -27,20 +27,20 @@
       {
         "Value": {
           "SandboxId": {
-            "Value": "19df6d3517a34ba480c2a65880c8567c"
-          },
-          "DeploymentId": "70f48f125a80447688e18cd17aac17db"
-        },
-        "Name": "Live"
-      },
-      {
-        "Value": {
-          "SandboxId": {
             "Value": "p-uvb48fad3qb2tza5wyetcx2hyxnrpt"
           },
           "DeploymentId": "b27af9e630504620a05e5794e16ce190"
         },
         "Name": "Stage"
+      },
+      {
+        "Value": {
+          "SandboxId": {
+            "Value": "19df6d3517a34ba480c2a65880c8567c"
+          },
+          "DeploymentId": "70f48f125a80447688e18cd17aac17db"
+        },
+        "Name": "Live"
       }
     ],
     "Sandboxes": [

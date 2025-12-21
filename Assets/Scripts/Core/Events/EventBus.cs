@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Core.Bootstrap;
 using Core.Logging;
 using UnityEngine;
 
@@ -14,6 +15,14 @@ namespace Core.Events
     {
         private readonly Dictionary<Type, List<Delegate>> _subscriptions = new Dictionary<Type, List<Delegate>>();
         private readonly object _lock = new object();
+
+        /// <summary>
+        /// Called after all services are constructed.
+        /// </summary>
+        public void Initialize()
+        {
+            // EventBus doesn't need cross-service setup
+        }
 
         /// <summary>
         /// Subscribe to an event type

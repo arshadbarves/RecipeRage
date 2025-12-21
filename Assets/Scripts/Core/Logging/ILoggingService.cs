@@ -1,11 +1,12 @@
 using System;
+using Core.Bootstrap;
 
 namespace Core.Logging
 {
     /// <summary>
     /// Interface for the logging service
     /// </summary>
-    public interface ILoggingService : IDisposable
+    public interface ILoggingService : IInitializable, IDisposable
     {
         event Action<LogEntry> OnLogAdded;
         

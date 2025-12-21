@@ -8,6 +8,7 @@ using Core.RemoteConfig;
 using Core.SaveSystem;
 using Core.State;
 using UI;
+using Core.Networking;
 
 namespace Core.Bootstrap
 {
@@ -41,6 +42,7 @@ namespace Core.Bootstrap
         public IMaintenanceService MaintenanceService { get; private set; }
         public IRemoteConfigService RemoteConfigService { get; private set; }
         public INTPTimeService NTPTimeService { get; private set; }
+        public IConnectivityService ConnectivityService { get; private set; }
         public IGameStateManager StateManager { get; private set; }
 
         // ============================================
@@ -114,42 +116,80 @@ namespace Core.Bootstrap
         public ServiceContainer(UIDocumentProvider uiDocumentProvider)
         {
             _uiDocumentProvider = uiDocumentProvider;
-            InitializeFoundation();
-            InitializeCoreServices();
+            
+            // Phase 1: Construct all services (store references only)
+            ConstructFoundation();
+            ConstructCoreServices();
+            
+            // Phase 2: Initialize all services (safe to access each other)
+            InitializeAllServices();
         }
 
-        private void InitializeFoundation()
+        /// <summary>
+        /// Phase 1a: Construct foundation services.
+        /// Only set up internal state, don't access other services.
+        /// </summary>
+        private void ConstructFoundation()
         {
-            GameLogger.Log("Initializing foundation services");
+            GameLogger.Log("Constructing foundation services...");
 
             LoggingService = new LoggingService(maxLogEntries: 10000);
-            GameLogger.Log("Logging service initialized");
-
             EventBus = new Events.EventBus();
 
             var storageFactory = new StorageProviderFactory();
             SaveService = new SaveService(storageFactory, new EncryptionService());
 
             NTPTimeService = new NTPTimeService();
+            NTPTime.SetInstance(NTPTimeService);
 
             RemoteConfigService = new RemoteConfigService();
 
             AnimationService = CreateAnimationService();
             UIService = CreateUIService();
 
-            UIService.InitializeScreens();
+            ConnectivityService = new ConnectivityService(EventBus);
 
-            GameLogger.Log("Foundation services initialized");
+            GameLogger.Log("Foundation services constructed.");
         }
 
-        private void InitializeCoreServices()
+        /// <summary>
+        /// Phase 1b: Construct core services.
+        /// Only set up internal state, don't access other services.
+        /// </summary>
+        private void ConstructCoreServices()
         {
-            MaintenanceService = new MaintenanceService(EventBus);
+            GameLogger.Log("Constructing core services...");
 
-            AuthenticationService = new AuthenticationService(SaveService, EventBus);
-
-            // StateManager is global application state
+            MaintenanceService = new MaintenanceService(EventBus, RemoteConfigService);
+            AuthenticationService = new AuthenticationService(SaveService, EventBus, MaintenanceService, CreateSession);
             StateManager = new GameStateManager();
+
+            GameLogger.Log("Core services constructed.");
+        }
+
+        /// <summary>
+        /// Phase 2: Initialize all services.
+        /// Services can now safely access other services.
+        /// </summary>
+        private void InitializeAllServices()
+        {
+            GameLogger.Log("Initializing all services...");
+
+            // Initialize foundation services that need UI setup
+            UIService.InitializeScreens();
+
+            // Initialize all services (all interfaces now extend IInitializable)
+            LoggingService.Initialize();
+            EventBus.Initialize();
+            SaveService.Initialize();
+            NTPTimeService.Initialize();
+            RemoteConfigService.Initialize();
+            AnimationService.Initialize();
+            ConnectivityService.Initialize();
+            MaintenanceService.Initialize();
+            AuthenticationService.Initialize();
+
+            GameLogger.Log("All services initialized.");
         }
 
         private IAnimationService CreateAnimationService()
@@ -167,3 +207,4 @@ namespace Core.Bootstrap
         }
     }
 }
+

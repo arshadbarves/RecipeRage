@@ -56,9 +56,7 @@ namespace Core.State.States
         {
             GameLogger.Log($"[LoginState] Login successful for user: {evt.UserId}");
 
-            // Create the GameSession immediately after successful authentication
-            _serviceContainer.CreateSession();
-
+            // Session is created internally by AuthenticationService after successful auth
             _stateManager.ChangeState(new MainMenuState());
         }
     }

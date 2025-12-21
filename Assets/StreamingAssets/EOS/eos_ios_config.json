@@ -1,9 +1,9 @@
 {
   "deployment": {
     "SandboxId": {
-      "Value": "p-3e949b6n57y7qcjyg5sccpyatyzser"
+      "Value": "19df6d3517a34ba480c2a65880c8567c"
     },
-    "DeploymentId": "146b53cc89584a8d9586e9dd1f0caf91"
+    "DeploymentId": "70f48f125a80447688e18cd17aac17db"
   },
   "clientCredentials": {
     "ClientId": "xyza7891a4duvFnuVg7ZJzUGcaf7vgHF",
@@ -13,7 +13,7 @@
   "isServer": false,
   "platformOptionsFlags": "None",
   "authScopeOptionsFlags": "NoFlags",
-  "integratedPlatformManagementFlags": 0,
+  "integratedPlatformManagementFlags": "Disabled",
   "tickBudgetInMilliseconds": 0,
   "taskNetworkTimeoutSeconds": 0.0,
   "threadAffinity": {

@@ -49,9 +49,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _uiDocumentProvider: {fileID: 7525430368098650970}
-  _showSplashScreen: 1
-  _splashDuration: 2
-  _showLoadingScreen: 1
 --- !u!114 &2203266933821147587
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -158,9 +155,13 @@ MonoBehaviour:
   m_ParentUI: {fileID: 0}
   sourceAsset: {fileID: 0}
   m_SortingOrder: 0
+  m_Position: 0
   m_WorldSpaceSizeMode: 1
   m_WorldSpaceWidth: 1920
   m_WorldSpaceHeight: 1080
+  m_PivotReferenceSize: 0
+  m_Pivot: 0
+  m_WorldSpaceCollider: {fileID: 0}
 --- !u!114 &7525430368098650970
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -44,10 +44,6 @@ namespace UI.Popups
 
         protected override void OnInitialize()
         {
-            // Get services
-            _saveService = GameBootstrap.Services?.SaveService;
-            _currencyService = GameBootstrap.Services?.Session?.CurrencyService;
-
             // Query elements
             QueryElements();
 
@@ -128,6 +124,10 @@ namespace UI.Popups
 
         protected override void OnShow()
         {
+            // Get services
+            _saveService = GameBootstrap.Services?.SaveService;
+            _currencyService = GameBootstrap.Services?.Session?.CurrencyService;
+
             // Focus username field when shown
             _usernameField?.Focus();
         }

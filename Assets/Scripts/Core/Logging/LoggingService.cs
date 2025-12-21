@@ -32,6 +32,14 @@ namespace Core.Logging
             Application.logMessageReceived += HandleUnityLog;
         }
 
+        /// <summary>
+        /// Called after all services are constructed.
+        /// </summary>
+        public void Initialize()
+        {
+            // Logging service doesn't need cross-service setup
+        }
+
         [HideInCallstack]
         public void Log(string message, LogLevel level = LogLevel.Info, string category = "General")
         {

@@ -1,20 +1,20 @@
 {
   "project_info": {
-    "project_number": "895670510894",
-    "project_id": "recipe-rage",
-    "storage_bucket": "recipe-rage.firebasestorage.app"
+    "project_number": "574652461732",
+    "project_id": "recipe-rage-6063a",
+    "storage_bucket": "recipe-rage-6063a.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:895670510894:ios:01ca1d25bb3a61117c06bf",
+        "mobilesdk_app_id": "1:574652461732:ios:05cdc2dbac3c16266b2c31",
         "android_client_info": {
           "package_name": "com.playcenter.reciperage"
         }
       },
       "api_key": [
         {
-          "current_key": "AIzaSyC5u7E7aKha5_qvk6uG8zjgX60iLyKeK8c"
+          "current_key": "AIzaSyBHmpktCsoJvXZG7tDgMQm2EivXcZXkxf8"
         }
       ],
       "services": {

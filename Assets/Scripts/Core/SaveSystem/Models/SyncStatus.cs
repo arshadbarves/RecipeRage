@@ -1,4 +1,5 @@
 using System;
+using Core.RemoteConfig;
 
 namespace Core.SaveSystem
 {
@@ -22,7 +23,7 @@ namespace Core.SaveSystem
         {
             IsSyncing = false;
             HasPendingChanges = false;
-            LastSyncTime = DateTime.UtcNow;
+            LastSyncTime = NTPTime.UtcNow;
             LastError = null;
         }
         
