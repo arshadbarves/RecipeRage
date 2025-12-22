@@ -1,118 +1,138 @@
-@import url("project://database/Assets/Resources/UI/Themes/DesignSystem.uss?fileID=7433441132597879392&guid=74282f7acd0164afea4d8dc9dc05a968&type=3#DesignSystem");
-
 .loading-screen {
-    position: absolute;
     width: 100%;
     height: 100%;
-    align-items: center;
-    justify-content: flex-end;
+    display: flex;
     flex-direction: column;
-    -unity-font-definition: var(--font-primary);
+    padding-bottom: 60px;
+    -unity-font-definition: url("project://database/Assets/Fonts/Anton-Regular%20SDF.asset?fileID=11400000&guid=aa820f8024bbb4ae08525ce0513021a5&type=2#Anton-Regular SDF");
 }
 
-.background {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    -unity-background-scale-mode: scale-and-crop;
-    background-image: url("project://database/Assets/Textures/Arts/bg-4.png?fileID=2800000&guid=c8ac88b81256647b3b39ad75f7081306&type=3#bg-4");
-    -unity-material: url("project://database/Assets/Shaders/UI_RadialGradientBackground.mat?fileID=2100000&guid=25e9f1c4a38b94089b942f58697c1318&type=2#UI_RadialGradientBackground");
-}
-
-.background-overlay {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.4);
-}
-
-.loading-container {
-    width: 85%;
-    max-width: 1000px;
+.header-logo {
+    flex-grow: 1;
     align-items: center;
     justify-content: center;
-    flex-direction: column;
-    background-color: var(--color-black);
-    border-radius: var(--radius-md);
-    padding: var(--spacing-lg) var(--spacing-lg);
-    margin-bottom: var(--spacing-md);
+    flex-direction: row;
 }
 
-.progress-text {
-    font-size: var(--font-size-xxl);
-    color: var(--color-text-light);
-    margin-bottom: var(--spacing-sm);
-    -unity-text-align: middle-center;
-    letter-spacing: 3px;
+.logo-box-container {
+    position: relative;
+    height: 120px;
+    padding-left: 20px;
+    padding-right: 20px;
+    justify-content: center;
+    align-items: center;
 }
 
-.loading-progress {
-    width: 95%;
-    min-height: 35px;
+.rage-margin {
+    margin-left: 15px;
 }
 
-.loading-progress .unity-progress-bar__title {
-    display: none;
+.logo-bg {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
 }
 
-.loading-progress .unity-progress-bar__background {
-    background-color: var(--color-accent-blue);
-    border-radius: var(--radius-xs);
-    border-width: var(--border-width-normal);
-    margin: var(--spacing-xs);
-    border-color: white;
-    overflow: hidden;
-    min-height: 25px;
-    height: 25px;
-}
-
-.loading-progress .unity-progress-bar__progress {
-    background-color: var(--color-accent-red);
-    border-radius: 0;
+.header-text {
+    -unity-font-definition: url("project://database/Assets/Fonts/Anton-Regular%20SDF.asset?fileID=11400000&guid=aa820f8024bbb4ae08525ce0513021a5&type=2#Anton-Regular SDF");
+    font-size: 96px;
+    color: rgb(255, 255, 255);
+    letter-spacing: 2px;
     margin: 0;
-    min-height: 15px;
-}
-
-.loading-progress .unity-progress-bar__container {
-    min-height: 15px;
-    height: 15px;
-}
-
-.tip-container {
-    width: 85%;
-    max-width: 700px;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    background-color: var(--color-black);
-    border-radius: var(--radius-md);
-    border-color: var(--color-black);
-    border-width: var(--border-width-normal);
-    padding: var(--spacing-lg) var(--spacing-lg);
-    margin-bottom: var(--spacing-md);
-}
-
-.tip-header {
-    font-size: var(--font-size-xl);
-    text-shadow: var(--text-shadow-md);
-    color: var(--color-accent-orange);
-    margin-bottom: var(--spacing-xs);
-    letter-spacing: 1px;
-}
-
-.loading-tip {
-    font-size: var(--font-size-xl);
-    color: var(--color-text-secondary);
+    padding: 0;
     -unity-text-align: middle-center;
+    margin-top: -10px;
+    margin-bottom: -10px;
+}
+
+.bottom-wrapper {
+    width: 100%;
+    align-items: center;
+}
+
+.loading-complex {
+    width: 100%;
+    max-width: 900px;
+    flex-direction: column;
+}
+
+.status-row {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 8px;
+}
+
+.status-text {
+    -unity-font-definition: url("project://database/Assets/Fonts/Anton-Regular%20SDF.asset?fileID=11400000&guid=aa820f8024bbb4ae08525ce0513021a5&type=2#Anton-Regular SDF");
+    font-size: 19px;
+    color: rgb(136, 136, 136);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.percentage {
+    -unity-font-definition: url("project://database/Assets/Fonts/Anton-Regular%20SDF.asset?fileID=11400000&guid=aa820f8024bbb4ae08525ce0513021a5&type=2#Anton-Regular SDF");
+    font-size: 48px;
+    color: rgb(230, 57, 70);
+    margin: 0;
+    padding: 0;
+    margin-bottom: -5px;
+}
+
+.progress-track-container {
+    width: 100%;
+    height: 30px;
+    position: relative;
+    margin-top: 4px;
+}
+
+.progress-track-bg {
+    height: 100%;
+    position: absolute;
+    width: 100%;
+}
+
+.progress-fill-skewed {
+    margin-top: 5px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    margin-left: 5px;
+    height: 100%;
+    width: 100%;
+    max-width: 99%;
+}
+
+.tips-area {
+    margin-top: 15px;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    max-width: 600px;
+}
+
+.tip-title {
+    -unity-font-definition: url("project://database/Assets/Fonts/Anton-Regular%20SDF.asset?fileID=11400000&guid=aa820f8024bbb4ae08525ce0513021a5&type=2#Anton-Regular SDF");
+    color: rgb(230, 57, 70);
+    font-size: 14px;
+    letter-spacing: 1px;
+    margin-right: 8px;
+    -unity-font-style: bold;
+}
+
+.tip-text {
+    font-size: 14px;
+    color: rgb(102, 102, 102);
     white-space: normal;
-    max-width: 650px;
+    -unity-text-align: middle-left;
 }
 
 .version-info {
     position: absolute;
-    top: var(--spacing-md);
-    right: var(--spacing-lg);
-    font-size: var(--font-size-xs);
-    color: var(--color-text-light);
-    -unity-text-align: middle-right;
+    bottom: 10px;
+    right: 10px;
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.3);
 }

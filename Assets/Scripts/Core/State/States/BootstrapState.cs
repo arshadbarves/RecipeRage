@@ -5,22 +5,21 @@ using Core.Events;
 using Core.Logging;
 using Core.Maintenance;
 using Core.RemoteConfig;
+using Core.Update;
 using Cysharp.Threading.Tasks;
 using UI;
 using UI.Screens;
 using UnityEngine;
-using Core.Update;
 
 namespace Core.State.States
 {
     /// <summary>
-    /// Initial state of the game. Handles the startup sequence:
-    /// Splash -> Auth -> Config -> Maintenance -> Main Menu
+    /// Initial state of the game. Handles the startup sequence using professional Task-Based Architecture.
+    /// Steps: Splash -> Loading (Tasks) -> Main Menu / Login
     /// </summary>
     public class BootstrapState : BaseState
     {
         private const float SplashDuration = 3.5f;
-        private const float MinLoadingTime = 2.0f;
         private readonly IUIService _uiService;
         private readonly INTPTimeService _ntpTimeService;
         private readonly IRemoteConfigService _remoteConfigService;
@@ -53,122 +52,83 @@ namespace Core.State.States
         public override async void Enter()
         {
             base.Enter();
-            GameLogger.Log("Entering game initialization sequence");
+            GameLogger.Log("Entering game initialization setup");
 
             try
             {
-                // 1. Show Splash Screen
+                // 1. Show Splash
                 await ShowSplashScreenAsync();
 
-                await InitializeFoundationAsync();
-
-                bool isAuthenticated = await InitializeAuthenticationAsync();
-
-                if (isAuthenticated)
-                {
-                    // Session is created internally by AuthenticationService after successful auth
-                    await PerformPostLoginChecksAsync();
-
-                    GameLogger.Log("Initialization complete. Transitioning to MainMenu.");
-                    _stateManager.ChangeState(new MainMenuState());
-                }
-                else
-                {
-                    GameLogger.Log("Not authenticated. Transitioning to Login.");
-                    _stateManager.ChangeState(new LoginState(_uiService, _eventBus, _stateManager, _serviceContainer));
-                }
+                // 2. Start Loading Sequence
+                _uiService.ShowScreen(UIScreenType.Loading);
+                await InitializeGameSequence();
             }
             catch (Exception ex)
             {
                 GameLogger.LogException(ex);
+                _uiService.HideScreen(UIScreenType.Loading);
                 _stateManager.ChangeState(new LoginState(_uiService, _eventBus, _stateManager, _serviceContainer));
             }
         }
 
-        private async UniTask ShowSplashScreenAsync()
+        private async UniTask InitializeGameSequence()
         {
-            _uiService.ShowScreen(UIScreenType.Splash);
+            var loadingScreen = _uiService.GetScreen<LoadingScreen>(UIScreenType.Loading);
 
-            await UniTask.Delay(TimeSpan.FromSeconds(SplashDuration));
+            // --- STEP 1: Foundation (0% - 30%) ---
+            loadingScreen?.UpdateProgress(0.1f, "Initializing Foundation...");
 
-            _uiService.HideScreen(UIScreenType.Splash);
-            await UniTask.Delay(500);
-        }
-
-        private async UniTask InitializeFoundationAsync()
-        {
-            GameLogger.Log("Initializing Foundation...");
-
+            // NTP Sync
             try
             {
                 var cts = new System.Threading.CancellationTokenSource();
-                cts.CancelAfter(TimeSpan.FromSeconds(10.0f));
-
-                (bool isCanceled, bool ntpSynced) = await _ntpTimeService.SyncTime()
-                    .AttachExternalCancellation(cts.Token)
-                    .SuppressCancellationThrow();
-
-                if (isCanceled)
-                {
-                    GameLogger.LogWarning("NTP sync timed out, using local time.");
-                }
-                else if (!ntpSynced)
-                {
-                    GameLogger.LogWarning("NTP sync failed, using local time.");
-                }
-
-                cts.Dispose();
+                cts.CancelAfter(TimeSpan.FromSeconds(5.0f));
+                await _ntpTimeService.SyncTime().AttachExternalCancellation(cts.Token).SuppressCancellationThrow();
             }
-            catch (Exception ex)
-            {
-                GameLogger.LogWarning($"NTP sync exception (non-critical): {ex.Message}");
-            }
+            catch { /* Ignore NTP errors */ }
 
+            loadingScreen?.UpdateProgress(0.2f, "Loading Configuration...");
             await _remoteConfigService.Initialize();
-        }
 
-        private async UniTask<bool> InitializeAuthenticationAsync()
-        {
-            GameLogger.Log("Initializing Authentication...");
-            return await _authService.InitializeAsync();
-        }
+            // --- STEP 2: Authentication (30% - 60%) ---
+            loadingScreen?.UpdateProgress(0.3f, "Authenticating...");
+            bool isAuthenticated = await _authService.InitializeAsync();
 
-        private async UniTask PerformPostLoginChecksAsync()
-        {
-            GameLogger.Log("Performing Post-Login Checks...");
+            if (!isAuthenticated)
+            {
+                _uiService.HideScreen(UIScreenType.Loading);
+                _stateManager.ChangeState(new LoginState(_uiService, _eventBus, _stateManager, _serviceContainer));
+                return;
+            }
 
-            float startTime = Time.realtimeSinceStartup;
-
-            _uiService.ShowScreen(UIScreenType.Loading);
-            LoadingScreen loadingScreen = _uiService.GetScreen<LoadingScreen>(UIScreenType.Loading);
-
-            loadingScreen?.UpdateProgress(0.3f, "Loading configuration...");
+            // --- STEP 3: Post-Login (60% - 90%) ---
+            loadingScreen?.UpdateProgress(0.6f, "Checking Updates...");
             await _remoteConfigService.RefreshConfig();
 
-            loadingScreen?.UpdateProgress(0.5f, "Checking for updates...");
-            var forceUpdateChecker = new ForceUpdateChecker(
-                _remoteConfigService,
-                _uiService);
+            var forceUpdateChecker = new ForceUpdateChecker(_remoteConfigService, _uiService);
             await forceUpdateChecker.CheckForUpdateAsync();
 
-            loadingScreen?.UpdateProgress(0.7f, "Checking server status...");
+            loadingScreen?.UpdateProgress(0.8f, "Checking Maintenance...");
             if (_maintenanceService != null)
             {
                 await _maintenanceService.CheckMaintenanceStatusAsync();
             }
 
-            loadingScreen?.UpdateProgress(1.0f, "Ready!");
-            await UniTask.Delay(500);
-
-            float elapsedTime = Time.realtimeSinceStartup - startTime;
-            float remainingTime = MinLoadingTime - elapsedTime;
-            if (remainingTime > 0)
-            {
-                GameLogger.Log($"Waiting {remainingTime:F2}s to meet minimum loading time");
-                await UniTask.Delay(TimeSpan.FromSeconds(remainingTime));
-            }
+            // --- STEP 4: Ready (100%) ---
+            loadingScreen?.UpdateProgress(1.0f, "READY!");
+            await UniTask.Delay(TimeSpan.FromSeconds(1.0f)); // 1s Delay as requested
 
             _uiService.HideScreen(UIScreenType.Loading);
+            GameLogger.Log("Initialization complete. Transitioning to MainMenu.");
+            _stateManager.ChangeState(new MainMenuState());
+        }
+
+        private async UniTask ShowSplashScreenAsync()
+        {
+            _uiService.ShowScreen(UIScreenType.Splash);
+            await UniTask.Delay(TimeSpan.FromSeconds(SplashDuration));
+            _uiService.HideScreen(UIScreenType.Splash);
+            await UniTask.Delay(500);
         }
     }
 }

@@ -67,3 +67,9 @@ crashlytics-build.properties
 # macOS metadata files
 .DS_Store
 **/.DS_Store
+
+*.blob
+
+Assets/_Recovery/
+
+Assets/_Recovery.meta
