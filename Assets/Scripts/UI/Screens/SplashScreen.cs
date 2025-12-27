@@ -57,7 +57,6 @@ namespace UI.Screens
         protected override void OnInitialize()
         {
             CacheUIElements();
-            GameLogger.Log("Initialized");
 
             // Generate and apply procedural textures
             ApplyProceduralGraphics();

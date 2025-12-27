@@ -15,14 +15,17 @@ namespace UI.Controls
 
         [UxmlAttribute("skew-angle")]
         [Tooltip("Horizontal skew angle in degrees. Negative values skew left.")]
-        [Range(-45f, 45f)]
         public float SkewAngle
         {
             get => _skewAngle;
             set
             {
+                if (Mathf.Approximately(_skewAngle, value)) return;
                 _skewAngle = Mathf.Clamp(value, -45f, 45f);
+                if (_autoPadding) UpdatePadding();
                 MarkDirtyRepaint();
+                // Force immediate visual update in UI Builder
+                schedule.Execute(() => MarkDirtyRepaint());
             }
         }
         private float _skewAngle = 0f;
@@ -129,6 +132,28 @@ namespace UI.Controls
         }
         private float _borderProgress = 1f;
 
+        [UxmlAttribute("auto-padding")]
+        [Tooltip("Automatically calculated horizontal padding to keep content inside the skewed area.")]
+        public bool AutoPadding
+        {
+            get => _autoPadding;
+            set
+            {
+                if (_autoPadding == value) return;
+                _autoPadding = value;
+                if (_autoPadding)
+                {
+                    UpdatePadding();
+                    RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+                }
+                else
+                {
+                    UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+                }
+            }
+        }
+        private bool _autoPadding = true;
+
         #endregion
 
         #region Constructor
@@ -136,27 +161,88 @@ namespace UI.Controls
         public SkewedBoxElement()
         {
             generateVisualContent += OnGenerateVisualContent;
+            
+            // Default to true, so register by default if not set otherwise
+            if (_autoPadding)
+            {
+                RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+            }
+            
+            // Watch for property changes that affect layout
+            this.RegisterCallback<AttachToPanelEvent>(evt => UpdatePadding());
         }
 
+        #endregion
+
+        #region Layout & Logic
+
+        private void OnGeometryChanged(GeometryChangedEvent evt)
+        {
+            if (!_autoPadding) return;
+            
+            // Only update if height changed significantly to avoid float jitter loops
+            if (Mathf.Abs(evt.newRect.height - evt.oldRect.height) > 0.5f)
+            {
+                UpdatePadding();
+            }
+        }
+
+        private void UpdatePadding()
+        {
+            if (!_autoPadding || float.IsNaN(layout.height) || layout.height <= 0) return;
+
+            // Calculate skew offset: tan(angle) * height
+            // The visual skew moves the top/bottom edges relative to center.
+            // Total skew offset width = |tan| * height.
+            // We need to push content in from BOTH sides to be safe, 
+            // essentially centering the "safe rect" inside the parallelogram.
+            // The safe padding on each side is half the total skew offset.
+            
+            float skewOffsetTotal = Mathf.Abs(Mathf.Tan(_skewAngle * Mathf.Deg2Rad) * layout.height);
+            float safePadding = skewOffsetTotal * 0.5f;
+
+            // Apply padding if different 
+            // (Using style.paddingLeft/Right to avoid overriding USS padding if possible, 
+            // but for auto-padding we explicitly take control)
+            
+            if (Mathf.Abs(style.paddingLeft.value.value - safePadding) > 1f)
+            {
+                style.paddingLeft = safePadding;
+                style.paddingRight = safePadding;
+            }
+        }
+        
+        
         #endregion
 
         #region Rendering
 
         private void OnGenerateVisualContent(MeshGenerationContext mgc)
         {
+            // Use localBounds (= standard layout rect 0,0 to w,h) instead of contentRect
+            // contentRect shrinks with padding, but we want the background to stay full size
             var rect = contentRect;
-            if (rect.width <= 0 || rect.height <= 0) return;
+            
+            // Check if we have padding, if so, we might want to draw relative to the full element bounds
+            // contentRect is offset by padding. 
+            // For a background element, we usually want it to cover the whole VisualElement.
+            // Creating a rect from 0,0 to layout.width, layout.height
+            
+            if (layout.width <= 0 || layout.height <= 0) return;
+            
+            // Use full layout bounds for the visual background shape
+            Rect visualRect = new Rect(0, 0, layout.width, layout.height);
 
             var painter = mgc.painter2D;
-            float skewOffset = Mathf.Tan(_skewAngle * Mathf.Deg2Rad) * rect.height;
+            float skewOffset = Mathf.Tan(_skewAngle * Mathf.Deg2Rad) * visualRect.height;
 
             // Calculate corners
             Vector2 tl = new Vector2(-skewOffset * 0.5f, 0);
-            Vector2 tr = new Vector2(rect.width - skewOffset * 0.5f, 0);
-            Vector2 br = new Vector2(rect.width + skewOffset * 0.5f, rect.height);
-            Vector2 bl = new Vector2(skewOffset * 0.5f, rect.height);
+            Vector2 tr = new Vector2(visualRect.width - skewOffset * 0.5f, 0);
+            Vector2 br = new Vector2(visualRect.width + skewOffset * 0.5f, visualRect.height);
+            Vector2 bl = new Vector2(skewOffset * 0.5f, visualRect.height);
 
-            float radius = Mathf.Min(_cornerRadius, rect.height * 0.5f, rect.width * 0.5f);
+            float radius = Mathf.Min(_cornerRadius, visualRect.height * 0.5f, visualRect.width * 0.5f);
 
             // Draw fill
             if (_enableFill)

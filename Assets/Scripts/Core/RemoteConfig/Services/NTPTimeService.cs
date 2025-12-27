@@ -68,8 +68,6 @@ namespace Core.RemoteConfig
                 {
                     try
                     {
-                        GameLogger.Log($"NTP sync: Server [{serverIndex + 1}/{NTP_SERVERS.Length}] {server}, Attempt {attempt + 1}/{MAX_RETRY_ATTEMPTS}");
-
                         DateTime ntpTime = await FetchNTPTime(server);
                         DateTime localTime = DateTime.UtcNow;
 
@@ -230,7 +228,6 @@ namespace Core.RemoteConfig
 
                 if (_isAutoSyncEnabled && Application.isPlaying)
                 {
-                    GameLogger.Log("Performing automatic NTP re-sync...");
                     await SyncTime();
                 }
             }

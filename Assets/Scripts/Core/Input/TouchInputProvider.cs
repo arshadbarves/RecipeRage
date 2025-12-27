@@ -74,13 +74,9 @@ namespace Core.Input
         /// </summary>
         public void Initialize()
         {
-            GameLogger.Log("Initializing touch input provider");
-            
             // Find joystick area in the UI
             // In a real implementation, this would be passed in or found in the UI
             // For now, we'll use a placeholder
-            
-            // TODO: Implement actual joystick area reference
             
             _isEnabled = true;
         }
@@ -105,7 +101,6 @@ namespace Core.Input
         public void Enable()
         {
             _isEnabled = true;
-            GameLogger.Log("Touch input provider enabled");
         }
         
         /// <summary>
@@ -115,7 +110,6 @@ namespace Core.Input
         {
             _isEnabled = false;
             ResetInput();
-            GameLogger.Log("Touch input provider disabled");
         }
         
         /// <summary>
@@ -299,8 +293,6 @@ namespace Core.Input
             // In a real implementation, this would check against the actual UI element
             // For now, we'll use a placeholder
             
-            // TODO: Implement actual interaction button area check
-            
             return false;
         }
         
@@ -314,8 +306,6 @@ namespace Core.Input
             // In a real implementation, this would check against the actual UI element
             // For now, we'll use a placeholder
             
-            // TODO: Implement actual special ability button area check
-            
             return false;
         }
         
@@ -328,8 +318,6 @@ namespace Core.Input
         {
             // In a real implementation, this would check against the actual UI element
             // For now, we'll use a placeholder
-            
-            // TODO: Implement actual pause button area check
             
             return false;
         }

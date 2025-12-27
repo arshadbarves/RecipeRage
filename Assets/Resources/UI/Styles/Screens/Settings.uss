@@ -1,55 +1,23 @@
 @import url("project://database/Assets/Resources/UI/Themes/DesignSystem.uss?fileID=7433441132597879392&guid=74282f7acd0164afea4d8dc9dc05a968&type=3#DesignSystem");
 
-.settings-root {
-    width: 100%;
-    height: 100%;
-    flex-direction: column;
-    -unity-font-definition: var(--font-primary);
-}
 
-.settings-header {
-    padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-sm) var(--spacing-lg);
-    align-items: center;
-}
 
-.settings-title {
-    font-size: var(--font-size-display);
-    color: var(--color-text-primary);
-    -unity-text-align: middle-center;
-    margin-bottom: 5px;
-}
 
-.settings-subtitle {
-    font-size: var(--font-size-lg);
-    color: var(--color-text-muted);
-    -unity-text-align: middle-center;
-}
 
-.settings-scroll {
-    flex-grow: 1;
-    padding: var(--spacing-md);
-    padding-bottom: var(--spacing-xxl);
-}
+
+
+
+
+
 
 /* Settings Section uses design system .card */
-.settings-section {
-    background-color: var(--color-card-bg);
-    border-radius: var(--radius-xl);
-    border-width: var(--border-width-thick);
-    border-color: var(--color-card-border);
-    padding: var(--spacing-lg);
-    margin-bottom: var(--spacing-md);
-}
 
-.settings-section-danger {
-    background-color: rgb(255, 240, 240);
-    border-color: var(--color-danger);
-}
+
+
 
 /* Section Title uses design system .section-title */
 
-.controls-group {
-}
+
 
 .controls-group > * {
     margin-bottom: var(--spacing-xs);
@@ -62,81 +30,28 @@
 /* Control Dropdown uses design system .control-dropdown */
 /* Control Label uses design system .control-label */
 
-.slider-container {
-    flex-direction: row;
-    align-items: flex-start;
-    flex-shrink: 0;
-}
 
-.value-label {
-    font-size: var(--font-size-xl);
-    color: var(--color-text-primary);
-    min-width: 55px;
-    -unity-text-align: middle-right;
-    background-color: rgba(40, 30, 25, 0.1);
-    border-radius: var(--radius-sm);
-    padding: 4px var(--spacing-xs);
-}
+
+
 
 /* Settings Buttons */
-.settings-button {
-    background-color: var(--color-accent-blue);
-    border-radius: var(--radius-md);
-    padding: var(--spacing-sm) var(--spacing-lg);
-    border-width: var(--border-width-normal);
-    border-color: var(--color-card-border);
-    font-size: var(--font-size-md);
-    color: var(--color-text-primary);
-    transition-property: scale;
-    transition-duration: var(--transition-fast);
-    flex-grow: 0;
-    flex-shrink: 0;
-    width: auto;
-}
+
 
 .settings-button:active {
     scale: 0.95 0.95 1;
 }
 
-.settings-button-full {
-    width: 100%;
-    font-size: var(--font-size-lg);
-    padding: var(--spacing-sm) var(--spacing-lg);
-}
 
-.settings-button-primary {
-    background-color: var(--color-accent-green);
-    font-size: var(--font-size-xl);
-    padding: var(--spacing-sm) var(--spacing-lg);
-}
 
-.settings-button-warning {
-    background-color: var(--color-warning);
-}
 
-.settings-button-danger {
-    background-color: var(--color-danger);
-    color: var(--color-text-light);
-    border-color: rgb(200, 50, 50);
-}
+
+
+
+
 
 /* Version Info */
-.version-info {
-    padding: var(--spacing-md);
-    align-items: center;
-    margin-top: var(--spacing-sm);
-    margin-bottom: var(--spacing-md);
-}
 
-.version-text {
-    font-size: var(--font-size-md);
-    color: var(--color-text-muted);
-    -unity-text-align: middle-center;
-    margin-bottom: 5px;
-}
 
-.credits-text {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-muted);
-    -unity-text-align: middle-center;
-}
+
+
+

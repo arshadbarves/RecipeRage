@@ -1,13 +1,14 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+<?xml version='1.0' encoding='utf-8'?>
+<ns0:UXML xmlns:ns0="UnityEngine.UIElements" editor-extension-mode="False">
     <Style src="project://database/Assets/Resources/UI/Styles/Screens/MatchmakingScreen.uss?fileID=7433441132597879392&amp;guid=a717c98668a174517a65cbe51354289b&amp;type=3#MatchmakingScreen" />
-    <ui:VisualElement name="matchmaking-screen" class="screen full-screen">
-        <ui:VisualElement name="content" class="matchmaking-content">
-            <ui:VisualElement name="status-indicator" class="status-indicator searching" />
-            <ui:Label name="status-text" text="Searching for players..." class="status-text" />
-            <ui:Label name="player-count" text="1/8" class="player-count" />
-            <ui:Label name="search-time" text="0:00" class="search-time" />
-            <ui:VisualElement name="player-list" class="player-list" />
-            <ui:Button name="cancel-button" text="Cancel" class="cancel-button" />
-        </ui:VisualElement>
-    </ui:VisualElement>
-</ui:UXML>
+    <ns0:VisualElement name="matchmaking-screen">
+        <ns0:VisualElement name="content" class="matchmaking-content">
+            <ns0:VisualElement name="status-indicator" class="status-indicator searching" />
+            <ns0:Label name="status-text" text="Searching for players..." class="status-text" />
+            <ns0:Label name="player-count" text="1/8" class="player-count" />
+            <ns0:Label name="search-time" text="0:00" class="search-time" />
+            <ns0:VisualElement name="player-list" class="player-list" />
+            <ns0:Button name="cancel-button" text="Cancel" class="cancel-button" />
+        </ns0:VisualElement>
+    </ns0:VisualElement>
+</ns0:UXML>

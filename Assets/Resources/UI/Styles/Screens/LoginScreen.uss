@@ -1,85 +1,22 @@
 @import url("../../Themes/DesignSystem.uss");
 
-.login-screen {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-}
 
-.background {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-color: var(--color-background-primary);
-    opacity: 1;
-}
 
-.login-card {
-    width: 480px;
-    background-color: var(--color-card-bg);
-    border-radius: var(--radius-xxl);
-    padding: 48px 40px;
-    flex-direction: column;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    align-self: flex-end;
-    flex-grow: 1;
-    border-top-left-radius: var(--radius-xxl);
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-    border-bottom-left-radius: var(--radius-xxl);
-    border-width: var(--border-width-extra-thick);
-    border-color: var(--color-card-border);
-    -unity-font-definition: var(--font-primary);
-}
 
-.header {
-    align-items: center;
-    margin-bottom: 40px;
-}
 
-.app-title {
-    font-size: 32px;
-    color: var(--color-text-primary);
-    -unity-text-align: middle-center;
-    margin-bottom: var(--spacing-xs);
-    letter-spacing: -0.5px;
-}
 
-.app-subtitle {
-    font-size: var(--font-size-md);
-    color: var(--color-text-secondary);
-    -unity-text-align: middle-center;
-}
 
-.login-form {
-    width: 100%;
-    flex-direction: column;
-}
 
-.form-label {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-secondary);
-    margin-bottom: var(--spacing-lg);
-    -unity-text-align: middle-center;
-    letter-spacing: 0.5px;
-}
 
-.btn {
-    width: 100%;
-    height: 56px;
-    border-radius: var(--radius-sm);
-    border-width: 0;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    padding: 0 var(--spacing-lg);
-    cursor: link;
-    transition-property: scale;
-    transition-duration: var(--transition-fast);
-}
+
+
+
+
+
+
+
+
+
 
 .btn:active {
     scale: 0.95;
@@ -87,118 +24,40 @@
 
 .btn:disabled {
     opacity: 0.5;
-    cursor: default;
 }
 
-.btn-primary {
-    background-color: var(--color-accent-blue);
-    margin-bottom: var(--spacing-md);
-    border-width: var(--border-width-normal);
-    border-color: var(--color-card-border);
-}
 
-.btn-secondary {
-    background-color: var(--color-card-bg);
-    border-width: var(--border-width-normal);
-    border-color: var(--color-card-border);
-}
 
-.btn-icon {
-    width: 24px;
-    height: 24px;
-    margin-right: var(--spacing-sm);
-    border-radius: var(--radius-sm);
-}
 
-.btn-icon-facebook {
-    background-color: rgb(255, 255, 255);
-}
 
-.btn-icon-guest {
-    background-color: var(--color-text-secondary);
-}
 
-.btn-label {
-    font-size: var(--font-size-md);
-    -unity-text-align: middle-center;
-}
 
-.btn-primary .btn-label {
-    color: var(--color-text-primary);
-}
 
-.btn-secondary .btn-label {
-    color: var(--color-text-primary);
-}
 
-.divider {
-    flex-direction: row;
-    align-items: center;
-    margin: var(--spacing-xxl) 0;
-}
 
-.divider-line {
-    flex: 1;
-    height: 1px;
-    background-color: rgba(40, 30, 25, 0.2);
-}
 
-.divider-text {
-    font-size: var(--font-size-xs);
-    color: var(--color-text-secondary);
-    margin: 0 var(--spacing-md);
-    letter-spacing: 1px;
-}
 
-.disclaimer {
-    font-size: var(--font-size-xs);
-    color: var(--color-text-secondary);
-    -unity-text-align: middle-center;
-    white-space: normal;
-    margin-top: var(--spacing-xxl);
-    line-height: 18px;
-}
 
-.loading-indicator {
-    width: 100%;
-    align-items: center;
-    justify-content: center;
-    flex-direction: row;
-    margin-top: var(--spacing-xxl);
-    display: none;
-}
+.btn-primary 
 
-.spinner {
-    width: 20px;
-    height: 20px;
-    border-radius: var(--radius-sm);
-    border-width: var(--border-width-thin);
-    border-color: var(--color-accent-blue);
-    margin-right: var(--spacing-sm);
-}
+.btn-secondary 
 
-.loading-text {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-secondary);
-}
 
-.status-text {
-    font-size: var(--font-size-sm);
-    color: var(--color-accent-blue);
-    -unity-text-align: middle-center;
-    margin-top: var(--spacing-md);
-    white-space: normal;
-}
 
-.footer {
-    margin-top: 32px;
-    align-items: center;
-}
 
-.footer-text {
-    font-size: 11px;
-    color: var(--color-text-muted);
-    -unity-text-align: middle-center;
-    white-space: normal;
-    line-height: 16px;
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

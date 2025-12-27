@@ -4,34 +4,15 @@
         <VisualElement name="splash-content" class="splash-content">
             <VisualElement name="master-container" class="master-container">
                 <VisualElement name="logo-row" class="logo-row">
-                    <!-- PLAY Container -->
                     <VisualElement name="play-container" class="logo-container play-margin">
-                        <ui:SkewedBoxElement name="play-skewed-border" 
-                            skew-angle="-10" 
-                            enable-fill="false" 
-                            enable-border="true" 
-                            border-color="rgb(255, 255, 255)" 
-                            border-width="3" 
-                            border-progress="1" 
-                            corner-radius="20" 
-                            class="logo-background"/>
+                        <ui:SkewedBoxElement name="play-skewed-border" skew-angle="-12" enable-fill="false" enable-border="true" border-color="rgb(255, 255, 255)" border-width="3" border-progress="1" corner-radius="20" class="logo-background"/>
                         <Label name="play-text" text="PLAY" class="logo-text"/>
                     </VisualElement>
-
-                    <!-- CENTER Container -->
                     <VisualElement name="center-container" class="logo-container">
-                        <ui:SkewedBoxElement name="center-skewed-box" 
-                            skew-angle="-10" 
-                            enable-fill="true" 
-                            fill-color="rgb(230, 57, 70)" 
-                            enable-border="true" 
-                            border-color="rgb(230, 58, 70)" 
-                            corner-radius="20" 
-                            class="logo-background"/>
+                        <ui:SkewedBoxElement name="center-skewed-box" skew-angle="-12" enable-fill="true" fill-color="rgb(230, 57, 70)" enable-border="true" border-color="rgb(230, 58, 70)" corner-radius="20" class="logo-background"/>
                         <Label name="center-text" text="CENTER" class="logo-text"/>
                     </VisualElement>
                 </VisualElement>
-                
                 <Label name="subtitle" text="STUDIO" class="subtitle"/>
             </VisualElement>
         </VisualElement>

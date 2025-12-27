@@ -102,7 +102,6 @@ namespace UI
             {
                 _networkScoreManager.OnPlayerScoreUpdated += HandleNetworkScoreUpdated;
                 _networkScoreManager.OnScoreboardUpdated += HandleScoreboardUpdated;
-                GameLogger.Log("Subscribed to NetworkScoreManager events");
             }
             else
             {
@@ -114,7 +113,6 @@ namespace UI
             {
                 _roundTimer.OnTimeUpdated += HandleTimeUpdated;
                 _roundTimer.OnTimerExpired += HandleTimerExpired;
-                GameLogger.Log("Subscribed to RoundTimer events");
             }
             else
             {
@@ -125,7 +123,6 @@ namespace UI
             if (_networkGameStateManager != null)
             {
                 _networkGameStateManager.OnPhaseChanged += HandlePhaseChanged;
-                GameLogger.Log("Subscribed to NetworkGameStateManager events");
             }
             else
             {
@@ -349,7 +346,6 @@ namespace UI
             {
                 _score = score;
                 UpdateScoreUI();
-                GameLogger.Log($"Local player score updated: {score}");
             }
         }
 
@@ -360,7 +356,6 @@ namespace UI
         {
             // Refresh scoreboard display
             // In a full implementation, you'd update a leaderboard UI here
-            GameLogger.Log("Scoreboard updated");
         }
 
         /// <summary>
@@ -380,7 +375,6 @@ namespace UI
         {
             GameLogger.Log("Round timer expired - Game Over!");
             // Show game over UI
-            // TODO: Implement game over screen
         }
 
         /// <summary>

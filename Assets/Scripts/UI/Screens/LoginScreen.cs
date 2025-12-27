@@ -48,8 +48,6 @@ namespace UI.Screens
             SetupButtonHandlers();
 
             _loginCard.style.translate = new Translate(new Length(100, LengthUnit.Percent), 0);
-
-            GameLogger.Log("Initialized");
         }
 
         protected override void OnShow()
@@ -204,8 +202,6 @@ namespace UI.Screens
                 eventBus.Subscribe<LoginFailedEvent>(HandleLoginFailed);
                 eventBus.Subscribe<LoginStatusChangedEvent>(HandleStatusChanged);
             }
-
-            GameLogger.Log("Connected to EventBus");
         }
 
         private void UpdateUI()
@@ -234,8 +230,6 @@ namespace UI.Screens
             {
                 _statusText.text = message;
             }
-
-            GameLogger.Log($"{message}");
         }
 
         #endregion
@@ -280,7 +274,6 @@ namespace UI.Screens
         {
             try
             {
-                // TODO: We don't need to check for AuthenticationService availability, at this point it should be available
                 // Wait for AuthenticationService if not available
                 if (GameBootstrap.Services.AuthenticationService == null)
                 {

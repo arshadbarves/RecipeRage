@@ -1,37 +1,38 @@
-<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/UI/USS/LoginScreen.uss?fileID=7433441132597879392&amp;guid=4b557b5c6c2c8444f9dd359c67577447&amp;type=3#LoginScreen" />
-    <VisualElement name="screen-container" class="login-screen">
-        <VisualElement name="background" class="background" />
-        <VisualElement name="login-card" class="login-card">
-            <VisualElement name="header" class="header">
-                <Label text="RecipeRage" class="app-title" />
-                <Label text="Sign in to continue" class="app-subtitle" />
-            </VisualElement>
-            <VisualElement name="login-form" class="login-form">
-                <Label text="Choose your login method" class="form-label" />
-                <Button name="facebook-login-button" class="btn btn-primary">
-                    <VisualElement class="btn-icon btn-icon-facebook" />
-                    <Label text="Continue with Facebook" class="btn-label" />
-                </Button>
-                <VisualElement name="divider" class="divider">
-                    <VisualElement class="divider-line" />
-                    <Label text="OR" class="divider-text" />
-                    <VisualElement class="divider-line" />
-                </VisualElement>
-                <Button name="guest-login-button" class="btn btn-secondary">
-                    <VisualElement class="btn-icon btn-icon-guest" />
-                    <Label text="Continue as Guest" class="btn-label" />
-                </Button>
-                <Label name="disclaimer" text="Guest accounts may lose progress. We recommend signing in with Facebook for the best experience." class="disclaimer" />
-            </VisualElement>
-            <VisualElement name="loading-indicator" class="loading-indicator">
-                <VisualElement name="spinner" class="spinner" />
-                <Label text="Connecting..." class="loading-text" />
-            </VisualElement>
-            <Label name="status-text" class="status-text" />
-            <VisualElement name="footer" class="footer">
-                <Label text="By continuing, you agree to our Terms of Service and Privacy Policy" class="footer-text" />
-            </VisualElement>
-        </VisualElement>
-    </VisualElement>
-</UXML>
+<?xml version='1.0' encoding='utf-8'?>
+<ns0:UXML xmlns:ns0="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd" editor-extension-mode="False">
+    <ns0:Style src="project://database/Assets/UI/USS/LoginScreen.uss?fileID=7433441132597879392&amp;guid=4b557b5c6c2c8444f9dd359c67577447&amp;type=3#LoginScreen" />
+    <ns0:VisualElement name="screen-container">
+        <ns0:VisualElement name="background" />
+        <ns0:VisualElement name="login-card">
+            <ns0:VisualElement name="header">
+                <ns0:Label text="RecipeRage" />
+                <ns0:Label text="Sign in to continue" />
+            </ns0:VisualElement>
+            <ns0:VisualElement name="login-form">
+                <ns0:Label text="Choose your login method" />
+                <ns0:Button name="facebook-login-button">
+                    <ns0:VisualElement />
+                    <ns0:Label text="Continue with Facebook" />
+                </ns0:Button>
+                <ns0:VisualElement name="divider">
+                    <ns0:VisualElement />
+                    <ns0:Label text="OR" />
+                    <ns0:VisualElement />
+                </ns0:VisualElement>
+                <ns0:Button name="guest-login-button">
+                    <ns0:VisualElement />
+                    <ns0:Label text="Continue as Guest" />
+                </ns0:Button>
+                <ns0:Label name="disclaimer" text="Guest accounts may lose progress. We recommend signing in with Facebook for the best experience." />
+            </ns0:VisualElement>
+            <ns0:VisualElement name="loading-indicator">
+                <ns0:VisualElement name="spinner" />
+                <ns0:Label text="Connecting..." />
+            </ns0:VisualElement>
+            <ns0:Label name="status-text" />
+            <ns0:VisualElement name="footer">
+                <ns0:Label text="By continuing, you agree to our Terms of Service and Privacy Policy" />
+            </ns0:VisualElement>
+        </ns0:VisualElement>
+    </ns0:VisualElement>
+</ns0:UXML>

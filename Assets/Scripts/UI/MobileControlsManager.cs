@@ -67,25 +67,21 @@ namespace UI
         
         private void OnJumpPressed()
         {
-            GameLogger.Log("Jump pressed");
             // Trigger jump action
         }
         
         private void OnAttackPressed()
         {
-            GameLogger.Log("Attack pressed");
             // Trigger attack action
         }
         
         private void OnSpecialPressed()
         {
-            GameLogger.Log("Special pressed");
             // Trigger special action
         }
         
         private void OnInteractPressed()
         {
-            GameLogger.Log("Interact pressed");
             // Trigger interact action
         }
         

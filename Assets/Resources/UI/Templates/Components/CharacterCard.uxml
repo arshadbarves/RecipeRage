@@ -1,26 +1,24 @@
-<?xml version="1.0" encoding="utf-8"?>
-<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" 
-      xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd"
-      xsi:schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd">
+<?xml version='1.0' encoding='utf-8'?>
+<ns0:UXML xmlns:ns0="UnityEngine.UIElements" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" xsi:schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd">
     
-    <VisualElement name="character-card" class="character-card">
-        <VisualElement name="card-background" class="card-background">
-            <VisualElement name="character-portrait" class="character-portrait" />
-            <VisualElement name="character-frame" class="character-frame" />
-            <Label name="character-card-name" text="CHEF GORDON" class="character-card-name" />
-            <VisualElement name="character-level-badge" class="character-level-badge">
-                <Label name="character-card-level" text="10" class="character-card-level" />
-            </VisualElement>
-            <VisualElement name="character-rarity" class="character-rarity" />
-            <VisualElement name="locked-overlay" class="locked-overlay hidden">
-                <VisualElement name="lock-icon" class="lock-icon" />
-                <Label name="unlock-text" text="UNLOCK" class="unlock-text" />
-                <VisualElement name="unlock-cost" class="unlock-cost">
-                    <VisualElement name="gem-icon-small" class="gem-icon-small" />
-                    <Label name="unlock-cost-text" text="80" class="unlock-cost-text" />
-                </VisualElement>
-            </VisualElement>
-        </VisualElement>
-    </VisualElement>
+    <ns0:VisualElement name="character-card">
+        <ns0:VisualElement name="card-background">
+            <ns0:VisualElement name="character-portrait" />
+            <ns0:VisualElement name="character-frame" />
+            <ns0:Label name="character-card-name" text="CHEF GORDON" />
+            <ns0:VisualElement name="character-level-badge">
+                <ns0:Label name="character-card-level" text="10" />
+            </ns0:VisualElement>
+            <ns0:VisualElement name="character-rarity" />
+            <ns0:VisualElement name="locked-overlay">
+                <ns0:VisualElement name="lock-icon" />
+                <ns0:Label name="unlock-text" text="UNLOCK" />
+                <ns0:VisualElement name="unlock-cost">
+                    <ns0:VisualElement name="gem-icon-small" />
+                    <ns0:Label name="unlock-cost-text" text="80" />
+                </ns0:VisualElement>
+            </ns0:VisualElement>
+        </ns0:VisualElement>
+    </ns0:VisualElement>
     
-</UXML>
+</ns0:UXML>

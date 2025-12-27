@@ -1,9 +1,10 @@
-<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/UI/USS/Common.uss?fileID=7433441132597879392&amp;guid=e49c7ac1dcc4c4d849d7474224cbe79e&amp;type=3#Common" />
-    <VisualElement name="logo-container" class="logo-container">
-        <VisualElement name="game-logo" class="logo">
-            <Label text="Recipe" name="game-title-1" class="game-title-1" />
-            <Label text="RAGE" name="game-title-2" class="game-title-2" />
-        </VisualElement>
-    </VisualElement>
-</UXML>
+<?xml version='1.0' encoding='utf-8'?>
+<ns0:UXML xmlns:ns0="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd" editor-extension-mode="False">
+    <ns0:Style src="project://database/Assets/UI/USS/Common.uss?fileID=7433441132597879392&amp;guid=e49c7ac1dcc4c4d849d7474224cbe79e&amp;type=3#Common" />
+    <ns0:VisualElement name="logo-container">
+        <ns0:VisualElement name="game-logo">
+            <ns0:Label text="Recipe" name="game-title-1" />
+            <ns0:Label text="RAGE" name="game-title-2" />
+        </ns0:VisualElement>
+    </ns0:VisualElement>
+</ns0:UXML>

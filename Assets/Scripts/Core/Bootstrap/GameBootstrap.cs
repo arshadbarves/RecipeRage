@@ -35,14 +35,10 @@ namespace Core.Bootstrap
 
         private void InitializeGame()
         {
-            Debug.Log("Starting game initialization...");
-
             Services = new ServiceContainer(_uiDocumentProvider);
 
             // Subscribe to log out handler for full reboot
             Services.EventBus.Subscribe<Events.LogoutEvent>(HandleLogoutAsync);
-
-            GameLogger.Log("Starting State Machine...");
 
             var bootstrapState = new BootstrapState(
                 Services.UIService,
@@ -62,8 +58,6 @@ namespace Core.Bootstrap
         {
             try
             {
-                GameLogger.Log($"User {evt.UserId} logged out - performing full reboot");
-
                 Services?.Dispose();
 
                 await UniTask.Yield();
@@ -78,8 +72,6 @@ namespace Core.Bootstrap
                     Services.StateManager,
                     Services
                 ));
-
-                GameLogger.Log("Reboot complete - ready for new login");
             }
             catch (Exception e)
             {

@@ -78,7 +78,6 @@ namespace UI
             HideAllScreens();
 
             _isInitialized = true;
-            GameLogger.Log("UI screens initialized successfully");
         }
 
         private void SetupUIDocument()
@@ -117,8 +116,6 @@ namespace UI
             _root.style.right = 0;
             _root.style.bottom = 0;
             _root.AddToClassList("ui-root");
-
-            GameLogger.Log("UIDocument ready");
         }
 
         private void CreateScreenControllers()
@@ -130,8 +127,6 @@ namespace UI
 
             // Sort screens by category after all are created to ensure proper layering
             SortScreensByCategory();
-
-            GameLogger.Log($"Created {_screens.Count} screens from registry");
         }
 
         private void CreateScreen(UIScreenType screenType)
@@ -155,8 +150,6 @@ namespace UI
             {
                 screen.Initialize(screenType, attribute.Priority, controller);
                 _screens[screenType] = screen;
-
-                GameLogger.Log($"Created screen: {screenType} -> {screen.GetType().Name}");
             }
             else
             {
@@ -180,7 +173,6 @@ namespace UI
 
                 if (template != null)
                 {
-                    GameLogger.Log($"Loaded template '{templatePath}' from Resources at '{resourcePath}'");
                     return template;
                 }
                 else
@@ -224,8 +216,6 @@ namespace UI
 
             // Get category for this screen
             UIScreenCategory category = _stackManager.GetCategory(screenType);
-
-            GameLogger.Log($"Showing {screenType} in category {category} (addToHistory: {addToHistory})");
 
             // Handle category-specific logic
             switch (category)
@@ -567,8 +557,6 @@ namespace UI
                     controller.Container.BringToFront();
                 }
             }
-
-            GameLogger.Log($"Sorted {sortedControllers.Count} screens by category (Popups/Modals on top)");
         }
 
         #endregion

@@ -3,11 +3,11 @@
     <VisualElement name="screen-container" class="loading-screen">
         <VisualElement name="header-logo" class="header-logo">
             <VisualElement name="header-recipe-container" class="logo-box-container">
-                <ui:SkewedBoxElement name="recipe-bg" skew-angle="-10" enable-fill="false" enable-border="true" border-color="rgb(255, 255, 255)" border-width="4" corner-radius="8" class="logo-bg"/>
+                <ui:SkewedBoxElement name="recipe-bg" skew-angle="-12" enable-fill="false" enable-border="true" border-color="rgb(255, 255, 255)" border-width="4" corner-radius="8" class="logo-bg"/>
                 <Label name="recipe-text" text="RECIPE" class="header-text"/>
             </VisualElement>
             <VisualElement name="header-rage-container" class="logo-box-container rage-margin">
-                <ui:SkewedBoxElement name="rage-bg" skew-angle="-10" enable-fill="true" fill-color="rgb(230, 57, 70)" enable-border="false" corner-radius="8" class="logo-bg"/>
+                <ui:SkewedBoxElement name="rage-bg" skew-angle="-12" enable-fill="true" fill-color="rgb(230, 57, 70)" enable-border="false" corner-radius="8" class="logo-bg"/>
                 <Label name="rage-text" text="RAGE" class="header-text"/>
             </VisualElement>
         </VisualElement>
@@ -18,8 +18,8 @@
                     <Label name="percentage" text="0%" class="percentage"/>
                 </VisualElement>
                 <VisualElement name="progress-track" class="progress-track-container">
-                    <ui:SkewedBoxElement name="track-bg" skew-angle="-10" enable-fill="true" fill-color="rgb(17, 17, 17)" enable-border="true" border-color="rgb(51, 51, 51)" border-width="2" corner-radius="4" class="progress-track-bg"/>
-                    <ui:SkewedBoxElement name="progress-fill" skew-angle="-10" enable-fill="true" fill-color="rgb(255, 255, 255)" corner-radius="2" class="progress-fill-skewed"/>
+                    <ui:SkewedBoxElement name="track-bg" skew-angle="-12" enable-fill="true" fill-color="rgb(17, 17, 17)" enable-border="true" border-color="rgb(51, 51, 51)" border-width="2" corner-radius="4" class="progress-track-bg"/>
+                    <ui:SkewedBoxElement name="progress-fill" skew-angle="-12" enable-fill="true" fill-color="rgb(255, 255, 255)" corner-radius="2" class="progress-fill-skewed"/>
                 </VisualElement>
             </VisualElement>
             <VisualElement name="tips-area" class="tips-area">

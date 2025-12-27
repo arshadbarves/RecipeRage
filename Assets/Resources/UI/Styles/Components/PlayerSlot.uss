@@ -5,7 +5,7 @@
     align-items: center;
     margin: 0 var(--spacing-md);
     min-width: 160px;
-    -unity-font-definition: var(--font-primary);
+
 }
 
 /* Player Slot Stats (Above Character) */

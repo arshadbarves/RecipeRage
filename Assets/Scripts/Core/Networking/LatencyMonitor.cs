@@ -49,8 +49,6 @@ namespace Core.Networking
         {
             if (NetworkManager.Singleton == null) return;
             
-            GameLogger.Log("LatencyMonitor registering message handlers");
-            
             // Register handlers
             NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler(PING_MESSAGE_NAME, HandlePingServer);
             NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler(PONG_MESSAGE_NAME, HandlePongClient);
@@ -103,7 +101,6 @@ namespace Core.Networking
             if (_currentRtt > WARNING_THRESHOLD)
             {
                 GameLogger.LogWarning($"High Latency Detected: {(_currentRtt * 1000):F0}ms");
-                // TODO: Trigger UI Event for "Weak Connection" icon
             }
         }
 

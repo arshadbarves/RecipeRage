@@ -1,192 +1,64 @@
 @import url("project://database/Assets/Resources/UI/Themes/DesignSystem.uss?fileID=7433441132597879392&guid=74282f7acd0164afea4d8dc9dc05a968&type=3#DesignSystem");
 
-.character-selection-screen {
-    width: 100%;
-    height: 100%;
-    background-color: rgb(20, 20, 30);
-    flex-direction: column;
-}
 
-.character-header {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    background-color: rgba(0, 0, 0, 0.3);
-}
 
-.back-button {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.3);
-    color: white;
-    padding: 10px 20px;
-    border-radius: 8px;
-}
 
-.character-title {
-    font-size: 32px;
-    color: white;
-}
 
-.character-content {
-    flex-grow: 1;
-    flex-direction: row;
-    padding: 20px;
-}
 
-.character-grid {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: flex-start;
-    flex-grow: 1;
-    padding: 20px;
-}
 
-.character-slot {
-    margin: 15px;
-    padding: 20px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    border-width: 2px;
-    border-color: rgba(255, 255, 255, 0.2);
-    align-items: center;
-    transition-property: border-color, scale;
-    transition-duration: 0.2s;
-    cursor: link;
-    min-width: 140px;
-}
+
+
+
+
+
+
+
 
 .character-slot:hover {
     border-color: rgb(100, 150, 255);
     scale: 1.05;
 }
 
-.character-slot--selected {
-    border-color: rgb(100, 200, 255);
-    border-width: 3px;
-    background-color: rgba(100, 150, 255, 0.2);
-}
 
-.character-slot--locked {
-    opacity: 0.6;
-    border-color: rgba(255, 255, 255, 0.1);
-}
+
+
 
 .character-slot--locked:hover {
     border-color: rgb(255, 200, 100);
     opacity: 0.8;
 }
 
-.character-portrait {
-    width: 120px;
-    height: 120px;
-    background-color: rgba(255, 255, 255, 0.2);
-    border-radius: 60px;
-    margin-bottom: 15px;
-    -unity-background-scale-mode: scale-to-fit;
-}
 
-.character-lock-icon {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    -unity-text-align: middle-center;
-    font-size: 32px;
-}
 
-.character-unlock-cost {
-    font-size: 12px;
-    color: rgb(255, 200, 100);
-    margin-top: 5px;
-    -unity-text-align: middle-center;
-}
 
-.character-name {
-    font-size: 18px;
-    color: white;
-    -unity-text-align: middle-center;
-}
 
-.character-details {
-    min-width: 350px;
-    max-width: 400px;
-    padding: 25px;
-    background-color: rgba(0, 0, 0, 0.4);
-    border-radius: 12px;
-    margin-left: 20px;
-    border-width: 1px;
-    border-color: rgba(255, 255, 255, 0.1);
-}
 
-.selected-character-name {
-    font-size: 24px;
-    color: rgb(100, 200, 255);
-    margin-bottom: 15px;
-}
 
-.character-description {
-    font-size: 16px;
-    color: rgba(255, 255, 255, 0.8);
-    margin-bottom: 20px;
-    white-space: normal;
-}
 
-.character-stats {
-    flex-direction: column;
-}
 
-.stat {
-    flex-direction: row;
-    align-items: center;
-    margin-bottom: 10px;
-}
 
-.stat-label {
-    color: white;
-    font-size: 14px;
-    min-width: 80px;
-}
 
-.stat-bar {
-    flex-grow: 1;
-    height: 8px;
-    background-color: rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
-    margin-left: 10px;
-}
 
-.stat-fill {
-    height: 100%;
-    background-color: rgb(100, 200, 100);
-    border-radius: 4px;
-    width: 80%;
-}
 
-.character-footer {
-    padding: 20px;
-    justify-content: center;
-    align-items: center;
-}
 
-.select-button {
-    background-color: rgb(100, 150, 255);
-    border-color: rgb(120, 170, 255);
-    color: white;
-    padding: 15px 40px;
-    border-radius: 8px;
-    font-size: 18px;
-    cursor: link;
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 .select-button:hover {
     background-color: rgb(120, 170, 255);
     scale: 1.05;
 }
 
-.ability-section {
-    margin-top: 20px;
-    padding-top: 15px;
-    border-top-width: 1px;
-    border-top-color: rgba(255, 255, 255, 0.2);
-}
+

@@ -1,25 +1,9 @@
 /* Matchmaking Widget - PUBG/Fortnite Style */
 /* Small overlay that appears on main menu during matchmaking */
 
-.matchmaking-widget {
-    position: absolute;
-    bottom: 100px;
-    left: 50%;
-    translate: -50% 0;
-    min-width: 500px;
-    -unity-font-definition: url("project://database/Assets/Fonts/LilitaOne-Regular.ttf?fileID=12800000&guid=2309d3a0e6c55446ea2d106abff555fe&type=3#LilitaOne-Regular");
-}
 
-.widget-content {
-    background-color: rgb(245, 240, 235);
-    border-radius: 25px;
-    border-width: 6px;
-    border-color: rgb(40, 30, 25);
-    padding: 25px 35px;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-}
+
+
 
 .widget-content > * {
     margin-right: 20px;
@@ -27,23 +11,14 @@
 
 
 /* Status Section */
-.status-section {
-    flex-direction: row;
-    align-items: center;
-}
+
 
 .status-section > * {
     margin-right: 15px;
 }
 
 
-.status-dot {
-    width: 20px;
-    height: 20px;
-    border-radius: 10px;
-    border-width: 3px;
-    border-color: rgb(40, 30, 25);
-}
+
 
 .status-dot.searching {
     background-color: rgb(255, 200, 0);
@@ -54,49 +29,22 @@
     background-color: rgb(100, 200, 100);
 }
 
-.status-text {
-    font-size: 24px;
-    color: rgb(40, 30, 25);
-}
+
 
 /* Info Section */
-.info-section {
-    flex-direction: row;
-    align-items: center;
-}
+
 
 .info-section > * {
     margin-right: 20px;
 }
 
 
-.player-count-text {
-    font-size: 28px;
-    color: rgb(40, 30, 25);
-    background-color: rgba(255, 255, 255, 0.5);
-    padding: 8px 20px;
-    border-radius: 15px;
-    border-width: 3px;
-    border-color: rgba(40, 30, 25, 0.3);
-}
 
-.search-time-text {
-    font-size: 28px;
-    color: rgb(255, 140, 0);
-}
+
+
 
 /* Cancel Button */
-.cancel-button {
-    height: 55px;
-    min-width: 140px;
-    font-size: 24px;
-    background-color: rgb(255, 150, 150);
-    border-color: rgb(40, 30, 25);
-    color: rgb(40, 30, 25);
-    border-radius: 18px;
-    border-width: 5px;
-    transition-duration: 0.1s;
-}
+
 
 .cancel-button:hover {
     background-color: rgb(255, 180, 180);

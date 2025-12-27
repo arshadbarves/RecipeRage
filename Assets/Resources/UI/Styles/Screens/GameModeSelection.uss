@@ -1,53 +1,16 @@
 @import url("project://database/Assets/Resources/UI/Themes/DesignSystem.uss?fileID=7433441132597879392&guid=74282f7acd0164afea4d8dc9dc05a968&type=3#DesignSystem");
 
-.gamemode-selection-screen {
-    width: 100%;
-    height: 100%;
-    background-color: rgb(20, 20, 30);
-    flex-direction: column;
-}
 
-.gamemode-header {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    background-color: rgba(0, 0, 0, 0.3);
-}
 
-.gamemode-title {
-    font-size: 32px;
-    color: white;
-}
 
-.gamemode-content {
-    flex-grow: 1;
-    justify-content: center;
-    align-items: center;
-    padding: 40px;
-}
 
-.gamemode-grid {
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-}
 
-.gamemode-card {
-    width: 250px;
-    height: 300px;
-    margin: 20px;
-    padding: 20px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    border-width: 2px;
-    border-color: rgba(255, 255, 255, 0.2);
-    align-items: center;
-    justify-content: space-between;
-    transition-property: border-color, scale, background-color;
-    transition-duration: 0.3s;
-}
+
+
+
+
+
+
 
 .gamemode-card:hover {
     border-color: rgb(100, 150, 255);
@@ -55,41 +18,13 @@
     scale: 1.05;
 }
 
-.gamemode-icon {
-    width: 80px;
-    height: 80px;
-    background-color: rgba(255, 255, 255, 0.3);
-    border-radius: 40px;
-    margin-bottom: 20px;
-}
 
-.gamemode-name {
-    font-size: 20px;
-    color: white;
-    -unity-text-align: middle-center;
-    margin-bottom: 10px;
-}
 
-.gamemode-description {
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.7);
-    -unity-text-align: middle-center;
-    white-space: normal;
-    margin-bottom: 20px;
-    flex-grow: 1;
-}
 
-.play-gamemode-button {
-    background-color: rgb(100, 150, 255);
-    border-color: rgb(120, 170, 255);
-    color: white;
-    padding: 12px 30px;
-    border-radius: 8px;
-    font-size: 16px;
-    width: 100%;
-    transition-property: background-color, scale;
-    transition-duration: 0.2s;
-}
+
+
+
+
 
 .play-gamemode-button:hover {
     background-color: rgb(120, 170, 255);

@@ -252,13 +252,8 @@ namespace Gameplay.Scoring
                 return;
             }
 
-            GameLogger.Log("Resetting all scores");
-
             // Reset the main score
             ResetScore();
-
-            // TODO: When team or player-specific scores are implemented,
-            // reset those here as well
         }
     }
 }

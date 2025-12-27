@@ -1,3 +1,5 @@
+@import url("project://database/Assets/Resources/UI/Themes/DesignSystem.uss?fileID=7433441132597879392&guid=74282f7acd0164afea4d8dc9dc05a968&type=3#DesignSystem");
+
 .splash-screen {
     width: 100%;
     height: 100%;
@@ -21,14 +23,12 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    margin-bottom: 25px;
+    margin-bottom: var(--spacing-section);
 }
 
-/* Professional Container Sizing */
 .logo-container {
     position: relative;
-    /* This height dictates the 'short box' look professionally */
-    height: 120px;
+    height: var(--height-top-bar);
     padding-left: 50px;
     padding-right: 50px;
     justify-content: center;
@@ -36,10 +36,9 @@
 }
 
 .play-margin {
-    margin-right: 20px;
+    margin-right: var(--spacing-element);
 }
 
-/* Absolute background fills the container */
 .logo-background {
     position: absolute;
     left: 0;
@@ -48,25 +47,20 @@
     bottom: 0;
 }
 
-/* Font styling */
 .logo-text {
-    -unity-font-definition: url("project://database/Assets/Fonts/Anton-Regular%20SDF.asset?fileID=11400000&guid=aa820f8024bbb4ae08525ce0513021a5&type=2#Anton-Regular SDF");
-    -unity-font-style: normal;
     text-transform: uppercase;
-    font-size: 100px;
-    color: rgb(255, 255, 255);
+    font-size: var(--font-size-hero-xl);
+    color: var(--text-white);
     letter-spacing: 3px;
     margin: 0;
     padding: 0;
     -unity-text-align: middle-center;
 }
 
-/* Subtitle */
 .subtitle {
-    -unity-font-definition: url("project://database/Assets/Fonts/Anton-Regular%20SDF.asset?fileID=11400000&guid=aa820f8024bbb4ae08525ce0513021a5&type=2#Anton-Regular SDF");
-    font-size: 32px;
-    color: rgb(136, 136, 136);
+    font-size: var(--font-size-title-md);
+    color: var(--text-gray);
     letter-spacing: 12px;
     text-transform: uppercase;
-    margin-top: 15px;
+    margin-top: var(--spacing-item);
 }

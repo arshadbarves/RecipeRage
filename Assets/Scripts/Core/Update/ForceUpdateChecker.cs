@@ -28,8 +28,6 @@ namespace Core.Update
         {
             try
             {
-                GameLogger.Log("Checking for force update...");
-
                 // Refresh force update config to get latest data
                 await _configService.RefreshConfig<ForceUpdateConfig>();
 
@@ -44,14 +42,11 @@ namespace Core.Update
                 string platform = GetCurrentPlatform();
                 string currentVersion = Application.version;
 
-                GameLogger.Log($"Current platform: {platform}, version: {currentVersion}");
-
                 // Get platform-specific requirements
                 var requirement = updateConfig.GetRequirementForPlatform(platform);
 
                 if (requirement == null)
                 {
-                    GameLogger.Log($"No update requirements for platform: {platform}");
                     return false;
                 }
 
@@ -72,7 +67,6 @@ namespace Core.Update
                     return false;
                 }
 
-                GameLogger.Log("App version is up to date");
                 return false;
             }
             catch (Exception ex)
@@ -109,7 +103,6 @@ namespace Core.Update
                         if (!string.IsNullOrEmpty(requirement.StoreUrl))
                         {
                             // Should show a popup here
-                            // OpenStoreUrl(requirement.StoreUrl);
                         }
                     }
                 }

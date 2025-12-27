@@ -52,8 +52,6 @@ namespace UI.Screens
                 _matchmakingService.OnPlayersFound += OnPlayersFoundUpdated;
                 _matchmakingService.OnMatchFound += OnMatchFound;
             }
-
-            GameLogger.Log("Initialized");
         }
 
         protected override void OnShow()
@@ -71,13 +69,10 @@ namespace UI.Screens
                 _statusIndicator.RemoveFromClassList("found");
                 _statusIndicator.AddToClassList("searching");
             }
-
-            GameLogger.Log("Shown");
         }
 
         protected override void OnHide()
         {
-            GameLogger.Log("Hidden");
         }
 
         public override void Update(float deltaTime)
@@ -104,16 +99,12 @@ namespace UI.Screens
             {
                 _cancelButton.clicked -= OnCancelClicked;
             }
-
-            GameLogger.Log("Disposed");
         }
 
         #region Event Handlers
 
         private void OnCancelClicked()
         {
-            GameLogger.Log("Cancel button clicked");
-
             // Cancel matchmaking via service
             if (_matchmakingService != null)
             {
@@ -129,8 +120,6 @@ namespace UI.Screens
             {
                 _playerCountText.text = $"{current}/{required}";
             }
-
-            GameLogger.Log($"Players: {current}/{required}");
         }
 
         private void OnMatchFound(LobbyInfo lobbyInfo)

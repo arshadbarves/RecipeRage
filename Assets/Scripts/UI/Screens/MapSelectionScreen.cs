@@ -34,8 +34,6 @@ namespace UI.Screens
             SetupButtons();
             LoadMapDatabase();
             SubscribeToRemoteConfig();
-
-            GameLogger.Log("Initialized");
         }
 
         private void SubscribeToRemoteConfig()
@@ -45,7 +43,6 @@ namespace UI.Screens
             {
                 // Subscribe to MapConfig updates
                 remoteConfig.OnSpecificConfigUpdated += OnMapConfigUpdated;
-                GameLogger.Log("Subscribed to MapConfig updates");
             }
         }
 
@@ -54,7 +51,6 @@ namespace UI.Screens
             // Check if this is a MapConfig update
             if (configType == typeof(MapConfig))
             {
-                GameLogger.Log("MapConfig updated from RemoteConfig - refreshing UI");
                 // Refresh the UI with new map data
                 if (IsVisible)
                 {
@@ -72,7 +68,6 @@ namespace UI.Screens
             }
             else
             {
-                GameLogger.Log("MapCard template loaded successfully");
             }
         }
 
@@ -110,7 +105,6 @@ namespace UI.Screens
                         totalMaps += category.maps?.Count ?? 0;
                     }
                 }
-                GameLogger.Log($"Loaded {totalMaps} maps from {_mapDatabase.categories?.Count ?? 0} categories");
             }
             else
             {
@@ -153,8 +147,6 @@ namespace UI.Screens
                 VisualElement categoryContainer = CreateCategoryContainer(category);
                 _categoriesScroll.Add(categoryContainer);
             }
-
-            GameLogger.Log($"Populated {_mapDatabase.categories.Count} categories");
         }
 
         private VisualElement CreateCategoryContainer(MapCategory category)
@@ -349,7 +341,6 @@ namespace UI.Screens
 
         private void OnMapCardClicked(MapInfo map)
         {
-            GameLogger.Log($"Map selected: {map.name}");
 
             // Update current map in database
             _mapDatabase.currentMapId = map.id;

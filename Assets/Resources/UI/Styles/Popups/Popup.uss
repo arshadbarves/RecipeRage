@@ -1,13 +1,4 @@
-.popup-root {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    left: 0;
-    top: 0;
-    align-items: center;
-    justify-content: center;
-    display: none;
-}
+
 
 .popup-root-fullscreen {
     width: 100%;
@@ -111,39 +102,13 @@
     display: none;
 }
 
-.cost-container {
-    width: 100%;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 20px;
-    padding: 12px 20px;
-    background-color: rgb(255, 200, 60);
-    border-radius: 14px;
-    border-width: 4px;
-    border-color: rgb(40, 30, 25);
-}
 
-.cost-text {
-    font-size: 18px;
-    color: rgb(40, 30, 25);
-    margin-right: 10px;
-}
 
-.gem-icon-small {
-    width: 28px;
-    height: 28px;
-    background-color: rgb(100, 200, 255);
-    border-radius: 50%;
-    margin-right: 8px;
-    border-width: 3px;
-    border-color: rgb(40, 30, 25);
-}
 
-.cost-label {
-    font-size: 20px;
-    color: rgb(40, 30, 25);
-}
+
+
+
+
 
 .popup-button-container {
     width: 100%;

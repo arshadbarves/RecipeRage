@@ -1,50 +1,51 @@
-<UXML xmlns="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
-    <!-- Design System - Include FIRST for design tokens -->
-    <Style src="project://database/Assets/Resources/UI/Themes/DesignSystem.uss" />
-    <!-- Popup-specific styles -->
-    <Style src="project://database/Assets/Resources/UI/Styles/Popups/Friends.uss?fileID=7433441132597879392&amp;guid=2552d209e2db2440d8ca8764c5d94dd2&amp;type=3#Friends" />
-    <VisualElement name="friends-popup-root" class="popup-root">
-        <VisualElement name="popup-overlay" class="popup-overlay" />
-        <VisualElement name="popup-container" class="popup-container">
-            <VisualElement name="popup-header" class="popup-header">
-                <VisualElement class="header-left">
-                    <Label name="title-label" text="FRIENDS" class="popup-title" />
-                    <Button name="refresh-button" class="icon-button-small">
-                        <Label text="🔄" class="icon-label" />
-                    </Button>
-                </VisualElement>
-                <Button name="close-button" class="popup-close-button">
-                    <Label text="✕" class="close-icon" />
-                </Button>
-            </VisualElement>
-            <ScrollView name="popup-scroll" class="popup-scroll">
-                <VisualElement name="my-code-section" class="my-code-section">
-                    <Label text="MY FRIEND CODE" class="section-title" />
-                    <VisualElement class="code-card">
-                        <Label name="my-code-label" text="LOADING..." class="code-label" />
-                        <Button name="copy-code-button" class="btn btn-small btn-primary">
-                            <Label text="📋 COPY" />
-                        </Button>
-                    </VisualElement>
-                    <Button name="add-friend-button" class="btn btn-primary btn-full">
-                        <Label text="➕ ADD FRIEND" />
-                    </Button>
-                </VisualElement>
-                <VisualElement name="requests-section" class="friends-section">
-                    <VisualElement class="section-header-row">
-                        <Label text="📬 FRIEND REQUESTS" class="section-title" />
-                        <Label name="requests-count-label" text="0 Pending" class="count-label" />
-                    </VisualElement>
-                    <ScrollView name="requests-list" mode="Vertical" class="friends-list-scroll" />
-                </VisualElement>
-                <VisualElement name="friends-section" class="friends-section">
-                    <VisualElement class="section-header-row">
-                        <Label text="👥 MY FRIENDS" class="section-title" />
-                        <Label name="friends-count-label" text="0 Friends" class="count-label" />
-                    </VisualElement>
-                    <ScrollView name="friends-list" mode="Vertical" class="friends-list-scroll" />
-                </VisualElement>
-            </ScrollView>
-        </VisualElement>
-    </VisualElement>
-</UXML>
+<?xml version='1.0' encoding='utf-8'?>
+<ns0:UXML xmlns:ns0="UnityEngine.UIElements" editor-extension-mode="False">
+    
+    <ns0:Style src="project://database/Assets/Resources/UI/Themes/DesignSystem.uss" />
+    
+    <ns0:Style src="project://database/Assets/Resources/UI/Styles/Popups/Friends.uss?fileID=7433441132597879392&amp;guid=2552d209e2db2440d8ca8764c5d94dd2&amp;type=3#Friends" />
+    <ns0:VisualElement name="friends-popup-root" class="popup-root">
+        <ns0:VisualElement name="popup-overlay" class="popup-overlay" />
+        <ns0:VisualElement name="popup-container" class="popup-container">
+            <ns0:VisualElement name="popup-header" class="popup-header">
+                <ns0:VisualElement class="header-left">
+                    <ns0:Label name="title-label" text="FRIENDS" class="popup-title" />
+                    <ns0:Button name="refresh-button" class="icon-button-small">
+                        <ns0:Label text="🔄" class="icon-label" />
+                    </ns0:Button>
+                </ns0:VisualElement>
+                <ns0:Button name="close-button" class="popup-close-button">
+                    <ns0:Label text="✕" class="close-icon" />
+                </ns0:Button>
+            </ns0:VisualElement>
+            <ns0:ScrollView name="popup-scroll" class="popup-scroll">
+                <ns0:VisualElement name="my-code-section" class="my-code-section">
+                    <ns0:Label text="MY FRIEND CODE" class="section-title" />
+                    <ns0:VisualElement class="code-card">
+                        <ns0:Label name="my-code-label" text="LOADING..." class="code-label" />
+                        <ns0:Button name="copy-code-button">
+                            <ns0:Label text="📋 COPY" />
+                        </ns0:Button>
+                    </ns0:VisualElement>
+                    <ns0:Button name="add-friend-button">
+                        <ns0:Label text="➕ ADD FRIEND" />
+                    </ns0:Button>
+                </ns0:VisualElement>
+                <ns0:VisualElement name="requests-section" class="friends-section">
+                    <ns0:VisualElement class="section-header-row">
+                        <ns0:Label text="📬 FRIEND REQUESTS" class="section-title" />
+                        <ns0:Label name="requests-count-label" text="0 Pending" class="count-label" />
+                    </ns0:VisualElement>
+                    <ns0:ScrollView name="requests-list" mode="Vertical" class="friends-list-scroll" />
+                </ns0:VisualElement>
+                <ns0:VisualElement name="friends-section" class="friends-section">
+                    <ns0:VisualElement class="section-header-row">
+                        <ns0:Label text="👥 MY FRIENDS" class="section-title" />
+                        <ns0:Label name="friends-count-label" text="0 Friends" class="count-label" />
+                    </ns0:VisualElement>
+                    <ns0:ScrollView name="friends-list" mode="Vertical" class="friends-list-scroll" />
+                </ns0:VisualElement>
+            </ns0:ScrollView>
+        </ns0:VisualElement>
+    </ns0:VisualElement>
+</ns0:UXML>

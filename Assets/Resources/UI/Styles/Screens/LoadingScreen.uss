@@ -1,10 +1,11 @@
+@import url("../../Themes/DesignSystem.uss");
+
 .loading-screen {
     width: 100%;
     height: 100%;
     display: flex;
     flex-direction: column;
     padding-bottom: 60px;
-    -unity-font-definition: url("project://database/Assets/Fonts/Anton-Regular%20SDF.asset?fileID=11400000&guid=aa820f8024bbb4ae08525ce0513021a5&type=2#Anton-Regular SDF");
 }
 
 .header-logo {
@@ -16,15 +17,15 @@
 
 .logo-box-container {
     position: relative;
-    height: 120px;
-    padding-left: 20px;
-    padding-right: 20px;
+    height: var(--height-top-bar);
+    padding-left: var(--spacing-element);
+    padding-right: var(--spacing-element);
     justify-content: center;
     align-items: center;
 }
 
 .rage-margin {
-    margin-left: 15px;
+    margin-left: var(--spacing-item);
 }
 
 .logo-bg {
@@ -36,9 +37,8 @@
 }
 
 .header-text {
-    -unity-font-definition: url("project://database/Assets/Fonts/Anton-Regular%20SDF.asset?fileID=11400000&guid=aa820f8024bbb4ae08525ce0513021a5&type=2#Anton-Regular SDF");
-    font-size: 96px;
-    color: rgb(255, 255, 255);
+    font-size: var(--font-size-hero-lg);
+    color: var(--text-white);
     letter-spacing: 2px;
     margin: 0;
     padding: 0;
@@ -66,17 +66,15 @@
 }
 
 .status-text {
-    -unity-font-definition: url("project://database/Assets/Fonts/Anton-Regular%20SDF.asset?fileID=11400000&guid=aa820f8024bbb4ae08525ce0513021a5&type=2#Anton-Regular SDF");
-    font-size: 19px;
-    color: rgb(136, 136, 136);
+    font-size: var(--font-size-body-sm);
+    color: var(--text-gray);
     letter-spacing: 2px;
     text-transform: uppercase;
 }
 
 .percentage {
-    -unity-font-definition: url("project://database/Assets/Fonts/Anton-Regular%20SDF.asset?fileID=11400000&guid=aa820f8024bbb4ae08525ce0513021a5&type=2#Anton-Regular SDF");
-    font-size: 48px;
-    color: rgb(230, 57, 70);
+    font-size: var(--font-size-hero-sm);
+    color: var(--theme-red);
     margin: 0;
     padding: 0;
     margin-bottom: -5px;
@@ -84,7 +82,7 @@
 
 .progress-track-container {
     width: 100%;
-    height: 30px;
+    height: var(--height-progress);
     position: relative;
     margin-top: 4px;
 }
@@ -106,7 +104,7 @@
 }
 
 .tips-area {
-    margin-top: 15px;
+    margin-top: var(--spacing-item);
     flex-direction: row;
     justify-content: center;
     align-items: center;
@@ -114,25 +112,23 @@
 }
 
 .tip-title {
-    -unity-font-definition: url("project://database/Assets/Fonts/Anton-Regular%20SDF.asset?fileID=11400000&guid=aa820f8024bbb4ae08525ce0513021a5&type=2#Anton-Regular SDF");
-    color: rgb(230, 57, 70);
-    font-size: 14px;
+    color: var(--theme-red);
+    font-size: var(--font-size-caption-md);
     letter-spacing: 1px;
     margin-right: 8px;
-    -unity-font-style: bold;
 }
 
 .tip-text {
-    font-size: 14px;
-    color: rgb(102, 102, 102);
+    font-size: var(--font-size-caption-md);
+    color: var(--border-dark-light);
     white-space: normal;
     -unity-text-align: middle-left;
 }
 
 .version-info {
     position: absolute;
-    bottom: 10px;
-    right: 10px;
-    font-size: 10px;
-    color: rgba(255, 255, 255, 0.3);
+    bottom: var(--spacing-tight);
+    right: var(--spacing-tight);
+    font-size: var(--font-size-caption-xs);
+    color: var(--text-white-dim);
 }

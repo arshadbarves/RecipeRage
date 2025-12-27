@@ -1,16 +1,17 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+<?xml version='1.0' encoding='utf-8'?>
+<ns0:UXML xmlns:ns0="UnityEngine.UIElements" editor-extension-mode="False">
     <Style src="project://database/Assets/Resources/UI/MatchmakingWidget.uss?fileID=7433441132597879392&amp;guid=6de8786b1049f45ef9635e18e9300857&amp;type=3#MatchmakingWidget" />
-    <ui:VisualElement name="matchmaking-widget" class="matchmaking-widget" style="display: none;">
-        <ui:VisualElement name="widget-content" class="widget-content">
-            <ui:VisualElement name="status-section" class="status-section">
-                <ui:VisualElement name="status-indicator" class="status-dot searching" />
-                <ui:Label name="status-text" text="Searching for players..." class="status-text" />
-            </ui:VisualElement>
-            <ui:VisualElement name="info-section" class="info-section">
-                <ui:Label name="player-count" text="1/4" class="player-count-text" />
-                <ui:Label name="search-time" text="0:00" class="search-time-text" />
-            </ui:VisualElement>
-            <ui:Button name="cancel-button" text="CANCEL" class="cancel-button" />
-        </ui:VisualElement>
-    </ui:VisualElement>
-</ui:UXML>
+    <ns0:VisualElement name="matchmaking-widget" style="display: none;">
+        <ns0:VisualElement name="widget-content">
+            <ns0:VisualElement name="status-section">
+                <ns0:VisualElement name="status-indicator" />
+                <ns0:Label name="status-text" text="Searching for players..." />
+            </ns0:VisualElement>
+            <ns0:VisualElement name="info-section">
+                <ns0:Label name="player-count" text="1/4" />
+                <ns0:Label name="search-time" text="0:00" />
+            </ns0:VisualElement>
+            <ns0:Button name="cancel-button" text="CANCEL" />
+        </ns0:VisualElement>
+    </ns0:VisualElement>
+</ns0:UXML>

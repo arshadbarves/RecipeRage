@@ -148,8 +148,6 @@ namespace Core.Characters
                 return false;
             }
             
-            GameLogger.Log($"Activating ability: {AbilityType}");
-            
             // Start cooldown
             CooldownTimer = Cooldown;
             OnAbilityCooldownStarted?.Invoke(this, Cooldown);
@@ -175,8 +173,6 @@ namespace Core.Characters
             {
                 return;
             }
-            
-            GameLogger.Log($"Deactivating ability: {AbilityType}");
             
             // Reset duration timer
             DurationTimer = 0f;
@@ -337,116 +333,63 @@ namespace Core.Characters
         }
     }
     
-    /// <summary>
-    /// Freeze time ability.
-    /// </summary>
     public class FreezeTimeAbility : CharacterAbility
     {
         public override bool Activate()
         {
-            if (!base.Activate())
-            {
-                return false;
-            }
-            
+            if (!base.Activate()) return false;
             // TODO: Implement freeze time logic
-            // This would require integration with a game time manager
-            
             return true;
         }
         
         public override void Deactivate()
         {
-            if (!IsActive)
-            {
-                return;
-            }
-            
+            if (!IsActive) return;
             // TODO: Implement unfreeze time logic
-            
             base.Deactivate();
         }
     }
     
-    /// <summary>
-    /// Double ingredients ability.
-    /// </summary>
     public class DoubleIngredientsAbility : CharacterAbility
     {
         public override bool Activate()
         {
-            if (!base.Activate())
-            {
-                return false;
-            }
-            
+            if (!base.Activate()) return false;
             // TODO: Implement double ingredients logic
-            // This would require integration with the ingredient system
-            
             return true;
         }
     }
     
-    /// <summary>
-    /// Instant cook ability.
-    /// </summary>
     public class InstantCookAbility : CharacterAbility
     {
         public override bool Activate()
         {
-            if (!base.Activate())
-            {
-                return false;
-            }
-            
+            if (!base.Activate()) return false;
             // TODO: Implement instant cook logic
-            // This would require integration with the cooking station
-            
             return true;
         }
     }
     
-    /// <summary>
-    /// Instant chop ability.
-    /// </summary>
     public class InstantChopAbility : CharacterAbility
     {
         public override bool Activate()
         {
-            if (!base.Activate())
-            {
-                return false;
-            }
-            
+            if (!base.Activate()) return false;
             // TODO: Implement instant chop logic
-            // This would require integration with the cutting station
-            
             return true;
         }
     }
     
-    /// <summary>
-    /// Teleport to station ability.
-    /// </summary>
     public class TeleportToStationAbility : CharacterAbility
     {
         public override bool Activate()
         {
-            if (!base.Activate())
-            {
-                return false;
-            }
-            
+            if (!base.Activate()) return false;
             // TODO: Implement teleport to station logic
-            // This would require integration with the station system
-            
             return true;
         }
     }
     
-    /// <summary>
-    /// Push other players ability.
-    /// </summary>
     public class PushOtherPlayersAbility : CharacterAbility
     {
         private float _pushForce = 5f;
@@ -455,8 +398,6 @@ namespace Core.Characters
         public override void Initialize(CharacterClass characterClass, PlayerController playerController)
         {
             base.Initialize(characterClass, playerController);
-            
-            // Parse parameters
             if (!string.IsNullOrEmpty(characterClass.PrimaryAbilityParameters))
             {
                 try
@@ -468,36 +409,20 @@ namespace Core.Characters
                         _pushRadius = parameters.PushRadius;
                     }
                 }
-                catch (Exception e)
-                {
-                    GameLogger.LogError($"Failed to parse parameters: {e.Message}");
-                }
+                catch (Exception e) { GameLogger.LogError($"Failed to parse push parameters: {e.Message}"); }
             }
         }
         
         public override bool Activate()
         {
-            if (!base.Activate())
-            {
-                return false;
-            }
-            
+            if (!base.Activate()) return false;
             // TODO: Implement push other players logic
-            // This would require integration with the player physics system
-            
             return true;
         }
         
-        private class PushParameters
-        {
-            public float PushForce { get; set; } = 5f;
-            public float PushRadius { get; set; } = 3f;
-        }
+        private class PushParameters { public float PushForce { get; set; } = 5f; public float PushRadius { get; set; } = 3f; }
     }
     
-    /// <summary>
-    /// Steal ingredient ability.
-    /// </summary>
     public class StealIngredientAbility : CharacterAbility
     {
         private float _stealRadius = 2f;
@@ -505,97 +430,54 @@ namespace Core.Characters
         public override void Initialize(CharacterClass characterClass, PlayerController playerController)
         {
             base.Initialize(characterClass, playerController);
-            
-            // Parse parameters
             if (!string.IsNullOrEmpty(characterClass.PrimaryAbilityParameters))
             {
                 try
                 {
                     StealParameters parameters = JsonConvert.DeserializeObject<StealParameters>(characterClass.PrimaryAbilityParameters);
-                    if (parameters != null)
-                    {
-                        _stealRadius = parameters.StealRadius;
-                    }
+                    if (parameters != null) _stealRadius = parameters.StealRadius;
                 }
-                catch (Exception e)
-                {
-                    GameLogger.LogError($"Failed to parse parameters: {e.Message}");
-                }
+                catch (Exception e) { GameLogger.LogError($"Failed to parse steal parameters: {e.Message}"); }
             }
         }
         
         public override bool Activate()
         {
-            if (!base.Activate())
-            {
-                return false;
-            }
-            
+            if (!base.Activate()) return false;
             // TODO: Implement steal ingredient logic
-            // This would require integration with the ingredient system
-            
             return true;
         }
         
-        private class StealParameters
-        {
-            public float StealRadius { get; set; } = 2f;
-        }
+        private class StealParameters { public float StealRadius { get; set; } = 2f; }
     }
     
-    /// <summary>
-    /// Prevent burning ability.
-    /// </summary>
     public class PreventBurningAbility : CharacterAbility
     {
         public override bool Activate()
         {
-            if (!base.Activate())
-            {
-                return false;
-            }
-            
+            if (!base.Activate()) return false;
             // TODO: Implement prevent burning logic
-            // This would require integration with the cooking system
-            
             return true;
         }
         
         public override void Deactivate()
         {
-            if (!IsActive)
-            {
-                return;
-            }
-            
+            if (!IsActive) return;
             // TODO: Implement restore burning logic
-            
             base.Deactivate();
         }
     }
-    
-    /// <summary>
-    /// Auto plate ability.
-    /// </summary>
+
     public class AutoPlateAbility : CharacterAbility
     {
         public override bool Activate()
         {
-            if (!base.Activate())
-            {
-                return false;
-            }
-            
+            if (!base.Activate()) return false;
             // TODO: Implement auto plate logic
-            // This would require integration with the plating system
-            
             return true;
         }
     }
     
-    /// <summary>
-    /// Ingredient magnet ability.
-    /// </summary>
     public class IngredientMagnetAbility : CharacterAbility
     {
         private float _magnetRadius = 5f;
@@ -604,8 +486,6 @@ namespace Core.Characters
         public override void Initialize(CharacterClass characterClass, PlayerController playerController)
         {
             base.Initialize(characterClass, playerController);
-            
-            // Parse parameters
             if (!string.IsNullOrEmpty(characterClass.PrimaryAbilityParameters))
             {
                 try
@@ -617,42 +497,24 @@ namespace Core.Characters
                         _magnetForce = parameters.MagnetForce;
                     }
                 }
-                catch (Exception e)
-                {
-                    GameLogger.LogError($"Failed to parse parameters: {e.Message}");
-                }
+                catch (Exception e) { GameLogger.LogError($"Failed to parse magnet parameters: {e.Message}"); }
             }
         }
         
         public override bool Activate()
         {
-            if (!base.Activate())
-            {
-                return false;
-            }
-            
+            if (!base.Activate()) return false;
             // TODO: Implement ingredient magnet logic
-            // This would require integration with the ingredient physics system
-            
             return true;
         }
         
         public override void Deactivate()
         {
-            if (!IsActive)
-            {
-                return;
-            }
-            
+            if (!IsActive) return;
             // TODO: Implement disable magnet logic
-            
             base.Deactivate();
         }
         
-        private class MagnetParameters
-        {
-            public float MagnetRadius { get; set; } = 5f;
-            public float MagnetForce { get; set; } = 10f;
-        }
+        private class MagnetParameters { public float MagnetRadius { get; set; } = 5f; public float MagnetForce { get; set; } = 10f; }
     }
 }

@@ -1,52 +1,76 @@
-<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd" editor-extension-mode="False">
+<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" xmlns:ui="UI.Controls" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd" editor-extension-mode="False">
     <Template name="CharacterTabTemplate" src="project://database/Assets/Resources/UI/Templates/Screens/CharacterTabTemplate.uxml?fileID=9197481963319205126&amp;guid=ac8e05f0b8d6c4ef79f194a1f70828d2&amp;type=3#CharacterTabTemplate"/>
     <Template name="LobbyTemplate" src="project://database/Assets/Resources/UI/Templates/Screens/LobbyTemplate.uxml?fileID=9197481963319205126&amp;guid=3da2194908d8a4d65b7a6a67f37ee6f6&amp;type=3#LobbyTemplate"/>
     <Template name="SettingsTemplate" src="project://database/Assets/Resources/UI/Templates/Screens/SettingsTemplate.uxml?fileID=9197481963319205126&amp;guid=2cd1b3db03fd841fa89c38e06c5d5b88&amp;type=3#SettingsTemplate"/>
     <Template name="ShopTemplate" src="project://database/Assets/Resources/UI/Templates/Screens/ShopTemplate.uxml?fileID=9197481963319205126&amp;guid=0824e79abae0447b990331c5e433d706&amp;type=3#ShopTemplate"/>
     <Style src="project://database/Assets/Resources/UI/Styles/Screens/MainMenu.uss?fileID=7433441132597879392&amp;guid=15bb364f81be046f5a66a2cf721fada9&amp;type=3#MainMenu"/>
+    <Style src="project://database/Assets/Resources/UI/Styles/Screens/Lobby.uss?fileID=7433441132597879392&amp;guid=0dc93b02b55854976be67fbd874f44ac&amp;type=3#Lobby"/>
     <Style src="project://database/Assets/Resources/UI/Styles/Screens/Settings.uss?fileID=7433441132597879392&amp;guid=ce13c355a0e3346d586ee254f45c6391&amp;type=3#Settings"/>
     <Style src="project://database/Assets/Resources/UI/Styles/Screens/Shop.uss?fileID=7433441132597879392&amp;guid=4e442d0be92504d63986397556b8d066&amp;type=3#Shop"/>
     <Style src="project://database/Assets/Resources/UI/Styles/Components/CharacterTab.uss?fileID=7433441132597879392&amp;guid=aa9123e71487e4e7788a3c50b3c86c73&amp;type=3#CharacterTab"/>
     <VisualElement name="main-menu-root" class="main-menu-root">
-        <VisualElement name="top-bar" class="top-bar header">
-            <Button name="player-card-button" class="player-card">
-                <VisualElement name="star-icon" class="star-icon"/>
-                <VisualElement name="player-info" class="player-info">
-                    <Label name="player-title" text="Guest Player" class="player-title"/>
-                    <Label name="player-number" text="#675" class="player-number"/>
-                </VisualElement>
-            </Button>
-            <VisualElement name="currency-container" class="currency-container">
-                <VisualElement name="coins-display" class="currency-display">
-                    <VisualElement name="coin-icon" class="currency-icon coin-icon"/>
-                    <Label name="coins-amount" text="1,250" class="currency-amount"/>
-                    <Button name="add-coins-button" class="add-currency-button">
-                        <Label text="+" class="add-button-text"/>
-                    </Button>
-                </VisualElement>
-                <VisualElement name="gems-display" class="currency-display">
-                    <VisualElement name="gem-icon" class="currency-icon gem-icon"/>
-                    <Label name="gems-amount" text="85" class="currency-amount"/>
-                    <Button name="add-gems-button" class="add-currency-button">
-                        <Label text="+" class="add-button-text"/>
-                    </Button>
-                </VisualElement>
+        <!-- TOP BAR -->
+        <VisualElement name="top-bar" class="top-bar">
+            <!-- Left Group (Profile) -->
+            <VisualElement name="top-left-group" class="top-left-group">
+                <Button name="profile-button" class="btn-wrapper">
+                    <ui:SkewedBoxElement name="profile-btn" skew-angle="-12" enable-fill="true" fill-color="white" enable-border="false" class="profile-btn skew-button" picking-mode="Ignore">
+                        <VisualElement name="avatar-frame" class="avatar-frame">
+                            <VisualElement name="avatar-img" class="avatar-img" />
+                        </VisualElement>
+                        <VisualElement name="profile-info" class="profile-info">
+                            <Label name="player-name" text="STRYKER" class="player-name" />
+                            <Label name="player-lvl" text="LVL. 54" class="player-lvl anton" />
+                        </VisualElement>
+                    </ui:SkewedBoxElement>
+                </Button>
+            </VisualElement>
+            
+            <!-- Currency & System Icons (Right Side) -->
+            <VisualElement name="top-right-group" class="top-right-group">
+                <ui:SkewedBoxElement name="currency-pill-coins" skew-angle="-12" enable-fill="true" fill-color="rgb(0, 0, 0)" enable-border="true" border-color="rgb(51, 51, 51)" border-width="1" class="currency-pill">
+                    <VisualElement name="coin-icon" class="coin-icon-small" />
+                    <Label name="coins-amount" text="24,000" class="coin-val" />
+                </ui:SkewedBoxElement>
+                <ui:SkewedBoxElement name="currency-pill-gems" skew-angle="-12" enable-fill="true" fill-color="rgb(0, 0, 0)" enable-border="true" border-color="rgb(51, 51, 51)" border-width="1" class="currency-pill">
+                    <VisualElement name="gem-icon" class="gem-icon-small" />
+                    <Label name="gems-amount" text="1,250" class="coin-val" />
+                </ui:SkewedBoxElement>
+                <Button name="leaderboard-button" class="btn-wrapper">
+                    <ui:SkewedBoxElement name="sys-icon-leaderboard" skew-angle="-12" enable-fill="true" fill-color="rgba(255, 255, 255, 0.05)" enable-border="true" border-color="rgba(255, 255, 255, 0.15)" border-width="1" class="sys-icon-btn skew-button" picking-mode="Ignore">
+                        <VisualElement name="leaderboard-icon" class="sys-icon leaderboard-icon" />
+                    </ui:SkewedBoxElement>
+                </Button>
+                <Button name="friends-button" class="btn-wrapper">
+                    <ui:SkewedBoxElement name="sys-icon-friends" skew-angle="-12" enable-fill="true" fill-color="rgba(255, 255, 255, 0.05)" enable-border="true" border-color="rgba(255, 255, 255, 0.15)" border-width="1" class="sys-icon-btn skew-button" picking-mode="Ignore">
+                        <VisualElement name="friends-icon" class="sys-icon friends-icon" />
+                        <VisualElement name="notif-dot" class="notif-dot" />
+                    </ui:SkewedBoxElement>
+                </Button>
+                <Button name="settings-button" class="btn-wrapper">
+                    <ui:SkewedBoxElement name="sys-icon-settings" skew-angle="-12" enable-fill="true" fill-color="rgba(255, 255, 255, 0.05)" enable-border="true" border-color="rgba(255, 255, 255, 0.15)" border-width="1" class="sys-icon-btn skew-button" picking-mode="Ignore">
+                        <VisualElement name="settings-icon" class="sys-icon settings-icon" />
+                    </ui:SkewedBoxElement>
+                </Button>
             </VisualElement>
         </VisualElement>
-        <TabView name="main-tabs" class="main-tabs">
-            <Tab name="chef-tab" icon-image="project://database/Assets/Textures/Icons/Badges/icons8-home-96.png?fileID=2800000&amp;guid=2be65e77c79024ee1a42cef702ecd4bc&amp;type=3#icons8-home-96" class="chef-tab">
-                <Instance template="LobbyTemplate" name="TemplateContainer" style="flex-grow: 1;"/>
+
+        <!-- Tab View for Navigation -->
+        <TabView name="main-tabs" class="main-tabs" picking-mode="Ignore">
+            <Tab name="tab-lobby" label="LOBBY" class="main-tab home-tab" icon="project://database/Assets/UI/Icons/house.png">
+                <Instance template="LobbyTemplate" name="lobby-content" style="flex-grow: 1; width: 100%; height: 100%;"/>
             </Tab>
-            <Tab name="character-tab" icon-image="project://database/Assets/Textures/Icons/Badges/icons8-home-96.png?fileID=2800000&amp;guid=2be65e77c79024ee1a42cef702ecd4bc&amp;type=3#icons8-home-96" class="chef-tab">
-                <Instance template="CharacterTabTemplate" style="flex-grow: 1;"/>
+            <Tab name="tab-shop" label="SHOP" class="main-tab shop-tab" icon="project://database/Assets/UI/Icons/cart-shopping.png">
+                <Instance template="ShopTemplate" name="shop-content" style="flex-grow: 1; width: 100%; height: 100%;"/>
             </Tab>
-            <Tab name="shop-tab" icon-image="project://database/Assets/Textures/Icons/Badges/icons8-shop-96.png?fileID=2800000&amp;guid=8bddd360023be43369db1644138f5fdb&amp;type=3#icons8-shop-96">
-                <Instance template="ShopTemplate" style="flex-grow: 1;"/>
+            <Tab name="tab-inventory" label="INVENTORY" class="main-tab inventory-tab" icon="project://database/Assets/UI/Icons/shirt.png">
+                <Instance template="CharacterTabTemplate" name="character-content" style="flex-grow: 1; width: 100%; height: 100%;"/>
             </Tab>
-            <Tab name="settings-tab" icon-image="project://database/Assets/Textures/Icons/Badges/icons8-settings-96.png?fileID=2800000&amp;guid=f3f55e28fe7084597817e02bc52799e0&amp;type=3#icons8-settings-96">
-                <Instance template="SettingsTemplate" style="flex-grow: 1;"/>
+            <Tab name="tab-missions" label="MISSIONS" class="main-tab missions-tab" icon="project://database/Assets/UI/Icons/crosshairs.png">
+                <VisualElement name="missions-root" style="flex-grow: 1; align-items: center; justify-content: center; width: 100%; height: 100%;">
+                    <Label text="MISSIONS COMING SOON" style="color: white; font-size: 40px; -unity-font-style: bold;"/>
+                </VisualElement>
             </Tab>
         </TabView>
-        <VisualElement name="bottom-bar" class="header bottom-background-bar"/>
     </VisualElement>
 </UXML>

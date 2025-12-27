@@ -1,156 +1,41 @@
 @import url("../../Themes/DesignSystem.uss");
 
-.maintenance-screen {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    flex-direction: column;
-    -unity-font-definition: url("project://database/Assets/Fonts/BlackHanSans-Regular.ttf?fileID=12800000&guid=728719a2ad09249de8ea4878b88d19cf&type=3#BlackHanSans-Regular");
-}
 
-.background {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    -unity-background-scale-mode: scale-and-crop;
-    background-image: url("project://database/Assets/Textures/Arts/bg-4.png?fileID=2800000&guid=c8ac88b81256647b3b39ad75f7081306&type=3#bg-4");
-}
+
+
 
 /* Header Bar */
-.header-bar {
-    width: 100%;
-    height: 80px;
-    background-color: rgb(66, 135, 245);
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 30px;
-    border-bottom-width: 4px;
-    border-bottom-color: rgb(50, 100, 200);
-}
 
-.title-section {
-    flex-direction: row;
-    align-items: center;
-}
 
-.wrench-icon-small {
-    width: 40px;
-    height: 40px;
-    background-color: rgb(255, 200, 80);
-    border-radius: 50%;
-    margin-right: 15px;
-    border-width: 3px;
-    border-color: rgb(255, 255, 255);
-}
 
-.header-title {
-    font-size: 32px;
-    color: rgb(255, 255, 255);
-    letter-spacing: 1px;
-    -unity-text-outline-width: 2px;
-    -unity-text-outline-color: rgba(0, 0, 0, 0.8);
-    margin-right: 12px;
-}
 
-.info-icon {
-    width: 35px;
-    height: 35px;
-    background-color: rgb(255, 200, 80);
-    border-radius: 50%;
-    border-width: 2px;
-    border-color: rgb(255, 255, 255);
-}
 
-.time-section {
-    background-color: rgb(50, 100, 200);
-    padding: 12px 25px;
-    border-radius: 20px;
-    align-items: center;
-}
 
-.time-label {
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.8);
-    margin-bottom: 3px;
-}
 
-.time-value {
-    font-size: 28px;
-    color: rgb(255, 255, 255);
-    letter-spacing: 1px;
-    -unity-text-outline-width: 1px;
-    -unity-text-outline-color: rgba(0, 0, 0, 0.6);
-}
+
+
+
+
+
+
+
+
 
 /* Content Area */
-.content-area {
-    flex-grow: 1;
-    flex-direction: row;
-    padding: 20px;
-}
+
 
 /* Left Panel - Featured */
-.left-panel {
-    width: 45%;
-    margin-right: 15px;
-    flex-direction: column;
-}
 
-.featured-image {
-    flex-grow: 1;
-    background-color: rgb(220, 50, 90);
-    border-radius: 15px;
-    padding: 30px;
-    align-items: center;
-    justify-content: center;
-    border-width: 4px;
-    border-color: rgb(180, 30, 70);
-    margin-bottom: 15px;
-    background-image: url("project://database/Assets/Textures/Arts/bg-4.png?fileID=2800000&guid=c8ac88b81256647b3b39ad75f7081306&type=3#bg-4");
-    -unity-background-scale-mode: scale-and-crop;
-}
 
-.game-logo {
-    font-size: 48px;
-    color: rgb(255, 255, 255);
-    letter-spacing: 3px;
-    -unity-text-outline-width: 3px;
-    -unity-text-outline-color: rgb(0, 0, 0);
-    text-shadow: 3px 4px 0 rgba(0, 0, 0, 0.8);
-    margin-bottom: 20px;
-}
 
-.featured-character {
-    width: 200px;
-    height: 200px;
-    background-color: rgba(0, 0, 0, 0.3);
-    border-radius: 20px;
-    margin-bottom: 20px;
-}
 
-.featured-text {
-    font-size: 36px;
-    color: rgb(255, 255, 255);
-    letter-spacing: 2px;
-    -unity-text-outline-width: 2px;
-    -unity-text-outline-color: rgb(0, 0, 0);
-    text-shadow: 2px 3px 0 rgba(0, 0, 0, 0.7);
-}
 
-.social-button {
-    width: 100%;
-    height: 60px;
-    background-color: rgb(66, 135, 245);
-    border-radius: 15px;
-    border-width: 0;
-    margin-bottom: 15px;
-    align-items: center;
-    justify-content: center;
-    cursor: link;
-    transition-property: scale;
-    transition-duration: 0.15s;
-}
+
+
+
+
+
+
 
 .social-button:hover {
     scale: 1.05;
@@ -161,29 +46,11 @@
     scale: 0.95;
 }
 
-.social-button-text {
-    font-size: 24px;
-    color: rgb(255, 255, 255);
-    letter-spacing: 2px;
-    -unity-text-outline-width: 1px;
-    -unity-text-outline-color: rgba(0, 0, 0, 0.6);
-}
 
-.social-links {
-    flex-direction: row;
-    justify-content: space-around;
-    padding: 10px 0;
-}
 
-.social-icon {
-    width: 55px;
-    height: 55px;
-    border-radius: 50%;
-    border-width: 0;
-    cursor: link;
-    transition-property: scale;
-    transition-duration: 0.1s;
-}
+
+
+
 
 .social-icon:hover {
     scale: 1.15;
@@ -193,143 +60,46 @@
     scale: 0.9;
 }
 
-.twitter-icon {
-    background-color: rgb(29, 161, 242);
-}
 
-.facebook-icon {
-    background-color: rgb(66, 103, 178);
-}
 
-.discord-icon {
-    background-color: rgb(114, 137, 218);
-}
 
-.youtube-icon {
-    background-color: rgb(255, 0, 0);
-}
+
+
+
+
 
 /* Right Panel - News */
-.right-panel {
-    flex-grow: 1;
-    flex-direction: column;
-}
 
-.news-card {
-    background-color: rgb(255, 255, 255);
-    border-radius: 15px;
-    overflow: hidden;
-    margin-bottom: 15px;
-    flex-direction: row;
-    height: 120px;
-}
 
-.news-image {
-    width: 150px;
-    background-color: rgb(100, 200, 250);
-    background-image: url("project://database/Assets/Textures/Arts/bg-4.png?fileID=2800000&guid=c8ac88b81256647b3b39ad75f7081306&type=3#bg-4");
-    -unity-background-scale-mode: scale-and-crop;
-}
 
-.news-content {
-    flex-grow: 1;
-    padding: 15px 20px;
-    justify-content: center;
-}
 
-.news-timestamp {
-    font-size: 12px;
-    color: rgb(100, 100, 100);
-    margin-bottom: 8px;
-    letter-spacing: 0.5px;
-}
 
-.news-title {
-    font-size: 20px;
-    color: rgb(0, 0, 0);
-    letter-spacing: 0.5px;
-}
 
-.patch-card {
-    background-color: rgba(255, 255, 255, 0.95);
-    border-radius: 15px;
-    overflow: hidden;
-    margin-bottom: 15px;
-    flex-grow: 1;
-    flex-direction: column;
-}
 
-.patch-image {
-    width: 100%;
-    height: 150px;
-    background-color: rgb(150, 100, 250);
-    background-image: url("project://database/Assets/Textures/Arts/bg-4.png?fileID=2800000&guid=c8ac88b81256647b3b39ad75f7081306&type=3#bg-4");
-    -unity-background-scale-mode: scale-and-crop;
-}
 
-.patch-content {
-    flex-grow: 1;
-    padding: 20px;
-}
 
-.patch-header {
-    font-size: 22px;
-    color: rgb(0, 0, 0);
-    margin-bottom: 12px;
-    letter-spacing: 1px;
-}
 
-.patch-notes-scroll {
-    flex-grow: 1;
-}
 
-.patch-notes-text {
-    font-size: 16px;
-    color: rgb(50, 50, 50);
-    white-space: normal;
-    line-height: 24px;
-}
 
-.countdown-container {
-    background-color: rgba(255, 107, 53, 0.2);
-    border-radius: 15px;
-    padding: 15px 20px;
-    margin-bottom: 15px;
-    flex-direction: row;
-    align-items: center;
-    border-width: 2px;
-    border-color: rgb(255, 107, 53);
-}
 
-.countdown-icon {
-    width: 35px;
-    height: 35px;
-    background-color: rgb(255, 107, 53);
-    border-radius: 50%;
-    margin-right: 15px;
-}
 
-.countdown-label {
-    font-size: 18px;
-    color: rgb(255, 255, 255);
-    letter-spacing: 0.5px;
-    -unity-text-outline-width: 1px;
-    -unity-text-outline-color: rgba(0, 0, 0, 0.6);
-}
 
-.retry-button {
-    width: 100%;
-    height: 60px;
-    background-color: rgb(66, 200, 100);
-    border-radius: 15px;
-    border-width: 0;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    cursor: link;
-    transition-property: scale;
-    transition-duration: 0.15s;
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 .retry-button:hover {
     scale: 1.05;
@@ -346,32 +116,11 @@
     scale: 1;
 }
 
-.btn-icon-retry {
-    width: 28px;
-    height: 28px;
-    background-color: rgb(255, 255, 255);
-    border-radius: 50%;
-    margin-right: 12px;
-}
 
-.btn-label {
-    font-size: 22px;
-    color: rgb(255, 255, 255);
-    letter-spacing: 2px;
-    -unity-text-outline-width: 1px;
-    -unity-text-outline-color: rgba(0, 0, 0, 0.6);
-}
+
+
 
 /* Footer */
-.footer {
-    width: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
-    padding: 15px 30px;
-    align-items: center;
-}
 
-.footer-text {
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.7);
-    letter-spacing: 0.5px;
-}
+
+

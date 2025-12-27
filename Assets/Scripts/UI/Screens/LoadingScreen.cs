@@ -52,12 +52,10 @@ namespace UI.Screens
         protected override void OnInitialize()
         {
             CacheUIElements();
-            // InitializeShader(); // Moved to manual setup
 
             SetRandomTip();
             SetVersionInfo();
             ApplyProceduralGraphics();
-            GameLogger.Log("Initialized");
         }
 
         protected override void OnShow()

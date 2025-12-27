@@ -94,24 +94,107 @@
     --transition-fast: 0.1s;
     --transition-normal: 0.15s;
     --transition-slow: 0.25s;
+
+    /* ============================================
+       DARK THEME (Fortnite/Lobby Style)
+       ============================================ */
+
+    /* Theme Accent Colors */
+    --theme-red: #E63946;
+    --theme-yellow: #FFD700;
+    --theme-amber: #FFAA00;
+
+    /* Glass Effects */
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.15);
+    --glass-bg-hover: rgba(255, 255, 255, 0.1);
+
+    /* Dark Backgrounds */
+    --bg-dark: #050505;
+    --bg-dark-secondary: rgb(26, 31, 44);
+    --bg-panel: rgba(20, 20, 20, 0.8);
+    --bg-panel-solid: rgb(30, 30, 30);
+
+    /* Dark Theme Text */
+    --text-white: rgb(255, 255, 255);
+    --text-white-muted: rgba(255, 255, 255, 0.6);
+    --text-white-dim: rgba(255, 255, 255, 0.4);
+    --text-gray: rgb(136, 136, 136);
+
+    /* Dark Theme Borders */
+    --border-dark: rgb(51, 51, 51);
+    --border-dark-light: rgb(68, 68, 68);
+    --border-dark-strong: rgb(85, 85, 85);
+
+    /* Typography - Large UI Sizes */
+    --font-size-hero-xl: 100px;
+    --font-size-hero-lg: 96px;
+    --font-size-hero-md: 72px;
+    --font-size-hero-sm: 48px;
+    --font-size-title-xl: 42px;
+    --font-size-title-lg: 36px;
+    --font-size-title-md: 32px;
+    --font-size-title-sm: 28px;
+    --font-size-body-xl: 24px;
+    --font-size-body-lg: 22px;
+    --font-size-body-md: 20px;
+    --font-size-body-sm: 18px;
+    --font-size-caption-lg: 16px;
+    --font-size-caption-md: 14px;
+    --font-size-caption-sm: 12px;
+    --font-size-caption-xs: 10px;
+
+    /* Component Heights */
+    --height-top-bar: 120px;
+    --height-button-xxl: 120px;
+    --height-button-xl: 100px;
+    --height-button-lg: 80px;
+    --height-button-md: 60px;
+    --height-button-sm: 40px;
+    --height-icon-xl: 70px;
+    --height-icon-lg: 60px;
+    --height-icon-md: 50px;
+    --height-icon-sm: 36px;
+    --height-progress: 30px;
+
+    /* Icon Sizes */
+    --icon-size-xl: 40px;
+    --icon-size-lg: 36px;
+    --icon-size-md: 32px;
+    --icon-size-sm: 28px;
+    --icon-size-xs: 24px;
+    --icon-size-xxs: 20px;
+
+    /* Panel Widths */
+    --panel-width-lg: 400px;
+    --panel-width-md: 350px;
+    --panel-width-sm: 280px;
+
+    /* Spacing - Large */
+    --spacing-panel: 40px;
+    --spacing-section: 25px;
+    --spacing-element: 20px;
+    --spacing-item: 15px;
+    --spacing-tight: 10px;
+
+    /* Anton Font (SDF for better rendering) */
+    --font-anton-sdf: url("project://database/Assets/Fonts/Anton-Regular%20SDF.asset?fileID=11400000&guid=aa820f8024bbb4ae08525ce0513021a5&type=2#Anton-Regular SDF");
 }
 
 /* ============================================
    BASE STYLES
    ============================================ */
-.screen-root {
-    width: 100%;
-    height: 100%;
-    flex-direction: column;
-    -unity-font-definition: var(--font-primary);
+/* Global Typography Application */
+Label,
+Button,
+TextField,
+.unity-text-element {
+    -unity-font-definition: var(--font-anton-sdf);
 }
 
-.background-gradient {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-color: var(--color-background-primary);
-}
+
+
+
 
 .header {
     flex-direction: row;
@@ -210,28 +293,14 @@
    ============================================ */
 
 /* Standard Card */
-.card {
-    background-color: var(--color-card-bg);
-    border-radius: var(--radius-lg);
-    border-width: var(--border-width-thick);
-    border-color: var(--color-card-border);
-    padding: var(--spacing-lg);
-    margin-bottom: var(--spacing-md);
-}
+
 
 /* Card Variants */
-.card-compact {
-    padding: var(--spacing-md);
-}
 
-.card-spacious {
-    padding: var(--spacing-xl);
-}
 
-.card-danger {
-    background-color: rgb(255, 240, 240);
-    border-color: var(--color-danger);
-}
+
+
+
 
 /* Stat Card */
 .stat-card {
@@ -253,102 +322,27 @@
    BUTTON COMPONENTS
    ============================================ */
 
-/* Base Button */
-.btn {
+/* Base Button - Now applied to all Buttons */
+Button, .unity-button, .skew-button {
+    transition-property: scale, background-color;
+    transition-duration: var(--transition-fast);
+}
+
+Button, .unity-button {
     border-radius: var(--radius-md);
     padding: var(--spacing-sm) var(--spacing-lg);
     border-width: var(--border-width-normal);
     border-color: var(--color-card-border);
     font-size: var(--font-size-lg);
     color: var(--color-text-primary);
-    transition-property: scale, background-color;
-    transition-duration: var(--transition-fast);
 }
 
-.btn:active {
+Button:hover, .unity-button:hover, .skew-button:hover {
+    scale: 1.03;
+}
+
+Button:active, .unity-button:active, .skew-button:active {
     scale: 0.93;
-}
-
-/* Button Variants */
-.btn-primary {
-    background-color: var(--color-accent-green);
-}
-
-.btn-primary:active {
-    background-color: rgb(80, 210, 130);
-}
-
-.btn-secondary {
-    background-color: var(--color-accent-blue);
-}
-
-.btn-secondary:active {
-    background-color: rgb(80, 181, 235);
-}
-
-.btn-danger {
-    background-color: var(--color-danger);
-    color: var(--color-text-light);
-}
-
-.btn-danger:active {
-    background-color: rgb(235, 80, 80);
-}
-
-.btn-warning {
-    background-color: var(--color-warning);
-}
-
-.btn-warning:active {
-    background-color: rgb(235, 180, 40);
-}
-
-/* Button Sizes */
-.btn-small {
-    font-size: var(--font-size-md);
-    padding: var(--spacing-xs) var(--spacing-md);
-}
-
-.btn-large {
-    font-size: var(--font-size-xxl);
-    padding: var(--spacing-md) var(--spacing-xxl);
-}
-
-.btn-full {
-    width: 100%;
-}
-
-/* Icon Button */
-.icon-button {
-    width: 50px;
-    height: 50px;
-    background-color: rgba(0, 0, 0, 0.4);
-    border-radius: var(--radius-round);
-    border-width: 0;
-    margin-right: var(--spacing-md);
-    transition-property: scale;
-    transition-duration: var(--transition-fast);
-}
-
-.icon-button:active {
-    scale: 0.9;
-}
-
-.icon-button-small {
-    width: 40px;
-    height: 40px;
-    min-width: 40px;
-    min-height: 40px;
-    background-color: var(--color-accent-green);
-    border-radius: var(--radius-round);
-    border-width: var(--border-width-normal);
-    border-color: var(--color-card-border);
-    padding: 0;
-    margin: 0;
-}
-
-.icon-button-small:active {
-    scale: 0.88;
 }
 
 /* ============================================
@@ -362,11 +356,12 @@
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-.screen-title-dark {
-    font-size: var(--font-size-display);
-    color: var(--color-text-primary);
-    -unity-text-align: middle-center;
-    margin-bottom: 5px;
+
+
+/* Anton Font Utility */
+.anton {
+    -unity-font-definition: var(--font-anton-sdf);
+    letter-spacing: 2px;
 }
 
 /* Section Header */
@@ -390,44 +385,24 @@
 }
 
 /* Text Styles */
-.text-primary {
-    font-size: var(--font-size-md);
-    color: var(--color-text-primary);
-}
 
-.text-secondary {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-secondary);
-}
 
-.text-muted {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-muted);
-}
 
-.text-light {
-    color: var(--color-text-light);
-}
 
-.text-center {
-    -unity-text-align: middle-center;
-}
 
-.text-large {
-    font-size: var(--font-size-display);
-    color: var(--color-text-primary);
-}
+
+
+
+
+
+
 
 /* ============================================
    FORM CONTROLS
    ============================================ */
 
 /* Slider */
-.control-slider {
-    width: 200px;
-    min-width: 200px;
-    align-items: center;
-}
+
 
 .control-slider .unity-base-slider__dragger {
     background-color: var(--color-accent-green);
@@ -484,19 +459,7 @@
 }
 
 /* Dropdown */
-.control-dropdown {
-    width: 400px;
-    min-width: 200px;
-    background-color: rgb(255, 255, 255);
-    border-radius: var(--radius-md);
-    border-width: var(--border-width-normal);
-    border-color: var(--color-card-border);
-    padding: var(--spacing-sm) var(--spacing-md);
-    font-size: var(--font-size-xl);
-    color: var(--color-text-primary);
-    flex-shrink: 0;
-    max-width: 400px;
-}
+
 
 .control-dropdown .unity-base-popup-field__text {
     color: var(--color-text-primary);
@@ -510,74 +473,28 @@
 }
 
 /* Control Row */
-.control-row {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--spacing-sm) var(--spacing-md);
-    background-color: var(--color-overlay-light);
-    border-radius: var(--radius-sm);
-    margin-bottom: var(--spacing-xs);
-}
 
-.control-label {
-    font-size: var(--font-size-xxl);
-    color: var(--color-text-primary);
-    flex-shrink: 0;
-    margin-right: var(--spacing-md);
-}
+
+
 
 /* ============================================
    ICON & BADGE COMPONENTS
    ============================================ */
 
 /* Avatar */
-.avatar {
-    width: 120px;
-    height: 120px;
-    background-color: var(--color-accent-blue);
-    border-radius: var(--radius-round);
-    border-width: var(--border-width-thick);
-    border-color: var(--color-card-border);
-}
 
-.avatar-small {
-    width: 90px;
-    height: 90px;
-}
+
+
 
 /* Icon */
-.icon {
-    width: 40px;
-    height: 40px;
-    background-color: var(--color-danger);
-    border-radius: var(--radius-round);
-    border-width: var(--border-width-thin);
-    border-color: var(--color-card-border);
-}
 
-.icon-small {
-    width: 30px;
-    height: 30px;
-}
 
-.icon-large {
-    width: 50px;
-    height: 50px;
-    border-width: var(--border-width-normal);
-}
+
+
+
 
 /* Badge */
-.badge {
-    width: 45px;
-    height: 45px;
-    background-color: var(--color-warning);
-    border-radius: var(--radius-round);
-    border-width: var(--border-width-normal);
-    border-color: var(--color-card-border);
-    align-items: center;
-    justify-content: center;
-}
+
 
 /* ============================================
    UTILITY CLASSES
@@ -587,61 +504,38 @@
     flex-grow: 1;
 }
 
-.divider {
-    height: 1px;
-    background-color: rgba(255, 255, 255, 0.2);
-    margin: var(--spacing-md) 0;
+.btn-wrapper {
+    background-color: transparent;
+    border-width: 0;
+    padding: 0;
+    margin: 0;
 }
+
+
 
 .hidden {
     display: none;
 }
 
-.disabled {
-    opacity: 0.5;
-}
 
-.selected {
-    border-color: var(--color-accent-red);
-    border-width: var(--border-width-thick);
-}
+
+
 
 /* Grid Layouts */
-.grid-2col {
-    flex-direction: row;
-    flex-wrap: wrap;
-}
+
 
 .grid-2col > * {
     margin-right: var(--spacing-md);
     margin-bottom: var(--spacing-md);
 }
 
-.grid-3col {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-between;
-}
 
-.button-grid {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-}
+
+
 
 .button-grid > * {
     margin-right: var(--spacing-sm);
     margin-bottom: var(--spacing-sm);
 }
 
-/* ============================================
-   GLOBAL BUTTON ANIMATIONS
-   ============================================ */
-.unity-button {
-    transition-property: scale;
-    transition-duration: var(--transition-fast);
-}
 
-.unity-button:active {
-    scale: 0.92 0.92 1;
-}

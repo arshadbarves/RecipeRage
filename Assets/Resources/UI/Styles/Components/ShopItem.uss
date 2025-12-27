@@ -19,7 +19,7 @@
     transition-duration: var(--transition-normal);
     padding: 0;
     position: relative;
-    -unity-font-definition: var(--font-primary);
+
 }
 
 .shop-item:hover {

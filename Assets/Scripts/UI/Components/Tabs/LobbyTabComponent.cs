@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
+using Core.Animation;
 using Core.Bootstrap;
 using Core.Networking.Common;
 using Core.Networking.Interfaces;
 using Core.State;
 using Core.State.States;
+using DG.Tweening;
 using UI.Data;
-using UI.Popups;
 using UI.Screens;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -85,6 +86,7 @@ namespace UI.Components.Tabs
             LoadMapInfo();
             UpdatePartyState();
             UpdateActionButton();
+            HideAnimatedElements();            // Hide elements for intro animation
 
             GameLogger.Log("Initialization complete");
         }
@@ -355,7 +357,7 @@ namespace UI.Components.Tabs
             if (_currentMap != null)
             {
                 UpdateMapDisplay(_currentMap);
-                
+
                 // Set team size based on map's maxPlayers
                 if (_currentMap.maxPlayers > 0)
                 {
@@ -584,7 +586,7 @@ namespace UI.Components.Tabs
                 // Cannot select this map - party too large
                 string message = $"Cannot select {map.name}. Map supports {map.maxPlayers} players but you have {_currentPlayerCount} in party.";
                 GameLogger.LogWarning(message);
-                
+
                 var uiService = GameBootstrap.Services?.UIService;
                 if (uiService != null)
                 {
@@ -596,7 +598,7 @@ namespace UI.Components.Tabs
             _currentMap = map;
             UpdateMapDisplay(map);
             UpdateMapTimer();
-            
+
             // Update team size based on new map
             if (map.maxPlayers > 0)
             {
@@ -732,6 +734,121 @@ namespace UI.Components.Tabs
         public void Update(float deltaTime)
         {
             // Update timer if needed
+        }
+
+        /// <summary>
+        /// Hide all animated elements before intro animations
+        /// </summary>
+        private void HideAnimatedElements()
+        {
+            if (_root == null) return;
+
+            // Left panel elements
+            HideElement(_root.Q<VisualElement>("news-btn"));
+            HideElement(_root.Q<VisualElement>("bp-widget"));
+
+            // Right panel elements
+            HideElement(_root.Q<VisualElement>("lobby-header"));
+            HideElement(_root.Q<VisualElement>("squad-row"));
+            HideElement(_root.Q<VisualElement>("map-box"));
+            HideElement(_root.Q<VisualElement>("play-btn"));
+
+            // Character model
+            HideElement(_root.Q<VisualElement>("character-model"));
+        }
+
+        private void HideElement(VisualElement element)
+        {
+            if (element == null) return;
+            element.style.opacity = 0f;
+        }
+
+        /// <summary>
+        /// Play intro animations for lobby elements
+        /// Called by MainMenuScreen when screen becomes visible
+        /// </summary>
+        public void PlayIntroAnimations(IUIAnimator animator)
+        {
+            if (_root == null || animator == null) return;
+
+            const float animDuration = 0.6f;
+
+            // === LEFT PANEL (Slide from Left) ===
+            var leftPanel = _root.Q<VisualElement>("left-panel");
+            var newsBtn = _root.Q<VisualElement>("news-btn");
+            var bpWidget = _root.Q<VisualElement>("bp-widget");
+
+            AnimateSlideFromLeft(newsBtn, 0.4f, animDuration);
+            AnimateSlideFromLeft(bpWidget, 0.5f, animDuration);
+
+            // === RIGHT PANEL (Slide from Right) ===
+            var lobbyHeader = _root.Q<VisualElement>("lobby-header");
+            var squadRow = _root.Q<VisualElement>("squad-row");
+            var mapBox = _root.Q<VisualElement>("map-box");
+            var playBtn = _root.Q<VisualElement>("play-btn");
+
+            AnimateSlideFromRight(lobbyHeader, 0.5f, animDuration);
+            AnimateSlideFromRight(squadRow, 0.6f, animDuration);
+            AnimateSlideFromRight(mapBox, 0.7f, animDuration);
+            AnimateSlideFromRight(playBtn, 0.8f, animDuration);
+
+            // === CHARACTER MODEL (Scale up with fade) ===
+            var characterModel = _root.Q<VisualElement>("character-model");
+            AnimateScaleIn(characterModel, 0.3f, 1.0f);
+        }
+
+        private void AnimateSlideFromLeft(VisualElement element, float delay, float duration)
+        {
+            if (element == null) return;
+
+            // Set initial state
+            element.style.opacity = 0f;
+            element.style.translate = new StyleTranslate(new Translate(-50, 0, 0));
+
+            DOVirtual.DelayedCall(delay, () =>
+            {
+                DOTween.To(() => 0f, x => element.style.opacity = x, 1f, duration)
+                    .SetEase(Ease.OutCubic);
+                DOTween.To(() => -50f, x => element.style.translate = new StyleTranslate(new Translate(x, 0, 0)), 0f, duration)
+                    .SetEase(Ease.OutCubic);
+            });
+        }
+
+        private void AnimateSlideFromRight(VisualElement element, float delay, float duration)
+        {
+            if (element == null) return;
+
+            // Set initial state
+            element.style.opacity = 0f;
+            element.style.translate = new StyleTranslate(new Translate(50, 0, 0));
+
+            DOVirtual.DelayedCall(delay, () =>
+            {
+                DOTween.To(() => 0f, x => element.style.opacity = x, 1f, duration)
+                    .SetEase(Ease.OutCubic);
+                DOTween.To(() => 50f, x => element.style.translate = new StyleTranslate(new Translate(x, 0, 0)), 0f, duration)
+                    .SetEase(Ease.OutCubic);
+            });
+        }
+
+        private void AnimateScaleIn(VisualElement element, float delay, float duration)
+        {
+            if (element == null) return;
+
+            // Set initial state
+            element.style.opacity = 0f;
+            element.style.scale = new StyleScale(new Vector2(0.95f, 0.95f));
+            element.style.translate = new StyleTranslate(new Translate(0, 50, 0));
+
+            DOVirtual.DelayedCall(delay, () =>
+            {
+                DOTween.To(() => 0f, x => element.style.opacity = x, 1f, duration * 0.5f)
+                    .SetEase(Ease.OutCubic);
+                DOTween.To(() => 0.95f, x => element.style.scale = new StyleScale(new Vector2(x, x)), 1f, duration)
+                    .SetEase(Ease.OutBack);
+                DOTween.To(() => 50f, y => element.style.translate = new StyleTranslate(new Translate(0, y, 0)), 0f, duration)
+                    .SetEase(Ease.OutBack);
+            });
         }
 
         /// <summary>

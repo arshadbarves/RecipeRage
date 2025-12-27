@@ -4,7 +4,7 @@
     width: 100%;
     height: 100%;
     position: absolute;
-    -unity-font-definition: var(--font-primary);
+
 }
 
 .background {

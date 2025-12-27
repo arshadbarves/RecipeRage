@@ -76,8 +76,6 @@ namespace UI
                         iconImage.sprite = ingredient.Ingredient.Icon;
                         iconImage.color = ingredient.Ingredient.Color;
                     }
-                    
-                    // TODO: Add indicators for cutting and cooking requirements
                 }
             }
         }

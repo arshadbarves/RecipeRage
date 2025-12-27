@@ -53,8 +53,6 @@ namespace Core.State.States
 
                 // Make it accessible to gameplay systems
                 GameplayContext.CameraController = _cameraController;
-
-                GameLogger.Log("Camera system initialized for gameplay");
             }
             catch (System.Exception ex)
             {
@@ -73,7 +71,6 @@ namespace Core.State.States
             {
                 GameLogger.Log("Loading Game scene...");
                 await SceneManager.LoadSceneAsync("Game");
-                GameLogger.Log("Game scene loaded");
             }
 
             // Wait one frame for scene objects to initialize
@@ -84,7 +81,6 @@ namespace Core.State.States
             if (networkInitializer != null)
             {
                 networkInitializer.Initialize();
-                GameLogger.Log("NetworkInitializer found and initialized");
             }
             else
             {
@@ -99,7 +95,6 @@ namespace Core.State.States
             if (networkingServices?.GameStarter != null)
             {
                 networkingServices.GameStarter.StartGame();
-                GameLogger.Log("Network game started (host or client)");
             }
             else
             {
@@ -115,10 +110,6 @@ namespace Core.State.States
 
             // Initialize the game mode
             var gameModeService = GameBootstrap.Services?.Session?.GameModeService;
-            if (gameModeService != null)
-            {
-                GameLogger.Log("Game mode service initialized");
-            }
 
             // Initialize the order system
             OrderManager orderManager = Object.FindFirstObjectByType<OrderManager>();
@@ -159,14 +150,11 @@ namespace Core.State.States
             // Clear gameplay context
             GameplayContext.Reset();
 
-            GameLogger.Log("Camera system disposed");
-
             // Stop the game mode
             var gameModeService = GameBootstrap.Services?.Session?.GameModeService;
             if (gameModeService != null)
             {
                 // Stop the current game mode if available
-                GameLogger.Log("Game mode service stopped");
             }
 
             // Stop the order system
@@ -186,17 +174,6 @@ namespace Core.State.States
             _cameraController?.Update(Time.deltaTime);
 
             // Gameplay update logic
-
-            // Check if the game is over
-            // Note: Game over logic should be handled by a game manager or score system
-            // For now, this is a placeholder that can be implemented when needed
-
-            // Example: Check time limit or score limit
-            // var services = GameBootstrap.Services;
-            // if (services?.GameModeService.IsGameOver())
-            // {
-            //     services.StateManager.ChangeState(new GameOverState());
-            // }
         }
 
         /// <summary>

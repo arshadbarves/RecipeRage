@@ -1,10 +1,11 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+<?xml version='1.0' encoding='utf-8'?>
+<ns0:UXML xmlns:ns0="UnityEngine.UIElements" editor-extension-mode="False">
     <Style src="project://database/Assets/Resources/UI/LobbyStyles.uss?fileID=7433441132597879392&amp;guid=4874f17ee45e3402ca5e263b1825a11b&amp;type=3#LobbyStyles" />
-    <ui:VisualElement name="player-entry" class="player-entry">
-        <ui:VisualElement name="player-info" class="player-info">
-            <ui:VisualElement name="ready-status" class="ready-indicator not-ready" />
-            <ui:Label name="player-name" text="Player Name" class="player-name" />
-            <ui:Label name="player-level" text="Team A" class="player-level" />
-        </ui:VisualElement>
-    </ui:VisualElement>
-</ui:UXML>
+    <ns0:VisualElement name="player-entry">
+        <ns0:VisualElement name="player-info">
+            <ns0:VisualElement name="ready-status" />
+            <ns0:Label name="player-name" text="Player Name" />
+            <ns0:Label name="player-level" text="Team A" />
+        </ns0:VisualElement>
+    </ns0:VisualElement>
+</ns0:UXML>

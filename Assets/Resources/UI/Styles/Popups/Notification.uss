@@ -23,7 +23,7 @@
     padding: var(--spacing-md) var(--spacing-lg);
     min-width: 300px;
     max-width: 500px;
-    -unity-font-definition: var(--font-primary);
+
 }
 
 .notification-icon {

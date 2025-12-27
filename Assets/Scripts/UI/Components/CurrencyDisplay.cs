@@ -34,8 +34,6 @@ namespace UI.Components
 
         private void Initialize()
         {
-            GameLogger.Log("Initializing");
-
             // Cache UI elements
             _coinsLabel = _root.Q<Label>("coins-amount");
             _gemsLabel = _root.Q<Label>("gems-amount");
@@ -57,8 +55,6 @@ namespace UI.Components
 
             // Initial update
             UpdateUI(_currencyService.Coins, _currencyService.Gems);
-
-            GameLogger.Log("Initialized successfully");
         }
 
         private void SetupButtons()
@@ -89,13 +85,11 @@ namespace UI.Components
             if (_coinsLabel != null)
             {
                 _coinsLabel.text = _currencyService.FormatCurrency(coins);
-                GameLogger.Log($"Updated coins label to: {_coinsLabel.text}");
             }
 
             if (_gemsLabel != null)
             {
                 _gemsLabel.text = _currencyService.FormatCurrency(gems);
-                GameLogger.Log($"Updated gems label to: {_gemsLabel.text}");
             }
         }
 
@@ -108,8 +102,6 @@ namespace UI.Components
             _currencyService.AddCoins(500);
 #else
             // Production - open store
-            GameLogger.Log($"Opening store for coins purchase");
-            // TODO: Open in-app purchase dialog
 #endif
         }
 
@@ -122,8 +114,6 @@ namespace UI.Components
             _currencyService.AddGems(50);
 #else
             // Production - open store
-            GameLogger.Log($"Opening store for gems purchase");
-            // TODO: Open in-app purchase dialog
 #endif
         }
 
@@ -144,8 +134,6 @@ namespace UI.Components
             {
                 _addGemsButton.clicked -= OnAddGemsClicked;
             }
-
-            GameLogger.Log("Disposed");
         }
     }
 }

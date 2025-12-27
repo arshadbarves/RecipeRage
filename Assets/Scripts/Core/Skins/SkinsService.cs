@@ -30,7 +30,6 @@ namespace Core.Skins
 
         public SkinsService()
         {
-            // LoadSkinsData();
             LoadPlayerProgress();
             SubscribeToConfigUpdates();
         }
@@ -42,7 +41,6 @@ namespace Core.Skins
 
             if (remoteConfigService != null && remoteConfigService.TryGetConfig<SkinsConfig>(out var skinsConfig))
             {
-                GameLogger.Log("Loading skins from RemoteConfigService");
                 LoadFromRemoteConfig(skinsConfig);
                 return;
             }
@@ -89,7 +87,6 @@ namespace Core.Skins
             }
 
             BuildLookupDictionaries();
-            GameLogger.Log($"Loaded {_skinsData.skins.Count} skins from RemoteConfig");
         }
 
         private void BuildLookupDictionaries()
@@ -131,7 +128,6 @@ namespace Core.Skins
         {
             if (obj is SkinsConfig skinsConfig)
             {
-                GameLogger.Log("SkinsConfig updated, reloading skins data");
                 LoadFromRemoteConfig(skinsConfig);
             }
         }
@@ -140,7 +136,6 @@ namespace Core.Skins
         {
             if (configType == typeof(SkinsConfig) && config is SkinsConfig skinsConfig)
             {
-                GameLogger.Log("SkinsConfig updated, reloading skins data");
                 LoadFromRemoteConfig(skinsConfig);
             }
         }
@@ -326,7 +321,6 @@ namespace Core.Skins
             _skinsByCharacter.Clear();
             _unlockedSkins.Clear();
             _equippedSkins.Clear();
-            GameLogger.Log("SkinsService disposed");
         }
     }
 }

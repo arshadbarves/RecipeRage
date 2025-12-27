@@ -1,84 +1,85 @@
-<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/UI/USS/Maintenance.uss?fileID=7433441132597879392&amp;guid=2860c49174bcf421d9070d78867b58e4&amp;type=3#Maintenance" />
-    <VisualElement name="screen-container" class="maintenance-screen">
-        <VisualElement name="background" class="background" />
+<?xml version='1.0' encoding='utf-8'?>
+<ns0:UXML xmlns:ns0="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd" editor-extension-mode="False">
+    <ns0:Style src="project://database/Assets/UI/USS/Maintenance.uss?fileID=7433441132597879392&amp;guid=2860c49174bcf421d9070d78867b58e4&amp;type=3#Maintenance" />
+    <ns0:VisualElement name="screen-container">
+        <ns0:VisualElement name="background" />
 
-        <!-- Header Bar -->
-        <VisualElement name="header-bar" class="header-bar">
-            <VisualElement name="title-section" class="title-section">
-                <VisualElement name="wrench-icon" class="wrench-icon-small" />
-                <Label name="maintenance-title" text="Maintenance Break" class="header-title" />
-                <VisualElement name="info-icon" class="info-icon" />
-            </VisualElement>
-            <VisualElement name="time-section" class="time-section">
-                <Label text="Estimated time" class="time-label" />
-                <Label name="estimated-time" text="55m" class="time-value" />
-            </VisualElement>
-        </VisualElement>
+        
+        <ns0:VisualElement name="header-bar">
+            <ns0:VisualElement name="title-section">
+                <ns0:VisualElement name="wrench-icon" />
+                <ns0:Label name="maintenance-title" text="Maintenance Break" />
+                <ns0:VisualElement name="info-icon" />
+            </ns0:VisualElement>
+            <ns0:VisualElement name="time-section">
+                <ns0:Label text="Estimated time" />
+                <ns0:Label name="estimated-time" text="55m" />
+            </ns0:VisualElement>
+        </ns0:VisualElement>
 
-        <!-- Main Content Area -->
-        <VisualElement name="content-area" class="content-area">
+        
+        <ns0:VisualElement name="content-area">
 
-            <!-- Left Panel - Featured Content -->
-            <VisualElement name="left-panel" class="left-panel">
-                <VisualElement name="featured-image" class="featured-image">
-                    <Label text="RECIPERAG" class="game-logo" />
-                    <VisualElement name="featured-character" class="featured-character" />
-                    <Label name="featured-text" text="COMING SOON!" class="featured-text" />
-                </VisualElement>
-                <Button name="social-button" class="social-button">
-                    <Label text="FOLLOW US!" class="social-button-text" />
-                </Button>
+            
+            <ns0:VisualElement name="left-panel">
+                <ns0:VisualElement name="featured-image">
+                    <ns0:Label text="RECIPERAG" />
+                    <ns0:VisualElement name="featured-character" />
+                    <ns0:Label name="featured-text" text="COMING SOON!" />
+                </ns0:VisualElement>
+                <ns0:Button name="social-button">
+                    <ns0:Label text="FOLLOW US!" />
+                </ns0:Button>
 
-                <!-- Social Links -->
-                <VisualElement name="social-links" class="social-links">
-                    <Button name="twitter-btn" class="social-icon twitter-icon" />
-                    <Button name="facebook-btn" class="social-icon facebook-icon" />
-                    <Button name="discord-btn" class="social-icon discord-icon" />
-                    <Button name="youtube-btn" class="social-icon youtube-icon" />
-                </VisualElement>
-            </VisualElement>
+                
+                <ns0:VisualElement name="social-links">
+                    <ns0:Button name="twitter-btn" />
+                    <ns0:Button name="facebook-btn" />
+                    <ns0:Button name="discord-btn" />
+                    <ns0:Button name="youtube-btn" />
+                </ns0:VisualElement>
+            </ns0:VisualElement>
 
-            <!-- Right Panel - News & Updates -->
-            <VisualElement name="right-panel" class="right-panel">
+            
+            <ns0:VisualElement name="right-panel">
 
-                <!-- Latest News Card -->
-                <VisualElement name="news-card" class="news-card">
-                    <VisualElement name="news-image" class="news-image" />
-                    <VisualElement name="news-content" class="news-content">
-                        <Label name="news-timestamp" text="59 MINUTES AGO" class="news-timestamp" />
-                        <Label name="news-title" text="RELEASE NOTES: NEW UPDATE" class="news-title" />
-                    </VisualElement>
-                </VisualElement>
+                
+                <ns0:VisualElement name="news-card">
+                    <ns0:VisualElement name="news-image" />
+                    <ns0:VisualElement name="news-content">
+                        <ns0:Label name="news-timestamp" text="59 MINUTES AGO" />
+                        <ns0:Label name="news-title" text="RELEASE NOTES: NEW UPDATE" />
+                    </ns0:VisualElement>
+                </ns0:VisualElement>
 
-                <!-- Patch Notes Card -->
-                <VisualElement name="patch-card" class="patch-card">
-                    <VisualElement name="patch-image" class="patch-image" />
-                    <VisualElement name="patch-content" class="patch-content">
-                        <Label text="What's New?" class="patch-header" />
-                        <ScrollView name="patch-notes-scroll" class="patch-notes-scroll">
-                            <Label name="patch-notes" text="• New characters added\n• Bug fixes and improvements\n• Performance optimizations\n• Balance changes" class="patch-notes-text" />
-                        </ScrollView>
-                    </VisualElement>
-                </VisualElement>
+                
+                <ns0:VisualElement name="patch-card">
+                    <ns0:VisualElement name="patch-image" />
+                    <ns0:VisualElement name="patch-content">
+                        <ns0:Label text="What's New?" />
+                        <ns0:ScrollView name="patch-notes-scroll">
+                            <ns0:Label name="patch-notes" text="• New characters added\n• Bug fixes and improvements\n• Performance optimizations\n• Balance changes" />
+                        </ns0:ScrollView>
+                    </ns0:VisualElement>
+                </ns0:VisualElement>
 
-                <!-- Countdown Timer -->
-                <VisualElement name="countdown-container" class="countdown-container">
-                    <VisualElement name="countdown-icon" class="countdown-icon" />
-                    <Label name="countdown-label" text="Server will be back online soon..." class="countdown-label" />
-                </VisualElement>
+                
+                <ns0:VisualElement name="countdown-container">
+                    <ns0:VisualElement name="countdown-icon" />
+                    <ns0:Label name="countdown-label" text="Server will be back online soon..." />
+                </ns0:VisualElement>
 
-                <!-- Retry Button (only shown when maintenance is over or on timeout) -->
-                <Button name="retry-button" class="retry-button">
-                    <VisualElement class="btn-icon-retry" />
-                    <Label text="RETRY CONNECTION" class="btn-label" />
-                </Button>
-            </VisualElement>
-        </VisualElement>
+                
+                <ns0:Button name="retry-button">
+                    <ns0:VisualElement />
+                    <ns0:Label text="RETRY CONNECTION" />
+                </ns0:Button>
+            </ns0:VisualElement>
+        </ns0:VisualElement>
 
-        <!-- Footer -->
-        <VisualElement name="footer" class="footer">
-            <Label name="footer-text" text="Follow us on social media for live updates" class="footer-text" />
-        </VisualElement>
-    </VisualElement>
-</UXML>
+        
+        <ns0:VisualElement name="footer">
+            <ns0:Label name="footer-text" text="Follow us on social media for live updates" />
+        </ns0:VisualElement>
+    </ns0:VisualElement>
+</ns0:UXML>

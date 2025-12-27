@@ -6,7 +6,7 @@
     justify-content: center;
     background-color: var(--color-background-primary);
     padding: 40px;
-    -unity-font-definition: var(--font-primary);
+
 }
 
 /* Status Indicator (animated circle) */

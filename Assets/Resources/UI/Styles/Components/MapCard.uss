@@ -11,7 +11,7 @@
     transition-duration: var(--transition-normal);
     padding: 0;
     background-color: rgb(30, 30, 30);
-    -unity-font-definition: var(--font-primary);
+
     flex-grow: 1;
 }
 
