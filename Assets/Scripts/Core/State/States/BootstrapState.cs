@@ -1,5 +1,4 @@
 using System;
-using Core.Authentication;
 using Core.Bootstrap;
 using Core.Events;
 using Core.Logging;
@@ -10,6 +9,7 @@ using Cysharp.Threading.Tasks;
 using UI;
 using UI.Screens;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Core.State.States
 {
@@ -101,7 +101,7 @@ namespace Core.State.States
                 return;
             }
 
-            // --- STEP 3: Post-Login (60% - 90%) ---
+            // --- STEP 3: Post-Login (60% - 80%) ---
             loadingScreen?.UpdateProgress(0.6f, "Checking Updates...");
             await _remoteConfigService.RefreshConfig();
 
@@ -114,7 +114,35 @@ namespace Core.State.States
                 await _maintenanceService.CheckMaintenanceStatusAsync();
             }
 
-            // --- STEP 4: Ready (100%) ---
+            // --- STEP 4: Load Main Menu Scene (80% - 99%) ---
+            loadingScreen?.UpdateProgress(0.9f, "Loading Environment...");
+            
+            // Only load if not already there (e.g. playing in editor)
+            if (SceneManager.GetActiveScene().name != "MainMenu")
+            {
+                // Note: Check Build Settings to ensure 'MainMenu' is added!
+                try 
+                {
+                    var loadOp = SceneManager.LoadSceneAsync("MainMenu");
+                    if (loadOp != null)
+                    {
+                        loadOp.allowSceneActivation = false;
+                        while (loadOp.progress < 0.9f)
+                        {
+                            await UniTask.Yield();
+                        }
+                        loadOp.allowSceneActivation = true;
+                        await UniTask.WaitUntil(() => loadOp.isDone);
+                    }
+                }
+                catch (Exception e)
+                {
+                    GameLogger.LogError($"Failed to load MainMenu scene: {e.Message}");
+                    // Continue anyway, maybe we are in a dev scene
+                }
+            }
+
+            // --- STEP 5: Ready (100%) ---
             loadingScreen?.UpdateProgress(1.0f, "READY!");
             await UniTask.Delay(TimeSpan.FromSeconds(1.0f)); // 1s Delay as requested
 
