@@ -1,13 +1,13 @@
 # Track Plan: Settings System and UI Refinement
 
-## Phase 1: Core Systems & Architecture
+## Phase 1: Core Systems & Architecture [checkpoint: 65a5a97]
 - [x] Task: Define Settings data models and update `GameSettingsData` in `SaveService`. [commit: 7409efe]
 - [x] Task: Implement modular, SOLID-compliant `TabSystem` component. [commit: 0a3319a]
-- [~] Task: Implement `SettingsService` for applying values to Unity engine (QualitySettings, AudioMixer, etc.).
-- [ ] Task: Conductor - User Manual Verification 'Core Systems & Architecture' (Protocol in workflow.md)
+- [x] Task: Implement `SettingsService` for applying values to Unity engine (QualitySettings, AudioMixer, etc.). [commit: 13c8c03]
+- [x] Task: Conductor - User Manual Verification 'Core Systems & Architecture' (Protocol in workflow.md)
 
 ## Phase 2: Settings Screen Implementation
-- [ ] Task: Create UXML templates and USS styles for the Settings Screen (based on HTML reference).
+- [~] Task: Create UXML templates and USS styles for the Settings Screen (based on HTML reference).
 - [ ] Task: Implement Graphics and Audio tab UI logic and engine integration.
 - [ ] Task: Implement Controls, Account, and Legal tab UI logic.
 - [ ] Task: Conductor - User Manual Verification 'Settings Screen Implementation' (Protocol in workflow.md)
