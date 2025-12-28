@@ -63,5 +63,18 @@ namespace Core.SaveSystem
         // Authentication
         [Header("Authentication")]
         public string LastLoginMethod = "";
+
+        // HUD Layout
+        [Header("HUD Layout")]
+        public List<ControlLayoutData> HUDLayout = new List<ControlLayoutData>();
+    }
+
+    [Serializable]
+    public class ControlLayoutData
+    {
+        public string ControlId;
+        public Vector2 NormalizedPosition;
+        public float SizeMultiplier = 1.0f;
+        public float Opacity = 1.0f;
     }
 }

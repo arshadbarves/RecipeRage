@@ -32,6 +32,9 @@ namespace UI
         Lobby,
         GameOver,
 
+        // Special screens
+        HUDEditor,
+
         // Background screens (lowest priority)
         HUD,
         Background

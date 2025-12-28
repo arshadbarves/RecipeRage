@@ -367,7 +367,7 @@ namespace UI.Components.Tabs
             private void OnEditControlsClicked()
             {
                 GameLogger.Log("Opening HUD Editor...");
-                // Open HUD Editor mode (Phase 3)
+                GameBootstrap.Services?.UIService?.ShowScreen(UIScreenType.HUDEditor);
             }
         }
 
