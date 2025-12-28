@@ -164,33 +164,312 @@ namespace UI.Components.Tabs
         private class GraphicsSettingsTab : BaseSettingsTab
         {
             public override string TabId => "Graphics";
+            
+            private VisualElement _qualityGroup;
+            private VisualElement _fpsGroup;
+            private Toggle _shadowsToggle;
+            private Toggle _bloomToggle;
+
             public GraphicsSettingsTab(VisualElement root, ISaveService saveService) : base(root, saveService) { }
-            // Add UI logic for graphics sliders/toggles here
+
+            public override void Initialize(VisualElement root)
+            {
+                _qualityGroup = root.Q<VisualElement>(null, "segment-control"); // First segment control
+                _fpsGroup = root.Query<VisualElement>(null, "segment-control").Last();
+                _shadowsToggle = root.Q<Toggle>("shadows-toggle");
+                _bloomToggle = root.Q<Toggle>("bloom-toggle");
+
+                SetupQualityButtons();
+                SetupFPSButtons();
+                
+                if (_shadowsToggle != null)
+                {
+                    _shadowsToggle.RegisterValueChangedCallback(evt => SaveService.UpdateSettings(s => s.ShadowsEnabled = evt.newValue));
+                }
+                
+                if (_bloomToggle != null)
+                {
+                    _bloomToggle.RegisterValueChangedCallback(evt => SaveService.UpdateSettings(s => s.BloomEnabled = evt.newValue));
+                }
+            }
+
+            public override void OnShow()
+            {
+                base.OnShow();
+                LoadCurrentSettings();
+            }
+
+            private void LoadCurrentSettings()
+            {
+                var settings = SaveService.GetSettings();
+                
+                // Update Quality Segment
+                UpdateSegmentVisual(_qualityGroup, settings.GraphicsQuality);
+                
+                // Update FPS Segment (Map 30, 60, 120 to indices 0, 1, 2)
+                int fpsIndex = settings.TargetFrameRate switch { 30 => 0, 60 => 1, 120 => 2, _ => 1 };
+                UpdateSegmentVisual(_fpsGroup, fpsIndex);
+
+                if (_shadowsToggle != null) _shadowsToggle.value = settings.ShadowsEnabled;
+                if (_bloomToggle != null) _bloomToggle.value = settings.BloomEnabled;
+            }
+
+            private void SetupQualityButtons()
+            {
+                if (_qualityGroup == null) return;
+                var btns = _qualityGroup.Query<Button>(null, "seg-btn").ToList();
+                for (int i = 0; i < btns.Count; i++)
+                {
+                    int index = i;
+                    btns[i].clicked += () => {
+                        SaveService.UpdateSettings(s => s.GraphicsQuality = index);
+                        UpdateSegmentVisual(_qualityGroup, index);
+                    };
+                }
+            }
+
+            private void SetupFPSButtons()
+            {
+                if (_fpsGroup == null) return;
+                var btns = _fpsGroup.Query<Button>(null, "seg-btn").ToList();
+                int[] rates = { 30, 60, 120 };
+                for (int i = 0; i < btns.Count; i++)
+                {
+                    int index = i;
+                    btns[i].clicked += () => {
+                        SaveService.UpdateSettings(s => s.TargetFrameRate = rates[index]);
+                        UpdateSegmentVisual(_fpsGroup, index);
+                    };
+                }
+            }
+
+            private void UpdateSegmentVisual(VisualElement group, int activeIndex)
+            {
+                if (group == null) return;
+                var btns = group.Query<Button>(null, "seg-btn").ToList();
+                for (int i = 0; i < btns.Count; i++)
+                {
+                    if (i == activeIndex) btns[i].AddToClassList("active");
+                    else btns[i].RemoveFromClassList("active");
+                }
+            }
         }
 
         private class AudioSettingsTab : BaseSettingsTab
         {
             public override string TabId => "Audio";
+            
+            private Slider _masterSlider;
+            private Slider _musicSlider;
+            private Slider _sfxSlider;
+            private Label _masterLabel;
+            private Label _musicLabel;
+            private Label _sfxLabel;
+
             public AudioSettingsTab(VisualElement root, ISaveService saveService) : base(root, saveService) { }
-            // Add UI logic for audio sliders here
+
+            public override void Initialize(VisualElement root)
+            {
+                _masterSlider = root.Q<Slider>("master-volume");
+                _musicSlider = root.Q<Slider>("music-volume");
+                _sfxSlider = root.Q<Slider>("sfx-volume");
+                
+                _masterLabel = root.Q<Label>("master-volume-text");
+                _musicLabel = root.Q<Label>("music-volume-text");
+                _sfxLabel = root.Q<Label>("sfx-volume-text");
+
+                SetupSlider(_masterSlider, _masterLabel, (s, v) => s.MasterVolume = v);
+                SetupSlider(_musicSlider, _musicLabel, (s, v) => s.MusicVolume = v);
+                SetupSlider(_sfxSlider, _sfxLabel, (s, v) => s.SFXVolume = v);
+            }
+
+            public override void OnShow()
+            {
+                base.OnShow();
+                LoadCurrentSettings();
+            }
+
+            private void LoadCurrentSettings()
+            {
+                var settings = SaveService.GetSettings();
+                UpdateSliderVisual(_masterSlider, _masterLabel, settings.MasterVolume);
+                UpdateSliderVisual(_musicSlider, _musicLabel, settings.MusicVolume);
+                UpdateSliderVisual(_sfxSlider, _sfxLabel, settings.SFXVolume);
+            }
+
+            private void SetupSlider(Slider slider, Label label, Action<GameSettingsData, float> saveAction)
+            {
+                if (slider == null) return;
+                slider.RegisterValueChangedCallback(evt => {
+                    SaveService.UpdateSettings(s => saveAction(s, evt.newValue));
+                    UpdateSliderVisual(slider, label, evt.newValue);
+                });
+            }
+
+            private void UpdateSliderVisual(Slider slider, Label label, float value)
+            {
+                if (slider != null) slider.value = value;
+                if (label != null) label.text = $"{Mathf.RoundToInt(value * 100)}%";
+            }
         }
 
         private class ControlsSettingsTab : BaseSettingsTab
         {
             public override string TabId => "Controls";
+            
+            private Button _editControlsBtn;
+            private Slider _sensitivitySlider;
+            private Label _sensitivityLabel;
+            private Toggle _invertYToggle;
+            private Toggle _vibrationToggle;
+
             public ControlsSettingsTab(VisualElement root, ISaveService saveService) : base(root, saveService) { }
+
+            public override void Initialize(VisualElement root)
+            {
+                _editControlsBtn = root.Q<Button>("edit-controls-btn");
+                _sensitivitySlider = root.Q<Slider>("sensitivity");
+                _sensitivityLabel = root.Q<Label>("sensitivity-text");
+                _invertYToggle = root.Q<Toggle>("invert-y");
+                _vibrationToggle = root.Q<Toggle>("vibration");
+
+                if (_editControlsBtn != null) _editControlsBtn.clicked += OnEditControlsClicked;
+
+                if (_sensitivitySlider != null)
+                {
+                    _sensitivitySlider.RegisterValueChangedCallback(evt => {
+                        SaveService.UpdateSettings(s => s.Sensitivity = evt.newValue);
+                        if (_sensitivityLabel != null) _sensitivityLabel.text = $"{evt.newValue:F1}";
+                    });
+                }
+
+                if (_invertYToggle != null)
+                {
+                    _invertYToggle.RegisterValueChangedCallback(evt => SaveService.UpdateSettings(s => s.InvertY = evt.newValue));
+                }
+
+                if (_vibrationToggle != null)
+                {
+                    _vibrationToggle.RegisterValueChangedCallback(evt => SaveService.UpdateSettings(s => s.IsVibrationEnabled = evt.newValue));
+                }
+            }
+
+            public override void OnShow()
+            {
+                base.OnShow();
+                var settings = SaveService.GetSettings();
+                if (_sensitivitySlider != null) _sensitivitySlider.value = settings.Sensitivity;
+                if (_sensitivityLabel != null) _sensitivityLabel.text = $"{settings.Sensitivity:F1}";
+                if (_invertYToggle != null) _invertYToggle.value = settings.InvertY;
+                if (_vibrationToggle != null) _vibrationToggle.value = settings.IsVibrationEnabled;
+            }
+
+            private void OnEditControlsClicked()
+            {
+                GameLogger.Log("Opening HUD Editor...");
+                // Open HUD Editor mode (Phase 3)
+            }
         }
 
         private class AccountSettingsTab : BaseSettingsTab
         {
             public override string TabId => "Account";
+            
+            private Label _playerNameLabel;
+            private Label _playerIdLabel;
+            private Button _copyIdBtn;
+            private Button _logoutBtn;
+
             public AccountSettingsTab(VisualElement root, ISaveService saveService) : base(root, saveService) { }
+
+            public override void Initialize(VisualElement root)
+            {
+                _playerNameLabel = root.Q<Label>("player-name");
+                _playerIdLabel = root.Q<Label>("player-id");
+                _copyIdBtn = root.Q<Button>("copy-id-btn");
+                _logoutBtn = root.Q<Button>("logout-btn");
+
+                if (_copyIdBtn != null) _copyIdBtn.clicked += OnCopyIdClicked;
+                if (_logoutBtn != null) _logoutBtn.clicked += OnLogoutClicked;
+            }
+
+            public override void OnShow()
+            {
+                base.OnShow();
+                var stats = SaveService.GetPlayerStats();
+                if (_playerNameLabel != null) _playerNameLabel.text = stats.PlayerName;
+                if (_playerIdLabel != null) _playerIdLabel.text = $"UID: {stats.PlayerId}";
+            }
+
+            private void OnCopyIdClicked()
+            {
+                var stats = SaveService.GetPlayerStats();
+                GUIUtility.systemCopyBuffer = stats.PlayerId;
+                GameBootstrap.Services?.UIService?.ShowNotification("Player ID copied", NotificationType.Info, 2f);
+            }
+
+            private async void OnLogoutClicked()
+            {
+                GameLogger.Log("Requesting Logout");
+                var auth = GameBootstrap.Services?.AuthenticationService;
+                if (auth != null)
+                {
+                    await auth.LogoutAsync();
+                }
+            }
         }
 
         private class LegalSettingsTab : BaseSettingsTab
         {
             public override string TabId => "Social";
+            
+            private DropdownField _languageDropdown;
+            private Toggle _notificationsToggle;
+
             public LegalSettingsTab(VisualElement root, ISaveService saveService) : base(root, saveService) { }
+
+            public override void Initialize(VisualElement root)
+            {
+                _languageDropdown = root.Q<DropdownField>("language-dropdown");
+                _notificationsToggle = root.Q<Toggle>("notifications");
+
+                if (_languageDropdown != null)
+                {
+                    _languageDropdown.choices = new List<string> { "English", "Spanish", "French" }; // Expand as needed
+                    _languageDropdown.RegisterValueChangedCallback(evt => {
+                        int index = _languageDropdown.choices.IndexOf(evt.newValue);
+                        SaveService.UpdateSettings(s => s.LanguageIndex = index);
+                    });
+                }
+
+                if (_notificationsToggle != null)
+                {
+                    _notificationsToggle.RegisterValueChangedCallback(evt => SaveService.UpdateSettings(s => s.NotificationsEnabled = evt.newValue));
+                }
+
+                // URL Buttons
+                SetupUrlBtn(root, "help-btn", "https://support.reciperage.com/help");
+                SetupUrlBtn(root, "support-btn", "https://support.reciperage.com/contact");
+                SetupUrlBtn(root, "privacy-btn", "https://reciperage.com/privacy");
+                SetupUrlBtn(root, "terms-btn", "https://reciperage.com/terms");
+            }
+
+            private void SetupUrlBtn(VisualElement root, string name, string url)
+            {
+                var btn = root.Q<Button>(name);
+                if (btn != null) btn.clicked += () => Application.OpenURL(url);
+            }
+
+            public override void OnShow()
+            {
+                base.OnShow();
+                var settings = SaveService.GetSettings();
+                if (_languageDropdown != null && settings.LanguageIndex >= 0 && settings.LanguageIndex < _languageDropdown.choices.Count)
+                {
+                    _languageDropdown.value = _languageDropdown.choices[settings.LanguageIndex];
+                }
+                if (_notificationsToggle != null) _notificationsToggle.value = settings.NotificationsEnabled;
+            }
         }
 
         #endregion
