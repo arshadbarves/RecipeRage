@@ -64,7 +64,7 @@ namespace UI.Screens
 
         protected override void OnShow()
         {
-            var anim = GameBootstrap.Services?.AnimationService;
+            var anim = Services?.AnimationService;
             if (anim == null) return;
 
             // 1. Global Scale
@@ -166,7 +166,7 @@ namespace UI.Screens
             // Fade out - longer duration for elegant exit
             if (Container != null)
             {
-                var animationService = GameBootstrap.Services?.AnimationService;
+                var animationService = Services?.AnimationService;
                 if (animationService != null)
                 {
                     animationService.UI.FadeOut(Container, FADE_OUT_DURATION);

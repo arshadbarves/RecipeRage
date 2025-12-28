@@ -38,8 +38,8 @@ namespace UI.Screens
         protected override void OnInitialize()
         {
             // Get services
-            _saveService = GameBootstrap.Services?.SaveService;
-            _uiService = GameBootstrap.Services?.UIService;
+            _saveService = Services?.SaveService;
+            _uiService = Services?.UIService;
 
             // Query elements
             QueryElements();
@@ -157,7 +157,7 @@ namespace UI.Screens
             if (_friendCodeLabel == null)
                 return;
 
-            var networking = GameBootstrap.Services?.Session?.NetworkingServices;
+            var networking = Services?.Session?.NetworkingServices;
             var friendsService = networking?.FriendsService;
 
             if (friendsService != null && friendsService.IsInitialized)
@@ -268,7 +268,7 @@ namespace UI.Screens
 
         private void OnCopyFriendCodeClicked()
         {
-            var networking = GameBootstrap.Services?.Session?.NetworkingServices;
+            var networking = Services?.Session?.NetworkingServices;
             var friendsService = networking?.FriendsService;
 
             if (friendsService == null || !friendsService.IsInitialized)
@@ -280,7 +280,7 @@ namespace UI.Screens
             var code = friendsService.MyFriendCode;
             GUIUtility.systemCopyBuffer = code;
 
-            var uiService = GameBootstrap.Services?.UIService;
+            var uiService = Services?.UIService;
             uiService?.ShowNotification($"Friend Code copied: {code}", NotificationType.Success, 2f);
 
             GameLogger.Log($"Copied friend code: {code}");

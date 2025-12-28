@@ -58,6 +58,7 @@ namespace UI.Components.Tabs
 
         // Template
         private VisualTreeAsset _playerSlotTemplate;
+        private ServiceContainer _services;
 
         public LobbyTabComponent(
             IMatchmakingService matchmakingService,
@@ -67,7 +68,7 @@ namespace UI.Components.Tabs
             _stateManager = stateManager ?? throw new ArgumentNullException(nameof(stateManager));
         }
 
-        public void Initialize(VisualElement root)
+        public void Initialize(VisualElement root, ServiceContainer services)
         {
             GameLogger.Log("Initialize called");
 
@@ -78,6 +79,7 @@ namespace UI.Components.Tabs
             }
 
             _root = root;
+            _services = services ?? throw new ArgumentNullException(nameof(services));
             GameLogger.Log($"Root element: {_root.name}");
 
             LoadTemplate();                    // Load PlayerSlot template
@@ -97,7 +99,7 @@ namespace UI.Components.Tabs
         public void OnShow()
         {
             if (_root != null) _root.style.display = DisplayStyle.Flex;
-            UpdateMapInfo(); // Refresh map data when shown
+            LoadMapInfo(); // Refresh map data when shown
         }
 
         public void OnHide()
@@ -598,7 +600,7 @@ namespace UI.Components.Tabs
         {
             GameLogger.Log("Map button clicked - Opening map selection screen");
 
-            var uiService = GameBootstrap.Services?.UIService;
+            var uiService = _services?.UIService;
             if (uiService != null)
             {
                 var mapScreen = uiService.GetScreen<MapSelectionScreen>();
@@ -624,7 +626,7 @@ namespace UI.Components.Tabs
                 string message = $"Cannot select {map.name}. Map supports {map.maxPlayers} players but you have {_currentPlayerCount} in party.";
                 GameLogger.LogWarning(message);
 
-                var uiService = GameBootstrap.Services?.UIService;
+                var uiService = _services?.UIService;
                 if (uiService != null)
                 {
                     uiService.ShowNotification("Map Selection Failed", message, NotificationType.Error, 4f);
@@ -671,7 +673,7 @@ namespace UI.Components.Tabs
         {
             GameLogger.Log("Opening Friends popup");
 
-            var uiService = GameBootstrap.Services?.UIService;
+            var uiService = _services?.UIService;
             if (uiService != null)
             {
                 // Use ShowScreen to properly display the popup
@@ -698,7 +700,7 @@ namespace UI.Components.Tabs
                     UpdateActionButton();
 
                     // Animate slot
-                    var animationService = GameBootstrap.Services?.AnimationService;
+                    var animationService = _services?.AnimationService;
                     if (animationService != null && slot.SlotElement != null)
                     {
                         animationService.UI.Pulse(slot.SlotElement, 0.3f);

@@ -83,7 +83,7 @@ namespace UI.Screens
 
             if (Container != null)
             {
-                var animationService = GameBootstrap.Services?.AnimationService;
+                var animationService = Services?.AnimationService;
                 if (animationService != null)
                 {
                     animationService.UI.FadeOut(Container, 0.3f);

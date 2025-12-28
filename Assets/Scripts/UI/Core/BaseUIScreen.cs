@@ -54,6 +54,11 @@ namespace UI.Core
         /// </summary>
         public TemplateContainer TemplateContainer => Controller?.TemplateContainer;
 
+        /// <summary>
+        /// The service container providing access to all game services
+        /// </summary>
+        protected ServiceContainer Services { get; private set; }
+
         #endregion
 
         #region Events
@@ -83,21 +88,18 @@ namespace UI.Core
         #region Lifecycle
 
         /// <summary>
-        /// Initialize the screen with its controller
+        /// Initialize the screen with its controller and service container
         /// Called automatically by the UI system
         /// </summary>
-        public void Initialize(UIScreenType screenType, UIScreenPriority priority, UIScreenController controller)
+        public void Initialize(UIScreenType screenType, UIScreenPriority priority, UIScreenController controller, ServiceContainer services)
         {
             ScreenType = screenType;
             Priority = priority;
             Controller = controller;
+            Services = services ?? throw new ArgumentNullException(nameof(services));
 
             // Get category from UIService
-            var uiService = GameBootstrap.Services?.UIService;
-            if (uiService != null)
-            {
-                Category = uiService.GetScreenCategory(screenType);
-            }
+            Category = Services.UIService.GetScreenCategory(screenType);
 
             // Subscribe to controller events
             if (Controller != null)
@@ -182,7 +184,7 @@ namespace UI.Core
         /// </summary>
         public void Show(bool animate = true, bool addToHistory = true)
         {
-            GameBootstrap.Services?.UIService?.ShowScreen(ScreenType, animate, addToHistory);
+            Services?.UIService?.ShowScreen(ScreenType, animate, addToHistory);
         }
 
         /// <summary>
@@ -190,7 +192,7 @@ namespace UI.Core
         /// </summary>
         public void Hide(bool animate = true)
         {
-            GameBootstrap.Services?.UIService?.HideScreen(ScreenType, animate);
+            Services?.UIService?.HideScreen(ScreenType, animate);
         }
 
         /// <summary>

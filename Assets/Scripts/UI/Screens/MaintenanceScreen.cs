@@ -119,7 +119,7 @@ namespace UI.Screens
 
         private void SubscribeToEvents()
         {
-            var eventBus = GameBootstrap.Services?.EventBus;
+            var eventBus = Services?.EventBus;
             if (eventBus != null)
             {
                 eventBus.Subscribe<MaintenanceModeEvent>(HandleMaintenanceModeEvent);
@@ -129,7 +129,7 @@ namespace UI.Screens
 
         private void UnsubscribeFromEvents()
         {
-            var eventBus = GameBootstrap.Services?.EventBus;
+            var eventBus = Services?.EventBus;
             if (eventBus != null)
             {
                 eventBus.Unsubscribe<MaintenanceModeEvent>(HandleMaintenanceModeEvent);
@@ -200,7 +200,7 @@ namespace UI.Screens
         {
             if (remaining.TotalHours >= 1)
             {
-                return $"{(int)remaining.TotalHours}h {remaining.Minutes}m";
+                return $"{(int)remaining.TotalHours}h {time.Minutes}m";
             }
             else if (remaining.TotalMinutes >= 1)
             {
@@ -285,7 +285,7 @@ namespace UI.Screens
                 // Wait a bit before retrying
                 await UniTask.Delay(TimeSpan.FromSeconds(1));
 
-                var authService = GameBootstrap.Services?.AuthenticationService;
+                var authService = Services?.AuthenticationService;
                 if (authService == null)
                 {
                     GameLogger.LogError("AuthenticationService not available");
@@ -302,7 +302,7 @@ namespace UI.Screens
                     GameLogger.Log("Reconnect successful");
 
                     // Check maintenance status again
-                    var maintenanceService = GameBootstrap.Services?.MaintenanceService;
+                    var maintenanceService = Services?.MaintenanceService;
                     if (maintenanceService != null)
                     {
                         await maintenanceService.CheckMaintenanceStatusAsync();

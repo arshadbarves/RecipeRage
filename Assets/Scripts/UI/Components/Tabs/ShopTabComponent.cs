@@ -17,11 +17,12 @@ namespace UI.Components.Tabs
         private string _currentCategory = "featured";
         private ShopData _shopData;
         private VisualTreeAsset _shopItemTemplate;
+        private ServiceContainer _services;
 
         public string TabId => "Shop";
         public VisualElement Root => _root;
 
-        public void Initialize(VisualElement root)
+        public void Initialize(VisualElement root, ServiceContainer services)
         {
             GameLogger.Log("Initialize called");
 
@@ -32,6 +33,7 @@ namespace UI.Components.Tabs
             }
 
             _root = root;
+            _services = services ?? throw new ArgumentNullException(nameof(services));
             GameLogger.Log($"Root element: {_root.name}");
 
             _shopItemsGrid = _root.Q<VisualElement>("shop-items-grid");
@@ -261,7 +263,7 @@ namespace UI.Components.Tabs
         {
             GameLogger.Log($"Attempting to buy {item.name} for {item.price} {item.currency}");
 
-            var currencyService = GameBootstrap.Services.Session.CurrencyService;
+            var currencyService = _services?.Session?.CurrencyService;
             if (currencyService == null)
             {
                 GameLogger.LogError("CurrencyService not found");

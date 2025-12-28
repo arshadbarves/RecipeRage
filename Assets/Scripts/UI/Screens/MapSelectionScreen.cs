@@ -38,7 +38,7 @@ namespace UI.Screens
 
         private void SubscribeToRemoteConfig()
         {
-            var remoteConfig = GameBootstrap.Services?.RemoteConfigService;
+            var remoteConfig = Services?.RemoteConfigService;
             if (remoteConfig != null)
             {
                 // Subscribe to MapConfig updates
@@ -355,7 +355,7 @@ namespace UI.Screens
             _onMapSelected?.Invoke(map);
 
             // Show toast
-            var uiService = GameBootstrap.Services?.UIService;
+            var uiService = Services?.UIService;
             uiService?.ShowNotification($"Map changed to {map.name}", NotificationType.Success, 2f);
 
             // Go back
@@ -364,7 +364,7 @@ namespace UI.Screens
 
         private void OnBackClicked()
         {
-            var uiService = GameBootstrap.Services?.UIService;
+            var uiService = Services?.UIService;
             if (uiService != null)
             {
                 bool wentBack = uiService.GoBack(false);
@@ -385,7 +385,7 @@ namespace UI.Screens
             }
 
             // Unsubscribe from RemoteConfig
-            var remoteConfig = GameBootstrap.Services?.RemoteConfigService;
+            var remoteConfig = Services?.RemoteConfigService;
             if (remoteConfig != null)
             {
                 remoteConfig.OnSpecificConfigUpdated -= OnMapConfigUpdated;

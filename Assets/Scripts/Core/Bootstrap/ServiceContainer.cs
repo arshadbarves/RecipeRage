@@ -217,7 +217,7 @@ namespace Core.Bootstrap
 
         private IUIService CreateUIService()
         {
-            var uiService = new UIService(AnimationService);
+            var uiService = new UIService(AnimationService, this);
             _uiDocumentProvider.Initialize(uiService);
             return uiService;
         }

@@ -27,8 +27,9 @@ namespace UI.Components.Tabs
 
         // State
         private readonly Dictionary<int, VisualElement> _characterSlots = new Dictionary<int, VisualElement>();
+        private ServiceContainer _services;
 
-        public void Initialize(VisualElement root)
+        public void Initialize(VisualElement root, ServiceContainer services)
         {
             GameLogger.Log("Initialize called");
 
@@ -39,8 +40,9 @@ namespace UI.Components.Tabs
             }
 
             _root = root;
-            _characterService = GameBootstrap.Services?.Session?.CharacterService;
-            _uiService = GameBootstrap.Services?.UIService;
+            _services = services ?? throw new ArgumentNullException(nameof(services));
+            _characterService = _services?.Session?.CharacterService;
+            _uiService = _services?.UIService;
 
             if (_characterService == null)
             {

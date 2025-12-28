@@ -121,7 +121,7 @@ namespace UI.Screens
             UpdateContent(notification.Title, notification.Message, notification.Type);
 
             // Use BaseUIScreen's Show method with animation
-            base.Show(animate: true, addToHistory: false);
+            this.Show(animate: true, addToHistory: false);
 
             // Wait for show animation to complete
             await UniTask.WaitUntil(() => !IsAnimating);
@@ -130,7 +130,7 @@ namespace UI.Screens
             await UniTask.Delay((int)(notification.Duration * 1000));
 
             // Hide using BaseUIScreen's Hide method
-            Hide(animate: true);
+            this.Hide(animate: true);
 
             // Wait for hide animation to complete
             await UniTask.WaitUntil(() => !IsAnimating);

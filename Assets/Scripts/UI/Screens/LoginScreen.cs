@@ -129,7 +129,7 @@ namespace UI.Screens
             }
 
             // Unsubscribe from EventBus
-            var eventBus = GameBootstrap.Services?.EventBus;
+            var eventBus = Services?.EventBus;
             if (eventBus != null)
             {
                 eventBus.Unsubscribe<LoginSuccessEvent>(HandleLoginSuccess);
@@ -188,14 +188,14 @@ namespace UI.Screens
 
         private void SetupAuthenticationManager()
         {
-            if (GameBootstrap.Services.AuthenticationService == null)
+            if (Services.AuthenticationService == null)
             {
                 GameLogger.LogWarning("AuthenticationManager not available yet, will retry when needed");
                 return;
             }
 
             // Subscribe to EventBus events
-            var eventBus = GameBootstrap.Services.EventBus;
+            var eventBus = Services.EventBus;
             if (eventBus != null)
             {
                 eventBus.Subscribe<LoginSuccessEvent>(HandleLoginSuccess);
@@ -275,14 +275,14 @@ namespace UI.Screens
             try
             {
                 // Wait for AuthenticationService if not available
-                if (GameBootstrap.Services.AuthenticationService == null)
+                if (Services.AuthenticationService == null)
                 {
                     UpdateStatus("Initializing authentication...");
 
                     var timeout = TimeSpan.FromSeconds(5);
                     var startTime = Time.time;
 
-                    while (GameBootstrap.Services.AuthenticationService == null)
+                    while (Services.AuthenticationService == null)
                     {
                         if (Time.time - startTime > timeout.TotalSeconds)
                         {
@@ -301,7 +301,7 @@ namespace UI.Screens
                 }
 
                 // Delegate to AuthenticationService
-                await GameBootstrap.Services.AuthenticationService.LoginWithFacebookAsync();
+                await Services.AuthenticationService.LoginWithFacebookAsync();
             }
             catch (Exception ex)
             {
@@ -317,14 +317,14 @@ namespace UI.Screens
             try
             {
                 // Wait for AuthenticationService if not available
-                if (GameBootstrap.Services.AuthenticationService == null)
+                if (Services.AuthenticationService == null)
                 {
                     UpdateStatus("Initializing authentication...");
 
                     var timeout = TimeSpan.FromSeconds(5);
                     var startTime = Time.time;
 
-                    while (GameBootstrap.Services.AuthenticationService == null)
+                    while (Services.AuthenticationService == null)
                     {
                         if (Time.time - startTime > timeout.TotalSeconds)
                         {
@@ -343,7 +343,7 @@ namespace UI.Screens
                 }
 
                 // Delegate to AuthenticationService
-                await GameBootstrap.Services.AuthenticationService.LoginAsGuestAsync();
+                await Services.AuthenticationService.LoginAsGuestAsync();
             }
             catch (Exception ex)
             {

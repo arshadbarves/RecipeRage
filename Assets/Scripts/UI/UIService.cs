@@ -26,6 +26,7 @@ namespace UI
         private readonly Dictionary<UIScreenType, BaseUIScreen> _screens = new();
         private readonly UIScreenStackManager _stackManager;
         private readonly IAnimationService _animationService;
+        private readonly ServiceContainer _services;
 
         public event Action<UIScreenType> OnScreenShown;
         public event Action<UIScreenType> OnScreenHidden;
@@ -33,9 +34,10 @@ namespace UI
 
         private bool _isInitialized = false;
 
-        public UIService(IAnimationService animationService)
+        public UIService(IAnimationService animationService, ServiceContainer services)
         {
             _animationService = animationService ?? throw new ArgumentNullException(nameof(animationService));
+            _services = services ?? throw new ArgumentNullException(nameof(services));
             _stackManager = new UIScreenStackManager();
         }
 
@@ -148,7 +150,7 @@ namespace UI
             BaseUIScreen screen = UIScreenRegistry.CreateScreen(screenType);
             if (screen != null)
             {
-                screen.Initialize(screenType, attribute.Priority, controller);
+                screen.Initialize(screenType, attribute.Priority, controller, _services);
                 _screens[screenType] = screen;
             }
             else

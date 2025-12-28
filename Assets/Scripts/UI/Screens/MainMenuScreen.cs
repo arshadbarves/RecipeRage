@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Core.Bootstrap;
 using Core.Animation;
 using Core.Events;
@@ -60,10 +61,11 @@ namespace UI.Screens
             }
 
             UpdatePlayerName();
-            PlayIntroAnimations();
 
-            // Default to Lobby
+            // Default to Lobby BEFORE animations so elements are visible to animate
             _tabSystem?.SwitchToTab("Lobby", true);
+
+            PlayIntroAnimations();
         }
 
         private void InitializeData()
@@ -75,6 +77,17 @@ namespace UI.Screens
             InitializePlayerCard();
             InitializeTabContent();
             SubscribeToEvents();
+
+            // Fix TabView header blocking top bar
+            TabView tabView = GetElement<TabView>("main-tabs");
+            if (tabView != null)
+            {
+                var headerContainer = tabView.Q(className: "unity-tab-view__header-container");
+                if (headerContainer != null) headerContainer.pickingMode = PickingMode.Ignore;
+
+                var tabHeader = tabView.Q(className: "unity-tab-view__header");
+                if (tabHeader != null) tabHeader.pickingMode = PickingMode.Ignore;
+            }
         }
 
         protected override void OnHide()
@@ -104,7 +117,7 @@ namespace UI.Screens
 
         private void SubscribeToEvents()
         {
-            var eventBus = GameBootstrap.Services?.EventBus;
+            var eventBus = Services?.EventBus;
             if (eventBus != null)
             {
                 eventBus.Subscribe<PlayerStatsChangedEvent>(OnPlayerStatsChanged);
@@ -113,7 +126,7 @@ namespace UI.Screens
 
         private void UnsubscribeFromEvents()
         {
-            var eventBus = GameBootstrap.Services?.EventBus;
+            var eventBus = Services?.EventBus;
             if (eventBus != null)
             {
                 eventBus.Unsubscribe<PlayerStatsChangedEvent>(OnPlayerStatsChanged);
@@ -204,7 +217,7 @@ namespace UI.Screens
         private void OnFriendsClicked()
         {
             GameLogger.Log("Opening Friends Popup");
-            var uiService = GameBootstrap.Services?.UIService;
+            var uiService = Services?.UIService;
             if (uiService != null)
             {
                 uiService.ShowScreen(UIScreenType.FriendsPopup, true, true);
@@ -225,14 +238,13 @@ namespace UI.Screens
 
         private void InitializeCurrencyDisplay()
         {
-            var services = GameBootstrap.Services;
             // Currency is in Session scope
-            if (services?.Session != null)
+            if (Services?.Session != null)
             {
                 _currencyDisplay = new CurrencyDisplay(
                     Container,
-                    services.EventBus,
-                    services.Session.CurrencyService
+                    Services.EventBus,
+                    Services.Session.CurrencyService
                 );
             }
         }
@@ -253,7 +265,7 @@ namespace UI.Screens
 
         private void UpdatePlayerName()
         {
-            var saveService = GameBootstrap.Services?.SaveService;
+            var saveService = Services?.SaveService;
             if (saveService != null && _playerNameLabel != null)
             {
                 var stats = saveService.GetPlayerStats();
@@ -265,7 +277,7 @@ namespace UI.Screens
         private void OnPlayerCardClicked()
         {
 
-            var uiService = GameBootstrap.Services?.UIService;
+            var uiService = Services?.UIService;
             if (uiService != null)
             {
                 uiService.ShowScreen(UIScreenType.Profile, true, true);
@@ -289,10 +301,9 @@ namespace UI.Screens
 
         private void InitializeAllTabs()
         {
-            var services = GameBootstrap.Services;
-            if (services?.Session == null)
+            if (Services?.Session == null)
             {
-                GameLogger.LogError("GameBootstrap.Services or Session is null!");
+                GameLogger.LogError("Services or Session is null!");
                 return;
             }
 
@@ -300,39 +311,51 @@ namespace UI.Screens
             var tabHeader = tabView.Q(className: "unity-tab-view__header");
             var tabButtons = tabHeader.Query<Button>(className: "unity-tab-button").ToList();
 
+            // Synchronize TabSystem with TabView
+            _tabSystem.OnTabChanged += (tabId) => {
+                int index = tabId switch {
+                    "Lobby" => 0,
+                    "Shop" => 1,
+                    "Character" => 2,
+                    "Settings" => 3,
+                    _ => 0
+                };
+                tabView.selectedTabIndex = index;
+            };
+
             // Lobby tab (Index 0)
-            VisualElement lobbyRoot = GetElement<VisualElement>("lobby-root");
+            VisualElement lobbyRoot = GetElement<VisualElement>("lobby-content");
             if (lobbyRoot != null && tabButtons.Count > 0)
             {
-                IMatchmakingService matchmakingService = services.Session.NetworkingServices?.MatchmakingService;
-                _lobbyTab = new LobbyTabComponent(matchmakingService, services.StateManager);
+                IMatchmakingService matchmakingService = Services.Session.NetworkingServices?.MatchmakingService;
+                _lobbyTab = new LobbyTabComponent(matchmakingService, Services.StateManager);
                 _lobbyTab.Initialize(lobbyRoot);
                 _tabSystem.AddTab("Lobby", tabButtons[0], _lobbyTab);
             }
 
-            // Character tab (Index 1)
-            VisualElement characterRoot = GetElement<VisualElement>("character-root");
-            if (characterRoot != null && tabButtons.Count > 1)
-            {
-                _characterTab = new CharacterTabComponent();
-                _characterTab.Initialize(characterRoot);
-                _tabSystem.AddTab("Character", tabButtons[1], _characterTab);
-            }
-
-            // Shop tab (Index 2)
-            VisualElement shopRoot = GetElement<VisualElement>("shop-root");
-            if (shopRoot != null && tabButtons.Count > 2)
+            // Shop tab (Index 1)
+            VisualElement shopRoot = GetElement<VisualElement>("shop-content");
+            if (shopRoot != null && tabButtons.Count > 1)
             {
                 _shopTab = new ShopTabComponent();
                 _shopTab.Initialize(shopRoot);
-                _tabSystem.AddTab("Shop", tabButtons[2], _shopTab);
+                _tabSystem.AddTab("Shop", tabButtons[1], _shopTab);
+            }
+
+            // Character tab (Index 2)
+            VisualElement characterRoot = GetElement<VisualElement>("character-content");
+            if (characterRoot != null && tabButtons.Count > 2)
+            {
+                _characterTab = new CharacterTabComponent();
+                _characterTab.Initialize(characterRoot);
+                _tabSystem.AddTab("Character", tabButtons[2], _characterTab);
             }
 
             // Settings tab (Index 3)
             VisualElement settingsRoot = GetElement<VisualElement>("settings-root");
             if (settingsRoot != null && tabButtons.Count > 3)
             {
-                _settingsTab = new SettingsTabComponent(services.SaveService);
+                _settingsTab = new SettingsTabComponent(Services.SaveService);
                 _settingsTab.Initialize(settingsRoot);
                 _tabSystem.AddTab("Settings", tabButtons[3], _settingsTab);
             }

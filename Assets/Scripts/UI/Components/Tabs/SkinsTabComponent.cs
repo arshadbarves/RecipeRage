@@ -18,11 +18,12 @@ namespace UI.Components.Tabs
         private string _selectedSkinId;
         private string _equippedSkinId;
         private SkinsData _skinsData;
+        private ServiceContainer _services;
 
         public string TabId => "Skins";
         public VisualElement Root => _root;
 
-        public void Initialize(VisualElement root)
+        public void Initialize(VisualElement root, ServiceContainer services)
         {
             GameLogger.Log("Initialize called");
 
@@ -33,6 +34,7 @@ namespace UI.Components.Tabs
             }
 
             _root = root;
+            _services = services ?? throw new ArgumentNullException(nameof(services));
             GameLogger.Log($"Root element: {_root.name}");
 
             _skinsGrid = _root.Q<VisualElement>("skins-grid");
