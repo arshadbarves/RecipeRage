@@ -17,7 +17,7 @@
 - [x] Task: Implement HUD layout persistence and runtime application to Gameplay UI. [commit: 901bc9f]
 - [x] Task: Conductor - User Manual Verification 'HUD Layout Editor' (Protocol in workflow.md)
 
-## Phase 4: Final Refinement
-- [~] Task: Polish animations and transitions between settings tabs.
-- [ ] Task: Final UI style audit and consistency check.
-- [ ] Task: Conductor - User Manual Verification 'Final Refinement' (Protocol in workflow.md)
+## Phase 4: Final Refinement [checkpoint: 55e273a]
+- [x] Task: Polish animations and transitions between settings tabs. [commit: 71b37eb]
+- [x] Task: Final UI style audit and consistency check. [commit: 71b37eb]
+- [x] Task: Conductor - User Manual Verification 'Final Refinement' (Protocol in workflow.md)
