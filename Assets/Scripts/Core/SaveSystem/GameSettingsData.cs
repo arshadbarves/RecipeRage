@@ -31,6 +31,9 @@ namespace Core.SaveSystem
         public bool IsFullscreen = true;
         public int ResolutionIndex = 0;
         public int GraphicsQuality = 2; // 0=Low, 1=Medium, 2=High
+        public int TargetFrameRate = 60;
+        public bool ShadowsEnabled = true;
+        public bool BloomEnabled = true;
 
         [Range(0f, 1f)]
         public float Brightness = 0.5f;
@@ -50,6 +53,12 @@ namespace Core.SaveSystem
         public bool ShowTutorials = true;
         public bool NotificationsEnabled = true;
         public int LanguageIndex = 0; // 0=English, 1=Spanish, etc.
+
+        // Privacy and Legal
+        [Header("Privacy and Legal")]
+        public bool GDPRConsent = false;
+        public bool PrivacyPolicyAccepted = false;
+        public bool TermsOfServiceAccepted = false;
 
         // Authentication
         [Header("Authentication")]

@@ -18,6 +18,12 @@ namespace Core.SaveSystem
         public int Level = 1;
         public int Experience = 0;
         public int ExperienceToNextLevel = 100;
+
+        // Account Linking
+        [Header("Account Linking")]
+        public bool IsLinkedToGoogle = false;
+        public bool IsLinkedToApple = false;
+        public bool IsLinkedToFacebook = false;
         
         // Currency
         [Header("Currency")]
