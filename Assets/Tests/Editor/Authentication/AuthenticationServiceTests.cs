@@ -92,7 +92,7 @@ namespace Tests.Editor.Authentication
 
         public void DeleteAllData() { }
         public void ClearUserCache() { }
-        public SyncStatus GetSyncStatus(string key) => SyncStatus.Synced;
+        public SyncStatus GetSyncStatus(string key) => new SyncStatus();
         public UniTask SyncAllCloudDataAsync() => UniTask.CompletedTask;
         public T LoadData<T>(string key) where T : class, new() => new T();
         public void SaveData<T>(string key, T data) where T : class, new() { }
