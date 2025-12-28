@@ -1,51 +1,31 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ns0:UXML xmlns:ns0="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd" editor-extension-mode="False">
-    <ns0:Style src="project://database/Assets/UI/USS/JoystickEditor.uss" />
-    <ns0:VisualElement name="joystick-editor-root">
-        <ns0:VisualElement name="editor-header">
-            <ns0:Label text="EDIT CONTROLS" />
-            <ns0:Button name="close-button" text="✕" />
+<ns0:UXML xmlns:ns0="UnityEngine.UIElements">
+    <ns0:Style src="project://database/Assets/Resources/UI/Styles/Screens/Settings.uss" />
+    
+    <ns0:VisualElement name="editor-root" class="settings-body" style="background-color: rgba(0,0,0,0.8);">
+        <!-- HEADER -->
+        <ns0:VisualElement class="settings-header">
+            <ns0:Label text="EDIT CONTROLS" class="page-title anton" />
+            <ns0:VisualElement style="flex-grow: 1;" />
+            <ns0:Button name="close-button" text="✕" class="back-btn" />
         </ns0:VisualElement>
-        <ns0:VisualElement name="editor-content">
-            <ns0:VisualElement name="preview-area">
-                <ns0:VisualElement name="left-joystick">
-                    <ns0:VisualElement name="left-joystick-base" />
-                    <ns0:VisualElement name="left-joystick-stick" />
-                </ns0:VisualElement>
-                <ns0:VisualElement name="right-joystick">
-                    <ns0:VisualElement name="right-joystick-base" />
-                    <ns0:VisualElement name="right-joystick-stick" />
-                </ns0:VisualElement>
-                <ns0:VisualElement name="action-buttons">
-                    <ns0:Button name="jump-button">
-                        <ns0:Label text="JUMP" />
-                    </ns0:Button>
-                    <ns0:Button name="attack-button">
-                        <ns0:Label text="ATTACK" />
-                    </ns0:Button>
-                    <ns0:Button name="special-button">
-                        <ns0:Label text="SPECIAL" />
-                    </ns0:Button>
-                </ns0:VisualElement>
-            </ns0:VisualElement>
-            <ns0:VisualElement name="controls-panel">
-                <ns0:Label text="JOYSTICK SETTINGS" />
-                <ns0:VisualElement>
-                    <ns0:Label text="Joystick Size" />
-                    <ns0:Slider name="joystick-size" low-value="0.5" high-value="1.5" value="1" />
-                </ns0:VisualElement>
-                <ns0:VisualElement>
-                    <ns0:Label text="Opacity" />
-                    <ns0:Slider name="joystick-opacity" low-value="0.3" high-value="1" value="0.7" />
-                </ns0:VisualElement>
-                <ns0:VisualElement>
-                    <ns0:Label text="Dead Zone" />
-                    <ns0:Slider name="dead-zone" low-value="0" high-value="0.5" value="0.1" />
-                </ns0:VisualElement>
-                <ns0:Toggle name="fixed-joystick" text="Fixed Position" />
-                <ns0:Button name="reset-button" text="RESET TO DEFAULT" />
-                <ns0:Button name="save-button" text="SAVE CHANGES" />
-            </ns0:VisualElement>
+
+        <!-- PREVIEW AREA (Interactive) -->
+        <ns0:VisualElement name="preview-area" style="flex-grow: 1; position: relative;">
+            <ns0:VisualElement name="movement-joystick" class="joystick-preview" style="position: absolute; left: 150px; bottom: 150px; width: 200px; height: 200px; border-width: 2px; border-color: rgba(255,255,255,0.3); border-radius: 100px; background-color: rgba(255,255,255,0.1);" />
+            
+            <ns0:VisualElement name="aim-joystick" class="joystick-preview" style="position: absolute; right: 150px; bottom: 150px; width: 200px; height: 200px; border-width: 2px; border-color: rgba(255,255,255,0.3); border-radius: 100px; background-color: rgba(255,255,255,0.1);" />
+
+            <ns0:Button name="jump-btn" text="JUMP" class="seg-btn" style="position: absolute; right: 400px; bottom: 100px; width: 100px; height: 100px; border-radius: 50px;" />
+            <ns0:Button name="dash-btn" text="DASH" class="seg-btn" style="position: absolute; right: 300px; bottom: 250px; width: 80px; height: 80px; border-radius: 40px;" />
+            <ns0:Button name="special-btn" text="ULTI" class="seg-btn active" style="position: absolute; right: 450px; bottom: 250px; width: 120px; height: 120px; border-radius: 60px;" />
+        </ns0:VisualElement>
+
+        <!-- FOOTER -->
+        <ns0:VisualElement class="settings-footer">
+            <ns0:Label text="Drag elements to reposition. Tap to select." class="set-sub" style="margin-right: auto;" />
+            <ns0:Button name="reset-button" text="RESET" class="action-btn btn-reset anton" />
+            <ns0:Button name="save-button" text="SAVE" class="action-btn btn-apply anton" />
         </ns0:VisualElement>
     </ns0:VisualElement>
 </ns0:UXML>
