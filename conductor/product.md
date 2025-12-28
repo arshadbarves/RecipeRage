@@ -19,9 +19,10 @@ Players are motivated by several core objectives:
 The development will follow a phased approach, prioritizing infrastructure and UI before core gameplay:
 
 1.  **Phase 1: Foundation & UI System:**
-    -   **Backend Integration:** Full integration of Epic Online Services (EOS) for authentication, friends, and presence, and Firebase for remote config and analytics.
-    -   **UI Architecture:** A robust, responsive UI system built on this backend, handling login, main menu, friend lists, and settings.
+    -   **Backend Integration:** Full integration of Epic Online Services (EOS) for authentication and friends, and Firebase for remote config.
+    -   **UI Architecture:** A robust, modular Tab-based UI system (SOLID compliant) handling login, main menu, friends, and comprehensive settings.
     -   **Social Features:** Chat and party management UI.
+    -   **Control Customization:** Interactive HUD editor for mobile layout optimization.
 
 2.  **Phase 2: Core Gameplay:**
     -   **Game Modes:** Implementation of Classic, Time Attack, and Team Battle modes.
