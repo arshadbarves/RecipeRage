@@ -19,6 +19,7 @@ namespace Core.Authentication
         private readonly ISaveService _saveService;
         private readonly Core.Events.IEventBus _eventBus;
         private readonly Core.Maintenance.IMaintenanceService _maintenanceService;
+        private readonly IEOSWrapper _eosWrapper;
         private readonly Action _onSessionCreate;
 
         public bool IsLoggedIn => IsUserLoggedIn();
@@ -28,11 +29,13 @@ namespace Core.Authentication
             ISaveService saveService,
             Core.Events.IEventBus eventBus,
             Core.Maintenance.IMaintenanceService maintenanceService,
+            IEOSWrapper eosWrapper,
             Action onSessionCreate)
         {
             _saveService = saveService ?? throw new ArgumentNullException(nameof(saveService));
             _eventBus = eventBus ?? throw new ArgumentNullException(nameof(eventBus));
             _maintenanceService = maintenanceService;
+            _eosWrapper = eosWrapper ?? throw new ArgumentNullException(nameof(eosWrapper));
             _onSessionCreate = onSessionCreate ?? throw new ArgumentNullException(nameof(onSessionCreate));
         }
 
@@ -79,7 +82,7 @@ namespace Core.Authentication
 
                 _eventBus?.Publish(new Core.Events.LoginSuccessEvent
                 {
-                    UserId = EOSManager.Instance?.GetProductUserId()?.ToString() ?? "unknown",
+                    UserId = _eosWrapper.GetProductUserId()?.ToString() ?? "unknown",
                     DisplayName = "User"
                 });
 
@@ -133,12 +136,29 @@ namespace Core.Authentication
         private async UniTask<bool> LoginWithDeviceIdInternalAsync(bool isAutoLogin)
         {
             string errorMessage = "";
+            
+            if (!_eosWrapper.IsReady)
+            {
+                errorMessage = "EOS SDK not initialized";
+                GameLogger.LogError(errorMessage);
+                UpdateStatus(errorMessage);
+                _eventBus?.Publish(new Core.Events.LoginFailedEvent { Error = errorMessage });
+                return false;
+            }
 
             if (!isAutoLogin)
             {
                 UpdateStatus("Setting up guest account...");
 
-                ConnectInterface connectInterface = EOSManager.Instance.GetEOSConnectInterface();
+                ConnectInterface connectInterface = _eosWrapper.GetEOSConnectInterface();
+                if (connectInterface == null)
+                {
+                    errorMessage = "EOS Connect Interface unavailable";
+                    GameLogger.LogError(errorMessage);
+                    UpdateStatus(errorMessage);
+                    return false;
+                }
+
                 var createOptions = new CreateDeviceIdOptions()
                 {
                     DeviceModel = SystemInfo.deviceModel
@@ -203,7 +223,7 @@ namespace Core.Authentication
             bool loginSuccess = false;
             string displayName = $"Guest_{SystemInfo.deviceUniqueIdentifier.Substring(0, 8)}";
 
-            EOSManager.Instance.StartConnectLoginWithOptions(
+            _eosWrapper.StartConnectLoginWithOptions(
                 ExternalCredentialType.DeviceidAccessToken,
                 null,
                 displayName,
@@ -256,7 +276,7 @@ namespace Core.Authentication
 
                 _eventBus?.Publish(new Core.Events.LoginSuccessEvent
                 {
-                    UserId = EOSManager.Instance?.GetProductUserId()?.ToString() ?? "unknown",
+                    UserId = _eosWrapper.GetProductUserId()?.ToString() ?? "unknown",
                     DisplayName = "Guest"
                 });
 
@@ -282,9 +302,9 @@ namespace Core.Authentication
 
         private bool IsUserLoggedIn()
         {
-            if (EOSManager.Instance == null) return false;
+            if (!_eosWrapper.IsReady) return false;
 
-            ProductUserId productUserId = EOSManager.Instance.GetProductUserId();
+            ProductUserId productUserId = _eosWrapper.GetProductUserId();
             return productUserId != null && productUserId.IsValid();
         }
 
@@ -316,12 +336,12 @@ namespace Core.Authentication
                 _saveService.OnUserLoggedOut();
 
                 // EOS logout (if available)
-                if (EOSManager.Instance != null)
+                if (_eosWrapper.IsReady)
                 {
-                    ProductUserId productUserId = EOSManager.Instance.GetProductUserId();
+                    ProductUserId productUserId = _eosWrapper.GetProductUserId();
                     if (productUserId != null && productUserId.IsValid())
                     {
-                        EOSManager.Instance.ClearConnectId(productUserId);
+                        _eosWrapper.ClearConnectId(productUserId);
                     }
                     GameLogger.Log("EOS session cleared");
                 }
@@ -332,7 +352,7 @@ namespace Core.Authentication
 
                 _eventBus?.Publish(new Core.Events.LogoutEvent
                 {
-                    UserId = EOSManager.Instance?.GetProductUserId()?.ToString() ?? "unknown"
+                    UserId = _eosWrapper.GetProductUserId()?.ToString() ?? "unknown"
                 });
 
                 GameLogger.Log("Logout complete");
