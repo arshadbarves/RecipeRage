@@ -1,7 +1,7 @@
 # Track Plan: Foundation: UI System and Backend Integration
 
 ## Phase 1: Backend Infrastructure Integration
-- [ ] Task: Integrate Epic Online Services (EOS) SDK and implement basic Auth service.
+- [x] Task: Integrate Epic Online Services (EOS) SDK and implement basic Auth service. [commit: ca3adde]
 - [ ] Task: Integrate Firebase SDK and implement Remote Config service.
 - [ ] Task: Implement EOS Friends and Presence service.
 - [ ] Task: Conductor - User Manual Verification 'Backend Infrastructure Integration' (Protocol in workflow.md)
