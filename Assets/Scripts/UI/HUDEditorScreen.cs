@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Core.Animation;
+using Core.Bootstrap;
 using Core.Logging;
 using Core.SaveSystem;
 using UI.Core;
+using UI.Screens;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -20,19 +22,19 @@ namespace UI
         private ISaveService _saveService;
         private VisualElement _editorRoot;
         private List<EditableControl> _editableControls = new List<EditableControl>();
-        
+
         private Button _saveBtn;
         private Button _resetBtn;
         private Button _exitBtn;
-        
+
         private EditableControl _selectedControl;
 
         public void Initialize() { } // Added for interface compatibility if needed
 
         protected override void OnInitialize()
         {
-            _saveService = Core.Bootstrap.GameBootstrap.Services?.SaveService;
-            
+            _saveService = Services?.SaveService;
+
             _editorRoot = GetElement<VisualElement>("editor-root");
             _saveBtn = GetElement<Button>("save-button");
             _resetBtn = GetElement<Button>("reset-button");
@@ -71,7 +73,7 @@ namespace UI
             if (_selectedControl != null) _selectedControl.SetSelected(false);
             _selectedControl = control;
             if (_selectedControl != null) _selectedControl.SetSelected(true);
-            
+
             GameLogger.Log($"Selected control for editing: {control.Id}");
         }
 
@@ -92,7 +94,7 @@ namespace UI
             }
 
             _saveService.SaveSettings(settings);
-            GameBootstrap.Services?.UIService?.ShowNotification("HUD Layout Saved", NotificationType.Success, 2f);
+            Services?.UIService?.ShowNotification("HUD Layout Saved", NotificationType.Success, 2f);
             Hide(true);
         }
 
@@ -132,7 +134,7 @@ namespace UI
             public VisualElement Element { get; }
             public float Size { get; private set; } = 1.0f;
             public float Opacity { get; private set; } = 1.0f;
-            
+
             public event Action<EditableControl> OnSelected;
 
             private Vector2 _defaultPos;
@@ -157,26 +159,42 @@ namespace UI
                 else Element.RemoveFromClassList("selected-for-edit");
             }
 
-            public void SetLayout(Vector2 normalizedPos, float size, float opacity)
-            {
-                Size = size;
-                Opacity = opacity;
-                
-                // Position logic...
-                // In a real implementation, we'd map normalized (0-1) to parent dimensions
-            }
-
-            public Vector2 GetNormalizedPosition()
-            {
-                // Return normalized coordinates...
-                return Vector2.zero; 
-            }
-
-            public void ResetToDefault()
-            {
-                // Reset logic...
-            }
-
+                        public void SetLayout(Vector2 normalizedPos, float size, float opacity)
+                        {
+                            Size = size;
+                            Opacity = opacity;
+                            
+                            Element.style.width = Element.resolvedStyle.width * size;
+                            Element.style.height = Element.resolvedStyle.height * size;
+                            Element.style.opacity = opacity;
+            
+                            var parent = Element.parent;
+                            if (parent != null)
+                            {
+                                Element.style.left = normalizedPos.x * parent.resolvedStyle.width;
+                                Element.style.top = normalizedPos.y * parent.resolvedStyle.height;
+                            }
+                        }
+            
+                        public Vector2 GetNormalizedPosition()
+                        {
+                            var parent = Element.parent;
+                            if (parent == null || parent.resolvedStyle.width == 0) return Vector2.zero;
+            
+                            return new Vector2(
+                                Element.resolvedStyle.left / parent.resolvedStyle.width,
+                                Element.resolvedStyle.top / parent.resolvedStyle.height
+                            );
+                        }
+            
+                        public void ResetToDefault()
+                        {
+                            Element.style.left = _defaultPos.x;
+                            Element.style.top = _defaultPos.y;
+                            Element.style.width = StyleKeyword.Null;
+                            Element.style.height = StyleKeyword.Null;
+                            Element.style.opacity = 1.0f;
+                        }
             private void OnPointerDown(PointerDownEvent evt)
             {
                 _isDragging = true;

@@ -10,7 +10,7 @@ namespace UI.Components.Tabs
     {
         string TabId { get; }
         VisualElement Root { get; }
-        void Initialize(VisualElement root);
+        void Initialize(VisualElement root, Core.Bootstrap.ServiceContainer services);
         void OnShow();
         void OnHide();
         void Update(float deltaTime);
