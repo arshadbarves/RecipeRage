@@ -26,6 +26,7 @@ namespace UI.Screens
         private ShopTabComponent _shopTab;
         private CharacterTabComponent _characterTab;
         private SettingsTabComponent _settingsTab;
+        private TabSystem _tabSystem;
 
         #endregion
 
@@ -60,6 +61,9 @@ namespace UI.Screens
 
             UpdatePlayerName();
             PlayIntroAnimations();
+
+            // Default to Lobby
+            _tabSystem?.SwitchToTab("Lobby", true);
         }
 
         private void InitializeData()
@@ -79,13 +83,14 @@ namespace UI.Screens
 
         public override void Update(float deltaTime)
         {
-            _lobbyTab?.Update(deltaTime);
+            _tabSystem?.Update(deltaTime);
         }
 
         protected override void OnDispose()
         {
             UnsubscribeFromEvents();
             _currencyDisplay?.Dispose();
+            _tabSystem?.Dispose();
 
             if (_playerCardButton != null)
             {
@@ -208,17 +213,8 @@ namespace UI.Screens
 
         private void OnSettingsClicked()
         {
-            // Settings is a tab, so switch to it?
-            // Or show a settings popup?
-            // "Settings is now a tab within MainMenuScreen" -> Switch tab
-            var tabView = Container.Q<TabView>("main-tabs");
-            // Assuming Settings is the last tab or index 3
-            // Better to find index by name but TabView API is limited
-            // Hardcoding for now based on template structure (Lobby, Character, Shop, Settings)
-            // But usually settings icon opens a quick settings popup or overlay
-            // If it's a tab, we should switch the tab view
-            // TODO: Implement proper tab switching if needed, for now log
-            GameLogger.Log("Settings clicked");
+            // Settings is a tab, so switch to it
+            _tabSystem?.SwitchToTab("Settings");
         }
 
         private void OnLeaderboardClicked()
@@ -279,100 +275,66 @@ namespace UI.Screens
         private void InitializeTabContent()
         {
             TabView tabView = GetElement<TabView>("main-tabs");
-            if (tabView != null)
-            {
-                tabView.RegisterCallback<ChangeEvent<int>>(OnTabChanged);
-                InitializeAllTabs();
-            }
-            else
+            if (tabView == null)
             {
                 GameLogger.LogError("TabView not found!");
+                return;
             }
-        }
 
-        private void OnTabChanged(ChangeEvent<int> evt)
-        {
+            // Initialize TabSystem
+            _tabSystem = new TabSystem(Container, _animator);
+
+            InitializeAllTabs();
         }
 
         private void InitializeAllTabs()
         {
-
             var services = GameBootstrap.Services;
-            if (services == null)
+            if (services?.Session == null)
             {
-                GameLogger.LogError("GameBootstrap.Services is null!");
+                GameLogger.LogError("GameBootstrap.Services or Session is null!");
                 return;
             }
 
-            if (services.Session == null)
-            {
-                GameLogger.LogError("GameBootstrap.Services.Session is null! User not logged in?");
-                return;
-            }
+            TabView tabView = GetElement<TabView>("main-tabs");
+            var tabHeader = tabView.Q(className: "unity-tab-view__header");
+            var tabButtons = tabHeader.Query<Button>(className: "unity-tab-button").ToList();
 
-            // Lobby tab (Main Menu/Home)
+            // Lobby tab (Index 0)
             VisualElement lobbyRoot = GetElement<VisualElement>("lobby-root");
-            if (lobbyRoot != null)
+            if (lobbyRoot != null && tabButtons.Count > 0)
             {
-                // Get matchmaking service from networking services (In Session)
                 IMatchmakingService matchmakingService = services.Session.NetworkingServices?.MatchmakingService;
-
-                if (matchmakingService != null && services.StateManager != null)
-                {
-                    _lobbyTab = new LobbyTabComponent(matchmakingService, services.StateManager);
-                    _lobbyTab.Initialize(lobbyRoot);
-                }
-                else
-                {
-                    GameLogger.LogError("Failed to get required services for LobbyTab");
-                }
-            }
-            else
-            {
-                GameLogger.LogWarning("Lobby root not found");
+                _lobbyTab = new LobbyTabComponent(matchmakingService, services.StateManager);
+                _lobbyTab.Initialize(lobbyRoot);
+                _tabSystem.AddTab("Lobby", tabButtons[0], _lobbyTab);
             }
 
-            // Character tab
+            // Character tab (Index 1)
             VisualElement characterRoot = GetElement<VisualElement>("character-root");
-            if (characterRoot != null)
+            if (characterRoot != null && tabButtons.Count > 1)
             {
                 _characterTab = new CharacterTabComponent();
                 _characterTab.Initialize(characterRoot);
-            }
-            else
-            {
-                GameLogger.LogWarning("Character root not found");
+                _tabSystem.AddTab("Character", tabButtons[1], _characterTab);
             }
 
-            // Shop tab
+            // Shop tab (Index 2)
             VisualElement shopRoot = GetElement<VisualElement>("shop-root");
-            if (shopRoot != null)
+            if (shopRoot != null && tabButtons.Count > 2)
             {
                 _shopTab = new ShopTabComponent();
                 _shopTab.Initialize(shopRoot);
-            }
-            else
-            {
-                GameLogger.LogWarning("Shop root not found");
+                _tabSystem.AddTab("Shop", tabButtons[2], _shopTab);
             }
 
-            // Settings tab
+            // Settings tab (Index 3)
             VisualElement settingsRoot = GetElement<VisualElement>("settings-root");
-            if (settingsRoot != null)
+            if (settingsRoot != null && tabButtons.Count > 3)
             {
-                if (services.SaveService != null)
-                {
-                    _settingsTab = new SettingsTabComponent(services.SaveService);
-                    _settingsTab.Initialize(settingsRoot);
-                }
-                else
-                {
-                    GameLogger.LogError("SaveService not available!");
-                }
-            }
-            else
-            {
-                GameLogger.LogWarning("Settings root not found");
+                _settingsTab = new SettingsTabComponent(services.SaveService);
+                _settingsTab.Initialize(settingsRoot);
+                _tabSystem.AddTab("Settings", tabButtons[3], _settingsTab);
             }
         }
 

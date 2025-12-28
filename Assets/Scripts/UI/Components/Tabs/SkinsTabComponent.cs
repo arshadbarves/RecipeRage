@@ -9,7 +9,7 @@ namespace UI.Components.Tabs
     /// Skins tab content component
     /// Renamed from SkinsUI for consistency
     /// </summary>
-    public class SkinsTabComponent
+    public class SkinsTabComponent : ITabComponent
     {
         private VisualElement _root;
         private VisualElement _skinsGrid;
@@ -18,6 +18,8 @@ namespace UI.Components.Tabs
         private string _selectedSkinId;
         private string _equippedSkinId;
         private SkinsData _skinsData;
+
+        public string TabId => "Skins";
 
         public void Initialize(VisualElement root)
         {
@@ -58,6 +60,29 @@ namespace UI.Components.Tabs
             UpdateSkinNameDisplay();
             PopulateSkins();
             UpdateEquipButton();
+        }
+
+        public void OnShow()
+        {
+            if (_root != null) _root.style.display = DisplayStyle.Flex;
+            PopulateSkins(); // Refresh on show
+        }
+
+        public void OnHide()
+        {
+            if (_root != null) _root.style.display = DisplayStyle.None;
+        }
+
+        public void Update(float deltaTime) { }
+
+        public void Dispose()
+        {
+            if (_equipButton != null)
+            {
+                _equipButton.clicked -= OnEquipButtonClicked;
+            }
+
+            GameLogger.Log("Disposed");
         }
 
         private void LoadSkinsData()
@@ -196,16 +221,6 @@ namespace UI.Components.Tabs
 
             UpdateEquipButton();
             PopulateSkins();
-        }
-
-        public void Dispose()
-        {
-            if (_equipButton != null)
-            {
-                _equipButton.clicked -= OnEquipButtonClicked;
-            }
-
-            GameLogger.Log("Disposed");
         }
     }
 }

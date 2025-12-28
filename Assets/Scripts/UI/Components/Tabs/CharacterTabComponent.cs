@@ -13,11 +13,13 @@ namespace UI.Components.Tabs
     /// Displays character grid - clicking opens CharacterDetailsScreen
     /// Matches the style of SkinsTabComponent
     /// </summary>
-    public class CharacterTabComponent
+    public class CharacterTabComponent : ITabComponent
     {
         private VisualElement _root;
         private ICharacterService _characterService;
         private IUIService _uiService;
+
+        public string TabId => "Character";
 
         // UI Elements
         private VisualElement _characterGrid;
@@ -54,6 +56,25 @@ namespace UI.Components.Tabs
             BuildCharacterGrid();
 
             GameLogger.Log("Initialization complete");
+        }
+
+        public void OnShow()
+        {
+            if (_root != null) _root.style.display = DisplayStyle.Flex;
+            BuildCharacterGrid(); // Refresh on show
+        }
+
+        public void OnHide()
+        {
+            if (_root != null) _root.style.display = DisplayStyle.None;
+        }
+
+        public void Update(float deltaTime) { }
+
+        public void Dispose()
+        {
+            _characterSlots.Clear();
+            GameLogger.Log("Disposed");
         }
 
         private void QueryElements()
@@ -202,15 +223,6 @@ namespace UI.Components.Tabs
         public void Update(float deltaTime)
         {
             // Can be used for animations or updates if needed
-        }
-
-        /// <summary>
-        /// Cleanup resources
-        /// </summary>
-        public void Dispose()
-        {
-            _characterSlots.Clear();
-            GameLogger.Log("Disposed");
         }
     }
 }

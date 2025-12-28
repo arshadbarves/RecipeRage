@@ -15,10 +15,12 @@ namespace UI.Components.Tabs
     /// Uses SaveService for persistence (cloud sync + encryption)
     /// Follows proper dependency injection pattern
     /// </summary>
-    public class SettingsTabComponent
+    public class SettingsTabComponent : ITabComponent
     {
         private VisualElement _root;
         private readonly ISaveService _saveService;
+
+        public string TabId => "Settings";
 
         // Audio controls
         private Slider _musicVolumeSlider;
@@ -89,6 +91,19 @@ namespace UI.Components.Tabs
 
             GameLogger.Log("Initialization complete");
         }
+
+        public void OnShow()
+        {
+            if (_root != null) _root.style.display = DisplayStyle.Flex;
+            LoadSettings(); // Refresh from data
+        }
+
+        public void OnHide()
+        {
+            if (_root != null) _root.style.display = DisplayStyle.None;
+        }
+
+        public void Update(float deltaTime) { }
 
         private void QueryElements()
         {

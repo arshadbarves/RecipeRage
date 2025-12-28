@@ -19,42 +19,15 @@ namespace UI.Components.Tabs
     /// Lobby/Home tab with 4-player party support
     /// Brawl Stars-style lobby with ADD buttons and context-sensitive action button
     /// </summary>
-    public class LobbyTabComponent
+    public class LobbyTabComponent : ITabComponent
     {
         private VisualElement _root;
         private readonly IMatchmakingService _matchmakingService;
         private readonly IGameStateManager _stateManager;
 
-        // UI Elements - Map/Event
-        private Button _playButton;
-        private Button _mapButton;
-        private Label _mapNameLabel;
-        private Label _mapSubtitleLabel;
-        private Label _timerLabel;
-        private Label _actionButtonText;
+        public string TabId => "Lobby";
 
-        // UI Elements - Party
-        private VisualElement _teamControls;
-        private Label _teamCodeLabel;
-        private Button _leaveButton;
-
-        // Player Slots (dynamic based on team size)
-        private List<PlayerSlot> _playerSlots = new List<PlayerSlot>();
-        private VisualElement _playerSlotsContainer;
-
-        // Map data
-        private MapDatabase _mapDatabase;
-        private MapInfo _currentMap;
-
-        // Party state
-        private bool _isInParty = false;
-        private bool _isReady = false;
-        private int _currentPlayerCount = 1;
-        private int _maxTeamSize = 4; // Default, can be changed based on game mode
-        private bool _buttonsInitialized = false;
-
-        // Template
-        private VisualTreeAsset _playerSlotTemplate;
+        // ... existing properties ...
 
         public LobbyTabComponent(
             IMatchmakingService matchmakingService,
@@ -89,6 +62,40 @@ namespace UI.Components.Tabs
             HideAnimatedElements();            // Hide elements for intro animation
 
             GameLogger.Log("Initialization complete");
+        }
+
+        public void OnShow()
+        {
+            if (_root != null) _root.style.display = DisplayStyle.Flex;
+            UpdateMapInfo(); // Refresh map data when shown
+        }
+
+        public void OnHide()
+        {
+            if (_root != null) _root.style.display = DisplayStyle.None;
+        }
+
+        public void Update(float deltaTime)
+        {
+            // Update timer if needed
+        }
+
+        public void Dispose()
+        {
+            if (_playButton != null)
+                _playButton.clicked -= OnPlayClicked;
+
+            if (_mapButton != null)
+                _mapButton.clicked -= OnMapClicked;
+
+            if (_leaveButton != null)
+                _leaveButton.clicked -= OnLeaveClicked;
+
+            CleanupDynamicButtons();
+
+            _buttonsInitialized = false;
+
+            GameLogger.Log("Disposed");
         }
 
         private void LoadTemplate()
@@ -731,11 +738,6 @@ namespace UI.Components.Tabs
         public bool IsInParty() => _isInParty;
         public bool IsReady() => _isReady;
 
-        public void Update(float deltaTime)
-        {
-            // Update timer if needed
-        }
-
         /// <summary>
         /// Hide all animated elements before intro animations
         /// </summary>
@@ -849,27 +851,6 @@ namespace UI.Components.Tabs
                 DOTween.To(() => 50f, y => element.style.translate = new StyleTranslate(new Translate(0, y, 0)), 0f, duration)
                     .SetEase(Ease.OutBack);
             });
-        }
-
-        /// <summary>
-        /// Cleanup event handlers - call when disposing component
-        /// </summary>
-        public void Dispose()
-        {
-            if (_playButton != null)
-                _playButton.clicked -= OnPlayClicked;
-
-            if (_mapButton != null)
-                _mapButton.clicked -= OnMapClicked;
-
-            if (_leaveButton != null)
-                _leaveButton.clicked -= OnLeaveClicked;
-
-            CleanupDynamicButtons();
-
-            _buttonsInitialized = false;
-
-            GameLogger.Log("Disposed");
         }
 
         // Helper class

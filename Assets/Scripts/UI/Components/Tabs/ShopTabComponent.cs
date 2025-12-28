@@ -10,13 +10,15 @@ namespace UI.Components.Tabs
     /// Shop tab content component
     /// Renamed from ShopUI for consistency
     /// </summary>
-    public class ShopTabComponent
+    public class ShopTabComponent : ITabComponent
     {
         private VisualElement _root;
         private VisualElement _shopItemsGrid;
         private string _currentCategory = "featured";
         private ShopData _shopData;
         private VisualTreeAsset _shopItemTemplate;
+
+        public string TabId => "Shop";
 
         public void Initialize(VisualElement root)
         {
@@ -45,6 +47,24 @@ namespace UI.Components.Tabs
             LoadShopData();
             SetupCategoryButtons();
             PopulateShopItems();
+        }
+
+        public void OnShow()
+        {
+            if (_root != null) _root.style.display = DisplayStyle.Flex;
+            PopulateShopItems(); // Refresh on show
+        }
+
+        public void OnHide()
+        {
+            if (_root != null) _root.style.display = DisplayStyle.None;
+        }
+
+        public void Update(float deltaTime) { }
+
+        public void Dispose()
+        {
+            GameLogger.Log("Disposed");
         }
 
         private void LoadTemplate()
@@ -276,11 +296,6 @@ namespace UI.Components.Tabs
             {
                 GameLogger.LogWarning($"Not enough {item.currency} to buy {item.name}");
             }
-        }
-
-        public void Dispose()
-        {
-            GameLogger.Log("Disposed");
         }
     }
 }
