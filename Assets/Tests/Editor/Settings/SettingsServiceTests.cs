@@ -4,6 +4,7 @@ using Core.SaveSystem;
 using Core.Audio;
 using UnityEngine;
 using System;
+using Tests.Editor.Mocks;
 
 namespace Tests.Editor.Settings
 {
