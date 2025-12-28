@@ -71,20 +71,31 @@ namespace Tests.Editor.Authentication
         public GameSettingsData Settings = new GameSettingsData();
         public bool IsUserLoggedInVal = false;
 
+        public event Action<GameSettingsData> OnSettingsChanged;
+        public event Action<PlayerProgressData> OnPlayerProgressChanged;
+        public event Action<PlayerStatsData> OnPlayerStatsChanged;
+
         public void Initialize() { }
         public GameSettingsData GetSettings() => Settings;
-        public void SaveSettings(GameSettingsData settings) { Settings = settings; }
-        public void UpdateSettings(Action<GameSettingsData> updateAction) { updateAction(Settings); }
+        public void SaveSettings(GameSettingsData settings) { Settings = settings; OnSettingsChanged?.Invoke(Settings); }
+        public void UpdateSettings(Action<GameSettingsData> updateAction) { updateAction(Settings); OnSettingsChanged?.Invoke(Settings); }
         public void OnUserLoggedIn() { IsUserLoggedInVal = true; }
         public void OnUserLoggedOut() { IsUserLoggedInVal = false; }
         
-        public PlayerProgressData GetProgress() => new PlayerProgressData();
-        public void SaveProgress(PlayerProgressData progress) { }
-        public void UpdateProgress(Action<PlayerProgressData> updateAction) { }
+        public PlayerProgressData GetPlayerProgress() => new PlayerProgressData();
+        public void SavePlayerProgress(PlayerProgressData progress) { OnPlayerProgressChanged?.Invoke(progress); }
+        public void UpdatePlayerProgress(Action<PlayerProgressData> updateAction) { }
         
-        public PlayerStatsData GetStats() => new PlayerStatsData();
-        public void SaveStats(PlayerStatsData stats) { }
-        public void UpdateStats(Action<PlayerStatsData> updateAction) { }
+        public PlayerStatsData GetPlayerStats() => new PlayerStatsData();
+        public void SavePlayerStats(PlayerStatsData stats) { OnPlayerStatsChanged?.Invoke(stats); }
+        public void UpdatePlayerStats(Action<PlayerStatsData> updateAction) { }
+
+        public void DeleteAllData() { }
+        public void ClearUserCache() { }
+        public SyncStatus GetSyncStatus(string key) => SyncStatus.Synced;
+        public UniTask SyncAllCloudDataAsync() => UniTask.CompletedTask;
+        public T LoadData<T>(string key) where T : class, new() => new T();
+        public void SaveData<T>(string key, T data) where T : class, new() { }
     }
 
     public class MockEventBus : IEventBus
@@ -92,9 +103,10 @@ namespace Tests.Editor.Authentication
         public object LastPublishedEvent;
 
         public void Initialize() { }
-        public void Publish<T>(T eventMessage) { LastPublishedEvent = eventMessage; }
-        public void Subscribe<T>(Action<T> action) { }
-        public void Unsubscribe<T>(Action<T> action) { }
+        public void Publish<T>(T eventMessage) where T : class { LastPublishedEvent = eventMessage; }
+        public void Subscribe<T>(Action<T> action) where T : class { }
+        public void Unsubscribe<T>(Action<T> action) where T : class { }
+        public void ClearSubscriptions<T>() where T : class { }
         public void ClearAllSubscriptions() { }
     }
 
@@ -102,6 +114,7 @@ namespace Tests.Editor.Authentication
     {
         public void Initialize() { }
         public void ShowServerDownMaintenance(string message) { }
+        public UniTask<bool> CheckMaintenanceStatusAsync() => UniTask.FromResult(false);
     }
 
     public class MockEOSWrapper : IEOSWrapper
