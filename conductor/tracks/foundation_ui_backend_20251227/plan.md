@@ -2,7 +2,7 @@
 
 ## Phase 1: Backend Infrastructure Integration
 - [x] Task: Integrate Epic Online Services (EOS) SDK and implement basic Auth service. [commit: ca3adde]
-- [ ] Task: Integrate Firebase SDK and implement Remote Config service.
+- [x] Task: Integrate Firebase SDK and implement Remote Config service. [commit: 6d3a44c]
 - [ ] Task: Implement EOS Friends and Presence service.
 - [ ] Task: Conductor - User Manual Verification 'Backend Infrastructure Integration' (Protocol in workflow.md)
 
