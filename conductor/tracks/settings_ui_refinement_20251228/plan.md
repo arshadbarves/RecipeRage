@@ -12,12 +12,12 @@
 - [x] Task: Implement Controls, Account, and Legal tab UI logic. [commit: 933fb77]
 - [x] Task: Conductor - User Manual Verification 'Settings Screen Implementation' (Protocol in workflow.md)
 
-## Phase 3: HUD Layout Editor (Edit Controls)
-- [~] Task: Implement the "Edit Controls" interactive mode (drag-and-drop, resizing).
-- [ ] Task: Implement HUD layout persistence and runtime application to Gameplay UI.
-- [ ] Task: Conductor - User Manual Verification 'HUD Layout Editor' (Protocol in workflow.md)
+## Phase 3: HUD Layout Editor (Edit Controls) [checkpoint: 11b321e]
+- [x] Task: Implement the "Edit Controls" interactive mode (drag-and-drop, resizing). [commit: 901bc9f]
+- [x] Task: Implement HUD layout persistence and runtime application to Gameplay UI. [commit: 901bc9f]
+- [x] Task: Conductor - User Manual Verification 'HUD Layout Editor' (Protocol in workflow.md)
 
 ## Phase 4: Final Refinement
-- [ ] Task: Polish animations and transitions between settings tabs.
+- [~] Task: Polish animations and transitions between settings tabs.
 - [ ] Task: Final UI style audit and consistency check.
 - [ ] Task: Conductor - User Manual Verification 'Final Refinement' (Protocol in workflow.md)
