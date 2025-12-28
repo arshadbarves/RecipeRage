@@ -6,14 +6,14 @@
 - [x] Task: Implement `SettingsService` for applying values to Unity engine (QualitySettings, AudioMixer, etc.). [commit: 13c8c03]
 - [x] Task: Conductor - User Manual Verification 'Core Systems & Architecture' (Protocol in workflow.md)
 
-## Phase 2: Settings Screen Implementation
+## Phase 2: Settings Screen Implementation [checkpoint: 2f7654d]
 - [x] Task: Create UXML templates and USS styles for the Settings Screen (based on HTML reference). [commit: ebdc01f]
-- [~] Task: Implement Graphics and Audio tab UI logic and engine integration.
-- [ ] Task: Implement Controls, Account, and Legal tab UI logic.
-- [ ] Task: Conductor - User Manual Verification 'Settings Screen Implementation' (Protocol in workflow.md)
+- [x] Task: Implement Graphics and Audio tab UI logic and engine integration. [commit: 933fb77]
+- [x] Task: Implement Controls, Account, and Legal tab UI logic. [commit: 933fb77]
+- [x] Task: Conductor - User Manual Verification 'Settings Screen Implementation' (Protocol in workflow.md)
 
 ## Phase 3: HUD Layout Editor (Edit Controls)
-- [ ] Task: Implement the "Edit Controls" interactive mode (drag-and-drop, resizing).
+- [~] Task: Implement the "Edit Controls" interactive mode (drag-and-drop, resizing).
 - [ ] Task: Implement HUD layout persistence and runtime application to Gameplay UI.
 - [ ] Task: Conductor - User Manual Verification 'HUD Layout Editor' (Protocol in workflow.md)
 
