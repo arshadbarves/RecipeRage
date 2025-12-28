@@ -157,7 +157,74 @@ namespace UI.Screens
                         button.pickingMode = PickingMode.Position;
                     }
                 }
+
+                // Make system icons clickable
+                var systemContainer = topBar.Q<VisualElement>("system-container");
+                if (systemContainer != null)
+                {
+                    systemContainer.pickingMode = PickingMode.Position;
+                }
+
+                RegisterSystemIconListeners();
             }
+        }
+
+        private void RegisterSystemIconListeners()
+        {
+            // Friends
+            var friendsBtn = Container.Q<VisualElement>("sys-icon-friends");
+            if (friendsBtn != null)
+            {
+                friendsBtn.pickingMode = PickingMode.Position;
+                friendsBtn.RegisterCallback<ClickEvent>(evt => OnFriendsClicked());
+            }
+
+            // Settings
+            var settingsBtn = Container.Q<VisualElement>("sys-icon-settings");
+            if (settingsBtn != null)
+            {
+                settingsBtn.pickingMode = PickingMode.Position;
+                settingsBtn.RegisterCallback<ClickEvent>(evt => OnSettingsClicked());
+            }
+
+            // Leaderboard
+            var leaderboardBtn = Container.Q<VisualElement>("sys-icon-leaderboard");
+            if (leaderboardBtn != null)
+            {
+                leaderboardBtn.pickingMode = PickingMode.Position;
+                leaderboardBtn.RegisterCallback<ClickEvent>(evt => OnLeaderboardClicked());
+            }
+        }
+
+        private void OnFriendsClicked()
+        {
+            GameLogger.Log("Opening Friends Popup");
+            var uiService = GameBootstrap.Services?.UIService;
+            if (uiService != null)
+            {
+                uiService.ShowScreen(UIScreenType.FriendsPopup, true, true);
+            }
+        }
+
+        private void OnSettingsClicked()
+        {
+            // Settings is a tab, so switch to it?
+            // Or show a settings popup?
+            // "Settings is now a tab within MainMenuScreen" -> Switch tab
+            var tabView = Container.Q<TabView>("main-tabs");
+            // Assuming Settings is the last tab or index 3
+            // Better to find index by name but TabView API is limited
+            // Hardcoding for now based on template structure (Lobby, Character, Shop, Settings)
+            // But usually settings icon opens a quick settings popup or overlay
+            // If it's a tab, we should switch the tab view
+            // TODO: Implement proper tab switching if needed, for now log
+            GameLogger.Log("Settings clicked");
+        }
+
+        private void OnLeaderboardClicked()
+        {
+            GameLogger.Log("Leaderboard clicked");
+            // TODO: Show leaderboard
         }
 
         private void InitializeCurrencyDisplay()
