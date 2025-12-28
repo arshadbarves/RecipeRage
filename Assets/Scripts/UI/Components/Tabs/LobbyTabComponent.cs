@@ -27,7 +27,36 @@ namespace UI.Components.Tabs
 
         public string TabId => "Lobby";
 
-        // ... existing properties ...
+        // UI Elements - Map/Event
+        private Button _playButton;
+        private Button _mapButton;
+        private Label _mapNameLabel;
+        private Label _mapSubtitleLabel;
+        private Label _timerLabel;
+        private Label _actionButtonText;
+
+        // UI Elements - Party
+        private VisualElement _teamControls;
+        private Label _teamCodeLabel;
+        private Button _leaveButton;
+
+        // Player Slots (dynamic based on team size)
+        private List<PlayerSlot> _playerSlots = new List<PlayerSlot>();
+        private VisualElement _playerSlotsContainer;
+
+        // Map data
+        private MapDatabase _mapDatabase;
+        private MapInfo _currentMap;
+
+        // Party state
+        private bool _isInParty = false;
+        private bool _isReady = false;
+        private int _currentPlayerCount = 1;
+        private int _maxTeamSize = 4; // Default, can be changed based on game mode
+        private bool _buttonsInitialized = false;
+
+        // Template
+        private VisualTreeAsset _playerSlotTemplate;
 
         public LobbyTabComponent(
             IMatchmakingService matchmakingService,
