@@ -2,7 +2,7 @@
 
 ## Phase 1: Foundational Infrastructure
 - [x] Task: Standardize shared test mocks and move to a centralized `Tests/Editor/Mocks` directory. [commit: 2fcb925]
-- [ ] Task: Refactor `ServiceContainer` to strictly enforce constructor injection and remove static access points.
+- [x] Task: Refactor `ServiceContainer` to strictly enforce constructor injection and remove static access points. [commit: 61b9938]
 - [ ] Task: Expand `EventBus` with standardized events for all major service state changes.
 - [ ] Task: Conductor - User Manual Verification 'Foundational Infrastructure' (Protocol in workflow.md)
 
