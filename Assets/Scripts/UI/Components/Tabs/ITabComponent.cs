@@ -9,6 +9,7 @@ namespace UI.Components.Tabs
     public interface ITabComponent
     {
         string TabId { get; }
+        VisualElement Root { get; }
         void Initialize(VisualElement root);
         void OnShow();
         void OnHide();

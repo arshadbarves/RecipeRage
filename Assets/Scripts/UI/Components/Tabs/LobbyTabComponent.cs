@@ -26,6 +26,7 @@ namespace UI.Components.Tabs
         private readonly IGameStateManager _stateManager;
 
         public string TabId => "Lobby";
+        public VisualElement Root => _root;
 
         // UI Elements - Map/Event
         private Button _playButton;

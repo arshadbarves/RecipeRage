@@ -70,10 +70,27 @@ namespace UI.Components.Tabs
             // 2. Handle Content visibility
             if (!string.IsNullOrEmpty(previousTabId))
             {
-                _tabs[previousTabId].Content.OnHide();
+                var prevContent = _tabs[previousTabId].Content;
+                if (!immediate && _animator != null && prevContent.Root != null)
+                {
+                    _animator.FadeOut(prevContent.Root, 0.2f, () => prevContent.OnHide());
+                }
+                else
+                {
+                    prevContent.OnHide();
+                }
             }
 
-            _tabs[tabId].Content.OnShow();
+            var nextContent = _tabs[tabId].Content;
+            if (!immediate && _animator != null && nextContent.Root != null)
+            {
+                nextContent.OnShow();
+                _animator.FadeIn(nextContent.Root, 0.2f);
+            }
+            else
+            {
+                nextContent.OnShow();
+            }
 
             GameLogger.Log($"Switched from {previousTabId} to {tabId}");
             OnTabChanged?.Invoke(tabId);

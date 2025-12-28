@@ -19,6 +19,7 @@ namespace UI.Components.Tabs
         private VisualTreeAsset _shopItemTemplate;
 
         public string TabId => "Shop";
+        public VisualElement Root => _root;
 
         public void Initialize(VisualElement root)
         {

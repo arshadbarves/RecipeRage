@@ -20,6 +20,7 @@ namespace UI.Components.Tabs
         private SkinsData _skinsData;
 
         public string TabId => "Skins";
+        public VisualElement Root => _root;
 
         public void Initialize(VisualElement root)
         {

@@ -20,6 +20,7 @@ namespace UI.Components.Tabs
         private TabSystem _subTabSystem;
 
         public string TabId => "Settings";
+        public VisualElement Root => _root;
 
         // Main UI Elements
         private Button _backButton;
@@ -142,15 +143,16 @@ namespace UI.Components.Tabs
 
         #region Internal Sub-Tab Implementations
 
-        private abstract class BaseSettingsTab : ITabComponent
+        public abstract class BaseSettingsTab : ITabComponent
         {
-            protected VisualElement Root;
+            private readonly VisualElement _root;
+            public VisualElement Root => _root;
             protected ISaveService SaveService;
             public abstract string TabId { get; }
 
             public BaseSettingsTab(VisualElement root, ISaveService saveService)
             {
-                Root = root;
+                _root = root;
                 SaveService = saveService;
             }
 

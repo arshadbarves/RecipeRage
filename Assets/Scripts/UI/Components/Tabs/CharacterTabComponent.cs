@@ -20,6 +20,7 @@ namespace UI.Components.Tabs
         private IUIService _uiService;
 
         public string TabId => "Character";
+        public VisualElement Root => _root;
 
         // UI Elements
         private VisualElement _characterGrid;
@@ -220,7 +221,7 @@ namespace UI.Components.Tabs
         /// <summary>
         /// Update method - call from parent if needed
         /// </summary>
-        public void Update(float deltaTime)
+        public void Update()
         {
             // Can be used for animations or updates if needed
         }
