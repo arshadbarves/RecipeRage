@@ -2,8 +2,8 @@
 
 ## Phase 1: Core Systems & Architecture
 - [x] Task: Define Settings data models and update `GameSettingsData` in `SaveService`. [commit: 7409efe]
-- [~] Task: Implement modular, SOLID-compliant `TabSystem` component.
-- [ ] Task: Implement `SettingsService` for applying values to Unity engine (QualitySettings, AudioMixer, etc.).
+- [x] Task: Implement modular, SOLID-compliant `TabSystem` component. [commit: 0a3319a]
+- [~] Task: Implement `SettingsService` for applying values to Unity engine (QualitySettings, AudioMixer, etc.).
 - [ ] Task: Conductor - User Manual Verification 'Core Systems & Architecture' (Protocol in workflow.md)
 
 ## Phase 2: Settings Screen Implementation
