@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Core.Bootstrap;
 using Core.Logging;
 using Core.SaveSystem;
@@ -10,52 +9,24 @@ using UnityEngine.UIElements;
 namespace UI.Components.Tabs
 {
     /// <summary>
-    /// Settings tab content component
-    /// Renamed from SettingsTabComponent for consistency
-    /// Uses SaveService for persistence (cloud sync + encryption)
-    /// Follows proper dependency injection pattern
+    /// Settings tab content component.
+    /// Refactored to use a modular Sub-Tab system.
+    /// Follows SOLID: Single Responsibility and Dependency Inversion.
     /// </summary>
     public class SettingsTabComponent : ITabComponent
     {
         private VisualElement _root;
         private readonly ISaveService _saveService;
+        private TabSystem _subTabSystem;
 
         public string TabId => "Settings";
 
-        // Audio controls
-        private Slider _musicVolumeSlider;
-        private Slider _sfxVolumeSlider;
-        private Toggle _muteToggle;
-        private Label _musicVolumeLabel;
-        private Label _sfxVolumeLabel;
+        // Main UI Elements
+        private Button _backButton;
+        private Button _resetButton;
+        private Button _applyButton;
+        private VisualElement _contentRoot;
 
-        // Graphics controls
-        private DropdownField _qualityDropdown;
-        private DropdownField _resolutionDropdown;
-        private Toggle _fullscreenToggle;
-        private Toggle _vsyncToggle;
-        private Toggle _fpsToggle;
-
-        // Controls
-        private Slider _sensitivitySlider;
-        private Toggle _vibrationToggle;
-        private Label _sensitivityLabel;
-
-        // Gameplay
-        private DropdownField _languageDropdown;
-        private Toggle _tutorialsToggle;
-        private Toggle _notificationsToggle;
-
-        // Version
-        private Label _versionLabel;
-
-        private float _previousMusicVolume = 0.75f;
-        private float _previousSfxVolume = 0.75f;
-
-        /// <summary>
-        /// Constructor with dependency injection
-        /// </summary>
-        /// <param name="saveService">Save service for settings persistence</param>
         public SettingsTabComponent(ISaveService saveService)
         {
             _saveService = saveService ?? throw new ArgumentNullException(nameof(saveService));
@@ -63,8 +34,6 @@ namespace UI.Components.Tabs
 
         public void Initialize(VisualElement root)
         {
-            GameLogger.Log("Initialize called");
-
             if (root == null)
             {
                 GameLogger.LogError("Root is null!");
@@ -72,30 +41,71 @@ namespace UI.Components.Tabs
             }
 
             _root = root;
+            _contentRoot = _root.Q<VisualElement>("settings-content");
 
-            GameLogger.Log($"Root element: {_root.name}");
+            // Query Main Buttons
+            _backButton = _root.Q<Button>("back-btn");
+            _resetButton = _root.Q<Button>("reset-btn");
+            _applyButton = _root.Q<Button>("apply-btn");
 
-            // Query all elements
-            QueryElements();
+            if (_backButton != null) _backButton.clicked += OnBackClicked;
+            if (_resetButton != null) _resetButton.clicked += OnResetClicked;
+            if (_applyButton != null) _applyButton.clicked += OnApplyClicked;
 
-            GameLogger.Log($"Elements found - Music: {_musicVolumeSlider != null}, SFX: {_sfxVolumeSlider != null}, Quality: {_qualityDropdown != null}");
+            // Initialize Sub-Tab System
+            var animator = GameBootstrap.Services?.AnimationService?.UI;
+            _subTabSystem = new TabSystem(_contentRoot, animator);
 
-            // Setup callbacks BEFORE loading settings
-            InitializeDropdowns();
-            SetupValueChangeCallbacks();
-            SetupButtons();
+            InitializeSubTabs();
 
-            // Load settings AFTER callbacks are registered
-            LoadSettings();
-            UpdateVersionInfo();
+            GameLogger.Log("Settings Screen initialized with sub-tabs");
+        }
 
-            GameLogger.Log("Initialization complete");
+        private void InitializeSubTabs()
+        {
+            // Graphics Tab
+            AddSettingsTab("Graphics", "tab-graphics", "Components/SettingsTab_Graphics", root => new GraphicsSettingsTab(root, _saveService));
+            
+            // Audio Tab
+            AddSettingsTab("Audio", "tab-audio", "Components/SettingsTab_Audio", root => new AudioSettingsTab(root, _saveService));
+            
+            // Controls Tab
+            AddSettingsTab("Controls", "tab-controls", "Components/SettingsTab_Controls", root => new ControlsSettingsTab(root, _saveService));
+            
+            // Account Tab
+            AddSettingsTab("Account", "tab-account", "Components/SettingsTab_Account", root => new AccountSettingsTab(root, _saveService));
+            
+            // Social/Legal Tab
+            AddSettingsTab("Social", "tab-legal", "Components/SettingsTab_Legal", root => new LegalSettingsTab(root, _saveService));
+
+            // Default to Graphics
+            _subTabSystem.SwitchToTab("Graphics", true);
+        }
+
+        private void AddSettingsTab(string id, string btnName, string templatePath, Func<VisualElement, ITabComponent> factory)
+        {
+            var btn = _root.Q<Button>(btnName);
+            var template = Resources.Load<VisualTreeAsset>($"UI/Templates/{templatePath}");
+            if (btn != null && template != null)
+            {
+                var contentRoot = template.CloneTree();
+                contentRoot.style.flexGrow = 1;
+                contentRoot.style.display = DisplayStyle.None;
+                _contentRoot.Add(contentRoot);
+                
+                var component = factory(contentRoot);
+                component.Initialize(contentRoot);
+                _subTabSystem.AddTab(id, btn, component);
+            }
+            else
+            {
+                GameLogger.LogWarning($"Failed to add settings tab: {id}. Button found: {btn != null}, Template found: {template != null}");
+            }
         }
 
         public void OnShow()
         {
             if (_root != null) _root.style.display = DisplayStyle.Flex;
-            LoadSettings(); // Refresh from data
         }
 
         public void OnHide()
@@ -103,527 +113,86 @@ namespace UI.Components.Tabs
             if (_root != null) _root.style.display = DisplayStyle.None;
         }
 
-        public void Update(float deltaTime) { }
+        public void Update(float deltaTime) => _subTabSystem?.Update(deltaTime);
 
-        private void QueryElements()
+        public void Dispose() => _subTabSystem?.Dispose();
+
+        private void OnBackClicked()
         {
-            // Audio
-            _musicVolumeSlider = _root.Q<Slider>("music-volume");
-            _sfxVolumeSlider = _root.Q<Slider>("sfx-volume");
-            _muteToggle = _root.Q<Toggle>("mute-toggle");
-            _musicVolumeLabel = _root.Q<Label>("music-volume-value");
-            _sfxVolumeLabel = _root.Q<Label>("sfx-volume-value");
-
-            // Graphics
-            _qualityDropdown = _root.Q<DropdownField>("quality-dropdown");
-            _resolutionDropdown = _root.Q<DropdownField>("resolution-dropdown");
-            _fullscreenToggle = _root.Q<Toggle>("fullscreen-toggle");
-            _vsyncToggle = _root.Q<Toggle>("vsync-toggle");
-            _fpsToggle = _root.Q<Toggle>("fps-toggle");
-
-            // Controls
-            _sensitivitySlider = _root.Q<Slider>("sensitivity-slider");
-            _vibrationToggle = _root.Q<Toggle>("vibration-toggle");
-            _sensitivityLabel = _root.Q<Label>("sensitivity-value");
-
-            // Gameplay
-            _languageDropdown = _root.Q<DropdownField>("language-dropdown");
-            _tutorialsToggle = _root.Q<Toggle>("tutorials-toggle");
-            _notificationsToggle = _root.Q<Toggle>("notifications-toggle");
-
-            // Version
-            _versionLabel = _root.Q<Label>("version-label");
+            GameBootstrap.Services?.UIService?.GoBack();
         }
 
-        private void InitializeDropdowns()
+        private void OnApplyClicked()
         {
-            GameLogger.Log("Initializing dropdowns");
-
-            // Quality dropdown
-            if (_qualityDropdown != null)
-            {
-                string[] qualityNames = QualitySettings.names;
-                _qualityDropdown.choices = new List<string>(qualityNames);
-                _qualityDropdown.index = QualitySettings.GetQualityLevel();
-                GameLogger.Log($"Quality dropdown initialized with {qualityNames.Length} options, current: {_qualityDropdown.index}");
-            }
-            else
-            {
-                GameLogger.LogWarning("Quality dropdown not found!");
-            }
-
-            // Resolution dropdown
-            if (_resolutionDropdown != null)
-            {
-                Resolution[] resolutions = Screen.resolutions;
-                List<string> resolutionStrings = new List<string>();
-                int currentResolutionIndex = 0;
-
-                for (int i = 0; i < resolutions.Length; i++)
-                {
-                    string resString = $"{resolutions[i].width} x {resolutions[i].height} @ {resolutions[i].refreshRate}Hz";
-                    resolutionStrings.Add(resString);
-
-                    if (resolutions[i].width == Screen.currentResolution.width &&
-                        resolutions[i].height == Screen.currentResolution.height)
-                    {
-                        currentResolutionIndex = i;
-                    }
-                }
-
-                _resolutionDropdown.choices = resolutionStrings;
-                _resolutionDropdown.index = currentResolutionIndex;
-                GameLogger.Log($"Resolution dropdown initialized with {resolutionStrings.Count} options, current: {currentResolutionIndex}");
-            }
-            else
-            {
-                GameLogger.LogWarning("Resolution dropdown not found!");
-            }
-
-            // Language dropdown
-            if (_languageDropdown != null)
-            {
-                _languageDropdown.choices = new List<string>
-                {
-                    "English", "Español", "Français", "Deutsch", "Italiano",
-                    "Português", "Русский", "日本語", "한국어", "中文"
-                };
-                var settings = _saveService.GetSettings();
-                _languageDropdown.index = settings.LanguageIndex;
-                GameLogger.Log($"Language dropdown initialized with 10 options, current: {settings.LanguageIndex}");
-            }
-            else
-            {
-                GameLogger.LogWarning("Language dropdown not found!");
-            }
-
-            GameLogger.Log("Dropdown initialization complete");
+            GameLogger.Log("Applying settings changes");
+            // The SettingsService applies current values from SaveService
+            var settingsService = (GameBootstrap.Services as ServiceContainer)?.SettingsService;
+            settingsService?.ApplyAllSettings(_saveService.GetSettings());
+            
+            GameBootstrap.Services?.UIService?.ShowNotification("Settings applied", NotificationType.Success, 2f);
         }
 
-        private void SetupButtons()
-        {
-            GameLogger.Log("Setting up buttons");
-
-            // Control buttons
-            Button editJoystickButton = _root.Q<Button>("edit-joystick-button");
-
-            // Support buttons
-            Button helpButton = _root.Q<Button>("help-button");
-            Button supportButton = _root.Q<Button>("support-button");
-            Button privacyButton = _root.Q<Button>("privacy-button");
-            Button termsButton = _root.Q<Button>("terms-button");
-            Button creditsButton = _root.Q<Button>("credits-button");
-            Button parentGuideButton = _root.Q<Button>("parent-guide-button");
-
-            // Account buttons
-            Button logoutButton = _root.Q<Button>("logout-button");
-
-            // Action buttons
-            Button resetButton = _root.Q<Button>("reset-button");
-            Button clearDataButton = _root.Q<Button>("clear-data-button");
-
-            GameLogger.Log($"Buttons found - Joystick: {editJoystickButton != null}, Help: {helpButton != null}, Support: {supportButton != null}, Logout: {logoutButton != null}, Reset: {resetButton != null}");
-
-            if (editJoystickButton != null)
-            {
-                editJoystickButton.clicked += OnEditJoystickClicked;
-                GameLogger.Log("Edit joystick button listener added");
-            }
-
-            if (helpButton != null)
-            {
-                helpButton.clicked += OnHelpClicked;
-                GameLogger.Log("Help button listener added");
-            }
-
-            if (supportButton != null)
-            {
-                supportButton.clicked += OnSupportClicked;
-                GameLogger.Log("Support button listener added");
-            }
-
-            if (privacyButton != null) privacyButton.clicked += OnPrivacyClicked;
-            if (termsButton != null) termsButton.clicked += OnTermsClicked;
-            if (creditsButton != null) creditsButton.clicked += OnCreditsClicked;
-            if (parentGuideButton != null) parentGuideButton.clicked += OnParentGuideClicked;
-
-            if (logoutButton != null)
-            {
-                logoutButton.clicked += OnLogoutClicked;
-                GameLogger.Log("Logout button listener added");
-            }
-
-            if (resetButton != null)
-            {
-                resetButton.clicked += OnResetClicked;
-                GameLogger.Log("Reset button listener added");
-            }
-
-            if (clearDataButton != null)
-            {
-                clearDataButton.clicked += OnClearDataClicked;
-                GameLogger.Log("Clear data button listener added");
-            }
-
-            GameLogger.Log("Button setup complete");
-        }
-
-        private void SetupValueChangeCallbacks()
-        {
-            GameLogger.Log("Setting up value change callbacks");
-
-            // Audio callbacks
-            if (_musicVolumeSlider != null)
-            {
-                _musicVolumeSlider.RegisterValueChangedCallback(evt =>
-                {
-                    GameLogger.Log($"Music volume changed to {evt.newValue}");
-                    _previousMusicVolume = evt.newValue;
-                    if (_muteToggle != null && !_muteToggle.value)
-                    {
-                        _saveService.UpdateSettings(s => s.MusicVolume = evt.newValue);
-                        AudioListener.volume = evt.newValue;
-                    }
-                    UpdateVolumeLabel(_musicVolumeLabel, evt.newValue);
-                });
-                GameLogger.Log("Music volume callback registered");
-            }
-
-            if (_sfxVolumeSlider != null)
-            {
-                _sfxVolumeSlider.RegisterValueChangedCallback(evt =>
-                {
-                    GameLogger.Log($"SFX volume changed to {evt.newValue}");
-                    _previousSfxVolume = evt.newValue;
-                    _saveService.UpdateSettings(s => s.SFXVolume = evt.newValue);
-                    UpdateVolumeLabel(_sfxVolumeLabel, evt.newValue);
-                });
-                GameLogger.Log("SFX volume callback registered");
-            }
-
-            if (_muteToggle != null)
-            {
-                _muteToggle.RegisterValueChangedCallback(evt =>
-                {
-                    if (evt.newValue)
-                    {
-                        AudioListener.volume = 0;
-                    }
-                    else
-                    {
-                        AudioListener.volume = _previousMusicVolume;
-                    }
-                    _saveService.UpdateSettings(s => s.IsMuted = evt.newValue);
-                });
-            }
-
-            // Graphics callbacks
-            if (_qualityDropdown != null)
-            {
-                _qualityDropdown.RegisterValueChangedCallback(evt =>
-                {
-                    QualitySettings.SetQualityLevel(_qualityDropdown.index);
-                    _saveService.UpdateSettings(s => s.GraphicsQuality = _qualityDropdown.index);
-                });
-            }
-
-            if (_resolutionDropdown != null)
-            {
-                _resolutionDropdown.RegisterValueChangedCallback(evt =>
-                {
-                    Resolution[] resolutions = Screen.resolutions;
-                    if (_resolutionDropdown.index >= 0 && _resolutionDropdown.index < resolutions.Length)
-                    {
-                        Resolution res = resolutions[_resolutionDropdown.index];
-                        Screen.SetResolution(res.width, res.height, Screen.fullScreen, res.refreshRate);
-                        _saveService.UpdateSettings(s => s.ResolutionIndex = _resolutionDropdown.index);
-                    }
-                });
-            }
-
-            if (_fullscreenToggle != null)
-            {
-                _fullscreenToggle.RegisterValueChangedCallback(evt =>
-                {
-                    Screen.fullScreen = evt.newValue;
-                    _saveService.UpdateSettings(s => s.IsFullscreen = evt.newValue);
-                });
-            }
-
-            if (_vsyncToggle != null)
-            {
-                _vsyncToggle.RegisterValueChangedCallback(evt =>
-                {
-                    QualitySettings.vSyncCount = evt.newValue ? 1 : 0;
-                    _saveService.UpdateSettings(s => s.IsVSyncEnabled = evt.newValue);
-                });
-            }
-
-            if (_fpsToggle != null)
-            {
-                _fpsToggle.RegisterValueChangedCallback(evt =>
-                {
-                    _saveService.UpdateSettings(s => s.ShowFPS = evt.newValue);
-                    // You can implement FPS counter display here
-                });
-            }
-
-            // Controls callbacks
-            if (_sensitivitySlider != null)
-            {
-                _sensitivitySlider.RegisterValueChangedCallback(evt =>
-                {
-                    _saveService.UpdateSettings(s => s.Sensitivity = evt.newValue);
-                    UpdateSensitivityLabel(evt.newValue);
-                });
-            }
-
-            if (_vibrationToggle != null)
-            {
-                _vibrationToggle.RegisterValueChangedCallback(evt =>
-                {
-                    _saveService.UpdateSettings(s => s.IsVibrationEnabled = evt.newValue);
-                });
-            }
-
-            // Gameplay callbacks
-            if (_languageDropdown != null)
-            {
-                _languageDropdown.RegisterValueChangedCallback(evt =>
-                {
-                    _saveService.UpdateSettings(s => s.LanguageIndex = _languageDropdown.index);
-                    GameLogger.Log($"Language changed to: {_languageDropdown.value}");
-                });
-            }
-
-            if (_tutorialsToggle != null)
-            {
-                _tutorialsToggle.RegisterValueChangedCallback(evt =>
-                {
-                    _saveService.UpdateSettings(s => s.ShowTutorials = evt.newValue);
-                });
-            }
-
-            if (_notificationsToggle != null)
-            {
-                _notificationsToggle.RegisterValueChangedCallback(evt =>
-                {
-                    _saveService.UpdateSettings(s => s.NotificationsEnabled = evt.newValue);
-                });
-            }
-        }
-
-        private void LoadSettings()
-        {
-            var settings = _saveService.GetSettings();
-
-            // Audio
-            if (_musicVolumeSlider != null)
-            {
-                float musicVolume = settings.MusicVolume;
-                _musicVolumeSlider.value = musicVolume;
-                _previousMusicVolume = musicVolume;
-                UpdateVolumeLabel(_musicVolumeLabel, musicVolume);
-            }
-
-            if (_sfxVolumeSlider != null)
-            {
-                float sfxVolume = settings.SFXVolume;
-                _sfxVolumeSlider.value = sfxVolume;
-                _previousSfxVolume = sfxVolume;
-                UpdateVolumeLabel(_sfxVolumeLabel, sfxVolume);
-            }
-
-            if (_muteToggle != null)
-                _muteToggle.value = settings.IsMuted;
-
-            // Graphics
-            if (_fullscreenToggle != null)
-                _fullscreenToggle.value = settings.IsFullscreen;
-
-            if (_vsyncToggle != null)
-                _vsyncToggle.value = settings.IsVSyncEnabled;
-
-            if (_fpsToggle != null)
-                _fpsToggle.value = settings.ShowFPS;
-
-            // Controls
-            if (_sensitivitySlider != null)
-            {
-                float sensitivity = settings.Sensitivity;
-                _sensitivitySlider.value = sensitivity;
-                UpdateSensitivityLabel(sensitivity);
-            }
-
-            if (_vibrationToggle != null)
-                _vibrationToggle.value = settings.IsVibrationEnabled;
-
-            // Gameplay
-            if (_tutorialsToggle != null)
-                _tutorialsToggle.value = settings.ShowTutorials;
-
-            if (_notificationsToggle != null)
-                _notificationsToggle.value = settings.NotificationsEnabled;
-        }
-
-        private void UpdateVolumeLabel(Label label, float value)
-        {
-            if (label != null)
-            {
-                label.text = $"{Mathf.RoundToInt(value * 100)}%";
-            }
-        }
-
-        private void UpdateSensitivityLabel(float value)
-        {
-            if (_sensitivityLabel != null)
-            {
-                _sensitivityLabel.text = $"{value:F1}x";
-            }
-        }
-
-        private void UpdateVersionInfo()
-        {
-            if (_versionLabel != null)
-            {
-                _versionLabel.text = $"Version {Application.version}";
-            }
-        }
-
-        private void OnEditJoystickClicked()
-        {
-            GameLogger.Log("Opening joystick editor");
-
-            // Show the joystick editor screen using UIService
-            var uiService = GameBootstrap.Services?.UIService;
-            if (uiService != null && uiService.IsInitialized)
-            {
-                // Get the joystick editor screen
-                JoystickEditorUI joystickEditor = uiService.GetScreen<JoystickEditorUI>();
-                if (joystickEditor != null)
-                {
-                    joystickEditor.Show(true, true);
-                }
-                else
-                {
-                    GameLogger.LogWarning("JoystickEditorUI screen not found in UIService");
-                }
-            }
-            else
-            {
-                GameLogger.LogWarning("UIService not available or not initialized");
-            }
-        }
-
-        private void OnHelpClicked()
-        {
-            GameLogger.Log("Opening help");
-            Application.OpenURL("https://yourwebsite.com/help");
-        }
-
-        private void OnSupportClicked()
-        {
-            GameLogger.Log("Opening support");
-            Application.OpenURL("https://yourwebsite.com/support");
-        }
-
-        private void OnPrivacyClicked()
-        {
-            GameLogger.Log("Opening privacy policy");
-            Application.OpenURL("https://yourwebsite.com/privacy");
-        }
-
-        private void OnTermsClicked()
-        {
-            GameLogger.Log("Opening terms and conditions");
-            Application.OpenURL("https://yourwebsite.com/terms");
-        }
-
-        private void OnParentGuideClicked()
-        {
-            GameLogger.Log("Opening parent guide");
-            Application.OpenURL("https://yourwebsite.com/parent-guide");
-        }
-
-        private void OnCreditsClicked()
-        {
-            GameLogger.Log("Opening credits");
-            Application.OpenURL("https://yourwebsite.com/credits");
-        }
-
-        private async void OnResetClicked()
+        private void OnResetClicked()
         {
             GameLogger.Log("Resetting settings to defaults");
-
-            // Reset all settings to defaults using SaveService
-            _saveService.UpdateSettings(s =>
-            {
-                s.MusicVolume = 0.75f;
-                s.SFXVolume = 0.75f;
-                s.IsMuted = false;
-                s.GraphicsQuality = 2;
-                s.IsFullscreen = true;
-                s.IsVSyncEnabled = true;
-                s.ShowFPS = false;
-                s.Sensitivity = 1.0f;
-                s.IsVibrationEnabled = true;
-                s.LanguageIndex = 0;
-                s.ShowTutorials = true;
-                s.NotificationsEnabled = true;
-            });
-
-            // Reload settings
-            LoadSettings();
-
-            // Apply graphics settings
-            if (_qualityDropdown != null)
-            {
-                QualitySettings.SetQualityLevel(2);
-                _qualityDropdown.index = 2;
-            }
-
-            Screen.fullScreen = true;
-            QualitySettings.vSyncCount = 1;
-            AudioListener.volume = 0.75f;
-
-            // Show success toast
-            var uiService = GameBootstrap.Services?.UIService;
-            uiService?.ShowNotification("Settings reset to defaults", NotificationType.Success, 2f);
-
-            GameLogger.Log("Settings reset complete");
+            _saveService.DeleteAllData(); // Or implementation-specific reset
+            _subTabSystem.SwitchToTab("Graphics", true); // Reload UI
+            GameBootstrap.Services?.UIService?.ShowNotification("Settings reset", NotificationType.Info, 2f);
         }
 
-        private async void OnLogoutClicked()
+        #region Internal Sub-Tab Implementations
+
+        private abstract class BaseSettingsTab : ITabComponent
         {
-            GameLogger.Log("Logout button clicked");
+            protected VisualElement Root;
+            protected ISaveService SaveService;
+            public abstract string TabId { get; }
 
-            var authService = GameBootstrap.Services?.AuthenticationService;
-            if (authService != null)
+            public BaseSettingsTab(VisualElement root, ISaveService saveService)
             {
-                await authService.LogoutAsync();
-                GameLogger.Log("User logged out successfully");
+                Root = root;
+                SaveService = saveService;
             }
-            else
-            {
-                GameLogger.LogError("AuthenticationService not available");
-            }
+
+            public virtual void Initialize(VisualElement root) { }
+            public virtual void OnShow() => Root.style.display = DisplayStyle.Flex;
+            public virtual void OnHide() => Root.style.display = DisplayStyle.None;
+            public virtual void Update(float deltaTime) { }
+            public virtual void Dispose() { }
         }
 
-        private void OnClearDataClicked()
+        private class GraphicsSettingsTab : BaseSettingsTab
         {
-            GameLogger.Log("Clear data requested");
-
-            // Show confirmation dialog (you can implement a proper dialog system)
-            if (Application.isEditor)
-            {
-                GameLogger.LogWarning("Clear all data - This would delete all player progress!");
-                // In a real implementation, show a confirmation dialog
-                // For now, just log the action
-            }
-            else
-            {
-                GameLogger.LogWarning("Data clearing disabled in build - implement confirmation dialog first");
-            }
+            public override string TabId => "Graphics";
+            public GraphicsSettingsTab(VisualElement root, ISaveService saveService) : base(root, saveService) { }
+            // Add UI logic for graphics sliders/toggles here
         }
+
+        private class AudioSettingsTab : BaseSettingsTab
+        {
+            public override string TabId => "Audio";
+            public AudioSettingsTab(VisualElement root, ISaveService saveService) : base(root, saveService) { }
+            // Add UI logic for audio sliders here
+        }
+
+        private class ControlsSettingsTab : BaseSettingsTab
+        {
+            public override string TabId => "Controls";
+            public ControlsSettingsTab(VisualElement root, ISaveService saveService) : base(root, saveService) { }
+        }
+
+        private class AccountSettingsTab : BaseSettingsTab
+        {
+            public override string TabId => "Account";
+            public AccountSettingsTab(VisualElement root, ISaveService saveService) : base(root, saveService) { }
+        }
+
+        private class LegalSettingsTab : BaseSettingsTab
+        {
+            public override string TabId => "Social";
+            public LegalSettingsTab(VisualElement root, ISaveService saveService) : base(root, saveService) { }
+        }
+
+        #endregion
     }
 }

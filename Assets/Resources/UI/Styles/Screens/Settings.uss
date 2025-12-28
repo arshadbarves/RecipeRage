@@ -1,57 +1,229 @@
-@import url("project://database/Assets/Resources/UI/Themes/DesignSystem.uss?fileID=7433441132597879392&guid=74282f7acd0164afea4d8dc9dc05a968&type=3#DesignSystem");
-
-
-
-
-
-
-
-
-
-
-
-/* Settings Section uses design system .card */
-
-
-
-
-/* Section Title uses design system .section-title */
-
-
-
-.controls-group > * {
-    margin-bottom: var(--spacing-xs);
+:root {
+    --theme-red: #E63946;
+    --theme-yellow: #FFD700;
+    --theme-dark: #050505;
+    --glass-bg: rgba(20, 20, 20, 0.95);
+    --border-col: rgba(255, 255, 255, 0.15);
+    --text-gray: #888;
 }
 
-
-/* Control Row uses design system .control-row */
-/* Control Slider uses design system .control-slider */
-/* Control Toggle uses design system .control-toggle */
-/* Control Dropdown uses design system .control-dropdown */
-/* Control Label uses design system .control-label */
-
-
-
-
-
-/* Settings Buttons */
-
-
-.settings-button:active {
-    scale: 0.95 0.95 1;
+.settings-body {
+    width: 100%;
+    height: 100%;
+    background-color: transparent; /* Root background handled by procedural texture or scene */
+    flex-direction: column;
 }
 
+.anton {
+    -unity-font-definition: url("project://database/Assets/TextMesh%20Pro/Fonts/Anton-Regular%20SDF.asset");
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
 
+/* --- HEADER --- */
+.settings-header {
+    height: 90px;
+    flex-direction: row;
+    align-items: center;
+    padding: 0 40px;
+    border-bottom-width: 1px;
+    border-bottom-color: var(--border-col);
+    background-color: rgba(0, 0, 0, 0.5);
+}
 
+.back-btn {
+    flex-direction: row;
+    align-items: center;
+    padding: 5px 15px;
+    background-color: transparent;
+    border-width: 1px;
+    border-color: transparent;
+    rotate: -10deg; /* Skew equivalent */
+}
 
+.back-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: white;
+}
 
+.back-btn Label {
+    color: var(--text-gray);
+    font-size: 1.2rem;
+}
 
+.back-btn:hover Label {
+    color: white;
+}
 
+.page-title {
+    font-size: 32px;
+    margin-left: 20px;
+    color: white;
+    rotate: -10deg;
+}
 
+/* --- CONTAINER --- */
+.settings-container {
+    flex-grow: 1;
+    flex-direction: row;
+    padding: 40px;
+}
 
-/* Version Info */
+/* --- SIDEBAR --- */
+.settings-sidebar {
+    width: 250px;
+    flex-direction: column;
+    padding-top: 20px;
+}
 
+.tab-btn {
+    background-color: transparent;
+    border-width: 1px;
+    border-color: var(--border-col);
+    padding: 15px 25px;
+    color: var(--text-gray);
+    font-size: 20px;
+    rotate: -10deg;
+    margin-bottom: 15px;
+    -unity-text-align: middle-left;
+    transition-duration: 0.2s;
+}
 
+.tab-btn:hover {
+    border-color: white;
+    color: white;
+}
 
+.tab-btn.active {
+    background-color: white;
+    color: black;
+    border-color: white;
+}
 
+/* --- CONTENT --- */
+.settings-content {
+    flex-grow: 1;
+    background-color: rgba(20, 20, 20, 0.6);
+    border-width: 1px;
+    border-color: var(--border-col);
+    rotate: -10deg;
+    padding: 40px 60px;
+    margin-left: 40px;
+}
 
+.setting-section {
+    flex-direction: column;
+}
+
+.sec-header {
+    font-size: 24px;
+    color: var(--theme-yellow);
+    border-bottom-width: 2px;
+    border-bottom-color: #333;
+    padding-bottom: 10px;
+    margin-bottom: 30px;
+}
+
+.setting-row {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.set-label {
+    font-size: 18px;
+    font-weight: bold;
+    color: #ddd;
+}
+
+.set-sub {
+    font-size: 12px;
+    color: #666;
+}
+
+/* --- CONTROLS --- */
+.segment-control {
+    flex-direction: row;
+    background-color: #000;
+    border-width: 1px;
+    border-color: #333;
+    padding: 4px;
+}
+
+.seg-btn {
+    padding: 8px 20px;
+    background-color: transparent;
+    border-width: 0;
+    color: #666;
+    font-weight: bold;
+}
+
+.seg-btn.active {
+    background-color: var(--theme-red);
+    color: white;
+}
+
+.range-wrapper {
+    width: 300px;
+    flex-direction: row;
+    align-items: center;
+}
+
+.range-wrapper Slider {
+    flex-grow: 1;
+}
+
+.range-wrapper Label {
+    margin-left: 15px;
+    width: 50px;
+    color: white;
+}
+
+.toggle-switch {
+    /* Unity Toggle custom styling is complex, for now we use base classes */
+}
+
+/* --- FOOTER --- */
+.settings-footer {
+    height: 100px;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 0 60px;
+}
+
+.action-btn {
+    padding: 12px 30px;
+    font-size: 20px;
+    border-width: 0;
+    rotate: -10deg;
+    margin-left: 20px;
+}
+
+.btn-reset {
+    background-color: transparent;
+    border-width: 1px;
+    border-color: #555;
+    color: #888;
+}
+
+.btn-apply {
+    background-color: white;
+    color: black;
+}
+
+.btn-apply:hover {
+    background-color: var(--theme-yellow);
+}
+
+.support-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.support-grid .action-btn {
+    margin: 10px;
+    width: 45%;
+}

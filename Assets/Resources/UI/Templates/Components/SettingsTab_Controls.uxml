@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ns0:UXML xmlns:ns0="UnityEngine.UIElements">
+    <ns0:VisualElement name="tab-content" class="setting-section">
+        <ns0:Label text="GAMEPLAY" class="sec-header" />
+        
+        <ns0:Button name="edit-controls-btn" text="EDIT CONTROLS" class="action-btn btn-apply" />
+
+        <ns0:VisualElement class="setting-row">
+            <ns0:Label text="AIM SENSITIVITY" class="set-label" />
+            <ns0:VisualElement class="range-wrapper">
+                <ns0:Slider name="sensitivity" low-value="0.1" high-value="2.0" value="1.0" />
+                <ns0:Label name="sensitivity-text" text="1.0" class="anton" />
+            </ns0:VisualElement>
+        </ns0:VisualElement>
+
+        <ns0:VisualElement class="setting-row">
+            <ns0:Label text="INVERT Y-AXIS" class="set-label" />
+            <ns0:Toggle name="invert-y" class="toggle-switch" />
+        </ns0:VisualElement>
+
+        <ns0:VisualElement class="setting-row">
+            <ns0:VisualElement>
+                <ns0:Label text="VIBRATION" class="set-label" />
+                <ns0:Label text="Haptic feedback on actions" class="set-sub" />
+            </ns0:VisualElement>
+            <ns0:Toggle name="vibration" class="toggle-switch" value="true" />
+        </ns0:VisualElement>
+    </ns0:VisualElement>
+</ns0:UXML>

@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ns0:UXML xmlns:ns0="UnityEngine.UIElements">
+    <ns0:VisualElement name="tab-content" class="setting-section">
+        <ns0:Label text="VOLUME" class="sec-header" />
+        
+        <ns0:VisualElement class="setting-row">
+            <ns0:Label text="MASTER VOLUME" class="set-label" />
+            <ns0:VisualElement class="range-wrapper">
+                <ns0:Slider name="master-volume" low-value="0" high-value="1" value="0.8" />
+                <ns0:Label name="master-volume-text" text="80%" class="anton" />
+            </ns0:VisualElement>
+        </ns0:VisualElement>
+
+        <ns0:VisualElement class="setting-row">
+            <ns0:Label text="MUSIC" class="set-label" />
+            <ns0:VisualElement class="range-wrapper">
+                <ns0:Slider name="music-volume" low-value="0" high-value="1" value="0.5" />
+                <ns0:Label name="music-volume-text" text="50%" class="anton" />
+            </ns0:VisualElement>
+        </ns0:VisualElement>
+
+        <ns0:VisualElement class="setting-row">
+            <ns0:Label text="SFX" class="set-label" />
+            <ns0:VisualElement class="range-wrapper">
+                <ns0:Slider name="sfx-volume" low-value="0" high-value="1" value="1.0" />
+                <ns0:Label name="sfx-volume-text" text="100%" class="anton" />
+            </ns0:VisualElement>
+        </ns0:VisualElement>
+    </ns0:VisualElement>
+</ns0:UXML>
