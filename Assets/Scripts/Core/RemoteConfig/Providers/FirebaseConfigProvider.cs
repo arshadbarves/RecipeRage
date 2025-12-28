@@ -12,7 +12,14 @@ namespace Core.RemoteConfig.Providers
     {
         public string ProviderName => "Firebase";
 
+        private readonly IFirebaseWrapper _firebaseWrapper;
         private bool _isInitialized;
+
+        public FirebaseConfigProvider(IFirebaseWrapper firebaseWrapper)
+        {
+            _firebaseWrapper = firebaseWrapper ?? throw new ArgumentNullException(nameof(firebaseWrapper));
+            _isInitialized = false;
+        }
 
         public bool IsAvailable()
         {
@@ -28,7 +35,7 @@ namespace Core.RemoteConfig.Providers
                 string platform = Core.Utilities.PlatformUtils.GetPlatform();
                 string environment = Core.Utilities.PlatformUtils.GetEnvironment();
 
-                FirebaseRemoteConfig remoteConfig = Firebase.RemoteConfig.FirebaseRemoteConfig.DefaultInstance;
+                // FirebaseRemoteConfig remoteConfig = Firebase.RemoteConfig.FirebaseRemoteConfig.DefaultInstance; // Removed static access
 
                 GameLogger.Log($"Firebase will use device.os for condition matching");
 
@@ -37,10 +44,10 @@ namespace Core.RemoteConfig.Providers
                     // Add your default config values here if needed
                 };
 
-                await remoteConfig.SetDefaultsAsync(defaults);
+                await _firebaseWrapper.SetDefaultsAsync(defaults);
 
-                await remoteConfig.FetchAsync(TimeSpan.Zero);
-                await remoteConfig.ActivateAsync();
+                await _firebaseWrapper.FetchAsync(TimeSpan.Zero);
+                await _firebaseWrapper.ActivateAsync();
 
                 GameLogger.Log($"Firebase provider initialized for platform: {platform}, environment: {environment}");
 
@@ -66,7 +73,7 @@ namespace Core.RemoteConfig.Providers
             {
                 GameLogger.Log($"Fetching config '{key}' from Firebase...");
 
-                string jsonString = FirebaseRemoteConfig.DefaultInstance.GetValue(key).StringValue;
+                string jsonString = _firebaseWrapper.GetStringValue(key);
 
                 return JsonUtility.FromJson<T>(jsonString);
 

@@ -142,7 +142,10 @@ namespace Core.Bootstrap
             NTPTimeService = new NTPTimeService();
             NTPTime.SetInstance(NTPTimeService);
 
-            RemoteConfigService = new RemoteConfigService();
+            // Construct Remote Config with Firebase provider
+            var firebaseWrapper = new Core.RemoteConfig.Providers.FirebaseWrapper();
+            var configProvider = new Core.RemoteConfig.Providers.FirebaseConfigProvider(firebaseWrapper);
+            RemoteConfigService = new RemoteConfigService(configProvider);
 
             AnimationService = CreateAnimationService();
             UIService = CreateUIService();

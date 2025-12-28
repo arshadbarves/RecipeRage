@@ -23,9 +23,10 @@ namespace Core.RemoteConfig
         public event Action<Type, IConfigModel> OnSpecificConfigUpdated;
         public event Action<ConfigHealthStatus> OnHealthStatusChanged;
 
-        public RemoteConfigService()
+        public RemoteConfigService(IConfigProvider configProvider)
         {
             _configCache = new Dictionary<Type, IConfigModel>();
+            _firebaseProvider = configProvider ?? throw new ArgumentNullException(nameof(configProvider));
             _healthStatus = ConfigHealthStatus.Failed;
             _lastUpdateTime = DateTime.MinValue;
             _isInitialized = false;
@@ -45,18 +46,17 @@ namespace Core.RemoteConfig
             {
                 GameLogger.Log("Initializing RemoteConfigService...");
 
-                // Initialize Firebase provider
-                _firebaseProvider = new FirebaseConfigProvider();
-                bool firebaseSuccess = await _firebaseProvider.Initialize();
+                // Initialize provider (already injected)
+                bool providerSuccess = await _firebaseProvider.Initialize();
 
-                if (!firebaseSuccess || !_firebaseProvider.IsAvailable())
+                if (!providerSuccess || !_firebaseProvider.IsAvailable())
                 {
-                    GameLogger.LogError("Firebase provider failed to initialize");
+                    GameLogger.LogError("Config provider failed to initialize");
                     UpdateHealthStatus(ConfigHealthStatus.Failed);
                     return false;
                 }
 
-                GameLogger.Log("Firebase provider initialized successfully");
+                GameLogger.Log("Config provider initialized successfully");
 
                 // Fetch initial configuration
                 bool fetchSuccess = await FetchAllConfigsAsync();
