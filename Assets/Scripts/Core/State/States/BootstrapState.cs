@@ -1,4 +1,5 @@
 using System;
+using Core.Authentication;
 using Core.Bootstrap;
 using Core.Events;
 using Core.Logging;
@@ -116,12 +117,12 @@ namespace Core.State.States
 
             // --- STEP 4: Load Main Menu Scene (80% - 99%) ---
             loadingScreen?.UpdateProgress(0.9f, "Loading Environment...");
-            
+
             // Only load if not already there (e.g. playing in editor)
             if (SceneManager.GetActiveScene().name != "MainMenu")
             {
                 // Note: Check Build Settings to ensure 'MainMenu' is added!
-                try 
+                try
                 {
                     var loadOp = SceneManager.LoadSceneAsync("MainMenu");
                     if (loadOp != null)

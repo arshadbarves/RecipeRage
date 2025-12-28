@@ -11,6 +11,7 @@ namespace Core.RemoteConfig
     {
         private readonly Dictionary<Type, IConfigModel> _configCache;
         private IConfigProvider _firebaseProvider;
+        private readonly IEventBus _eventBus;
 
         private ConfigHealthStatus _healthStatus;
         private DateTime _lastUpdateTime;
@@ -19,14 +20,11 @@ namespace Core.RemoteConfig
         public ConfigHealthStatus HealthStatus => _healthStatus;
         public DateTime LastUpdateTime => _lastUpdateTime;
 
-        public event Action<IConfigModel> OnConfigUpdated;
-        public event Action<Type, IConfigModel> OnSpecificConfigUpdated;
-        public event Action<ConfigHealthStatus> OnHealthStatusChanged;
-
-        public RemoteConfigService(IConfigProvider configProvider)
+        public RemoteConfigService(IConfigProvider configProvider, IEventBus eventBus)
         {
             _configCache = new Dictionary<Type, IConfigModel>();
             _firebaseProvider = configProvider ?? throw new ArgumentNullException(nameof(configProvider));
+            _eventBus = eventBus ?? throw new ArgumentNullException(nameof(eventBus));
             _healthStatus = ConfigHealthStatus.Failed;
             _lastUpdateTime = DateTime.MinValue;
             _isInitialized = false;
@@ -219,8 +217,11 @@ namespace Core.RemoteConfig
             if (hasChanged)
             {
                 GameLogger.Log($"Config updated: {configType}");
-                OnConfigUpdated?.Invoke(config);
-                OnSpecificConfigUpdated?.Invoke(configType, config);
+                _eventBus.Publish(new Core.Events.RemoteConfigUpdatedEvent
+                {
+                    ConfigType = configType,
+                    ConfigData = config
+                });
             }
         }
 
@@ -231,7 +232,10 @@ namespace Core.RemoteConfig
                 var previousStatus = _healthStatus;
                 _healthStatus = newStatus;
                 GameLogger.Log($"Health status changed: {previousStatus} -> {newStatus}");
-                OnHealthStatusChanged?.Invoke(newStatus);
+                _eventBus.Publish(new Core.Events.RemoteConfigHealthStatusChangedEvent
+                {
+                    Status = newStatus
+                });
             }
         }
 

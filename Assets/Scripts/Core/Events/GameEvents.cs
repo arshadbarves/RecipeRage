@@ -161,4 +161,39 @@ namespace Core.Events
         public float SFXVolume { get; set; }
         public bool IsMuted { get; set; }
     }
+
+    // ============================================
+    // REMOTE CONFIG EVENTS
+    // ============================================
+
+    /// <summary>
+    /// Published when remote configuration is updated
+    /// </summary>
+    public class RemoteConfigUpdatedEvent
+    {
+        public System.Type ConfigType { get; set; }
+        public object ConfigData { get; set; }
+    }
+
+    /// <summary>
+    /// Published when remote config health status changes
+    /// </summary>
+    public class RemoteConfigHealthStatusChangedEvent
+    {
+        public Core.RemoteConfig.ConfigHealthStatus Status { get; set; }
+    }
+
+    // ============================================
+    // SAVE SYSTEM EVENTS
+    // ============================================
+
+    /// <summary>
+    /// Published when cloud sync status changes
+    /// </summary>
+    public class CloudSyncStatusChangedEvent
+    {
+        public string DataKey { get; set; }
+        public bool IsSyncing { get; set; }
+        public string Error { get; set; }
+    }
 }

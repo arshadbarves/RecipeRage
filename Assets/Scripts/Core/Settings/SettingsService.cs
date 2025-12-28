@@ -6,10 +6,6 @@ using UnityEngine;
 
 namespace Core.Settings
 {
-    /// <summary>
-    /// Service for applying settings to Unity systems.
-    /// Follows SOLID: Single Responsibility.
-    /// </summary>
     public class SettingsService : ISettingsService
     {
         private IAudioService _audioService;
@@ -40,7 +36,7 @@ namespace Core.Settings
             ApplyGraphicsSettings(data);
             ApplyAudioSettings(data);
             ApplyGameplaySettings(data);
-            
+
             GameLogger.Log("All settings applied to engine");
         }
 
@@ -50,17 +46,17 @@ namespace Core.Settings
 
             // Quality
             QualitySettings.SetQualityLevel(data.GraphicsQuality, true);
-            
+
             // Frame Rate
             Application.targetFrameRate = data.TargetFrameRate;
-            
+
             // Fullscreen
             Screen.fullScreen = data.IsFullscreen;
-            
+
             // VSync
             QualitySettings.vSyncCount = data.IsVSyncEnabled ? 1 : 0;
 
-            // Note: Shadows and Bloom toggles usually require manipulating 
+            // Note: Shadows and Bloom toggles usually require manipulating
             // specific URP Asset properties or PostProcessing Volumes.
             // For now, we log the intent.
             GameLogger.Log($"Graphics applied: Quality={data.GraphicsQuality}, FPS={data.TargetFrameRate}, VSync={data.IsVSyncEnabled}");
@@ -74,7 +70,7 @@ namespace Core.Settings
             _audioService.SetMusicVolume(data.MusicVolume);
             _audioService.SetSFXVolume(data.SFXVolume);
             _audioService.SetMute(data.IsMuted);
-            
+
             GameLogger.Log($"Audio applied: Master={data.MasterVolume}, Mute={data.IsMuted}");
         }
 
@@ -82,7 +78,7 @@ namespace Core.Settings
         {
             if (data == null) return;
 
-            // Gameplay settings like sensitivity are usually consumed by 
+            // Gameplay settings like sensitivity are usually consumed by
             // the Input Handling components at runtime.
             // This service ensures they are broadcasted or available.
             GameLogger.Log($"Gameplay settings applied: Sensitivity={data.Sensitivity}, InvertY={data.InvertY}");

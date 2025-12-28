@@ -47,7 +47,7 @@ namespace Core.Bootstrap
         public IPlayerNetworkManager PlayerNetworkManager { get; private set; }
         public INetworkObjectPool NetworkObjectPool { get; private set; }
 
-        public GameSession(ISaveService saveService, IEventBus eventBus, ILoggingService loggingService)
+        public GameSession(ISaveService saveService, IEventBus eventBus, ILoggingService loggingService, IRemoteConfigService remoteConfigService)
         {
             GameLogger.Log("Initializing GameSession...");
 
@@ -63,9 +63,9 @@ namespace Core.Bootstrap
             var inputProvider = InputProviderFactory.CreateForPlatform();
             InputService = new InputService(inputProvider);
 
-            GameModeService = new GameModeService();
+            GameModeService = new GameModeService(eventBus, remoteConfigService);
             CharacterService = new CharacterService();
-            SkinsService = new SkinsService();
+            SkinsService = new SkinsService(eventBus, remoteConfigService);
             NetworkingServices = new NetworkingServiceContainer();
 
             PlayerNetworkManager = new PlayerNetworkManager(loggingService);

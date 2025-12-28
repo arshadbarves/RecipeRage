@@ -16,6 +16,7 @@ namespace Core.SaveSystem
         private readonly IEncryptionService _encryption;
         private readonly IStorageProvider _localProvider;
         private readonly IStorageProvider _cloudProvider;
+        private readonly IEventBus _eventBus;
 
         // Storage configurations per data type
         private readonly Dictionary<string, StorageConfig> _storageConfigs;
@@ -33,10 +34,11 @@ namespace Core.SaveSystem
         public event Action<PlayerProgressData> OnPlayerProgressChanged;
         public event Action<PlayerStatsData> OnPlayerStatsChanged;
 
-        public SaveService(StorageProviderFactory providerFactory, IEncryptionService encryption)
+        public SaveService(StorageProviderFactory providerFactory, IEncryptionService encryption, IEventBus eventBus)
         {
             _providerFactory = providerFactory ?? throw new ArgumentNullException(nameof(providerFactory));
             _encryption = encryption;
+            _eventBus = eventBus ?? throw new ArgumentNullException(nameof(eventBus));
 
             // Get providers
             _localProvider = _providerFactory.GetLocalProvider();
@@ -397,6 +399,11 @@ namespace Core.SaveSystem
             }
 
             status.MarkSyncStarted();
+            _eventBus.Publish(new Core.Events.CloudSyncStatusChangedEvent
+            {
+                DataKey = key,
+                IsSyncing = true
+            });
 
             try
             {
@@ -405,6 +412,7 @@ namespace Core.SaveSystem
                 if (string.IsNullOrEmpty(content))
                 {
                     status.MarkSyncCompleted();
+                    _eventBus.Publish(new Core.Events.CloudSyncStatusChangedEvent { DataKey = key, IsSyncing = false });
                     return;
                 }
 
@@ -412,11 +420,13 @@ namespace Core.SaveSystem
                 await _cloudProvider.WriteAsync(key, content);
 
                 status.MarkSyncCompleted();
+                _eventBus.Publish(new Core.Events.CloudSyncStatusChangedEvent { DataKey = key, IsSyncing = false });
                 GameLogger.Log($"[SaveService] Synced {key} to cloud");
             }
             catch (Exception e)
             {
                 status.MarkSyncFailed(e.Message);
+                _eventBus.Publish(new Core.Events.CloudSyncStatusChangedEvent { DataKey = key, IsSyncing = false, Error = e.Message });
                 GameLogger.LogError($"[SaveService] Failed to sync {key}: {e.Message}");
             }
         }

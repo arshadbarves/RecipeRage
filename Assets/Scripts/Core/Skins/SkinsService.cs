@@ -25,21 +25,25 @@ namespace Core.Skins
         private readonly HashSet<string> _unlockedSkins = new HashSet<string>();
         private readonly Dictionary<int, string> _equippedSkins = new Dictionary<int, string>();
 
+        private readonly IEventBus _eventBus;
+        private readonly IRemoteConfigService _remoteConfigService;
+
         public event Action<string> OnSkinUnlocked;
         public event Action<int, string> OnSkinEquipped;
 
-        public SkinsService()
+        public SkinsService(IEventBus eventBus, IRemoteConfigService remoteConfigService)
         {
+            _eventBus = eventBus ?? throw new ArgumentNullException(nameof(eventBus));
+            _remoteConfigService = remoteConfigService ?? throw new ArgumentNullException(nameof(remoteConfigService));
+            
+            LoadSkinsData(); // Initial load from current config
             LoadPlayerProgress();
             SubscribeToConfigUpdates();
         }
 
         private void LoadSkinsData()
         {
-            // Try to load from RemoteConfigService first
-            var remoteConfigService = GameBootstrap.Services?.RemoteConfigService;
-
-            if (remoteConfigService != null && remoteConfigService.TryGetConfig<SkinsConfig>(out var skinsConfig))
+            if (_remoteConfigService != null && _remoteConfigService.TryGetConfig<SkinsConfig>(out var skinsConfig))
             {
                 LoadFromRemoteConfig(skinsConfig);
                 return;
@@ -116,25 +120,13 @@ namespace Core.Skins
 
         private void SubscribeToConfigUpdates()
         {
-            var remoteConfigService = GameBootstrap.Services?.RemoteConfigService;
-
-            if (remoteConfigService != null)
-            {
-                remoteConfigService.OnConfigUpdated += OnConfigUpdated;
-                GameLogger.Log("Subscribed to SkinsConfig updates");
-            }
-        }
-        private void OnConfigUpdated(IConfigModel obj)
-        {
-            if (obj is SkinsConfig skinsConfig)
-            {
-                LoadFromRemoteConfig(skinsConfig);
-            }
+            _eventBus.Subscribe<Core.Events.RemoteConfigUpdatedEvent>(OnRemoteConfigUpdated);
+            GameLogger.Log("Subscribed to SkinsConfig updates via EventBus");
         }
 
-        private void OnConfigUpdated(Type configType, IConfigModel config)
+        private void OnRemoteConfigUpdated(Core.Events.RemoteConfigUpdatedEvent evt)
         {
-            if (configType == typeof(SkinsConfig) && config is SkinsConfig skinsConfig)
+            if (evt.ConfigType == typeof(SkinsConfig) && evt.ConfigData is SkinsConfig skinsConfig)
             {
                 LoadFromRemoteConfig(skinsConfig);
             }
@@ -310,11 +302,7 @@ namespace Core.Skins
         public void Dispose()
         {
             // Unsubscribe from config updates
-            var remoteConfigService = GameBootstrap.Services?.RemoteConfigService;
-            if (remoteConfigService != null)
-            {
-                remoteConfigService.OnSpecificConfigUpdated -= OnConfigUpdated;
-            }
+            _eventBus?.Unsubscribe<Core.Events.RemoteConfigUpdatedEvent>(OnRemoteConfigUpdated);
 
             SavePlayerProgress();
             _skinsById.Clear();

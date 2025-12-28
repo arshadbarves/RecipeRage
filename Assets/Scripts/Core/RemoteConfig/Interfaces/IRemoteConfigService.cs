@@ -63,22 +63,5 @@ namespace Core.RemoteConfig
         /// Gets the timestamp of the last successful configuration update
         /// </summary>
         DateTime LastUpdateTime { get; }
-        
-        // Events
-        
-        /// <summary>
-        /// Event fired when any configuration is updated
-        /// </summary>
-        event Action<IConfigModel> OnConfigUpdated;
-        
-        /// <summary>
-        /// Event fired when a specific configuration type is updated
-        /// </summary>
-        event Action<Type, IConfigModel> OnSpecificConfigUpdated;
-        
-        /// <summary>
-        /// Event fired when the health status changes
-        /// </summary>
-        event Action<ConfigHealthStatus> OnHealthStatusChanged;
     }
 }

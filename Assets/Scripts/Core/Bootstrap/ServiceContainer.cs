@@ -67,7 +67,7 @@ namespace Core.Bootstrap
                 DestroySession();
             }
 
-            Session = new GameSession(SaveService, EventBus, LoggingService);
+            Session = new GameSession(SaveService, EventBus, LoggingService, RemoteConfigService);
             
             // Post-session settings application
             if (SettingsService is Core.Settings.SettingsService settingsImpl)
@@ -145,7 +145,7 @@ namespace Core.Bootstrap
             EventBus = new Events.EventBus();
 
             var storageFactory = new StorageProviderFactory();
-            SaveService = new SaveService(storageFactory, new EncryptionService());
+            SaveService = new SaveService(storageFactory, new EncryptionService(), EventBus);
 
             NTPTimeService = new NTPTimeService();
             NTPTime.SetInstance(NTPTimeService);
@@ -153,7 +153,7 @@ namespace Core.Bootstrap
             // Construct Remote Config with Firebase provider
             var firebaseWrapper = new Core.RemoteConfig.Providers.FirebaseWrapper();
             var configProvider = new Core.RemoteConfig.Providers.FirebaseConfigProvider(firebaseWrapper);
-            RemoteConfigService = new RemoteConfigService(configProvider);
+            RemoteConfigService = new RemoteConfigService(configProvider, EventBus);
 
             AnimationService = CreateAnimationService();
             UIService = CreateUIService();
