@@ -13,6 +13,7 @@
 ## UI & Architecture
 - **UI Framework:** Unity UI Toolkit (UXML for templates, USS for styling).
 - **Architecture:** Modular, extensible framework with clear separation of concerns (Core, Modules, UI).
+- **Design Pattern:** Service-oriented architecture with dependency injection (ServiceContainer) and MVP-like pattern for UI Screens.
 - **State Management:** Custom state machine for game flow (Bootstrap, MainMenu, Gameplay).
 
 ## Version Control & DevOps
