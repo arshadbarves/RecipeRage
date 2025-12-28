@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ns0:UXML xmlns:ns0="UnityEngine.UIElements">
+    <ns0:VisualElement name="tab-content" class="setting-section">
+        <ns0:Label text="DISPLAY" class="sec-header" />
+        
+        <ns0:VisualElement class="setting-row">
+            <ns0:VisualElement>
+                <ns0:Label text="GRAPHICS QUALITY" class="set-label" />
+                <ns0:Label text="Overall visual fidelity" class="set-sub" />
+            </ns0:VisualElement>
+            <ns0:VisualElement class="segment-control">
+                <ns0:Button text="LOW" class="seg-btn" />
+                <ns0:Button text="MED" class="seg-btn" />
+                <ns0:Button text="HIGH" class="seg-btn active" />
+                <ns0:Button text="ULTRA" class="seg-btn" />
+            </ns0:VisualElement>
+        </ns0:VisualElement>
+
+        <ns0:VisualElement class="setting-row">
+            <ns0:VisualElement>
+                <ns0:Label text="FRAME RATE" class="set-label" />
+                <ns0:Label text="Higher FPS drains battery" class="set-sub" />
+            </ns0:VisualElement>
+            <ns0:VisualElement class="segment-control">
+                <ns0:Button text="30" class="seg-btn" />
+                <ns0:Button text="60" class="seg-btn active" />
+                <ns0:Button text="120" class="seg-btn" />
+            </ns0:VisualElement>
+        </ns0:VisualElement>
+
+        <ns0:VisualElement class="setting-row">
+            <ns0:Label text="SHADOWS" class="set-label" />
+            <ns0:Toggle name="shadows-toggle" class="toggle-switch" value="true" />
+        </ns0:VisualElement>
+
+        <ns0:VisualElement class="setting-row">
+            <ns0:Label text="BLOOM &amp; GLOW" class="set-label" />
+            <ns0:Toggle name="bloom-toggle" class="toggle-switch" value="true" />
+        </ns0:VisualElement>
+    </ns0:VisualElement>
+</ns0:UXML>

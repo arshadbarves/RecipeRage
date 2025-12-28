@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ns0:UXML xmlns:ns0="UnityEngine.UIElements">
+    <ns0:VisualElement name="tab-content" class="setting-section">
+        <ns0:Label text="LEGAL &amp; SUPPORT" class="sec-header" />
+        
+        <ns0:VisualElement class="setting-row">
+            <ns0:Label text="LANGUAGE" class="set-label" />
+            <ns0:DropdownField name="language-dropdown" class="control-dropdown" />
+        </ns0:VisualElement>
+
+        <ns0:VisualElement class="setting-row">
+            <ns0:Label text="PUSH NOTIFICATIONS" class="set-label" />
+            <ns0:Toggle name="notifications" class="toggle-switch" value="true" />
+        </ns0:VisualElement>
+
+        <ns0:VisualElement class="support-grid">
+            <ns0:Button name="help-btn" text="HELP" class="action-btn btn-reset" />
+            <ns0:Button name="support-btn" text="SUPPORT" class="action-btn btn-reset" />
+            <ns0:Button name="privacy-btn" text="PRIVACY POLICY" class="action-btn btn-reset" />
+            <ns0:Button name="terms-btn" text="TERMS OF SERVICE" class="action-btn btn-reset" />
+        </ns0:VisualElement>
+    </ns0:VisualElement>
+</ns0:UXML>

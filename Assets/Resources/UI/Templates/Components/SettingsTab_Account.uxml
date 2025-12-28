@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ns0:UXML xmlns:ns0="UnityEngine.UIElements">
+    <ns0:VisualElement name="tab-content" class="setting-section">
+        <ns0:Label text="PROFILE" class="sec-header" />
+        
+        <ns0:VisualElement class="setting-row profile-card">
+            <ns0:VisualElement style="flex-direction: row; align-items: center; gap: 15px;">
+                <ns0:VisualElement name="avatar-img" class="avatar-box" />
+                <ns0:VisualElement>
+                    <ns0:Label name="player-name" text="STRYKER" class="set-label" style="font-size: 1.2rem;" />
+                    <ns0:Label name="player-id" text="UID: 892-112-990" class="set-sub" />
+                </ns0:VisualElement>
+            </ns0:VisualElement>
+            <ns0:Button name="copy-id-btn" text="COPY ID" class="action-btn" style="background-color: #333; color: white; font-size: 0.9rem;" />
+        </ns0:VisualElement>
+
+        <ns0:VisualElement class="setting-row">
+            <ns0:Label text="STREAMER MODE" class="set-label" />
+            <ns0:Toggle name="streamer-mode" class="toggle-switch" />
+        </ns0:VisualElement>
+
+        <ns0:VisualElement style="margin-top: 20px; border-top-width: 1px; border-top-color: #333; padding-top: 20px;">
+            <ns0:Button name="logout-btn" text="LOG OUT" class="action-btn" style="background-color: #E63946; color: white;" />
+        </ns0:VisualElement>
+    </ns0:VisualElement>
+</ns0:UXML>
