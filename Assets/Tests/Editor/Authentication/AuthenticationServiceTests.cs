@@ -110,7 +110,7 @@ namespace Tests.Editor.Authentication
         
         public Epic.OnlineServices.ProductUserId GetProductUserId() => null;
         public Epic.OnlineServices.Connect.ConnectInterface GetEOSConnectInterface() => null;
-        public void StartConnectLoginWithOptions(Epic.OnlineServices.ExternalCredentialType credentialsType, string credentialsId, string displayName, PlayEveryWare.EpicOnlineServices.OnLoginCallback callback) { }
+        public void StartConnectLoginWithOptions(Epic.OnlineServices.ExternalCredentialType credentialsType, string credentialsId, string displayName, System.Action<Epic.OnlineServices.Connect.LoginCallbackInfo> callback) { }
         public void ClearConnectId(Epic.OnlineServices.ProductUserId localUserId) { }
     }
 }
