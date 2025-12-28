@@ -44,6 +44,7 @@ namespace Core.Bootstrap
         public INTPTimeService NTPTimeService { get; private set; }
         public IConnectivityService ConnectivityService { get; private set; }
         public IGameStateManager StateManager { get; private set; }
+        public Core.Settings.ISettingsService SettingsService { get; private set; }
 
         // ============================================
         // GAME SESSION (Scoped - User Specific)
@@ -67,6 +68,13 @@ namespace Core.Bootstrap
             }
 
             Session = new GameSession(SaveService, EventBus, LoggingService);
+            
+            // Post-session settings application
+            if (SettingsService is Core.Settings.SettingsService settingsImpl)
+            {
+                settingsImpl.UpdateAudioService(Session.AudioService);
+            }
+            SettingsService?.ApplyAudioSettings(SaveService.GetSettings());
         }
 
         public void DestroySession()
@@ -166,6 +174,10 @@ namespace Core.Bootstrap
             MaintenanceService = new MaintenanceService(EventBus, RemoteConfigService);
             AuthenticationService = new AuthenticationService(SaveService, EventBus, MaintenanceService, new EOSWrapper(), CreateSession);
             StateManager = new GameStateManager();
+            
+            // Settings service needs AudioService (which is in Session currently)
+            // We'll pass a proxy or update after session creation
+            SettingsService = new Core.Settings.SettingsService(null, SaveService);
 
             GameLogger.Log("Core services constructed.");
         }
@@ -191,6 +203,7 @@ namespace Core.Bootstrap
             ConnectivityService.Initialize();
             MaintenanceService.Initialize();
             AuthenticationService.Initialize();
+            SettingsService.Initialize();
 
             GameLogger.Log("All services initialized.");
         }
