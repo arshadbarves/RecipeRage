@@ -9,7 +9,7 @@ namespace Core.Authentication
         bool IsReady { get; }
         ProductUserId GetProductUserId();
         ConnectInterface GetEOSConnectInterface();
-        void StartConnectLoginWithOptions(ExternalCredentialType credentialsType, string credentialsId, string displayName, OnLoginCallback callback);
+        void StartConnectLoginWithOptions(ExternalCredentialType credentialsType, string credentialsId, string displayName, System.Action<LoginCallbackInfo> callback);
         void ClearConnectId(ProductUserId localUserId);
     }
 
@@ -27,9 +27,9 @@ namespace Core.Authentication
             return EOSManager.Instance?.GetEOSConnectInterface();
         }
 
-        public void StartConnectLoginWithOptions(ExternalCredentialType credentialsType, string credentialsId, string displayName, OnLoginCallback callback)
+        public void StartConnectLoginWithOptions(ExternalCredentialType credentialsType, string credentialsId, string displayName, System.Action<LoginCallbackInfo> callback)
         {
-            EOSManager.Instance?.StartConnectLoginWithOptions(credentialsType, credentialsId, displayName, callback);
+            EOSManager.Instance?.StartConnectLoginWithOptions(credentialsType, credentialsId, displayName, (LoginCallbackInfo info) => callback?.Invoke(info));
         }
 
         public void ClearConnectId(ProductUserId localUserId)
