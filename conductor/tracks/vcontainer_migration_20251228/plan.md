@@ -1,0 +1,35 @@
+# Plan: Migrate Core to VContainer
+
+## Phase 1: Foundation Setup
+Establish the root LifetimeScope and register foundational services.
+
+- [ ] Task: Create GameLifetimeScope
+    - Create `Assets/Scripts/Core/Bootstrap/GameLifetimeScope.cs`.
+    - Register: `EventBus`, `SaveService`, `NTPTimeService`, `RemoteConfigService`, `AnimationService`, `UIService`, `ConnectivityService`.
+    - Inject `UIDocumentProvider` from the scene into `UIService`.
+- [ ] Task: Register Core Services
+    - Register: `MaintenanceService`, `AuthService` (EOSAuthService), `StateManager`.
+    - Ensure `AuthService` is correctly configured with its constructor dependencies.
+- [ ] Task: Update GameBootstrap
+    - Replace `ServiceContainer` instantiation with `LifetimeScope`.
+    - Update `BootstrapState` to resolve dependencies from the container.
+- [ ] Task: Conductor - User Manual Verification 'Foundation Setup' (Protocol in workflow.md)
+
+## Phase 2: Session Management
+Migrate user-specific services to a dynamic session scope.
+
+- [ ] Task: Create SessionLifetimeScope
+    - Create `Assets/Scripts/Core/Bootstrap/SessionLifetimeScope.cs`.
+    - Register: `CurrencyService`, `AudioService`, `InputService`, `GameModeService`, `CharacterService`, `SkinsService`, `NetworkingServices`, `NetworkGameManager`, `PlayerNetworkManager`, `NetworkObjectPool`.
+- [ ] Task: Update Session Creation Logic
+    - Update `AuthService` or a dedicated `SessionManager` to create the `SessionLifetimeScope` upon login.
+    - Ensure proper disposal of the scope on logout.
+- [ ] Task: Conductor - User Manual Verification 'Session Management' (Protocol in workflow.md)
+
+## Phase 3: Cleanup & Refinement
+- [ ] Task: Remove Legacy Container Files
+    - Delete `ServiceContainer.cs` and `GameSession.cs`.
+    - Fix any remaining direct references to `GameBootstrap.Services`.
+- [ ] Task: Refactor UI Injection
+    - Update screens (e.g., `MainMenuScreen`) to use VContainer property injection or manual resolution from the scope if necessary.
+- [ ] Task: Conductor - User Manual Verification 'Cleanup & Refinement' (Protocol in workflow.md)
