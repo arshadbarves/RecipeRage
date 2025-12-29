@@ -19,7 +19,7 @@ Establishes the module structure and defines the contracts for authentication.
 ## Phase 2: Core Authentication Logic
 Implements the actual EOS connection logic using the PlayEveryWare plugin.
 
-- [ ] Task: Implement EOSAuthService Skeleton
+- [x] Task: Implement EOSAuthService Skeleton 3186bbd
     - Create `EOSAuthService.cs` implementing `IAuthService`.
     - Implement `Initialize()` to grab the EOS Platform Interface instance.
     - Add logging using the existing `Logging` module.
