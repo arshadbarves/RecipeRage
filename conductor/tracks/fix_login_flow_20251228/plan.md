@@ -1,7 +1,7 @@
 # Plan: Fix Initial Login Flow
 
 ## Phase 1: Persistence & Logic Update
-- [ ] Task: Update EOSAuthService with Persistence
+- [~] Task: Update EOSAuthService with Persistence
     - Inject `ISaveService` into `EOSAuthService`.
     - Update `LoginAsync` to save `LastLoginMethod` on success.
     - Update `LogoutAsync` to clear `LastLoginMethod`.

@@ -4,5 +4,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-## [~] Track: Implement EOS Authentication Flow
-*Link: [./conductor/tracks/auth_eos_20251228/](./conductor/tracks/auth_eos_20251228/)*
+## [~] Track: Fix Initial Login Flow
+*Link: [./conductor/tracks/fix_login_flow_20251228/](./conductor/tracks/fix_login_flow_20251228/)*

@@ -20,3 +20,4 @@
 ## Key Libraries & Tools
 - **Logging:** Custom Logging Module
 - **Version Control:** Git LFS
+- **Authentication:** Custom EOS Auth Module

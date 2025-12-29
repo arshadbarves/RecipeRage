@@ -1,5 +1,4 @@
 using System;
-using Core.Authentication;
 using Core.Bootstrap;
 using Core.Events;
 using Core.Logging;
@@ -93,7 +92,7 @@ namespace Core.State.States
 
             // --- STEP 2: Authentication (30% - 60%) ---
             loadingScreen?.UpdateProgress(0.3f, "Authenticating...");
-            
+
             // New logic: Check if logged in, otherwise attempt auto-login with DeviceID
             bool isAuthenticated = _authService.IsLoggedIn();
             if (!isAuthenticated)
