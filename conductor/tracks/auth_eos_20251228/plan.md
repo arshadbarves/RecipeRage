@@ -35,11 +35,11 @@ Implements the actual EOS connection logic using the PlayEveryWare plugin.
 ## Phase 3: Integration & UI
 Connects the backend logic to the frontend UI and integrates with the Friends system.
 
-- [ ] Task: Create Login UI Layout (UXML/USS)
+- [x] Task: Create Login UI Layout (UXML/USS) fa6c675
     - Create `LoginView.uxml` and `LoginView.uss` in `Assets/Scripts/Modules/Auth/UI/`.
     - Implement "Skewed Shop" style: Dark background, skewed buttons (-10deg), Red/Yellow accents.
     - Add buttons: "Connect (Device)", "Connect (Epic)".
-- [ ] Task: Implement LoginView Logic
+- [x] Task: Implement LoginView Logic a5d4709
     - Create `LoginView.cs` (UI Document Controller).
     - Inject `IAuthService`.
     - Bind buttons to `LoginAsync` calls.

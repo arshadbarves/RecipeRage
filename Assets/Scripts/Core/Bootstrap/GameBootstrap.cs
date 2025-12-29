@@ -44,7 +44,7 @@ namespace Core.Bootstrap
                 Services.UIService,
                 Services.NTPTimeService,
                 Services.RemoteConfigService,
-                Services.AuthenticationService,
+                Services.AuthService,
                 Services.MaintenanceService,
                 Services.StateManager,
                 Services.EventBus,

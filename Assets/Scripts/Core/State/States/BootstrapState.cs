@@ -10,6 +10,7 @@ using Cysharp.Threading.Tasks;
 using UI;
 using UI.Screens;
 using UnityEngine;
+using RecipeRage.Modules.Auth.Core;
 
 namespace Core.State.States
 {
@@ -23,7 +24,7 @@ namespace Core.State.States
         private readonly IUIService _uiService;
         private readonly INTPTimeService _ntpTimeService;
         private readonly IRemoteConfigService _remoteConfigService;
-        private readonly IAuthenticationService _authService;
+        private readonly IAuthService _authService;
         private readonly IMaintenanceService _maintenanceService;
         private readonly IGameStateManager _stateManager;
         private readonly IEventBus _eventBus;
@@ -33,7 +34,7 @@ namespace Core.State.States
             IUIService uiService,
             INTPTimeService ntpTimeService,
             IRemoteConfigService remoteConfigService,
-            IAuthenticationService authService,
+            IAuthService authService,
             IMaintenanceService maintenanceService,
             IGameStateManager stateManager,
             IEventBus eventBus,
@@ -92,7 +93,13 @@ namespace Core.State.States
 
             // --- STEP 2: Authentication (30% - 60%) ---
             loadingScreen?.UpdateProgress(0.3f, "Authenticating...");
-            bool isAuthenticated = await _authService.InitializeAsync();
+            
+            // New logic: Check if logged in, otherwise attempt auto-login with DeviceID
+            bool isAuthenticated = _authService.IsLoggedIn();
+            if (!isAuthenticated)
+            {
+                isAuthenticated = await _authService.LoginAsync(AuthType.DeviceID);
+            }
 
             if (!isAuthenticated)
             {

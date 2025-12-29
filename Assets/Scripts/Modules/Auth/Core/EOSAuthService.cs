@@ -14,10 +14,12 @@ namespace RecipeRage.Modules.Auth.Core
     {
         private const int TIMEOUT_SECONDS = 15;
         private readonly IEventBus _eventBus;
+        private readonly Action _onLoginSuccess;
 
-        public EOSAuthService(IEventBus eventBus)
+        public EOSAuthService(IEventBus eventBus, Action onLoginSuccess = null)
         {
             _eventBus = eventBus;
+            _onLoginSuccess = onLoginSuccess;
         }
 
         public bool IsLoggedIn()
@@ -49,10 +51,12 @@ namespace RecipeRage.Modules.Auth.Core
 
             if (success)
             {
+                _onLoginSuccess?.Invoke();
+                
                 _eventBus?.Publish(new LoginSuccessEvent
                 {
                     UserId = GetCurrentUserId(),
-                    DisplayName = "User" // Placeholder until we fetch display name
+                    DisplayName = "User"
                 });
             }
             else

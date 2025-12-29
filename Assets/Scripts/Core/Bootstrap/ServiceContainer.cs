@@ -1,6 +1,5 @@
 using System;
 using Core.Animation;
-using Core.Authentication;
 using Core.Events;
 using Core.Logging;
 using Core.Maintenance;
@@ -39,7 +38,6 @@ namespace Core.Bootstrap
 
         public ILoggingService LoggingService { get; private set; }
         public ISaveService SaveService { get; private set; }
-        public IAuthenticationService AuthenticationService { get; private set; }
         public IAuthService AuthService { get; private set; }
         public IMaintenanceService MaintenanceService { get; private set; }
         public IRemoteConfigService RemoteConfigService { get; private set; }
@@ -163,8 +161,7 @@ namespace Core.Bootstrap
             GameLogger.Log("Constructing core services...");
 
             MaintenanceService = new MaintenanceService(EventBus, RemoteConfigService);
-            AuthenticationService = new AuthenticationService(SaveService, EventBus, MaintenanceService, CreateSession);
-            AuthService = new EOSAuthService(EventBus);
+            AuthService = new EOSAuthService(EventBus, CreateSession);
             StateManager = new GameStateManager();
 
             GameLogger.Log("Core services constructed.");
@@ -190,7 +187,6 @@ namespace Core.Bootstrap
             AnimationService.Initialize();
             ConnectivityService.Initialize();
             MaintenanceService.Initialize();
-            AuthenticationService.Initialize();
 
             GameLogger.Log("All services initialized.");
         }
