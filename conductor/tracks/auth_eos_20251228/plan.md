@@ -16,7 +16,7 @@ Establishes the module structure and defines the contracts for authentication.
     - Write tests to verify VContainer resolution and `MockAuthService` behavior.
 - [ ] Task: Conductor - User Manual Verification 'Setup & Initialization' (Protocol in workflow.md)
 
-## Phase 2: Core Authentication Logic
+## Phase 2: Core Authentication Logic [checkpoint: e151118]
 Implements the actual EOS connection logic using the PlayEveryWare plugin.
 
 - [x] Task: Implement EOSAuthService Skeleton 3186bbd
