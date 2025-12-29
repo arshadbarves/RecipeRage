@@ -23,7 +23,7 @@ Implements the actual EOS connection logic using the PlayEveryWare plugin.
     - Create `EOSAuthService.cs` implementing `IAuthService`.
     - Implement `Initialize()` to grab the EOS Platform Interface instance.
     - Add logging using the existing `Logging` module.
-- [ ] Task: Implement Login Logic (DevAuth & DeviceID)
+- [x] Task: Implement Login Logic (DevAuth & DeviceID) 8c49cb5
     - **TDD Red:** Write failing tests for `LoginAsync` in `AuthServiceTests.cs` (mocking EOS calls if possible, or using integration tests).
     - **Green:** Implement `LoginAsync` handling `AuthType.DevAuth` and `AuthType.DeviceID`.
     - Use `EOSManager.Instance.StartLoginWithLoginTypeAndToken`.
