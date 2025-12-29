@@ -18,13 +18,12 @@ Replace the placeholder authentication system with a fully functional module pow
     - `bool IsLoggedIn()`
     - `string GetCurrentUserId()` (Returns PUID)
 - **Auth Types:**
-    - `DevAuth`: For development (using DevAuthTool).
     - `DeviceID`: For simple persistent guest login.
-    - `AccountPortal`: For full Epic Account login (web browser flow).
+    - *Future: Google, Facebook*
 
 ### 3. Integration
 - **Bootstrapper:** Update the game's entry point to initialize `AuthService` *before* `FriendsService`.
-- **Dependency Injection:** Register `IAuthService` and `EOSAuthService` in the VContainer scope.
+- **Dependency Injection:** Register `IAuthService` and `EOSAuthService` in the VContainer scope (or ServiceContainer).
 - **Friends Dependency:** Ensure the Friends module waits for a valid user ID before attempting to connect.
 
 ### 4. User Interface
@@ -32,8 +31,7 @@ Replace the placeholder authentication system with a fully functional module pow
 - **Style:** Adhere to the "Skewed Shop" aesthetic (Dark, Red/Yellow accents, Skewed buttons).
 - **Functionality:**
     - Display Status (Initializing, Ready, Logging In, Error).
-    - Buttons for "Login with Device ID" and "Login with Epic".
-    - DevAuth input fields (Port/Creds) visible only in Debug builds or via toggle.
+    - Buttons for "Login with Device ID".
 
 ## Technical Architecture
 
