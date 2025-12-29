@@ -1,6 +1,5 @@
 using System;
 using Cysharp.Threading.Tasks;
-using RecipeRage.Modules.Auth.Core;
 using PlayEveryWare.EpicOnlineServices;
 using Core.Logging;
 using Epic.OnlineServices;
@@ -52,23 +51,24 @@ namespace RecipeRage.Modules.Auth.Core
                     break;
             }
 
-            if (success)
-            {
-                // Save persistence
-                if (type == AuthType.DeviceID)
-                {
-                    _saveService.UpdateSettings(s => s.LastLoginMethod = "DeviceID");
-                }
-
-                _onLoginSuccess?.Invoke();
-                
-                _eventBus?.Publish(new LoginSuccessEvent
-                {
-                    UserId = GetCurrentUserId(),
-                    DisplayName = "User"
-                });
-            }
-            else
+                        if (success)
+                        {
+                            // Save persistence
+                            if (type == AuthType.DeviceID)
+                            {
+                                _saveService.UpdateSettings(s => s.LastLoginMethod = "DeviceID");
+                            }
+            
+                            _onLoginSuccess?.Invoke();
+                            
+                            GameLogger.Log("[Auth] Publishing LoginSuccessEvent...");
+                            _eventBus?.Publish(new LoginSuccessEvent
+                            {
+                                UserId = GetCurrentUserId(),
+                                DisplayName = "User"
+                            });
+                            GameLogger.Log("[Auth] LoginSuccessEvent Published");
+                        }            else
             {
                 _eventBus?.Publish(new LoginFailedEvent
                 {
@@ -94,7 +94,7 @@ namespace RecipeRage.Modules.Auth.Core
                 EOSManager.Instance.ClearConnectId(productUserId);
                 GameLogger.Log("[Auth] Logged out from EOS");
             }
-            
+
             _eventBus?.Publish(new LogoutEvent
             {
                 UserId = userIdStr

@@ -31,7 +31,7 @@ namespace Core.State.States
         public override void Enter()
         {
             base.Enter();
-            GameLogger.Log("[LoginState] Entered");
+            GameLogger.Log("[LoginState] Entered - Subscribing to events");
 
             // Show Login Screen
             _uiService.ShowScreen(UIScreenType.Login);
@@ -43,7 +43,7 @@ namespace Core.State.States
         public override void Exit()
         {
             base.Exit();
-            GameLogger.Log("[LoginState] Exiting");
+            GameLogger.Log("[LoginState] Exiting - Unsubscribing");
 
             // Hide Login Screen
             _uiService.HideScreen(UIScreenType.Login);
@@ -54,7 +54,7 @@ namespace Core.State.States
 
         private void OnLoginSuccess(Events.LoginSuccessEvent evt)
         {
-            GameLogger.Log($"[LoginState] Login successful for user: {evt.UserId}");
+            GameLogger.Log($"[LoginState] EVENT RECEIVED: Login successful for user: {evt.UserId}");
 
             // Session is created internally by AuthenticationService after successful auth
             _stateManager.ChangeState(new MainMenuState());
