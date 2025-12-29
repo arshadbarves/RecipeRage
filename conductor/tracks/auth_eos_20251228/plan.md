@@ -11,7 +11,7 @@ Establishes the module structure and defines the contracts for authentication.
     - Create `AuthScope` or update `GameLifetimeScope` to register `IAuthService`.
     - Create a mock `MockAuthService` for initial testing.
     - Update `Bootstrapper.cs` to resolve and initialize `IAuthService`.
-- [ ] Task: Create Basic Auth Tests
+- [x] Task: Create Basic Auth Tests 8ce9fd0
     - Create `Assets/Scripts/Modules/Auth/Tests/AuthServiceTests.cs`.
     - Write tests to verify VContainer resolution and `MockAuthService` behavior.
 - [ ] Task: Conductor - User Manual Verification 'Setup & Initialization' (Protocol in workflow.md)
