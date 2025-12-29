@@ -8,6 +8,7 @@ using System.Collections;
 using UnityEngine.TestTools;
 using UnityEngine.UIElements;
 using UI;
+using Core.Events;
 
 namespace RecipeRage.Modules.Auth.Tests
 {
@@ -17,7 +18,6 @@ namespace RecipeRage.Modules.Auth.Tests
         public void ServiceContainer_Resolves_IAuthService()
         {
             // Arrange
-            // We need a UIDocumentProvider to create ServiceContainer
             var go = new GameObject("TestObject");
             var uiDoc = go.AddComponent<UIDocument>();
             var provider = go.AddComponent<UIDocumentProvider>();
@@ -47,5 +47,18 @@ namespace RecipeRage.Modules.Auth.Tests
             Assert.IsTrue(result);
             Assert.IsTrue(authService.IsLoggedIn());
         });
+
+        [Test]
+        public void EOSAuthService_CanBeInstantiated()
+        {
+            // Arrange
+            var eventBus = new EventBus(); // Using real EventBus since it's simple
+            
+            // Act
+            var service = new EOSAuthService(eventBus);
+            
+            // Assert
+            Assert.IsNotNull(service);
+        }
     }
 }
