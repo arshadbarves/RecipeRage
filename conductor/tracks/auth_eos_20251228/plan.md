@@ -27,7 +27,7 @@ Implements the actual EOS connection logic using the PlayEveryWare plugin.
     - **TDD Red:** Write failing tests for `LoginAsync` in `AuthServiceTests.cs` (mocking EOS calls if possible, or using integration tests).
     - **Green:** Implement `LoginAsync` handling `AuthType.DevAuth` and `AuthType.DeviceID`.
     - Use `EOSManager.Instance.StartLoginWithLoginTypeAndToken`.
-- [ ] Task: Implement Logout & State Management
+- [x] Task: Implement Logout & State Management b9c0327
     - **TDD Red:** Write failing tests for `LogoutAsync` and state checks.
     - **Green:** Implement `LogoutAsync` and `IsLoggedIn`. Ensure local user data is cleared.
 - [ ] Task: Conductor - User Manual Verification 'Core Authentication Logic' (Protocol in workflow.md)
