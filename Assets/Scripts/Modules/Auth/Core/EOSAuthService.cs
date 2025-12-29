@@ -7,6 +7,7 @@ using Epic.OnlineServices;
 using Epic.OnlineServices.Connect;
 using UnityEngine;
 using Core.Events;
+using Core.SaveSystem;
 
 namespace RecipeRage.Modules.Auth.Core
 {
@@ -14,11 +15,13 @@ namespace RecipeRage.Modules.Auth.Core
     {
         private const int TIMEOUT_SECONDS = 15;
         private readonly IEventBus _eventBus;
+        private readonly ISaveService _saveService;
         private readonly Action _onLoginSuccess;
 
-        public EOSAuthService(IEventBus eventBus, Action onLoginSuccess = null)
+        public EOSAuthService(IEventBus eventBus, ISaveService saveService, Action onLoginSuccess = null)
         {
             _eventBus = eventBus;
+            _saveService = saveService;
             _onLoginSuccess = onLoginSuccess;
         }
 
@@ -51,6 +54,12 @@ namespace RecipeRage.Modules.Auth.Core
 
             if (success)
             {
+                // Save persistence
+                if (type == AuthType.DeviceID)
+                {
+                    _saveService.UpdateSettings(s => s.LastLoginMethod = "DeviceID");
+                }
+
                 _onLoginSuccess?.Invoke();
                 
                 _eventBus?.Publish(new LoginSuccessEvent
@@ -72,6 +81,9 @@ namespace RecipeRage.Modules.Auth.Core
 
         public async UniTask LogoutAsync()
         {
+            // Clear persistence
+            _saveService.UpdateSettings(s => s.LastLoginMethod = "");
+
             if (EOSManager.Instance == null) return;
 
             var productUserId = EOSManager.Instance.GetProductUserId();
