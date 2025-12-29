@@ -3,11 +3,11 @@
 ## Phase 1: Setup & Initialization
 Establishes the module structure and defines the contracts for authentication.
 
-- [ ] Task: Create Auth Module Structure
+- [x] Task: Create Auth Module Structure 695a603
     - Create directories: `Assets/Scripts/Modules/Auth/{Core,UI,Tests}`.
     - Create `IAuthService.cs` interface with `LoginAsync`, `LogoutAsync`, `IsLoggedIn`, `GetCurrentUserId`.
     - Create Assembly Definition `RecipeRage.Modules.Auth` and reference `RecipeRage.Core`, `Unity.Netcode.Runtime`, `VContainer`, `UniTask`, `Epic.OnlineServices`.
-- [ ] Task: Configure VContainer & Bootstrapper
+- [x] Task: Configure VContainer & Bootstrapper 6eeab5c
     - Create `AuthScope` or update `GameLifetimeScope` to register `IAuthService`.
     - Create a mock `MockAuthService` for initial testing.
     - Update `Bootstrapper.cs` to resolve and initialize `IAuthService`.
