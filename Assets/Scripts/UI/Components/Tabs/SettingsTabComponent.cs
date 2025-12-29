@@ -582,7 +582,7 @@ namespace UI.Components.Tabs
         {
             GameLogger.Log("Logout button clicked");
 
-            var authService = GameBootstrap.Services?.AuthenticationService;
+            var authService = GameBootstrap.Services?.AuthService;
             if (authService != null)
             {
                 await authService.LogoutAsync();
@@ -590,7 +590,7 @@ namespace UI.Components.Tabs
             }
             else
             {
-                GameLogger.LogError("AuthenticationService not available");
+                GameLogger.LogError("AuthService not available");
             }
         }
 

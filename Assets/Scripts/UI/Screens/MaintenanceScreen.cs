@@ -2,12 +2,11 @@ using System;
 using Core.Bootstrap;
 using Core.Events;
 using Core.Logging;
-using Core.Maintenance;
 using Core.RemoteConfig;
 using Cysharp.Threading.Tasks;
 using UI.Core;
-using UnityEngine;
 using UnityEngine.UIElements;
+using RecipeRage.Modules.Auth.Core;
 
 namespace UI.Screens
 {
@@ -285,17 +284,17 @@ namespace UI.Screens
                 // Wait a bit before retrying
                 await UniTask.Delay(TimeSpan.FromSeconds(1));
 
-                var authService = GameBootstrap.Services?.AuthenticationService;
+                var authService = GameBootstrap.Services?.AuthService;
                 if (authService == null)
                 {
-                    GameLogger.LogError("AuthenticationService not available");
+                    GameLogger.LogError("AuthService not available");
                     _isRetrying = false;
                     UpdateUI();
                     return;
                 }
 
                 // Try to log in again
-                bool success = await authService.AttemptAutoLoginAsync();
+                bool success = await authService.LoginAsync(AuthType.DeviceID);
 
                 if (success)
                 {
