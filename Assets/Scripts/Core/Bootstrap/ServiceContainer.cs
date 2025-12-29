@@ -10,7 +10,6 @@ using Core.State;
 using UI;
 using Core.Networking;
 using RecipeRage.Modules.Auth.Core;
-using RecipeRage.Modules.Auth.Tests;
 
 namespace Core.Bootstrap
 {
@@ -165,7 +164,7 @@ namespace Core.Bootstrap
 
             MaintenanceService = new MaintenanceService(EventBus, RemoteConfigService);
             AuthenticationService = new AuthenticationService(SaveService, EventBus, MaintenanceService, CreateSession);
-            AuthService = new MockAuthService();
+            AuthService = new EOSAuthService(EventBus);
             StateManager = new GameStateManager();
 
             GameLogger.Log("Core services constructed.");

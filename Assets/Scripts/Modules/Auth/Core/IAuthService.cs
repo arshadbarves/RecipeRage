@@ -4,9 +4,8 @@ namespace RecipeRage.Modules.Auth.Core
 {
     public enum AuthType
     {
-        DevAuth,
         DeviceID,
-        AccountPortal
+        // Future: Google, Facebook
     }
 
     public interface IAuthService

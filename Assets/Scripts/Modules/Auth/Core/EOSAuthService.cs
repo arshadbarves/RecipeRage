@@ -42,12 +42,6 @@ namespace RecipeRage.Modules.Auth.Core
                 case AuthType.DeviceID:
                     success = await LoginWithDeviceIdAsync();
                     break;
-                case AuthType.DevAuth:
-                    success = await LoginWithDevAuthAsync();
-                    break;
-                case AuthType.AccountPortal:
-                    success = await LoginWithAccountPortalAsync();
-                    break;
                 default:
                     GameLogger.LogError($"[Auth] Unsupported AuthType: {type}");
                     break;
@@ -58,7 +52,7 @@ namespace RecipeRage.Modules.Auth.Core
                 _eventBus?.Publish(new LoginSuccessEvent
                 {
                     UserId = GetCurrentUserId(),
-                    DisplayName = "User" // Placeholder, could fetch from EOS
+                    DisplayName = "User" // Placeholder until we fetch display name
                 });
             }
             else
@@ -148,23 +142,6 @@ namespace RecipeRage.Modules.Auth.Core
             });
 
             return await tcs.Task.Timeout(TimeSpan.FromSeconds(TIMEOUT_SECONDS));
-        }
-
-        private async UniTask<bool> LoginWithDevAuthAsync()
-        {
-            GameLogger.Log("[Auth] DevAuth login requested (Implementation pending)");
-            return await UniTask.FromResult(false);
-        }
-
-        private async UniTask<bool> LoginWithAccountPortalAsync()
-        {
-            GameLogger.Log("[Auth] Account Portal login requested");
-            return await UniTask.FromResult(false);
-        }
-        
-        public void Initialize()
-        {
-            GameLogger.Log("[Auth] EOSAuthService Initialized");
         }
     }
 }
