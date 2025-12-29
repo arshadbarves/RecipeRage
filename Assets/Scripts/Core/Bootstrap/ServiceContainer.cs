@@ -9,6 +9,8 @@ using Core.SaveSystem;
 using Core.State;
 using UI;
 using Core.Networking;
+using RecipeRage.Modules.Auth.Core;
+using RecipeRage.Modules.Auth.Tests;
 
 namespace Core.Bootstrap
 {
@@ -39,6 +41,7 @@ namespace Core.Bootstrap
         public ILoggingService LoggingService { get; private set; }
         public ISaveService SaveService { get; private set; }
         public IAuthenticationService AuthenticationService { get; private set; }
+        public IAuthService AuthService { get; private set; }
         public IMaintenanceService MaintenanceService { get; private set; }
         public IRemoteConfigService RemoteConfigService { get; private set; }
         public INTPTimeService NTPTimeService { get; private set; }
@@ -162,6 +165,7 @@ namespace Core.Bootstrap
 
             MaintenanceService = new MaintenanceService(EventBus, RemoteConfigService);
             AuthenticationService = new AuthenticationService(SaveService, EventBus, MaintenanceService, CreateSession);
+            AuthService = new MockAuthService();
             StateManager = new GameStateManager();
 
             GameLogger.Log("Core services constructed.");
