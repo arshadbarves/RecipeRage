@@ -41,20 +41,19 @@ namespace RecipeRage.Modules.Auth.Core
             GameLogger.Log($"[Auth] Attempting login with type: {type}");
 
             bool success = false;
-            switch (type)
-            {
-                case AuthType.DeviceID:
-                    success = await LoginWithDeviceIdAsync();
-                    break;
-                default:
-                    GameLogger.LogError($"[Auth] Unsupported AuthType: {type}");
-                    break;
-            }
-
-                        if (success)
-                        {
-                            // Save persistence
-                            if (type == AuthType.DeviceID)
+                                    switch (type)
+                                    {
+                                        case AuthType.DeviceID:
+                                            success = await LoginWithDeviceIdAsync();
+                                            break;
+                                        default:
+                                            GameLogger.LogError($"[Auth] Unsupported AuthType: {type}");
+                                            break;
+                                    }
+                        
+                                    if (success)
+                                    {
+                                        // Save persistence                            if (type == AuthType.DeviceID)
                             {
                                 _saveService.UpdateSettings(s => s.LastLoginMethod = "DeviceID");
                             }
