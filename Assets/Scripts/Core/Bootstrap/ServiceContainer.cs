@@ -161,7 +161,7 @@ namespace Core.Bootstrap
             GameLogger.Log("Constructing core services...");
 
             MaintenanceService = new MaintenanceService(EventBus, RemoteConfigService);
-            AuthService = new EOSAuthService(EventBus, CreateSession);
+            AuthService = new EOSAuthService(EventBus, SaveService, CreateSession);
             StateManager = new GameStateManager();
 
             GameLogger.Log("Core services constructed.");
