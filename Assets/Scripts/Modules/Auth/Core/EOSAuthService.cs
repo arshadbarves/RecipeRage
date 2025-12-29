@@ -6,12 +6,19 @@ using Core.Logging;
 using Epic.OnlineServices;
 using Epic.OnlineServices.Connect;
 using UnityEngine;
+using Core.Events;
 
 namespace RecipeRage.Modules.Auth.Core
 {
     public class EOSAuthService : IAuthService
     {
         private const int TIMEOUT_SECONDS = 15;
+        private readonly IEventBus _eventBus;
+
+        public EOSAuthService(IEventBus eventBus)
+        {
+            _eventBus = eventBus;
+        }
 
         public bool IsLoggedIn()
         {
@@ -29,18 +36,40 @@ namespace RecipeRage.Modules.Auth.Core
         {
             GameLogger.Log($"[Auth] Attempting login with type: {type}");
 
+            bool success = false;
             switch (type)
             {
                 case AuthType.DeviceID:
-                    return await LoginWithDeviceIdAsync();
+                    success = await LoginWithDeviceIdAsync();
+                    break;
                 case AuthType.DevAuth:
-                    return await LoginWithDevAuthAsync();
+                    success = await LoginWithDevAuthAsync();
+                    break;
                 case AuthType.AccountPortal:
-                    return await LoginWithAccountPortalAsync();
+                    success = await LoginWithAccountPortalAsync();
+                    break;
                 default:
                     GameLogger.LogError($"[Auth] Unsupported AuthType: {type}");
-                    return false;
+                    break;
             }
+
+            if (success)
+            {
+                _eventBus?.Publish(new LoginSuccessEvent
+                {
+                    UserId = GetCurrentUserId(),
+                    DisplayName = "User" // Placeholder, could fetch from EOS
+                });
+            }
+            else
+            {
+                _eventBus?.Publish(new LoginFailedEvent
+                {
+                    Error = "Login failed"
+                });
+            }
+
+            return success;
         }
 
         public async UniTask LogoutAsync()
@@ -48,22 +77,27 @@ namespace RecipeRage.Modules.Auth.Core
             if (EOSManager.Instance == null) return;
 
             var productUserId = EOSManager.Instance.GetProductUserId();
+            string userIdStr = productUserId?.ToString() ?? "unknown";
+
             if (productUserId != null && productUserId.IsValid())
             {
                 EOSManager.Instance.ClearConnectId(productUserId);
                 GameLogger.Log("[Auth] Logged out from EOS");
             }
             
+            _eventBus?.Publish(new LogoutEvent
+            {
+                UserId = userIdStr
+            });
+
             await UniTask.Yield();
         }
 
         private async UniTask<bool> LoginWithDeviceIdAsync()
         {
-            // 1. Ensure Device ID exists
             bool deviceIdReady = await EnsureDeviceIdCreated();
             if (!deviceIdReady) return false;
 
-            // 2. Perform Connect Login
             var tcs = new UniTaskCompletionSource<bool>();
             string displayName = $"Guest_{SystemInfo.deviceUniqueIdentifier.Substring(0, 8)}";
 
@@ -118,9 +152,7 @@ namespace RecipeRage.Modules.Auth.Core
 
         private async UniTask<bool> LoginWithDevAuthAsync()
         {
-            // DevAuth implementation usually uses Account Portal or DevAuthTool
-            // For now, implementing basic routing as per spec
-            GameLogger.Log("[Auth] DevAuth login requested (Implementation pending DevAuthTool config)");
+            GameLogger.Log("[Auth] DevAuth login requested (Implementation pending)");
             return await UniTask.FromResult(false);
         }
 
