@@ -90,16 +90,24 @@ namespace Core.State.States
             loadingScreen?.UpdateProgress(0.2f, "Loading Configuration...");
             await _remoteConfigService.Initialize();
 
-            // --- STEP 2: Authentication (30% - 60%) ---
-            loadingScreen?.UpdateProgress(0.3f, "Authenticating...");
-
-            // New logic: Check if logged in, otherwise attempt auto-login with DeviceID
-            bool isAuthenticated = _authService.IsLoggedIn();
-            if (!isAuthenticated)
-            {
-                isAuthenticated = await _authService.LoginAsync(AuthType.DeviceID);
-            }
-
+                        // --- STEP 2: Authentication (30% - 60%) ---
+                        loadingScreen?.UpdateProgress(0.3f, "Authenticating...");
+                        
+                        bool isAuthenticated = _authService.IsLoggedIn();
+                        
+                        if (!isAuthenticated)
+                        {
+                            string lastLogin = _serviceContainer.SaveService.GetSettings().LastLoginMethod;
+                            if (!string.IsNullOrEmpty(lastLogin) && lastLogin == "DeviceID")
+                            {
+                                GameLogger.Log("[Bootstrap] Attempting auto-login with DeviceID");
+                                isAuthenticated = await _authService.LoginAsync(AuthType.DeviceID);
+                            }
+                            else
+                            {
+                                GameLogger.Log("[Bootstrap] No last login found, skipping auto-login");
+                            }
+                        }
             if (!isAuthenticated)
             {
                 _uiService.HideScreen(UIScreenType.Loading);
