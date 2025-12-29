@@ -1,6 +1,6 @@
 # Plan: Implement EOS Authentication Flow
 
-## Phase 1: Setup & Initialization
+## Phase 1: Setup & Initialization [checkpoint: 42875cd]
 Establishes the module structure and defines the contracts for authentication.
 
 - [x] Task: Create Auth Module Structure 695a603
