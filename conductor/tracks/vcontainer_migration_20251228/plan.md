@@ -1,6 +1,6 @@
 # Plan: Migrate Core to VContainer
 
-## Phase 1: Foundation Setup
+## Phase 1: Foundation Setup [checkpoint: 21e83cd]
 Establish the root LifetimeScope and register foundational services.
 
 - [x] Task: Create GameLifetimeScope [2f4245d]
