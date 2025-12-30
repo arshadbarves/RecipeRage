@@ -6,6 +6,7 @@ using UI;
 using UI.Core;
 using UnityEngine.UIElements;
 using Cysharp.Threading.Tasks;
+using VContainer;
 
 namespace RecipeRage.Modules.Auth.UI
 {
@@ -32,8 +33,11 @@ namespace RecipeRage.Modules.Auth.UI
                 _guestLoginButton.clicked += OnGuestLoginClicked;
             }
 
-            // Resolve AuthService from ServiceContainer
-            _authService = GameBootstrap.Services?.AuthService;
+            // Resolve AuthService from Container
+            if (GameBootstrap.Container != null)
+            {
+                _authService = GameBootstrap.Container.Resolve<IAuthService>();
+            }
         }
 
         protected override void OnShow()
@@ -41,9 +45,9 @@ namespace RecipeRage.Modules.Auth.UI
             UpdateStatus("Ready to connect");
             SetLoading(false);
             
-            if (_authService == null)
+            if (_authService == null && GameBootstrap.Container != null)
             {
-                _authService = GameBootstrap.Services?.AuthService;
+                _authService = GameBootstrap.Container.Resolve<IAuthService>();
             }
         }
 

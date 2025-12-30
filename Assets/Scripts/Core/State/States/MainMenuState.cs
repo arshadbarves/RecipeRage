@@ -2,7 +2,6 @@ using Core.Bootstrap;
 using Cysharp.Threading.Tasks;
 using UI;
 using UI.Popups;
-using UnityEngine;
 using UnityEngine.SceneManagement;
 using Core.Logging;
 

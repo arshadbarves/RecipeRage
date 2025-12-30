@@ -3,7 +3,7 @@
 ## Phase 1: Foundation Setup
 Establish the root LifetimeScope and register foundational services.
 
-- [ ] Task: Create GameLifetimeScope
+- [~] Task: Create GameLifetimeScope
     - Create `Assets/Scripts/Core/Bootstrap/GameLifetimeScope.cs`.
     - Register: `EventBus`, `SaveService`, `NTPTimeService`, `RemoteConfigService`, `AnimationService`, `UIService`, `ConnectivityService`.
     - Inject `UIDocumentProvider` from the scene into `UIService`.

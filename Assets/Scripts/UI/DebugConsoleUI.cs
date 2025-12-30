@@ -5,6 +5,7 @@ using Core.Bootstrap;
 using Core.Logging;
 using UnityEngine;
 using UnityEngine.UIElements;
+using VContainer;
 
 namespace UI
 {
@@ -61,7 +62,10 @@ namespace UI
             return;
 #endif
             
-            _loggingService = GameBootstrap.Services?.LoggingService;
+            if (GameBootstrap.Container != null)
+            {
+                _loggingService = GameBootstrap.Container.Resolve<ILoggingService>();
+            }
             
             if (_loggingService == null)
             {

@@ -1,4 +1,3 @@
-using Core.Bootstrap;
 using Core.Events;
 using Core.Logging;
 using UI;
@@ -14,18 +13,15 @@ namespace Core.State.States
         private readonly IUIService _uiService;
         private readonly IEventBus _eventBus;
         private readonly IGameStateManager _stateManager;
-        private readonly ServiceContainer _serviceContainer;
 
         public LoginState(
             IUIService uiService,
             IEventBus eventBus,
-            IGameStateManager stateManager,
-            ServiceContainer serviceContainer)
+            IGameStateManager stateManager)
         {
             _uiService = uiService;
             _eventBus = eventBus;
             _stateManager = stateManager;
-            _serviceContainer = serviceContainer;
         }
 
         public override void Enter()

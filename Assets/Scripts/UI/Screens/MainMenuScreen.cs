@@ -9,6 +9,9 @@ using UI.Components.Tabs;
 using UI.Core;
 using UnityEngine;
 using UnityEngine.UIElements;
+using VContainer;
+using Core.SaveSystem;
+using Core.State;
 
 namespace UI.Screens
 {
@@ -98,19 +101,25 @@ namespace UI.Screens
 
         private void SubscribeToEvents()
         {
-            var eventBus = GameBootstrap.Services?.EventBus;
-            if (eventBus != null)
+            if (GameBootstrap.Container != null)
             {
-                eventBus.Subscribe<PlayerStatsChangedEvent>(OnPlayerStatsChanged);
+                var eventBus = GameBootstrap.Container.Resolve<IEventBus>();
+                if (eventBus != null)
+                {
+                    eventBus.Subscribe<PlayerStatsChangedEvent>(OnPlayerStatsChanged);
+                }
             }
         }
 
         private void UnsubscribeFromEvents()
         {
-            var eventBus = GameBootstrap.Services?.EventBus;
-            if (eventBus != null)
+            if (GameBootstrap.Container != null)
             {
-                eventBus.Unsubscribe<PlayerStatsChangedEvent>(OnPlayerStatsChanged);
+                var eventBus = GameBootstrap.Container.Resolve<IEventBus>();
+                if (eventBus != null)
+                {
+                    eventBus.Unsubscribe<PlayerStatsChangedEvent>(OnPlayerStatsChanged);
+                }
             }
         }
 
@@ -161,15 +170,20 @@ namespace UI.Screens
 
         private void InitializeCurrencyDisplay()
         {
-            var services = GameBootstrap.Services;
-            // Currency is in Session scope
-            if (services?.Session != null)
+            if (GameBootstrap.Container != null)
             {
-                _currencyDisplay = new CurrencyDisplay(
-                    Container,
-                    services.EventBus,
-                    services.Session.CurrencyService
-                );
+                var sessionManager = GameBootstrap.Container.Resolve<SessionManager>();
+                var eventBus = GameBootstrap.Container.Resolve<IEventBus>();
+                
+                // Currency is in Session scope
+                if (sessionManager?.CurrentSession != null)
+                {
+                    _currencyDisplay = new CurrencyDisplay(
+                        Container,
+                        eventBus,
+                        sessionManager.CurrentSession.CurrencyService
+                    );
+                }
             }
         }
 
@@ -189,22 +203,27 @@ namespace UI.Screens
 
         private void UpdatePlayerName()
         {
-            var saveService = GameBootstrap.Services?.SaveService;
-            if (saveService != null && _playerNameLabel != null)
+            if (GameBootstrap.Container != null && _playerNameLabel != null)
             {
-                var stats = saveService.GetPlayerStats();
-                string displayName = string.IsNullOrEmpty(stats.PlayerName) ? "Guest Player" : stats.PlayerName;
-                _playerNameLabel.text = displayName;
+                var saveService = GameBootstrap.Container.Resolve<ISaveService>();
+                if (saveService != null)
+                {
+                    var stats = saveService.GetPlayerStats();
+                    string displayName = string.IsNullOrEmpty(stats.PlayerName) ? "Guest Player" : stats.PlayerName;
+                    _playerNameLabel.text = displayName;
+                }
             }
         }
 
         private void OnPlayerCardClicked()
         {
-
-            var uiService = GameBootstrap.Services?.UIService;
-            if (uiService != null)
+            if (GameBootstrap.Container != null)
             {
-                uiService.ShowScreen(UIScreenType.Profile, true, true);
+                var uiService = GameBootstrap.Container.Resolve<IUIService>();
+                if (uiService != null)
+                {
+                    uiService.ShowScreen(UIScreenType.Profile, true, true);
+                }
             }
         }
 
@@ -228,17 +247,19 @@ namespace UI.Screens
 
         private void InitializeAllTabs()
         {
-
-            var services = GameBootstrap.Services;
-            if (services == null)
+            if (GameBootstrap.Container == null)
             {
-                GameLogger.LogError("GameBootstrap.Services is null!");
+                GameLogger.LogError("GameBootstrap.Container is null!");
                 return;
             }
 
-            if (services.Session == null)
+            var sessionManager = GameBootstrap.Container.Resolve<SessionManager>();
+            var stateManager = GameBootstrap.Container.Resolve<IGameStateManager>();
+            var saveService = GameBootstrap.Container.Resolve<ISaveService>();
+
+            if (sessionManager?.CurrentSession == null)
             {
-                GameLogger.LogError("GameBootstrap.Services.Session is null! User not logged in?");
+                GameLogger.LogError("Session is null! User not logged in?");
                 return;
             }
 
@@ -247,11 +268,11 @@ namespace UI.Screens
             if (lobbyRoot != null)
             {
                 // Get matchmaking service from networking services (In Session)
-                IMatchmakingService matchmakingService = services.Session.NetworkingServices?.MatchmakingService;
+                IMatchmakingService matchmakingService = sessionManager.CurrentSession.NetworkingServices?.MatchmakingService;
 
-                if (matchmakingService != null && services.StateManager != null)
+                if (matchmakingService != null && stateManager != null)
                 {
-                    _lobbyTab = new LobbyTabComponent(matchmakingService, services.StateManager);
+                    _lobbyTab = new LobbyTabComponent(matchmakingService, stateManager);
                     _lobbyTab.Initialize(lobbyRoot);
                 }
                 else
@@ -292,9 +313,9 @@ namespace UI.Screens
             VisualElement settingsRoot = GetElement<VisualElement>("settings-root");
             if (settingsRoot != null)
             {
-                if (services.SaveService != null)
+                if (saveService != null)
                 {
-                    _settingsTab = new SettingsTabComponent(services.SaveService);
+                    _settingsTab = new SettingsTabComponent(saveService);
                     _settingsTab.Initialize(settingsRoot);
                 }
                 else

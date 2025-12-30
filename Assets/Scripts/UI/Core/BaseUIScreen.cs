@@ -3,6 +3,7 @@ using Core.Animation;
 using Core.Bootstrap;
 using UI;
 using UnityEngine.UIElements;
+using VContainer;
 
 namespace UI.Core
 {
@@ -93,10 +94,13 @@ namespace UI.Core
             Controller = controller;
 
             // Get category from UIService
-            var uiService = GameBootstrap.Services?.UIService;
-            if (uiService != null)
+            if (GameBootstrap.Container != null)
             {
-                Category = uiService.GetScreenCategory(screenType);
+                var uiService = GameBootstrap.Container.Resolve<IUIService>();
+                if (uiService != null)
+                {
+                    Category = uiService.GetScreenCategory(screenType);
+                }
             }
 
             // Subscribe to controller events
@@ -182,7 +186,10 @@ namespace UI.Core
         /// </summary>
         public void Show(bool animate = true, bool addToHistory = true)
         {
-            GameBootstrap.Services?.UIService?.ShowScreen(ScreenType, animate, addToHistory);
+            if (GameBootstrap.Container != null)
+            {
+                GameBootstrap.Container.Resolve<IUIService>()?.ShowScreen(ScreenType, animate, addToHistory);
+            }
         }
 
         /// <summary>
@@ -190,7 +197,10 @@ namespace UI.Core
         /// </summary>
         public void Hide(bool animate = true)
         {
-            GameBootstrap.Services?.UIService?.HideScreen(ScreenType, animate);
+            if (GameBootstrap.Container != null)
+            {
+                GameBootstrap.Container.Resolve<IUIService>()?.HideScreen(ScreenType, animate);
+            }
         }
 
         /// <summary>

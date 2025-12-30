@@ -1,14 +1,13 @@
 using System;
-using Core.Bootstrap;
 using Core.Events;
 using Core.Logging;
 using Core.Maintenance;
 using Core.RemoteConfig;
+using Core.SaveSystem;
 using Core.Update;
 using Cysharp.Threading.Tasks;
 using UI;
 using UI.Screens;
-using UnityEngine;
 using RecipeRage.Modules.Auth.Core;
 
 namespace Core.State.States
@@ -24,29 +23,29 @@ namespace Core.State.States
         private readonly INTPTimeService _ntpTimeService;
         private readonly IRemoteConfigService _remoteConfigService;
         private readonly IAuthService _authService;
+        private readonly ISaveService _saveService;
         private readonly IMaintenanceService _maintenanceService;
         private readonly IGameStateManager _stateManager;
         private readonly IEventBus _eventBus;
-        private readonly ServiceContainer _serviceContainer;
 
         public BootstrapState(
             IUIService uiService,
             INTPTimeService ntpTimeService,
             IRemoteConfigService remoteConfigService,
             IAuthService authService,
+            ISaveService saveService,
             IMaintenanceService maintenanceService,
             IGameStateManager stateManager,
-            IEventBus eventBus,
-            ServiceContainer serviceContainer)
+            IEventBus eventBus)
         {
             _uiService = uiService;
             _ntpTimeService = ntpTimeService;
             _remoteConfigService = remoteConfigService;
             _authService = authService;
+            _saveService = saveService;
             _maintenanceService = maintenanceService;
             _stateManager = stateManager;
             _eventBus = eventBus;
-            _serviceContainer = serviceContainer;
         }
 
         public override async void Enter()
@@ -67,7 +66,7 @@ namespace Core.State.States
             {
                 GameLogger.LogException(ex);
                 _uiService.HideScreen(UIScreenType.Loading);
-                _stateManager.ChangeState(new LoginState(_uiService, _eventBus, _stateManager, _serviceContainer));
+                _stateManager.ChangeState(new LoginState(_uiService, _eventBus, _stateManager));
             }
         }
 
@@ -90,28 +89,29 @@ namespace Core.State.States
             loadingScreen?.UpdateProgress(0.2f, "Loading Configuration...");
             await _remoteConfigService.Initialize();
 
-                        // --- STEP 2: Authentication (30% - 60%) ---
-                        loadingScreen?.UpdateProgress(0.3f, "Authenticating...");
-                        
-                        bool isAuthenticated = _authService.IsLoggedIn();
-                        
-                        if (!isAuthenticated)
-                        {
-                            string lastLogin = _serviceContainer.SaveService.GetSettings().LastLoginMethod;
-                            if (!string.IsNullOrEmpty(lastLogin) && lastLogin == "DeviceID")
-                            {
-                                GameLogger.Log("[Bootstrap] Attempting auto-login with DeviceID");
-                                isAuthenticated = await _authService.LoginAsync(AuthType.DeviceID);
-                            }
-                            else
-                            {
-                                GameLogger.Log("[Bootstrap] No last login found, skipping auto-login");
-                            }
-                        }
+            // --- STEP 2: Authentication (30% - 60%) ---
+            loadingScreen?.UpdateProgress(0.3f, "Authenticating...");
+
+            bool isAuthenticated = _authService.IsLoggedIn();
+
+            if (!isAuthenticated)
+            {
+                string lastLogin = _saveService.GetSettings().LastLoginMethod;
+                if (!string.IsNullOrEmpty(lastLogin) && lastLogin == "DeviceID")
+                {
+                    GameLogger.Log("[Bootstrap] Attempting auto-login with DeviceID");
+                    isAuthenticated = await _authService.LoginAsync(AuthType.DeviceID);
+                }
+                else
+                {
+                    GameLogger.Log("[Bootstrap] No last login found, skipping auto-login");
+                }
+            }
+
             if (!isAuthenticated)
             {
                 _uiService.HideScreen(UIScreenType.Loading);
-                _stateManager.ChangeState(new LoginState(_uiService, _eventBus, _stateManager, _serviceContainer));
+                _stateManager.ChangeState(new LoginState(_uiService, _eventBus, _stateManager));
                 return;
             }
 

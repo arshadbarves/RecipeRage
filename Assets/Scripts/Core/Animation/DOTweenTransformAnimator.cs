@@ -22,11 +22,13 @@ namespace Core.Animation
             if (_isInitialized) return;
 
             // Initialize DOTween with optimal settings
-            DOTween.Init(
+            var init = DOTween.Init(
                 recycleAllByDefault: true,
                 useSafeMode: true,
                 logBehaviour: LogBehaviour.ErrorsOnly
-            ).SetCapacity(200, 50);
+            );
+            
+            init?.SetCapacity(200, 50);
 
             _isInitialized = true;
         }

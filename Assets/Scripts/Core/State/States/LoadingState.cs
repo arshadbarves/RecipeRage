@@ -1,6 +1,3 @@
-using System;
-using UnityEngine;
-
 namespace Core.State.States
 {
     /// <summary>
