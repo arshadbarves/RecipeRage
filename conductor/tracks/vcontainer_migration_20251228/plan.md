@@ -21,7 +21,7 @@ Migrate user-specific services to a dynamic session scope.
 - [x] Task: Create SessionLifetimeScope [73798a0]
     - Create `Assets/Scripts/Core/Bootstrap/SessionLifetimeScope.cs`.
     - Register: `CurrencyService`, `AudioService`, `InputService`, `GameModeService`, `CharacterService`, `SkinsService`, `NetworkingServices`, `NetworkGameManager`, `PlayerNetworkManager`, `NetworkObjectPool`.
-- [ ] Task: Update Session Creation Logic
+- [x] Task: Update Session Creation Logic [73798a0]
     - Update `AuthService` or a dedicated `SessionManager` to create the `SessionLifetimeScope` upon login.
     - Ensure proper disposal of the scope on logout.
 - [ ] Task: Conductor - User Manual Verification 'Session Management' (Protocol in workflow.md)
