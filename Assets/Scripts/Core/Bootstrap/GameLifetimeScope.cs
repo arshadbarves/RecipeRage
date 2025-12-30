@@ -65,20 +65,23 @@ namespace Core.Bootstrap
         private readonly IEnumerable<IInitializable> _initializables;
         private readonly IUIService _uiService;
         private readonly UIDocumentProvider _uiDocumentProvider;
+        private readonly ILoggingService _loggingService;
 
         public RootBootstrapper(
             IEnumerable<IInitializable> initializables, 
             IUIService uiService,
-            UIDocumentProvider uiDocumentProvider)
+            UIDocumentProvider uiDocumentProvider,
+            ILoggingService loggingService)
         {
             _initializables = initializables;
             _uiService = uiService;
             _uiDocumentProvider = uiDocumentProvider;
+            _loggingService = loggingService;
         }
 
         public void Start()
         {
-            GameLogger.Log("[RootBootstrapper] Starting foundation initialization...");
+            _loggingService.LogInfo("[RootBootstrapper] Starting foundation initialization...");
 
             // 1. UI Binding (Critical first step from manual ServiceContainer)
             _uiDocumentProvider.Initialize(_uiService);
@@ -90,7 +93,7 @@ namespace Core.Bootstrap
                 initializable.Initialize();
             }
 
-            GameLogger.Log("[RootBootstrapper] Foundation initialized.");
+            _loggingService.LogInfo("[RootBootstrapper] Foundation initialized.");
         }
     }
 }
