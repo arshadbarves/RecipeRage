@@ -1,3 +1,4 @@
+using System;
 using Core.Bootstrap;
 using Core.Events;
 using Core.Logging;
@@ -7,17 +8,29 @@ using VContainer.Unity;
 
 namespace Core.Bootstrap
 {
-    public class SessionManager
+    public class SessionManager : IInitializable, IDisposable
     {
         private readonly IObjectResolver _container;
+        private readonly IEventBus _eventBus;
         private SessionLifetimeScope _sessionScope;
 
-        public GameSession CurrentSession => _sessionScope?.Container.Resolve<GameSession>();
+        public GameSession CurrentSession => _sessionScope?.Container?.Resolve<GameSession>();
         
         [Inject]
-        public SessionManager(IObjectResolver container)
+        public SessionManager(IObjectResolver container, IEventBus eventBus)
         {
             _container = container;
+            _eventBus = eventBus;
+        }
+
+        public void Initialize()
+        {
+            _eventBus.Subscribe<LogoutEvent>(HandleLogout);
+        }
+
+        private void HandleLogout(LogoutEvent evt)
+        {
+            DestroySession();
         }
 
         public void CreateSession()
@@ -45,6 +58,12 @@ namespace Core.Bootstrap
                 _sessionScope = null;
                 GameLogger.Log("[SessionManager] SessionLifetimeScope destroyed.");
             }
+        }
+
+        public void Dispose()
+        {
+            _eventBus.Unsubscribe<LogoutEvent>(HandleLogout);
+            DestroySession();
         }
     }
 }

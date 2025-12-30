@@ -24,7 +24,7 @@ Migrate user-specific services to a dynamic session scope.
 - [x] Task: Update Session Creation Logic [73798a0]
     - Update `AuthService` or a dedicated `SessionManager` to create the `SessionLifetimeScope` upon login.
     - Ensure proper disposal of the scope on logout.
-- [ ] Task: Conductor - User Manual Verification 'Session Management' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Session Management' (Protocol in workflow.md) [c7b6929]
 
 ## Phase 3: Cleanup & Refinement
 - [ ] Task: Remove Legacy Container Files

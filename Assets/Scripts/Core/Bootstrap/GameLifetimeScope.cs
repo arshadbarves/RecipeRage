@@ -46,7 +46,7 @@ namespace Core.Bootstrap
             builder.Register<GameStateManager>(Lifetime.Singleton).AsImplementedInterfaces();
 
             // Session Management
-            builder.Register<SessionManager>(Lifetime.Singleton);
+            builder.Register<SessionManager>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
 
             // Auth - Inject SessionManager.CreateSession delegate
             builder.Register<EOSAuthService>(Lifetime.Singleton).AsImplementedInterfaces()
