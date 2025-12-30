@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6887119164124692602}
+  - component: {fileID: 1159256033589980387}
   - component: {fileID: 417808214242561093}
   - component: {fileID: 2203266933821147587}
   - component: {fileID: 4646105006637090929}
@@ -36,6 +37,23 @@ Transform:
   - {fileID: 8432972302416662543}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1159256033589980387
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 278132838411788017}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1218ccb1eebc4ceea82be9daba378ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Core.Bootstrap.GameLifetimeScope
+  parentReference:
+    TypeName: 
+  autoRun: 1
+  autoInjectGameObjects: []
+  _uiDocumentProvider: {fileID: 7525430368098650970}
 --- !u!114 &417808214242561093
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -48,7 +66,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: afd3d1c17ef3e4337911313bc8a21629, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uiDocumentProvider: {fileID: 7525430368098650970}
 --- !u!114 &2203266933821147587
 MonoBehaviour:
   m_ObjectHideFlags: 0

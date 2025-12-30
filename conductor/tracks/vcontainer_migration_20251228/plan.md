@@ -13,7 +13,7 @@ Establish the root LifetimeScope and register foundational services.
 - [x] Task: Update GameBootstrap [2f4245d]
     - Replace `ServiceContainer` instantiation with `LifetimeScope`.
     - Update `BootstrapState` to resolve dependencies from the container.
-- [ ] Task: Conductor - User Manual Verification 'Foundation Setup' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Foundation Setup' (Protocol in workflow.md) [86a4994]
 
 ## Phase 2: Session Management
 Migrate user-specific services to a dynamic session scope.

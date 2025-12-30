@@ -1,0 +1,30 @@
+Unity Editor version:    6000.3.0f1 (d1870ce95baf)
+Branch:                  6000.3/staging
+Build type:              Release
+Batch mode:              YES
+macOS version:           Version 26.2 (Build 25C56)
+Darwin version:          25.2.0
+Architecture:            arm64
+Running under Rosetta:   NO
+Available memory:        65536 MB
+Date:                    2025-12-30T15:02:11Z
+[Licensing::Module] Trying to connect to existing licensing client channel...
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-arshadbarves" at "2025-12-30T15:02:11.808013Z"
+Launching external process: /Applications/Unity/Hub/Editor/6000.3.0f1/Unity.app/Contents/Resources/PackageManager/Server/UnityPackageManager
+
+COMMAND LINE ARGUMENTS:
+/Applications/Unity/Hub/Editor/6000.3.0f1/Unity.app/Contents/MacOS/Unity
+-runTests
+-batchmode
+-nographics
+-projectPath
+.
+-testPlatform
+EditMode
+-testResults
+results.xml
+-logFile
+test_log.txt
+Successfully changed project path to: /Users/arshadbarves/MyProject/RecipeRage
+/Users/arshadbarves/MyProject/RecipeRage
+[Package Manager] Server process was shutdown

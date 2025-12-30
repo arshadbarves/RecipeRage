@@ -41,38 +41,33 @@ namespace RecipeRage.Modules.Auth.Core
             GameLogger.Log($"[Auth] Attempting login with type: {type}");
 
             bool success = false;
-                                    switch (type)
-                                    {
-                                        case AuthType.DeviceID:
-                                            success = await LoginWithDeviceIdAsync();
-                                            break;
-                                        default:
-                                            GameLogger.LogError($"[Auth] Unsupported AuthType: {type}");
-                                            break;
-                                    }
-                        
-                                    if (success)
-                                    {
-                                        // Save persistence                            if (type == AuthType.DeviceID)
-                            {
-                                _saveService.UpdateSettings(s => s.LastLoginMethod = "DeviceID");
-                            }
-            
-                            _onLoginSuccess?.Invoke();
-                            
-                            GameLogger.Log("[Auth] Publishing LoginSuccessEvent...");
-                            _eventBus?.Publish(new LoginSuccessEvent
-                            {
-                                UserId = GetCurrentUserId(),
-                                DisplayName = "User"
-                            });
-                            GameLogger.Log("[Auth] LoginSuccessEvent Published");
-                        }            else
+            switch (type)
             {
-                _eventBus?.Publish(new LoginFailedEvent
+                case AuthType.DeviceID:
+                    success = await LoginWithDeviceIdAsync();
+                    break;
+                default:
+                    GameLogger.LogError($"[Auth] Unsupported AuthType: {type}");
+                    break;
+            }
+
+            if (success)
+            {
+                // Save persistence
+                if (type == AuthType.DeviceID)
                 {
-                    Error = "Login failed"
-                });
+                    _saveService.UpdateSettings(s => s.LastLoginMethod = "DeviceID");
+                }
+
+                _onLoginSuccess?.Invoke();
+
+                GameLogger.Log("[Auth] Publishing LoginSuccessEvent...");
+                _eventBus?.Publish(new LoginSuccessEvent { UserId = GetCurrentUserId(), DisplayName = "User" });
+                GameLogger.Log("[Auth] LoginSuccessEvent Published");
+            }
+            else
+            {
+                _eventBus?.Publish(new LoginFailedEvent { Error = "Login failed" });
             }
 
             return success;
@@ -94,10 +89,7 @@ namespace RecipeRage.Modules.Auth.Core
                 GameLogger.Log("[Auth] Logged out from EOS");
             }
 
-            _eventBus?.Publish(new LogoutEvent
-            {
-                UserId = userIdStr
-            });
+            _eventBus?.Publish(new LogoutEvent { UserId = userIdStr });
 
             await UniTask.Yield();
         }
@@ -137,10 +129,7 @@ namespace RecipeRage.Modules.Auth.Core
             var connectInterface = EOSManager.Instance.GetEOSConnectInterface();
             if (connectInterface == null) return false;
 
-            var createOptions = new CreateDeviceIdOptions()
-            {
-                DeviceModel = SystemInfo.deviceModel
-            };
+            var createOptions = new CreateDeviceIdOptions() { DeviceModel = SystemInfo.deviceModel };
 
             var tcs = new UniTaskCompletionSource<bool>();
             connectInterface.CreateDeviceId(ref createOptions, null, (ref CreateDeviceIdCallbackInfo info) =>
