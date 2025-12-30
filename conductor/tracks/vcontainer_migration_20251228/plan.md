@@ -15,7 +15,7 @@ Establish the root LifetimeScope and register foundational services.
     - Update `BootstrapState` to resolve dependencies from the container.
 - [x] Task: Conductor - User Manual Verification 'Foundation Setup' (Protocol in workflow.md) [86a4994]
 
-## Phase 2: Session Management
+## Phase 2: Session Management [checkpoint: 6655d03]
 Migrate user-specific services to a dynamic session scope.
 
 - [x] Task: Create SessionLifetimeScope [73798a0]
