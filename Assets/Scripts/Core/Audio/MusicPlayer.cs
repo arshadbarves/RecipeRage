@@ -23,7 +23,10 @@ namespace Core.Audio
         private void CreateMusicSource()
         {
             GameObject musicObj = new GameObject("MusicSource");
-            Object.DontDestroyOnLoad(musicObj);
+            if (Application.isPlaying)
+            {
+                Object.DontDestroyOnLoad(musicObj);
+            }
 
             _musicSource = musicObj.AddComponent<AudioSource>();
             _musicSource.loop = true;

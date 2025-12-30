@@ -60,13 +60,8 @@ namespace Core.Bootstrap
 
         public void CreateSession()
         {
-            if (Session != null)
-            {
-                GameLogger.LogWarning("Session already exists! Destroying previous session.");
-                DestroySession();
-            }
-
-            Session = new GameSession(SaveService, EventBus, LoggingService);
+            // LEGACY: No longer used. Session handled by VContainer and SessionManager.
+            GameLogger.LogWarning("LEGACY CreateSession called. Ignoring.");
         }
 
         public void DestroySession()

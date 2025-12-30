@@ -47,32 +47,28 @@ namespace Core.Bootstrap
         public IPlayerNetworkManager PlayerNetworkManager { get; private set; }
         public INetworkObjectPool NetworkObjectPool { get; private set; }
 
-        public GameSession(ISaveService saveService, IEventBus eventBus, ILoggingService loggingService)
+        public GameSession(
+            ICurrencyService currencyService,
+            IAudioService audioService,
+            IInputService inputService,
+            IGameModeService gameModeService,
+            ICharacterService characterService,
+            ISkinsService skinsService,
+            INetworkingServices networkingServices,
+            IPlayerNetworkManager playerNetworkManager,
+            INetworkObjectPool networkObjectPool,
+            INetworkGameManager networkGameManager)
         {
-            GameLogger.Log("Initializing GameSession...");
-
-            // Logic moved from ServiceContainer lazy factories
-            CurrencyService = new CurrencyService(saveService, eventBus);
-
-            var poolManager = new AudioPoolManager(GameBootstrap.Instance.transform);
-            var volumeController = new AudioVolumeController(saveService);
-            var musicPlayer = new MusicPlayer(volumeController);
-            var sfxPlayer = new SFXPlayer(poolManager, volumeController);
-            AudioService = new AudioService(musicPlayer, sfxPlayer, volumeController);
-            
-            var inputProvider = InputProviderFactory.CreateForPlatform();
-            InputService = new InputService(inputProvider);
-
-            GameModeService = new GameModeService();
-            CharacterService = new CharacterService();
-            SkinsService = new SkinsService();
-            NetworkingServices = new NetworkingServiceContainer();
-
-            PlayerNetworkManager = new PlayerNetworkManager(loggingService);
-            NetworkObjectPool = new NetworkObjectPool(loggingService);
-            NetworkGameManager = new NetworkGameManager(loggingService, PlayerNetworkManager);
-
-            GameLogger.Log("GameSession Initialized");
+            CurrencyService = currencyService;
+            AudioService = audioService;
+            InputService = inputService;
+            GameModeService = gameModeService;
+            CharacterService = characterService;
+            SkinsService = skinsService;
+            NetworkingServices = networkingServices;
+            PlayerNetworkManager = playerNetworkManager;
+            NetworkObjectPool = networkObjectPool;
+            NetworkGameManager = networkGameManager;
         }
 
         public void Update(float deltaTime)

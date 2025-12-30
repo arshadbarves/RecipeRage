@@ -774,7 +774,9 @@ namespace Core.Networking.Services
         /// </summary>
         private void SubscribeToLobbyNotifications()
         {
+            if (EOSManager.Instance == null) return;
             var lobbyInterface = EOSManager.Instance.GetEOSLobbyInterface();
+            if (lobbyInterface == null) return;
 
             // Subscribe to lobby updates
             var updateOptions = new AddNotifyLobbyUpdateReceivedOptions();

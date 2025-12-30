@@ -3,38 +3,48 @@ using Core.Events;
 using Core.Logging;
 using Core.SaveSystem;
 using VContainer;
+using VContainer.Unity;
 
 namespace Core.Bootstrap
 {
     public class SessionManager
     {
-        public GameSession CurrentSession { get; private set; }
-        
-        private readonly ISaveService _saveService;
-        private readonly IEventBus _eventBus;
-        private readonly ILoggingService _loggingService;
+        private readonly IObjectResolver _container;
+        private SessionLifetimeScope _sessionScope;
 
+        public GameSession CurrentSession => _sessionScope?.Container.Resolve<GameSession>();
+        
         [Inject]
-        public SessionManager(ISaveService saveService, IEventBus eventBus, ILoggingService loggingService)
+        public SessionManager(IObjectResolver container)
         {
-            _saveService = saveService;
-            _eventBus = eventBus;
-            _loggingService = loggingService;
+            _container = container;
         }
 
         public void CreateSession()
         {
-            if (CurrentSession != null)
+            if (_sessionScope != null)
             {
-                CurrentSession.Dispose();
+                DestroySession();
             }
-            CurrentSession = new GameSession(_saveService, _eventBus, _loggingService);
+
+            var parentScope = _container.Resolve<LifetimeScope>();
+            _sessionScope = parentScope.CreateChild<SessionLifetimeScope>(builder =>
+            {
+                // Register GameSession itself into its own scope so we can resolve it
+                builder.Register<GameSession>(Lifetime.Singleton);
+            });
+
+            GameLogger.Log("[SessionManager] SessionLifetimeScope created.");
         }
         
         public void DestroySession()
         {
-            CurrentSession?.Dispose();
-            CurrentSession = null;
+            if (_sessionScope != null)
+            {
+                _sessionScope.Dispose();
+                _sessionScope = null;
+                GameLogger.Log("[SessionManager] SessionLifetimeScope destroyed.");
+            }
         }
     }
 }
