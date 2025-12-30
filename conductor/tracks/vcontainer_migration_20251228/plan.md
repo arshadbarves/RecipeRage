@@ -3,14 +3,14 @@
 ## Phase 1: Foundation Setup
 Establish the root LifetimeScope and register foundational services.
 
-- [~] Task: Create GameLifetimeScope
+- [x] Task: Create GameLifetimeScope [2f4245d]
     - Create `Assets/Scripts/Core/Bootstrap/GameLifetimeScope.cs`.
     - Register: `EventBus`, `SaveService`, `NTPTimeService`, `RemoteConfigService`, `AnimationService`, `UIService`, `ConnectivityService`.
     - Inject `UIDocumentProvider` from the scene into `UIService`.
-- [ ] Task: Register Core Services
+- [x] Task: Register Core Services [2f4245d]
     - Register: `MaintenanceService`, `AuthService` (EOSAuthService), `StateManager`.
     - Ensure `AuthService` is correctly configured with its constructor dependencies.
-- [ ] Task: Update GameBootstrap
+- [x] Task: Update GameBootstrap [2f4245d]
     - Replace `ServiceContainer` instantiation with `LifetimeScope`.
     - Update `BootstrapState` to resolve dependencies from the container.
 - [ ] Task: Conductor - User Manual Verification 'Foundation Setup' (Protocol in workflow.md)
