@@ -18,7 +18,7 @@ Establish the root LifetimeScope and register foundational services.
 ## Phase 2: Session Management
 Migrate user-specific services to a dynamic session scope.
 
-- [ ] Task: Create SessionLifetimeScope
+- [x] Task: Create SessionLifetimeScope [73798a0]
     - Create `Assets/Scripts/Core/Bootstrap/SessionLifetimeScope.cs`.
     - Register: `CurrencyService`, `AudioService`, `InputService`, `GameModeService`, `CharacterService`, `SkinsService`, `NetworkingServices`, `NetworkGameManager`, `PlayerNetworkManager`, `NetworkObjectPool`.
 - [ ] Task: Update Session Creation Logic
