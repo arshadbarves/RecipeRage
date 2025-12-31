@@ -40,6 +40,7 @@ namespace UI
             CacheUIElements();
             SetupEventHandlers();
             LoadJoystickSettings();
+            TransitionType = UITransitionType.SlideUp;
             GameLogger.Log("Initialized");
         }
 
@@ -162,16 +163,6 @@ namespace UI
         private void HandleOpacityChanged(float value) { JoystickOpacity = value; UpdateJoystickPreview(); }
         private void HandleDeadZoneChanged(float value) { DeadZone = value; }
         private void HandleFixedToggleChanged(bool value) { FixedJoystick = value; }
-
-        public override void AnimateShow(IUIAnimator animator, VisualElement element, float duration, Action onComplete)
-        {
-            animator.SlideIn(element, SlideDirection.Bottom, duration, onComplete);
-        }
-
-        public override void AnimateHide(IUIAnimator animator, VisualElement element, float duration, Action onComplete)
-        {
-            animator.SlideOut(element, SlideDirection.Bottom, duration, onComplete);
-        }
 
         public override float GetAnimationDuration() => 0.3f;
     }

@@ -50,6 +50,8 @@ namespace UI.Screens
             // Setup callbacks
             SetupCallbacks();
 
+            TransitionType = UITransitionType.SlideRight;
+
             GameLogger.Log("Initialized");
         }
 
@@ -369,14 +371,5 @@ namespace UI.Screens
             }
         }
 
-        public override void AnimateShow(IUIAnimator animator, VisualElement element, float duration, Action onComplete)
-        {
-            animator.SlideIn(element, SlideDirection.Right, duration, onComplete);
-        }
-
-        public override void AnimateHide(IUIAnimator animator, VisualElement element, float duration, Action onComplete)
-        {
-            animator.SlideOut(element, SlideDirection.Right, duration, onComplete);
-        }
     }
 }

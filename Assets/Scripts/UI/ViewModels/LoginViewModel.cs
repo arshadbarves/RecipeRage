@@ -1,4 +1,5 @@
 using System;
+using Core.Localization;
 using Core.Logging;
 using Core.Reactive;
 using RecipeRage.Modules.Auth.Core;

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Core.Animation;
 using Core.Events;
+using Core.Localization;
 using Core.Logging;
 using Core.Maintenance;
 using Core.Networking;
@@ -31,9 +32,6 @@ namespace Core.Bootstrap
             builder.Register<StorageProviderFactory>(Lifetime.Singleton);
             builder.Register<EncryptionService>(Lifetime.Singleton).AsImplementedInterfaces().WithParameter("key", "RecipeRage");
             builder.Register<SaveService>(Lifetime.Singleton).AsImplementedInterfaces();
-using Core.Localization; // Added namespace
-
-// ...
 
             builder.Register<NTPTimeService>(Lifetime.Singleton).AsImplementedInterfaces();
             builder.Register<RemoteConfigService>(Lifetime.Singleton).AsImplementedInterfaces();

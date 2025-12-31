@@ -37,6 +37,14 @@ namespace UI.Core
                     await AnimateSlide(element, new Vector3(0, -100, 0), Vector3.zero, duration);
                     break;
 
+                case UITransitionType.SlideLeft:
+                    await AnimateSlide(element, new Vector3(-100, 0, 0), Vector3.zero, duration);
+                    break;
+
+                case UITransitionType.SlideRight:
+                    await AnimateSlide(element, new Vector3(100, 0, 0), Vector3.zero, duration);
+                    break;
+
                 case UITransitionType.Scale:
                     element.transform.scale = Vector3.zero;
                     await DOTween.To(() => element.transform.scale, x => element.transform.scale = x, Vector3.one, duration)
@@ -58,6 +66,18 @@ namespace UI.Core
 
                 case UITransitionType.SlideUp:
                     await AnimateSlide(element, Vector3.zero, new Vector3(0, 100, 0), duration);
+                    break;
+
+                case UITransitionType.SlideDown:
+                    await AnimateSlide(element, Vector3.zero, new Vector3(0, -100, 0), duration);
+                    break;
+
+                case UITransitionType.SlideLeft:
+                    await AnimateSlide(element, Vector3.zero, new Vector3(-100, 0, 0), duration);
+                    break;
+
+                case UITransitionType.SlideRight:
+                    await AnimateSlide(element, Vector3.zero, new Vector3(100, 0, 0), duration);
                     break;
 
                 case UITransitionType.Scale:
