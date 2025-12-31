@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Core.Animation;
-using Core.Events;
 using Core.Logging;
 using Core.Maintenance;
 using Core.Networking;

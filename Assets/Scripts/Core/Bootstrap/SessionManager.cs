@@ -1,8 +1,6 @@
 using System;
-using Core.Bootstrap;
 using Core.Events;
 using Core.Logging;
-using Core.SaveSystem;
 using VContainer;
 using VContainer.Unity;
 
@@ -16,7 +14,7 @@ namespace Core.Bootstrap
 
         public IObjectResolver SessionContainer => _sessionScope?.Container;
         public bool IsSessionActive => _sessionScope != null;
-        
+
         [Inject]
         public SessionManager(IObjectResolver container, IEventBus eventBus)
         {
@@ -46,7 +44,7 @@ namespace Core.Bootstrap
 
             GameLogger.Log("[SessionManager] SessionLifetimeScope created.");
         }
-        
+
         public void DestroySession()
         {
             if (_sessionScope != null)
