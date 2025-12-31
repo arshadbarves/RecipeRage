@@ -143,7 +143,7 @@ namespace UI.Screens
             var shopRoot = GetElement<VisualElement>("shop-root");
             if (shopRoot != null)
             {
-                _shopTab = new ShopTabComponent();
+                _shopTab = new ShopTabComponent(_viewModel.ShopVM);
                 sessionContainer.Inject(_shopTab);
                 _shopTab.Initialize(shopRoot);
             }
@@ -151,7 +151,7 @@ namespace UI.Screens
             var settingsRoot = GetElement<VisualElement>("settings-root");
             if (settingsRoot != null)
             {
-                _settingsTab = new SettingsTabComponent();
+                _settingsTab = new SettingsTabComponent(_viewModel.SettingsVM);
                 sessionContainer.Inject(_settingsTab);
                 _settingsTab.Initialize(settingsRoot);
             }

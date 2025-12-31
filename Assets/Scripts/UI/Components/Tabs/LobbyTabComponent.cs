@@ -20,6 +20,24 @@ namespace UI.Components.Tabs
         private readonly LobbyViewModel _viewModel;
 
         private Button _playButton;
+        private Button _mapButton;
+        private Button _leaveButton;
+        private Label _mapNameLabel;
+        private Label _mapSubtitleLabel;
+        private Label _timerLabel;
+        private Label _actionButtonText;
+        private Label _teamCodeLabel;
+        private VisualElement _teamControls;
+        private VisualElement _playerSlotsContainer;
+        
+        private VisualTreeAsset _playerSlotTemplate;
+        private System.Collections.Generic.List<PlayerSlot> _playerSlots = new();
+        
+        private bool _isInParty = false;
+        private bool _isReady = false;
+        private bool _buttonsInitialized = false;
+        private int _currentPlayerCount = 1;
+        private int _maxTeamSize = 3;
 
         public LobbyTabComponent(LobbyViewModel viewModel)
         {
