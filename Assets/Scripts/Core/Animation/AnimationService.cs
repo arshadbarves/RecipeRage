@@ -2,6 +2,8 @@ using System;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Cysharp.Threading.Tasks;
+using Core.Extensions;
 
 namespace Core.Animation
 {
@@ -29,27 +31,28 @@ namespace Core.Animation
         }
 
         // UI Element animations
-        public void AnimateOpacity(VisualElement element, float from, float to, float duration, Action onComplete = null)
+        public UniTask AnimateOpacity(VisualElement element, float from, float to, float duration, Action onComplete = null)
         {
-            if (element == null) return;
+            if (element == null) return UniTask.CompletedTask;
 
             element.style.opacity = from;
-            DOTween.To(() => element.style.opacity.value,
+            return DOTween.To(() => element.style.opacity.value,
                 x => element.style.opacity = x,
                 to,
                 duration)
                 .SetEase(Ease.OutQuad)
-                .OnComplete(() => onComplete?.Invoke());
+                .OnComplete(() => onComplete?.Invoke())
+                .ToUniTask();
         }
 
-        public void AnimatePosition(VisualElement element, Vector2 from, Vector2 to, float duration, Action onComplete = null)
+        public UniTask AnimatePosition(VisualElement element, Vector2 from, Vector2 to, float duration, Action onComplete = null)
         {
-            if (element == null) return;
+            if (element == null) return UniTask.CompletedTask;
 
             element.style.left = from.x;
             element.style.top = from.y;
 
-            DOTween.To(() => from,
+            return DOTween.To(() => from,
                 pos =>
                 {
                     element.style.left = pos.x;
@@ -58,51 +61,72 @@ namespace Core.Animation
                 to,
                 duration)
                 .SetEase(Ease.OutQuad)
-                .OnComplete(() => onComplete?.Invoke());
+                .OnComplete(() => onComplete?.Invoke())
+                .ToUniTask();
         }
 
-        public void AnimateScale(VisualElement element, Vector2 from, Vector2 to, float duration, Action onComplete = null)
+        public UniTask AnimateScale(VisualElement element, Vector2 from, Vector2 to, float duration, Action onComplete = null)
         {
-            if (element == null) return;
+            if (element == null) return UniTask.CompletedTask;
 
             element.style.scale = new StyleScale(from);
 
-            DOTween.To(() => from,
+            return DOTween.To(() => from,
                 scale => element.style.scale = new StyleScale(scale),
                 to,
                 duration)
                 .SetEase(Ease.OutQuad)
-                .OnComplete(() => onComplete?.Invoke());
+                .OnComplete(() => onComplete?.Invoke())
+                .ToUniTask();
         }
 
-        public void AnimateRotation(VisualElement element, float from, float to, float duration, Action onComplete = null)
+        public UniTask AnimateRotation(VisualElement element, float from, float to, float duration, Action onComplete = null)
         {
-            if (element == null) return;
+            if (element == null) return UniTask.CompletedTask;
 
             element.style.rotate = new Rotate(from);
 
-            DOTween.To(() => from,
+            return DOTween.To(() => from,
                 rotation => element.style.rotate = new Rotate(rotation),
                 to,
                 duration)
                 .SetEase(Ease.OutQuad)
-                .OnComplete(() => onComplete?.Invoke());
+                .OnComplete(() => onComplete?.Invoke())
+                .ToUniTask();
         }
 
         // Transform animations
-        public void AnimateTransformPosition(Transform transform, Vector3 to, float duration, Action onComplete = null)
+        public UniTask AnimateTransformPosition(Transform transform, Vector3 to, float duration, Action onComplete = null)
         {
-            _transformAnimator.MoveTo(transform, to, duration, onComplete);
+            var tcs = new UniTaskCompletionSource();
+            _transformAnimator.MoveTo(transform, to, duration, () => 
+            {
+                onComplete?.Invoke();
+                tcs.TrySetResult();
+            });
+            return tcs.Task;
         }
 
-        public void AnimateTransformScale(Transform transform, Vector3 to, float duration, Action onComplete = null)
+        public UniTask AnimateTransformScale(Transform transform, Vector3 to, float duration, Action onComplete = null)
         {
-            _transformAnimator.ScaleTo(transform, to, duration, onComplete);
+            var tcs = new UniTaskCompletionSource();
+            _transformAnimator.ScaleTo(transform, to, duration, () => 
+            {
+                onComplete?.Invoke();
+                tcs.TrySetResult();
+            });
+            return tcs.Task;
         }
 
-        public void AnimateTransformRotation(Transform transform, Vector3 to, float duration, Action onComplete = null)
+        public UniTask AnimateTransformRotation(Transform transform, Vector3 to, float duration, Action onComplete = null)
         {
-            _transformAnimator.RotateTo(transform, to, duration, onComplete);
+            var tcs = new UniTaskCompletionSource();
+            _transformAnimator.RotateTo(transform, to, duration, () => 
+            {
+                onComplete?.Invoke();
+                tcs.TrySetResult();
+            });
+            return tcs.Task;
         }
 
         // Kill animations

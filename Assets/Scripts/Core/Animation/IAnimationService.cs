@@ -1,5 +1,6 @@
 using System;
 using Core.Bootstrap;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -14,37 +15,37 @@ namespace Core.Animation
         /// <summary>
         /// Animate UI element opacity
         /// </summary>
-        void AnimateOpacity(VisualElement element, float from, float to, float duration, Action onComplete = null);
+        UniTask AnimateOpacity(VisualElement element, float from, float to, float duration, Action onComplete = null);
         
         /// <summary>
         /// Animate UI element position
         /// </summary>
-        void AnimatePosition(VisualElement element, Vector2 from, Vector2 to, float duration, Action onComplete = null);
+        UniTask AnimatePosition(VisualElement element, Vector2 from, Vector2 to, float duration, Action onComplete = null);
         
         /// <summary>
         /// Animate UI element scale
         /// </summary>
-        void AnimateScale(VisualElement element, Vector2 from, Vector2 to, float duration, Action onComplete = null);
+        UniTask AnimateScale(VisualElement element, Vector2 from, Vector2 to, float duration, Action onComplete = null);
         
         /// <summary>
         /// Animate UI element rotation
         /// </summary>
-        void AnimateRotation(VisualElement element, float from, float to, float duration, Action onComplete = null);
+        UniTask AnimateRotation(VisualElement element, float from, float to, float duration, Action onComplete = null);
         
         /// <summary>
         /// Animate GameObject position
         /// </summary>
-        void AnimateTransformPosition(Transform transform, Vector3 to, float duration, Action onComplete = null);
+        UniTask AnimateTransformPosition(Transform transform, Vector3 to, float duration, Action onComplete = null);
         
         /// <summary>
         /// Animate GameObject scale
         /// </summary>
-        void AnimateTransformScale(Transform transform, Vector3 to, float duration, Action onComplete = null);
+        UniTask AnimateTransformScale(Transform transform, Vector3 to, float duration, Action onComplete = null);
         
         /// <summary>
         /// Animate GameObject rotation
         /// </summary>
-        void AnimateTransformRotation(Transform transform, Vector3 to, float duration, Action onComplete = null);
+        UniTask AnimateTransformRotation(Transform transform, Vector3 to, float duration, Action onComplete = null);
         
         /// <summary>
         /// Kill all animations on a UI element
