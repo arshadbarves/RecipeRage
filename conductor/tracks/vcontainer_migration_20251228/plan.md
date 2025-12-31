@@ -27,7 +27,7 @@ Migrate user-specific services to a dynamic session scope.
 - [x] Task: Conductor - User Manual Verification 'Session Management' (Protocol in workflow.md) [c7b6929]
 
 ## Phase 3: Cleanup & Refinement
-- [~] Task: Remove Legacy Container Files
+- [x] Task: Remove Legacy Container Files [fa17591]
     - Delete `ServiceContainer.cs` and `GameSession.cs`.
     - Fix any remaining direct references to `GameBootstrap.Services`.
 - [ ] Task: Refactor UI Injection
