@@ -6,6 +6,7 @@ using Unity.Netcode;
 using UnityEngine;
 using Core.Logging;
 using Core.Networking.Services;
+using Core.Stats;
 using VContainer;
 using VContainer.Unity;
 
@@ -72,8 +73,8 @@ namespace Core.Characters
         private GameObject _heldObject;
         public CharacterClass CharacterClass { get; private set; }
         public CharacterAbility PrimaryAbility { get; private set; }
-        public float InteractionSpeedModifier { get; set; } = 1f;
-        public int CarryingCapacity { get; set; } = 1;
+        public ModifiableStat InteractionSpeed { get; } = new ModifiableStat(1f);
+        public ModifiableStat CarryingCapacity { get; } = new ModifiableStat(1f);
 
         #endregion
 
@@ -384,8 +385,8 @@ namespace Core.Characters
             if (CharacterClass != null && _movementController != null)
             {
                 _movementController.MovementSpeed = _baseMovementSpeed * CharacterClass.MovementSpeedModifier;
-                InteractionSpeedModifier = CharacterClass.InteractionSpeedModifier;
-                CarryingCapacity = Mathf.RoundToInt(CharacterClass.CarryingCapacityModifier);
+                InteractionSpeed.BaseValue = CharacterClass.InteractionSpeedModifier;
+                CarryingCapacity.BaseValue = CharacterClass.CarryingCapacityModifier;
                 PrimaryAbility = CharacterAbility.CreateAbility(CharacterClass.PrimaryAbilityType, CharacterClass, this);
             }
         }
