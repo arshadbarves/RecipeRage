@@ -1,0 +1,8 @@
+Key,English,Spanish
+splash_loading,Loading...,Cargando...
+login_guest,Guest Login,Invitado
+login_status_ready,Ready to connect,Listo para conectar
+login_status_connecting,Connecting to EOS...,Conectando a EOS...
+login_status_connected,Connected!,Conectado!
+login_status_failed,Connection failed. Try again.,Fallo de conexión. Intente de nuevo.
+login_status_error,Error during connection,Error durante la conexión

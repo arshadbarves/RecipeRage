@@ -101,7 +101,7 @@ namespace UI
         /// <summary>
         /// Show the screen with animation
         /// </summary>
-        public void Show(IUIAnimator animator, Action<IUIAnimator, VisualElement, float, Action> animateCallback, float duration, bool animate, Action onComplete = null)
+        public void Show(Action<VisualElement, float, Action> animateCallback, float duration, bool animate, Action onComplete = null)
         {
             if (IsVisible || IsAnimating) return;
 
@@ -114,7 +114,7 @@ namespace UI
             if (animate)
             {
                 // Call the animation callback which will invoke the specific animation method
-                animateCallback?.Invoke(animator, Container, duration, () =>
+                animateCallback?.Invoke(Container, duration, () =>
                 {
                     CompleteShow(onComplete);
                 });
@@ -131,7 +131,7 @@ namespace UI
         /// <summary>
         /// Hide the screen with animation
         /// </summary>
-        public void Hide(IUIAnimator animator, Action<IUIAnimator, VisualElement, float, Action> animateCallback, float duration, bool animate, Action onComplete = null)
+        public void Hide(Action<VisualElement, float, Action> animateCallback, float duration, bool animate, Action onComplete = null)
         {
             if (!IsVisible || IsAnimating) return;
 
@@ -140,7 +140,7 @@ namespace UI
 
             if (animate)
             {
-                animateCallback?.Invoke(animator, Container, duration, () =>
+                animateCallback?.Invoke(Container, duration, () =>
                 {
                     CompleteHide(onComplete);
                 });

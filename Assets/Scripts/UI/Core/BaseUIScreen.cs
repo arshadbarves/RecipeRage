@@ -169,46 +169,29 @@ namespace UI.Core
 
         #region Animation Configuration
 
-        public virtual void AnimateShow(IUIAnimator animator, VisualElement element, float duration, Action onComplete)
+        public UITransitionType TransitionType { get; protected set; } = UITransitionType.Fade;
+
+        public virtual async void AnimateShow(VisualElement element, float duration, Action onComplete)
         {
-            switch (Category)
+            if (Controller != null)
             {
-                case UIScreenCategory.Modal:
-                case UIScreenCategory.Popup:
-                    animator.PopupIn(element, duration, onComplete);
-                    break;
-                default:
-                    animator.FadeIn(element, duration, onComplete);
-                    break;
+                await UITransitionHandler.AnimateShow(element, TransitionType, duration);
+                onComplete?.Invoke();
             }
         }
 
-        public virtual void AnimateHide(IUIAnimator animator, VisualElement element, float duration, Action onComplete)
+        public virtual async void AnimateHide(VisualElement element, float duration, Action onComplete)
         {
-            switch (Category)
+            if (Controller != null)
             {
-                case UIScreenCategory.Modal:
-                case UIScreenCategory.Popup:
-                    animator.PopupOut(element, duration, onComplete);
-                    break;
-                default:
-                    animator.FadeOut(element, duration, onComplete);
-                    break;
+                await UITransitionHandler.AnimateHide(element, TransitionType, duration);
+                onComplete?.Invoke();
             }
         }
 
         public virtual float GetAnimationDuration()
         {
-            return Category switch
-            {
-                UIScreenCategory.System => 0.5f,
-                UIScreenCategory.Overlay => 0.3f,
-                UIScreenCategory.Modal => 0.4f,
-                UIScreenCategory.Popup => 0.4f,
-                UIScreenCategory.Screen => 0.3f,
-                UIScreenCategory.Persistent => 0.2f,
-                _ => 0.3f
-            };
+            return 0.3f;
         }
 
         public virtual void OnBeforeShowAnimation() { }

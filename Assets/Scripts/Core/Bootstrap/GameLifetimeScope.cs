@@ -31,9 +31,14 @@ namespace Core.Bootstrap
             builder.Register<StorageProviderFactory>(Lifetime.Singleton);
             builder.Register<EncryptionService>(Lifetime.Singleton).AsImplementedInterfaces().WithParameter("key", "RecipeRage");
             builder.Register<SaveService>(Lifetime.Singleton).AsImplementedInterfaces();
+using Core.Localization; // Added namespace
+
+// ...
+
             builder.Register<NTPTimeService>(Lifetime.Singleton).AsImplementedInterfaces();
             builder.Register<RemoteConfigService>(Lifetime.Singleton).AsImplementedInterfaces();
             builder.Register<ConnectivityService>(Lifetime.Singleton).AsImplementedInterfaces();
+            builder.Register<LocalizationManager>(Lifetime.Singleton).AsImplementedInterfaces(); // Added Registration
 
             // UI System
             builder.Register<DOTweenUIAnimator>(Lifetime.Singleton).AsImplementedInterfaces();
@@ -57,6 +62,10 @@ namespace Core.Bootstrap
             builder.Register<MatchmakingState>(Lifetime.Transient);
             builder.Register<GameplayState>(Lifetime.Transient);
             builder.Register<GameOverState>(Lifetime.Transient);
+
+            // UI ViewModels
+            builder.Register<UI.ViewModels.SplashScreenViewModel>(Lifetime.Transient);
+            builder.Register<UI.ViewModels.LoginViewModel>(Lifetime.Transient);
 
             // UI Screens (Transient)
             builder.Register<UI.Screens.LoadingScreen>(Lifetime.Transient);

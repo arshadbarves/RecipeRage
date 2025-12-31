@@ -510,7 +510,7 @@ namespace UI
             float duration = screen.GetAnimationDuration();
             screen.OnBeforeShowAnimation();
 
-            controller.Show(_animationService.UI, screen.AnimateShow, duration, animate, () =>
+            controller.Show(screen.AnimateShow, duration, animate, () =>
             {
                 screen.OnAfterShowAnimation();
                 OnScreenShown?.Invoke(screen.ScreenType);
@@ -530,7 +530,7 @@ namespace UI
             float duration = screen.GetAnimationDuration();
             screen.OnBeforeHideAnimation();
 
-            controller.Hide(_animationService.UI, screen.AnimateHide, duration, animate, () =>
+            controller.Hide(screen.AnimateHide, duration, animate, () =>
             {
                 screen.OnAfterHideAnimation();
                 OnScreenHidden?.Invoke(screen.ScreenType);

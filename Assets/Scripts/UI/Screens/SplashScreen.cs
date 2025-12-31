@@ -1,7 +1,6 @@
-using Core.Animation;
 using Core.Logging;
 using UI.Core;
-using UnityEngine;
+using UI.ViewModels;
 using UnityEngine.UIElements;
 using VContainer;
 
@@ -13,6 +12,8 @@ namespace UI.Screens
     [UIScreen(UIScreenType.Splash, UIScreenCategory.System, "Screens/SplashScreenTemplate")]
     public class SplashScreen : BaseUIScreen
     {
+        [Inject] private SplashScreenViewModel _viewModel;
+
         private VisualElement _logo;
         private Label _loadingLabel;
 
@@ -20,14 +21,26 @@ namespace UI.Screens
         {
             _logo = GetElement<VisualElement>("splash-logo");
             _loadingLabel = GetElement<Label>("loading-text");
+            
+            TransitionType = UITransitionType.Fade;
+
+            BindViewModel();
         }
 
-        protected override void OnShow()
+        private void BindViewModel()
         {
-            if (_logo != null)
+            if (_viewModel == null) return;
+            
+            _viewModel.Initialize();
+            _viewModel.LoadingText.Bind(text => 
             {
-                // Animation logic could go here
-            }
+                if (_loadingLabel != null) _loadingLabel.text = text;
+            });
+        }
+
+        protected override void OnDispose()
+        {
+            _viewModel?.Dispose();
         }
     }
 }
