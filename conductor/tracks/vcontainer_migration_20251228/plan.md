@@ -35,7 +35,7 @@ Migrate user-specific services to a dynamic session scope.
 - [x] Task: Implement Session Loading State [fd2b654]
     - Create `SessionLoadingState` to handle async data loading (Profile, Currency) between Login and MainMenu.
     - Resolves "pop-in" issues with username and currency display.
-- [x] Task: Fix UI Registration and Template Paths
+- [x] Task: Fix UI Registration and Template Paths [0a1ec59]
     - Register `LoginView` in `GameLifetimeScope` to fix `VContainerException`.
     - Update `NotificationScreen` template path to `Popups/NotificationTemplate`.
     - Update `NotificationScreen` toast template path to `Components/NotificationToast`.

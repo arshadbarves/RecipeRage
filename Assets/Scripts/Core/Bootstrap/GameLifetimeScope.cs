@@ -10,6 +10,7 @@ using Core.SaveSystem;
 using Core.State;
 using Core.State.States;
 using RecipeRage.Modules.Auth.Core;
+using RecipeRage.Modules.Auth.UI;
 using UI;
 using UnityEngine;
 using VContainer;
@@ -38,7 +39,7 @@ namespace Core.Bootstrap
             builder.Register<DOTweenUIAnimator>(Lifetime.Singleton).AsImplementedInterfaces();
             builder.Register<DOTweenTransformAnimator>(Lifetime.Singleton).AsImplementedInterfaces();
             builder.Register<AnimationService>(Lifetime.Singleton).AsImplementedInterfaces();
-            
+
             builder.Register<UIService>(Lifetime.Singleton).AsImplementedInterfaces();
             builder.RegisterComponent(_uiDocumentProvider);
 
@@ -96,7 +97,7 @@ namespace Core.Bootstrap
         private readonly ILoggingService _loggingService;
 
         public RootBootstrapper(
-            IEnumerable<IInitializable> initializables, 
+            IEnumerable<IInitializable> initializables,
             IUIService uiService,
             UIDocumentProvider uiDocumentProvider,
             ILoggingService loggingService)

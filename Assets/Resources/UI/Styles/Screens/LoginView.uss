@@ -1,17 +1,17 @@
 :root {
-    --theme-red: #E63946;
-    --theme-yellow: #FFD700;
-    --theme-dark: #050505;
+    --theme-red: rgb(230, 57, 70);
+    --theme-yellow: rgb(255, 215, 0);
+    --theme-dark: rgb(5, 5, 5);
     --glass-bg: rgba(20, 20, 20, 0.95);
-    --card-bg: #1a1a1a;
-    --card-border: #333;
+    --card-bg: rgb(26, 26, 26);
+    --card-border: rgb(51, 51, 51);
 }
 
 #screen-container {
     width: 100%;
     height: 100%;
-    background-color: #050505;
-    background-image: radial-gradient(circle, #1a1f2c, #050505);
+    background-color: rgb(5, 5, 5);
+    background-image: url("project://database/Assets/Textures/Arts/bg-4.png?fileID=2800000&guid=c8ac88b81256647b3b39ad75f7081306&type=3#bg-4");
     justify-content: center;
     align-items: center;
     overflow: hidden;
@@ -19,10 +19,10 @@
 
 #login-card {
     width: 400px;
-    background-color: #151515;
+    background-color: rgb(21, 21, 21);
     border-width: 2px;
-    border-color: #333;
-    transform: skewX(-10deg);
+    border-color: rgb(51, 51, 51);
+    transform: ;
     padding: 20px;
     border-top-width: 6px;
     border-top-color: var(--theme-red);
@@ -36,7 +36,7 @@
 .title {
     font-size: 48px;
     color: white;
-    -unity-font-definition: url("project://database/Assets/Fonts/Anton-Regular SDF.asset");
+    -unity-font-definition: url("project://database/Assets/Fonts/Anton-Regular%20SDF.asset?fileID=11400000&guid=aa820f8024bbb4ae08525ce0513021a5&type=2#Anton-Regular SDF");
     -unity-font-style: bold;
     letter-spacing: 2px;
     text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5);
@@ -44,7 +44,7 @@
 
 .subtitle {
     font-size: 14px;
-    color: #888;
+    color: rgb(136, 136, 136);
     margin-top: -5px;
     text-transform: uppercase;
 }
@@ -54,10 +54,10 @@
     margin-bottom: 15px;
     background-color: rgba(255, 255, 255, 0.05);
     border-width: 1px;
-    border-color: #444;
-    color: #888;
+    border-color: rgb(68, 68, 68);
+    color: rgb(136, 136, 136);
     font-size: 20px;
-    -unity-font-definition: url("project://database/Assets/Fonts/Anton-Regular SDF.asset");
+    -unity-font-definition: url("project://database/Assets/Fonts/Anton-Regular%20SDF.asset?fileID=11400000&guid=aa820f8024bbb4ae08525ce0513021a5&type=2#Anton-Regular SDF");
     transition-duration: 0.2s;
     flex-direction: row;
     align-items: center;
@@ -77,7 +77,7 @@
 }
 
 .login-button.primary:hover {
-    background-color: #ff4d5a;
+    background-color: rgb(255, 77, 90);
     scale: 1.05;
 }
 
