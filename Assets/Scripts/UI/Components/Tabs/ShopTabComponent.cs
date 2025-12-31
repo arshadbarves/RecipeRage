@@ -13,16 +13,17 @@ namespace UI.Components.Tabs
     /// </summary>
     public class ShopTabComponent
     {
+        [Inject]
+        private ICurrencyService _currencyService;
+
         private VisualElement _root;
         private VisualElement _shopItemsGrid;
         private string _currentCategory = "featured";
         private ShopData _shopData;
         private VisualTreeAsset _shopItemTemplate;
-        private readonly ICurrencyService _currencyService;
 
-        public ShopTabComponent(ICurrencyService currencyService)
+        public ShopTabComponent()
         {
-            _currencyService = currencyService;
         }
 
         public void Initialize(VisualElement root)

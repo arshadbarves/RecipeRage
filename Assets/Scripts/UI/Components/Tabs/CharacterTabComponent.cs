@@ -16,9 +16,11 @@ namespace UI.Components.Tabs
     /// </summary>
     public class CharacterTabComponent
     {
+        [Inject]
+        private IUIService _uiService;
+
         private VisualElement _root;
         private readonly ICharacterService _characterService;
-        private readonly IUIService _uiService;
 
         // UI Elements
         private VisualElement _characterGrid;
@@ -26,10 +28,9 @@ namespace UI.Components.Tabs
         // State
         private readonly Dictionary<int, VisualElement> _characterSlots = new Dictionary<int, VisualElement>();
 
-        public CharacterTabComponent(ICharacterService characterService, IUIService uiService)
+        public CharacterTabComponent(ICharacterService characterService)
         {
             _characterService = characterService;
-            _uiService = uiService;
         }
 
         public void Initialize(VisualElement root)

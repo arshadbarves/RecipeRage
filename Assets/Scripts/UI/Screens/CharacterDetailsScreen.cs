@@ -44,6 +44,19 @@ namespace UI.Screens
 
         protected override void OnInitialize()
         {
+            // Query elements
+            QueryElements();
+
+            // Setup callbacks
+            SetupCallbacks();
+
+            GameLogger.Log("Initialized");
+        }
+
+        private void ResolveServices()
+        {
+            if (_characterService != null && _skinsService != null) return;
+
             var sessionContainer = _sessionManager?.SessionContainer;
             if (sessionContainer != null)
             {
@@ -55,14 +68,6 @@ namespace UI.Screens
             {
                 GameLogger.LogError("SkinsService is null!");
             }
-
-            // Query elements
-            QueryElements();
-
-            // Setup callbacks
-            SetupCallbacks();
-
-            GameLogger.Log("Initialized");
         }
 
         private void QueryElements()
@@ -91,6 +96,7 @@ namespace UI.Screens
 
         public void ShowForCharacter(CharacterClass character)
         {
+            ResolveServices();
             _currentCharacter = character;
 
             var equippedSkin = _skinsService?.GetEquippedSkin(character.Id);

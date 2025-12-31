@@ -19,8 +19,8 @@ namespace UI.Screens
     [UIScreen(UIScreenType.Profile, UIScreenCategory.Screen, "Screens/ProfileTemplate")]
     public class ProfileScreen : BaseUIScreen
     {
-        [Inject]
-        private SessionManager _sessionManager;
+        [Inject] private SessionManager _sessionManager;
+        [Inject] private ISaveService _saveService;
 
         private Label _playerNameLabel;
         private Label _playerLevelLabel;
@@ -56,12 +56,10 @@ namespace UI.Screens
 
         private void UpdatePlayerInfo()
         {
-            var container = GameBootstrap.Container;
-            if (container == null) return;
+            if (_saveService == null) return;
 
-            var saveService = container.Resolve<ISaveService>();
-            var stats = saveService.GetPlayerStats();
-            var progress = saveService.GetPlayerProgress();
+            var stats = _saveService.GetPlayerStats();
+            var progress = _saveService.GetPlayerProgress();
 
             if (_playerNameLabel != null)
                 _playerNameLabel.text = string.IsNullOrEmpty(stats.PlayerName) ? "GUEST" : stats.PlayerName.ToUpper();

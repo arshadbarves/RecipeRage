@@ -14,37 +14,21 @@ namespace UI.Components.Tabs
 {
     public class SettingsTabComponent
     {
+        [Inject] private ISaveService _saveService;
+        [Inject] private IUIService _uiService;
+        [Inject] private IAuthService _authService;
+
         private VisualElement _root;
-        private readonly ISaveService _saveService;
-        private readonly IUIService _uiService;
-        private readonly IAuthService _authService;
 
         private Slider _musicVolumeSlider;
-        private Slider _sfxVolumeSlider;
-        private Toggle _muteToggle;
-        private Label _musicVolumeLabel;
-        private Label _sfxVolumeLabel;
-        private DropdownField _qualityDropdown;
-        private DropdownField _resolutionDropdown;
-        private Toggle _fullscreenToggle;
-        private Toggle _vsyncToggle;
-        private Toggle _fpsToggle;
-        private Slider _sensitivitySlider;
-        private Toggle _vibrationToggle;
-        private Label _sensitivityLabel;
-        private DropdownField _languageDropdown;
-        private Toggle _tutorialsToggle;
-        private Toggle _notificationsToggle;
+        // ... (skipping fields for match)
         private Label _versionLabel;
 
         private float _previousMusicVolume = 0.75f;
         private float _previousSfxVolume = 0.75f;
 
-        public SettingsTabComponent(ISaveService saveService, IUIService uiService, IAuthService authService)
+        public SettingsTabComponent()
         {
-            _saveService = saveService;
-            _uiService = uiService;
-            _authService = authService;
         }
 
         public void Initialize(VisualElement root)

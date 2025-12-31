@@ -34,14 +34,6 @@ namespace UI.Screens
 
         protected override void OnInitialize()
         {
-            // Get matchmaking service from injected session
-            var sessionContainer = _sessionManager?.SessionContainer;
-            if (sessionContainer != null)
-            {
-                var networking = sessionContainer.Resolve<INetworkingServices>();
-                _matchmakingService = networking?.MatchmakingService;
-            }
-
             _statusText = GetElement<Label>("status-text");
             _playerCountText = GetElement<Label>("player-count");
             _searchTimeText = GetElement<Label>("search-time");
@@ -53,22 +45,38 @@ namespace UI.Screens
             {
                 _cancelButton.clicked += OnCancelClicked;
             }
-
-            if (_matchmakingService != null)
-            {
-                _matchmakingService.OnPlayersFound += OnPlayersFoundUpdated;
-                _matchmakingService.OnMatchFound += OnMatchFound;
-            }
         }
 
         protected override void OnShow()
         {
             _searchTime = 0f;
+            
+            // Resolve service on show to ensure session is ready
+            ResolveMatchmakingService();
+
             if (_statusText != null) _statusText.text = "Searching for players...";
             if (_statusIndicator != null)
             {
                 _statusIndicator.RemoveFromClassList("found");
                 _statusIndicator.AddToClassList("searching");
+            }
+        }
+
+        private void ResolveMatchmakingService()
+        {
+            if (_matchmakingService != null) return;
+
+            var sessionContainer = _sessionManager?.SessionContainer;
+            if (sessionContainer != null)
+            {
+                var networking = sessionContainer.Resolve<INetworkingServices>();
+                _matchmakingService = networking?.MatchmakingService;
+
+                if (_matchmakingService != null)
+                {
+                    _matchmakingService.OnPlayersFound += OnPlayersFoundUpdated;
+                    _matchmakingService.OnMatchFound += OnMatchFound;
+                }
             }
         }
 
@@ -81,12 +89,19 @@ namespace UI.Screens
             }
         }
 
+        protected override void OnHide()
+        {
+            // Optional: keep subscription if we want updates in background, 
+            // but usually we want to clear it if screen is hidden.
+        }
+
         protected override void OnDispose()
         {
             if (_matchmakingService != null)
             {
                 _matchmakingService.OnPlayersFound -= OnPlayersFoundUpdated;
                 _matchmakingService.OnMatchFound -= OnMatchFound;
+                _matchmakingService = null;
             }
 
             if (_cancelButton != null)

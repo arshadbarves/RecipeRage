@@ -29,6 +29,7 @@ namespace UI.Screens
     {
         #region Dependencies
 
+        [Inject] private IObjectResolver _container;
         [Inject] private IUIService _uiService;
         [Inject] private ISaveService _saveService;
         [Inject] private IEventBus _eventBus;
@@ -51,26 +52,56 @@ namespace UI.Screens
 
         protected override void OnInitialize()
         {
-            InitializeCurrencyDisplay();
             InitializePlayerCard();
-            InitializeAllTabs();
             SetupPointerInteractions();
+            _eventBus?.Subscribe<LogoutEvent>(OnLogout);
+        }
+
+        private void OnLogout(LogoutEvent evt)
+        {
+            ClearSessionComponents();
+        }
+
+        private void ClearSessionComponents()
+        {
+            _lobbyTab?.Dispose();
+            _settingsTab?.Dispose();
+            _currencyDisplay?.Dispose();
+
+            _lobbyTab = null;
+            _settingsTab = null;
+            _currencyDisplay = null;
+        }
+
+        protected override void OnDispose()
+        {
+            _eventBus?.Unsubscribe<LogoutEvent>(OnLogout);
+            ClearSessionComponents();
         }
 
         protected override void OnShow()
         {
             UpdatePlayerInfo();
+            InitializeSessionComponents();
             _lobbyTab?.PlayIntroAnimations(null); 
         }
 
-        public override void Update(float deltaTime) => _lobbyTab?.Update(deltaTime);
-
-        protected override void OnDispose()
+        private void InitializeSessionComponents()
         {
-            _lobbyTab?.Dispose();
-            _settingsTab?.Dispose();
-            _currencyDisplay?.Dispose();
+            if (_sessionManager?.IsSessionActive == false) return;
+            
+            // If already initialized for this session, just refresh
+            if (_lobbyTab != null)
+            {
+                // Optionally refresh state here
+                return;
+            }
+
+            InitializeCurrencyDisplay();
+            InitializeAllTabs();
         }
+
+        public override void Update(float deltaTime) => _lobbyTab?.Update(deltaTime);
 
         private void SetupPointerInteractions()
         {
@@ -83,7 +114,9 @@ namespace UI.Screens
             if (_sessionManager?.IsSessionActive == true)
             {
                 var currencyService = _sessionManager.SessionContainer.Resolve<ICurrencyService>();
-                _currencyDisplay = new CurrencyDisplay(Container, _eventBus, currencyService);
+                _currencyDisplay = new CurrencyDisplay(Container, currencyService);
+                _sessionManager.SessionContainer.Inject(_currencyDisplay);
+                _currencyDisplay.Initialize();
             }
         }
 
@@ -103,28 +136,32 @@ namespace UI.Screens
             if (lobbyRoot != null)
             {
                 var networking = sessionContainer.Resolve<INetworkingServices>();
-                _lobbyTab = new LobbyTabComponent(networking?.MatchmakingService, _stateManager, _uiService, _animationService, _loggingService);
+                _lobbyTab = new LobbyTabComponent(networking?.MatchmakingService);
+                sessionContainer.Inject(_lobbyTab);
                 _lobbyTab.Initialize(lobbyRoot);
             }
 
             var characterRoot = GetElement<VisualElement>("character-root");
             if (characterRoot != null)
             {
-                _characterTab = new CharacterTabComponent(sessionContainer.Resolve<ICharacterService>(), _uiService);
+                _characterTab = new CharacterTabComponent(sessionContainer.Resolve<ICharacterService>());
+                sessionContainer.Inject(_characterTab);
                 _characterTab.Initialize(characterRoot);
             }
 
             var shopRoot = GetElement<VisualElement>("shop-root");
             if (shopRoot != null)
             {
-                _shopTab = new ShopTabComponent(sessionContainer.Resolve<ICurrencyService>());
+                _shopTab = new ShopTabComponent();
+                sessionContainer.Inject(_shopTab);
                 _shopTab.Initialize(shopRoot);
             }
 
             var settingsRoot = GetElement<VisualElement>("settings-root");
             if (settingsRoot != null)
             {
-                _settingsTab = new SettingsTabComponent(_saveService, _uiService, _authService);
+                _settingsTab = new SettingsTabComponent();
+                sessionContainer.Inject(_settingsTab);
                 _settingsTab.Initialize(settingsRoot);
             }
         }

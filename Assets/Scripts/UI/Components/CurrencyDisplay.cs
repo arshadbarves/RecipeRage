@@ -14,8 +14,10 @@ namespace UI.Components
     /// </summary>
     public class CurrencyDisplay
     {
+        [Inject]
+        private IEventBus _eventBus;
+        
         private readonly VisualElement _root;
-        private readonly IEventBus _eventBus;
         private readonly ICurrencyService _currencyService;
 
         private Label _coinsLabel;
@@ -23,16 +25,13 @@ namespace UI.Components
         private Button _addCoinsButton;
         private Button _addGemsButton;
 
-        public CurrencyDisplay(VisualElement root, IEventBus eventBus, ICurrencyService currencyService)
+        public CurrencyDisplay(VisualElement root, ICurrencyService currencyService)
         {
             _root = root;
-            _eventBus = eventBus;
             _currencyService = currencyService;
-
-            Initialize();
         }
 
-        private void Initialize()
+        public void Initialize()
         {
             // Cache UI elements
             _coinsLabel = _root.Q<Label>("coins-amount");
