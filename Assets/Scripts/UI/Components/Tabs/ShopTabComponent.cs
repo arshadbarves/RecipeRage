@@ -3,6 +3,7 @@ using Core.Logging;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UI.Data;
+using Core.Currency;
 
 namespace UI.Components.Tabs
 {
@@ -17,6 +18,12 @@ namespace UI.Components.Tabs
         private string _currentCategory = "featured";
         private ShopData _shopData;
         private VisualTreeAsset _shopItemTemplate;
+        private readonly ICurrencyService _currencyService;
+
+        public ShopTabComponent(ICurrencyService currencyService)
+        {
+            _currencyService = currencyService;
+        }
 
         public void Initialize(VisualElement root)
         {
@@ -240,8 +247,7 @@ namespace UI.Components.Tabs
         {
             GameLogger.Log($"Attempting to buy {item.name} for {item.price} {item.currency}");
 
-            var currencyService = GameBootstrap.Services.Session.CurrencyService;
-            if (currencyService == null)
+            if (_currencyService == null)
             {
                 GameLogger.LogError("CurrencyService not found");
                 return;
@@ -251,11 +257,11 @@ namespace UI.Components.Tabs
 
             if (item.currency == "coins")
             {
-                purchaseSuccess = currencyService.SpendCoins(item.price);
+                purchaseSuccess = _currencyService.SpendCoins(item.price);
             }
             else if (item.currency == "gems")
             {
-                purchaseSuccess = currencyService.SpendGems(item.price);
+                purchaseSuccess = _currencyService.SpendGems(item.price);
             }
 
             if (purchaseSuccess)

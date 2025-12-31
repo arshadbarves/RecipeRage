@@ -53,7 +53,7 @@ namespace Core.State.States
             GameLogger.Log($"[LoginState] EVENT RECEIVED: Login successful for user: {evt.UserId}");
 
             // Session is created internally by AuthenticationService after successful auth
-            _stateManager.ChangeState(new MainMenuState());
+            _stateManager.ChangeState<MainMenuState>();
         }
     }
 }

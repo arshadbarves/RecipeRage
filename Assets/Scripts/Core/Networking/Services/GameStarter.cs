@@ -1,6 +1,4 @@
-using Core.Bootstrap;
 using Core.Logging;
-using Core.Networking.Bot;
 using Core.State.States;
 using Epic.OnlineServices;
 using Gameplay;
@@ -9,6 +7,7 @@ using PlayEveryWare.EpicOnlineServices;
 using UI;
 using Unity.Netcode;
 using UnityEngine;
+using Core.State;
 
 namespace Core.Networking.Services
 {
@@ -19,18 +18,26 @@ namespace Core.Networking.Services
     /// </summary>
     public class GameStarter
     {
-        private INetworkingServices _networkingServices;
+        private readonly INetworkingServices _networkingServices;
+        private readonly IUIService _uiService;
+        private readonly IGameStateManager _stateManager;
+
         private bool _isGameActive;
         private SpawnManager _spawnManager;
         private GameObject _playerPrefab; // Store player prefab for bot spawning
         private Core.Networking.LatencyMonitor _latencyMonitor;
 
         /// <summary>
-        /// Constructor
+        /// Constructor with dependencies
         /// </summary>
-        public GameStarter(INetworkingServices networkingServices)
+        public GameStarter(
+            INetworkingServices networkingServices,
+            IUIService uiService,
+            IGameStateManager stateManager)
         {
             _networkingServices = networkingServices;
+            _uiService = uiService;
+            _stateManager = stateManager;
         }
 
         /// <summary>
@@ -82,10 +89,10 @@ namespace Core.Networking.Services
             if (NetworkManager.Singleton.NetworkConfig != null)
             {
                 _playerPrefab = NetworkManager.Singleton.NetworkConfig.PlayerPrefab;
-                
+
                 // Disable automatic spawning by clearing player prefab
                 NetworkManager.Singleton.NetworkConfig.PlayerPrefab = null;
-                
+
                 GameLogger.Log("Disabled automatic player spawning - using manual spawning");
             }
 
@@ -216,7 +223,7 @@ namespace Core.Networking.Services
             // Create pure C# monitor - works for both host and client
             // It will hook into CustomMessagingManager internally
             _latencyMonitor = new Core.Networking.LatencyMonitor();
-            
+
             GameLogger.Log("LatencyMonitor initialized (Pure C#)");
         }
 
@@ -299,30 +306,10 @@ namespace Core.Networking.Services
             // Leave match lobby
             _networkingServices.LobbyManager.LeaveMatchLobby();
 
-            // Check if player is in a party
-            // if (_networkingServices.LobbyManager.IsInParty)
-            // {
-            //     GameLogger.Log("Returning to party lobby");
-            //
-            //     // Show party lobby UI
-            //     var uiService = GameBootstrap.Services?.UIService;
-            //     // TODO: Show party lobby screen when UI is ready
-            //     // uiService?.ShowScreen(UIScreenType.PartyLobby);
-            // }
-            // else
-            // {
-            //     GameLogger.Log("Returning to main menu");
-            //
-            //     // Show main menu
-            //     var uiService = GameBootstrap.Services?.UIService;
-            //     uiService?.ShowScreen(UIScreenType.MainMenu);
-            // }
-
             // Return to main menu
-            var stateManager = GameBootstrap.Services?.StateManager;
-            if (stateManager != null)
+            if (_stateManager != null)
             {
-                stateManager.ChangeState(new MainMenuState());
+                _stateManager.ChangeState<MainMenuState>();
             }
             else
             {
@@ -395,9 +382,7 @@ namespace Core.Networking.Services
                 GameLogger.LogWarning("Host disconnected - ending match for all players");
 
                 // Show message to players
-                var uiService = GameBootstrap.Services?.UIService;
-                // TODO: Show toast "Host left the match"
-                // uiService?.ShowNotification("Host left the match. Returning to lobby...");
+                _uiService?.ShowNotification("Host left the match. Returning to lobby...", NotificationType.Info);
 
                 // End game and return to lobby
                 EndGame();
@@ -417,9 +402,7 @@ namespace Core.Networking.Services
             GameLogger.LogError($"Game start failed: {reason}");
 
             // Show error message
-            var uiService = GameBootstrap.Services?.UIService;
-            // TODO: Show error toast when UI is ready
-            // uiService?.ShowNotification($"Failed to start game: {reason}");
+            _uiService?.ShowNotification("Game Start Failed", reason, NotificationType.Error, 4f);
 
             // Return to lobby
             ReturnToLobby();

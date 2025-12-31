@@ -5,6 +5,8 @@ using UI.Core;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Core.Logging;
+using Core.Networking;
+using VContainer;
 
 namespace UI.Screens
 {
@@ -15,6 +17,9 @@ namespace UI.Screens
     [UIScreen(UIScreenType.Matchmaking, UIScreenCategory.Screen, "Screens/MatchmakingTemplate")]
     public class MatchmakingScreen : BaseUIScreen
     {
+        [Inject]
+        private SessionManager _sessionManager;
+
         // UI Elements
         private Label _statusText;
         private Label _playerCountText;
@@ -29,10 +34,14 @@ namespace UI.Screens
 
         protected override void OnInitialize()
         {
-            // Get matchmaking service
-            _matchmakingService = GameBootstrap.Services?.Session?.NetworkingServices?.MatchmakingService;
+            // Get matchmaking service from injected session
+            var sessionContainer = _sessionManager?.SessionContainer;
+            if (sessionContainer != null)
+            {
+                var networking = sessionContainer.Resolve<INetworkingServices>();
+                _matchmakingService = networking?.MatchmakingService;
+            }
 
-            // Query UI elements
             _statusText = GetElement<Label>("status-text");
             _playerCountText = GetElement<Label>("player-count");
             _searchTimeText = GetElement<Label>("search-time");
@@ -40,13 +49,11 @@ namespace UI.Screens
             _statusIndicator = GetElement<VisualElement>("status-indicator");
             _playerListContainer = GetElement<VisualElement>("player-list");
 
-            // Setup cancel button
             if (_cancelButton != null)
             {
                 _cancelButton.clicked += OnCancelClicked;
             }
 
-            // Subscribe to matchmaking events
             if (_matchmakingService != null)
             {
                 _matchmakingService.OnPlayersFound += OnPlayersFoundUpdated;
@@ -57,13 +64,7 @@ namespace UI.Screens
         protected override void OnShow()
         {
             _searchTime = 0f;
-
-            // Set initial state
-            if (_statusText != null)
-            {
-                _statusText.text = "Searching for players...";
-            }
-
+            if (_statusText != null) _statusText.text = "Searching for players...";
             if (_statusIndicator != null)
             {
                 _statusIndicator.RemoveFromClassList("found");
@@ -71,13 +72,8 @@ namespace UI.Screens
             }
         }
 
-        protected override void OnHide()
-        {
-        }
-
         public override void Update(float deltaTime)
         {
-            // Update search time display
             if (_matchmakingService != null && _matchmakingService.IsSearching)
             {
                 _searchTime += deltaTime;
@@ -87,62 +83,37 @@ namespace UI.Screens
 
         protected override void OnDispose()
         {
-            // Unsubscribe from events
             if (_matchmakingService != null)
             {
                 _matchmakingService.OnPlayersFound -= OnPlayersFoundUpdated;
                 _matchmakingService.OnMatchFound -= OnMatchFound;
             }
 
-            // Remove button callback
             if (_cancelButton != null)
             {
                 _cancelButton.clicked -= OnCancelClicked;
             }
         }
 
-        #region Event Handlers
-
         private void OnCancelClicked()
         {
-            // Cancel matchmaking via service
-            if (_matchmakingService != null)
-            {
-                _matchmakingService.CancelMatchmaking();
-            }
-
-            // Return to main menu (MatchmakingState will handle this via event)
+            _matchmakingService?.CancelMatchmaking();
         }
 
         private void OnPlayersFoundUpdated(int current, int required)
         {
-            if (_playerCountText != null)
-            {
-                _playerCountText.text = $"{current}/{required}";
-            }
+            if (_playerCountText != null) _playerCountText.text = $"{current}/{required}";
         }
 
         private void OnMatchFound(LobbyInfo lobbyInfo)
         {
-            GameLogger.Log($"Match found! Lobby: {lobbyInfo.LobbyId}");
-
-            if (_statusText != null)
-            {
-                _statusText.text = "Match Found!";
-            }
-
+            if (_statusText != null) _statusText.text = "Match Found!";
             if (_statusIndicator != null)
             {
                 _statusIndicator.RemoveFromClassList("searching");
                 _statusIndicator.AddToClassList("found");
             }
-
-            // Note: State transition is handled by MatchmakingState
         }
-
-        #endregion
-
-        #region Helper Methods
 
         private void UpdateSearchTimeDisplay()
         {
@@ -153,7 +124,5 @@ namespace UI.Screens
                 _searchTimeText.text = $"{minutes}:{seconds:00}";
             }
         }
-
-        #endregion
     }
 }

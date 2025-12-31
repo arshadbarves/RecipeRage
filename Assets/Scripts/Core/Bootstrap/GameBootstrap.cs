@@ -26,30 +26,6 @@ namespace Core.Bootstrap
 
         public static IObjectResolver Container { get; private set; }
 
-        /// <summary>
-        /// Temporary shim to maintain compatibility with code still using GameBootstrap.Services.
-        /// Will be removed in Phase 3.
-        /// </summary>
-        public class ServicesShim
-        {
-            public IEventBus EventBus => Container?.Resolve<IEventBus>();
-            public IUIService UIService => Container?.Resolve<IUIService>();
-            public IAnimationService AnimationService => Container?.Resolve<IAnimationService>();
-            public ILoggingService LoggingService => Container?.Resolve<ILoggingService>();
-            public ISaveService SaveService => Container?.Resolve<ISaveService>();
-            public IAuthService AuthService => Container?.Resolve<IAuthService>();
-            public IMaintenanceService MaintenanceService => Container?.Resolve<IMaintenanceService>();
-            public IRemoteConfigService RemoteConfigService => Container?.Resolve<IRemoteConfigService>();
-            public INTPTimeService NTPTimeService => Container?.Resolve<INTPTimeService>();
-            public IConnectivityService ConnectivityService => Container?.Resolve<IConnectivityService>();
-            public IGameStateManager StateManager => Container?.Resolve<IGameStateManager>();
-            
-            // Session handled via SessionManager in VContainer
-            public GameSession Session => Container?.Resolve<SessionManager>()?.CurrentSession;
-        }
-
-        public static ServicesShim Services { get; } = new ServicesShim();
-
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -75,20 +51,12 @@ namespace Core.Bootstrap
 
             var eventBus = Container.Resolve<IEventBus>();
             var stateManager = Container.Resolve<IGameStateManager>();
+            var stateFactory = Container.Resolve<IStateFactory>();
 
             // Subscribe to log out handler for full reboot
             eventBus.Subscribe<LogoutEvent>(HandleLogoutAsync);
 
-            var bootstrapState = new BootstrapState(
-                Container.Resolve<IUIService>(),
-                Container.Resolve<INTPTimeService>(),
-                Container.Resolve<IRemoteConfigService>(),
-                Container.Resolve<IAuthService>(),
-                Container.Resolve<ISaveService>(),
-                Container.Resolve<IMaintenanceService>(),
-                stateManager,
-                eventBus
-            );
+            var bootstrapState = stateFactory.CreateState<BootstrapState>();
 
             stateManager.Initialize(bootstrapState);
         }
@@ -99,14 +67,10 @@ namespace Core.Bootstrap
             {
                 await UniTask.Yield();
 
-                var eventBus = Container.Resolve<IEventBus>();
                 var stateManager = Container.Resolve<IGameStateManager>();
+                var stateFactory = Container.Resolve<IStateFactory>();
 
-                stateManager.Initialize(new LoginState(
-                    Container.Resolve<IUIService>(),
-                    eventBus,
-                    stateManager
-                ));
+                stateManager.Initialize(stateFactory.CreateState<LoginState>());
             }
             catch (Exception e)
             {

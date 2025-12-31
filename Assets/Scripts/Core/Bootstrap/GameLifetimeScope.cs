@@ -8,6 +8,7 @@ using Core.Networking;
 using Core.RemoteConfig;
 using Core.SaveSystem;
 using Core.State;
+using Core.State.States;
 using RecipeRage.Modules.Auth.Core;
 using UI;
 using UnityEngine;
@@ -44,6 +45,31 @@ namespace Core.Bootstrap
             // Core
             builder.Register<MaintenanceService>(Lifetime.Singleton).AsImplementedInterfaces();
             builder.Register<GameStateManager>(Lifetime.Singleton).AsImplementedInterfaces();
+            builder.Register<StateFactory>(Lifetime.Singleton).AsImplementedInterfaces();
+
+            // Game States (Transient - created on demand)
+            builder.Register<BootstrapState>(Lifetime.Transient);
+            builder.Register<LoginState>(Lifetime.Transient);
+            builder.Register<MainMenuState>(Lifetime.Transient);
+            builder.Register<LobbyState>(Lifetime.Transient);
+            builder.Register<MatchmakingState>(Lifetime.Transient);
+            builder.Register<GameplayState>(Lifetime.Transient);
+            builder.Register<GameOverState>(Lifetime.Transient);
+
+            // UI Screens (Transient)
+            builder.Register<UI.Screens.LoadingScreen>(Lifetime.Transient);
+            builder.Register<UI.Screens.MainMenuScreen>(Lifetime.Transient);
+            builder.Register<UI.Screens.ProfileScreen>(Lifetime.Transient);
+            builder.Register<UI.Screens.MaintenanceScreen>(Lifetime.Transient);
+            builder.Register<UI.Screens.SplashScreen>(Lifetime.Transient);
+            builder.Register<UI.Screens.NotificationScreen>(Lifetime.Transient);
+            builder.Register<UI.Screens.MatchmakingScreen>(Lifetime.Transient);
+            builder.Register<UI.Screens.CharacterDetailsScreen>(Lifetime.Transient);
+            builder.Register<UI.Screens.MapSelectionScreen>(Lifetime.Transient);
+            builder.Register<UI.Popups.FriendsPopup>(Lifetime.Transient);
+            builder.Register<UI.Popups.UsernamePopup>(Lifetime.Transient);
+            builder.Register<UI.Popups.NoInternetPopup>(Lifetime.Transient);
+            builder.Register<UI.JoystickEditorUI>(Lifetime.Transient);
 
             // Session Management
             builder.Register<SessionManager>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
@@ -83,7 +109,7 @@ namespace Core.Bootstrap
         {
             _loggingService.LogInfo("[RootBootstrapper] Starting foundation initialization...");
 
-            // 1. UI Binding (Critical first step from manual ServiceContainer)
+            // 1. UI Binding (Critical first step from manual registration)
             _uiDocumentProvider.Initialize(_uiService);
             _uiService.InitializeScreens();
 

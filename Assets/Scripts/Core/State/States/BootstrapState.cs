@@ -66,7 +66,7 @@ namespace Core.State.States
             {
                 GameLogger.LogException(ex);
                 _uiService.HideScreen(UIScreenType.Loading);
-                _stateManager.ChangeState(new LoginState(_uiService, _eventBus, _stateManager));
+                _stateManager.ChangeState<LoginState>();
             }
         }
 
@@ -111,7 +111,7 @@ namespace Core.State.States
             if (!isAuthenticated)
             {
                 _uiService.HideScreen(UIScreenType.Loading);
-                _stateManager.ChangeState(new LoginState(_uiService, _eventBus, _stateManager));
+                _stateManager.ChangeState<LoginState>();
                 return;
             }
 
@@ -134,7 +134,7 @@ namespace Core.State.States
 
             _uiService.HideScreen(UIScreenType.Loading);
             GameLogger.Log("Initialization complete. Transitioning to MainMenu.");
-            _stateManager.ChangeState(new MainMenuState());
+            _stateManager.ChangeState<MainMenuState>();
         }
 
         private async UniTask ShowSplashScreenAsync()

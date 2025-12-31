@@ -3,6 +3,7 @@ using Core.Logging;
 using Core.Networking.Services;
 using Unity.Netcode;
 using UnityEngine;
+using VContainer;
 
 namespace Gameplay.Cooking
 {
@@ -15,6 +16,9 @@ namespace Gameplay.Cooking
         [Header("Ingredient Prefabs")]
         [SerializeField] private GameObject _ingredientPrefab;
 
+        [Inject]
+        private SessionManager _sessionManager;
+
         private INetworkObjectPool _objectPool;
         private INetworkGameManager _networkGameManager;
 
@@ -23,9 +27,20 @@ namespace Gameplay.Cooking
         /// </summary>
         private void Awake()
         {
-            // Get services from ServiceContainer
-            _objectPool = GameBootstrap.Services?.Session?.NetworkObjectPool;
-            _networkGameManager = GameBootstrap.Services?.Session?.NetworkGameManager;
+            // Services will be resolved from SessionManager when needed
+        }
+
+        private void EnsureServices()
+        {
+            if (_objectPool == null || _networkGameManager == null)
+            {
+                var sessionContainer = _sessionManager?.SessionContainer;
+                if (sessionContainer != null)
+                {
+                    _objectPool = sessionContainer.Resolve<INetworkObjectPool>();
+                    _networkGameManager = sessionContainer.Resolve<INetworkGameManager>();
+                }
+            }
         }
 
         /// <summary>
@@ -47,6 +62,8 @@ namespace Gameplay.Cooking
                 GameLogger.LogError("Cannot spawn null ingredient");
                 return null;
             }
+
+            EnsureServices();
 
             // Get ingredient from pool or create new
             NetworkObject ingredientObject;
@@ -93,6 +110,8 @@ namespace Gameplay.Cooking
                 GameLogger.LogWarning("Cannot despawn null ingredient");
                 return;
             }
+
+            EnsureServices();
 
             // Return to pool or despawn
             if (_objectPool != null)

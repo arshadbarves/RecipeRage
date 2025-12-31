@@ -12,15 +12,17 @@ namespace Core.State
     public class GameStateManager : IGameStateManager, IDisposable
     {
         private readonly IStateMachine _stateMachine;
+        private readonly IStateFactory _stateFactory;
 
         public event Action<IState, IState> OnStateChanged;
 
         public IState CurrentState => _stateMachine.CurrentState;
         public IState PreviousState => _stateMachine.PreviousState;
 
-        public GameStateManager()
+        public GameStateManager(IStateFactory stateFactory)
         {
             _stateMachine = new StateMachine();
+            _stateFactory = stateFactory;
             _stateMachine.OnStateChanged += (prev, curr) => OnStateChanged?.Invoke(prev, curr);
         }
 
@@ -42,9 +44,9 @@ namespace Core.State
             _stateMachine.ChangeState(newState);
         }
 
-        public void ChangeState<T>() where T : IState, new()
+        public void ChangeState<T>() where T : IState
         {
-            ChangeState(new T());
+            ChangeState(_stateFactory.CreateState<T>());
         }
 
         public void Update(float deltaTime)

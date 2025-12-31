@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using Core.Networking.Common;
-using UnityEngine;
 using Core.Logging;
 
 namespace Core.Networking.Bot

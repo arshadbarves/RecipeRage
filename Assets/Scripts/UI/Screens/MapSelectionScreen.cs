@@ -1,5 +1,6 @@
 using System;
 using Core.Bootstrap;
+using UI;
 using UI.Core;
 using UI.Data;
 using UnityEngine;
@@ -7,6 +8,7 @@ using UnityEngine.UIElements;
 using Core.Logging;
 using Core.RemoteConfig;
 using Core.RemoteConfig.Models;
+using VContainer;
 
 namespace UI.Screens
 {
@@ -16,6 +18,12 @@ namespace UI.Screens
     [UIScreen(UIScreenType.MapSelection, UIScreenCategory.Screen, "Screens/MapSelectionTemplate")]
     public class MapSelectionScreen : BaseUIScreen
     {
+        [Inject]
+        private IRemoteConfigService _remoteConfigService;
+
+        [Inject]
+        private IUIService _uiService;
+
         private MapDatabase _mapDatabase;
         private Action<MapInfo> _onMapSelected;
 
@@ -38,11 +46,10 @@ namespace UI.Screens
 
         private void SubscribeToRemoteConfig()
         {
-            var remoteConfig = GameBootstrap.Services?.RemoteConfigService;
-            if (remoteConfig != null)
+            if (_remoteConfigService != null)
             {
                 // Subscribe to MapConfig updates
-                remoteConfig.OnSpecificConfigUpdated += OnMapConfigUpdated;
+                _remoteConfigService.OnSpecificConfigUpdated += OnMapConfigUpdated;
             }
         }
 
@@ -355,8 +362,7 @@ namespace UI.Screens
             _onMapSelected?.Invoke(map);
 
             // Show toast
-            var uiService = GameBootstrap.Services?.UIService;
-            uiService?.ShowNotification($"Map changed to {map.name}", NotificationType.Success, 2f);
+            _uiService?.ShowNotification($"Map changed to {map.name}", NotificationType.Success, 2f);
 
             // Go back
             OnBackClicked();
@@ -364,15 +370,14 @@ namespace UI.Screens
 
         private void OnBackClicked()
         {
-            var uiService = GameBootstrap.Services?.UIService;
-            if (uiService != null)
+            if (_uiService != null)
             {
-                bool wentBack = uiService.GoBack(false);
+                bool wentBack = _uiService.GoBack(false);
 
                 if (!wentBack)
                 {
                     // If no history, go to main menu
-                    uiService.ShowScreen(UIScreenType.MainMenu, true, false);
+                    _uiService.ShowScreen(UIScreenType.MainMenu, true, false);
                 }
             }
         }
@@ -385,10 +390,9 @@ namespace UI.Screens
             }
 
             // Unsubscribe from RemoteConfig
-            var remoteConfig = GameBootstrap.Services?.RemoteConfigService;
-            if (remoteConfig != null)
+            if (_remoteConfigService != null)
             {
-                remoteConfig.OnSpecificConfigUpdated -= OnMapConfigUpdated;
+                _remoteConfigService.OnSpecificConfigUpdated -= OnMapConfigUpdated;
             }
         }
     }

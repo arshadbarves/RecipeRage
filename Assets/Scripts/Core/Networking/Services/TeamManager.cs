@@ -1,10 +1,8 @@
 using System.Collections.Generic;
 using Core.Networking.Common;
 using Core.Networking.Interfaces;
-using Epic.OnlineServices.Lobby;
 using PlayEveryWare.EpicOnlineServices;
 using PlayEveryWare.EpicOnlineServices.Samples;
-using UnityEngine;
 
 namespace Core.Networking.Services
 {

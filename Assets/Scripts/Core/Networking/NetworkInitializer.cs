@@ -3,6 +3,7 @@ using Core.Logging;
 using Core.Networking.Services;
 using Unity.Netcode;
 using UnityEngine;
+using VContainer;
 
 namespace Core.Networking
 {
@@ -15,6 +16,12 @@ namespace Core.Networking
         [Header("Settings")]
         [SerializeField] private bool _autoInitialize = true;
 
+        [Inject]
+        private SessionManager _sessionManager;
+
+        [Inject]
+        private ILoggingService _loggingService;
+
         private INetworkGameManager _networkGameManager;
         private IPlayerNetworkManager _playerNetworkManager;
         private ConnectionHandler _connectionHandler;
@@ -24,6 +31,11 @@ namespace Core.Networking
         /// </summary>
         private void Awake()
         {
+            if (GameBootstrap.Container != null)
+            {
+                GameBootstrap.Container.Inject(this);
+            }
+
             if (_autoInitialize)
             {
                 Initialize();
@@ -35,20 +47,20 @@ namespace Core.Networking
         /// </summary>
         public void Initialize()
         {
-            // Get services from ServiceContainer
-            var services = GameBootstrap.Services;
-            if (services == null)
+            // Get services from session
+            var sessionContainer = _sessionManager?.SessionContainer;
+            if (sessionContainer == null)
             {
-                GameLogger.LogError("GameBootstrap.Services is null!");
+                GameLogger.LogError("SessionContainer is null!");
                 return;
             }
 
-            _networkGameManager = services.Session?.NetworkGameManager;
-            _playerNetworkManager = services.Session?.PlayerNetworkManager;
+            _networkGameManager = sessionContainer.Resolve<INetworkGameManager>();
+            _playerNetworkManager = sessionContainer.Resolve<IPlayerNetworkManager>();
 
             // Create connection handler
             _connectionHandler = new ConnectionHandler(
-                services.LoggingService,
+                _loggingService,
                 _playerNetworkManager,
                 _networkGameManager
             );

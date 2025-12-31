@@ -10,7 +10,7 @@ namespace Core.Bootstrap
     {
         /// <summary>
         /// Called after all services are constructed.
-        /// Safe to access other services through ServiceContainer here.
+        /// Safe to access other services through VContainer here.
         /// </summary>
         void Initialize();
     }

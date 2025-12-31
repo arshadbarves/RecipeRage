@@ -1,5 +1,7 @@
 using Core.Bootstrap;
 using UI;
+using Core.Networking;
+using VContainer;
 
 namespace Core.State.States
 {
@@ -8,6 +10,20 @@ namespace Core.State.States
     /// </summary>
     public class LobbyState : BaseState
     {
+        private readonly IUIService _uiService;
+        private readonly SessionManager _sessionManager;
+        private readonly IGameStateManager _stateManager;
+
+        public LobbyState(
+            IUIService uiService, 
+            SessionManager sessionManager, 
+            IGameStateManager stateManager)
+        {
+            _uiService = uiService;
+            _sessionManager = sessionManager;
+            _stateManager = stateManager;
+        }
+
         /// <summary>
         /// Called when the state is entered.
         /// </summary>
@@ -16,11 +32,7 @@ namespace Core.State.States
             base.Enter();
 
             // Show the lobby UI
-            var uiService = GameBootstrap.Services?.UIService;
-            if (uiService != null)
-            {
-                uiService.ShowScreen(UIScreenType.Lobby, true, false);
-            }
+            _uiService?.ShowScreen(UIScreenType.Lobby, true, false);
         }
 
         /// <summary>
@@ -31,11 +43,7 @@ namespace Core.State.States
             base.Exit();
 
             // Hide the lobby UI
-            var uiService = GameBootstrap.Services?.UIService;
-            if (uiService != null)
-            {
-                uiService.HideScreen(UIScreenType.Lobby, true);
-            }
+            _uiService?.HideScreen(UIScreenType.Lobby, true);
         }
 
         /// <summary>
@@ -44,18 +52,17 @@ namespace Core.State.States
         public override void Update()
         {
             // Check if all players are ready and the host can start the game
-            var services = GameBootstrap.Services;
-            var networking = services?.Session?.NetworkingServices;
+            var sessionContainer = _sessionManager.SessionContainer;
+            if (sessionContainer == null) return;
+
+            var networking = sessionContainer.Resolve<INetworkingServices>();
 
             if (networking != null &&
                 networking.LobbyManager.IsMatchLobbyOwner &&
                 networking.LobbyManager.AreAllPlayersReady())
             {
                 // Transition to the game state
-                if (services != null)
-                {
-                    services.StateManager.ChangeState(new GameplayState());
-                }
+                _stateManager.ChangeState<GameplayState>();
             }
         }
 

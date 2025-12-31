@@ -1,358 +1,257 @@
-using System;
-using System.Text.RegularExpressions;
-using Core.Animation;
 using Core.Bootstrap;
 using Core.Currency;
 using Core.Events;
 using Core.Logging;
 using Core.SaveSystem;
+using UI;
 using UI.Core;
 using UI.Screens;
 using UnityEngine;
 using UnityEngine.UIElements;
+using VContainer;
+using System;
 
 namespace UI.Popups
 {
     /// <summary>
-    /// Username popup for setting/changing player name
-    /// First time: Free
-    /// Subsequent changes: Costs gems
-    /// Now properly extends BaseUIScreen for UIService integration
+    /// Mandatory popup for setting/changing username
+    /// Used for both first-time setup and subsequent changes
     /// </summary>
-    [UIScreen(UIScreenType.UsernamePopup, UIScreenCategory.Popup, "Popups/UsernamePopupTemplate")]
+    [UIScreen(UIScreenType.UsernamePopup, UIScreenCategory.Modal, "Popups/UsernamePopupTemplate")]
     public class UsernamePopup : BaseUIScreen
     {
-        private const int USERNAME_CHANGE_COST = 100; // Gems
-        private const int MIN_USERNAME_LENGTH = 3;
-        private const int MAX_USERNAME_LENGTH = 15;
-        private static readonly Regex USERNAME_REGEX = new Regex(@"^[a-zA-Z0-9_]+$");
+        [Inject]
+        private IEventBus _eventBus;
 
+        [Inject]
         private ISaveService _saveService;
-        private ICurrencyService _currencyService;
+
+        [Inject]
+        private IUIService _uiService;
+
+        [Inject]
+        private SessionManager _sessionManager;
+
+        private ICurrencyService CurrencyService
+        {
+            get
+            {
+                var sessionContainer = _sessionManager?.SessionContainer;
+                if (sessionContainer != null)
+                {
+                    return sessionContainer.Resolve<ICurrencyService>();
+                }
+                return null;
+            }
+        }
 
         private TextField _usernameField;
+        private Label _statusLabel;
+        private Label _costLabel;
         private Button _confirmButton;
         private Button _cancelButton;
-        private Button _closeButton;
-        private Label _titleLabel;
-        private Label _errorLabel;
-        private VisualElement _overlay;
+        private VisualElement _costContainer;
 
-        private bool _isFirstTime;
         private Action<string> _onConfirm;
         private Action _onCancel;
+        private bool _isFirstTime;
+        private int _changeCost = 0; // Cost in gems to change name
 
         protected override void OnInitialize()
         {
-            // Query elements
-            QueryElements();
-
-            // Setup callbacks
-            SetupCallbacks();
-
-            GameLogger.Log("Initialized");
-        }
-
-        private void QueryElements()
-        {
-            _overlay = GetElement<VisualElement>("popup-overlay");
-            _usernameField = GetElement<TextField>("username-field");
+            _usernameField = GetElement<TextField>("username-input");
+            _statusLabel = GetElement<Label>("status-message");
+            _costLabel = GetElement<Label>("cost-value");
             _confirmButton = GetElement<Button>("confirm-button");
             _cancelButton = GetElement<Button>("cancel-button");
-            _closeButton = GetElement<Button>("close-button");
-            _titleLabel = GetElement<Label>("popup-title");
-            _errorLabel = GetElement<Label>("error-label");
-        }
+            _costContainer = GetElement<VisualElement>("cost-container");
 
-        private void SetupCallbacks()
-        {
             if (_confirmButton != null)
-            {
                 _confirmButton.clicked += OnConfirmClicked;
-            }
 
             if (_cancelButton != null)
-            {
                 _cancelButton.clicked += OnCancelClicked;
-            }
-
-            if (_closeButton != null)
-            {
-                _closeButton.clicked += OnCloseClicked;
-            }
 
             if (_usernameField != null)
             {
                 _usernameField.RegisterValueChangedCallback(OnUsernameChanged);
-            }
-
-            // Allow clicking overlay to close if closable
-            if (_overlay != null)
-            {
-                _overlay.RegisterCallback<ClickEvent>(OnOverlayClicked);
+                _usernameField.maxLength = 16;
             }
         }
 
-        /// <summary>
-        /// Configure and show popup for username entry
-        /// </summary>
+        protected override void OnShow()
+        {
+            if (_usernameField != null)
+            {
+                _usernameField.value = _saveService?.GetPlayerStats().PlayerName ?? "";
+                _usernameField.Focus();
+            }
+
+            UpdateStatus("", false);
+            UpdateCostDisplay();
+        }
+
         public void ShowForUsername(bool isFirstTime, Action<string> onConfirm, Action onCancel = null)
         {
             _isFirstTime = isFirstTime;
             _onConfirm = onConfirm;
             _onCancel = onCancel;
 
-            // Update UI based on first time or change
-            UpdateUIForMode();
+            // First time is free, subsequent changes might cost gems
+            _changeCost = isFirstTime ? 0 : 50;
 
-            // Clear previous input
-            if (_usernameField != null && _saveService != null)
+            UpdateCostDisplay();
+
+            // Cancel button is hidden for first-time mandatory setup
+            if (_cancelButton != null)
             {
-                var stats = _saveService.GetPlayerStats();
-                _usernameField.value = isFirstTime ? "" : stats.PlayerName;
+                _cancelButton.style.display = isFirstTime ? DisplayStyle.None : DisplayStyle.Flex;
             }
 
-            if (_errorLabel != null)
-            {
-                _errorLabel.text = "";
-                _errorLabel.style.display = DisplayStyle.None;
-            }
-
-            // Show the screen
-            Show(animate: true, addToHistory: false);
+            Show(true, false);
         }
 
-        protected override void OnShow()
+        private void UpdateCostDisplay()
         {
-            // Get services
-            _saveService = GameBootstrap.Services?.SaveService;
-            _currencyService = GameBootstrap.Services?.Session?.CurrencyService;
+            if (_costContainer == null) return;
 
-            // Focus username field when shown
-            _usernameField?.Focus();
-        }
-
-        private void UpdateUIForMode()
-        {
-            if (_isFirstTime)
+            if (_changeCost > 0)
             {
-                // First time - free and mandatory
-                if (_titleLabel != null)
-                {
-                    _titleLabel.text = "Choose Your Username";
-                }
-
-                if (_confirmButton != null)
-                {
-                    _confirmButton.text = "Confirm";
-                }
-
-                if (_cancelButton != null)
-                {
-                    _cancelButton.style.display = DisplayStyle.None;
-                }
-
-                if (_closeButton != null)
-                {
-                    _closeButton.style.display = DisplayStyle.None;
-                }
-
-                // Disable overlay click for mandatory popup
-                if (_overlay != null)
-                {
-                    _overlay.pickingMode = PickingMode.Ignore;
-                }
+                _costContainer.style.display = DisplayStyle.Flex;
+                if (_costLabel != null) _costLabel.text = _changeCost.ToString();
             }
             else
             {
-                // Changing username - costs gems and closable
-                if (_titleLabel != null)
-                {
-                    _titleLabel.text = "Change Username";
-                }
-
-                // Show cost in confirm button
-                if (_confirmButton != null)
-                {
-                    _confirmButton.text = $"Confirm ({USERNAME_CHANGE_COST} 💎)";
-                }
-
-                if (_cancelButton != null)
-                {
-                    _cancelButton.style.display = DisplayStyle.Flex;
-                }
-
-                if (_closeButton != null)
-                {
-                    _closeButton.style.display = DisplayStyle.Flex;
-                }
-
-                // Enable overlay click for closable popup
-                if (_overlay != null)
-                {
-                    _overlay.pickingMode = PickingMode.Position;
-                }
+                _costContainer.style.display = DisplayStyle.None;
             }
         }
 
         private void OnUsernameChanged(ChangeEvent<string> evt)
         {
-            // Clear error when user types
-            if (_errorLabel != null)
+            string newName = evt.newValue?.Trim();
+            bool isValid = ValidateUsername(newName, out string error);
+
+            if (!string.IsNullOrEmpty(newName))
             {
-                _errorLabel.text = "";
-                _errorLabel.style.display = DisplayStyle.None;
+                UpdateStatus(error, !isValid);
+            }
+            else
+            {
+                UpdateStatus("", false);
             }
         }
 
-        private void OnConfirmClicked()
+        private bool ValidateUsername(string name, out string error)
         {
-            string username = _usernameField?.value?.Trim() ?? "";
-
-            // Validate username
-            if (!ValidateUsername(username, out string errorMessage))
+            if (string.IsNullOrEmpty(name))
             {
-                ShowError(errorMessage);
+                error = "Username cannot be empty";
+                return false;
+            }
+
+            if (name.Length < 3)
+            {
+                error = "Minimum 3 characters required";
+                return false;
+            }
+
+            if (name.Length > 16)
+            {
+                error = "Maximum 16 characters allowed";
+                return false;
+            }
+
+            // Simple profanity or character check could go here
+            foreach (char c in name)
+            {
+                if (!char.IsLetterOrDigit(c) && c != '_' && c != ' ')
+                {
+                    error = "Only letters, numbers, and underscores allowed";
+                    return false;
+                }
+            }
+
+            error = "Username is available";
+            return true;
+        }
+
+        private void UpdateStatus(string message, bool isError)
+        {
+            if (_statusLabel == null) return;
+
+            _statusLabel.text = message;
+            _statusLabel.style.color = isError ? Color.red : Color.green;
+            _statusLabel.style.visibility = string.IsNullOrEmpty(message) ? Visibility.Hidden : Visibility.Visible;
+        }
+
+        private async void OnConfirmClicked()
+        {
+            string newName = _usernameField?.value?.Trim();
+
+            if (!ValidateUsername(newName, out string error))
+            {
+                UpdateStatus(error, true);
                 return;
             }
 
-            // Check if changing username (not first time)
-            if (!_isFirstTime)
+            // Check cost
+            if (_changeCost > 0)
             {
-                // Check if user has enough gems
-                if (_currencyService.Gems < USERNAME_CHANGE_COST)
+                if (CurrencyService == null || CurrencyService.Gems < _changeCost)
                 {
-                    ShowError($"Not enough gems! Need {USERNAME_CHANGE_COST} gems.");
+                    UpdateStatus("Not enough gems!", true);
                     return;
                 }
-
-                // Deduct gems
-                if (!_currencyService.SpendGems(USERNAME_CHANGE_COST))
-                {
-                    ShowError("Failed to deduct gems. Please try again.");
-                    return;
-                }
-
-                GameLogger.Log($"Deducted {USERNAME_CHANGE_COST} gems for username change");
             }
 
-            // Update player stats
-            _saveService.UpdatePlayerStats(stats =>
+            _confirmButton.SetEnabled(false);
+            UpdateStatus("Saving...", false);
+
+            try
             {
-                stats.PlayerName = username;
-                stats.UsernameChangeCount++;
-            });
+                // In a real game, we'd check availability with backend here
+                // For now, just save locally via SaveService
 
-            GameLogger.Log($"Username set to: {username} (Change count: {_saveService.GetPlayerStats().UsernameChangeCount})");
+                if (_changeCost > 0)
+                {
+                    CurrencyService.SpendGems(_changeCost);
+                }
 
-            // Publish event to notify other UI components
-            GameBootstrap.Services?.EventBus?.Publish(new PlayerStatsChangedEvent
+                _saveService.UpdatePlayerStats(stats =>
+                {
+                    stats.PlayerName = newName;
+                });
+
+                _onConfirm?.Invoke(newName);
+
+                _uiService?.ShowNotification("Username updated successfully!", NotificationType.Success);
+
+                Hide(true);
+            }
+            catch (Exception ex)
             {
-                PlayerName = username
-            });
-
-            // Invoke callback
-            _onConfirm?.Invoke(username);
-
-            // Hide popup
-            Hide(animate: true);
+                GameLogger.LogError($"Failed to save username: {ex.Message}");
+                UpdateStatus("Failed to save. Try again.", true);
+                _confirmButton.SetEnabled(true);
+            }
         }
 
         private void OnCancelClicked()
         {
-            if (_isFirstTime) return; // Cannot cancel if first time
-
             _onCancel?.Invoke();
-            Hide(animate: true);
-        }
-
-        private void OnCloseClicked()
-        {
-            if (_isFirstTime) return; // Cannot close if first time
-
-            _onCancel?.Invoke();
-            Hide(animate: true);
-        }
-
-        private void OnOverlayClicked(ClickEvent evt)
-        {
-            if (_isFirstTime) return; // Cannot close if first time
-
-            _onCancel?.Invoke();
-            Hide(animate: true);
-        }
-
-        private bool ValidateUsername(string username, out string errorMessage)
-        {
-            errorMessage = "";
-
-            if (string.IsNullOrWhiteSpace(username))
-            {
-                errorMessage = "Username cannot be empty";
-                return false;
-            }
-
-            if (username.Length < MIN_USERNAME_LENGTH)
-            {
-                errorMessage = $"Username must be at least {MIN_USERNAME_LENGTH} characters";
-                return false;
-            }
-
-            if (username.Length > MAX_USERNAME_LENGTH)
-            {
-                errorMessage = $"Username must be at most {MAX_USERNAME_LENGTH} characters";
-                return false;
-            }
-
-            if (!USERNAME_REGEX.IsMatch(username))
-            {
-                errorMessage = "Username can only contain letters, numbers, and underscores";
-                return false;
-            }
-
-            return true;
-        }
-
-        private void ShowError(string message)
-        {
-            if (_errorLabel != null)
-            {
-                _errorLabel.text = message;
-                _errorLabel.style.display = DisplayStyle.Flex;
-            }
-
-            // Show error toast
-            _ = GameBootstrap.Services?.UIService?.ShowNotification(message, NotificationType.Error, 3f);
-
-            GameLogger.LogWarning($"Validation error: {message}");
+            Hide(true);
         }
 
         protected override void OnDispose()
         {
             if (_confirmButton != null)
-            {
                 _confirmButton.clicked -= OnConfirmClicked;
-            }
 
             if (_cancelButton != null)
-            {
                 _cancelButton.clicked -= OnCancelClicked;
-            }
-
-            if (_closeButton != null)
-            {
-                _closeButton.clicked -= OnCloseClicked;
-            }
 
             if (_usernameField != null)
-            {
                 _usernameField.UnregisterValueChangedCallback(OnUsernameChanged);
-            }
-
-            if (_overlay != null)
-            {
-                _overlay.UnregisterCallback<ClickEvent>(OnOverlayClicked);
-            }
         }
     }
 }

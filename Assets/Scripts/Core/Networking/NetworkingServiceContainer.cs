@@ -3,9 +3,11 @@ using Core.Logging;
 using Core.Networking.Bot;
 using Core.Networking.Interfaces;
 using Core.Networking.Services;
+using Core.State;
 using PlayEveryWare.EpicOnlineServices;
 using PlayEveryWare.EpicOnlineServices.Samples;
-using UnityEngine;
+using UI;
+using VContainer;
 
 namespace Core.Networking
 {
@@ -33,6 +35,8 @@ namespace Core.Networking
         #region Private Fields
 
         private bool _isInitialized;
+        private readonly IUIService _uiService;
+        private readonly IGameStateManager _stateManager;
 
         #endregion
 
@@ -41,8 +45,11 @@ namespace Core.Networking
         /// <summary>
         /// Constructor
         /// </summary>
-        public NetworkingServiceContainer()
+        [Inject]
+        public NetworkingServiceContainer(IUIService uiService, IGameStateManager stateManager)
         {
+            _uiService = uiService;
+            _stateManager = stateManager;
             Initialize();
         }
 
@@ -85,7 +92,7 @@ namespace Core.Networking
             MatchmakingService.Initialize();
 
             // 5. Game Starter (depends on all services)
-            GameStarter = new GameStarter(this);
+            GameStarter = new GameStarter(this, _uiService, _stateManager);
 
             // 6. Bot Spawner (needs bot prefab - will be set later)
             // BotSpawner will be initialized when bot prefab is available

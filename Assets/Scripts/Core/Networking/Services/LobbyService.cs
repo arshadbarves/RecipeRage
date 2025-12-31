@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Core.Logging;
 using Core.Networking.Common;
 using Core.Networking.Interfaces;
@@ -7,7 +6,6 @@ using Epic.OnlineServices;
 using Epic.OnlineServices.Lobby;
 using PlayEveryWare.EpicOnlineServices;
 using PlayEveryWare.EpicOnlineServices.Samples;
-using UnityEngine;
 
 namespace Core.Networking.Services
 {

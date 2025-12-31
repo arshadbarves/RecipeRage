@@ -4,10 +4,12 @@ using Core.Bootstrap;
 using Core.Characters;
 using Core.Logging;
 using Core.Skins;
+using UI;
 using UI.Core;
 using UI.Data;
 using UnityEngine;
 using UnityEngine.UIElements;
+using VContainer;
 
 namespace UI.Screens
 {
@@ -18,9 +20,14 @@ namespace UI.Screens
     [UIScreen(UIScreenType.CharacterSelection, UIScreenCategory.Screen, "Screens/CharacterDetailsTemplate")]
     public class CharacterDetailsScreen : BaseUIScreen
     {
+        [Inject]
+        private SessionManager _sessionManager;
+        
+        [Inject]
+        private IUIService _uiService;
+
         private ICharacterService _characterService;
         private ISkinsService _skinsService;
-        private IUIService _uiService;
 
         // Current character
         private CharacterClass _currentCharacter;
@@ -33,16 +40,16 @@ namespace UI.Screens
         private VisualElement _characterStats;
         private Button _selectButton;
         private VisualElement _skinsGrid;
-
-        // Skins data
         private string _selectedSkinId;
 
         protected override void OnInitialize()
         {
-            // Get services
-            _characterService = GameBootstrap.Services?.Session?.CharacterService;
-            _skinsService = GameBootstrap.Services?.Session?.SkinsService;
-            _uiService = GameBootstrap.Services?.UIService;
+            var sessionContainer = _sessionManager?.SessionContainer;
+            if (sessionContainer != null)
+            {
+                _characterService = sessionContainer.Resolve<ICharacterService>();
+                _skinsService = sessionContainer.Resolve<ISkinsService>();
+            }
 
             if (_skinsService == null)
             {
@@ -82,16 +89,10 @@ namespace UI.Screens
             }
         }
 
-
-
-        /// <summary>
-        /// Show this screen for a specific character
-        /// </summary>
         public void ShowForCharacter(CharacterClass character)
         {
             _currentCharacter = character;
 
-            // Get equipped skin for this character
             var equippedSkin = _skinsService?.GetEquippedSkin(character.Id);
             _selectedSkinId = equippedSkin?.id;
 
@@ -104,28 +105,22 @@ namespace UI.Screens
         {
             if (_currentCharacter == null) return;
 
-            // Update character name
             if (_characterNameLabel != null)
             {
                 _characterNameLabel.text = _currentCharacter.DisplayName.ToUpper();
             }
 
-            // Update description
             if (_characterDescriptionLabel != null)
             {
                 _characterDescriptionLabel.text = _currentCharacter.Description;
             }
 
-            // Update preview icon
             if (_characterPreview != null && _currentCharacter.Icon != null)
             {
                 _characterPreview.style.backgroundImage = new StyleBackground(_currentCharacter.Icon);
             }
 
-            // Update stats
             UpdateCharacterStats();
-
-            // Update select button
             UpdateSelectButton();
         }
 
@@ -135,12 +130,10 @@ namespace UI.Screens
 
             _characterStats.Clear();
 
-            // Add stats
             AddStatRow("Speed", _currentCharacter.MovementSpeedModifier);
             AddStatRow("Skill", _currentCharacter.InteractionSpeedModifier);
             AddStatRow("Capacity", _currentCharacter.CarryingCapacityModifier);
 
-            // Add ability info
             if (_currentCharacter.PrimaryAbilityType != AbilityType.None)
             {
                 var abilitySection = new VisualElement();
@@ -151,14 +144,11 @@ namespace UI.Screens
 
                 var abilityTitle = new Label("SPECIAL ABILITY");
                 abilityTitle.style.fontSize = 16;
-                abilityTitle.style.color = new Color(40f/255f, 30f/255f, 25f/255f);
-                abilityTitle.style.marginBottom = 8;
                 abilityTitle.style.unityFontStyleAndWeight = FontStyle.Bold;
                 abilitySection.Add(abilityTitle);
 
                 var abilityName = new Label(_currentCharacter.PrimaryAbilityType.ToString());
                 abilityName.style.fontSize = 14;
-                abilityName.style.color = new Color(40f/255f, 30f/255f, 25f/255f);
                 abilityName.style.unityFontStyleAndWeight = FontStyle.Bold;
                 abilitySection.Add(abilityName);
 
@@ -166,16 +156,12 @@ namespace UI.Screens
                 {
                     var abilityDesc = new Label(_currentCharacter.PrimaryAbilityDescription);
                     abilityDesc.style.fontSize = 12;
-                    abilityDesc.style.color = new Color(100f/255f, 80f/255f, 70f/255f);
                     abilityDesc.style.whiteSpace = WhiteSpace.Normal;
-                    abilityDesc.style.marginTop = 5;
                     abilitySection.Add(abilityDesc);
                 }
 
                 var cooldownLabel = new Label($"Cooldown: {_currentCharacter.PrimaryAbilityCooldown}s");
                 cooldownLabel.style.fontSize = 11;
-                cooldownLabel.style.color = new Color(100f/255f, 80f/255f, 70f/255f);
-                cooldownLabel.style.marginTop = 5;
                 abilitySection.Add(cooldownLabel);
 
                 _characterStats.Add(abilitySection);
@@ -191,12 +177,10 @@ namespace UI.Screens
 
             var nameLabel = new Label(statName);
             nameLabel.style.fontSize = 14;
-            nameLabel.style.color = new Color(40f/255f, 30f/255f, 25f/255f);
             statRow.Add(nameLabel);
 
             var valueLabel = new Label($"{value:F1}x");
             valueLabel.style.fontSize = 14;
-            valueLabel.style.color = new Color(100f/255f, 80f/255f, 70f/255f);
             valueLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
             statRow.Add(valueLabel);
 
@@ -205,7 +189,7 @@ namespace UI.Screens
 
         private void UpdateSelectButton()
         {
-            if (_selectButton == null || _currentCharacter == null) return;
+            if (_selectButton == null || _currentCharacter == null || _characterService == null) return;
 
             bool isCurrentlySelected = _characterService.SelectedCharacter?.Id == _currentCharacter.Id;
 
@@ -227,7 +211,6 @@ namespace UI.Screens
 
             _skinsGrid.Clear();
 
-            // Get only skins for this character
             var characterSkins = _skinsService.GetSkinsForCharacter(_currentCharacter.Id);
 
             foreach (SkinItem skin in characterSkins)
@@ -267,7 +250,6 @@ namespace UI.Screens
                 lockIcon.AddToClassList("lock-icon");
                 image.Add(lockIcon);
 
-                // Add cost label
                 Label costLabel = new Label($"{skin.unlockCost} 💰");
                 costLabel.style.position = Position.Absolute;
                 costLabel.style.bottom = 5;
@@ -283,7 +265,6 @@ namespace UI.Screens
             nameLabel.AddToClassList("skin-item-name");
             skinItem.Add(nameLabel);
 
-            // Add equipped indicator
             if (isEquipped)
             {
                 Label equippedLabel = new Label("EQUIPPED");
@@ -308,7 +289,6 @@ namespace UI.Screens
                 return;
             }
 
-            // Equip the skin
             bool success = _skinsService.EquipSkin(_currentCharacter.Id, skin.id);
 
             if (success)
@@ -328,12 +308,10 @@ namespace UI.Screens
         {
             if (_uiService != null)
             {
-                // Use GoBack to return to previous screen in history
                 bool wentBack = _uiService.GoBack(true);
 
                 if (!wentBack)
                 {
-                    // If no history, manually show MainMenu
                     _uiService.ShowScreen(UIScreenType.MainMenu, true, false);
                 }
             }
@@ -347,18 +325,13 @@ namespace UI.Screens
                 return;
             }
 
-            // Select the character in the service
             bool success = _characterService.SelectCharacter(_currentCharacter.Id);
 
             if (success)
             {
                 GameLogger.Log($"Character selected: {_currentCharacter.DisplayName}");
                 _uiService?.ShowNotification($"Selected {_currentCharacter.DisplayName}", NotificationType.Success, 2f);
-
-                // Update button state
                 UpdateSelectButton();
-
-                // Go back
                 OnBackClicked();
             }
             else
@@ -370,7 +343,6 @@ namespace UI.Screens
 
         protected override void OnShow()
         {
-            // Refresh when shown
             if (_currentCharacter != null)
             {
                 UpdateCharacterDisplay();

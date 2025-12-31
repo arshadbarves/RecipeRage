@@ -3,31 +3,45 @@ using Core.Bootstrap;
 using Core.Events;
 using Core.Logging;
 using Core.RemoteConfig;
+using Core.Maintenance;
 using Cysharp.Threading.Tasks;
 using UI.Core;
 using UnityEngine.UIElements;
 using RecipeRage.Modules.Auth.Core;
+using VContainer;
+using UI;
 
 namespace UI.Screens
 {
     /// <summary>
     /// Maintenance screen - displays maintenance information with optional countdown
-    /// Two modes:
-    /// 1. Scheduled Maintenance - Shows estimated end time with countdown
-    /// 2. Server Down - Shows generic message with retry button
     /// </summary>
     [UIScreen(UIScreenType.Maintenance, UIScreenCategory.System, "Screens/MaintenanceTemplate")]
     public class MaintenanceScreen : BaseUIScreen
     {
+        #region Dependencies
+
+        [Inject]
+        private IEventBus _eventBus;
+
+        [Inject]
+        private IAuthService _authService;
+
+        [Inject]
+        private IMaintenanceService _maintenanceService;
+
+        [Inject]
+        private ILoggingService _loggingService;
+
+        #endregion
+
         #region UI Elements
 
-        private VisualElement _maintenanceCard;
         private Label _titleLabel;
         private Label _messageLabel;
         private VisualElement _countdownContainer;
         private Label _countdownLabel;
         private Button _retryButton;
-        private VisualElement _maintenanceIcon;
 
         #endregion
 
@@ -49,7 +63,7 @@ namespace UI.Screens
             SetupButtonHandlers();
             SubscribeToEvents();
 
-            GameLogger.Log("Initialized");
+            _loggingService?.LogInfo("Initialized");
         }
 
         protected override void OnShow()
@@ -57,14 +71,13 @@ namespace UI.Screens
             _isRetrying = false;
             UpdateUI();
 
-            GameLogger.Log("Showing maintenance screen");
+            _loggingService?.LogInfo("Showing maintenance screen");
         }
 
         protected override void OnHide()
         {
             _isRetrying = false;
-
-            GameLogger.Log("Hiding maintenance screen");
+            _loggingService?.LogInfo("Hiding maintenance screen");
         }
 
         public override void Update(float deltaTime)
@@ -87,8 +100,6 @@ namespace UI.Screens
 
         #endregion
 
-        #region UI Setup
-
         private void CacheUIElements()
         {
             _titleLabel = GetElement<Label>("maintenance-title");
@@ -96,16 +107,11 @@ namespace UI.Screens
             _countdownContainer = GetElement<VisualElement>("countdown-container");
             _countdownLabel = GetElement<Label>("countdown-label");
             _retryButton = GetElement<Button>("retry-button");
-            _maintenanceIcon = GetElement<VisualElement>("maintenance-icon");
 
-            if (_titleLabel == null)
-                GameLogger.LogWarning("maintenance-title not found");
-            if (_countdownContainer == null)
-                GameLogger.LogWarning("countdown-container not found");
-            if (_countdownLabel == null)
-                GameLogger.LogWarning("countdown-label not found");
-            if (_retryButton == null)
-                GameLogger.LogWarning("retry-button not found");
+            if (_titleLabel == null) _loggingService?.LogWarning("maintenance-title not found");
+            if (_countdownContainer == null) _loggingService?.LogWarning("countdown-container not found");
+            if (_countdownLabel == null) _loggingService?.LogWarning("countdown-label not found");
+            if (_retryButton == null) _loggingService?.LogWarning("retry-button not found");
         }
 
         private void SetupButtonHandlers()
@@ -118,45 +124,39 @@ namespace UI.Screens
 
         private void SubscribeToEvents()
         {
-            var eventBus = GameBootstrap.Services?.EventBus;
-            if (eventBus != null)
+            if (_eventBus != null)
             {
-                eventBus.Subscribe<MaintenanceModeEvent>(HandleMaintenanceModeEvent);
-                eventBus.Subscribe<MaintenanceCheckFailedEvent>(HandleMaintenanceCheckFailed);
+                _eventBus.Subscribe<MaintenanceModeEvent>(HandleMaintenanceModeEvent);
+                _eventBus.Subscribe<MaintenanceCheckFailedEvent>(HandleMaintenanceCheckFailed);
             }
         }
 
         private void UnsubscribeFromEvents()
         {
-            var eventBus = GameBootstrap.Services?.EventBus;
-            if (eventBus != null)
+            if (_eventBus != null)
             {
-                eventBus.Unsubscribe<MaintenanceModeEvent>(HandleMaintenanceModeEvent);
-                eventBus.Unsubscribe<MaintenanceCheckFailedEvent>(HandleMaintenanceCheckFailed);
+                _eventBus.Unsubscribe<MaintenanceModeEvent>(HandleMaintenanceModeEvent);
+                _eventBus.Unsubscribe<MaintenanceCheckFailedEvent>(HandleMaintenanceCheckFailed);
             }
         }
 
         private void UpdateUI()
         {
-            // Update title
             if (_titleLabel != null)
             {
                 _titleLabel.text = _hasEstimatedTime ? "Scheduled Maintenance" : "Service Unavailable";
             }
 
-            // Update message
             if (_messageLabel != null)
             {
                 _messageLabel.text = _maintenanceMessage;
             }
 
-            // Update countdown visibility
             if (_countdownContainer != null)
             {
                 _countdownContainer.style.display = _hasEstimatedTime ? DisplayStyle.Flex : DisplayStyle.None;
             }
 
-            // Update retry button
             if (_retryButton != null)
             {
                 _retryButton.style.display = _allowRetry ? DisplayStyle.Flex : DisplayStyle.None;
@@ -164,7 +164,6 @@ namespace UI.Screens
                 _retryButton.text = _isRetrying ? "Retrying..." : "Retry Connection";
             }
 
-            // Update countdown if available
             if (_hasEstimatedTime)
             {
                 UpdateCountdown();
@@ -175,7 +174,7 @@ namespace UI.Screens
         {
             if (_countdownLabel == null) return;
 
-            TimeSpan remaining = _estimatedEndTime - NTPTime.UtcNow;
+            TimeSpan remaining = _estimatedEndTime - DateTime.UtcNow;
 
             if (remaining.TotalSeconds <= 0)
             {
@@ -189,7 +188,6 @@ namespace UI.Screens
             }
             else
             {
-                // Format: "Estimated time remaining: 2h 15m"
                 string timeText = FormatTimeRemaining(remaining);
                 _countdownLabel.text = $"Estimated time remaining: {timeText}";
             }
@@ -211,69 +209,51 @@ namespace UI.Screens
             }
         }
 
-        #endregion
-
-        #region Event Handlers
-
         private void HandleMaintenanceModeEvent(MaintenanceModeEvent evt)
         {
-            GameLogger.Log($"Maintenance mode event received - IsMaintenanceMode: {evt.IsMaintenanceMode}");
+            _loggingService?.LogInfo($"Maintenance mode event received - IsMaintenanceMode: {evt.IsMaintenanceMode}");
 
             if (!evt.IsMaintenanceMode)
             {
-                // No maintenance, hide screen if visible
-                if (IsVisible)
-                {
-                    Hide(true);
-                }
+                if (IsVisible) Hide(true);
                 return;
             }
 
-            // Set maintenance data
             _maintenanceMessage = evt.Message;
             _allowRetry = evt.AllowRetry;
 
-            // Parse estimated end time if available
             _hasEstimatedTime = !string.IsNullOrEmpty(evt.EstimatedEndTime);
             if (_hasEstimatedTime)
             {
                 try
                 {
                     _estimatedEndTime = DateTime.Parse(evt.EstimatedEndTime, null, System.Globalization.DateTimeStyles.RoundtripKind);
-                    GameLogger.Log($"Estimated end time: {_estimatedEndTime}");
+                    _loggingService?.LogInfo($"Estimated end time: {_estimatedEndTime}");
                 }
                 catch (Exception ex)
                 {
-                    GameLogger.LogError($"Failed to parse estimated end time: {ex.Message}");
+                    _loggingService?.LogError($"Failed to parse estimated end time: {ex.Message}");
                     _hasEstimatedTime = false;
                 }
             }
 
-            // Show maintenance screen
             UpdateUI();
-
-            if (!IsVisible)
-            {
-                Show(true);
-            }
+            if (!IsVisible) Show(true);
         }
 
         private void HandleMaintenanceCheckFailed(MaintenanceCheckFailedEvent evt)
         {
-            GameLogger.LogWarning($"Maintenance check failed: {evt.Error}");
-            // This could indicate server is down - but we don't show maintenance screen here
-            // AuthenticationService will handle showing maintenance for login failures
+            _loggingService?.LogWarning($"Maintenance check failed: {evt.Error}");
         }
 
         private void OnRetryClicked()
         {
             if (_isRetrying) return;
 
-            GameLogger.Log("Retry button clicked");
+            _loggingService?.LogInfo("Retry button clicked");
             _isRetrying = true;
             UpdateUI();
 
-            // Attempt to reconnect
             AttemptReconnectAsync().Forget();
         }
 
@@ -281,65 +261,39 @@ namespace UI.Screens
         {
             try
             {
-                // Wait a bit before retrying
                 await UniTask.Delay(TimeSpan.FromSeconds(1));
 
-                var authService = GameBootstrap.Services?.AuthService;
-                if (authService == null)
+                if (_authService == null)
                 {
-                    GameLogger.LogError("AuthService not available");
+                    _loggingService?.LogError("AuthService not available");
                     _isRetrying = false;
                     UpdateUI();
                     return;
                 }
 
-                // Try to log in again
-                bool success = await authService.LoginAsync(AuthType.DeviceID);
+                bool success = await _authService.LoginAsync(AuthType.DeviceID);
 
                 if (success)
                 {
-                    GameLogger.Log("Reconnect successful");
-
-                    // Check maintenance status again
-                    var maintenanceService = GameBootstrap.Services?.MaintenanceService;
-                    if (maintenanceService != null)
+                    _loggingService?.LogInfo("Reconnect successful");
+                    if (_maintenanceService != null)
                     {
-                        await maintenanceService.CheckMaintenanceStatusAsync();
+                        await _maintenanceService.CheckMaintenanceStatusAsync();
                     }
                 }
                 else
                 {
-                    GameLogger.LogWarning("Reconnect failed");
+                    _loggingService?.LogWarning("Reconnect failed");
                     _isRetrying = false;
                     UpdateUI();
                 }
             }
             catch (Exception ex)
             {
-                GameLogger.LogError($"Reconnect error: {ex.Message}");
+                _loggingService?.LogError($"Reconnect error: {ex.Message}");
                 _isRetrying = false;
                 UpdateUI();
             }
         }
-
-        #endregion
-
-        #region Public API
-
-        /// <summary>
-        /// Set maintenance data and show screen
-        /// </summary>
-        public void ShowMaintenance(bool hasEstimate, DateTime? estimatedEndTime, string message, bool allowRetry)
-        {
-            _hasEstimatedTime = hasEstimate && estimatedEndTime.HasValue;
-            _estimatedEndTime = estimatedEndTime ?? NTPTime.UtcNow;
-            _maintenanceMessage = message;
-            _allowRetry = allowRetry;
-
-            UpdateUI();
-            Show(true);
-        }
-
-        #endregion
     }
 }

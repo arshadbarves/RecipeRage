@@ -1,9 +1,10 @@
-using Core.Bootstrap;
 using Cysharp.Threading.Tasks;
 using UI;
 using UI.Popups;
 using UnityEngine.SceneManagement;
 using Core.Logging;
+using Core.SaveSystem;
+using UI.Core;
 
 namespace Core.State.States
 {
@@ -13,6 +14,15 @@ namespace Core.State.States
     /// </summary>
     public class MainMenuState : BaseState
     {
+        private readonly IUIService _uiService;
+        private readonly ISaveService _saveService;
+
+        public MainMenuState(IUIService uiService, ISaveService saveService)
+        {
+            _uiService = uiService;
+            _saveService = saveService;
+        }
+
         public override void Enter()
         {
             base.Enter();
@@ -24,11 +34,7 @@ namespace Core.State.States
             }
 
             // Show the main menu UI
-            var uiService = GameBootstrap.Services?.UIService;
-            if (uiService != null)
-            {
-                uiService.ShowScreen(UIScreenType.MainMenu, true, false);
-            }
+            _uiService?.ShowScreen(UIScreenType.MainMenu, true, false);
 
             // Check if this is first time user (no username set)
             CheckAndShowUsernamePopupAsync();
@@ -36,12 +42,9 @@ namespace Core.State.States
 
         private async void CheckAndShowUsernamePopupAsync()
         {
-            var saveService = GameBootstrap.Services?.SaveService;
-            var uiService = GameBootstrap.Services?.UIService;
+            if (_saveService == null || _uiService == null) return;
 
-            if (saveService == null || uiService == null) return;
-
-            var stats = saveService.GetPlayerStats();
+            var stats = _saveService.GetPlayerStats();
 
             // If no username set, show mandatory popup
             if (string.IsNullOrEmpty(stats.PlayerName))
@@ -52,7 +55,7 @@ namespace Core.State.States
                 await UniTask.Delay(500);
 
                 // Get the username popup screen
-                var usernamePopup = uiService.GetScreen<UsernamePopup>();
+                var usernamePopup = _uiService.GetScreen<UsernamePopup>();
                 if (usernamePopup != null)
                 {
                     usernamePopup.ShowForUsername(
@@ -82,11 +85,7 @@ namespace Core.State.States
             base.Exit();
 
             // Hide the main menu UI
-            var uiService = GameBootstrap.Services?.UIService;
-            if (uiService != null)
-            {
-                uiService.HideScreen(UIScreenType.MainMenu, true);
-            }
+            _uiService?.HideScreen(UIScreenType.MainMenu, true);
         }
 
         /// <summary>

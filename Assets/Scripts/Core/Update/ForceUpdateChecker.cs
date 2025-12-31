@@ -28,41 +28,30 @@ namespace Core.Update
         {
             try
             {
-                // Refresh force update config to get latest data
                 await _configService.RefreshConfig<ForceUpdateConfig>();
 
-                // Get force update config
                 if (!_configService.TryGetConfig<ForceUpdateConfig>(out var updateConfig))
                 {
                     GameLogger.LogWarning("ForceUpdateConfig not available");
                     return false;
                 }
 
-                // Get current platform
                 string platform = GetCurrentPlatform();
                 string currentVersion = Application.version;
-
-                // Get platform-specific requirements
                 var requirement = updateConfig.GetRequirementForPlatform(platform);
 
-                if (requirement == null)
-                {
-                    return false;
-                }
+                if (requirement == null) return false;
 
-                // Check if update is required
                 bool isRequired = requirement.IsUpdateRequired(currentVersion);
                 bool isRecommended = requirement.IsUpdateRecommended(currentVersion);
 
                 if (isRequired)
                 {
-                    GameLogger.Log($"Force update required: {currentVersion} < {requirement.MinimumVersion}");
                     await ShowForceUpdatePopupAsync(requirement, true);
                     return true;
                 }
                 else if (isRecommended && requirement.UpdateUrgency == UpdateUrgency.Recommended)
                 {
-                    GameLogger.Log($"Update recommended: {currentVersion} < {requirement.RecommendedVersion}");
                     await ShowForceUpdatePopupAsync(requirement, false);
                     return false;
                 }
@@ -80,38 +69,19 @@ namespace Core.Update
         {
             try
             {
-                GameLogger.Log($"Showing update popup - Required: {isRequired}");
-
-                string urgencyText = isRequired ? "REQUIRED" : "RECOMMENDED";
                 string message = $"{requirement.UpdateMessage}\n\n" +
                                 $"Current Version: {Application.version}\n" +
                                 $"Minimum Version: {requirement.MinimumVersion}";
 
-                GameLogger.Log($"Update popup: {message}");
-
-                // Show notification with update prompt
                 if (_uiService != null)
                 {
                     _uiService.ShowScreen(UIScreenType.Notification);
                     var notificationScreen = _uiService.GetScreen<UI.Screens.NotificationScreen>(UIScreenType.Notification);
                     if (notificationScreen != null)
                     {
-                        var notificationType = isRequired ? UI.Screens.NotificationType.Error : UI.Screens.NotificationType.Warning;
+                        var notificationType = isRequired ? UI.NotificationType.Error : UI.NotificationType.Warning;
                         await notificationScreen.Show(requirement.UpdateTitle, message, notificationType, isRequired ? 0f : 10f);
-
-                        // Open store URL
-                        if (!string.IsNullOrEmpty(requirement.StoreUrl))
-                        {
-                            // Should show a popup here
-                        }
                     }
-                }
-
-                if (isRequired)
-                {
-                    // Block app usage until update
-                    GameLogger.Log("Blocking app usage - update required");
-                    // Could show a blocking screen here
                 }
 
                 await UniTask.Yield();
@@ -119,25 +89,6 @@ namespace Core.Update
             catch (Exception ex)
             {
                 GameLogger.LogError($"Failed to show update popup: {ex.Message}");
-            }
-        }
-
-        private void OpenStoreUrl(string storeUrl)
-        {
-            if (string.IsNullOrEmpty(storeUrl))
-            {
-                GameLogger.LogError("Store URL is empty");
-                return;
-            }
-
-            try
-            {
-                GameLogger.Log($"Opening store URL: {storeUrl}");
-                Application.OpenURL(storeUrl);
-            }
-            catch (Exception ex)
-            {
-                GameLogger.LogError($"Failed to open store URL: {ex.Message}");
             }
         }
 

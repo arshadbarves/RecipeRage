@@ -5,6 +5,7 @@ using Core.Bootstrap;
 using Core.Logging;
 using Core.RemoteConfig;
 using Core.RemoteConfig.Models;
+using VContainer;
 
 namespace Core.GameModes
 {
@@ -18,13 +19,16 @@ namespace Core.GameModes
         private readonly Dictionary<string, GameMode> _gameModes = new Dictionary<string, GameMode>();
         private GameMode _selectedGameMode;
         private GameSettingsConfig _gameSettings;
+        private readonly IRemoteConfigService _remoteConfigService;
 
         public event Action<GameMode> OnGameModeChanged;
 
         public GameMode SelectedGameMode => _selectedGameMode;
 
-        public GameModeService()
+        [Inject]
+        public GameModeService(IRemoteConfigService remoteConfigService)
         {
+            _remoteConfigService = remoteConfigService;
             LoadGameSettings();
             LoadGameModes();
             SubscribeToConfigUpdates();
@@ -32,9 +36,7 @@ namespace Core.GameModes
         
         private void LoadGameSettings()
         {
-            var remoteConfigService = GameBootstrap.Services?.RemoteConfigService;
-            
-            if (remoteConfigService != null && remoteConfigService.TryGetConfig<GameSettingsConfig>(out var settings))
+            if (_remoteConfigService != null && _remoteConfigService.TryGetConfig<GameSettingsConfig>(out var settings))
             {
                 _gameSettings = settings;
                 GameLogger.Log("Loaded game settings from RemoteConfig");
@@ -47,11 +49,9 @@ namespace Core.GameModes
         
         private void SubscribeToConfigUpdates()
         {
-            var remoteConfigService = GameBootstrap.Services?.RemoteConfigService;
-            
-            if (remoteConfigService != null)
+            if (_remoteConfigService != null)
             {
-                remoteConfigService.OnSpecificConfigUpdated += OnConfigUpdated;
+                _remoteConfigService.OnSpecificConfigUpdated += OnConfigUpdated;
             }
         }
         
@@ -135,10 +135,9 @@ namespace Core.GameModes
         public void Dispose()
         {
             // Unsubscribe from config updates
-            var remoteConfigService = GameBootstrap.Services?.RemoteConfigService;
-            if (remoteConfigService != null)
+            if (_remoteConfigService != null)
             {
-                remoteConfigService.OnSpecificConfigUpdated -= OnConfigUpdated;
+                _remoteConfigService.OnSpecificConfigUpdated -= OnConfigUpdated;
             }
             
             GameLogger.Log("Disposing");

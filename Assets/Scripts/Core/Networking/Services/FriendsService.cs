@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Core.Logging;
 using Core.Networking.Interfaces;
 using Core.RemoteConfig;
-using Cysharp.Threading.Tasks;
 using Epic.OnlineServices;
 using PlayEveryWare.EpicOnlineServices;
 using UnityEngine;

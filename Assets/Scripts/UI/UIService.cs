@@ -9,6 +9,7 @@ using UI.Core;
 using UI.Screens;
 using UnityEngine;
 using UnityEngine.UIElements;
+using VContainer;
 
 namespace UI
 {
@@ -26,6 +27,8 @@ namespace UI
         private readonly Dictionary<UIScreenType, BaseUIScreen> _screens = new();
         private readonly UIScreenStackManager _stackManager;
         private readonly IAnimationService _animationService;
+        private readonly VContainer.IObjectResolver _container;
+        private readonly ILoggingService _loggingService;
 
         public event Action<UIScreenType> OnScreenShown;
         public event Action<UIScreenType> OnScreenHidden;
@@ -33,9 +36,11 @@ namespace UI
 
         private bool _isInitialized = false;
 
-        public UIService(IAnimationService animationService)
+        public UIService(IAnimationService animationService, VContainer.IObjectResolver container, ILoggingService loggingService)
         {
             _animationService = animationService ?? throw new ArgumentNullException(nameof(animationService));
+            _container = container ?? throw new ArgumentNullException(nameof(container));
+            _loggingService = loggingService ?? throw new ArgumentNullException(nameof(loggingService));
             _stackManager = new UIScreenStackManager();
         }
 
@@ -51,7 +56,7 @@ namespace UI
         {
             if (_isInitialized)
             {
-                GameLogger.LogWarning("Already initialized");
+                _loggingService.LogWarning("Already initialized");
                 return;
             }
 
@@ -64,13 +69,13 @@ namespace UI
         {
             if (_isInitialized)
             {
-                GameLogger.LogWarning("Screens already initialized");
+                _loggingService.LogWarning("Screens already initialized");
                 return;
             }
 
             if (_root == null)
             {
-                GameLogger.LogError("Root element not ready. Call Initialize(UIDocument) first.");
+                _loggingService.LogError("Root element not ready. Call Initialize(UIDocument) first.");
                 return;
             }
 
@@ -84,7 +89,7 @@ namespace UI
         {
             if (_uiDocument == null)
             {
-                GameLogger.LogError("UIDocument is null. Call Initialize(UIDocument) first.");
+                _loggingService.LogError("UIDocument is null. Call Initialize(UIDocument) first.");
                 return;
             }
 
@@ -134,7 +139,7 @@ namespace UI
             UIScreenAttribute attribute = UIScreenRegistry.GetScreenAttribute(screenType);
             if (attribute == null)
             {
-                GameLogger.LogError($"No attribute found for screen type {screenType}");
+                _loggingService.LogError($"No attribute found for screen type {screenType}");
                 return;
             }
 
@@ -145,7 +150,14 @@ namespace UI
 
             SortScreensByCategory();
 
-            BaseUIScreen screen = UIScreenRegistry.CreateScreen(screenType);
+            Type screenClass = UIScreenRegistry.GetScreenClassType(screenType);
+            if (screenClass == null)
+            {
+                _loggingService.LogError($"No screen class registered for {screenType}");
+                return;
+            }
+
+            BaseUIScreen screen = (BaseUIScreen)_container.Resolve(screenClass);
             if (screen != null)
             {
                 screen.Initialize(screenType, attribute.Priority, controller);
@@ -153,7 +165,7 @@ namespace UI
             }
             else
             {
-                GameLogger.LogError($"Failed to create screen instance for {screenType}");
+                _loggingService.LogError($"Failed to create screen instance for {screenType}");
             }
         }
 
@@ -161,7 +173,7 @@ namespace UI
         {
             if (string.IsNullOrEmpty(templatePath))
             {
-                GameLogger.LogWarning("Template path is null or empty");
+                _loggingService.LogWarning("Template path is null or empty");
                 return null;
             }
 
@@ -177,13 +189,13 @@ namespace UI
                 }
                 else
                 {
-                    GameLogger.LogError($"Template '{templatePath}' not found at '{resourcePath}'. Make sure the template exists in Resources/UI/Templates/ with proper category (Screens/, Components/, Popups/)");
+                    _loggingService.LogError($"Template '{templatePath}' not found at '{resourcePath}'. Make sure the template exists in Resources/UI/Templates/ with proper category (Screens/, Components/, Popups/)");
                     return null;
                 }
             }
             catch (System.Exception e)
             {
-                GameLogger.LogError($"Failed to load template '{templatePath}': {e.Message}");
+                _loggingService.LogError($"Failed to load template '{templatePath}': {e.Message}");
                 return null;
             }
         }
@@ -210,7 +222,7 @@ namespace UI
         {
             if (!_screens.TryGetValue(screenType, out BaseUIScreen screen))
             {
-                GameLogger.LogError($"Screen {screenType} not found");
+                _loggingService.LogError($"Screen {screenType} not found");
                 return;
             }
 
@@ -251,7 +263,7 @@ namespace UI
                 bool pushed = _stackManager.Push(screenType, category);
                 if (!pushed)
                 {
-                    GameLogger.LogWarning($"Failed to push {screenType} to stack");
+                    _loggingService.LogWarning($"Failed to push {screenType} to stack");
                     return;
                 }
             }
@@ -285,7 +297,7 @@ namespace UI
         {
             if (!_screens.TryGetValue(screenType, out BaseUIScreen screen))
             {
-                GameLogger.LogError($"Screen {screenType} not found");
+                _loggingService.LogError($"Screen {screenType} not found");
                 return;
             }
 
@@ -294,7 +306,7 @@ namespace UI
 
             if (!removed)
             {
-                GameLogger.LogWarning($"Screen {screenType} not in stack");
+                _loggingService.LogWarning($"Screen {screenType} not in stack");
             }
 
             HideScreenInternal(screen, animate);
@@ -371,7 +383,7 @@ namespace UI
 
         public bool GoBack(bool animate = true)
         {
-            GameLogger.Log("GoBack called");
+            _loggingService.Log("GoBack called");
 
             // Try to go back in each category (highest priority first)
             UIScreenCategory[] categories = new[]
@@ -385,12 +397,12 @@ namespace UI
             foreach (UIScreenCategory category in categories)
             {
                 int depth = _stackManager.GetStackDepth(category);
-                GameLogger.Log($"Category {category} stack depth: {depth}");
+                _loggingService.Log($"Category {category} stack depth: {depth}");
 
                 if (depth > 1)
                 {
                     UIScreenType? current = _stackManager.Pop(category);
-                    GameLogger.Log($"Popped {current} from {category}");
+                    _loggingService.Log($"Popped {current} from {category}");
 
                     if (current.HasValue && _screens.TryGetValue(current.Value, out BaseUIScreen currentScreen))
                     {
@@ -398,7 +410,7 @@ namespace UI
                     }
 
                     UIScreenType? previous = _stackManager.Peek(category);
-                    GameLogger.Log($"Showing previous screen: {previous}");
+                    _loggingService.Log($"Showing previous screen: {previous}");
 
                     if (previous.HasValue && _screens.TryGetValue(previous.Value, out BaseUIScreen previousScreen))
                     {
@@ -408,7 +420,7 @@ namespace UI
                 }
             }
 
-            GameLogger.LogWarning("No screen to go back to");
+            _loggingService.LogWarning("No screen to go back to");
             return false;
         }
 
@@ -454,24 +466,24 @@ namespace UI
             return _stackManager.IsBlockedByHigherCategory(category);
         }
 
-        public async UniTask ShowNotification(string message, NotificationType type = NotificationType.Info, float duration = 3f)
+        public async UniTask ShowNotification(string message, UI.NotificationType type = UI.NotificationType.Info, float duration = 3f)
         {
             var notificationScreen = GetScreen<NotificationScreen>(UIScreenType.Notification);
             if (notificationScreen == null)
             {
-                GameLogger.LogWarning("NotificationScreen not found - make sure it's registered");
+                _loggingService.LogWarning("NotificationScreen not found - make sure it's registered");
                 return;
             }
 
             await notificationScreen.Show(message, type, duration);
         }
 
-        public async UniTask ShowNotification(string title, string message, NotificationType type = NotificationType.Info, float duration = 3f)
+        public async UniTask ShowNotification(string title, string message, UI.NotificationType type = UI.NotificationType.Info, float duration = 3f)
         {
             var notificationScreen = GetScreen<NotificationScreen>(UIScreenType.Notification);
             if (notificationScreen == null)
             {
-                GameLogger.LogWarning("NotificationScreen not found - make sure it's registered");
+                _loggingService.LogWarning("NotificationScreen not found - make sure it's registered");
                 return;
             }
 
@@ -488,7 +500,7 @@ namespace UI
 
             if (!_controllers.TryGetValue(screen.ScreenType, out UIScreenController controller))
             {
-                GameLogger.LogError($"No controller found for screen {screen.ScreenType}");
+                _loggingService.LogError($"No controller found for screen {screen.ScreenType}");
                 return;
             }
 
@@ -511,7 +523,7 @@ namespace UI
 
             if (!_controllers.TryGetValue(screen.ScreenType, out UIScreenController controller))
             {
-                GameLogger.LogError($"No controller found for screen {screen.ScreenType}");
+                _loggingService.LogError($"No controller found for screen {screen.ScreenType}");
                 return;
             }
 
@@ -572,13 +584,13 @@ namespace UI
         [ContextMenu("Debug Screen Sizes")]
         public void DebugScreenSizes()
         {
-            GameLogger.Log($"Root Element Size: {_root.resolvedStyle.width}x{_root.resolvedStyle.height}");
+            _loggingService.Log($"Root Element Size: {_root.resolvedStyle.width}x{_root.resolvedStyle.height}");
 
             foreach (KeyValuePair<UIScreenType, UIScreenController> kvp in _controllers)
             {
                 UIScreenController controller = kvp.Value;
                 VisualElement container = controller.Container;
-                GameLogger.Log($"{kvp.Key} Container Size: {container.resolvedStyle.width}x{container.resolvedStyle.height}, Position: ({container.resolvedStyle.left}, {container.resolvedStyle.top}), Display: {container.resolvedStyle.display}");
+                _loggingService.Log($"{kvp.Key} Container Size: {container.resolvedStyle.width}x{container.resolvedStyle.height}, Position: ({container.resolvedStyle.left}, {container.resolvedStyle.top}), Display: {container.resolvedStyle.display}");
             }
         }
 
@@ -596,7 +608,7 @@ namespace UI
                 container.style.right = 0;
                 container.style.bottom = 0;
             }
-            GameLogger.Log("Forced resize of all screen containers");
+            _loggingService.Log("Forced resize of all screen containers");
         }
 
         #endregion

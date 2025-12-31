@@ -1,10 +1,11 @@
-using System;
 using Core.Bootstrap;
 using Core.Networking;
 using Core.Networking.Common;
 using UI;
 using UnityEngine;
 using VContainer;
+using Cysharp.Threading.Tasks;
+using Core.Logging;
 
 namespace Core.State.States
 {
@@ -14,6 +15,11 @@ namespace Core.State.States
     /// </summary>
     public class MatchmakingState : BaseState
     {
+        private readonly IUIService _uiService;
+        private readonly SessionManager _sessionManager;
+        private readonly IGameStateManager _stateManager;
+        private readonly Core.Maintenance.IMaintenanceService _maintenanceService;
+
         private INetworkingServices _networkingServices;
         private bool _isMatchmakingInProgress;
 
@@ -28,10 +34,20 @@ namespace Core.State.States
         private int _teamSize;
 
         /// <summary>
-        /// Constructor with matchmaking parameters
+        /// Constructor with matchmaking parameters and dependencies
         /// </summary>
-        public MatchmakingState(GameMode gameMode = GameMode.Classic, int teamSize = 4)
+        public MatchmakingState(
+            IUIService uiService,
+            SessionManager sessionManager,
+            IGameStateManager stateManager,
+            Core.Maintenance.IMaintenanceService maintenanceService,
+            GameMode gameMode = GameMode.Classic,
+            int teamSize = 4)
         {
+            _uiService = uiService;
+            _sessionManager = sessionManager;
+            _stateManager = stateManager;
+            _maintenanceService = maintenanceService;
             _gameMode = gameMode;
             _teamSize = teamSize;
         }
@@ -44,20 +60,16 @@ namespace Core.State.States
             CheckMaintenanceAndStartAsync().Forget();
         }
 
-        private async Cysharp.Threading.Tasks.UniTaskVoid CheckMaintenanceAndStartAsync()
+        private async UniTaskVoid CheckMaintenanceAndStartAsync()
         {
-            if (GameBootstrap.Container != null)
+            if (_maintenanceService != null)
             {
-                var maintenanceService = GameBootstrap.Container.Resolve<Core.Maintenance.IMaintenanceService>();
-                if (maintenanceService != null)
+                bool isInMaintenance = await _maintenanceService.CheckMaintenanceStatusAsync();
+                if (isInMaintenance)
                 {
-                    bool isInMaintenance = await maintenanceService.CheckMaintenanceStatusAsync();
-                    if (isInMaintenance)
-                    {
-                        LogMessage("Matchmaking blocked - server is in maintenance mode");
-                        ReturnToMainMenu();
-                        return;
-                    }
+                    LogMessage("Matchmaking blocked - server is in maintenance mode");
+                    ReturnToMainMenu();
+                    return;
                 }
             }
 
@@ -66,10 +78,10 @@ namespace Core.State.States
 
         private void StartMatchmaking()
         {
-            if (GameBootstrap.Container != null)
+            var sessionContainer = _sessionManager?.SessionContainer;
+            if (sessionContainer != null)
             {
-                var sessionManager = GameBootstrap.Container.Resolve<SessionManager>();
-                _networkingServices = sessionManager?.CurrentSession?.NetworkingServices;
+                _networkingServices = sessionContainer.Resolve<INetworkingServices>();
             }
 
             if (_networkingServices == null)
@@ -88,18 +100,14 @@ namespace Core.State.States
             LogMessage($"Starting matchmaking: {_gameMode}, Team Size: {_teamSize}");
 
             // Show matchmaking UI
-            if (GameBootstrap.Container != null)
+            if (_uiService != null)
             {
-                var uiService = GameBootstrap.Container.Resolve<IUIService>();
-                if (uiService != null)
-                {
-                    // Hide main menu
-                    uiService.HideScreen(UIScreenType.MainMenu, true);
+                // Hide main menu
+                _uiService.HideScreen(UIScreenType.MainMenu, true);
 
-                    // Show matchmaking screen
-                    uiService.ShowScreen(UIScreenType.Matchmaking, true, false);
-                    LogMessage("Matchmaking screen shown");
-                }
+                // Show matchmaking screen
+                _uiService.ShowScreen(UIScreenType.Matchmaking, true, false);
+                LogMessage("Matchmaking screen shown");
             }
 
             // Subscribe to matchmaking events
@@ -119,14 +127,7 @@ namespace Core.State.States
             base.Exit();
 
             // Hide matchmaking UI
-            if (GameBootstrap.Container != null)
-            {
-                var uiService = GameBootstrap.Container.Resolve<IUIService>();
-                if (uiService != null)
-                {
-                    uiService.HideScreen(UIScreenType.Matchmaking, true);
-                }
-            }
+            _uiService?.HideScreen(UIScreenType.Matchmaking, true);
 
             // Unsubscribe from events
             if (_networkingServices != null)
@@ -179,11 +180,7 @@ namespace Core.State.States
             _isMatchmakingInProgress = false;
 
             // Transition to gameplay state
-            if (GameBootstrap.Container != null)
-            {
-                var stateManager = GameBootstrap.Container.Resolve<Core.State.IGameStateManager>();
-                stateManager?.ChangeState(new GameplayState());
-            }
+            _stateManager?.ChangeState<GameplayState>();
         }
 
         private void HandleMatchmakingFailed(string reason)
@@ -225,10 +222,11 @@ namespace Core.State.States
         private void CleanupLobby()
         {
             // Access NetworkingServices via Session
-            if (GameBootstrap.Container != null)
+            var sessionContainer = _sessionManager?.SessionContainer;
+            if (sessionContainer != null)
             {
-                var sessionManager = GameBootstrap.Container.Resolve<SessionManager>();
-                var lobbyManager = sessionManager?.CurrentSession?.NetworkingServices?.LobbyManager;
+                var networking = sessionContainer.Resolve<INetworkingServices>();
+                var lobbyManager = networking?.LobbyManager;
 
                 // Leave match lobby if we're in one
                 if (lobbyManager != null && lobbyManager.IsInMatchLobby)
@@ -241,11 +239,7 @@ namespace Core.State.States
 
         private void ReturnToMainMenu()
         {
-            if (GameBootstrap.Container != null)
-            {
-                var stateManager = GameBootstrap.Container.Resolve<Core.State.IGameStateManager>();
-                stateManager?.ChangeState(new MainMenuState());
-            }
+            _stateManager?.ChangeState<MainMenuState>();
         }
 
         #endregion

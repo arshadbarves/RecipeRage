@@ -35,8 +35,8 @@ namespace UI
         UIScreenCategory GetScreenCategory(UIScreenType screenType);
         bool IsInteractionBlocked(UIScreenType screenType);
 
-        UniTask ShowNotification(string message, NotificationType type = NotificationType.Info, float duration = 3f);
-        UniTask ShowNotification(string title, string message, NotificationType type = NotificationType.Info, float duration = 3f);
+        UniTask ShowNotification(string message, UI.NotificationType type = UI.NotificationType.Info, float duration = 3f);
+        UniTask ShowNotification(string title, string message, UI.NotificationType type = UI.NotificationType.Info, float duration = 3f);
 
         event Action<UIScreenType> OnScreenShown;
         event Action<UIScreenType> OnScreenHidden;

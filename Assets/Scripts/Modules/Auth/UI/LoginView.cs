@@ -1,5 +1,4 @@
 using System;
-using Core.Bootstrap;
 using Core.Logging;
 using RecipeRage.Modules.Auth.Core;
 using UI;
@@ -17,10 +16,12 @@ namespace RecipeRage.Modules.Auth.UI
     [UIScreen(UIScreenType.Login, UIScreenCategory.Overlay, "Screens/LoginView")]
     public class LoginView : BaseUIScreen
     {
+        [Inject]
+        private IAuthService _authService;
+
         private Button _guestLoginButton;
         private Label _statusText;
         private VisualElement _loadingIndicator;
-        private IAuthService _authService;
 
         protected override void OnInitialize()
         {
@@ -32,23 +33,12 @@ namespace RecipeRage.Modules.Auth.UI
             {
                 _guestLoginButton.clicked += OnGuestLoginClicked;
             }
-
-            // Resolve AuthService from Container
-            if (GameBootstrap.Container != null)
-            {
-                _authService = GameBootstrap.Container.Resolve<IAuthService>();
-            }
         }
 
         protected override void OnShow()
         {
             UpdateStatus("Ready to connect");
             SetLoading(false);
-            
-            if (_authService == null && GameBootstrap.Container != null)
-            {
-                _authService = GameBootstrap.Container.Resolve<IAuthService>();
-            }
         }
 
         private void OnGuestLoginClicked()

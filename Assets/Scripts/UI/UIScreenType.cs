@@ -36,4 +36,15 @@ namespace UI
         HUD,
         Background
     }
+
+    /// <summary>
+    /// Types of notifications for the UI system
+    /// </summary>
+    public enum NotificationType
+    {
+        Info,
+        Success,
+        Warning,
+        Error
+    }
 }

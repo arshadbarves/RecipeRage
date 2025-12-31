@@ -1,4 +1,3 @@
-using Core.Bootstrap;
 using Gameplay.Scoring;
 using UI;
 using UnityEngine;
@@ -10,6 +9,13 @@ namespace Core.State.States
     /// </summary>
     public class GameOverState : BaseState
     {
+        private readonly IUIService _uiService;
+
+        public GameOverState(IUIService uiService)
+        {
+            _uiService = uiService;
+        }
+
         /// <summary>
         /// Called when the state is entered.
         /// </summary>
@@ -18,11 +24,7 @@ namespace Core.State.States
             base.Enter();
 
             // Show the game over UI
-            var uiService = GameBootstrap.Services?.UIService;
-            if (uiService != null)
-            {
-                uiService.ShowScreen(UIScreenType.GameOver, true, false);
-            }
+            _uiService?.ShowScreen(UIScreenType.GameOver, true, false);
 
             // Get the final scores
             ScoreManager scoreManager = Object.FindFirstObjectByType<ScoreManager>();
@@ -41,11 +43,7 @@ namespace Core.State.States
             base.Exit();
 
             // Hide the game over UI
-            var uiService = GameBootstrap.Services?.UIService;
-            if (uiService != null)
-            {
-                uiService.HideScreen(UIScreenType.GameOver, true);
-            }
+            _uiService?.HideScreen(UIScreenType.GameOver, true);
         }
 
         /// <summary>

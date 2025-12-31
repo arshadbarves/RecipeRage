@@ -29,7 +29,7 @@ namespace Core.RemoteConfig
         public static TimeSpan TimeOffset => _instance?.GetTimeOffset() ?? TimeSpan.Zero;
 
         /// <summary>
-        /// Sets the NTPTimeService instance. Called by ServiceContainer during initialization.
+        /// Sets the NTPTimeService instance. Called by VContainer during initialization.
         /// </summary>
         public static void SetInstance(INTPTimeService service)
         {

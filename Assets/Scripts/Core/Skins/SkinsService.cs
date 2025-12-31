@@ -7,6 +7,7 @@ using Core.RemoteConfig;
 using Core.RemoteConfig.Models;
 using UI.Data;
 using UnityEngine;
+using VContainer;
 
 namespace Core.Skins
 {
@@ -24,12 +25,15 @@ namespace Core.Skins
         private readonly Dictionary<int, List<SkinItem>> _skinsByCharacter = new Dictionary<int, List<SkinItem>>();
         private readonly HashSet<string> _unlockedSkins = new HashSet<string>();
         private readonly Dictionary<int, string> _equippedSkins = new Dictionary<int, string>();
+        private readonly IRemoteConfigService _remoteConfigService;
 
         public event Action<string> OnSkinUnlocked;
         public event Action<int, string> OnSkinEquipped;
 
-        public SkinsService()
+        [Inject]
+        public SkinsService(IRemoteConfigService remoteConfigService)
         {
+            _remoteConfigService = remoteConfigService;
             LoadPlayerProgress();
             SubscribeToConfigUpdates();
         }
@@ -37,9 +41,7 @@ namespace Core.Skins
         private void LoadSkinsData()
         {
             // Try to load from RemoteConfigService first
-            var remoteConfigService = GameBootstrap.Services?.RemoteConfigService;
-
-            if (remoteConfigService != null && remoteConfigService.TryGetConfig<SkinsConfig>(out var skinsConfig))
+            if (_remoteConfigService != null && _remoteConfigService.TryGetConfig<SkinsConfig>(out var skinsConfig))
             {
                 LoadFromRemoteConfig(skinsConfig);
                 return;
@@ -116,11 +118,9 @@ namespace Core.Skins
 
         private void SubscribeToConfigUpdates()
         {
-            var remoteConfigService = GameBootstrap.Services?.RemoteConfigService;
-
-            if (remoteConfigService != null)
+            if (_remoteConfigService != null)
             {
-                remoteConfigService.OnConfigUpdated += OnConfigUpdated;
+                _remoteConfigService.OnSpecificConfigUpdated += OnConfigUpdated;
                 GameLogger.Log("Subscribed to SkinsConfig updates");
             }
         }
@@ -310,10 +310,9 @@ namespace Core.Skins
         public void Dispose()
         {
             // Unsubscribe from config updates
-            var remoteConfigService = GameBootstrap.Services?.RemoteConfigService;
-            if (remoteConfigService != null)
+            if (_remoteConfigService != null)
             {
-                remoteConfigService.OnSpecificConfigUpdated -= OnConfigUpdated;
+                _remoteConfigService.OnSpecificConfigUpdated -= OnConfigUpdated;
             }
 
             SavePlayerProgress();

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Core.Bootstrap;
 using Core.Characters;
 using Core.Logging;
+using UI;
 using UI.Screens;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -16,14 +17,20 @@ namespace UI.Components.Tabs
     public class CharacterTabComponent
     {
         private VisualElement _root;
-        private ICharacterService _characterService;
-        private IUIService _uiService;
+        private readonly ICharacterService _characterService;
+        private readonly IUIService _uiService;
 
         // UI Elements
         private VisualElement _characterGrid;
 
         // State
         private readonly Dictionary<int, VisualElement> _characterSlots = new Dictionary<int, VisualElement>();
+
+        public CharacterTabComponent(ICharacterService characterService, IUIService uiService)
+        {
+            _characterService = characterService;
+            _uiService = uiService;
+        }
 
         public void Initialize(VisualElement root)
         {
@@ -36,8 +43,6 @@ namespace UI.Components.Tabs
             }
 
             _root = root;
-            _characterService = GameBootstrap.Services?.Session?.CharacterService;
-            _uiService = GameBootstrap.Services?.UIService;
 
             if (_characterService == null)
             {

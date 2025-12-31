@@ -4,6 +4,7 @@ using Core.Logging;
 using Core.State.States;
 using Unity.Netcode;
 using UnityEngine;
+using VContainer;
 
 namespace Core.State
 {
@@ -28,6 +29,7 @@ namespace Core.State
         /// </summary>
         private NetworkVariable<float> _phaseDuration = new NetworkVariable<float>(0f);
 
+        [Inject]
         private IGameStateManager _gameStateManager;
 
         /// <summary>
@@ -62,11 +64,9 @@ namespace Core.State
         /// </summary>
         private void Awake()
         {
-            // Get the existing game state manager
-            var services = GameBootstrap.Services;
-            if (services != null)
+            if (GameBootstrap.Container != null)
             {
-                _gameStateManager = services.StateManager;
+                GameBootstrap.Container.Inject(this);
             }
         }
 

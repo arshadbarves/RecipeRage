@@ -4,10 +4,8 @@ using Core.Networking.Common;
 using Core.Networking.Interfaces;
 using Epic.OnlineServices;
 using Epic.OnlineServices.Lobby;
-using Epic.OnlineServices.Sessions;
 using PlayEveryWare.EpicOnlineServices;
 using PlayEveryWare.EpicOnlineServices.Samples;
-using UnityEngine;
 
 namespace Core.Networking.Services
 {

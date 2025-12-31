@@ -5,18 +5,14 @@ using Gameplay;
 using Unity.Netcode;
 using UnityEngine;
 using Core.Logging;
+using Core.Networking.Services;
+using VContainer;
 
 namespace Core.Characters
 {
     /// <summary>
     /// Main player controller - orchestrates all player subsystems.
     /// Follows Single Responsibility Principle by delegating to specialized controllers.
-    ///
-    /// Responsibilities:
-    /// - Unity lifecycle management
-    /// - Component orchestration
-    /// - Network synchronization
-    /// - Character class management
     /// </summary>
     public class PlayerController : NetworkBehaviour
     {
@@ -46,6 +42,13 @@ namespace Core.Characters
 
         #endregion
 
+        #region Dependencies
+
+        [Inject]
+        private SessionManager _sessionManager;
+
+        #endregion
+
         #region Components
 
         private Rigidbody _rigidbody;
@@ -53,7 +56,7 @@ namespace Core.Characters
 
         #endregion
 
-        #region Controllers (SOLID - Separated Responsibilities)
+        #region Controllers (SOLID)
 
         private PlayerStateController _stateController;
         private PlayerMovementController _movementController;
@@ -85,6 +88,11 @@ namespace Core.Characters
 
         private void Awake()
         {
+            if (GameBootstrap.Container != null)
+            {
+                GameBootstrap.Container.Inject(this);
+            }
+
             _rigidbody = GetComponent<Rigidbody>();
             InitializeControllers();
         }
@@ -94,8 +102,8 @@ namespace Core.Characters
             if (!IsLocalPlayer) return;
 
             _inputProvider?.Update();
-            _inputHandler.UpdateSmoothing();
-            _stateController.UpdateState(_inputHandler.GetSmoothedInput(), IsHoldingObject());
+            _inputHandler?.UpdateSmoothing();
+            _stateController?.UpdateState(_inputHandler?.GetSmoothedInput() ?? Vector2.zero, IsHoldingObject());
 
             if (PrimaryAbility != null)
             {
@@ -107,7 +115,7 @@ namespace Core.Characters
         {
             if (!IsLocalPlayer) return;
 
-            if (_enableClientPrediction && _networkController.IsPredictionEnabled)
+            if (_enableClientPrediction && _networkController != null && _networkController.IsPredictionEnabled)
             {
                 ProcessMovementWithPrediction();
             }
@@ -153,8 +161,11 @@ namespace Core.Characters
                 _interactionLayer
             );
 
-            _interactionController.OnInteraction += (interactable) => OnInteraction?.Invoke(interactable);
-            _interactionController.OnAbilityUsed += (ability) => OnAbilityUsed?.Invoke(ability);
+            if (_interactionController != null)
+            {
+                _interactionController.OnInteraction += (interactable) => OnInteraction?.Invoke(interactable);
+                _interactionController.OnAbilityUsed += (ability) => OnAbilityUsed?.Invoke(ability);
+            }
         }
 
         #endregion
@@ -166,10 +177,11 @@ namespace Core.Characters
             base.OnNetworkSpawn();
 
             // Register with PlayerNetworkManager
-            var services = GameBootstrap.Services;
-            if (services?.Session?.PlayerNetworkManager != null)
+            var sessionContainer = _sessionManager?.SessionContainer;
+            if (sessionContainer != null)
             {
-                services.Session.PlayerNetworkManager.RegisterPlayer(OwnerClientId, this);
+                var playerNetworkManager = sessionContainer.Resolve<IPlayerNetworkManager>();
+                playerNetworkManager?.RegisterPlayer(OwnerClientId, this);
             }
 
             if (IsLocalPlayer)
@@ -181,9 +193,6 @@ namespace Core.Characters
             SetupCharacterClass();
         }
 
-        /// <summary>
-        /// Setup camera to follow this player (local player only)
-        /// </summary>
         private void SetupCamera()
         {
             var cameraController = GameplayContext.CameraController;
@@ -201,7 +210,6 @@ namespace Core.Characters
         {
             base.OnNetworkDespawn();
 
-            // Clear camera target if this is the local player
             if (IsLocalPlayer)
             {
                 var cameraController = GameplayContext.CameraController;
@@ -211,11 +219,11 @@ namespace Core.Characters
                 }
             }
 
-            // Unregister from PlayerNetworkManager
-            var services = GameBootstrap.Services;
-            if (services?.Session?.PlayerNetworkManager != null)
+            var sessionContainer = _sessionManager?.SessionContainer;
+            if (sessionContainer != null)
             {
-                services.Session.PlayerNetworkManager.UnregisterPlayer(OwnerClientId);
+                var playerNetworkManager = sessionContainer.Resolve<IPlayerNetworkManager>();
+                playerNetworkManager?.UnregisterPlayer(OwnerClientId);
             }
 
             if (IsLocalPlayer && _inputProvider != null)
@@ -246,14 +254,14 @@ namespace Core.Characters
 
         private void HandleMoveInput(Vector2 input)
         {
-            _inputHandler.SetRawInput(input);
+            _inputHandler?.SetRawInput(input);
         }
 
         private void HandleInteractInput()
         {
             if (!IsLocalPlayer) return;
 
-            bool interacted = _interactionController.TryInteract(_stateController, this);
+            bool interacted = _interactionController?.TryInteract(_stateController, this) ?? false;
             if (interacted)
             {
                 InteractServerRpc();
@@ -264,7 +272,7 @@ namespace Core.Characters
         {
             if (!IsLocalPlayer) return;
 
-            bool used = _interactionController.TryUseAbility(PrimaryAbility, _stateController);
+            bool used = _interactionController?.TryUseAbility(PrimaryAbility, _stateController) ?? false;
             if (used)
             {
                 UseAbilityServerRpc();
@@ -277,30 +285,22 @@ namespace Core.Characters
 
         private void ProcessMovement()
         {
+            if (_inputHandler == null || _movementController == null || _stateController == null) return;
             Vector2 input = _inputHandler.GetSmoothedInput();
             _movementController.ApplyMovement(input, _stateController.CurrentState, Time.fixedDeltaTime);
         }
 
         private void ProcessMovementWithPrediction()
         {
+            if (_inputHandler == null || _movementController == null || _stateController == null || _networkController == null) return;
             Vector2 input = _inputHandler.GetSmoothedInput();
 
-            // Create input data
             PlayerInputData inputData = _networkController.CreateInputData(input);
-
-            // Apply movement locally (prediction)
             _movementController.ApplyMovement(input, _stateController.CurrentState, Time.fixedDeltaTime);
 
-            // Store state
-            PlayerStateData stateData = _networkController.CreateStateData(
-                transform,
-                _rigidbody,
-                inputData.SequenceNumber
-            );
-
+            PlayerStateData stateData = _networkController.CreateStateData(transform, _rigidbody, inputData.SequenceNumber);
             _networkController.StoreHistory(inputData, stateData);
 
-            // Send to server
             SendInputToServerRpc(inputData);
         }
 
@@ -311,10 +311,8 @@ namespace Core.Characters
         [ServerRpc]
         private void SendInputToServerRpc(PlayerInputData input)
         {
-            // Server applies input
+            if (_movementController == null || _stateController == null || _networkController == null) return;
             _movementController.ApplyMovement(input.Movement, _stateController.CurrentState, Time.fixedDeltaTime);
-
-            // Send authoritative state back
             PlayerStateData authState = _networkController.CreateStateData(transform, _rigidbody, input.SequenceNumber);
             ReconcileStateClientRpc(authState);
         }
@@ -322,7 +320,7 @@ namespace Core.Characters
         [ClientRpc]
         private void ReconcileStateClientRpc(PlayerStateData serverState)
         {
-            if (IsServer) return;
+            if (IsServer || _networkController == null || _movementController == null || _stateController == null) return;
 
             _networkController.ReconcileState(
                 serverState,
@@ -333,29 +331,21 @@ namespace Core.Characters
         }
 
         [ServerRpc]
-        private void InteractServerRpc()
-        {
-            InteractClientRpc();
-        }
+        private void InteractServerRpc() => InteractClientRpc();
 
         [ClientRpc]
         private void InteractClientRpc()
         {
             if (IsLocalPlayer) return;
-            // Play interaction effects
         }
 
         [ServerRpc]
-        private void UseAbilityServerRpc()
-        {
-            UseAbilityClientRpc();
-        }
+        private void UseAbilityServerRpc() => UseAbilityClientRpc();
 
         [ClientRpc]
         private void UseAbilityClientRpc()
         {
             if (IsLocalPlayer) return;
-            // Play ability effects
         }
 
         #endregion
@@ -364,21 +354,27 @@ namespace Core.Characters
 
         private void SetupCharacterClass()
         {
-            var services = GameBootstrap.Services;
-            if (GameBootstrap.Services?.Session?.CharacterService == null)
+            var sessionContainer = _sessionManager?.SessionContainer;
+            ICharacterService characterService = null;
+            if (sessionContainer != null)
+            {
+                characterService = sessionContainer.Resolve<ICharacterService>();
+            }
+
+            if (characterService == null)
             {
                 GameLogger.LogError("Character service not available");
                 return;
             }
 
-            CharacterClass = services.Session.CharacterService.GetCharacter(_characterClassId);
+            CharacterClass = characterService.GetCharacter(_characterClassId);
             if (CharacterClass == null)
             {
-                CharacterClass = services.Session.CharacterService.SelectedCharacter;
+                CharacterClass = characterService.SelectedCharacter;
                 _characterClassId = CharacterClass?.Id ?? 0;
             }
 
-            if (CharacterClass != null)
+            if (CharacterClass != null && _movementController != null)
             {
                 _movementController.MovementSpeed = _baseMovementSpeed * CharacterClass.MovementSpeedModifier;
                 InteractionSpeedModifier = CharacterClass.InteractionSpeedModifier;
@@ -427,10 +423,7 @@ namespace Core.Characters
             obj.transform.localRotation = Quaternion.identity;
 
             var objRigidbody = obj.GetComponent<Rigidbody>();
-            if (objRigidbody != null)
-            {
-                objRigidbody.isKinematic = true;
-            }
+            if (objRigidbody != null) objRigidbody.isKinematic = true;
 
             return true;
         }
@@ -444,10 +437,7 @@ namespace Core.Characters
             obj.transform.SetParent(null);
 
             var objRigidbody = obj.GetComponent<Rigidbody>();
-            if (objRigidbody != null)
-            {
-                objRigidbody.isKinematic = false;
-            }
+            if (objRigidbody != null) objRigidbody.isKinematic = false;
 
             return obj;
         }
@@ -459,50 +449,30 @@ namespace Core.Characters
 
         #region Public API
 
-        // Movement State
-        public PlayerMovementState GetMovementState() => _stateController.CurrentState;
-        public void SetMovementState(PlayerMovementState state) => _stateController.SetState(state);
-        public bool IsMoving() => _stateController.IsMoving();
+        public PlayerMovementState GetMovementState() => _stateController?.CurrentState ?? PlayerMovementState.Idle;
+        public void SetMovementState(PlayerMovementState state) => _stateController?.SetState(state);
+        public bool IsMoving() => _stateController?.IsMoving() ?? false;
 
-        // Movement Speed
-        public float GetCurrentSpeed() => _movementController.GetCurrentSpeed();
-        public Vector3 GetVelocity() => _movementController.GetVelocity();
+        public float GetCurrentSpeed() => _movementController?.GetCurrentSpeed() ?? 0f;
+        public Vector3 GetVelocity() => _movementController?.GetVelocity() ?? Vector3.zero;
         public float MovementSpeed
         {
-            get => _movementController.MovementSpeed;
-            set => _movementController.MovementSpeed = value;
+            get => _movementController?.MovementSpeed ?? 0f;
+            set { if (_movementController != null) _movementController.MovementSpeed = value; }
         }
 
         public void Stun(float duration)
         {
-            _stateController.SetState(PlayerMovementState.Stunned);
+            _stateController?.SetState(PlayerMovementState.Stunned);
             Invoke(nameof(ClearStun), duration);
         }
 
         private void ClearStun()
         {
-            if (_stateController.CurrentState == PlayerMovementState.Stunned)
+            if (_stateController?.CurrentState == PlayerMovementState.Stunned)
             {
                 _stateController.SetState(PlayerMovementState.Idle);
             }
-        }
-
-        public void SetPredictionEnabled(bool enabled)
-        {
-            _enableClientPrediction = enabled;
-        }
-
-        public void SetInputSmoothingEnabled(bool enabled)
-        {
-            _enableInputSmoothing = enabled;
-        }
-
-        public string GetDebugInfo()
-        {
-            return $"State: {_stateController.CurrentState}\n" +
-                   $"Speed: {GetCurrentSpeed():F2} m/s\n" +
-                   $"Input: {_inputHandler.GetSmoothedInput()}\n" +
-                   _networkController.GetDebugInfo();
         }
 
         #endregion

@@ -32,7 +32,9 @@ namespace UI
         private Button _closeButton;
         private Label _statsLabel;
 
+        [Inject]
         private ILoggingService _loggingService;
+
         private bool _isVisible;
         private LogLevel _currentLevelFilter = LogLevel.Verbose;
         private string _currentCategoryFilter = "All";
@@ -50,6 +52,11 @@ namespace UI
             return;
 #endif
             
+            if (GameBootstrap.Container != null)
+            {
+                GameBootstrap.Container.Inject(this);
+            }
+
             if (_uiDocument == null)
             {
                 _uiDocument = GetComponent<UIDocument>();
@@ -62,14 +69,9 @@ namespace UI
             return;
 #endif
             
-            if (GameBootstrap.Container != null)
-            {
-                _loggingService = GameBootstrap.Container.Resolve<ILoggingService>();
-            }
-            
             if (_loggingService == null)
             {
-                GameLogger.LogError("LoggingService not found in ServiceContainer!");
+                GameLogger.LogError("LoggingService not found!");
                 enabled = false;
                 return;
             }

@@ -2,6 +2,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using Core.Bootstrap;
 using UnityEngine;
+using VContainer;
 
 namespace Core.Logging
 {
@@ -13,7 +14,18 @@ namespace Core.Logging
     /// </summary>
     public static class GameLogger
     {
-        private static ILoggingService Logger => GameBootstrap.Services?.LoggingService;
+        private static ILoggingService Logger
+        {
+            get
+            {
+                var container = GameBootstrap.Container;
+                if (container != null)
+                {
+                    return container.Resolve<ILoggingService>();
+                }
+                return null;
+            }
+        }
 
         /// <summary>
         /// Extracts clean file name from full path (e.g., "PlayerController" from "Assets/Scripts/Core/Characters/PlayerController.cs")
@@ -22,7 +34,7 @@ namespace Core.Logging
         {
             if (string.IsNullOrEmpty(filePath))
                 return "General";
-            
+
             return Path.GetFileNameWithoutExtension(filePath);
         }
 

@@ -1,6 +1,8 @@
 using Core.Bootstrap;
+using Core.SaveSystem;
 using UnityEditor;
 using UnityEngine;
+using VContainer;
 
 namespace Editor
 {
@@ -9,6 +11,8 @@ namespace Editor
     /// </summary>
     public static class DevelopmentTools
     {
+        private static ISaveService SaveService => GameBootstrap.Container?.Resolve<ISaveService>();
+
         [MenuItem("RecipeRage/Development/Clear All Saved Data")]
         public static void ClearAllSavedData()
         {
@@ -24,9 +28,9 @@ namespace Editor
                 "Cancel"))
             {
                 // Clear save files if game is running
-                if (Application.isPlaying && GameBootstrap.Services?.SaveService != null)
+                if (Application.isPlaying && SaveService != null)
                 {
-                    GameBootstrap.Services.SaveService.DeleteAllData();
+                    SaveService.DeleteAllData();
                     Debug.Log("[DevelopmentTools] ✅ All saved data cleared (runtime)");
                 }
                 else
@@ -69,9 +73,9 @@ namespace Editor
                 "Yes, Clear Auth Data",
                 "Cancel"))
             {
-                if (Application.isPlaying && GameBootstrap.Services?.SaveService != null)
+                if (Application.isPlaying && SaveService != null)
                 {
-                    GameBootstrap.Services.SaveService.UpdateSettings(s => s.LastLoginMethod = "");
+                    SaveService.UpdateSettings(s => s.LastLoginMethod = "");
                     Debug.Log("[DevelopmentTools] ✅ Authentication data cleared (runtime)");
                 }
                 else
@@ -116,15 +120,16 @@ namespace Editor
                 return;
             }
 
-            if (GameBootstrap.Services?.SaveService == null)
+            var saveService = SaveService;
+            if (saveService == null)
             {
                 Debug.LogWarning("[DevelopmentTools] SaveService not available");
                 return;
             }
 
-            var settings = GameBootstrap.Services.SaveService.GetSettings();
-            var progress = GameBootstrap.Services.SaveService.GetPlayerProgress();
-            var stats = GameBootstrap.Services.SaveService.GetPlayerStats();
+            var settings = saveService.GetSettings();
+            var progress = saveService.GetPlayerProgress();
+            var stats = saveService.GetPlayerStats();
 
             Debug.Log("=== CURRENT SAVE DATA ===");
             Debug.Log($"Settings: {JsonUtility.ToJson(settings, true)}");
@@ -140,3 +145,4 @@ namespace Editor
         }
     }
 }
+

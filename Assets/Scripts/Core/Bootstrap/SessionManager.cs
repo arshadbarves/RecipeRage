@@ -14,7 +14,8 @@ namespace Core.Bootstrap
         private readonly IEventBus _eventBus;
         private SessionLifetimeScope _sessionScope;
 
-        public GameSession CurrentSession => _sessionScope?.Container?.Resolve<GameSession>();
+        public IObjectResolver SessionContainer => _sessionScope?.Container;
+        public bool IsSessionActive => _sessionScope != null;
         
         [Inject]
         public SessionManager(IObjectResolver container, IEventBus eventBus)
@@ -41,11 +42,7 @@ namespace Core.Bootstrap
             }
 
             var parentScope = _container.Resolve<LifetimeScope>();
-            _sessionScope = parentScope.CreateChild<SessionLifetimeScope>(builder =>
-            {
-                // Register GameSession itself into its own scope so we can resolve it
-                builder.Register<GameSession>(Lifetime.Singleton);
-            });
+            _sessionScope = parentScope.CreateChild<SessionLifetimeScope>();
 
             GameLogger.Log("[SessionManager] SessionLifetimeScope created.");
         }
