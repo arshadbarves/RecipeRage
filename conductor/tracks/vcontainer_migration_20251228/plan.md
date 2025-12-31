@@ -26,7 +26,7 @@ Migrate user-specific services to a dynamic session scope.
     - Ensure proper disposal of the scope on logout.
 - [x] Task: Conductor - User Manual Verification 'Session Management' (Protocol in workflow.md) [c7b6929]
 
-## Phase 3: Cleanup & Refinement
+## Phase 3: Cleanup & Refinement [checkpoint: eae1b2f]
 - [x] Task: Remove Legacy Container Files [fa17591]
     - Delete `ServiceContainer.cs` and `GameSession.cs`.
     - Fix any remaining direct references to `GameBootstrap.Services`.
@@ -39,4 +39,4 @@ Migrate user-specific services to a dynamic session scope.
     - Register `LoginView` in `GameLifetimeScope` to fix `VContainerException`.
     - Update `NotificationScreen` template path to `Popups/NotificationTemplate`.
     - Update `NotificationScreen` toast template path to `Components/NotificationToast`.
-- [~] Task: Conductor - User Manual Verification 'Cleanup & Refinement' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Cleanup & Refinement' (Protocol in workflow.md) [eae1b2f]
