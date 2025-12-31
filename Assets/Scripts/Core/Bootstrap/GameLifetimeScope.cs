@@ -71,6 +71,7 @@ namespace Core.Bootstrap
             builder.Register<UI.Popups.UsernamePopup>(Lifetime.Transient);
             builder.Register<UI.Popups.NoInternetPopup>(Lifetime.Transient);
             builder.Register<UI.JoystickEditorUI>(Lifetime.Transient);
+            builder.Register<LoginView>(Lifetime.Transient);
 
             // Session Management
             builder.Register<SessionManager>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();

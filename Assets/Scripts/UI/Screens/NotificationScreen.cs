@@ -13,7 +13,7 @@ namespace UI.Screens
     /// <summary>
     /// Persistent notification screen for toasts and messages
     /// </summary>
-    [UIScreen(UIScreenType.Notification, UIScreenCategory.Persistent, "Screens/NotificationTemplate")]
+    [UIScreen(UIScreenType.Notification, UIScreenCategory.Persistent, "Popups/NotificationTemplate")]
     public class NotificationScreen : BaseUIScreen
     {
         private VisualElement _notificationContainer;
@@ -24,7 +24,7 @@ namespace UI.Screens
         protected override void OnInitialize()
         {
             _notificationContainer = GetElement<VisualElement>("notification-container");
-            _toastTemplate = Resources.Load<VisualTreeAsset>("UI/Templates/Components/ToastTemplate");
+            _toastTemplate = Resources.Load<VisualTreeAsset>("UI/Templates/Components/NotificationToast");
         }
 
         public async UniTask Show(string message, UI.NotificationType type, float duration)
