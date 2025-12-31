@@ -50,6 +50,7 @@ namespace Core.Bootstrap
             // Game States (Transient - created on demand)
             builder.Register<BootstrapState>(Lifetime.Transient);
             builder.Register<LoginState>(Lifetime.Transient);
+            builder.Register<SessionLoadingState>(Lifetime.Transient);
             builder.Register<MainMenuState>(Lifetime.Transient);
             builder.Register<LobbyState>(Lifetime.Transient);
             builder.Register<MatchmakingState>(Lifetime.Transient);

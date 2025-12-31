@@ -4,6 +4,7 @@ using Core.Events;
 using Core.Logging;
 using UnityEngine;
 using UnityEngine.UIElements;
+using VContainer;
 
 namespace UI.Components
 {
@@ -16,7 +17,7 @@ namespace UI.Components
     {
         [Inject]
         private IEventBus _eventBus;
-        
+
         private readonly VisualElement _root;
         private readonly ICurrencyService _currencyService;
 

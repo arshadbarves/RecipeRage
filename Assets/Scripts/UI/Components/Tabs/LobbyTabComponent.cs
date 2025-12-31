@@ -1,18 +1,14 @@
 using System;
-using System.Collections.Generic;
 using Core.Animation;
-using Core.Bootstrap;
-using Core.Networking.Common;
 using Core.Networking.Interfaces;
 using Core.State;
 using Core.State.States;
-using DG.Tweening;
 using UI.Data;
 using UI.Screens;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Core.Logging;
-using UI;
+using VContainer;
 
 namespace UI.Components.Tabs
 {
@@ -27,8 +23,26 @@ namespace UI.Components.Tabs
         private readonly IMatchmakingService _matchmakingService;
 
         private Button _playButton;
-        // ... (skipping some fields for brevity in match, but they are there)
+        private Button _mapButton;
+        private Button _leaveButton;
+        private Label _mapNameLabel;
+        private Label _mapSubtitleLabel;
+        private Label _timerLabel;
+        private Label _actionButtonText;
+        private Label _teamCodeLabel;
+        private VisualElement _teamControls;
+        private VisualElement _playerSlotsContainer;
+        
+        private VisualTreeAsset _playerSlotTemplate;
+        private System.Collections.Generic.List<PlayerSlot> _playerSlots = new();
+        private MapDatabase _mapDatabase;
         private MapInfo _currentMap;
+        
+        private bool _isInParty = false;
+        private bool _isReady = false;
+        private bool _buttonsInitialized = false;
+        private int _currentPlayerCount = 1;
+        private int _maxTeamSize = 3;
 
         public LobbyTabComponent(IMatchmakingService matchmakingService)
         {

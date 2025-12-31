@@ -30,6 +30,9 @@ Migrate user-specific services to a dynamic session scope.
 - [x] Task: Remove Legacy Container Files [fa17591]
     - Delete `ServiceContainer.cs` and `GameSession.cs`.
     - Fix any remaining direct references to `GameBootstrap.Services`.
-- [~] Task: Refactor UI Injection
+- [~] Task: Refactor UI Injection [2a98a62]
     - Update screens (e.g., `MainMenuScreen`) to use VContainer property injection or manual resolution from the scope if necessary.
-- [ ] Task: Conductor - User Manual Verification 'Cleanup & Refinement' (Protocol in workflow.md)
+- [x] Task: Implement Session Loading State
+    - Create `SessionLoadingState` to handle async data loading (Profile, Currency) between Login and MainMenu.
+    - Resolves "pop-in" issues with username and currency display.
+- [~] Task: Conductor - User Manual Verification 'Cleanup & Refinement' (Protocol in workflow.md)

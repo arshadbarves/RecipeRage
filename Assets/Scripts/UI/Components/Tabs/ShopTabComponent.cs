@@ -1,9 +1,9 @@
-using Core.Bootstrap;
 using Core.Logging;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UI.Data;
 using Core.Currency;
+using VContainer;
 
 namespace UI.Components.Tabs
 {
@@ -208,7 +208,7 @@ namespace UI.Components.Tabs
                 {
                     itemBadge.text = itemData.badge.ToUpper();
                     itemBadge.RemoveFromClassList("hidden");
-                    
+
                     // Add badge type class
                     if (itemData.badge.ToLower() == "sale")
                         itemBadge.AddToClassList("sale");

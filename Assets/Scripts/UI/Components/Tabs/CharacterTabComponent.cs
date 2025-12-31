@@ -1,11 +1,9 @@
 using System.Collections.Generic;
-using Core.Bootstrap;
 using Core.Characters;
 using Core.Logging;
-using UI;
 using UI.Screens;
-using UnityEngine;
 using UnityEngine.UIElements;
+using VContainer;
 
 namespace UI.Components.Tabs
 {

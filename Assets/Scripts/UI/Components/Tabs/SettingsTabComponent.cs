@@ -1,14 +1,9 @@
-using System;
 using System.Collections.Generic;
-using Core.Bootstrap;
-using Core.Logging;
 using Core.SaveSystem;
 using RecipeRage.Modules.Auth.Core;
-using UI.Core;
-using UI.Screens;
 using UnityEngine;
 using UnityEngine.UIElements;
-using UI;
+using VContainer;
 
 namespace UI.Components.Tabs
 {
@@ -21,7 +16,21 @@ namespace UI.Components.Tabs
         private VisualElement _root;
 
         private Slider _musicVolumeSlider;
-        // ... (skipping fields for match)
+        private Slider _sfxVolumeSlider;
+        private Toggle _muteToggle;
+        private Label _musicVolumeLabel;
+        private Label _sfxVolumeLabel;
+        private DropdownField _qualityDropdown;
+        private DropdownField _resolutionDropdown;
+        private Toggle _fullscreenToggle;
+        private Toggle _vsyncToggle;
+        private Toggle _fpsToggle;
+        private Slider _sensitivitySlider;
+        private Toggle _vibrationToggle;
+        private Label _sensitivityLabel;
+        private DropdownField _languageDropdown;
+        private Toggle _tutorialsToggle;
+        private Toggle _notificationsToggle;
         private Label _versionLabel;
 
         private float _previousMusicVolume = 0.75f;
