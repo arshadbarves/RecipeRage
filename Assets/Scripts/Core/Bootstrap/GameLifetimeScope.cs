@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Core.Animation;
+using Core.Events;
 using Core.Logging;
 using Core.Maintenance;
 using Core.Networking;
@@ -88,23 +89,34 @@ namespace Core.Bootstrap
     /// <summary>
     /// Bridges VContainer's Startable with the project's custom IInitializable interface
     /// </summary>
-    public class RootBootstrapper : IStartable
+    public class RootBootstrapper : IStartable, IDisposable
     {
         private readonly IEnumerable<IInitializable> _initializables;
         private readonly IUIService _uiService;
         private readonly UIDocumentProvider _uiDocumentProvider;
         private readonly ILoggingService _loggingService;
+        private readonly IGameStateManager _stateManager;
+        private readonly IStateFactory _stateFactory;
+        private readonly IEventBus _eventBus;
 
         public RootBootstrapper(
             IEnumerable<IInitializable> initializables,
             IUIService uiService,
             UIDocumentProvider uiDocumentProvider,
-            ILoggingService loggingService)
+            ILoggingService loggingService,
+            IGameStateManager stateManager,
+            IStateFactory stateFactory,
+            IEventBus eventBus)
         {
             _initializables = initializables;
             _uiService = uiService;
             _uiDocumentProvider = uiDocumentProvider;
             _loggingService = loggingService;
+            _stateManager = stateManager;
+            _stateFactory = stateFactory;
+            _eventBus = eventBus;
+
+            GameLogger.Initialize(_loggingService);
         }
 
         public void Start()
@@ -121,7 +133,29 @@ namespace Core.Bootstrap
                 initializable.Initialize();
             }
 
+            // 3. Start Game Loop
+            _eventBus.Subscribe<LogoutEvent>(HandleLogoutAsync);
+            _stateManager.Initialize(_stateFactory.CreateState<BootstrapState>());
+
             _loggingService.LogInfo("[RootBootstrapper] Foundation initialized.");
+        }
+
+        private async void HandleLogoutAsync(LogoutEvent evt)
+        {
+            try
+            {
+                await Cysharp.Threading.Tasks.UniTask.Yield();
+                _stateManager.Initialize(_stateFactory.CreateState<LoginState>());
+            }
+            catch (Exception e)
+            {
+                _loggingService.LogException(e);
+            }
+        }
+
+        public void Dispose()
+        {
+            _eventBus?.Unsubscribe<LogoutEvent>(HandleLogoutAsync);
         }
     }
 }

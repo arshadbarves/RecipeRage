@@ -11,7 +11,7 @@ namespace Editor
     /// </summary>
     public static class DevelopmentTools
     {
-        private static ISaveService SaveService => GameBootstrap.Container?.Resolve<ISaveService>();
+        private static ISaveService SaveService => VContainer.Unity.LifetimeScope.Find<Core.Bootstrap.GameLifetimeScope>()?.Container?.Resolve<ISaveService>();
 
         [MenuItem("RecipeRage/Development/Clear All Saved Data")]
         public static void ClearAllSavedData()

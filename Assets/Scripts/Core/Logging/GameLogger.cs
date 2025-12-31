@@ -14,18 +14,14 @@ namespace Core.Logging
     /// </summary>
     public static class GameLogger
     {
-        private static ILoggingService Logger
+        private static ILoggingService _logger;
+
+        public static void Initialize(ILoggingService logger)
         {
-            get
-            {
-                var container = GameBootstrap.Container;
-                if (container != null)
-                {
-                    return container.Resolve<ILoggingService>();
-                }
-                return null;
-            }
+            _logger = logger;
         }
+
+        private static ILoggingService Logger => _logger;
 
         /// <summary>
         /// Extracts clean file name from full path (e.g., "PlayerController" from "Assets/Scripts/Core/Characters/PlayerController.cs")

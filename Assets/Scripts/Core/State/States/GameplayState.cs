@@ -61,12 +61,17 @@ namespace Core.State.States
 
             await UniTask.Yield();
 
+            var sessionContainer = _sessionManager?.SessionContainer;
+            
             var networkInitializer = Object.FindFirstObjectByType<NetworkInitializer>();
-            networkInitializer?.Initialize();
+            if (networkInitializer != null && sessionContainer != null)
+            {
+                sessionContainer.Inject(networkInitializer);
+                networkInitializer.Initialize();
+            }
 
             await UniTask.Yield();
 
-            var sessionContainer = _sessionManager?.SessionContainer;
             if (sessionContainer != null)
             {
                 var networkingServices = sessionContainer.Resolve<INetworkingServices>();
@@ -78,10 +83,18 @@ namespace Core.State.States
             _uiService?.HideAllScreens(true);
 
             OrderManager orderManager = Object.FindFirstObjectByType<OrderManager>();
-            orderManager?.StartGeneratingOrders();
+            if (orderManager != null && sessionContainer != null)
+            {
+                sessionContainer.Inject(orderManager);
+                orderManager.StartGeneratingOrders();
+            }
 
             ScoreManager scoreManager = Object.FindFirstObjectByType<ScoreManager>();
-            scoreManager?.ResetScores();
+            if (scoreManager != null && sessionContainer != null)
+            {
+                sessionContainer.Inject(scoreManager);
+                scoreManager.ResetScores();
+            }
         }
 
         public override void Exit()

@@ -5,6 +5,7 @@ using Core.State.States;
 using Unity.Netcode;
 using UnityEngine;
 using VContainer;
+using VContainer.Unity;
 
 namespace Core.State
 {
@@ -64,9 +65,10 @@ namespace Core.State
         /// </summary>
         private void Awake()
         {
-            if (GameBootstrap.Container != null)
+            var scope = LifetimeScope.Find<GameLifetimeScope>();
+            if (scope != null)
             {
-                GameBootstrap.Container.Inject(this);
+                scope.Container.Inject(this);
             }
         }
 

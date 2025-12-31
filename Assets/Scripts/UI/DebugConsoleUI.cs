@@ -6,6 +6,7 @@ using Core.Logging;
 using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;
+using VContainer.Unity;
 
 namespace UI
 {
@@ -39,7 +40,7 @@ namespace UI
         private LogLevel _currentLevelFilter = LogLevel.Verbose;
         private string _currentCategoryFilter = "All";
         private string _searchQuery = "";
-        
+
         // Mobile touch gesture tracking
         private float _touchStartTime;
         private bool _isTouchGestureActive;
@@ -51,10 +52,11 @@ namespace UI
             Destroy(gameObject);
             return;
 #endif
-            
-            if (GameBootstrap.Container != null)
+
+            var scope = LifetimeScope.Find<GameLifetimeScope>();
+            if (scope != null)
             {
-                GameBootstrap.Container.Inject(this);
+                scope.Container.Inject(this);
             }
 
             if (_uiDocument == null)
@@ -68,7 +70,7 @@ namespace UI
 #if !DEVELOPMENT_BUILD && !UNITY_EDITOR
             return;
 #endif
-            
+
             if (_loggingService == null)
             {
                 GameLogger.LogError("LoggingService not found!");
@@ -78,10 +80,10 @@ namespace UI
 
             BuildUI();
             _loggingService.OnLogAdded += OnLogAdded;
-            
+
             // Start hidden
             Hide();
-            
+
             // Show mobile instructions
 #if UNITY_ANDROID || UNITY_IOS
             GameLogger.Log($"Hold {_touchCount} fingers for {_touchHoldTime}s to toggle console");
@@ -144,7 +146,7 @@ namespace UI
             _consolePanel.Add(_logScrollView);
 
             _root.Add(_consolePanel);
-            
+
             RefreshLogs();
         }
 
@@ -196,8 +198,8 @@ namespace UI
             _levelFilter.style.minWidth = 150;
             _levelFilter.RegisterValueChangedCallback(evt =>
             {
-                _currentLevelFilter = evt.newValue == "All" 
-                    ? LogLevel.Verbose 
+                _currentLevelFilter = evt.newValue == "All"
+                    ? LogLevel.Verbose
                     : (LogLevel)Enum.Parse(typeof(LogLevel), evt.newValue);
                 RefreshLogs();
             });
@@ -236,17 +238,17 @@ namespace UI
             _logScrollView.Clear();
 
             var logs = _loggingService.GetLogs();
-            
+
             // Apply filters
             var filteredLogs = logs.Where(log =>
             {
                 if (_levelFilter.value != "All" && log.Level < _currentLevelFilter)
                     return false;
-                    
+
                 if (_currentCategoryFilter != "All" && log.Category != _currentCategoryFilter)
                     return false;
-                    
-                if (!string.IsNullOrEmpty(_searchQuery) && 
+
+                if (!string.IsNullOrEmpty(_searchQuery) &&
                     !log.Message.Contains(_searchQuery, StringComparison.OrdinalIgnoreCase))
                     return false;
 
@@ -318,7 +320,7 @@ namespace UI
                     stackTrace.style.fontSize = 10;
                     stackTrace.style.marginLeft = 20;
                     stackTrace.style.whiteSpace = WhiteSpace.Normal;
-                    
+
                     if (container.childCount == 4)
                     {
                         container.Add(stackTrace);
@@ -353,7 +355,7 @@ namespace UI
                 .Distinct()
                 .OrderBy(c => c)
                 .ToList();
-            
+
             categories.Insert(0, "All");
             return categories;
         }
@@ -363,11 +365,11 @@ namespace UI
             var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
             var fileName = $"GameLogs_{timestamp}.txt";
             var filePath = Path.Combine(Application.persistentDataPath, fileName);
-            
+
             _loggingService.SaveLogsToFile(filePath);
-            
+
             GameLogger.Log($"Logs exported to: {filePath}");
-            
+
             // Show notification (you could add a toast notification here)
             _statsLabel.text = $"Logs exported to: {filePath}";
         }
@@ -386,21 +388,21 @@ namespace UI
 #if !DEVELOPMENT_BUILD && !UNITY_EDITOR
             return;
 #endif
-            
+
             // Keyboard toggle (for editor/PC)
             if (Input.GetKeyDown(_toggleKey))
             {
                 Toggle();
             }
-            
+
             // Mobile touch gesture (3+ finger hold)
             HandleMobileTouchGesture();
         }
-        
+
         private void HandleMobileTouchGesture()
         {
             int currentTouchCount = Input.touchCount;
-            
+
             // Check if we have the required number of touches
             if (currentTouchCount >= _touchCount)
             {
@@ -410,7 +412,7 @@ namespace UI
                     _isTouchGestureActive = true;
                     _touchStartTime = Time.time;
                 }
-                
+
                 // Check if held long enough
                 float holdDuration = Time.time - _touchStartTime;
                 if (holdDuration >= _touchHoldTime)

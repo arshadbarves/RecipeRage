@@ -31,10 +31,17 @@ namespace Core.Networking
         /// </summary>
         private void Awake()
         {
-            if (GameBootstrap.Container != null)
+            if (_autoInitialize)
             {
-                GameBootstrap.Container.Inject(this);
+                // Wait for injection
             }
+        }
+
+        [Inject]
+        public void Construct(SessionManager sessionManager, ILoggingService loggingService)
+        {
+            _sessionManager = sessionManager;
+            _loggingService = loggingService;
 
             if (_autoInitialize)
             {

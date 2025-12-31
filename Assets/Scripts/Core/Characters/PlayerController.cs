@@ -7,6 +7,7 @@ using UnityEngine;
 using Core.Logging;
 using Core.Networking.Services;
 using VContainer;
+using VContainer.Unity;
 
 namespace Core.Characters
 {
@@ -88,9 +89,15 @@ namespace Core.Characters
 
         private void Awake()
         {
-            if (GameBootstrap.Container != null)
+            // VContainer injection for NGO-spawned object
+            var scope = LifetimeScope.Find<GameLifetimeScope>();
+            if (scope != null)
             {
-                GameBootstrap.Container.Inject(this);
+                scope.Container.Inject(this);
+            }
+            else
+            {
+                GameLogger.LogError("GameLifetimeScope not found! PlayerController dependencies will fail.");
             }
 
             _rigidbody = GetComponent<Rigidbody>();
