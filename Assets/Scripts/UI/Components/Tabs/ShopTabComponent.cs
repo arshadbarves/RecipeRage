@@ -2,7 +2,7 @@ using Core.Logging;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UI.Data;
-using Core.Currency;
+using UI.ViewModels;
 using VContainer;
 
 namespace UI.Components.Tabs
@@ -13,17 +13,17 @@ namespace UI.Components.Tabs
     /// </summary>
     public class ShopTabComponent
     {
-        [Inject]
-        private ICurrencyService _currencyService;
-
         private VisualElement _root;
         private VisualElement _shopItemsGrid;
         private string _currentCategory = "featured";
         private ShopData _shopData;
         private VisualTreeAsset _shopItemTemplate;
+        
+        private readonly ShopViewModel _viewModel;
 
-        public ShopTabComponent()
+        public ShopTabComponent(ShopViewModel viewModel)
         {
+            _viewModel = viewModel;
         }
 
         public void Initialize(VisualElement root)
@@ -248,35 +248,11 @@ namespace UI.Components.Tabs
         {
             GameLogger.Log($"Attempting to buy {item.name} for {item.price} {item.currency}");
 
-            if (_currencyService == null)
-            {
-                GameLogger.LogError("CurrencyService not found");
-                return;
-            }
-
-            bool purchaseSuccess = false;
-
-            if (item.currency == "coins")
-            {
-                purchaseSuccess = _currencyService.SpendCoins(item.price);
-            }
-            else if (item.currency == "gems")
-            {
-                purchaseSuccess = _currencyService.SpendGems(item.price);
-            }
+            bool purchaseSuccess = _viewModel.BuyItem(item);
 
             if (purchaseSuccess)
             {
                 GameLogger.Log($"Successfully purchased {item.name}");
-
-                PlayerPrefs.SetInt($"Owned_{item.id}", 1);
-
-                if (item.type == "skin")
-                {
-                    PlayerPrefs.SetInt($"Unlocked_{item.id}", 1);
-                }
-
-                PlayerPrefs.Save();
                 PopulateShopItems();
             }
             else

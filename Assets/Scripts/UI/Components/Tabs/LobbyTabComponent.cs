@@ -1,21 +1,15 @@
 using System;
 using Core.Animation;
-using Core.Networking.Interfaces;
-using Core.State;
-using Core.State.States;
 using UI.Data;
 using UI.Screens;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Core.Logging;
+using UI.ViewModels;
 using VContainer;
 
 namespace UI.Components.Tabs
 {
-using UI.ViewModels; // Add namespace
-
-// ...
-
     public class LobbyTabComponent
     {
         [Inject] private IUIService _uiService;
@@ -26,8 +20,7 @@ using UI.ViewModels; // Add namespace
         private readonly LobbyViewModel _viewModel;
 
         private Button _playButton;
-        // ...
-        
+
         public LobbyTabComponent(LobbyViewModel viewModel)
         {
             _viewModel = viewModel;
@@ -42,8 +35,12 @@ using UI.ViewModels; // Add namespace
             CreatePlayerSlots(_maxTeamSize);
             SetupStaticButtons();
             SetupDynamicButtons();
-            LoadMapDatabase();
-            LoadMapInfo();
+            
+            // Map Binding
+            _viewModel.MapName.Bind(name => { if (_mapNameLabel != null) _mapNameLabel.text = name; });
+            _viewModel.MapSubtitle.Bind(sub => { if (_mapSubtitleLabel != null) _mapSubtitleLabel.text = sub; });
+            _viewModel.RotationTimer.Bind(time => { if (_timerLabel != null) _timerLabel.text = time; });
+
             UpdatePartyState();
             UpdateActionButton();
             HideAnimatedElements();
@@ -144,36 +141,6 @@ using UI.ViewModels; // Add namespace
             }
         }
 
-        private void LoadMapDatabase()
-        {
-            TextAsset jsonFile = Resources.Load<TextAsset>("UI/Data/Maps");
-            if (jsonFile != null) _mapDatabase = JsonUtility.FromJson<MapDatabase>(jsonFile.text);
-        }
-
-        private void LoadMapInfo()
-        {
-            if (_mapDatabase == null) return;
-            _currentMap = _mapDatabase.GetCurrentMap();
-            if (_currentMap != null) {
-                UpdateMapDisplay(_currentMap);
-                if (_currentMap.maxPlayers > 0) SetTeamSize(_currentMap.maxPlayers);
-            }
-            UpdateMapTimer();
-        }
-
-        private void UpdateMapDisplay(MapInfo map)
-        {
-            if (_mapNameLabel != null) _mapNameLabel.text = map.name;
-            if (_mapSubtitleLabel != null) _mapSubtitleLabel.text = map.subtitle;
-        }
-
-        private void UpdateMapTimer()
-        {
-            if (_mapDatabase == null || _timerLabel == null) return;
-            TimeSpan timeRemaining = _mapDatabase.GetTimeUntilRotation();
-            _timerLabel.text = timeRemaining.TotalSeconds > 0 ? $"NEW MAP IN : {timeRemaining.Hours}h {timeRemaining.Minutes}m" : "NEW MAP IN : --h --m";
-        }
-
         private void UpdatePartyState()
         {
             if (_teamControls != null) {
@@ -240,8 +207,9 @@ using UI.ViewModels; // Add namespace
 
         private void OnMapSelected(MapInfo map)
         {
-            _currentMap = map;
-            UpdateMapDisplay(map);
+            if (_mapNameLabel != null) _mapNameLabel.text = map.name;
+            if (_mapSubtitleLabel != null) _mapSubtitleLabel.text = map.subtitle;
+            
             if (map.maxPlayers > 0) SetTeamSize(map.maxPlayers);
         }
 

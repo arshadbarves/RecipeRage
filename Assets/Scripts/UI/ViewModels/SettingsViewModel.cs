@@ -21,6 +21,31 @@ namespace UI.ViewModels
             _authService = authService;
         }
 
+        public override void Initialize()
+        {
+            base.Initialize();
+            LoadSettings();
+        }
+
+        private void LoadSettings()
+        {
+            var settings = _saveService.GetSettings();
+            if (settings != null)
+            {
+                MusicVolume.Value = settings.MusicVolume;
+                SFXVolume.Value = settings.SFXVolume;
+            }
+        }
+
+        public void SaveVolumeSettings()
+        {
+            _saveService.UpdateSettings(s => 
+            {
+                s.MusicVolume = MusicVolume.Value;
+                s.SFXVolume = SFXVolume.Value;
+            });
+        }
+
         public void Logout()
         {
             _authService.LogoutAsync();

@@ -1,5 +1,4 @@
 using System;
-using Core.Bootstrap;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -33,11 +32,11 @@ namespace Core.Animation
         public void AnimateOpacity(VisualElement element, float from, float to, float duration, Action onComplete = null)
         {
             if (element == null) return;
-            
+
             element.style.opacity = from;
-            DOTween.To(() => element.style.opacity.value, 
-                x => element.style.opacity = x, 
-                to, 
+            DOTween.To(() => element.style.opacity.value,
+                x => element.style.opacity = x,
+                to,
                 duration)
                 .SetEase(Ease.OutQuad)
                 .OnComplete(() => onComplete?.Invoke());
@@ -46,17 +45,17 @@ namespace Core.Animation
         public void AnimatePosition(VisualElement element, Vector2 from, Vector2 to, float duration, Action onComplete = null)
         {
             if (element == null) return;
-            
+
             element.style.left = from.x;
             element.style.top = from.y;
-            
-            DOTween.To(() => from, 
+
+            DOTween.To(() => from,
                 pos =>
                 {
                     element.style.left = pos.x;
                     element.style.top = pos.y;
-                }, 
-                to, 
+                },
+                to,
                 duration)
                 .SetEase(Ease.OutQuad)
                 .OnComplete(() => onComplete?.Invoke());
@@ -65,12 +64,12 @@ namespace Core.Animation
         public void AnimateScale(VisualElement element, Vector2 from, Vector2 to, float duration, Action onComplete = null)
         {
             if (element == null) return;
-            
+
             element.style.scale = new StyleScale(from);
-            
-            DOTween.To(() => from, 
-                scale => element.style.scale = new StyleScale(scale), 
-                to, 
+
+            DOTween.To(() => from,
+                scale => element.style.scale = new StyleScale(scale),
+                to,
                 duration)
                 .SetEase(Ease.OutQuad)
                 .OnComplete(() => onComplete?.Invoke());
@@ -79,12 +78,12 @@ namespace Core.Animation
         public void AnimateRotation(VisualElement element, float from, float to, float duration, Action onComplete = null)
         {
             if (element == null) return;
-            
+
             element.style.rotate = new Rotate(from);
-            
-            DOTween.To(() => from, 
-                rotation => element.style.rotate = new Rotate(rotation), 
-                to, 
+
+            DOTween.To(() => from,
+                rotation => element.style.rotate = new Rotate(rotation),
+                to,
                 duration)
                 .SetEase(Ease.OutQuad)
                 .OnComplete(() => onComplete?.Invoke());
@@ -123,7 +122,7 @@ namespace Core.Animation
         {
             DOTween.KillAll();
         }
-        
+
         // Convenience accessors for specialized animators
         public IUIAnimator UI => _uiAnimator;
         public ITransformAnimator Transform => _transformAnimator;

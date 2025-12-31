@@ -1,6 +1,4 @@
 using System;
-using Core.Bootstrap;
-using UI;
 using UI.Core;
 using UI.Data;
 using UnityEngine;

@@ -1,4 +1,3 @@
-using Core.Logging;
 using UI.Core;
 using UI.ViewModels;
 using UnityEngine.UIElements;
@@ -18,7 +17,8 @@ namespace UI.Screens
 
         protected override void OnInitialize()
         {
-            _logo = GetElement<VisualElement>("splash-logo");
+            // The main container holding the logo elements
+            _logo = GetElement<VisualElement>("master-container");
             
             TransitionType = UITransitionType.Fade;
 

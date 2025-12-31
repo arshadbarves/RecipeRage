@@ -1,4 +1,3 @@
-using Core.Logging;
 using DG.Tweening;
 using UI.Controls;
 using UI.Core;

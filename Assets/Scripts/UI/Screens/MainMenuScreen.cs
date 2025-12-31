@@ -1,23 +1,15 @@
 using Core.Bootstrap;
-using Core.Animation;
 using Core.Events;
 using Core.Logging;
-using Core.Networking.Interfaces;
 using UI.Components;
 using UI.Components.Tabs;
 using UI.Core;
-using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;
 using Core.SaveSystem;
-using Core.State;
-using RecipeRage.Modules.Auth.Core;
 using Core.Currency;
-using System.Collections.Generic;
-using Core.Networking;
 using Core.Characters;
-using Core.State.States;
-using UI;
+using UI.ViewModels;
 
 namespace UI.Screens
 {
@@ -25,10 +17,6 @@ namespace UI.Screens
     /// Main menu screen - container for tab-based navigation
     /// </summary>
     [UIScreen(UIScreenType.MainMenu, UIScreenCategory.Screen, "Screens/MainMenuTemplate")]
-using UI.ViewModels;
-
-// ...
-
     public class MainMenuScreen : BaseUIScreen
     {
         #region Dependencies
@@ -85,13 +73,13 @@ using UI.ViewModels;
         {
             UpdatePlayerInfo();
             InitializeSessionComponents();
-            _lobbyTab?.PlayIntroAnimations(null); 
+            _lobbyTab?.PlayIntroAnimations(null);
         }
 
         private void InitializeSessionComponents()
         {
             if (_sessionManager?.IsSessionActive == false) return;
-            
+
             // If already initialized for this session, just refresh
             if (_lobbyTab != null)
             {
@@ -132,10 +120,10 @@ using UI.ViewModels;
         private void InitializeAllTabs()
         {
             if (_sessionManager?.IsSessionActive == false || _viewModel == null) return;
-            
+
             _viewModel.Initialize();
             var sessionContainer = _sessionManager.SessionContainer;
-            
+
             var lobbyRoot = GetElement<VisualElement>("lobby-root");
             if (lobbyRoot != null)
             {

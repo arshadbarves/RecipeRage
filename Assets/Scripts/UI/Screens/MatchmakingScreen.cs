@@ -4,7 +4,6 @@ using Core.Networking.Interfaces;
 using UI.Core;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Core.Logging;
 using Core.Networking;
 using VContainer;
 
@@ -50,7 +49,7 @@ namespace UI.Screens
         protected override void OnShow()
         {
             _searchTime = 0f;
-            
+
             // Resolve service on show to ensure session is ready
             ResolveMatchmakingService();
 
@@ -91,7 +90,7 @@ namespace UI.Screens
 
         protected override void OnHide()
         {
-            // Optional: keep subscription if we want updates in background, 
+            // Optional: keep subscription if we want updates in background,
             // but usually we want to clear it if screen is hidden.
         }
 

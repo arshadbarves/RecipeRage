@@ -1,12 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Core.Logging;
 using Cysharp.Threading.Tasks;
-using UI;
 using UI.Core;
 using UnityEngine;
 using UnityEngine.UIElements;
-using VContainer;
 
 namespace UI.Screens
 {

@@ -1,10 +1,7 @@
-using System;
-using Core.Animation;
 using Core.Bootstrap;
 using Core.Characters;
 using Core.Logging;
 using Core.Skins;
-using UI;
 using UI.Core;
 using UI.Data;
 using UnityEngine;
@@ -22,7 +19,7 @@ namespace UI.Screens
     {
         [Inject]
         private SessionManager _sessionManager;
-        
+
         [Inject]
         private IUIService _uiService;
 

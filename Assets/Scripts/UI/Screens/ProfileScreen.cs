@@ -1,15 +1,10 @@
 using Core.Bootstrap;
-using Core.Logging;
 using Core.Networking;
-using Core.Networking.Interfaces;
 using Core.SaveSystem;
-using UI;
 using UI.Core;
 using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;
-using UI.Popups;
-using System;
 
 namespace UI.Screens
 {
