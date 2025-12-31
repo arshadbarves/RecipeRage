@@ -64,6 +64,12 @@ namespace Core.Bootstrap
             // UI ViewModels
             builder.Register<UI.ViewModels.SplashScreenViewModel>(Lifetime.Transient);
             builder.Register<UI.ViewModels.LoginViewModel>(Lifetime.Transient);
+            builder.Register<UI.ViewModels.LoadingViewModel>(Lifetime.Transient);
+            builder.Register<UI.ViewModels.LobbyViewModel>(Lifetime.Transient);
+            builder.Register<UI.ViewModels.ShopViewModel>(Lifetime.Transient);
+            builder.Register<UI.ViewModels.SettingsViewModel>(Lifetime.Transient);
+            builder.Register<UI.ViewModels.CharacterViewModel>(Lifetime.Transient);
+            builder.Register<UI.ViewModels.MainMenuViewModel>(Lifetime.Transient);
 
             // UI Screens (Transient)
             builder.Register<UI.Screens.LoadingScreen>(Lifetime.Transient);

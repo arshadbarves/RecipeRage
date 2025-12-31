@@ -12,41 +12,25 @@ using VContainer;
 
 namespace UI.Components.Tabs
 {
+using UI.ViewModels; // Add namespace
+
+// ...
+
     public class LobbyTabComponent
     {
-        [Inject] private IGameStateManager _stateManager;
         [Inject] private IUIService _uiService;
         [Inject] private IAnimationService _animationService;
         [Inject] private ILoggingService _loggingService;
 
         private VisualElement _root;
-        private readonly IMatchmakingService _matchmakingService;
+        private readonly LobbyViewModel _viewModel;
 
         private Button _playButton;
-        private Button _mapButton;
-        private Button _leaveButton;
-        private Label _mapNameLabel;
-        private Label _mapSubtitleLabel;
-        private Label _timerLabel;
-        private Label _actionButtonText;
-        private Label _teamCodeLabel;
-        private VisualElement _teamControls;
-        private VisualElement _playerSlotsContainer;
+        // ...
         
-        private VisualTreeAsset _playerSlotTemplate;
-        private System.Collections.Generic.List<PlayerSlot> _playerSlots = new();
-        private MapDatabase _mapDatabase;
-        private MapInfo _currentMap;
-        
-        private bool _isInParty = false;
-        private bool _isReady = false;
-        private bool _buttonsInitialized = false;
-        private int _currentPlayerCount = 1;
-        private int _maxTeamSize = 3;
-
-        public LobbyTabComponent(IMatchmakingService matchmakingService)
+        public LobbyTabComponent(LobbyViewModel viewModel)
         {
-            _matchmakingService = matchmakingService;
+            _viewModel = viewModel;
         }
 
         public void Initialize(VisualElement root)
@@ -242,11 +226,11 @@ namespace UI.Components.Tabs
                 UpdateActionButton();
                 if (AreAllPlayersReady()) StartPartyMatchmaking();
             } else {
-                _stateManager?.ChangeState<MatchmakingState>();
+                _viewModel.Play();
             }
         }
 
-        private void StartPartyMatchmaking() => _stateManager?.ChangeState<MatchmakingState>();
+        private void StartPartyMatchmaking() => _viewModel.Play();
 
         private void OnMapClicked()
         {

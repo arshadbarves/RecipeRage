@@ -15,27 +15,20 @@ namespace UI.Screens
         [Inject] private SplashScreenViewModel _viewModel;
 
         private VisualElement _logo;
-        private Label _loadingLabel;
 
         protected override void OnInitialize()
         {
             _logo = GetElement<VisualElement>("splash-logo");
-            _loadingLabel = GetElement<Label>("loading-text");
             
             TransitionType = UITransitionType.Fade;
 
-            BindViewModel();
+            // BindViewModel(); // No bindings needed for static splash
         }
 
         private void BindViewModel()
         {
-            if (_viewModel == null) return;
-            
-            _viewModel.Initialize();
-            _viewModel.LoadingText.Bind(text => 
-            {
-                if (_loadingLabel != null) _loadingLabel.text = text;
-            });
+            // if (_viewModel == null) return;
+            // _viewModel.Initialize();
         }
 
         protected override void OnDispose()

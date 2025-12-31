@@ -9,5 +9,6 @@ namespace Core.Localization
         string GetText(string key);
         string GetText(string key, params object[] args);
         bool HasKey(string key);
+        event System.Action OnLanguageChanged;
     }
 }

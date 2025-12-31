@@ -20,8 +20,22 @@ namespace UI.ViewModels
         public override void Initialize()
         {
             base.Initialize();
-            // In a real app, we might load the initial string from localization
-            // LoadingText.Value = _localizationManager.GetText("splash_loading");
+            UpdateLocalizedText();
+            _localizationManager.OnLanguageChanged += UpdateLocalizedText;
+        }
+
+        public override void Dispose()
+        {
+            if (_localizationManager != null)
+            {
+                _localizationManager.OnLanguageChanged -= UpdateLocalizedText;
+            }
+            base.Dispose();
+        }
+
+        private void UpdateLocalizedText()
+        {
+            LoadingText.Value = _localizationManager.GetText("splash_loading");
         }
     }
 }

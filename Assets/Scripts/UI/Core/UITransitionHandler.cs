@@ -1,4 +1,3 @@
-using System;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
@@ -32,7 +31,7 @@ namespace UI.Core
                 case UITransitionType.SlideUp:
                     await AnimateSlide(element, new Vector3(0, 100, 0), Vector3.zero, duration);
                     break;
-                
+
                 case UITransitionType.SlideDown:
                     await AnimateSlide(element, new Vector3(0, -100, 0), Vector3.zero, duration);
                     break;

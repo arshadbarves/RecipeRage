@@ -1,6 +1,4 @@
 using System;
-using Core.Animation;
-using UI;
 using UnityEngine.UIElements;
 using VContainer;
 
@@ -66,7 +64,7 @@ namespace UI.Core
         protected virtual void OnInitialize() { }
         protected virtual void OnShow() { }
         protected virtual void OnHide() { }
-        
+
         public virtual void Update(float deltaTime) { }
 
         public virtual void Dispose()

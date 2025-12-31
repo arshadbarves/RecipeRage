@@ -25,18 +25,20 @@ namespace UI.Screens
     /// Main menu screen - container for tab-based navigation
     /// </summary>
     [UIScreen(UIScreenType.MainMenu, UIScreenCategory.Screen, "Screens/MainMenuTemplate")]
+using UI.ViewModels;
+
+// ...
+
     public class MainMenuScreen : BaseUIScreen
     {
         #region Dependencies
 
+        [Inject] private MainMenuViewModel _viewModel;
         [Inject] private IObjectResolver _container;
         [Inject] private IUIService _uiService;
         [Inject] private ISaveService _saveService;
         [Inject] private IEventBus _eventBus;
         [Inject] private SessionManager _sessionManager;
-        [Inject] private IGameStateManager _stateManager;
-        [Inject] private IAuthService _authService;
-        [Inject] private IAnimationService _animationService;
         [Inject] private ILoggingService _loggingService;
 
         #endregion
@@ -129,14 +131,15 @@ namespace UI.Screens
 
         private void InitializeAllTabs()
         {
-            if (_sessionManager?.IsSessionActive == false) return;
+            if (_sessionManager?.IsSessionActive == false || _viewModel == null) return;
+            
+            _viewModel.Initialize();
             var sessionContainer = _sessionManager.SessionContainer;
             
             var lobbyRoot = GetElement<VisualElement>("lobby-root");
             if (lobbyRoot != null)
             {
-                var networking = sessionContainer.Resolve<INetworkingServices>();
-                _lobbyTab = new LobbyTabComponent(networking?.MatchmakingService);
+                _lobbyTab = new LobbyTabComponent(_viewModel.LobbyVM);
                 sessionContainer.Inject(_lobbyTab);
                 _lobbyTab.Initialize(lobbyRoot);
             }

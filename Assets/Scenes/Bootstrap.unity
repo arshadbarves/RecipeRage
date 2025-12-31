@@ -132,36 +132,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: GameBootstrap
       objectReference: {fileID: 0}
-    - target: {fileID: 417808214242561093, guid: 4e8b0094d2ec0451195daa369d1aae17,
-        type: 3}
-      propertyPath: _showSplashScreen
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 417808214242561093, guid: 4e8b0094d2ec0451195daa369d1aae17,
-        type: 3}
-      propertyPath: _showLoadingScreen
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 417808214242561093, guid: 4e8b0094d2ec0451195daa369d1aae17,
-        type: 3}
-      propertyPath: _showSplashScreens
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 417808214242561093, guid: 4e8b0094d2ec0451195daa369d1aae17,
-        type: 3}
-      propertyPath: bootstrapConfig.showSplashScreens
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 417808214242561093, guid: 4e8b0094d2ec0451195daa369d1aae17,
-        type: 3}
-      propertyPath: _bootstrapConfig.showSplashScreens
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2203266933821147587, guid: 4e8b0094d2ec0451195daa369d1aae17,
-        type: 3}
-      propertyPath: NetworkConfig.PlayerPrefab
-      value: 
-      objectReference: {fileID: 0}
     - target: {fileID: 6887119164124692602, guid: 4e8b0094d2ec0451195daa369d1aae17,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -337,7 +307,6 @@ MonoBehaviour:
   m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
-  m_Version: 2
   m_TaaSettings:
     m_Quality: 3
     m_FrameInfluence: 0.1
@@ -345,6 +314,7 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+  m_Version: 2
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
