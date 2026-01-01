@@ -1,7 +1,9 @@
 using System;
 using Core.Animation;
 using Core.Logging;
+using Core.Extensions; // Added
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using UI.Core;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -18,7 +20,8 @@ namespace UI.Screens
     {
         [Inject] private IAnimationService _animationService;
 
-        private VisualElement _playContainer;
+        private VisualElement _masterContainer;
+        private VisualElement _playSkewedBorder;
         private VisualElement _centerContainer;
         private Label _playText;
         private Label _centerText;
@@ -27,13 +30,13 @@ namespace UI.Screens
         protected override void OnInitialize()
         {
             // Cache elements
-            _playContainer = GetElement<VisualElement>("play-container");
+            _masterContainer = GetElement<VisualElement>("master-container");
+            _playSkewedBorder = GetElement<VisualElement>("play-skewed-border");
             _centerContainer = GetElement<VisualElement>("center-container");
             _playText = GetElement<Label>("play-text");
             _centerText = GetElement<Label>("center-text");
             _subtitle = GetElement<Label>("subtitle");
 
-            // We override AnimateShow, so TransitionType is less relevant, but setting to Fade as backup
             TransitionType = UITransitionType.Fade;
         }
 
@@ -45,38 +48,65 @@ namespace UI.Screens
                 return;
             }
 
-            // 1. Initial State (Hidden)
+            // 1. Initial State
             ResetState();
             
-            // Show container
+            // Show screen
             element.style.display = DisplayStyle.Flex;
             element.style.opacity = 1f;
 
-            // 2. Animate Play Container (Scale In)
-            await _animationService.UI.ScaleIn(_playContainer, 0.4f);
+            // --- Animation Sequence ---
             
-            // 3. Animate Center Container (Slide/Scale In)
-            await _animationService.UI.ScaleIn(_centerContainer, 0.4f);
+            // Global Scale (1.5s)
+            var scaleTask = DOTween.To(() => 0.9f, x => _masterContainer.style.scale = new StyleScale(new Vector2(x, x)), 1.0f, 1.5s)
+                .SetEase(Ease.OutCubic) // cubic-bezier(0.215, 0.610, 0.355, 1.000) approx
+                .ToUniTask();
 
-            // 4. Fade in text
-            var textTask1 = _animationService.UI.FadeIn(_playText, 0.3f);
-            var textTask2 = _animationService.UI.FadeIn(_centerText, 0.3f);
-            var textTask3 = _animationService.UI.FadeIn(_subtitle, 0.5f);
+            // Border Wipe (Width 0 -> 100%) (1s)
+            var borderTask = DOTween.To(() => 0f, x => _playSkewedBorder.style.width = new Length(x, LengthUnit.Percent), 100f, 1.0f)
+                .SetEase(Ease.OutCubic)
+                .ToUniTask();
 
-            await UniTask.WhenAll(textTask1, textTask2, textTask3);
+            // Play Text Fade (1s)
+            var playTextTask = _animationService.AnimateOpacity(_playText, 0f, 1f, 1.0f);
 
-            // Wait a bit
-            await UniTask.Delay(TimeSpan.FromSeconds(1.0f));
+            // Center Box Slide & Fade (Starts at 0.2s)
+            var centerTask = UniTask.Create(async () => 
+            {
+                await UniTask.Delay(200);
+                var slide = DOTween.To(() => 30f, x => _centerContainer.style.translate = new StyleTranslate(new Translate(x, 0)), 0f, 0.8f)
+                    .SetEase(Ease.OutCubic).ToUniTask();
+                var fade = _animationService.AnimateOpacity(_centerContainer, 0f, 1f, 1.0f);
+                await UniTask.WhenAll(slide, fade);
+            });
+
+            // Subtitle Fade (Late)
+            var subTask = UniTask.Create(async () =>
+            {
+                await UniTask.Delay(800);
+                await _animationService.AnimateOpacity(_subtitle, 0f, 1f, 0.5f);
+            });
+
+            await UniTask.WhenAll(scaleTask, borderTask, playTextTask, centerTask, subTask);
+
+            // Hold
+            await UniTask.Delay(1000);
 
             onComplete?.Invoke();
         }
 
         private void ResetState()
         {
-            if (_playContainer != null) _playContainer.style.scale = new StyleScale(Vector2.zero);
-            if (_centerContainer != null) _centerContainer.style.scale = new StyleScale(Vector2.zero);
+            if (_masterContainer != null) _masterContainer.style.scale = new StyleScale(new Vector2(0.9f, 0.9f));
+            if (_playSkewedBorder != null) _playSkewedBorder.style.width = new Length(0, LengthUnit.Percent);
             if (_playText != null) _playText.style.opacity = 0f;
-            if (_centerText != null) _centerText.style.opacity = 0f;
+            
+            if (_centerContainer != null) 
+            {
+                _centerContainer.style.opacity = 0f;
+                _centerContainer.style.translate = new StyleTranslate(new Translate(30, 0));
+            }
+            
             if (_subtitle != null) _subtitle.style.opacity = 0f;
         }
     }
