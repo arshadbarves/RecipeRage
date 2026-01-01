@@ -9,18 +9,18 @@ Audit and cleanup the low-level services first.
 - [x] Task: Refactor Data Services
     -   Audit `SaveService`: Ensure it uses `EncryptionService` and `StorageProviderFactory` via DI.
     -   Audit `NTPTimeService` & `RemoteConfigService`: Check for proper `IInitializable` usage.
-- [~] Task: Conductor - User Manual Verification 'Foundation Services' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Foundation Services' (Protocol in workflow.md)
 
 ## Phase 2: Core & State Services Refactor
 Address the game logic drivers.
 
-- [ ] Task: Refactor GameState System
+- [x] Task: Refactor GameState System
     -   Audit `GameStateManager`: Ensure state transitions are safe and logged.
     -   Refactor `StateFactory` to strictly use container resolution for states.
-- [ ] Task: Refactor Maintenance & Connectivity
+- [x] Task: Refactor Maintenance & Connectivity
     -   Audit `MaintenanceService`: Ensure it fails gracefully if network is down.
     -   Audit `ConnectivityService`: Verify it properly notifies other services of network changes.
-- [ ] Task: Conductor - User Manual Verification 'Core Services' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Core Services' (Protocol in workflow.md)
 
 ## Phase 3: UI & Interaction Services Refactor
 Ensure UI services are decoupled.

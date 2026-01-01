@@ -1,7 +1,7 @@
 using System;
 using Core.Bootstrap;
-using UnityEngine;
 using Core.Logging;
+using VContainer;
 
 namespace Core.State
 {
@@ -13,16 +13,19 @@ namespace Core.State
     {
         private readonly IStateMachine _stateMachine;
         private readonly IStateFactory _stateFactory;
+        private readonly ILoggingService _logger;
 
         public event Action<IState, IState> OnStateChanged;
 
         public IState CurrentState => _stateMachine.CurrentState;
         public IState PreviousState => _stateMachine.PreviousState;
 
-        public GameStateManager(IStateFactory stateFactory)
+        [Inject]
+        public GameStateManager(IStateFactory stateFactory, ILoggingService logger)
         {
             _stateMachine = new StateMachine();
             _stateFactory = stateFactory;
+            _logger = logger;
             _stateMachine.OnStateChanged += (prev, curr) => OnStateChanged?.Invoke(prev, curr);
         }
 
@@ -36,11 +39,13 @@ namespace Core.State
 
         public void Initialize(IState initialState)
         {
+            _logger.Log($"Initializing with state: {initialState?.GetType().Name}");
             _stateMachine.Initialize(initialState);
         }
 
         public void ChangeState(IState newState)
         {
+            _logger.Log($"Changing state to: {newState?.GetType().Name}");
             _stateMachine.ChangeState(newState);
         }
 
@@ -61,7 +66,7 @@ namespace Core.State
 
         public void Dispose()
         {
-            GameLogger.Log("Disposing");
+            _logger.Log("Disposing GameStateManager");
 
             // Exit current state
             CurrentState?.Exit();

@@ -12,12 +12,14 @@ namespace Core.Maintenance
     {
         private readonly IEventBus _eventBus;
         private readonly IRemoteConfigService _remoteConfigService;
+        private readonly ILoggingService _logger;
         private bool _isChecking;
 
-        public MaintenanceService(IEventBus eventBus, IRemoteConfigService remoteConfigService)
+        public MaintenanceService(IEventBus eventBus, IRemoteConfigService remoteConfigService, ILoggingService logger)
         {
             _eventBus = eventBus ?? throw new ArgumentNullException(nameof(eventBus));
             _remoteConfigService = remoteConfigService;
+            _logger = logger;
         }
 
         /// <summary>
@@ -32,7 +34,7 @@ namespace Core.Maintenance
         {
             if (_isChecking)
             {
-                GameLogger.LogWarning("Already checking maintenance status");
+                _logger.LogWarning("Already checking maintenance status", "Maintenance");
                 return false;
             }
 
@@ -40,7 +42,7 @@ namespace Core.Maintenance
 
             try
             {
-                GameLogger.Log("Checking maintenance status from Firebase...");
+                _logger.LogInfo("Checking maintenance status from Firebase...", "Maintenance");
 
                 if (!_remoteConfigService.TryGetConfig<MaintenanceConfig>(out var maintenanceConfig))
                 {
@@ -50,14 +52,14 @@ namespace Core.Maintenance
 
                 if (maintenanceConfig == null)
                 {
-                    GameLogger.Log("No maintenance config found - service is operational");
+                    _logger.LogInfo("No maintenance config found - service is operational", "Maintenance");
                     _isChecking = false;
                     return false;
                 }
 
                 if (!maintenanceConfig.IsMaintenanceActive)
                 {
-                    GameLogger.Log("Maintenance is not active - service is operational");
+                    _logger.LogInfo("Maintenance is not active - service is operational", "Maintenance");
                     _isChecking = false;
                     return false;
                 }
@@ -67,19 +69,19 @@ namespace Core.Maintenance
 
                 if (isInWindow)
                 {
-                    GameLogger.Log("Maintenance mode is active");
+                    _logger.LogInfo("Maintenance mode is active", "Maintenance");
                     PublishMaintenanceEvent(maintenanceConfig);
                     _isChecking = false;
                     return true;
                 }
 
-                GameLogger.Log("Maintenance scheduled but not in window yet");
+                _logger.LogInfo("Maintenance scheduled but not in window yet", "Maintenance");
                 _isChecking = false;
                 return false;
             }
             catch (Exception ex)
             {
-                GameLogger.LogError($"Exception during maintenance check: {ex.Message}");
+                _logger.LogError($"Exception during maintenance check: {ex.Message}", "Maintenance");
                 _eventBus?.Publish(new MaintenanceCheckFailedEvent
                 {
                     Error = $"Maintenance check error: {ex.Message}"
@@ -91,7 +93,7 @@ namespace Core.Maintenance
 
         public void ShowServerDownMaintenance(string error)
         {
-            GameLogger.Log($"Showing server down maintenance: {error}");
+            _logger.LogInfo($"Showing server down maintenance: {error}", "Maintenance");
 
             _eventBus?.Publish(new MaintenanceModeEvent
             {
@@ -104,7 +106,7 @@ namespace Core.Maintenance
 
         private void PublishMaintenanceEvent(MaintenanceConfig config)
         {
-            GameLogger.Log($"Publishing maintenance mode event: {config.MaintenanceMessage}");
+            _logger.LogInfo($"Publishing maintenance mode event: {config.MaintenanceMessage}", "Maintenance");
 
             _eventBus?.Publish(new MaintenanceModeEvent
             {

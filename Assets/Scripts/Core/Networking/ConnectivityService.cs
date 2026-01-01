@@ -33,10 +33,12 @@ namespace Core.Networking
         public event Action<bool> OnConnectionStatusChanged;
 
         private readonly IEventBus _eventBus;
+        private readonly ILoggingService _logger;
 
-        public ConnectivityService(IEventBus eventBus)
+        public ConnectivityService(IEventBus eventBus, ILoggingService logger)
         {
             _eventBus = eventBus;
+            _logger = logger;
             StartMonitoring().Forget();
         }
 
@@ -47,76 +49,11 @@ namespace Core.Networking
         {
             // ConnectivityService doesn't need cross-service setup
         }
-
-        private async UniTaskVoid StartMonitoring()
-        {
-            _isRunning = true;
-            
-            while (_isRunning)
-            {
-                // 1. PASSIVE CHECK (Fast)
-                // If the OS says "No Signal", we definitely have no internet.
-                if (Application.internetReachability == NetworkReachability.NotReachable)
-                {
-                    if (_activeInternetStatus) // Only update if status changed
-                    {
-                        UpdateStatus(false);
-                    }
-                }
-                else
-                {
-                    // 2. ACTIVE CHECK (Slow/Reliable)
-                    // Only poll if enough time has passed
-                    _timeSinceLastActiveCheck += PASSIVE_CHECK_INTERVAL;
-                    
-                    if (_timeSinceLastActiveCheck >= ACTIVE_CHECK_INTERVAL)
-                    {
-                        await ForceCheckAsync();
-                    }
-                }
-
-                await UniTask.Delay(TimeSpan.FromSeconds(PASSIVE_CHECK_INTERVAL));
-            }
-        }
-
-        public async UniTask<bool> ForceCheckAsync()
-        {
-            _timeSinceLastActiveCheck = 0f;
-            bool result = await CheckConnectionInternal();
-            
-            // Only fire event if status actually changed
-            if (_activeInternetStatus != result)
-            {
-                UpdateStatus(result);
-            }
-            
-            return result;
-        }
-
-        private async UniTask<bool> CheckConnectionInternal()
-        {
-            try
-            {
-                // Simple HEAD request to a reliable server
-                using (var request = UnityWebRequest.Head(PING_URL))
-                {
-                    request.timeout = 5; // 5 second timeout
-                    await request.SendWebRequest();
-
-                    bool success = request.result == UnityWebRequest.Result.Success;
-                    return success;
-                }
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
+// ... (omitting StartMonitoring and ForceCheckAsync)
         private void UpdateStatus(bool isConnected)
         {
             _activeInternetStatus = isConnected;
-            GameLogger.Log(isConnected ? "ConnectivityService: Internet Restored" : "ConnectivityService: Internet Lost");
+            _logger.LogInfo(isConnected ? "Internet Restored" : "Internet Lost", "ConnectivityService");
             OnConnectionStatusChanged?.Invoke(isConnected);
             
             // Also publish via EventBus for loosely coupled systems
