@@ -1,3 +1,4 @@
+using Core.Bootstrap; // Added
 using Core.Characters;
 using UI.Core;
 using VContainer;
@@ -6,12 +7,13 @@ namespace UI.ViewModels
 {
     public class CharacterViewModel : BaseViewModel
     {
-        private readonly ICharacterService _characterService;
+        private readonly SessionManager _sessionManager;
+        private ICharacterService CharacterService => _sessionManager.SessionContainer?.Resolve<ICharacterService>();
 
         [Inject]
-        public CharacterViewModel(ICharacterService characterService)
+        public CharacterViewModel(SessionManager sessionManager)
         {
-            _characterService = characterService;
+            _sessionManager = sessionManager;
         }
     }
 }

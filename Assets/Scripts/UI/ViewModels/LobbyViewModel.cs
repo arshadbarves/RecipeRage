@@ -12,12 +12,18 @@ using VContainer;
 
 namespace UI.ViewModels
 {
+using Core.Bootstrap; // Added
+
+// ...
+
     public class LobbyViewModel : BaseViewModel
     {
-        private readonly IMatchmakingService _matchmakingService;
+        private readonly SessionManager _sessionManager;
         private readonly IGameStateManager _stateManager;
         private MapDatabase _mapDatabase;
         private CancellationTokenSource _cts;
+
+        private IMatchmakingService MatchmakingService => _sessionManager.SessionContainer?.Resolve<IMatchmakingService>();
 
         public BindableProperty<bool> IsMatchmaking { get; } = new BindableProperty<bool>(false);
         public BindableProperty<int> PlayerCount { get; } = new BindableProperty<int>(1);
@@ -28,9 +34,9 @@ namespace UI.ViewModels
         public BindableProperty<string> RotationTimer { get; } = new BindableProperty<string>("");
 
         [Inject]
-        public LobbyViewModel(IMatchmakingService matchmakingService, IGameStateManager stateManager)
+        public LobbyViewModel(SessionManager sessionManager, IGameStateManager stateManager)
         {
-            _matchmakingService = matchmakingService;
+            _sessionManager = sessionManager;
             _stateManager = stateManager;
         }
 

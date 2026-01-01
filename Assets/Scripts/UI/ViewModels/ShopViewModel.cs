@@ -7,17 +7,22 @@ using VContainer;
 
 namespace UI.ViewModels
 {
+using Core.Bootstrap; // Added
+
+// ...
+
     public class ShopViewModel : BaseViewModel
     {
-        private readonly ICurrencyService _currencyService;
+        private readonly SessionManager _sessionManager;
+        private ICurrencyService CurrencyService => _sessionManager.SessionContainer?.Resolve<ICurrencyService>();
 
         public BindableProperty<string> CoinsText { get; } = new BindableProperty<string>("0");
         public BindableProperty<string> GemsText { get; } = new BindableProperty<string>("0");
 
         [Inject]
-        public ShopViewModel(ICurrencyService currencyService)
+        public ShopViewModel(SessionManager sessionManager)
         {
-            _currencyService = currencyService;
+            _sessionManager = sessionManager;
         }
 
         public override void Initialize()
@@ -28,27 +33,29 @@ namespace UI.ViewModels
 
         public void UpdateCurrency()
         {
-            CoinsText.Value = _currencyService.FormatCurrency(_currencyService.Coins);
-            GemsText.Value = _currencyService.FormatCurrency(_currencyService.Gems);
+            if (CurrencyService == null) return;
+            CoinsText.Value = CurrencyService.FormatCurrency(CurrencyService.Coins);
+            GemsText.Value = CurrencyService.FormatCurrency(CurrencyService.Gems);
         }
 
         public bool BuyItem(ShopItem item)
         {
+            if (CurrencyService == null) return false;
+
             bool success = false;
             if (item.currency == "coins")
             {
-                success = _currencyService.SpendCoins(item.price);
+                success = CurrencyService.SpendCoins(item.price);
             }
             else if (item.currency == "gems")
             {
-                success = _currencyService.SpendGems(item.price);
+                success = CurrencyService.SpendGems(item.price);
             }
 
             if (success)
             {
                 UpdateCurrency();
                 // Persist ownership (Legacy: PlayerPrefs)
-                // Ideally move this to SaveService/ShopService
                 PlayerPrefs.SetInt($"Owned_{item.id}", 1);
                 if (item.type == "skin") PlayerPrefs.SetInt($"Unlocked_{item.id}", 1);
                 PlayerPrefs.Save();
