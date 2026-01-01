@@ -1,12 +1,15 @@
 using System;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
+using Core.Extensions;
 
 namespace Core.Animation
 {
     /// <summary>
-    /// DOTween-based Transform animator implementation
-    /// Follows Single Responsibility Principle - only handles GameObject/Transform animations
+    /// DOTween-based Transform animator implementation using modern async/await patterns
+    /// Follows Single Responsibility Principle
     /// </summary>
     public class DOTweenTransformAnimator : ITransformAnimator
     {
@@ -21,7 +24,6 @@ namespace Core.Animation
         {
             if (_isInitialized) return;
 
-            // Initialize DOTween with optimal settings
             var init = DOTween.Init(
                 recycleAllByDefault: true,
                 useSafeMode: true,
@@ -33,47 +35,52 @@ namespace Core.Animation
             _isInitialized = true;
         }
 
-        public void MoveTo(Transform transform, Vector3 target, float duration, Action onComplete = null)
+        public async UniTask MoveTo(Transform transform, Vector3 target, float duration, CancellationToken token = default)
         {
             if (transform == null) return;
             
-            transform.DOMove(target, duration)
+            await transform.DOMove(target, duration)
                 .SetEase(Ease.OutQuad)
-                .OnComplete(() => onComplete?.Invoke());
+                .ToUniTask()
+                .AttachExternalCancellation(token);
         }
 
-        public void ScaleTo(Transform transform, Vector3 target, float duration, Action onComplete = null)
+        public async UniTask ScaleTo(Transform transform, Vector3 target, float duration, CancellationToken token = default)
         {
             if (transform == null) return;
             
-            transform.DOScale(target, duration)
+            await transform.DOScale(target, duration)
                 .SetEase(Ease.OutQuad)
-                .OnComplete(() => onComplete?.Invoke());
+                .ToUniTask()
+                .AttachExternalCancellation(token);
         }
 
-        public void RotateTo(Transform transform, Vector3 target, float duration, Action onComplete = null)
+        public async UniTask RotateTo(Transform transform, Vector3 target, float duration, CancellationToken token = default)
         {
             if (transform == null) return;
             
-            transform.DORotate(target, duration)
+            await transform.DORotate(target, duration)
                 .SetEase(Ease.OutQuad)
-                .OnComplete(() => onComplete?.Invoke());
+                .ToUniTask()
+                .AttachExternalCancellation(token);
         }
 
-        public void Punch(Transform transform, Vector3 direction, float duration, Action onComplete = null)
+        public async UniTask Punch(Transform transform, Vector3 direction, float duration, CancellationToken token = default)
         {
             if (transform == null) return;
             
-            transform.DOPunchPosition(direction, duration, 10, 1)
-                .OnComplete(() => onComplete?.Invoke());
+            await transform.DOPunchPosition(direction, duration, 10, 1)
+                .ToUniTask()
+                .AttachExternalCancellation(token);
         }
 
-        public void Shake(Transform transform, float duration, float strength, Action onComplete = null)
+        public async UniTask Shake(Transform transform, float duration, float strength, CancellationToken token = default)
         {
             if (transform == null) return;
             
-            transform.DOShakePosition(duration, strength, 10, 90, false, true)
-                .OnComplete(() => onComplete?.Invoke());
+            await transform.DOShakePosition(duration, strength, 10, 90, false, true)
+                .ToUniTask()
+                .AttachExternalCancellation(token);
         }
     }
 }

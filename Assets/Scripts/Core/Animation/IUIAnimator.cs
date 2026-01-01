@@ -1,27 +1,27 @@
-using System;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine.UIElements;
 
 namespace Core.Animation
 {
     /// <summary>
-    /// UI-specific animation interface
-    /// Follows Interface Segregation Principle - clients only depend on what they need
-    /// Direct method calls instead of enum-based dispatch for cleaner code
+    /// UI-specific animation interface using modern async/await patterns
+    /// Follows Interface Segregation Principle
     /// </summary>
     public interface IUIAnimator
     {
-        void FadeIn(VisualElement element, float duration, Action onComplete = null);
-        void FadeOut(VisualElement element, float duration, Action onComplete = null);
-        void SlideIn(VisualElement element, SlideDirection direction, float duration, Action onComplete = null);
-        void SlideOut(VisualElement element, SlideDirection direction, float duration, Action onComplete = null);
-        void ScaleIn(VisualElement element, float duration, Action onComplete = null);
-        void ScaleOut(VisualElement element, float duration, Action onComplete = null);
-        void BounceIn(VisualElement element, float duration, Action onComplete = null);
-        void BounceOut(VisualElement element, float duration, Action onComplete = null);
-        void PopupIn(VisualElement container, float duration, Action onComplete = null);
-        void PopupOut(VisualElement container, float duration, Action onComplete = null);
-        void Pulse(VisualElement element, float duration, Action onComplete = null);
-        void Shake(VisualElement element, float duration, float intensity, Action onComplete = null);
+        UniTask FadeIn(VisualElement element, float duration, CancellationToken token = default);
+        UniTask FadeOut(VisualElement element, float duration, CancellationToken token = default);
+        UniTask SlideIn(VisualElement element, SlideDirection direction, float duration, CancellationToken token = default);
+        UniTask SlideOut(VisualElement element, SlideDirection direction, float duration, CancellationToken token = default);
+        UniTask ScaleIn(VisualElement element, float duration, CancellationToken token = default);
+        UniTask ScaleOut(VisualElement element, float duration, CancellationToken token = default);
+        UniTask BounceIn(VisualElement element, float duration, CancellationToken token = default);
+        UniTask BounceOut(VisualElement element, float duration, CancellationToken token = default);
+        UniTask PopupIn(VisualElement container, float duration, CancellationToken token = default);
+        UniTask PopupOut(VisualElement container, float duration, CancellationToken token = default);
+        UniTask Pulse(VisualElement element, float duration, CancellationToken token = default);
+        UniTask Shake(VisualElement element, float duration, float intensity, CancellationToken token = default);
     }
     
     public enum SlideDirection
