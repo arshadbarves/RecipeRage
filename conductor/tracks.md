@@ -4,5 +4,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-## [~] Track: Polish: Splash Screen "Rounded Sport" Animation
+## [x] Track: Polish: Splash Screen "Rounded Sport" Animation
 *Link: [./conductor/tracks/polish_splash_sport_anim_20251231/](./conductor/tracks/polish_splash_sport_anim_20251231/)*
