@@ -7,6 +7,7 @@ using Core.Logging;
 using Core.Maintenance;
 using Core.Networking;
 using Core.RemoteConfig;
+using Core.RemoteConfig.Providers;
 using Core.SaveSystem;
 using Core.State;
 using Core.State.States;
@@ -34,6 +35,7 @@ namespace Core.Bootstrap
             builder.Register<SaveService>(Lifetime.Singleton).AsImplementedInterfaces();
 
             builder.Register<NTPTimeService>(Lifetime.Singleton).AsImplementedInterfaces();
+            builder.Register<FirebaseConfigProvider>(Lifetime.Singleton).As<IConfigProvider>(); // Registered
             builder.Register<RemoteConfigService>(Lifetime.Singleton).AsImplementedInterfaces();
             builder.Register<ConnectivityService>(Lifetime.Singleton).AsImplementedInterfaces();
             builder.Register<LocalizationManager>(Lifetime.Singleton).AsImplementedInterfaces(); // Added Registration

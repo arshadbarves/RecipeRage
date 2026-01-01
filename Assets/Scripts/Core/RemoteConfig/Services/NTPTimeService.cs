@@ -51,7 +51,8 @@ namespace Core.RemoteConfig
         /// </summary>
         public void Initialize()
         {
-            // NTPTimeService doesn't need cross-service setup
+            // Set static instance for global access
+            NTPTime.SetInstance(this);
         }
 
         /// <summary>

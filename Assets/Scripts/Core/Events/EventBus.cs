@@ -4,6 +4,7 @@ using System.Linq;
 using Core.Bootstrap;
 using Core.Logging;
 using UnityEngine;
+using VContainer;
 
 namespace Core.Events
 {
@@ -15,6 +16,13 @@ namespace Core.Events
     {
         private readonly Dictionary<Type, List<Delegate>> _subscriptions = new Dictionary<Type, List<Delegate>>();
         private readonly object _lock = new object();
+        private readonly ILoggingService _logger;
+
+        [Inject]
+        public EventBus(ILoggingService logger)
+        {
+            _logger = logger;
+        }
 
         /// <summary>
         /// Called after all services are constructed.
@@ -31,7 +39,7 @@ namespace Core.Events
         {
             if (handler == null)
             {
-                GameLogger.LogWarning("Attempted to subscribe with null handler");
+                _logger.LogWarning("Attempted to subscribe with null handler", "EventBus");
                 return;
             }
 
@@ -48,7 +56,8 @@ namespace Core.Events
                 if (!_subscriptions[eventType].Contains(handler))
                 {
                     _subscriptions[eventType].Add(handler);
-                    GameLogger.Log($"Subscribed to {eventType.Name} (Total: {_subscriptions[eventType].Count})");
+                    // Reduced verbosity for standard subscriptions to avoid spam
+                    // _logger.LogInfo($"Subscribed to {eventType.Name} (Total: {_subscriptions[eventType].Count})", "EventBus");
                 }
             }
         }
@@ -67,8 +76,7 @@ namespace Core.Events
                 if (_subscriptions.TryGetValue(eventType, out List<Delegate> handlers))
                 {
                     handlers.Remove(handler);
-                    GameLogger.Log($"Unsubscribed from {eventType.Name} (Remaining: {handlers.Count})");
-
+                    
                     // Clean up empty lists
                     if (handlers.Count == 0)
                     {
@@ -85,7 +93,7 @@ namespace Core.Events
         {
             if (eventData == null)
             {
-                GameLogger.LogWarning("Attempted to publish null event data");
+                _logger.LogWarning("Attempted to publish null event data", "EventBus");
                 return;
             }
 
@@ -113,11 +121,12 @@ namespace Core.Events
                 }
                 catch (Exception ex)
                 {
-                    GameLogger.LogError($"Error invoking handler for {eventType.Name}: {ex.Message}\n{ex.StackTrace}");
+                    _logger.LogError($"Error invoking handler for {eventType.Name}: {ex.Message}\n{ex.StackTrace}", "EventBus");
                 }
             }
 
-            GameLogger.Log($"Published {eventType.Name} to {handlersCopy.Count} subscribers");
+            // Optional: Log publication if needed for debugging
+            // _logger.LogInfo($"Published {eventType.Name} to {handlersCopy.Count} subscribers", "EventBus");
         }
 
         /// <summary>
@@ -130,7 +139,7 @@ namespace Core.Events
                 Type eventType = typeof(T);
                 if (_subscriptions.Remove(eventType))
                 {
-                    GameLogger.Log($"Cleared all subscriptions for {eventType.Name}");
+                    _logger.LogInfo($"Cleared all subscriptions for {eventType.Name}", "EventBus");
                 }
             }
         }
@@ -144,7 +153,7 @@ namespace Core.Events
             {
                 int count = _subscriptions.Count;
                 _subscriptions.Clear();
-                GameLogger.Log($"Cleared all subscriptions ({count} event types)");
+                _logger.LogInfo($"Cleared all subscriptions ({count} event types)", "EventBus");
             }
         }
 

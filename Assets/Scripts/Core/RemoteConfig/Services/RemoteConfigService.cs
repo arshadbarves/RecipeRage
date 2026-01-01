@@ -7,10 +7,14 @@ using Core.RemoteConfig.Providers;
 
 namespace Core.RemoteConfig
 {
+using VContainer; // Added
+
+// ...
+
     public class RemoteConfigService : IRemoteConfigService
     {
         private readonly Dictionary<Type, IConfigModel> _configCache;
-        private IConfigProvider _firebaseProvider;
+        private readonly IConfigProvider _firebaseProvider;
 
         private ConfigHealthStatus _healthStatus;
         private DateTime _lastUpdateTime;
@@ -23,8 +27,10 @@ namespace Core.RemoteConfig
         public event Action<Type, IConfigModel> OnSpecificConfigUpdated;
         public event Action<ConfigHealthStatus> OnHealthStatusChanged;
 
-        public RemoteConfigService()
+        [Inject]
+        public RemoteConfigService(IConfigProvider configProvider)
         {
+            _firebaseProvider = configProvider;
             _configCache = new Dictionary<Type, IConfigModel>();
             _healthStatus = ConfigHealthStatus.Failed;
             _lastUpdateTime = DateTime.MinValue;
@@ -43,20 +49,19 @@ namespace Core.RemoteConfig
         {
             try
             {
-                GameLogger.Log("Initializing RemoteConfigService...");
+                GameLogger.Log($"Initializing RemoteConfigService with provider: {_firebaseProvider.ProviderName}...");
 
-                // Initialize Firebase provider
-                _firebaseProvider = new FirebaseConfigProvider();
-                bool firebaseSuccess = await _firebaseProvider.Initialize();
+                // Initialize provider
+                bool providerSuccess = await _firebaseProvider.Initialize();
 
-                if (!firebaseSuccess || !_firebaseProvider.IsAvailable())
+                if (!providerSuccess || !_firebaseProvider.IsAvailable())
                 {
-                    GameLogger.LogError("Firebase provider failed to initialize");
+                    GameLogger.LogError("Config provider failed to initialize");
                     UpdateHealthStatus(ConfigHealthStatus.Failed);
                     return false;
                 }
 
-                GameLogger.Log("Firebase provider initialized successfully");
+                GameLogger.Log("Config provider initialized successfully");
 
                 // Fetch initial configuration
                 bool fetchSuccess = await FetchAllConfigsAsync();
