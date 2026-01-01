@@ -15,12 +15,14 @@ namespace RecipeRage.Modules.Auth.Core
         private const int TIMEOUT_SECONDS = 15;
         private readonly IEventBus _eventBus;
         private readonly ISaveService _saveService;
+        private readonly ILoggingService _logger;
         private readonly Action _onLoginSuccess;
 
-        public EOSAuthService(IEventBus eventBus, ISaveService saveService, Action onLoginSuccess = null)
+        public EOSAuthService(IEventBus eventBus, ISaveService saveService, ILoggingService logger, Action onLoginSuccess = null)
         {
             _eventBus = eventBus;
             _saveService = saveService;
+            _logger = logger;
             _onLoginSuccess = onLoginSuccess;
         }
 
@@ -38,7 +40,7 @@ namespace RecipeRage.Modules.Auth.Core
 
         public async UniTask<bool> LoginAsync(AuthType type)
         {
-            GameLogger.Log($"[Auth] Attempting login with type: {type}");
+            _logger.LogInfo($"Attempting login with type: {type}", "Auth");
 
             bool success = false;
             switch (type)
@@ -47,7 +49,7 @@ namespace RecipeRage.Modules.Auth.Core
                     success = await LoginWithDeviceIdAsync();
                     break;
                 default:
-                    GameLogger.LogError($"[Auth] Unsupported AuthType: {type}");
+                    _logger.LogError($"Unsupported AuthType: {type}", "Auth");
                     break;
             }
 
@@ -61,9 +63,8 @@ namespace RecipeRage.Modules.Auth.Core
 
                 _onLoginSuccess?.Invoke();
 
-                GameLogger.Log("[Auth] Publishing LoginSuccessEvent...");
+                _logger.LogInfo("Login successful. Publishing LoginSuccessEvent...", "Auth");
                 _eventBus?.Publish(new LoginSuccessEvent { UserId = GetCurrentUserId(), DisplayName = "User" });
-                GameLogger.Log("[Auth] LoginSuccessEvent Published");
             }
             else
             {
@@ -86,7 +87,7 @@ namespace RecipeRage.Modules.Auth.Core
             if (productUserId != null && productUserId.IsValid())
             {
                 EOSManager.Instance.ClearConnectId(productUserId);
-                GameLogger.Log("[Auth] Logged out from EOS");
+                _logger.LogInfo("Logged out from EOS", "Auth");
             }
 
             _eventBus?.Publish(new LogoutEvent { UserId = userIdStr });
@@ -110,12 +111,12 @@ namespace RecipeRage.Modules.Auth.Core
                 {
                     if (callbackInfo.ResultCode == Result.Success)
                     {
-                        GameLogger.Log("[Auth] Device ID login successful");
+                        _logger.LogInfo("Device ID login successful", "Auth");
                         tcs.TrySetResult(true);
                     }
                     else
                     {
-                        GameLogger.LogError($"[Auth] Device ID login failed: {callbackInfo.ResultCode}");
+                        _logger.LogError($"Device ID login failed: {callbackInfo.ResultCode}", "Auth");
                         tcs.TrySetResult(false);
                     }
                 }
@@ -140,7 +141,7 @@ namespace RecipeRage.Modules.Auth.Core
                 }
                 else
                 {
-                    GameLogger.LogError($"[Auth] Failed to create Device ID: {info.ResultCode}");
+                    _logger.LogError($"Failed to create Device ID: {info.ResultCode}", "Auth");
                     tcs.TrySetResult(false);
                 }
             });

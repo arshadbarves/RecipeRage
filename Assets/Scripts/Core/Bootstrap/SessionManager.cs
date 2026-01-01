@@ -10,16 +10,18 @@ namespace Core.Bootstrap
     {
         private readonly IObjectResolver _container;
         private readonly IEventBus _eventBus;
+        private readonly ILoggingService _logger;
         private SessionLifetimeScope _sessionScope;
 
         public IObjectResolver SessionContainer => _sessionScope?.Container;
         public bool IsSessionActive => _sessionScope != null;
 
         [Inject]
-        public SessionManager(IObjectResolver container, IEventBus eventBus)
+        public SessionManager(IObjectResolver container, IEventBus eventBus, ILoggingService logger)
         {
             _container = container;
             _eventBus = eventBus;
+            _logger = logger;
         }
 
         public void Initialize()
@@ -42,7 +44,7 @@ namespace Core.Bootstrap
             var parentScope = _container.Resolve<LifetimeScope>();
             _sessionScope = parentScope.CreateChild<SessionLifetimeScope>();
 
-            GameLogger.Log("[SessionManager] SessionLifetimeScope created.");
+            _logger.LogInfo("SessionLifetimeScope created.", "SessionManager");
         }
 
         public void DestroySession()
@@ -51,7 +53,7 @@ namespace Core.Bootstrap
             {
                 _sessionScope.Dispose();
                 _sessionScope = null;
-                GameLogger.Log("[SessionManager] SessionLifetimeScope destroyed.");
+                _logger.LogInfo("SessionLifetimeScope destroyed.", "SessionManager");
             }
         }
 
