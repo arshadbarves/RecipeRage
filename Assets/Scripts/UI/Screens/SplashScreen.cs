@@ -53,15 +53,15 @@ namespace UI.Screens
             element.style.opacity = 1f;
 
             // 2. Animate Play Container (Scale In)
-            await _animationService.AnimateScale(_playContainer, Vector2.zero, Vector2.one, 0.4f);
+            await _animationService.UI.ScaleIn(_playContainer, 0.4f);
             
             // 3. Animate Center Container (Slide/Scale In)
-            await _animationService.AnimateScale(_centerContainer, Vector2.zero, Vector2.one, 0.4f);
+            await _animationService.UI.ScaleIn(_centerContainer, 0.4f);
 
             // 4. Fade in text
-            var textTask1 = _animationService.AnimateOpacity(_playText, 0f, 1f, 0.3f);
-            var textTask2 = _animationService.AnimateOpacity(_centerText, 0f, 1f, 0.3f);
-            var textTask3 = _animationService.AnimateOpacity(_subtitle, 0f, 1f, 0.5f);
+            var textTask1 = _animationService.UI.FadeIn(_playText, 0.3f);
+            var textTask2 = _animationService.UI.FadeIn(_centerText, 0.3f);
+            var textTask3 = _animationService.UI.FadeIn(_subtitle, 0.5f);
 
             await UniTask.WhenAll(textTask1, textTask2, textTask3);
 
