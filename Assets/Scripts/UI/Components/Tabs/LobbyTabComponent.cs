@@ -1,4 +1,3 @@
-using System;
 using Core.Animation;
 using UI.Data;
 using UI.Screens;
@@ -29,10 +28,10 @@ namespace UI.Components.Tabs
         private Label _teamCodeLabel;
         private VisualElement _teamControls;
         private VisualElement _playerSlotsContainer;
-        
+
         private VisualTreeAsset _playerSlotTemplate;
         private System.Collections.Generic.List<PlayerSlot> _playerSlots = new();
-        
+
         private bool _isInParty = false;
         private bool _isReady = false;
         private bool _buttonsInitialized = false;
@@ -53,7 +52,7 @@ namespace UI.Components.Tabs
             CreatePlayerSlots(_maxTeamSize);
             SetupStaticButtons();
             SetupDynamicButtons();
-            
+
             // Map Binding
             _viewModel.MapName.Bind(name => { if (_mapNameLabel != null) _mapNameLabel.text = name; });
             _viewModel.MapSubtitle.Bind(sub => { if (_mapSubtitleLabel != null) _mapSubtitleLabel.text = sub; });
@@ -227,7 +226,7 @@ namespace UI.Components.Tabs
         {
             if (_mapNameLabel != null) _mapNameLabel.text = map.name;
             if (_mapSubtitleLabel != null) _mapSubtitleLabel.text = map.subtitle;
-            
+
             if (map.maxPlayers > 0) SetTeamSize(map.maxPlayers);
         }
 

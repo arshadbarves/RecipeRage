@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using Core.Bootstrap;
 using Core.Networking.Interfaces;
 using Core.Reactive;
 using Core.State;
@@ -12,10 +13,6 @@ using VContainer;
 
 namespace UI.ViewModels
 {
-using Core.Bootstrap; // Added
-
-// ...
-
     public class LobbyViewModel : BaseViewModel
     {
         private readonly SessionManager _sessionManager;
@@ -27,7 +24,7 @@ using Core.Bootstrap; // Added
 
         public BindableProperty<bool> IsMatchmaking { get; } = new BindableProperty<bool>(false);
         public BindableProperty<int> PlayerCount { get; } = new BindableProperty<int>(1);
-        
+
         // Map Data
         public BindableProperty<string> MapName { get; } = new BindableProperty<string>("Loading...");
         public BindableProperty<string> MapSubtitle { get; } = new BindableProperty<string>("");
@@ -81,8 +78,8 @@ using Core.Bootstrap; // Added
                 if (_mapDatabase != null)
                 {
                     TimeSpan remaining = _mapDatabase.GetTimeUntilRotation();
-                    RotationTimer.Value = remaining.TotalSeconds > 0 
-                        ? $"NEW MAP IN : {remaining.Hours}h {remaining.Minutes}m" 
+                    RotationTimer.Value = remaining.TotalSeconds > 0
+                        ? $"NEW MAP IN : {remaining.Hours}h {remaining.Minutes}m"
                         : "NEW MAP IN : --h --m";
                 }
                 await UniTask.Delay(TimeSpan.FromMinutes(1), cancellationToken: token);

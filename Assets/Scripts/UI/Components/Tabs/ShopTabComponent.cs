@@ -3,7 +3,6 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UI.Data;
 using UI.ViewModels;
-using VContainer;
 
 namespace UI.Components.Tabs
 {
@@ -18,7 +17,7 @@ namespace UI.Components.Tabs
         private string _currentCategory = "featured";
         private ShopData _shopData;
         private VisualTreeAsset _shopItemTemplate;
-        
+
         private readonly ShopViewModel _viewModel;
 
         public ShopTabComponent(ShopViewModel viewModel)

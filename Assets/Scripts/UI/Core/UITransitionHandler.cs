@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Core.Extensions;
 
 namespace UI.Core
 {
@@ -93,17 +94,6 @@ namespace UI.Core
             element.transform.position = start;
             await DOTween.To(() => element.transform.position, x => element.transform.position = x, end, duration)
                 .SetEase(Ease.OutQuad).ToUniTask();
-        }
-    }
-
-    public static class TweenExtensions
-    {
-        public static UniTask ToUniTask(this Tween tween)
-        {
-            var tcs = new UniTaskCompletionSource();
-            tween.OnComplete(() => tcs.TrySetResult());
-            tween.OnKill(() => tcs.TrySetCanceled()); // Treat killed tween as canceled/completed
-            return tcs.Task;
         }
     }
 }

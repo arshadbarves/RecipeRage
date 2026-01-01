@@ -1,3 +1,4 @@
+using Core.Bootstrap;
 using Core.Currency;
 using Core.Reactive;
 using UI.Core;
@@ -7,10 +8,6 @@ using VContainer;
 
 namespace UI.ViewModels
 {
-using Core.Bootstrap; // Added
-
-// ...
-
     public class ShopViewModel : BaseViewModel
     {
         private readonly SessionManager _sessionManager;

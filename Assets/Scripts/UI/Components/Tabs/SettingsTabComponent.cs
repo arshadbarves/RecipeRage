@@ -3,7 +3,6 @@ using UI.ViewModels;
 using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;
-using UI;
 
 namespace UI.Components.Tabs
 {
@@ -45,7 +44,7 @@ namespace UI.Components.Tabs
             InitializeDropdowns();
             SetupValueChangeCallbacks();
             SetupButtons();
-            
+
             BindViewModel();
             UpdateVersionInfo();
         }
@@ -96,13 +95,13 @@ namespace UI.Components.Tabs
 
         private void BindViewModel()
         {
-            _viewModel.MusicVolume.Bind(val => 
+            _viewModel.MusicVolume.Bind(val =>
             {
                 if (_musicVolumeSlider != null) _musicVolumeSlider.value = val;
                 UpdateVolumeLabel(_musicVolumeLabel, val);
-                AudioListener.volume = val; 
+                AudioListener.volume = val;
             });
-            _viewModel.SFXVolume.Bind(val => 
+            _viewModel.SFXVolume.Bind(val =>
             {
                 if (_sfxVolumeSlider != null) _sfxVolumeSlider.value = val;
                 UpdateVolumeLabel(_sfxVolumeLabel, val);
@@ -119,7 +118,7 @@ namespace UI.Components.Tabs
                 _viewModel.SFXVolume.Value = evt.newValue;
                 _viewModel.SaveVolumeSettings();
             });
-            
+
             _qualityDropdown?.RegisterValueChangedCallback(evt => QualitySettings.SetQualityLevel(_qualityDropdown.index));
             _fullscreenToggle?.RegisterValueChangedCallback(evt => Screen.fullScreen = evt.newValue);
         }

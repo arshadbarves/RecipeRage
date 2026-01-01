@@ -13,3 +13,7 @@ loading_tip_title,CHEF'S TIP:,CONSEJO DEL CHEF:
 loading_tip_1,Chopping onions quickly fills your rage meter.,Picar cebollas rápidamente llena tu medidor de ira.
 loading_tip_2,Coordinate with your team to deliver orders faster.,Coordina con tu equipo para entregar pedidos más rápido.
 loading_tip_3,Don't burn the soup!,No quemes la sopa!
+matchmaking_status_searching,Searching for players...,Buscando jugadores...
+matchmaking_status_found,Match Found!,Partida encontrada!
+matchmaking_button_cancel,CANCEL,CANCELAR
+matchmaking_status_joining,Joining match...,Uniéndose a la partida...

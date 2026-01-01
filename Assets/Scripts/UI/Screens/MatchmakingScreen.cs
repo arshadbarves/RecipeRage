@@ -1,10 +1,7 @@
-using Core.Bootstrap;
-using Core.Networking.Common;
-using Core.Networking.Interfaces;
+using Core.Logging;
 using UI.Core;
-using UnityEngine;
+using UI.ViewModels;
 using UnityEngine.UIElements;
-using Core.Networking;
 using VContainer;
 
 namespace UI.Screens
@@ -16,8 +13,7 @@ namespace UI.Screens
     [UIScreen(UIScreenType.Matchmaking, UIScreenCategory.Screen, "Screens/MatchmakingTemplate")]
     public class MatchmakingScreen : BaseUIScreen
     {
-        [Inject]
-        private SessionManager _sessionManager;
+        [Inject] private MatchmakingViewModel _viewModel;
 
         // UI Elements
         private Label _statusText;
@@ -25,11 +21,6 @@ namespace UI.Screens
         private Label _searchTimeText;
         private Button _cancelButton;
         private VisualElement _statusIndicator;
-        private VisualElement _playerListContainer;
-
-        // State
-        private IMatchmakingService _matchmakingService;
-        private float _searchTime;
 
         protected override void OnInitialize()
         {
@@ -38,105 +29,57 @@ namespace UI.Screens
             _searchTimeText = GetElement<Label>("search-time");
             _cancelButton = GetElement<Button>("cancel-button");
             _statusIndicator = GetElement<VisualElement>("status-indicator");
-            _playerListContainer = GetElement<VisualElement>("player-list");
+
+            TransitionType = UITransitionType.Fade;
 
             if (_cancelButton != null)
             {
                 _cancelButton.clicked += OnCancelClicked;
             }
+
+            BindViewModel();
         }
 
-        protected override void OnShow()
+        private void BindViewModel()
         {
-            _searchTime = 0f;
+            if (_viewModel == null) return;
 
-            // Resolve service on show to ensure session is ready
-            ResolveMatchmakingService();
+            _viewModel.Initialize();
 
-            if (_statusText != null) _statusText.text = "Searching for players...";
-            if (_statusIndicator != null)
+            _viewModel.StatusText.Bind(text => { if (_statusText != null) _statusText.text = text; });
+            _viewModel.PlayerCountText.Bind(text => { if (_playerCountText != null) _playerCountText.text = text; });
+            _viewModel.SearchTimeText.Bind(text => { if (_searchTimeText != null) _searchTimeText.text = text; });
+            
+            _viewModel.IsMatchFound.Bind(found => 
             {
-                _statusIndicator.RemoveFromClassList("found");
-                _statusIndicator.AddToClassList("searching");
-            }
-        }
-
-        private void ResolveMatchmakingService()
-        {
-            if (_matchmakingService != null) return;
-
-            var sessionContainer = _sessionManager?.SessionContainer;
-            if (sessionContainer != null)
-            {
-                var networking = sessionContainer.Resolve<INetworkingServices>();
-                _matchmakingService = networking?.MatchmakingService;
-
-                if (_matchmakingService != null)
+                if (_statusIndicator != null)
                 {
-                    _matchmakingService.OnPlayersFound += OnPlayersFoundUpdated;
-                    _matchmakingService.OnMatchFound += OnMatchFound;
+                    if (found)
+                    {
+                        _statusIndicator.RemoveFromClassList("searching");
+                        _statusIndicator.AddToClassList("found");
+                    }
+                    else
+                    {
+                        _statusIndicator.RemoveFromClassList("found");
+                        _statusIndicator.AddToClassList("searching");
+                    }
                 }
-            }
-        }
-
-        public override void Update(float deltaTime)
-        {
-            if (_matchmakingService != null && _matchmakingService.IsSearching)
-            {
-                _searchTime += deltaTime;
-                UpdateSearchTimeDisplay();
-            }
-        }
-
-        protected override void OnHide()
-        {
-            // Optional: keep subscription if we want updates in background,
-            // but usually we want to clear it if screen is hidden.
-        }
-
-        protected override void OnDispose()
-        {
-            if (_matchmakingService != null)
-            {
-                _matchmakingService.OnPlayersFound -= OnPlayersFoundUpdated;
-                _matchmakingService.OnMatchFound -= OnMatchFound;
-                _matchmakingService = null;
-            }
-
-            if (_cancelButton != null)
-            {
-                _cancelButton.clicked -= OnCancelClicked;
-            }
+            });
         }
 
         private void OnCancelClicked()
         {
-            _matchmakingService?.CancelMatchmaking();
+            _viewModel?.CancelMatchmaking();
         }
 
-        private void OnPlayersFoundUpdated(int current, int required)
+        protected override void OnDispose()
         {
-            if (_playerCountText != null) _playerCountText.text = $"{current}/{required}";
-        }
-
-        private void OnMatchFound(LobbyInfo lobbyInfo)
-        {
-            if (_statusText != null) _statusText.text = "Match Found!";
-            if (_statusIndicator != null)
+            if (_cancelButton != null)
             {
-                _statusIndicator.RemoveFromClassList("searching");
-                _statusIndicator.AddToClassList("found");
+                _cancelButton.clicked -= OnCancelClicked;
             }
-        }
-
-        private void UpdateSearchTimeDisplay()
-        {
-            if (_searchTimeText != null)
-            {
-                int minutes = Mathf.FloorToInt(_searchTime / 60f);
-                int seconds = Mathf.FloorToInt(_searchTime % 60f);
-                _searchTimeText.text = $"{minutes}:{seconds:00}";
-            }
+            _viewModel?.Dispose();
         }
     }
 }
