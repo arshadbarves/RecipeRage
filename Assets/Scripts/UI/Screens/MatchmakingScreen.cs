@@ -1,4 +1,3 @@
-using Core.Logging;
 using UI.Core;
 using UI.ViewModels;
 using UnityEngine.UIElements;

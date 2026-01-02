@@ -64,7 +64,7 @@ namespace Core.Bootstrap
             builder.Register<GameOverState>(Lifetime.Transient);
 
             // UI ViewModels
-            builder.Register<UI.ViewModels.SplashScreenViewModel>(Lifetime.Transient);
+
             builder.Register<UI.ViewModels.LoginViewModel>(Lifetime.Transient);
             builder.Register<UI.ViewModels.LoadingViewModel>(Lifetime.Transient);
             builder.Register<UI.ViewModels.LobbyViewModel>(Lifetime.Transient);
