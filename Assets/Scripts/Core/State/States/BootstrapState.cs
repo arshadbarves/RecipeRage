@@ -1,5 +1,5 @@
 using System;
-using Core.Events;
+using Core.Localization;
 using Core.Logging;
 using Core.Maintenance;
 using Core.RemoteConfig;
@@ -26,7 +26,7 @@ namespace Core.State.States
         private readonly ISaveService _saveService;
         private readonly IMaintenanceService _maintenanceService;
         private readonly IGameStateManager _stateManager;
-        private readonly IEventBus _eventBus;
+        private readonly ILocalizationManager _localizationManager;
 
         public BootstrapState(
             IUIService uiService,
@@ -36,7 +36,7 @@ namespace Core.State.States
             ISaveService saveService,
             IMaintenanceService maintenanceService,
             IGameStateManager stateManager,
-            IEventBus eventBus)
+            ILocalizationManager localizationManager)
         {
             _uiService = uiService;
             _ntpTimeService = ntpTimeService;
@@ -45,7 +45,7 @@ namespace Core.State.States
             _saveService = saveService;
             _maintenanceService = maintenanceService;
             _stateManager = stateManager;
-            _eventBus = eventBus;
+            _localizationManager = localizationManager;
         }
 
         public override async void Enter()
@@ -75,6 +75,7 @@ namespace Core.State.States
             var loadingScreen = _uiService.GetScreen<LoadingScreen>(UIScreenType.Loading);
 
             // --- STEP 1: Foundation (0% - 30%) ---
+
             loadingScreen?.UpdateProgress(0.1f, "Initializing Foundation...");
 
             // NTP Sync
@@ -130,7 +131,7 @@ namespace Core.State.States
 
             // --- STEP 4: Ready (100%) ---
             loadingScreen?.UpdateProgress(1.0f, "READY!");
-            await UniTask.Delay(TimeSpan.FromSeconds(1.0f)); // 1s Delay as requested
+            await UniTask.Delay(TimeSpan.FromSeconds(1.0f));
 
             _uiService.HideScreen(UIScreenType.Loading);
             GameLogger.Log("Initialization complete. Transitioning to MainMenu.");

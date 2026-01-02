@@ -1,4 +1,3 @@
-using Core.Bootstrap;
 using Core.SaveSystem;
 using UnityEditor;
 using UnityEngine;
@@ -37,7 +36,7 @@ namespace Editor
                 {
                     // Clear save files manually when not playing
                     string savePath = Application.persistentDataPath;
-                    
+
                     if (System.IO.Directory.Exists(savePath))
                     {
                         string[] files = System.IO.Directory.GetFiles(savePath, "*.json");
@@ -48,10 +47,10 @@ namespace Editor
                         Debug.Log($"[DevelopmentTools] ✅ Deleted {files.Length} save files from: {savePath}");
                     }
                 }
-                
+
                 // Note: EOS plugin may use PlayerPrefs internally for its own data
                 // We don't clear PlayerPrefs to avoid breaking EOS functionality
-                
+
                 Debug.Log("[DevelopmentTools] ✅ All saved data cleared successfully!");
                 EditorUtility.DisplayDialog(
                     "Success",
@@ -83,7 +82,7 @@ namespace Editor
                     // Clear settings file manually when not playing
                     string savePath = Application.persistentDataPath;
                     string settingsFile = System.IO.Path.Combine(savePath, "settings.json");
-                    
+
                     if (System.IO.File.Exists(settingsFile))
                     {
                         System.IO.File.Delete(settingsFile);
@@ -94,7 +93,7 @@ namespace Editor
                         Debug.Log("[DevelopmentTools] No settings file found");
                     }
                 }
-                
+
                 EditorUtility.DisplayDialog(
                     "Success",
                     "Authentication data has been cleared.\n\n" +

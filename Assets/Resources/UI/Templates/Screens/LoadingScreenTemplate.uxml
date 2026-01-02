@@ -1,13 +1,14 @@
 <UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" xmlns:ui="UI.Controls" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/Resources/UI/Styles/Screens/LoadingScreen.uss?fileID=7433441132597879392&amp;guid=d8e0a677a7c6e42878ca14ea675de3de&amp;type=3#LoadingScreen"/>
     <VisualElement name="screen-container" class="loading-screen">
+        <ui:RadialGradientElement name="background" center-color="#1a1a1a" edge-color="#000000" radius-scale="1.5" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;"/>
         <VisualElement name="header-logo" class="header-logo">
             <VisualElement name="header-recipe-container" class="logo-box-container">
-                <ui:SkewedBoxElement name="recipe-bg" skew-angle="-12" enable-fill="false" enable-border="true" border-color="rgb(255, 255, 255)" border-width="4" corner-radius="8" class="logo-bg"/>
+                <ui:SkewedBoxElement name="recipe-bg" skew-angle="-12" enable-fill="false" enable-border="true" border-color="rgb(255, 255, 255)" border-width="4" corner-radius="15" class="logo-bg"/>
                 <Label name="recipe-text" text="RECIPE" class="header-text"/>
             </VisualElement>
             <VisualElement name="header-rage-container" class="logo-box-container rage-margin">
-                <ui:SkewedBoxElement name="rage-bg" skew-angle="-12" enable-fill="true" fill-color="rgb(230, 57, 70)" enable-border="false" corner-radius="8" class="logo-bg"/>
+                <ui:SkewedBoxElement name="rage-bg" skew-angle="-12" enable-fill="true" fill-color="rgb(230, 57, 70)" enable-border="false" corner-radius="15" class="logo-bg"/>
                 <Label name="rage-text" text="RAGE" class="header-text"/>
             </VisualElement>
         </VisualElement>
@@ -18,8 +19,8 @@
                     <Label name="percentage" text="0%" class="percentage"/>
                 </VisualElement>
                 <VisualElement name="progress-track" class="progress-track-container">
-                    <ui:SkewedBoxElement name="track-bg" skew-angle="-12" enable-fill="true" fill-color="rgb(17, 17, 17)" enable-border="true" border-color="rgb(51, 51, 51)" border-width="2" corner-radius="4" class="progress-track-bg"/>
-                    <ui:SkewedBoxElement name="progress-fill" skew-angle="-12" enable-fill="true" fill-color="rgb(255, 255, 255)" corner-radius="2" class="progress-fill-skewed"/>
+                    <ui:SkewedBoxElement name="track-bg" skew-angle="-12" enable-fill="true" fill-color="rgb(17, 17, 17)" enable-border="true" border-color="rgb(51, 51, 51)" border-width="2" corner-radius="15" class="progress-track-bg"/>
+                    <ui:SkewedBoxElement name="progress-fill" skew-angle="-12" enable-fill="true" fill-color="rgb(255, 255, 255)" corner-radius="10" class="progress-fill-skewed"/>
                 </VisualElement>
             </VisualElement>
             <VisualElement name="tips-area" class="tips-area">
