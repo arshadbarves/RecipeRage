@@ -1,49 +1,22 @@
-using Core.Bootstrap;
-using Core.Currency;
-using Core.Events;
-using Core.Logging;
-using Core.SaveSystem;
-using UI;
+using System;
+using DG.Tweening;
 using UI.Core;
-using UI.Screens;
+using UI.ViewModels;
 using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;
-using System;
 
 namespace UI.Popups
 {
     /// <summary>
     /// Mandatory popup for setting/changing username
     /// Used for both first-time setup and subsequent changes
+    /// Refactored to MVVM
     /// </summary>
     [UIScreen(UIScreenType.UsernamePopup, UIScreenCategory.Modal, "Popups/UsernamePopupTemplate")]
     public class UsernamePopup : BaseUIScreen
     {
-        [Inject]
-        private IEventBus _eventBus;
-
-        [Inject]
-        private ISaveService _saveService;
-
-        [Inject]
-        private IUIService _uiService;
-
-        [Inject]
-        private SessionManager _sessionManager;
-
-        private ICurrencyService CurrencyService
-        {
-            get
-            {
-                var sessionContainer = _sessionManager?.SessionContainer;
-                if (sessionContainer != null)
-                {
-                    return sessionContainer.Resolve<ICurrencyService>();
-                }
-                return null;
-            }
-        }
+        [Inject] private UsernameViewModel _viewModel;
 
         private TextField _usernameField;
         private Label _statusLabel;
@@ -51,11 +24,12 @@ namespace UI.Popups
         private Button _confirmButton;
         private Button _cancelButton;
         private VisualElement _costContainer;
+        private VisualElement _cardWrapper;
+        private VisualElement _loadingOverlay;
+        private VisualElement _spinner;
 
-        private Action<string> _onConfirm;
         private Action _onCancel;
-        private bool _isFirstTime;
-        private int _changeCost = 0; // Cost in gems to change name
+        private Tween _spinnerTween;
 
         protected override void OnInitialize()
         {
@@ -65,7 +39,20 @@ namespace UI.Popups
             _confirmButton = GetElement<Button>("confirm-button");
             _cancelButton = GetElement<Button>("cancel-button");
             _costContainer = GetElement<VisualElement>("cost-container");
+            _cardWrapper = GetElement<VisualElement>("popup-card-wrapper");
+            _loadingOverlay = GetElement<VisualElement>("loading-overlay");
+            _spinner = _loadingOverlay?.Q("spinner"); // Assuming class spinner is on a child or element itself
 
+            // If spinner is not found via query, try explicit naming if added, or rely on .spinner class
+            if (_spinner == null && _loadingOverlay != null)
+                _spinner = _loadingOverlay.Q(className: "spinner");
+
+            BindEvents();
+            BindViewModel();
+        }
+
+        private void BindEvents()
+        {
             if (_confirmButton != null)
                 _confirmButton.clicked += OnConfirmClicked;
 
@@ -75,171 +62,140 @@ namespace UI.Popups
             if (_usernameField != null)
             {
                 _usernameField.RegisterValueChangedCallback(OnUsernameChanged);
-                _usernameField.maxLength = 16;
             }
         }
 
-        protected override void OnShow()
+        private void BindViewModel()
         {
-            if (_usernameField != null)
+            if (_viewModel == null) return;
+
+            _viewModel.Initialize();
+
+            // Bind Properties
+            _viewModel.Username.Bind(val =>
             {
-                _usernameField.value = _saveService?.GetPlayerStats().PlayerName ?? "";
-                _usernameField.Focus();
-            }
+                if (_usernameField != null && _usernameField.value != val)
+                    _usernameField.SetValueWithoutNotify(val);
+            });
 
-            UpdateStatus("", false);
-            UpdateCostDisplay();
-        }
-
-        public void ShowForUsername(bool isFirstTime, Action<string> onConfirm, Action onCancel = null)
-        {
-            _isFirstTime = isFirstTime;
-            _onConfirm = onConfirm;
-            _onCancel = onCancel;
-
-            // First time is free, subsequent changes might cost gems
-            _changeCost = isFirstTime ? 0 : 50;
-
-            UpdateCostDisplay();
-
-            // Cancel button is hidden for first-time mandatory setup
-            if (_cancelButton != null)
+            _viewModel.StatusMessage.Bind(msg =>
             {
-                _cancelButton.style.display = isFirstTime ? DisplayStyle.None : DisplayStyle.Flex;
-            }
+                if (_statusLabel != null)
+                {
+                    _statusLabel.text = msg;
+                    _statusLabel.style.visibility = string.IsNullOrEmpty(msg) ? Visibility.Hidden : Visibility.Visible;
+                }
+            });
 
-            Show(true, false);
-        }
-
-        private void UpdateCostDisplay()
-        {
-            if (_costContainer == null) return;
-
-            if (_changeCost > 0)
+            _viewModel.IsStatusError.Bind(isError =>
             {
-                _costContainer.style.display = DisplayStyle.Flex;
-                if (_costLabel != null) _costLabel.text = _changeCost.ToString();
-            }
-            else
+                if (_statusLabel != null)
+                    _statusLabel.style.color = isError ? Color.red : Color.green;
+            });
+
+            _viewModel.CostText.Bind(txt =>
             {
-                _costContainer.style.display = DisplayStyle.None;
-            }
+                if (_costLabel != null) _costLabel.text = txt;
+            });
+
+            _viewModel.IsCostVisible.Bind(visible =>
+            {
+                if (_costContainer != null)
+                    _costContainer.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+            });
+
+            _viewModel.IsCancelVisible.Bind(visible =>
+            {
+                if (_cancelButton != null)
+                    _cancelButton.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+            });
+
+            _viewModel.IsConfirmEnabled.Bind(enabled =>
+            {
+                if (_confirmButton != null)
+                    _confirmButton.SetEnabled(enabled);
+            });
+
+            _viewModel.IsLoading.Bind(isLoading =>
+            {
+                if (_loadingOverlay != null)
+                {
+                    _loadingOverlay.RemoveFromClassList("hidden");
+                    if (!isLoading) _loadingOverlay.AddToClassList("hidden");
+                }
+                
+                if (isLoading)
+                    StartSpinnerAnimation();
+                else
+                    StopSpinnerAnimation();
+            });
         }
 
         private void OnUsernameChanged(ChangeEvent<string> evt)
         {
-            string newName = evt.newValue?.Trim();
-            bool isValid = ValidateUsername(newName, out string error);
-
-            if (!string.IsNullOrEmpty(newName))
-            {
-                UpdateStatus(error, !isValid);
-            }
-            else
-            {
-                UpdateStatus("", false);
-            }
+            _viewModel.Username.Value = evt.newValue;
         }
 
-        private bool ValidateUsername(string name, out string error)
+        private void OnConfirmClicked()
         {
-            if (string.IsNullOrEmpty(name))
-            {
-                error = "Username cannot be empty";
-                return false;
-            }
-
-            if (name.Length < 3)
-            {
-                error = "Minimum 3 characters required";
-                return false;
-            }
-
-            if (name.Length > 16)
-            {
-                error = "Maximum 16 characters allowed";
-                return false;
-            }
-
-            // Simple profanity or character check could go here
-            foreach (char c in name)
-            {
-                if (!char.IsLetterOrDigit(c) && c != '_' && c != ' ')
-                {
-                    error = "Only letters, numbers, and underscores allowed";
-                    return false;
-                }
-            }
-
-            error = "Username is available";
-            return true;
-        }
-
-        private void UpdateStatus(string message, bool isError)
-        {
-            if (_statusLabel == null) return;
-
-            _statusLabel.text = message;
-            _statusLabel.style.color = isError ? Color.red : Color.green;
-            _statusLabel.style.visibility = string.IsNullOrEmpty(message) ? Visibility.Hidden : Visibility.Visible;
-        }
-
-        private async void OnConfirmClicked()
-        {
-            string newName = _usernameField?.value?.Trim();
-
-            if (!ValidateUsername(newName, out string error))
-            {
-                UpdateStatus(error, true);
-                return;
-            }
-
-            // Check cost
-            if (_changeCost > 0)
-            {
-                if (CurrencyService == null || CurrencyService.Gems < _changeCost)
-                {
-                    UpdateStatus("Not enough gems!", true);
-                    return;
-                }
-            }
-
-            _confirmButton.SetEnabled(false);
-            UpdateStatus("Saving...", false);
-
-            try
-            {
-                // In a real game, we'd check availability with backend here
-                // For now, just save locally via SaveService
-
-                if (_changeCost > 0)
-                {
-                    CurrencyService.SpendGems(_changeCost);
-                }
-
-                _saveService.UpdatePlayerStats(stats =>
-                {
-                    stats.PlayerName = newName;
-                });
-
-                _onConfirm?.Invoke(newName);
-
-                _uiService?.ShowNotification("Username updated successfully!", NotificationType.Success);
-
-                Hide(true);
-            }
-            catch (Exception ex)
-            {
-                GameLogger.LogError($"Failed to save username: {ex.Message}");
-                UpdateStatus("Failed to save. Try again.", true);
-                _confirmButton.SetEnabled(true);
-            }
+            _viewModel.SaveUsername();
         }
 
         private void OnCancelClicked()
         {
             _onCancel?.Invoke();
             Hide(true);
+        }
+
+        public void ShowForUsername(bool isFirstTime, Action<string> onConfirm, Action onCancel = null)
+        {
+            _onCancel = onCancel;
+            
+            // Setup ViewModel for this session
+            // We wrap the confirm callback to hide the popup on success
+            Action<string> wrappedConfirm = (name) =>
+            {
+                onConfirm?.Invoke(name);
+                Hide(true);
+            };
+
+            _viewModel.Setup(isFirstTime, wrappedConfirm);
+
+            Show(true, false);
+            PlayAppearAnimation();
+        }
+
+        protected override void OnShow()
+        {
+            if (_usernameField != null)
+                _usernameField.Focus();
+        }
+
+        private void PlayAppearAnimation()
+        {
+            if (_cardWrapper == null) return;
+
+            _cardWrapper.style.scale = new Scale(Vector3.one * 0.7f);
+            DOTween.To(() => 0.7f, x => _cardWrapper.style.scale = new Scale(Vector3.one * x), 1.0f, 0.5f)
+                   .SetEase(Ease.OutBack);
+        }
+
+        private void StartSpinnerAnimation()
+        {
+            if (_spinner == null) return;
+            
+            _spinnerTween?.Kill();
+            // Rotate the spinner visual element using DOTween on the transform rotation
+            // Note: UI Toolkit rotation is in degrees
+            _spinner.style.rotate = new Rotate(0);
+            _spinnerTween = DOTween.To(() => 0f, x => _spinner.style.rotate = new Rotate(x), 360f, 1f)
+                .SetLoops(-1, LoopType.Restart)
+                .SetEase(Ease.Linear);
+        }
+
+        private void StopSpinnerAnimation()
+        {
+            _spinnerTween?.Kill();
         }
 
         protected override void OnDispose()
@@ -252,6 +208,9 @@ namespace UI.Popups
 
             if (_usernameField != null)
                 _usernameField.UnregisterValueChangedCallback(OnUsernameChanged);
+            
+            _spinnerTween?.Kill();
+            _viewModel?.Dispose();
         }
     }
 }

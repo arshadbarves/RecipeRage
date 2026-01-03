@@ -73,6 +73,7 @@ namespace Core.Bootstrap
             builder.Register<UI.ViewModels.CharacterViewModel>(Lifetime.Transient);
             builder.Register<UI.ViewModels.MainMenuViewModel>(Lifetime.Transient);
             builder.Register<UI.ViewModels.MatchmakingViewModel>(Lifetime.Transient);
+            builder.Register<UI.ViewModels.UsernameViewModel>(Lifetime.Transient);
 
             // UI Screens (Transient)
             builder.Register<UI.Screens.LoadingScreen>(Lifetime.Transient);

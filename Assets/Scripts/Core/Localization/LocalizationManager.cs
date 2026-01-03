@@ -28,7 +28,6 @@ namespace Core.Localization
 
         public event Action OnLanguageChanged;
 
-        // Constructor - automatically initializes when created by DI container
         public LocalizationManager()
         {
             Initialize();

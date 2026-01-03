@@ -232,6 +232,11 @@ namespace UI.Components.Tabs
 
         private void OnLeaveClicked()
         {
+            ExecuteLeaveLobby();
+        }
+
+        private void ExecuteLeaveLobby()
+        {
             _isInParty = false;
             _isReady = false;
             _currentPlayerCount = 1;

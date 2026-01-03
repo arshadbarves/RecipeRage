@@ -3,14 +3,10 @@ using System.Collections.Generic;
 using Core.Bootstrap;
 using Cysharp.Threading.Tasks;
 using Core.Logging;
-using Core.RemoteConfig.Providers;
+using VContainer;
 
 namespace Core.RemoteConfig
 {
-using VContainer; // Added
-
-// ...
-
     public class RemoteConfigService : IRemoteConfigService
     {
         private readonly Dictionary<Type, IConfigModel> _configCache;
