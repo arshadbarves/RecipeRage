@@ -1,343 +1,236 @@
 @import url("project://database/Assets/Resources/UI/Themes/DesignSystem.uss?fileID=7433441132597879392&guid=74282f7acd0164afea4d8dc9dc05a968&type=3#DesignSystem");
 
+/* ============================================
+   LOBBY - REFINED FORTNITE STYLE
+   ============================================ */
+
 .lobby-root {
     width: 100%;
     height: 100%;
-    flex-direction: column;
-}
-
-.btn-wrapper {
+    flex-direction: row;
     background-color: transparent;
-    border-width: 0;
-    padding: 0;
-    margin: 0;
 }
 
-.stage-container {
-    flex-grow: 1;
-    position: relative;
+/* === CHARACTER ZONE (Center) === */
+.character-zone {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    translate: -50% 0;
+    width: 500px;
+    height: 90%;
     align-items: center;
     justify-content: flex-end;
-    padding-bottom: 60px;
+}
+
+.floor-glow {
+    position: absolute;
+    bottom: -50px;
+    left: 50%;
+    translate: -50% 0;
+    width: 600px;
+    height: 200px;
+    background-color: rgba(255, 215, 0, 0.15); /* Slightly stronger */
+    border-radius: 50%;
 }
 
 .character-model {
+    width: 300px;
     height: 85%;
-    width: 500px;
-    min-width: 500px;
-    align-items: center;
-    justify-content: flex-end;
-    border-bottom-width: 5px;
-    border-bottom-color: var(--theme-yellow);
+    /* Placeholder for potential RenderTexture */
 }
 
-.char-label {
-    position: absolute;
-    bottom: 30px;
-    font-size: var(--font-size-title-sm);
-    color: var(--text-white-dim);
-    letter-spacing: 4px;
-}
-
-.ui-layer {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-}
-
-.ui-layer > * {
-    pointer-events: auto;
-}
-
-.left-panel {
-    position: absolute;
-    left: var(--spacing-panel);
-    bottom: var(--spacing-panel);
-    flex-direction: column;
-    align-items: flex-start;
-}
-
-.news-btn {
-    width: var(--height-button-lg);
-    height: var(--height-button-lg);
-    min-width: 70px;
-    min-height: 70px;
-    position: relative;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: var(--spacing-item);
-}
-
-.news-icon {
-    width: var(--icon-size-xl);
-    height: var(--icon-size-xl);
-    background-image: url("project://database/Assets/UI/Icons/newspaper.png?fileID=2800000&guid=df887da1418b04d78b599135abbcf1fb&type=3#newspaper");
-    -unity-background-scale-mode: scale-to-fit;
-    -unity-background-image-tint-color: black;
-}
-
-.news-badge {
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    background-color: var(--theme-red);
-    color: var(--text-white);
-    font-size: var(--font-size-body-sm);
-    padding: 4px var(--spacing-tight);
-    border-radius: 4px;
-}
-
-.news-label {
-    position: absolute;
-    bottom: -35px;
-    left: 50%;
-    translate: -50% 0;
-    color: var(--text-white-muted);
-    font-size: var(--font-size-body-sm);
-    white-space: nowrap;
-}
-
-.bp-widget {
-    width: var(--panel-width-md);
-    min-width: 300px;
-    padding: var(--spacing-section);
-    position: relative;
-    transition-property: border-color;
-    transition-duration: var(--transition-fast);
-    margin-top: var(--spacing-element);
-}
-
-.bp-widget:hover {
-    border-color: var(--theme-yellow);
-}
-
-.bp-bg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    background-color: var(--border-dark);
-}
-
-.bp-content {
-    flex-direction: column;
-}
-
-.bp-header {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-}
-
-.bp-title {
-    font-size: var(--font-size-title-md);
-    color: var(--theme-yellow);
-}
-
-.bp-tier {
-    font-size: var(--font-size-body-md);
-    color: var(--text-white);
-    background-color: var(--theme-red);
-    padding: 5px 12px;
-}
-
-.bp-season-name {
-    font-size: var(--font-size-body-lg);
-    color: var(--text-white);
-    margin-bottom: var(--spacing-tight);
-}
-
-.bp-progress-track {
-    height: 12px;
-    background-color: var(--bg-dark);
-    width: 100%;
-    margin-top: 8px;
-    border-width: 2px;
-    border-color: var(--border-dark);
-}
-
-.bp-progress-fill {
-    height: 100%;
-    width: 75%;
-    background-color: var(--theme-yellow);
-}
-
-.bp-sub {
-    font-size: var(--font-size-caption-lg);
-    color: var(--text-gray);
-    margin-top: var(--spacing-tight);
-    -unity-text-align: upper-right;
-}
-
+/* === RIGHT PANEL === */
 .right-panel {
     position: absolute;
-    right: var(--spacing-panel);
-    bottom: var(--spacing-panel);
+    right: 30px; /* 30px from right */
+    bottom: 30px; /* 30px from bottom */
+    width: 360px; /* Reduced from 400px */
     flex-direction: column;
-    align-items: stretch;
-    width: var(--panel-width-lg);
-    min-width: 350px;
 }
 
-.lobby-header {
+/* === SQUAD CONTAINER === */
+.squad-container {
     flex-direction: row;
-    width: 100%;
-    margin-bottom: var(--spacing-element);
-    justify-content: flex-end;
+    height: 130px; /* 130px height */
+    margin-bottom: 15px; /* Gap between squad and play controls */
 }
 
-.team-code-box {
-    flex-grow: 1;
-    height: var(--height-button-md);
-    min-height: 50px;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 var(--spacing-section);
-    transition-property: border-color;
-    transition-duration: var(--transition-fast);
+.squad-card {
+    flex: 1;
+    margin-right: 8px; /* 8px gap */
+    border-radius: 6px;
+    overflow: hidden;
+    transition-property: border-color, scale;
+    transition-duration: 0.1s;
+    background-color: rgba(30, 30, 35, 0.9); /* Dark background */
+    border-width: 1px;
+    border-color: #444;
+    padding: 0;
 }
 
-.team-code-box:hover {
-    border-color: var(--text-white);
+.squad-card:last-child {
+    margin-right: 0;
 }
 
-.code-container {
-    flex-direction: row;
-    align-items: center;
+
+
+.squad-card:active {
+    scale: 0.96;
 }
 
-.code-label {
-    font-size: var(--font-size-caption-lg);
-    color: var(--text-gray);
-    margin-right: var(--spacing-tight);
+
+/* Filled State (Player) */
+.squad-card.filled {
+    background-color: rgb(34, 34, 34);
+    border-color: rgb(68, 68, 68);
 }
 
-.code-val {
-    font-size: var(--font-size-title-sm);
-    color: var(--theme-yellow);
-}
-
-.copy-icon {
-    width: var(--icon-size-xs);
-    height: var(--icon-size-xs);
-    background-image: url("project://database/Assets/UI/Icons/copy.png?fileID=2800000&guid=c8f5418306d2b4dd598f51a411b02ece&type=3#copy");
-    -unity-background-scale-mode: scale-to-fit;
-    -unity-background-image-tint-color: var(--text-gray);
-}
-
-.leave-btn {
-    width: var(--height-button-md);
-    height: var(--height-button-md);
-    min-width: 50px;
-    min-height: 50px;
-    align-items: center;
-    justify-content: center;
-    margin-left: var(--spacing-item);
-}
-
-.leave-icon {
-    width: var(--icon-size-sm);
-    height: var(--icon-size-sm);
-    background-image: url("project://database/Assets/UI/Icons/arrow-right-from-bracket.png?fileID=2800000&guid=fcbefd4a3578d44b68d248d97191fc63&type=3#arrow-right-from-bracket");
-    -unity-background-scale-mode: scale-to-fit;
-    -unity-background-image-tint-color: var(--theme-red);
-}
-
-.squad-row {
-    flex-direction: row;
-    width: 100%;
-    justify-content: flex-end;
-    margin-bottom: var(--spacing-element);
-}
-
-.slot {
-    width: var(--height-icon-xl);
-    height: var(--height-icon-xl);
-    min-width: 60px;
-    min-height: 60px;
-    align-items: center;
-    justify-content: center;
-    margin-left: var(--spacing-item);
-    transition-property: border-color;
-    transition-duration: var(--transition-fast);
-}
-
-.slot.empty:hover {
-    border-color: var(--theme-yellow);
-}
-
-.slot-avatar {
-    width: 100%;
-    height: 100%;
-    -unity-background-scale-mode: scale-and-crop;
+.squad-bg {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
     opacity: 0.8;
+    -unity-background-scale-mode: scale-and-crop;
 }
 
-.slot-plus-icon {
-    width: var(--icon-size-sm);
-    height: var(--icon-size-sm);
-    background-image: url("project://database/Assets/UI/Icons/plus.png?fileID=2800000&guid=5013d3de088d243a9ab3d1bbd6b8e3f5&type=3#plus");
-    -unity-background-scale-mode: scale-to-fit;
-    -unity-background-image-tint-color: var(--border-dark-light);
+.crown-icon {
+    position: absolute;
+    top: 4px; right: 4px;
+    width: 14px; height: 14px;
+    background-image: url("project://database/Assets/UI/Icons/crown.png");
+    -unity-background-image-tint-color: var(--theme-yellow);
 }
 
-.map-box {
-    padding: var(--spacing-element) var(--spacing-section);
-    width: 100%;
+.name-tag-overlay {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 8px 2px 4px 2px;
+    background-color: rgba(0, 0, 0, 0.95);
+    /* Gradient simulation via color or texture if needed */
+    align-items: center;
+}
+
+.player-nick {
+    font-size: 13px;
+    -unity-font-definition: var(--font-rajdhani-sdf); /* If available, else default bold */
+    -unity-font-style: bold;
+    color: white;
+    margin: 0;
+}
+
+.player-status {
+    font-size: 10px;
+    color: #00E5FF; /* Gem color */
+    margin-top: 2px;
+    -unity-font-style: bold;
+}
+
+/* Empty State (Invite Button) */
+.squad-card.empty {
+    background-color: rgba(255, 255, 255, 0.02);
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.3); /* Dashed not supported easily, using solid */
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+
+
+.plus-icon {
+    width: 20px;
+    height: 20px;
+    background-image: url("project://database/Assets/UI/Icons/plus.png");
+    -unity-background-image-tint-color: rgb(85, 85, 85);
+    margin-bottom: 4px;
+}
+
+.invite-text {
+    font-size: 10px;
+    color: rgb(119, 119, 119);
+    -unity-font-definition: var(--font-anton-sdf);
+    letter-spacing: 1px;
+}
+
+/* === LOBBY CONTROLS === */
+.lobby-controls {
+    background-color: rgba(15, 15, 20, 0.85);
+    border-width: 1px;
+    border-color: var(--glass-border);
+    border-radius: 12px;
+    padding: 12px;
+}
+
+/* Map Selector */
+.map-selector {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    transition-property: border-color;
-    transition-duration: var(--transition-fast);
-    margin-bottom: var(--spacing-element);
+    margin-bottom: 12px;
+    padding: 8px 12px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 6px;
+    border-width: 0;
+    transition-property: background-color, scale;
+    transition-duration: 0.1s;
 }
 
-.map-box:hover {
-    border-color: var(--theme-yellow);
+.map-selector:active {
+    scale: 0.98;
+    background-color: rgba(0, 0, 0, 0.5);
 }
 
 .map-info {
     flex-direction: column;
 }
 
-.map-mode {
-    font-size: var(--font-size-caption-lg);
-    color: var(--text-gray);
+.map-mode-label {
+    font-size: 10px;
+    color: rgb(136, 136, 136);
+    letter-spacing: 1px;
+    -unity-font-style: bold;
     margin: 0;
-    letter-spacing: 3px;
 }
 
 .map-name {
-    font-size: var(--font-size-title-lg);
-    color: var(--text-white);
+    font-size: 20px;
+    color: white;
+    -unity-font-definition: var(--font-anton-sdf);
     margin: 0;
-    margin-top: 5px;
 }
 
 .rotate-icon {
-    width: var(--icon-size-sm);
-    height: var(--icon-size-sm);
-    background-image: url("project://database/Assets/UI/Icons/rotate.png?fileID=2800000&guid=46fbc0cdbcabc4e7ca4ad9e9fab1f0f1&type=3#rotate");
-    -unity-background-scale-mode: scale-to-fit;
-    -unity-background-image-tint-color: var(--border-dark-light);
+    width: 20px;
+    height: 20px;
+    background-image: url("project://database/Assets/UI/Icons/rotate.png");
+    -unity-background-image-tint-color: var(--theme-yellow);
 }
 
-.play-btn {
+/* Big Play Button */
+.play-btn-big {
     width: 100%;
+    height: 65px; /* 65px height */
+    background-color: var(--theme-yellow);
+    border-width: 0;
+    border-radius: 6px;
     align-items: center;
     justify-content: center;
-    position: relative;
+    transition-property: scale;
+    transition-duration: 0.1s;
 }
 
-.play-text {
-    -unity-font-definition: var(--font-anton-sdf);
-    font-size: var(--font-size-hero-md);
-    color: black;
+.play-btn-big:active {
+    scale: 0.96;
 }
+
+.play-label {
+    font-size: 36px;
+    color: black;
+    letter-spacing: 1px;
+    -unity-font-style: bold;
+    -unity-font-definition: var(--font-anton-sdf);
+}
+
+/* Region Info moved or removed in this ref? Removed from HTML but good to keep if needed. */
+/* Keeping region info hidden or removing logic if not in HTML */
+.region-info { display: none; }

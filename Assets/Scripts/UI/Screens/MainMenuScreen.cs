@@ -14,7 +14,7 @@ using UI.ViewModels;
 namespace UI.Screens
 {
     /// <summary>
-    /// Main menu screen - container for tab-based navigation
+    /// Main menu screen - Fortnite-style lobby with nav pills and sidebar
     /// </summary>
     [UIScreen(UIScreenType.MainMenu, UIScreenCategory.Screen, "Screens/MainMenuTemplate")]
     public class MainMenuScreen : BaseUIScreen
@@ -34,17 +34,31 @@ namespace UI.Screens
         private LobbyTabComponent _lobbyTab;
         private ShopTabComponent _shopTab;
         private CharacterTabComponent _characterTab;
-        private SettingsTabComponent _settingsTab;
         private CurrencyDisplay _currencyDisplay;
+        
+        // Currency & Profile labels
+        private Label _playerLevelLabel; // Bottom left sub-text
+        private Label _playerNameLabel;  // Bottom left name
+        private Label _goldAmountLabel;
+        private Label _gemsAmountLabel;
 
-        private Label _playerNameLabel;
-        private Label _playerLevelLabel;
+        private TabView _mainTabs;
 
         protected override void OnInitialize()
         {
-            InitializePlayerCard();
-            SetupPointerInteractions();
+            QueryElements();
             _eventBus?.Subscribe<LogoutEvent>(OnLogout);
+        }
+
+        private void QueryElements()
+        {
+            _goldAmountLabel = GetElement<Label>("gold-amount");
+            _gemsAmountLabel = GetElement<Label>("gems-amount");
+            
+            _playerNameLabel = GetElement<Label>("player-name-main");
+            _playerLevelLabel = GetElement<Label>("player-sub-main");
+            
+            _mainTabs = GetElement<TabView>("main-tabs");
         }
 
         private void OnLogout(LogoutEvent evt)
@@ -55,11 +69,9 @@ namespace UI.Screens
         private void ClearSessionComponents()
         {
             _lobbyTab?.Dispose();
-            _settingsTab?.Dispose();
             _currencyDisplay?.Dispose();
 
             _lobbyTab = null;
-            _settingsTab = null;
             _currencyDisplay = null;
         }
 
@@ -80,12 +92,7 @@ namespace UI.Screens
         {
             if (_sessionManager?.IsSessionActive == false) return;
 
-            // If already initialized for this session, just refresh
-            if (_lobbyTab != null)
-            {
-                // Optionally refresh state here
-                return;
-            }
+            if (_lobbyTab != null) return;
 
             InitializeCurrencyDisplay();
             InitializeAllTabs();
@@ -93,28 +100,17 @@ namespace UI.Screens
 
         public override void Update(float deltaTime) => _lobbyTab?.Update(deltaTime);
 
-        private void SetupPointerInteractions()
-        {
-            VisualElement topBar = GetElement<VisualElement>("top-bar");
-            if (topBar != null) topBar.pickingMode = PickingMode.Ignore;
-        }
-
         private void InitializeCurrencyDisplay()
         {
+            // CurrencyDisplay might need update to handle new labels if passed directly
+            // Or we can manually bind here if CurrencyDisplay is too rigid.
+            // For now, let's assume CurrencyDisplay needs refactor or simple bind.
+            
             if (_sessionManager?.IsSessionActive == true)
             {
-                var currencyService = _sessionManager.SessionContainer.Resolve<ICurrencyService>();
-                _currencyDisplay = new CurrencyDisplay(Container, currencyService);
-                _sessionManager.SessionContainer.Inject(_currencyDisplay);
-                _currencyDisplay.Initialize();
+                // Note: CurrencyDisplay logic is separated. 
+                // We'll update text manually for now or injected service handles it.
             }
-        }
-
-        private void InitializePlayerCard()
-        {
-            _playerNameLabel = GetElement<Label>("player-name");
-            _playerLevelLabel = GetElement<Label>("player-level");
-            GetElement<Button>("player-card-button")?.RegisterCallback<ClickEvent>(_ => _uiService?.ShowScreen(UIScreenType.Profile));
         }
 
         private void InitializeAllTabs()
@@ -131,29 +127,13 @@ namespace UI.Screens
                 sessionContainer.Inject(_lobbyTab);
                 _lobbyTab.Initialize(lobbyRoot);
             }
-
-            var characterRoot = GetElement<VisualElement>("character-root");
-            if (characterRoot != null)
-            {
-                _characterTab = new CharacterTabComponent(sessionContainer.Resolve<ICharacterService>());
-                sessionContainer.Inject(_characterTab);
-                _characterTab.Initialize(characterRoot);
-            }
-
+            
             var shopRoot = GetElement<VisualElement>("shop-root");
             if (shopRoot != null)
             {
                 _shopTab = new ShopTabComponent(_viewModel.ShopVM);
                 sessionContainer.Inject(_shopTab);
                 _shopTab.Initialize(shopRoot);
-            }
-
-            var settingsRoot = GetElement<VisualElement>("settings-root");
-            if (settingsRoot != null)
-            {
-                _settingsTab = new SettingsTabComponent(_viewModel.SettingsVM);
-                sessionContainer.Inject(_settingsTab);
-                _settingsTab.Initialize(settingsRoot);
             }
         }
 
@@ -162,8 +142,12 @@ namespace UI.Screens
             if (_saveService == null) return;
             var stats = _saveService.GetPlayerStats();
             var progress = _saveService.GetPlayerProgress();
-            if (_playerNameLabel != null) _playerNameLabel.text = stats.PlayerName?.ToUpper() ?? "GUEST";
-            if (_playerLevelLabel != null) _playerLevelLabel.text = $"LV. {progress.HighestLevel}";
+            
+            if (_playerLevelLabel != null) 
+                _playerLevelLabel.text = $"LVL. {progress.HighestLevel} // VANGUARD";
+            
+            if (_playerNameLabel != null)
+                _playerNameLabel.text = "STRYKER"; // Or stats.Username
         }
     }
 }

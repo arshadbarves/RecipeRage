@@ -1,91 +1,76 @@
-<ns0:UXML xmlns:ns0="UnityEngine.UIElements" xmlns:ns1="UI.Controls" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+<?xml version='1.0' encoding='utf-8'?>
+<UXML xmlns="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/Resources/UI/Styles/Screens/Lobby.uss?fileID=7433441132597879392&amp;guid=0dc93b02b55854976be67fbd874f44ac&amp;type=3#Lobby"/>
-    <ns0:VisualElement name="lobby-root" class="lobby-root">
-        <ns0:VisualElement name="stage-container" class="stage-container">
-            <ns1:SkewedBoxElement name="character-model" skew-angle="-12" class="character-model">
-                <ns0:Label name="char-label" text="OPERATOR // VANGUARD" class="char-label"/>
-            </ns1:SkewedBoxElement>
-        </ns0:VisualElement>
-        <ns0:VisualElement name="ui-layer" class="ui-layer">
-            <ns0:VisualElement name="left-panel" class="left-panel">
-                <ns0:Button name="news-button" class="btn-wrapper">
-                    <ns1:SkewedBoxElement name="news-btn" skew-angle="-12" enable-fill="true" fill-color="white" picking-mode="Ignore" class="news-btn skew-button">
-                        <ns0:VisualElement name="news-icon" class="news-icon"/>
-                        <ns0:Label name="news-badge" text="3" class="news-badge"/>
-                        <ns0:Label text="NEWS" class="news-label"/>
-                    </ns1:SkewedBoxElement>
-                </ns0:Button>
-                <ns0:Button name="bp-button" class="btn-wrapper">
-                    <ns1:SkewedBoxElement name="bp-widget" skew-angle="-12" enable-fill="true" fill-color="rgba(20, 20, 20, 0.8)" enable-border="true" border-color="rgb(68, 68, 68)" border-width="1" picking-mode="Ignore" class="bp-widget">
-                        <ns0:VisualElement name="bp-bg" class="bp-bg"/>
-                        <ns0:VisualElement name="bp-content" class="bp-content">
-                            <ns0:VisualElement name="bp-header" class="bp-header">
-                                <ns0:Label text="SEASON 04" class="bp-title"/>
-                                <ns0:Label text="TIER 45" class="bp-tier"/>
-                            </ns0:VisualElement>
-                            <ns0:Label text="CYBER PROTOCOL" class="bp-season-name"/>
-                            <ns0:VisualElement name="bp-progress-track" class="bp-progress-track">
-                                <ns0:VisualElement name="bp-progress-fill" class="bp-progress-fill"/>
-                            </ns0:VisualElement>
-                            <ns0:Label text="NEXT REWARD: LEGENDARY SKIN" class="bp-sub"/>
-                        </ns0:VisualElement>
-                    </ns1:SkewedBoxElement>
-                </ns0:Button>
-            </ns0:VisualElement>
-            <ns0:VisualElement name="right-panel" class="right-panel">
-                <ns0:VisualElement name="lobby-header" class="lobby-header">
-                    <ns0:Button name="team-code-button" class="btn-wrapper">
-                        <ns1:SkewedBoxElement name="team-code-box" skew-angle="-12" enable-fill="true" fill-color="rgba(30,30,30,0.9)" enable-border="true" border-color="rgb(85,85,85)" border-width="1" picking-mode="Ignore" class="team-code-box skew-button">
-                            <ns0:VisualElement name="code-container" class="code-container">
-                                <ns0:Label text="TEAM CODE:" class="code-label"/>
-                                <ns0:Label name="code-val" text="8X92L" class="code-val"/>
-                            </ns0:VisualElement>
-                            <ns0:VisualElement name="copy-icon" class="copy-icon"/>
-                        </ns1:SkewedBoxElement>
-                    </ns0:Button>
-                    <ns0:Button name="leave-button" class="btn-wrapper">
-                        <ns1:SkewedBoxElement name="leave-btn" skew-angle="-12" enable-fill="true" fill-color="rgba(230, 57, 70, 0.2)" enable-border="true" border-color="rgb(230, 57, 70)" border-width="1" picking-mode="Ignore" class="leave-btn skew-button">
-                            <ns0:VisualElement name="leave-icon" class="leave-icon"/>
-                        </ns1:SkewedBoxElement>
-                    </ns0:Button>
-                </ns0:VisualElement>
-                <ns0:VisualElement name="squad-row" class="squad-row">
-                    <ns0:Button name="slot-button-1" class="btn-wrapper">
-                        <ns1:SkewedBoxElement name="slot-1" skew-angle="-12" enable-fill="false" enable-border="true" border-color="rgb(68, 68, 68)" border-width="2" picking-mode="Ignore" class="slot empty skew-button">
-                            <ns0:VisualElement name="slot-plus-icon-1" class="slot-plus-icon"/>
-                        </ns1:SkewedBoxElement>
-                    </ns0:Button>
-                    <ns0:Button name="slot-button-2" class="btn-wrapper">
-                        <ns1:SkewedBoxElement name="slot-2" skew-angle="-12" enable-fill="false" enable-border="true" border-color="rgb(68, 68, 68)" border-width="2" picking-mode="Ignore" class="slot empty skew-button">
-                            <ns0:VisualElement name="slot-plus-icon-2" class="slot-plus-icon"/>
-                        </ns1:SkewedBoxElement>
-                    </ns0:Button>
-                    <ns0:Button name="slot-button-3" class="btn-wrapper">
-                        <ns1:SkewedBoxElement name="slot-3" skew-angle="-12" enable-fill="false" enable-border="true" border-color="rgb(68, 68, 68)" border-width="2" picking-mode="Ignore" class="slot empty skew-button">
-                            <ns0:VisualElement name="slot-plus-icon-3" class="slot-plus-icon"/>
-                        </ns1:SkewedBoxElement>
-                    </ns0:Button>
-                    <ns0:Button name="slot-button-4" class="btn-wrapper">
-                        <ns1:SkewedBoxElement name="slot-4" skew-angle="-12" enable-fill="false" enable-border="true" border-color="rgb(68, 68, 68)" border-width="2" picking-mode="Ignore" class="slot empty skew-button">
-                            <ns0:VisualElement name="slot-plus-icon-4" class="slot-plus-icon"/>
-                        </ns1:SkewedBoxElement>
-                    </ns0:Button>
-                </ns0:VisualElement>
-                <ns0:Button name="map-button" class="btn-wrapper">
-                    <ns1:SkewedBoxElement name="map-box" skew-angle="-12" enable-fill="true" fill-color="rgba(20, 20, 20, 0.8)" enable-border="true" border-color="rgb(51, 51, 51)" border-width="1" picking-mode="Ignore" class="map-box skew-button">
-                        <ns0:VisualElement name="map-info" class="map-info">
-                            <ns0:Label text="RANKED" class="map-mode"/>
-                            <ns0:Label text="DISTRICT 9" class="map-name anton"/>
-                        </ns0:VisualElement>
-                        <ns0:VisualElement name="rotate-icon" class="rotate-icon"/>
-                    </ns1:SkewedBoxElement>
-                </ns0:Button>
-                <ns0:Button name="play-button" class="btn-wrapper">
-                    <ns1:SkewedBoxElement name="play-btn" skew-angle="-12" enable-fill="true" fill-color="rgb(255, 215, 0)" picking-mode="Ignore" class="play-btn skew-button">
-                        <ns0:Label text="PLAY" class="play-text anton"/>
-                    </ns1:SkewedBoxElement>
-                </ns0:Button>
-            </ns0:VisualElement>
-        </ns0:VisualElement>
-    </ns0:VisualElement>
-</ns0:UXML>
+    
+    <VisualElement name="lobby-root" class="lobby-root">
+        
+        <!-- CENTER CHARACTER ZONE -->
+        <VisualElement name="character-zone" class="character-zone">
+            <VisualElement name="floor-glow" class="floor-glow"/>
+            <VisualElement name="character-model" class="character-model">
+                <!-- 3D Character will be rendered here via RenderTexture -->
+            </VisualElement>
+        </VisualElement>
+
+        <!-- RIGHT PANEL -->
+        <VisualElement name="right-panel" class="right-panel">
+            
+            <!-- SQUAD SECTION -->
+            <VisualElement name="squad-container" class="squad-container">
+                
+                <!-- Squad Card 1 (You - Leader) -->
+                <Button name="squad-slot-1" class="squad-card filled">
+                    <VisualElement name="crown-icon" class="crown-icon"/>
+                    <VisualElement name="squad-bg-1" class="squad-bg"/>
+                    <VisualElement class="name-tag-overlay">
+                        <Label name="player-name-1" text="STRYKER" class="player-nick"/>
+                        <Label name="player-status-1" text="READY" class="player-status ready"/>
+                    </VisualElement>
+                </Button>
+                
+                <!-- Squad Card 2 -->
+                <Button name="squad-slot-2" class="squad-card empty">
+                    <VisualElement name="plus-icon-2" class="plus-icon"/>
+                    <Label text="INVITE" class="invite-text"/>
+                </Button>
+                
+                <!-- Squad Card 3 -->
+                <Button name="squad-slot-3" class="squad-card empty">
+                    <VisualElement name="plus-icon-3" class="plus-icon"/>
+                    <Label text="INVITE" class="invite-text"/>
+                </Button>
+                
+                <!-- Squad Card 4 -->
+                <Button name="squad-slot-4" class="squad-card empty">
+                    <VisualElement name="plus-icon-4" class="plus-icon"/>
+                    <Label text="INVITE" class="invite-text"/>
+                </Button>
+                
+            </VisualElement>
+            
+            <!-- LOBBY CONTROLS -->
+            <VisualElement name="lobby-controls" class="lobby-controls">
+                
+                <!-- Map Selector -->
+                <Button name="map-selector" class="map-selector">
+                    <VisualElement class="map-info">
+                        <Label text="GAME MODE" class="map-mode-label"/>
+                        <Label name="map-name" text="ROYALE TRIOS" class="map-name anton"/>
+                    </VisualElement>
+                    <VisualElement name="rotate-icon" class="rotate-icon"/>
+                </Button>
+                
+                <!-- Big Play Button -->
+                <Button name="play-button" class="play-btn-big">
+                    <Label text="PLAY" class="play-label anton"/>
+                </Button>
+                
+                <!-- Region Info -->
+                <Label name="region-info" text="REGION: ASIA-PACIFIC (24ms)" class="region-info"/>
+                
+            </VisualElement>
+            
+        </VisualElement>
+        
+    </VisualElement>
+</UXML>

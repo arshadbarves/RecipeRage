@@ -18,25 +18,18 @@ namespace UI.Components.Tabs
         private VisualElement _root;
         private readonly LobbyViewModel _viewModel;
 
+        // UI Elements
         private Button _playButton;
-        private Button _mapButton;
-        private Button _leaveButton;
+        private Button _mapSelector;
         private Label _mapNameLabel;
-        private Label _mapSubtitleLabel;
-        private Label _timerLabel;
-        private Label _actionButtonText;
-        private Label _teamCodeLabel;
-        private VisualElement _teamControls;
-        private VisualElement _playerSlotsContainer;
-
-        private VisualTreeAsset _playerSlotTemplate;
-        private System.Collections.Generic.List<PlayerSlot> _playerSlots = new();
-
-        private bool _isInParty = false;
-        private bool _isReady = false;
+        private Label _regionInfo;
+        
+        // Squad slots
+        private Button[] _squadSlots = new Button[4];
+        private Label[] _playerNames = new Label[4];
+        private Label[] _playerStatuses = new Label[4];
+        
         private bool _buttonsInitialized = false;
-        private int _currentPlayerCount = 1;
-        private int _maxTeamSize = 3;
 
         public LobbyTabComponent(LobbyViewModel viewModel)
         {
@@ -47,174 +40,67 @@ namespace UI.Components.Tabs
         {
             if (root == null) return;
             _root = root;
-            LoadTemplate();
             QueryElements();
-            CreatePlayerSlots(_maxTeamSize);
-            SetupStaticButtons();
-            SetupDynamicButtons();
-
-            // Map Binding
-            _viewModel.MapName.Bind(name => { if (_mapNameLabel != null) _mapNameLabel.text = name; });
-            _viewModel.MapSubtitle.Bind(sub => { if (_mapSubtitleLabel != null) _mapSubtitleLabel.text = sub; });
-            _viewModel.RotationTimer.Bind(time => { if (_timerLabel != null) _timerLabel.text = time; });
-
-            UpdatePartyState();
-            UpdateActionButton();
-            HideAnimatedElements();
-        }
-
-        private void LoadTemplate()
-        {
-            _playerSlotTemplate = Resources.Load<VisualTreeAsset>("UI/Templates/Components/PlayerSlot");
-        }
-
-        public void SetTeamSize(int teamSize)
-        {
-            if (teamSize < 1 || teamSize > 8) return;
-            _maxTeamSize = teamSize;
-            CreatePlayerSlots(teamSize);
-            SetupDynamicButtons();
+            SetupButtons();
+            BindViewModel();
+            SetupLocalPlayer();
         }
 
         private void QueryElements()
         {
             _playButton = _root.Q<Button>("play-button");
-            _mapButton = _root.Q<Button>("map-button");
+            _mapSelector = _root.Q<Button>("map-selector");
             _mapNameLabel = _root.Q<Label>("map-name");
-            _mapSubtitleLabel = _root.Q<Label>("map-subtitle");
-            _timerLabel = _root.Q<Label>("timer-text");
-            _actionButtonText = _root.Q<Label>("action-button-text");
-            _teamControls = _root.Q<VisualElement>("team-controls");
-            _teamCodeLabel = _root.Q<Label>("team-code");
-            _leaveButton = _root.Q<Button>("leave-button");
-        }
-
-        private void CreatePlayerSlots(int teamSize)
-        {
-            _playerSlotsContainer = _root.Q<VisualElement>("player-slots");
-            if (_playerSlotsContainer == null) return;
-            _playerSlotsContainer.Clear();
-            _playerSlots.Clear();
-
-            for (int i = 0; i < teamSize; i++)
+            _regionInfo = _root.Q<Label>("region-info");
+            
+            // Query squad slots
+            for (int i = 0; i < 4; i++)
             {
-                var slot = CreatePlayerSlot(i, i == 0);
-                _playerSlots.Add(slot);
-                _playerSlotsContainer.Add(slot.SlotElement);
+                _squadSlots[i] = _root.Q<Button>($"squad-slot-{i + 1}");
+                _playerNames[i] = _root.Q<Label>($"player-name-{i + 1}");
+                _playerStatuses[i] = _root.Q<Label>($"player-status-{i + 1}");
             }
-
-            if (_playerSlots.Count > 0) SetPlayerSlotFilled(_playerSlots[0], "You", "Ready to play", false);
         }
 
-        private PlayerSlot CreatePlayerSlot(int index, bool isLocalPlayer)
-        {
-            if (_playerSlotTemplate == null) return null;
-            TemplateContainer slotContainer = _playerSlotTemplate.CloneTree();
-            VisualElement slotElement = slotContainer.Q<VisualElement>("player-slot");
-            if (slotElement == null) return null;
-
-            var slot = new PlayerSlot {
-                SlotIndex = index,
-                IsLocalPlayer = isLocalPlayer,
-                SlotElement = slotElement,
-                AddButton = slotContainer.Q<Button>("add-player-button"),
-                EmptyContent = slotContainer.Q<VisualElement>("empty-slot-content"),
-                StatsContainer = slotContainer.Q<VisualElement>("player-slot-stats"),
-                CharacterContainer = slotContainer.Q<VisualElement>("player-character"),
-                NameContainer = slotContainer.Q<VisualElement>("player-name-container"),
-                PlayerName = slotContainer.Q<Label>("player-name"),
-                PlayerStatus = slotContainer.Q<Label>("player-status"),
-                ReadyIndicator = slotContainer.Q<VisualElement>("ready-indicator"),
-                CrownIcon = slotContainer.Q<VisualElement>("crown-icon")
-            };
-
-            if (isLocalPlayer) {
-                slot.EmptyContent?.AddToClassList("hidden");
-                if (slot.PlayerName != null) slot.PlayerName.text = "You";
-            } else {
-                slot.StatsContainer?.AddToClassList("hidden");
-            }
-            return slot;
-        }
-
-        private void SetupStaticButtons()
+        private void SetupButtons()
         {
             if (_buttonsInitialized) return;
+            
             if (_playButton != null) _playButton.clicked += OnPlayClicked;
-            if (_mapButton != null) _mapButton.clicked += OnMapClicked;
-            if (_leaveButton != null) _leaveButton.clicked += OnLeaveClicked;
+            if (_mapSelector != null) _mapSelector.clicked += OnMapClicked;
+            
+            // Setup empty squad slots to open friends
+            for (int i = 1; i < 4; i++) // Skip slot 0 (player)
+            {
+                int slotIndex = i;
+                if (_squadSlots[i] != null && _squadSlots[i].ClassListContains("empty"))
+                {
+                    _squadSlots[i].clicked += () => OnInviteClicked(slotIndex);
+                }
+            }
+            
             _buttonsInitialized = true;
         }
 
-        private void SetupDynamicButtons()
+        private void BindViewModel()
         {
-            foreach (var slot in _playerSlots)
+            _viewModel.MapName.Bind(name => { if (_mapNameLabel != null) _mapNameLabel.text = name; });
+        }
+
+        private void SetupLocalPlayer()
+        {
+            // Set up slot 0 as the local player
+            if (_squadSlots[0] != null)
             {
-                if (slot.AddButton != null)
-                {
-                    int slotIndex = slot.SlotIndex;
-                    slot.AddButton.clicked += () => OnAddPlayerClicked(slotIndex);
-                }
+                _squadSlots[0].RemoveFromClassList("empty");
+                _squadSlots[0].AddToClassList("filled");
             }
-        }
-
-        private void UpdatePartyState()
-        {
-            if (_teamControls != null) {
-                if (_isInParty) _teamControls.RemoveFromClassList("hidden");
-                else _teamControls.AddToClassList("hidden");
-            }
-        }
-
-        private void UpdateActionButton()
-        {
-            if (_playButton == null || _actionButtonText == null) return;
-            if (_isInParty) {
-                _actionButtonText.text = _isReady ? "CANCEL" : "I'M READY";
-                if (_isReady) _playButton.AddToClassList("ready");
-                else _playButton.RemoveFromClassList("ready");
-            } else {
-                _actionButtonText.text = "PLAY!";
-                _playButton.RemoveFromClassList("ready");
-            }
-        }
-
-        private void SetPlayerSlotFilled(PlayerSlot slot, string playerName, string status, bool isReady)
-        {
-            if (slot == null) return;
-            slot.SlotElement?.RemoveFromClassList("empty");
-            slot.SlotElement?.AddToClassList("filled");
-            slot.EmptyContent?.AddToClassList("hidden");
-            slot.StatsContainer?.RemoveFromClassList("hidden");
-            if (slot.PlayerName != null) slot.PlayerName.text = playerName;
-            if (slot.PlayerStatus != null) slot.PlayerStatus.text = status;
-            if (slot.ReadyIndicator != null) {
-                if (isReady) slot.ReadyIndicator.RemoveFromClassList("hidden");
-                else slot.ReadyIndicator.AddToClassList("hidden");
-            }
-        }
-
-        private void SetPlayerSlotEmpty(PlayerSlot slot)
-        {
-            if (slot == null) return;
-            slot.SlotElement?.AddToClassList("empty");
-            slot.SlotElement?.RemoveFromClassList("filled");
-            slot.EmptyContent?.RemoveFromClassList("hidden");
-            slot.StatsContainer?.AddToClassList("hidden");
         }
 
         private void OnPlayClicked()
         {
-            if (_isInParty) {
-                _isReady = !_isReady;
-                UpdateActionButton();
-                if (AreAllPlayersReady()) StartPartyMatchmaking();
-            } else {
-                _viewModel.Play();
-            }
+            _viewModel.Play();
         }
-
-        private void StartPartyMatchmaking() => _viewModel.Play();
 
         private void OnMapClicked()
         {
@@ -224,63 +110,23 @@ namespace UI.Components.Tabs
 
         private void OnMapSelected(MapInfo map)
         {
-            if (_mapNameLabel != null) _mapNameLabel.text = map.name;
-            if (_mapSubtitleLabel != null) _mapSubtitleLabel.text = map.subtitle;
-
-            if (map.maxPlayers > 0) SetTeamSize(map.maxPlayers);
+            if (_mapNameLabel != null) _mapNameLabel.text = map.name.ToUpper();
         }
 
-        private void OnLeaveClicked()
+        private void OnInviteClicked(int slotIndex)
         {
-            ExecuteLeaveLobby();
-        }
-
-        private void ExecuteLeaveLobby()
-        {
-            _isInParty = false;
-            _isReady = false;
-            _currentPlayerCount = 1;
-            for (int i = 1; i < _playerSlots.Count; i++) SetPlayerSlotEmpty(_playerSlots[i]);
-            UpdatePartyState();
-            UpdateActionButton();
-        }
-
-        private void OnAddPlayerClicked(int slotIndex) => _uiService?.ShowScreen(UIScreenType.FriendsPopup);
-
-        public bool AreAllPlayersReady()
-        {
-            if (!_isInParty) return false;
-            for (int i = 0; i < _currentPlayerCount; i++) if (_playerSlots[i].ReadyIndicator?.ClassListContains("hidden") != false) return false;
-            return true;
+            _uiService?.ShowScreen(UIScreenType.FriendsPopup);
         }
 
         public void Update(float deltaTime) { }
-
-        private void HideAnimatedElements() { }
 
         public void PlayIntroAnimations(IUIAnimator animator) { }
 
         public void Dispose()
         {
             if (_playButton != null) _playButton.clicked -= OnPlayClicked;
-            if (_mapButton != null) _mapButton.clicked -= OnMapClicked;
-            if (_leaveButton != null) _leaveButton.clicked -= OnLeaveClicked;
+            if (_mapSelector != null) _mapSelector.clicked -= OnMapClicked;
             _buttonsInitialized = false;
-        }
-
-        private class PlayerSlot {
-            public int SlotIndex;
-            public bool IsLocalPlayer;
-            public VisualElement SlotElement;
-            public Button AddButton;
-            public VisualElement EmptyContent;
-            public VisualElement StatsContainer;
-            public VisualElement CharacterContainer;
-            public VisualElement NameContainer;
-            public Label PlayerName;
-            public Label PlayerStatus;
-            public VisualElement ReadyIndicator;
-            public VisualElement CrownIcon;
         }
     }
 }

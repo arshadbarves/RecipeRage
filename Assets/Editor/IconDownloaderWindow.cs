@@ -36,6 +36,9 @@ public class IconDownloaderWindow : EditorWindow
         ("arrow-right-from-bracket", "solid"),
         ("plus", "solid"),
         ("rotate", "solid"),
+        ("crown", "solid"),
+        ("list-check", "solid"),
+        ("bolt", "solid"),
 
         // Regular
         ("newspaper", "regular"),

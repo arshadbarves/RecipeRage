@@ -1,326 +1,242 @@
 @import url("project://database/Assets/Resources/UI/Themes/DesignSystem.uss?fileID=7433441132597879392&guid=74282f7acd0164afea4d8dc9dc05a968&type=3#DesignSystem");
 
-
-
-.top-bar {
-    height: var(--height-top-bar);
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    padding-left: var(--spacing-panel);
-    padding-right: var(--spacing-panel);
-    background-color: transparent;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 10;
-    /* picking-mode is handled in C# typically but we can try to hint via styles if supported, 
-       otherwise the structure depends on C# pickingMode = Ignore */
-}
-
-.top-left-group {
-    flex-grow: 0;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
-}
-
-.profile-btn {
-    flex-direction: row;
-    align-items: center;
-    padding: 10px 30px 10px 10px;
-    min-width: 260px;
-    height: 80px;
-}
-
-.avatar-frame {
-    width: 70px;
-    height: 70px;
-    min-width: 70px;
-    min-height: 70px;
-    border-width: 3px;
-    border-color: var(--theme-yellow);
-    overflow: hidden;
-    background-color: var(--border-dark);
-    margin-right: var(--spacing-element);
-}
-
-.avatar-img {
-    width: 100%;
-    height: 100%;
-    -unity-background-scale-mode: scale-and-crop;
-}
-
-.profile-info {
-    flex-direction: column;
-}
-
-.player-name {
-    font-size: var(--font-size-title-sm);
-    color: black;
-    margin: 0;
-}
-
-.player-lvl {
-    font-size: var(--font-size-body-sm);
-    color: #555;
-    margin: 0;
-    margin-top: 4px;
-}
-
-/* === TAB VIEW STYLING === */
-
-.main-tabs {
-    flex-grow: 1;
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: transparent;
-}
-
-/* Ensure content fills screen but respects top bar if needed, 
-   or if design is full screen under top bar, we leave it full.
-   Lobby design seems to be full screen. */
-.main-tabs .unity-tab-view__content-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    padding: 0;
-    margin: 0;
-    background-color: transparent;
-    flex-grow: 1;
-}
+/* ============================================
+   MAIN MENU - REFINED FORTNITE STYLE
+   ============================================ */
 
 .main-menu-root {
     width: 100%;
     height: 100%;
     flex-direction: column;
+    background-color: transparent;
+}
+
+/* === TOP BAR === */
+.top-bar {
+    height: 80px;
+    flex-direction: row;
+    align-items: center;
     justify-content: space-between;
-}
-
-.main-tab {
-    width: 100%;
-    height: 100%;
-    flex-grow: 1;
-    padding: 0;
-    margin: 0;
-    position: absolute; /* Using absolute inside absolute content container might help ensure full size */
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: transparent;
-}
-
-/* User Identified Fix: Ensure internal tab content container grows */
-.unity-tab__content-container {
-    flex-grow: 1;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    background-color: transparent;
-}
-
-/* Target instance containers directly */
-#lobby-content, #shop-content, #character-content {
-    flex-grow: 1;
-    width: 100%;
-    height: 100%;
+    padding-left: 30px;
+    padding-right: 30px;
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    bottom: 0;
+    z-index: 20;
 }
 
-/* Header Container - Position this to overlap the top bar area */
-.main-tabs .unity-tab-view__header-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: var(--height-top-bar); /* Match top bar height */
-    overflow: visible; /* Allow buttons to show */
-    background-color: transparent;
-    border-right-width: 0; /* Clear default borders */
+/* === CURRENCY GROUP (Wallet Pills) === */
+.currency-group {
     flex-direction: row;
     align-items: center;
-    justify-content: center;
-    z-index: 20; /* Above top bar background */
 }
 
-/* The actual header row inside container */
-.main-tabs .unity-tab-view__header {
-    background-color: transparent;
-    border-bottom-width: 0;
-    padding: 0;
-    margin: 0;
+.wallet-pill {
     flex-direction: row;
     align-items: center;
-    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.8);
+    border-width: 1px;
+    border-color: var(--glass-border);
+    border-radius: 6px;
+    padding: 4px 4px 4px 12px;
+    height: 40px;
+    margin-left: 12px;
 }
 
-/* Tab Button */
-.main-tabs .unity-tab-button {
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-gray);
-    transition-property: color;
-    transition-duration: var(--transition-normal);
-    margin-left: var(--spacing-section);
-    margin-right: var(--spacing-section);
-    background-color: transparent;
-    border-width: 0;
-    padding: var(--spacing-tight) var(--spacing-item);
-    border-radius: 0;
+.wallet-icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
 }
 
-.main-tabs .unity-tab-button:hover {
-    color: var(--text-white);
-    background-color: transparent;
+.gem-icon {
+    background-image: url("project://database/Assets/UI/Icons/gem.png");
+    -unity-background-image-tint-color: #00E5FF;
 }
 
-.main-tabs .unity-tab-button:checked {
-    color: var(--theme-red);
-    background-color: transparent;
+.gold-icon {
+    background-image: url("project://database/Assets/UI/Icons/coins.png");
+    -unity-background-image-tint-color: var(--theme-yellow);
 }
 
-/* Tab Icon - Now using real unity-image element from icon attribute */
-.main-tabs .unity-tab-button .unity-image {
-    width: var(--icon-size-lg);
-    height: var(--icon-size-lg);
-    margin-bottom: 8px;
-    -unity-background-scale-mode: scale-to-fit;
-    -unity-background-image-tint-color: var(--text-gray);
-    transition-property: -unity-background-image-tint-color;
-    transition-duration: var(--transition-normal);
-}
-
-.main-tabs .unity-tab-button:hover .unity-image {
-    -unity-background-image-tint-color: var(--text-white);
-}
-
-.main-tabs .unity-tab-button:checked .unity-image {
-    -unity-background-image-tint-color: var(--text-white);
-}
-
-/* Tab Label */
-.main-tabs .unity-tab-button__label {
-    font-size: var(--font-size-body-md);
-    margin: 0;
-    padding: 0;
+.wallet-amount {
+    min-width: 40px;
+    -unity-text-align: middle-right;
+    color: white;
+    font-size: 16px;
     -unity-font-definition: var(--font-anton-sdf);
-    -unity-text-align: middle-center;
 }
 
-.notif-dot {
+.add-btn {
+    width: 30px;
+    height: 30px;
+    background-color: var(--theme-yellow); /* Using primary gold for one, need green for other? Reference says Green #4CAF50 but var--primary also used */
+    /* Reference: .add-btn { background: var(--primary); ... } -> Gold is primary */
+    /* Wait, HTML says --add-btn: #4CAF50 but usage in HTML currency group:
+       Gems: default add-btn (primary?)
+       Gold: style="background: white;" */
+
+    border-radius: 4px;
+    margin-left: 5px;
+    align-items: center;
+    justify-content: center;
+    border-width: 0;
+    transition-property: scale;
+    transition-duration: 0.1s;
+}
+
+.add-btn.white-bg {
+    background-color: white;
+}
+
+.add-btn:active {
+    scale: 0.9;
+}
+
+.icon-plus-small {
+    width: 12px;
+    height: 12px;
+    background-image: url("project://database/Assets/UI/Icons/plus.png");
+    -unity-background-image-tint-color: black;
+}
+
+/* === LEFT SIDEBAR === */
+.sidebar-dock {
     position: absolute;
-    top: -4px;
-    right: -4px;
-    width: 14px;
-    height: 14px;
-    min-width: 14px;
-    min-height: 14px;
+    top: 120px;
+    left: 30px;
+    flex-direction: column;
+    z-index: 15;
+}
+
+.side-icon-btn {
+    width: 50px;
+    height: 50px;
+    background-color: var(--glass-bg);
+    border-width: 1px;
+    border-color: var(--glass-border);
+    border-radius: 10px;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+    transition-property: scale, background-color;
+    transition-duration: 0.1s;
+}
+
+.side-icon-btn:active {
+    scale: 0.9;
+    background-color: #333;
+}
+
+.side-icon-btn .icon {
+    width: 20px;
+    height: 20px;
+    -unity-background-image-tint-color: white;
+}
+
+.badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 18px;
+    height: 18px;
     background-color: var(--theme-red);
     border-radius: 50%;
-}
-
-
-.top-right-group {
-    /*flex-grow: 1;*/
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-end;
-}
-
-.currency-pill {
-    padding: 5px 25px;
-    flex-direction: row;
-    align-items: center;
-    height: 60px;
-    min-width: 160px;
-    margin-left: var(--spacing-item);
-    margin-right: var(--spacing-item);
-    flex-shrink: 0;
-}
-
-.coin-icon-small {
-    width: 36px;
-    height: 36px;
-    min-width: 36px;
-    min-height: 36px;
-    background-image: url('project://database/Assets/UI/Icons/coins.png');
-    -unity-background-image-tint-color: var(--theme-yellow);
-    margin-right: 15px;
-}
-
-.gem-icon-small {
-    width: 36px;
-    height: 36px;
-    min-width: 36px;
-    min-height: 36px;
-    background-image: url('project://database/Assets/UI/Icons/gem.png');
-    -unity-background-image-tint-color: var(--theme-red);
-    margin-right: 15px;
-}
-
-.coin-val {
-    font-size: 28px;
-    color: var(--text-white);
-    margin: 0;
-    white-space: nowrap;
-    -unity-text-align: middle-left;
-}
-
-.sys-icon-btn {
-    width: 65px;
-    height: 65px;
-    min-width: 65px;
-    min-height: 65px;
     align-items: center;
     justify-content: center;
-    margin-left: 12px;
-    transition-property: border-color;
-    transition-duration: var(--transition-fast);
-    position: relative;
+    border-width: 2px;
+    border-color: rgb(5, 5, 5);
 }
 
-.sys-icon-btn:hover {
-    border-color: var(--theme-yellow);
+.badge-text {
+    font-size: 10px;
+    color: white;
+    -unity-font-definition: var(--font-anton-sdf);
 }
 
-.sys-icon {
-    width: 38px;
-    height: 38px;
-    -unity-background-scale-mode: scale-to-fit;
-    -unity-background-image-tint-color: rgb(204, 204, 204);
-    transition-property: -unity-background-image-tint-color;
-    transition-duration: var(--transition-fast);
+/* Icon Images */
+.news-icon { background-image: url("project://database/Assets/UI/Icons/newspaper.png"); }
+.quests-icon { background-image: url("project://database/Assets/UI/Icons/list-check.png"); }
+.friends-icon { background-image: url("project://database/Assets/UI/Icons/user-group.png"); }
+.settings-icon { background-image: url("project://database/Assets/UI/Icons/gear.png"); }
+
+
+/* === PLAYER ID BADGE === */
+.player-id-badge {
+    position: absolute;
+    left: 30px;
+    bottom: 30px;
+    flex-direction: row;
+    align-items: center;
 }
 
-.sys-icon-btn:hover .sys-icon {
-    -unity-background-image-tint-color: var(--text-white);
+.id-text-box {
+    flex-direction: column;
 }
 
-.leaderboard-icon {
-    background-image: url("project://database/Assets/UI/Icons/chart-simple.png?fileID=2800000&guid=958ad9e25e2f4417dba9a3cbfa0e90bc&type=3#chart-simple");
+.id-name {
+    font-size: 32px; /* 2rem approx */
+    color: white;
+    -unity-font-definition: var(--font-anton-sdf);
+    margin: 0;
+    padding: 0;
+    text-shadow: 0 2px 0 black; /* Simple shadow */
 }
 
-.friends-icon {
-    background-image: url("project://database/Assets/UI/Icons/user-group.png?fileID=2800000&guid=9415b224afe804a798950ddb4a823224&type=3#user-group");
+.id-sub {
+    font-size: 14px;
+    color: var(--theme-yellow);
+    -unity-font-style: bold;
+    letter-spacing: 2px;
+    margin-top: -2px;
 }
 
-.settings-icon {
-    background-image: url("project://database/Assets/UI/Icons/gear.png?fileID=2800000&guid=85b5e490e73aa43bcb8c8e970b3965fc&type=3#gear");
+
+/* === TAB VIEW === */
+.main-tabs {
+    flex-grow: 1;
+}
+.main-tabs .unity-tab-view__header-container {
+    flex-direction: row;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.6);
+    border-width: 1px;
+    border-color: var(--glass-border);
+    border-radius: 30px;
+    padding: 4px;
+}
+.main-tabs .unity-tab-view__content-container {
+    flex-grow: 1;
 }
 
+.main-tabs .unity-tab__header {
+    padding: 8px 20px;
+    border-radius: 40px;
+    color: rgb(170, 170, 170);
+    font-size: 14px;
+    -unity-font-style: bold;
+    background-color: transparent;
+    border-width: 0;
+    transition-property: background-color, scale;
+    transition-duration: 0.1s;
+}
 
+.main-tabs .unity-tab__header:checked {
+    background-color: var(--theme-yellow);
+    color: black;
+    padding: 8px 20px;
+    border-radius: var(--radius-xxl);
+    font-size: 14px;
+    -unity-font-style: bold;
+    border-width: 0;
+    transition-property: background-color, scale;
+    transition-duration: 0.1s;
+}
+
+.unity-tab__content-container { flex-grow: 1; }
+.unity-tab__header-underline { display: none; }
+
+.unity-tab {
+    flex-grow: 1;
+}
