@@ -1,0 +1,8 @@
+<UXML xmlns="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <VisualElement class="player-tag-container">
+        <VisualElement class="name-tag-speech-bubble-tail"/>
+        <VisualElement name="crown-icon" class="crown-icon"/>
+        <Label name="player-nick" text="PLAYER" class="player-nick"/>
+        <Label name="player-status" text="READY" class="player-status"/>
+    </VisualElement>
+</UXML>

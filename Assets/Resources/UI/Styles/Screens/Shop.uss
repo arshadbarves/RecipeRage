@@ -8,14 +8,18 @@
 }
 
 .shop-header {
-    padding: var(--spacing-md) var(--spacing-lg) var(--spacing-sm) var(--spacing-lg);
+    padding: var(--spacing-xl) var(--spacing-lg) var(--spacing-md) var(--spacing-lg);
     align-items: center;
+    background-color: transparent;
 }
 
 .shop-title {
-    font-size: var(--font-size-display);
-    color: var(--color-text-primary);
+    font-size: var(--font-size-hero-sm);
+    color: var(--color-black);
     -unity-text-align: middle-center;
+    -unity-font-definition: var(--font-anton-sdf);
+    text-shadow: none;
+    letter-spacing: 2px;
 }
 
 .shop-scroll {
@@ -32,16 +36,19 @@
 .category-button {
     background-color: var(--color-card-bg);
     border-radius: var(--radius-lg);
-    padding: var(--spacing-sm) var(--spacing-xl);
-    border-width: var(--border-width-normal);
+    padding: var(--spacing-md) var(--spacing-xxl);
+    border-width: var(--border-width-thick);
     border-color: var(--color-card-border);
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-body-xl);
     color: var(--color-text-primary);
-    transition-property: scale, background-color;
     transition-duration: var(--transition-normal);
-    min-width: 110px;
-    margin-right: var(--spacing-sm);
-    margin-bottom: var(--spacing-sm);
+    min-width: 160px;
+    margin-right: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.category-button:hover {
+    scale: 1.05;
 }
 
 .category-button:active {

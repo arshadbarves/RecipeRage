@@ -1,9 +1,5 @@
 @import url("project://database/Assets/Resources/UI/Themes/DesignSystem.uss?fileID=7433441132597879392&guid=74282f7acd0164afea4d8dc9dc05a968&type=3#DesignSystem");
 
-/* ============================================
-   LOBBY - REFINED FORTNITE STYLE
-   ============================================ */
-
 .lobby-root {
     width: 100%;
     height: 100%;
@@ -11,173 +7,306 @@
     background-color: transparent;
 }
 
-/* === CHARACTER ZONE (Center) === */
 .character-zone {
-    position: absolute;
-    left: 50%;
-    bottom: 0;
-    translate: -50% 0;
-    width: 500px;
-    height: 90%;
     align-items: center;
     justify-content: flex-end;
-}
-
-.floor-glow {
+    height: 100%;
     position: absolute;
-    bottom: -50px;
-    left: 50%;
-    translate: -50% 0;
-    width: 600px;
-    height: 200px;
-    background-color: rgba(255, 215, 0, 0.15); /* Slightly stronger */
-    border-radius: 50%;
+    left: 0;
+    right: 0;
 }
 
-.character-model {
-    width: 300px;
-    height: 85%;
-    /* Placeholder for potential RenderTexture */
-}
-
-/* === RIGHT PANEL === */
-.right-panel {
-    position: absolute;
-    right: 30px; /* 30px from right */
-    bottom: 30px; /* 30px from bottom */
-    width: 360px; /* Reduced from 400px */
+.lobby-sidebar {
     flex-direction: column;
+    z-index: 20;
+    margin: 50px;
 }
 
-/* === SQUAD CONTAINER === */
-.squad-container {
+.squad-slot-container {
     flex-direction: row;
-    height: 130px; /* 130px height */
-    margin-bottom: 15px; /* Gap between squad and play controls */
+    justify-content: space-evenly;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+}
+
+.squad-slot-unit {
+    margin: 0 40px;
+    justify-content: center;
 }
 
 .squad-card {
-    flex: 1;
-    margin-right: 8px; /* 8px gap */
-    border-radius: 6px;
+    width: 75px;
+    height: 75px;
+    border-radius: var(--radius-md);
     overflow: hidden;
-    transition-property: border-color, scale;
-    transition-duration: 0.1s;
-    background-color: rgba(30, 30, 35, 0.9); /* Dark background */
-    border-width: 1px;
-    border-color: #444;
-    padding: 0;
-}
-
-.squad-card:last-child {
-    margin-right: 0;
-}
-
-
-
-.squad-card:active {
-    scale: 0.96;
-}
-
-
-/* Filled State (Player) */
-.squad-card.filled {
-    background-color: rgb(34, 34, 34);
-    border-color: rgb(68, 68, 68);
-}
-
-.squad-bg {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    opacity: 0.8;
-    -unity-background-scale-mode: scale-and-crop;
-}
-
-.crown-icon {
-    position: absolute;
-    top: 4px; right: 4px;
-    width: 14px; height: 14px;
-    background-image: url("project://database/Assets/UI/Icons/crown.png");
-    -unity-background-image-tint-color: var(--theme-yellow);
+    transition-duration: 0.15s;
+    background-color: rgba(255, 255, 255, 0.15);
+    border-width: 2.5px;
+    border-color: rgba(255, 255, 255, 0.4);
 }
 
 .name-tag-overlay {
     position: absolute;
-    bottom: 0; left: 0; right: 0;
-    padding: 8px 2px 4px 2px;
-    background-color: rgba(0, 0, 0, 0.95);
-    /* Gradient simulation via color or texture if needed */
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: var(--spacing-sm) 4px var(--spacing-sm) 4px;
+    background-color: var(--color-overlay-darker);
     align-items: center;
 }
 
+.player-tag-container {
+    position: absolute;
+    top: -120px;
+    left: 50%;
+    translate: -50% 0;
+    width: 240px;
+    border-radius: var(--radius-md);
+    padding: 8px 12px;
+    border-width: 3px;
+    border-color: var(--color-black);
+    background-color: white;
+    align-items: center;
+    justify-content: center;
+    min-height: 80px;
+}
+
+.player-tag-container.local-player {
+    border-color: var(--theme-yellow);
+    border-width: 4px;
+}
+
+.name-tag-speech-bubble-tail {
+    position: absolute;
+    bottom: -11px;
+    left: 50%;
+    translate: -50% 0;
+    width: 20px;
+    height: 20px;
+    background-color: white;
+    rotate: 45deg;
+    border-right-width: 3px;
+    border-right-color: var(--color-black);
+    border-bottom-width: 3px;
+    border-bottom-color: var(--color-black);
+    z-index: -1;
+}
+
+.player-tag-container.local-player .name-tag-speech-bubble-tail {
+    border-right-color: var(--theme-yellow);
+    border-bottom-color: var(--theme-yellow);
+}
+
+.crown-icon {
+    position: absolute;
+    top: -18px;
+    right: -12px;
+    width: 40px;
+    height: 40px;
+    background-image: url("project://database/Assets/UI/Icons/crown.png?fileID=2800000&guid=eaff26e31928b415abd465de3f6819fa&type=3#crown");
+    -unity-background-image-tint-color: var(--theme-yellow);
+    rotate: 15deg;
+    display: none;
+}
+
+.is-leader .crown-icon {
+    display: flex;
+}
+
 .player-nick {
-    font-size: 13px;
-    -unity-font-definition: var(--font-rajdhani-sdf); /* If available, else default bold */
+    font-size: var(--font-size-body-md);
+    -unity-font-definition: var(--font-anton-sdf);
     -unity-font-style: bold;
-    color: white;
+    color: var(--color-black);
     margin: 0;
+    -unity-text-align: middle-center;
 }
 
 .player-status {
-    font-size: 10px;
-    color: #00E5FF; /* Gem color */
+    font-size: var(--font-size-caption-xs);
+    color: var(--theme-amber);
     margin-top: 2px;
     -unity-font-style: bold;
+    -unity-text-align: middle-center;
 }
 
-/* Empty State (Invite Button) */
-.squad-card.empty {
-    background-color: rgba(255, 255, 255, 0.02);
-    border-width: 1px;
-    border-color: rgba(255, 255, 255, 0.3); /* Dashed not supported easily, using solid */
-    flex-direction: column;
+.side-icon-btn {
+    width: 84px;
+    height: 84px;
+    background-color: rgba(0, 0, 0, 0.45);
+    border-width: 2.5px;
+    border-color: var(--glass-border);
+    border-radius: var(--radius-lg);
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--spacing-md);
+    transition-duration: 0.15s;
+}
+
+.side-icon-btn:hover {
+    background-color: var(--glass-bg-hover);
+    border-color: var(--glass-border-bright);
+    scale: 1.05;
+}
+
+.side-icon-btn:active {
+    scale: 0.92;
+    background-color: var(--glass-bg-active);
+}
+
+.side-icon-btn .icon {
+    width: 42px;
+    height: 42px;
+    -unity-background-image-tint-color: var(--text-white);
+}
+
+.badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 32px;
+    height: 32px;
+    background-color: var(--theme-red);
+    border-radius: var(--radius-round);
+    align-items: center;
+    justify-content: center;
+    border-width: 3px;
+    border-color: white;
+}
+
+.badge-text {
+    font-size: var(--font-size-caption-xs);
+    color: var(--text-white);
+    -unity-font-definition: var(--font-anton-sdf);
+}
+
+.news-icon {
+    background-image: url("project://database/Assets/UI/Icons/newspaper.png?fileID=2800000&guid=df887da1418b04d78b599135abbcf1fb&type=3#newspaper");
+}
+
+.quests-icon {
+    background-image: url("project://database/Assets/UI/Icons/list-check.png?fileID=2800000&guid=2f5a7759b6ed54480961c7715008b50b&type=3#list-check");
+}
+
+.friends-icon {
+    background-image: url("project://database/Assets/UI/Icons/user-group.png?fileID=2800000&guid=9415b224afe804a798950ddb4a823224&type=3#user-group");
+}
+
+.settings-icon {
+    background-image: url("project://database/Assets/UI/Icons/gear.png?fileID=2800000&guid=85b5e490e73aa43bcb8c8e970b3965fc&type=3#gear");
+}
+
+.character-model {
+    width: 300px;
+    height: 100%;
+    margin: 0 40px;
     align-items: center;
     justify-content: center;
 }
 
+.right-panel {
+    position: absolute;
+    right: 50px;
+    bottom: 50px;
+    width: 520px;
+    flex-direction: column;
+}
 
+.squad-card:hover {
+    border-color: var(--theme-yellow);
+    scale: 1.02;
+}
+
+.squad-card:active {
+    scale: 0.94;
+    background-color: var(--bg-dark);
+}
+
+.squad-card.filled {
+    background-color: rgba(0, 0, 0, 0.65);
+    border-color: var(--glass-border-bright);
+}
+
+.squad-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.8;
+    -unity-background-scale-mode: scale-and-crop;
+}
+
+.squad-card.empty {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-width: 2px;
+    border-color: rgba(255, 255, 255, 0.3);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+}
+
+.squad-card.empty:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-color: white;
+}
+
+.empty-slot-content {
+    opacity: 0.6;
+    transition-duration: 0.2s;
+}
+
+.squad-card.empty:hover .empty-slot-content {
+    opacity: 1;
+    scale: 1.1;
+}
 
 .plus-icon {
-    width: 20px;
-    height: 20px;
-    background-image: url("project://database/Assets/UI/Icons/plus.png");
-    -unity-background-image-tint-color: rgb(85, 85, 85);
-    margin-bottom: 4px;
+    font-size: 75px;
+    color: white;
+    -unity-font-definition: var(--font-anton-sdf);
+    margin: 0;
+    padding: 0;
+    -unity-text-align: middle-center;
+    top: -10px;
 }
 
 .invite-text {
-    font-size: 10px;
-    color: rgb(119, 119, 119);
-    -unity-font-definition: var(--font-anton-sdf);
-    letter-spacing: 1px;
+    display: none;
 }
 
-/* === LOBBY CONTROLS === */
 .lobby-controls {
-    background-color: rgba(15, 15, 20, 0.85);
-    border-width: 1px;
+    background-color: rgba(0, 0, 0, 0.45);
+    border-width: 2.5px;
     border-color: var(--glass-border);
-    border-radius: 12px;
-    padding: 12px;
+    border-radius: var(--radius-md);
+    padding: var(--spacing-lg);
 }
 
-/* Map Selector */
 .map-selector {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 12px;
-    padding: 8px 12px;
-    background-color: rgba(0, 0, 0, 0.3);
-    border-radius: 6px;
-    border-width: 0;
-    transition-property: background-color, scale;
+    margin-bottom: var(--spacing-lg);
+    padding: var(--spacing-md) var(--spacing-lg);
+    background-color: var(--color-overlay-dark);
+    border-radius: var(--radius-md);
+    border-width: 2px;
+    border-color: var(--glass-border);
     transition-duration: 0.1s;
+    height: 100px;
+}
+
+.map-selector:hover {
+    border-color: var(--glass-border-bright);
+    background-color: var(--glass-bg-hover);
 }
 
 .map-selector:active {
     scale: 0.98;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: var(--color-overlay-darker);
 }
 
 .map-info {
@@ -185,52 +314,57 @@
 }
 
 .map-mode-label {
-    font-size: 10px;
-    color: rgb(136, 136, 136);
+    font-size: var(--font-size-caption-xs);
+    color: var(--text-gray);
     letter-spacing: 1px;
     -unity-font-style: bold;
     margin: 0;
 }
 
 .map-name {
-    font-size: 20px;
-    color: white;
+    font-size: var(--font-size-xl);
+    color: var(--text-white);
     -unity-font-definition: var(--font-anton-sdf);
     margin: 0;
 }
 
 .rotate-icon {
-    width: 20px;
-    height: 20px;
-    background-image: url("project://database/Assets/UI/Icons/rotate.png");
+    width: var(--icon-size-xxs);
+    height: var(--icon-size-xxs);
+    background-image: url("project://database/Assets/UI/Icons/rotate.png?fileID=2800000&guid=46fbc0cdbcabc4e7ca4ad9e9fab1f0f1&type=3#rotate");
     -unity-background-image-tint-color: var(--theme-yellow);
 }
 
-/* Big Play Button */
 .play-btn-big {
     width: 100%;
-    height: 65px; /* 65px height */
+    height: var(--height-button-lg);
     background-color: var(--theme-yellow);
-    border-width: 0;
-    border-radius: 6px;
+    border-width: 2px;
+    border-color: var(--color-black);
+    border-radius: var(--radius-md);
     align-items: center;
     justify-content: center;
-    transition-property: scale;
     transition-duration: 0.1s;
+    text-shadow: 0 2px 0 rgba(255, 255, 255, 0.3);
+}
+
+.play-btn-big:hover {
+    background-color: var(--theme-amber);
+    scale: 1.02;
 }
 
 .play-btn-big:active {
-    scale: 0.96;
+    scale: 0.95;
 }
 
 .play-label {
-    font-size: 36px;
-    color: black;
+    font-size: var(--font-size-title-md);
+    color: var(--color-black);
     letter-spacing: 1px;
     -unity-font-style: bold;
     -unity-font-definition: var(--font-anton-sdf);
 }
 
-/* Region Info moved or removed in this ref? Removed from HTML but good to keep if needed. */
-/* Keeping region info hidden or removing logic if not in HTML */
-.region-info { display: none; }
+.region-info {
+    display: none;
+}

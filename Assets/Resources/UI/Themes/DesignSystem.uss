@@ -47,12 +47,12 @@
     --border-width-extra-thick: 6px;
 
     /* Border Radius */
-    --radius-xs: 8px;
-    --radius-sm: 12px;
-    --radius-md: 15px;
-    --radius-lg: 18px;
-    --radius-xl: 20px;
-    --radius-xxl: 22px;
+    --radius-xs: 10px;
+    --radius-sm: 15px;
+    --radius-md: 18px;
+    --radius-lg: 22px;
+    --radius-xl: 25px;
+    --radius-xxl: 28px;
     --radius-round: 50%;
 
     /* Spacing */
@@ -67,12 +67,12 @@
     --font-size-xs: 12px;
     --font-size-sm: 14px;
     --font-size-md: 16px;
-    --font-size-lg: 18px;
-    --font-size-xl: 20px;
-    --font-size-xxl: 22px;
-    --font-size-title: 28px;
-    --font-size-display: 42px;
-    --font-size-hero: 48px;
+    --font-size-lg: 24px;
+    --font-size-xl: 32px;
+    --font-size-xxl: 40px;
+    --font-size-title: 48px;
+    --font-size-display: 64px;
+    --font-size-hero: 80px;
 
     /* Text Shadow */
     --text-shadow-xs: 1px 1px 0 rgb(0, 0, 0);
@@ -107,7 +107,14 @@
     /* Glass Effects */
     --glass-bg: rgba(255, 255, 255, 0.05);
     --glass-border: rgba(255, 255, 255, 0.15);
-    --glass-bg-hover: rgba(255, 255, 255, 0.1);
+    --glass-bg-hover: rgba(255, 255, 255, 0.12);
+    --glass-bg-active: rgba(255, 255, 255, 0.2);
+    --glass-border-bright: rgba(255, 255, 255, 0.4);
+
+    /* Shadows & Depth */
+    --shadow-soft: 0 8px 16px rgba(0, 0, 0, 0.4);
+    --shadow-inner: inset 0 2px 4px rgba(255, 255, 255, 0.1);
+    --outline-glow: 0 0 15px rgba(255, 215, 0, 0.3);
 
     /* Dark Backgrounds */
     --bg-dark: #050505;
@@ -127,55 +134,55 @@
     --border-dark-strong: rgb(85, 85, 85);
 
     /* Typography - Large UI Sizes */
-    --font-size-hero-xl: 100px;
-    --font-size-hero-lg: 96px;
-    --font-size-hero-md: 72px;
-    --font-size-hero-sm: 48px;
-    --font-size-title-xl: 42px;
-    --font-size-title-lg: 36px;
-    --font-size-title-md: 32px;
-    --font-size-title-sm: 28px;
-    --font-size-body-xl: 24px;
-    --font-size-body-lg: 22px;
-    --font-size-body-md: 20px;
-    --font-size-body-sm: 18px;
-    --font-size-caption-lg: 16px;
-    --font-size-caption-md: 14px;
-    --font-size-caption-sm: 12px;
-    --font-size-caption-xs: 10px;
+    --font-size-hero-xl: 120px;
+    --font-size-hero-lg: 110px;
+    --font-size-hero-md: 84px;
+    --font-size-hero-sm: 56px;
+    --font-size-title-xl: 56px;
+    --font-size-title-lg: 48px;
+    --font-size-title-md: 42px;
+    --font-size-title-sm: 40px;
+    --font-size-body-xl: 36px;
+    --font-size-body-lg: 32px;
+    --font-size-body-md: 28px;
+    --font-size-body-sm: 24px;
+    --font-size-caption-lg: 22px;
+    --font-size-caption-md: 20px;
+    --font-size-caption-sm: 18px;
+    --font-size-caption-xs: 16px;
 
     /* Component Heights */
-    --height-top-bar: 120px;
-    --height-button-xxl: 120px;
-    --height-button-xl: 100px;
-    --height-button-lg: 80px;
-    --height-button-md: 60px;
-    --height-button-sm: 40px;
-    --height-icon-xl: 70px;
-    --height-icon-lg: 60px;
-    --height-icon-md: 50px;
-    --height-icon-sm: 36px;
-    --height-progress: 30px;
+    --height-top-bar: 160px;
+    --height-button-xxl: 160px;
+    --height-button-xl: 140px;
+    --height-button-lg: 120px;
+    --height-button-md: 100px;
+    --height-button-sm: 64px;
+    --height-icon-xl: 100px;
+    --height-icon-lg: 85px;
+    --height-icon-md: 70px;
+    --height-icon-sm: 50px;
+    --height-progress: 50px;
 
     /* Icon Sizes */
-    --icon-size-xl: 40px;
-    --icon-size-lg: 36px;
-    --icon-size-md: 32px;
-    --icon-size-sm: 28px;
-    --icon-size-xs: 24px;
-    --icon-size-xxs: 20px;
+    --icon-size-xl: 64px;
+    --icon-size-lg: 56px;
+    --icon-size-md: 48px;
+    --icon-size-sm: 40px;
+    --icon-size-xs: 32px;
+    --icon-size-xxs: 28px;
 
     /* Panel Widths */
-    --panel-width-lg: 400px;
-    --panel-width-md: 350px;
-    --panel-width-sm: 280px;
+    --panel-width-lg: 450px;
+    --panel-width-md: 380px;
+    --panel-width-sm: 300px;
 
     /* Spacing - Large */
-    --spacing-panel: 40px;
-    --spacing-section: 25px;
-    --spacing-element: 20px;
-    --spacing-item: 15px;
-    --spacing-tight: 10px;
+    --spacing-panel: 50px;
+    --spacing-section: 30px;
+    --spacing-element: 25px;
+    --spacing-item: 20px;
+    --spacing-tight: 12px;
 
     /* Anton Font (SDF for better rendering) */
     --font-anton-sdf: url("project://database/Assets/Fonts/Anton-Regular%20SDF.asset?fileID=11400000&guid=aa820f8024bbb4ae08525ce0513021a5&type=2#Anton-Regular SDF");
@@ -192,9 +199,19 @@ TextField,
     -unity-font-definition: var(--font-anton-sdf);
 }
 
+/* Global Button Polish */
+Button, .unity-button {
+    transition-duration: 0.1s;
+    transition-timing-function: ease-in-out-sine;
+}
 
+Button:hover, .unity-button:hover {
+    scale: 1.03;
+}
 
-
+Button:active, .unity-button:active {
+    scale: 0.95;
+}
 
 .header {
     flex-direction: row;
@@ -324,16 +341,15 @@ TextField,
 
 /* Base Button - Now applied to all Buttons */
 Button, .unity-button, .skew-button {
-    transition-property: scale, background-color;
-    transition-duration: var(--transition-fast);
+    transition-duration: 0.1s;
 }
 
 Button, .unity-button {
     border-radius: var(--radius-md);
-    padding: var(--spacing-sm) var(--spacing-lg);
+    padding: var(--spacing-md) var(--spacing-xl);
     border-width: var(--border-width-normal);
     border-color: var(--color-card-border);
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-xl);
     color: var(--color-text-primary);
 }
 
@@ -435,7 +451,6 @@ Button:active, .unity-button:active, .skew-button:active {
     border-color: var(--color-card-border);
     width: 75px;
     height: 40px;
-    transition-property: all;
     transition-duration: var(--transition-slow);
     justify-content: flex-start;
     align-items: center;

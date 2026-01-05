@@ -30,26 +30,22 @@ namespace Core.State.States
         private bool _hasFilledWithBots;
 
         // Matchmaking parameters
-        private GameMode _gameMode;
-        private int _teamSize;
+        private GameMode _gameMode = GameMode.Classic;
+        private int _teamSize = 4;
 
         /// <summary>
-        /// Constructor with matchmaking parameters and dependencies
+        /// Constructor with dependencies
         /// </summary>
         public MatchmakingState(
             IUIService uiService,
             SessionManager sessionManager,
             IGameStateManager stateManager,
-            Core.Maintenance.IMaintenanceService maintenanceService,
-            GameMode gameMode = GameMode.Classic,
-            int teamSize = 4)
+            Core.Maintenance.IMaintenanceService maintenanceService)
         {
             _uiService = uiService;
             _sessionManager = sessionManager;
             _stateManager = stateManager;
             _maintenanceService = maintenanceService;
-            _gameMode = gameMode;
-            _teamSize = teamSize;
         }
 
         public override void Enter()

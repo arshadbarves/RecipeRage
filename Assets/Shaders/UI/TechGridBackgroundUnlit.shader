@@ -2,25 +2,36 @@ Shader "Unlit/TechGridBackground"
 {
     Properties
     {
-        _CenterColor ("Center Color", Color) = (0.1, 0.12, 0.17, 1) // #1a202c
-        _EdgeColor ("Edge Color", Color) = (0, 0, 0, 1)        // #000000
-        _GridColor ("Grid Color", Color) = (1, 1, 1, 0.03)     // White with low alpha
-        _GridSize ("Grid Size", Float) = 40.0
-        _LineWidth ("Line Width", Float) = 1.0
+        [Header(Radial Gradient)]
+        _CenterColor ("Center Color", Color) = (0.102, 0.125, 0.173, 1) // #1a202c
+        _EdgeColor ("Edge Color", Color) = (0, 0, 0, 1)                 // #000000
+        _GradientRadius ("Gradient Radius", Float) = 1.0
+        _GradientFalloff ("Gradient Falloff", Range(0.1, 5.0)) = 1.0
+        [Toggle] _CorrectAspect ("Correct Aspect Ratio", Float) = 1.0
+
+        [Header(Grid Lines)]
+        _GridColor ("Grid Color", Color) = (1, 1, 1, 1)
+        _GridSize ("Grid Size (px)", Float) = 40.0
+        _LineWidth ("Line Width (px)", Float) = 1.0
+        _GridAlpha ("Grid Alpha", Range(0, 0.2)) = 0.03
+
+        [Header(Vignette)]
+        _VignetteIntensity ("Vignette Intensity", Range(0, 3.0)) = 1.2
+        _VignetteSmoothness ("Vignette Smoothness", Range(0.1, 5.0)) = 1.5
+        _VignetteRoundness ("Vignette Roundness", Range(0, 1)) = 1.0
     }
 
     SubShader
     {
-        Tags 
-        { 
-            "RenderType"="Opaque" 
+        Tags
+        {
+            "RenderType"="Opaque"
             "Queue"="Background"
         }
-        
+
         LOD 100
         Cull Off
         ZWrite On
-        ZTest LEqual
 
         Pass
         {
@@ -46,9 +57,18 @@ Shader "Unlit/TechGridBackground"
 
             fixed4 _CenterColor;
             fixed4 _EdgeColor;
+            float _GradientRadius;
+            float _GradientFalloff;
+            float _CorrectAspect;
+
             fixed4 _GridColor;
             float _GridSize;
             float _LineWidth;
+            float _GridAlpha;
+
+            float _VignetteIntensity;
+            float _VignetteSmoothness;
+            float _VignetteRoundness;
 
             v2f vert (appdata v)
             {
@@ -61,42 +81,74 @@ Shader "Unlit/TechGridBackground"
 
             fixed4 frag (v2f i) : SV_Target
             {
-                // 1. Radial Gradient (Center to Corners)
-                // Matches: radial-gradient(circle at center, #1a202c 0%, #000000 100%)
-                float2 uv = i.uv;
-                float dist = distance(uv, float2(0.5, 0.5));
-                // For a circular gradient to edges (not corners), use 0.5 as radius
-                // This matches CSS "circle at center" with "closest-side" behavior
-                float radius = 0.5;
-                float t = saturate(dist / radius);
-                fixed4 bgColor = lerp(_CenterColor, _EdgeColor, t);
+                // === 1. RADIAL GRADIENT ===
+                // CSS: radial-gradient(circle at center, ...)
+                float2 uv = i.uv - 0.5; // Center UV at 0
 
-                // 2. Grid Lines using screen-space coordinates
-                // Matches: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px)
-                // repeated every 40px in both directions
+                // Correction for Aspect Ratio to make it a perfect circle
+                if (_CorrectAspect > 0.5)
+                {
+                    float aspect = _ScreenParams.x / _ScreenParams.y;
+                    uv.x *= aspect;
+                }
+
+                float dist = length(uv);
+
+                // Scale radius (default 0.5 reaches edge of height if aspect corrected and size matches)
+                // _GradientRadius 1.0 means it covers more screen.
+                // Standard CSS circle at center reaches closest side (0.5).
+                // Let's normalize so 1.0 is "full screen height" radius approx.
+                float radius = 0.5 * _GradientRadius;
+
+                float t = saturate(dist / radius);
+                t = pow(t, _GradientFalloff); // Curve control
+
+                fixed3 bgColor = lerp(_CenterColor.rgb, _EdgeColor.rgb, t);
+
+                // === 2. GRID LINES ===
                 float2 screenUV = i.screenPos.xy / i.screenPos.w;
-                float2 screenPixels = screenUV * _ScreenParams.xy;
-                
-                // Grid logic: modulo to get repeating pattern
-                float2 gridMod = fmod(screenPixels, _GridSize);
-                
-                // Check if we're on a grid line (first _LineWidth pixels of each tile)
-                float onLineX = step(gridMod.x, _LineWidth);
-                float onLineY = step(gridMod.y, _LineWidth);
-                float isGrid = max(onLineX, onLineY);
-                
-                // Alpha blend white grid lines over background
-                // CSS compositing: rgba(255,255,255,0.03) over radial gradient
-                float gridAlpha = isGrid * _GridColor.a;
-                fixed3 gridRGB = fixed3(1, 1, 1); // Pure white
-                
-                // Standard alpha blending: dst = src * alpha + bg * (1 - alpha)
-                fixed4 finalColor = fixed4(
-                    lerp(bgColor.rgb, gridRGB, gridAlpha),
-                    1.0
-                );
-                
-                return finalColor;
+                float2 pixels = screenUV * _ScreenParams.xy;
+
+                // Get position within each grid cell
+                float2 cellPos = fmod(abs(pixels), _GridSize);
+
+                // Check if we're in the first _LineWidth pixels of the cell
+                float lineX = step(cellPos.x, _LineWidth);
+                float lineY = step(cellPos.y, _LineWidth);
+
+                // Either horizontal OR vertical line
+                float isOnLine = max(lineX, lineY);
+
+                // === 3. COMPOSITE GRID ===
+                fixed3 gridColor = _GridColor.rgb;
+                fixed3 compositedColor = lerp(bgColor, gridColor, isOnLine * _GridAlpha);
+
+                // === 4. VIGNETTE ===
+                // Vignette usually follows screen shape (elliptical) or circle?
+                // Standard is elliptical (based on uncorrected UV).
+                // Let's use uncorrected UV for vignette (i.uv)
+                float2 uvVig = i.uv - 0.5;
+                // Roundness control: 1 = Circle (aspect corrected), 0 = Ellipse (screen fit)
+                // Actually simpler: mix aspect corrected UVs with uncorrected.
+                float2 vigCoord = uvVig;
+                if (_CorrectAspect > 0.5)
+                {
+                    float aspect = _ScreenParams.x / _ScreenParams.y;
+                    // Mixed based on roundness
+                    // Roundness 1 -> Corrected
+                    // Roundness 0 -> Uncorrected (stretch to fit screen)
+                    vigCoord.x *= lerp(1.0, aspect, _VignetteRoundness);
+                }
+
+                float vigDist = length(vigCoord);
+                vigDist *= _VignetteIntensity; // Scale
+
+                float vignette = saturate(1.0 - vigDist);
+                vignette = pow(vignette, _VignetteSmoothness);
+
+                fixed3 finalColor = compositedColor * vignette;
+
+                return fixed4(finalColor, 1.0);
             }
             ENDCG
         }

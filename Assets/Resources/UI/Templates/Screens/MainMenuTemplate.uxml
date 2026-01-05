@@ -4,44 +4,27 @@
     <Template name="ShopTemplate" src="project://database/Assets/Resources/UI/Templates/Screens/ShopTemplate.uxml?fileID=9197481963319205126&amp;guid=0824e79abae0447b990331c5e433d706&amp;type=3#ShopTemplate"/>
     <Style src="project://database/Assets/Resources/UI/Styles/Screens/MainMenu.uss?fileID=7433441132597879392&amp;guid=15bb364f81be046f5a66a2cf721fada9&amp;type=3#MainMenu"/>
     <VisualElement name="main-menu-root" class="main-menu-root">
-        <VisualElement name="shader-background" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; z-index: 0;"/>
-        <VisualElement name="top-bar" class="top-bar">
-            <TabView name="main-tabs" reorderable="false" view-data-key="MainMenuTabs" class="main-tabs">
-                <Tab name="tab-lobby" label="PLAY" view-data-key="LobbyTab">
-                    <Instance template="LobbyTemplate" name="lobby-content" style="flex-grow: 1; width: 100%; height: 100%;"/>
-                </Tab>
-                <Tab name="tab-battlepass" label="BP" view-data-key="BattlePassTab">
-                    <VisualElement style="flex-grow: 1;"/>
-                </Tab>
-                <Tab name="tab-compete" label="COMPETE" view-data-key="CompeteTab">
-                    <VisualElement style="flex-grow: 1;"/>
-                </Tab>
-                <Tab name="tab-shop" label="SHOP" view-data-key="ShopTab">
-                    <Instance template="ShopTemplate" name="shop-content" style="flex-grow: 1; width: 100%; height: 100%;"/>
-                </Tab>
-            </TabView>
-            <VisualElement name="currency-group" class="currency-group">
-                <VisualElement class="wallet-pill">
-                    <VisualElement class="wallet-icon gem-icon"/>
-                    <Label name="gems-amount" text="1,250" class="wallet-amount"/>
-                    <Button name="add-gems-btn" class="add-btn">
-                        <VisualElement class="icon-plus-small"/>
-                    </Button>
-                </VisualElement>
-                <VisualElement class="wallet-pill">
-                    <VisualElement class="wallet-icon gold-icon"/>
-                    <Label name="gold-amount" text="24K" class="wallet-amount"/>
-                    <Button name="add-gold-btn" class="add-btn white-bg">
-                        <VisualElement class="icon-plus-small"/>
-                    </Button>
-                </VisualElement>
+        <VisualElement name="shader-background" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; z-index: 0; background-color: white; -unity-material: url(&quot;project://database/Assets/Shaders/UI/Unlit_TechGridBackground.mat?fileID=2100000&amp;guid=35e2b2ac29f324d979bb1c833cf93c4c&amp;type=2#Unlit_TechGridBackground&quot;);"/>
+        <VisualElement name="currency-group" class="currency-group">
+            <VisualElement name="wallet-pill-gems" class="wallet-pill">
+                <VisualElement class="wallet-icon gem-icon"/>
+                <Label name="gems-amount" text="1,250" class="wallet-amount"/>
+            </VisualElement>
+            <VisualElement name="wallet-pill-gold" class="wallet-pill">
+                <VisualElement class="wallet-icon gold-icon"/>
+                <Label name="gold-amount" text="24K" class="wallet-amount"/>
             </VisualElement>
         </VisualElement>
-        <VisualElement name="player-id-badge" class="player-id-badge">
-            <VisualElement class="id-text-box">
-                <Label name="player-name-main" text="STRYKER" class="id-name"/>
-                <Label name="player-sub-main" text="LVL. 54 // VANGUARD" class="id-sub"/>
-            </VisualElement>
-        </VisualElement>
+        <TabView name="main-tabs" reorderable="false" view-data-key="MainMenuTabs" class="main-tabs">
+            <Tab name="tab-lobby" label="PLAY" view-data-key="LobbyTab">
+                <Instance template="LobbyTemplate" name="lobby-content" style="flex-grow: 1; width: 100%; height: 100%;"/>
+            </Tab>
+            <Tab name="tab-compete" label="COMPETE" view-data-key="CompeteTab">
+                <VisualElement style="flex-grow: 1;"/>
+            </Tab>
+            <Tab name="tab-shop" label="SHOP" view-data-key="ShopTab">
+                <Instance template="ShopTemplate" name="shop-content" style="flex-grow: 1; width: 100%; height: 100%;"/>
+            </Tab>
+        </TabView>
     </VisualElement>
 </UXML>

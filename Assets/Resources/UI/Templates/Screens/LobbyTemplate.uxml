@@ -1,57 +1,34 @@
-<?xml version='1.0' encoding='utf-8'?>
 <UXML xmlns="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Template name="CenterSlotTemplate" src="project://database/Assets/Resources/UI/Templates/Components/CenterSlotTemplate.uxml?fileID=9197481963319205126&amp;guid=dede8ee5a6afb41c59451e27deec7b71&amp;type=3#CenterSlotTemplate"/>
+    <Template name="SquadSlotTemplate" src="project://database/Assets/Resources/UI/Templates/Components/SquadSlotTemplate.uxml?fileID=9197481963319205126&amp;guid=da2040443a9c4410882587733bd873bd&amp;type=3#SquadSlotTemplate"/>
     <Style src="project://database/Assets/Resources/UI/Styles/Screens/Lobby.uss?fileID=7433441132597879392&amp;guid=0dc93b02b55854976be67fbd874f44ac&amp;type=3#Lobby"/>
-    
     <VisualElement name="lobby-root" class="lobby-root">
-        
-        <!-- CENTER CHARACTER ZONE -->
+        <VisualElement name="lobby-sidebar" class="lobby-sidebar">
+            <Button name="friends-btn" class="side-icon-btn">
+                <VisualElement class="icon friends-icon"/>
+            </Button>
+            <Button name="news-btn" class="side-icon-btn">
+                <VisualElement class="icon news-icon"/>
+                <VisualElement class="badge">
+                    <Label text="2" class="badge-text" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0;"/>
+                </VisualElement>
+            </Button>
+            <Button name="quests-btn" class="side-icon-btn">
+                <VisualElement class="icon quests-icon"/>
+            </Button>
+            <Button name="settings-btn" class="side-icon-btn">
+                <VisualElement class="icon settings-icon"/>
+            </Button>
+        </VisualElement>
         <VisualElement name="character-zone" class="character-zone">
-            <VisualElement name="floor-glow" class="floor-glow"/>
-            <VisualElement name="character-model" class="character-model">
-                <!-- 3D Character will be rendered here via RenderTexture -->
+            <VisualElement class="squad-slot-container">
+                <Instance template="SquadSlotTemplate"/>
+                <Instance template="CenterSlotTemplate"/>
+                <Instance template="SquadSlotTemplate"/>
             </VisualElement>
         </VisualElement>
-
-        <!-- RIGHT PANEL -->
         <VisualElement name="right-panel" class="right-panel">
-            
-            <!-- SQUAD SECTION -->
-            <VisualElement name="squad-container" class="squad-container">
-                
-                <!-- Squad Card 1 (You - Leader) -->
-                <Button name="squad-slot-1" class="squad-card filled">
-                    <VisualElement name="crown-icon" class="crown-icon"/>
-                    <VisualElement name="squad-bg-1" class="squad-bg"/>
-                    <VisualElement class="name-tag-overlay">
-                        <Label name="player-name-1" text="STRYKER" class="player-nick"/>
-                        <Label name="player-status-1" text="READY" class="player-status ready"/>
-                    </VisualElement>
-                </Button>
-                
-                <!-- Squad Card 2 -->
-                <Button name="squad-slot-2" class="squad-card empty">
-                    <VisualElement name="plus-icon-2" class="plus-icon"/>
-                    <Label text="INVITE" class="invite-text"/>
-                </Button>
-                
-                <!-- Squad Card 3 -->
-                <Button name="squad-slot-3" class="squad-card empty">
-                    <VisualElement name="plus-icon-3" class="plus-icon"/>
-                    <Label text="INVITE" class="invite-text"/>
-                </Button>
-                
-                <!-- Squad Card 4 -->
-                <Button name="squad-slot-4" class="squad-card empty">
-                    <VisualElement name="plus-icon-4" class="plus-icon"/>
-                    <Label text="INVITE" class="invite-text"/>
-                </Button>
-                
-            </VisualElement>
-            
-            <!-- LOBBY CONTROLS -->
             <VisualElement name="lobby-controls" class="lobby-controls">
-                
-                <!-- Map Selector -->
                 <Button name="map-selector" class="map-selector">
                     <VisualElement class="map-info">
                         <Label text="GAME MODE" class="map-mode-label"/>
@@ -59,18 +36,11 @@
                     </VisualElement>
                     <VisualElement name="rotate-icon" class="rotate-icon"/>
                 </Button>
-                
-                <!-- Big Play Button -->
                 <Button name="play-button" class="play-btn-big">
                     <Label text="PLAY" class="play-label anton"/>
                 </Button>
-                
-                <!-- Region Info -->
                 <Label name="region-info" text="REGION: ASIA-PACIFIC (24ms)" class="region-info"/>
-                
             </VisualElement>
-            
         </VisualElement>
-        
     </VisualElement>
 </UXML>

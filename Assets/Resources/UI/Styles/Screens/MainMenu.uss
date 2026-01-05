@@ -8,51 +8,48 @@
     width: 100%;
     height: 100%;
     flex-direction: column;
-    background-color: transparent;
+    background-color: white;
 }
 
-/* === TOP BAR === */
-.top-bar {
-    height: 80px;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    padding-left: 30px;
-    padding-right: 30px;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 20;
-}
-
-/* === CURRENCY GROUP (Wallet Pills) === */
+/* === TOP BAR AREA === */
+/* Currency positioned absolutely in top-right */
 .currency-group {
+    position: absolute;
+    top: 30px;
+    right: 50px; /* Aligned with sidebar margin */
     flex-direction: row;
     align-items: center;
+    z-index: 30;
 }
 
 .wallet-pill {
     flex-direction: row;
     align-items: center;
-    background-color: rgba(0, 0, 0, 0.8);
-    border-width: 1px;
+    background-color: rgba(0, 0, 0, 0.45);
+    border-width: 2.5px;
     border-color: var(--glass-border);
-    border-radius: 6px;
-    padding: 4px 4px 4px 12px;
-    height: 40px;
-    margin-left: 12px;
+    border-radius: var(--radius-xl);
+    padding: 0 18px; /* Reduced padding since add-btn is gone */
+    height: 72px;
+    margin-left: 30px;
+    transition-duration: 0.1s;
+    overflow: hidden;
+}
+
+.wallet-pill:hover {
+    border-color: var(--glass-border-bright);
+    background-color: var(--glass-bg-hover);
 }
 
 .wallet-icon {
-    width: 18px;
-    height: 18px;
-    margin-right: 8px;
+    width: 42px;
+    height: 42px;
+    margin-right: 12px;
 }
 
 .gem-icon {
     background-image: url("project://database/Assets/UI/Icons/gem.png");
-    -unity-background-image-tint-color: #00E5FF;
+    -unity-background-image-tint-color: var(--color-info);
 }
 
 .gold-icon {
@@ -61,33 +58,28 @@
 }
 
 .wallet-amount {
-    min-width: 40px;
-    -unity-text-align: middle-right;
-    color: white;
-    font-size: 16px;
+    min-width: 50px;
+    -unity-text-align: middle-left;
+    color: var(--text-white);
+    font-size: var(--font-size-body-md); /* Larger text */
     -unity-font-definition: var(--font-anton-sdf);
+    letter-spacing: 1px;
 }
 
 .add-btn {
-    width: 30px;
-    height: 30px;
-    background-color: var(--theme-yellow); /* Using primary gold for one, need green for other? Reference says Green #4CAF50 but var--primary also used */
-    /* Reference: .add-btn { background: var(--primary); ... } -> Gold is primary */
-    /* Wait, HTML says --add-btn: #4CAF50 but usage in HTML currency group:
-       Gems: default add-btn (primary?)
-       Gold: style="background: white;" */
-
-    border-radius: 4px;
-    margin-left: 5px;
+    width: 44px;
+    height: 44px;
+    background-color: var(--theme-yellow);
+    border-radius: var(--radius-md);
+    margin-left: 12px;
     align-items: center;
     justify-content: center;
     border-width: 0;
-    transition-property: scale;
     transition-duration: 0.1s;
 }
 
 .add-btn.white-bg {
-    background-color: white;
+    background-color: var(--text-white);
 }
 
 .add-btn:active {
@@ -95,63 +87,69 @@
 }
 
 .icon-plus-small {
-    width: 12px;
-    height: 12px;
+    width: 16px;
+    height: 16px;
     background-image: url("project://database/Assets/UI/Icons/plus.png");
-    -unity-background-image-tint-color: black;
+    -unity-background-image-tint-color: var(--color-black);
 }
 
 /* === LEFT SIDEBAR === */
 .sidebar-dock {
     position: absolute;
-    top: 120px;
-    left: 30px;
+    top: 180px;
+    right: 0;
     flex-direction: column;
     z-index: 15;
 }
 
 .side-icon-btn {
-    width: 50px;
-    height: 50px;
-    background-color: var(--glass-bg);
-    border-width: 1px;
+    width: 84px;
+    height: 84px;
+    background-color: rgba(0, 0, 0, 0.45);
+    border-width: 2.5px;
     border-color: var(--glass-border);
-    border-radius: 10px;
+    border-radius: var(--radius-lg) 0 0 var(--radius-lg);
     align-items: center;
     justify-content: center;
-    margin-bottom: 15px;
-    transition-property: scale, background-color;
-    transition-duration: 0.1s;
+    margin-bottom: var(--spacing-md);
+    transition-duration: 0.15s;
+}
+
+.side-icon-btn:hover {
+    background-color: var(--glass-bg-hover);
+    border-color: var(--glass-border-bright);
+    translate: -12px 0; /* More pronounced slide */
 }
 
 .side-icon-btn:active {
-    scale: 0.9;
-    background-color: #333;
+    scale: 0.92;
+    background-color: var(--glass-bg-active);
+    translate: 0 0;
 }
 
 .side-icon-btn .icon {
-    width: 20px;
-    height: 20px;
-    -unity-background-image-tint-color: white;
+    width: 42px;
+    height: 42px;
+    -unity-background-image-tint-color: var(--text-white);
 }
 
 .badge {
     position: absolute;
-    top: -5px;
-    right: -5px;
-    width: 18px;
-    height: 18px;
+    top: -8px;
+    right: -8px;
+    width: 32px;
+    height: 32px;
     background-color: var(--theme-red);
-    border-radius: 50%;
+    border-radius: var(--radius-round);
     align-items: center;
     justify-content: center;
-    border-width: 2px;
-    border-color: rgb(5, 5, 5);
+    border-width: 3px;
+    border-color: white; /* Match white theme */
 }
 
 .badge-text {
-    font-size: 10px;
-    color: white;
+    font-size: var(--font-size-caption-xs);
+    color: var(--text-white);
     -unity-font-definition: var(--font-anton-sdf);
 }
 
@@ -165,8 +163,8 @@
 /* === PLAYER ID BADGE === */
 .player-id-badge {
     position: absolute;
-    left: 30px;
-    bottom: 30px;
+    left: 50px;
+    bottom: 50px;
     flex-direction: row;
     align-items: center;
 }
@@ -176,20 +174,22 @@
 }
 
 .id-name {
-    font-size: 32px; /* 2rem approx */
-    color: white;
+    font-size: var(--font-size-hero-sm);
+    color: var(--color-black);
     -unity-font-definition: var(--font-anton-sdf);
     margin: 0;
     padding: 0;
-    text-shadow: 0 2px 0 black; /* Simple shadow */
+    text-shadow: none;
+    letter-spacing: 1px;
 }
 
 .id-sub {
-    font-size: 14px;
-    color: var(--theme-yellow);
+    font-size: var(--font-size-body-lg);
+    color: var(--color-text-muted);
     -unity-font-style: bold;
     letter-spacing: 2px;
-    margin-top: -2px;
+    margin-top: -5px;
+    text-shadow: none;
 }
 
 
@@ -197,41 +197,47 @@
 .main-tabs {
     flex-grow: 1;
 }
+
 .main-tabs .unity-tab-view__header-container {
     flex-direction: row;
     align-items: center;
-    background-color: rgba(0, 0, 0, 0.6);
-    border-width: 1px;
+    background-color: rgba(0, 0, 0, 0.45);
+    border-width: 2.5px;
     border-color: var(--glass-border);
-    border-radius: 30px;
-    padding: 4px;
+    border-radius: 36px; /* Highly rounded to match inner tabs (72px height / 2) */
+    padding: 8px;
+    margin: 30px 0 30px 50px; /* Added bottom margin for cleaner separation */
+    width: auto;
+    align-self: flex-start;
 }
+
 .main-tabs .unity-tab-view__content-container {
     flex-grow: 1;
 }
 
 .main-tabs .unity-tab__header {
-    padding: 8px 20px;
-    border-radius: 40px;
-    color: rgb(170, 170, 170);
-    font-size: 14px;
+    padding: 12px 32px;
+    border-radius: var(--radius-lg);
+    color: var(--text-white-muted);
+    font-size: var(--font-size-body-md);
     -unity-font-style: bold;
     background-color: transparent;
     border-width: 0;
-    transition-property: background-color, scale;
     transition-duration: 0.1s;
+    min-width: 140px; /* Slightly wider for better balance */
 }
 
 .main-tabs .unity-tab__header:checked {
     background-color: var(--theme-yellow);
-    color: black;
-    padding: 8px 20px;
-    border-radius: var(--radius-xxl);
-    font-size: 14px;
+    color: var(--color-black);
+    padding: 12px 32px;
+    border-radius: var(--radius-xl);
+    font-size: var(--font-size-body-md);
     -unity-font-style: bold;
     border-width: 0;
-    transition-property: background-color, scale;
     transition-duration: 0.1s;
+    scale: 1.02;
+    -unity-background-image-tint-color: white; /* Ensure no tint on the background color */
 }
 
 .unity-tab__content-container { flex-grow: 1; }

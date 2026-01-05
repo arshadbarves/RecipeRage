@@ -1,0 +1,11 @@
+<UXML xmlns="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Resources/UI/Styles/Screens/Lobby.uss?fileID=7433441132597879392&amp;guid=0dc93b02b55854976be67fbd874f44ac&amp;type=3#Lobby"/>
+    <VisualElement class="squad-slot-unit">
+        <Button name="squad-slot" class="squad-card empty">
+            <VisualElement class="empty-slot-content">
+                <Label text="+" class="plus-icon"/>
+            </VisualElement>
+        </Button>
+        <VisualElement name="slot-shadow" class="slot-shadow"/>
+    </VisualElement>
+</UXML>

@@ -1,0 +1,7 @@
+<UXML xmlns="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Template name="PlayerTagTemplate" src="project://database/Assets/Resources/UI/Templates/Components/PlayerTagTemplate.uxml?fileID=9197481963319205126&amp;guid=5d6362253f284cf8aaa4384655005d69&amp;type=3#PlayerTagTemplate"/>
+    <VisualElement class="character-model">
+        <Instance template="PlayerTagTemplate" name="player-tag-local" class="local-player is-leader"/>
+        <VisualElement name="floor-shadow-center" class="floor-shadow"/>
+    </VisualElement>
+</UXML>
