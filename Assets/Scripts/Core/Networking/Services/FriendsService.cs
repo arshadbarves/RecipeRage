@@ -4,20 +4,22 @@ using System.Linq;
 using System.Threading.Tasks;
 using Core.Logging;
 using Core.Networking.Interfaces;
-using Core.RemoteConfig;
+using Core.SDK;
 using Epic.OnlineServices;
-using PlayEveryWare.EpicOnlineServices;
-using UnityEngine;
+using UGSFriends = Unity.Services.Friends;
+using UGSModels = Unity.Services.Friends.Models;
+using UGSNotifications = Unity.Services.Friends.Notifications;
+using UGSExceptions = Unity.Services.Friends.Exceptions;
 
 namespace Core.Networking.Services
 {
     /// <summary>
-    /// Production-ready Friends Service with Supabase backend
+    /// Unity Gaming Services Friends implementation
     /// Features:
-    /// - Friend requests (send/accept/reject)
-    /// - Real friends list
-    /// - Recent players tracking
-    /// - Online status
+    /// - Friend requests (send/accept/reject/delete)
+    /// - Real friends list with presence
+    /// - Online status tracking
+    /// - Integration with EOS lobbies
     /// </summary>
     public class FriendsService : IFriendsService
     {
@@ -33,7 +35,7 @@ namespace Core.Networking.Services
         #region Properties
 
         public bool IsInitialized { get; private set; }
-        public string MyFriendCode { get; private set; }
+        public string MyFriendCode => _authManager?.PlayerId ?? "UNKNOWN";
         public IReadOnlyList<FriendInfo> Friends => _friends.AsReadOnly();
         public IReadOnlyList<FriendInfo> RecentPlayers => _recentPlayers.AsReadOnly();
         public IReadOnlyList<FriendRequest> PendingRequests => _pendingRequests.AsReadOnly();
@@ -43,22 +45,21 @@ namespace Core.Networking.Services
         #region Private Fields
 
         private readonly ILobbyManager _lobbyManager;
-        private readonly SupabaseClient _supabase;
+        private readonly UGSAuthenticationManager _authManager;
         private readonly List<FriendInfo> _friends = new List<FriendInfo>();
         private readonly List<FriendInfo> _recentPlayers = new List<FriendInfo>();
         private readonly List<FriendRequest> _pendingRequests = new List<FriendRequest>();
 
-        private string _myProductUserId;
-        private string _myDisplayName;
+        private UGSFriends.IFriendsService _ugsInstance;
 
         #endregion
 
         #region Initialization
 
-        public FriendsService(ILobbyManager lobbyManager, SupabaseConfig config)
+        public FriendsService(ILobbyManager lobbyManager, UGSAuthenticationManager authManager)
         {
             _lobbyManager = lobbyManager ?? throw new ArgumentNullException(nameof(lobbyManager));
-            _supabase = new SupabaseClient(config);
+            _authManager = authManager ?? throw new ArgumentNullException(nameof(authManager));
         }
 
         public async void Initialize()
@@ -69,30 +70,32 @@ namespace Core.Networking.Services
                 return;
             }
 
-            GameLogger.Log("Initializing with Supabase...");
+            GameLogger.Log("Initializing UGS Friends Service...");
 
             try
             {
-                // Get EOS user info
-                var productUserId = EOSManager.Instance.GetProductUserId();
-                if (productUserId == null || !productUserId.IsValid())
+                // Ensure UGS is authenticated
+                if (!_authManager.IsSignedIn)
                 {
-                    GameLogger.LogError("Invalid ProductUserId");
+                    GameLogger.LogError("UGS not signed in - cannot initialize friends");
                     return;
                 }
 
-                _myProductUserId = productUserId.ToString();
-                _myDisplayName = GetDisplayName();
+                // Get UGS Friends instance
+                _ugsInstance = UGSFriends.FriendsService.Instance;
 
-                // Register user and get friend code
-                await RegisterUserAsync();
+                // Initialize the service
+                await _ugsInstance.InitializeAsync();
 
-                // Load friends and requests
-                await RefreshFriendsAsync();
-                await RefreshFriendRequestsAsync();
+                // Subscribe to events
+                SubscribeToEvents();
+
+                // Initial data load
+                UpdateLocalFriends();
+                UpdateLocalRequests();
 
                 IsInitialized = true;
-                GameLogger.Log($"Initialized - Friend Code: {MyFriendCode}");
+                GameLogger.Log($"Initialized - Player ID: {MyFriendCode}");
             }
             catch (Exception ex)
             {
@@ -109,54 +112,37 @@ namespace Core.Networking.Services
             if (!IsInitialized)
                 throw new InvalidOperationException("Service not initialized");
 
-            // Validate friend code
-            if (string.IsNullOrEmpty(friendCode) || friendCode.Length != 8)
-                throw new ArgumentException("Invalid friend code format");
+            if (string.IsNullOrEmpty(friendCode))
+                throw new ArgumentException("Friend code cannot be empty");
 
             if (friendCode == MyFriendCode)
                 throw new ArgumentException("Cannot send request to yourself");
 
             GameLogger.Log($"Sending friend request to: {friendCode}");
 
-            // Find user by friend code
-            var query = $"friend_code=eq.{friendCode}&select=product_user_id,display_name,friend_code";
-            var response = await _supabase.GetAsync("users", query);
-
-            var users = JsonHelper.FromJson<UserData>(response);
-            if (users == null || users.Length == 0)
-                throw new Exception("Friend code not found");
-
-            var targetUser = users[0];
-
-            // Check if already friends
-            if (_friends.Any(f => f.FriendCode == friendCode))
-                throw new Exception("Already friends with this user");
-
-            // Send friend request
-            var requestData = new
+            try
             {
-                from_user_id = _myProductUserId,
-                to_user_id = targetUser.product_user_id,
-                status = "pending"
-            };
+                // Send request using UGS (by member ID, which is the PlayerId)
+                var relationship = await _ugsInstance.AddFriendAsync(friendCode);
 
-            var requestJson = JsonUtility.ToJson(requestData);
-            var requestResponse = await _supabase.PostAsync("friend_requests", requestJson);
+                GameLogger.Log($"Friend request sent to {friendCode}");
 
-            var createdRequest = JsonUtility.FromJson<FriendRequestData>(requestResponse);
-
-            GameLogger.Log($"Friend request sent to {targetUser.display_name}");
-
-            return new FriendRequest
+                return new FriendRequest
+                {
+                    Id = relationship.Id,
+                    FromUserId = MyFriendCode,
+                    FromUserName = "You",
+                    FromFriendCode = MyFriendCode,
+                    ToUserId = friendCode,
+                    Status = "pending",
+                    CreatedAt = DateTime.UtcNow
+                };
+            }
+            catch (UGSExceptions.FriendsServiceException ex)
             {
-                Id = createdRequest.id,
-                FromUserId = _myProductUserId,
-                FromUserName = _myDisplayName,
-                FromFriendCode = MyFriendCode,
-                ToUserId = targetUser.product_user_id,
-                Status = "pending",
-                CreatedAt = NTPTime.UtcNow
-            };
+                GameLogger.LogError($"Failed to send friend request: {ex.Message}");
+                throw new Exception($"Failed to send friend request: {ex.Message}");
+            }
         }
 
         public async Task AcceptFriendRequestAsync(string requestId)
@@ -166,19 +152,24 @@ namespace Core.Networking.Services
 
             GameLogger.Log($"Accepting friend request: {requestId}");
 
-            // Call RPC function to accept request
-            var rpcData = new { request_id = requestId };
-            var rpcJson = JsonUtility.ToJson(rpcData);
+            try
+            {
+                // Find the incoming request by ID
+                var request = _ugsInstance.IncomingFriendRequests.FirstOrDefault(r => r.Id == requestId);
 
-            await _supabase.RpcAsync("accept_friend_request", rpcJson);
+                if (request == null)
+                    throw new Exception("Friend request not found");
 
-            // Remove from pending
-            _pendingRequests.RemoveAll(r => r.Id == requestId);
+                // Accept the request by adding them as a friend
+                await _ugsInstance.AddFriendAsync(request.Member.Id);
 
-            // Refresh friends list
-            await RefreshFriendsAsync();
-
-            GameLogger.Log("Friend request accepted");
+                GameLogger.Log("Friend request accepted");
+            }
+            catch (UGSExceptions.FriendsServiceException ex)
+            {
+                GameLogger.LogError($"Failed to accept friend request: {ex.Message}");
+                throw;
+            }
         }
 
         public async Task RejectFriendRequestAsync(string requestId)
@@ -188,16 +179,24 @@ namespace Core.Networking.Services
 
             GameLogger.Log($"Rejecting friend request: {requestId}");
 
-            // Call RPC function to reject request
-            var rpcData = new { request_id = requestId };
-            var rpcJson = JsonUtility.ToJson(rpcData);
+            try
+            {
+                // Find the incoming request by ID
+                var request = _ugsInstance.IncomingFriendRequests.FirstOrDefault(r => r.Id == requestId);
 
-            await _supabase.RpcAsync("reject_friend_request", rpcJson);
+                if (request == null)
+                    throw new Exception("Friend request not found");
 
-            // Remove from pending
-            _pendingRequests.RemoveAll(r => r.Id == requestId);
+                // Delete/reject the request
+                await _ugsInstance.DeleteIncomingFriendRequestAsync(request.Member.Id);
 
-            GameLogger.Log("Friend request rejected");
+                GameLogger.Log("Friend request rejected");
+            }
+            catch (UGSExceptions.FriendsServiceException ex)
+            {
+                GameLogger.LogError($"Failed to reject friend request: {ex.Message}");
+                throw;
+            }
         }
 
         public async Task RefreshFriendRequestsAsync()
@@ -207,37 +206,19 @@ namespace Core.Networking.Services
 
             GameLogger.Log("Refreshing friend requests...");
 
-            // Get pending requests where I'm the recipient
-            var query = $"to_user_id=eq.{_myProductUserId}&status=eq.pending&select=*,from_user:users!from_user_id(product_user_id,display_name,friend_code)";
-            var response = await _supabase.GetAsync("friend_requests", query);
-
-            var requests = JsonHelper.FromJson<FriendRequestWithUserData>(response);
-
-            _pendingRequests.Clear();
-
-            if (requests != null)
+            try
             {
-                foreach (var req in requests)
-                {
-                    _pendingRequests.Add(new FriendRequest
-                    {
-                        Id = req.id,
-                        FromUserId = req.from_user_id,
-                        FromUserName = req.from_user?.display_name ?? "Unknown",
-                        FromFriendCode = req.from_user?.friend_code ?? "",
-                        ToUserId = req.to_user_id,
-                        Status = req.status,
-                        CreatedAt = DateTime.Parse(req.created_at)
-                    });
-                }
+                // Force refresh relationships from server
+                await _ugsInstance.ForceRelationshipsRefreshAsync();
+
+                // Update local cache
+                UpdateLocalRequests();
+
+                GameLogger.Log($"Found {_pendingRequests.Count} pending requests");
             }
-
-            GameLogger.Log($"Found {_pendingRequests.Count} pending requests");
-
-            // Notify if new requests
-            foreach (var request in _pendingRequests)
+            catch (UGSExceptions.FriendsServiceException ex)
             {
-                OnFriendRequestReceived?.Invoke(request);
+                GameLogger.LogError($"Failed to refresh friend requests: {ex.Message}");
             }
         }
 
@@ -252,51 +233,20 @@ namespace Core.Networking.Services
 
             GameLogger.Log("Refreshing friends list...");
 
-            // Get friends where I'm either user_id or friend_id
-            var query = $"or=(user_id.eq.{_myProductUserId},friend_id.eq.{_myProductUserId})&select=*,user:users!user_id(*),friend:users!friend_id(*)";
-            var response = await _supabase.GetAsync("friends", query);
-
-            var friendships = JsonHelper.FromJson<FriendshipData>(response);
-
-            _friends.Clear();
-
-            if (friendships != null)
+            try
             {
-                foreach (var friendship in friendships)
-                {
-                    // Determine which user is the friend (not me)
-                    var friendData = friendship.user_id == _myProductUserId
-                        ? friendship.friend
-                        : friendship.user;
+                // Force refresh relationships from server
+                await _ugsInstance.ForceRelationshipsRefreshAsync();
 
-                    if (friendData != null)
-                    {
-                        var isOnline = IsUserOnline(friendData.last_seen);
+                // Update local cache
+                UpdateLocalFriends();
 
-                        _friends.Add(new FriendInfo
-                        {
-                            FriendCode = friendData.friend_code,
-                            ProductUserId = ProductUserId.FromString(friendData.product_user_id),
-                            DisplayName = friendData.display_name,
-                            AddedAt = DateTime.Parse(friendship.added_at),
-                            LastSeen = DateTime.Parse(friendData.last_seen),
-                            IsOnline = isOnline,
-                            IsRecent = false
-                        });
-                    }
-                }
+                GameLogger.Log($"Loaded {_friends.Count} friends");
             }
-
-            // Sort: online first, then by name
-            _friends.Sort((a, b) =>
+            catch (UGSExceptions.FriendsServiceException ex)
             {
-                if (a.IsOnline != b.IsOnline)
-                    return b.IsOnline.CompareTo(a.IsOnline);
-                return string.Compare(a.DisplayName, b.DisplayName, StringComparison.Ordinal);
-            });
-
-            GameLogger.Log($"Loaded {_friends.Count} friends");
-            OnFriendsListUpdated?.Invoke();
+                GameLogger.LogError($"Failed to refresh friends: {ex.Message}");
+            }
         }
 
         public async Task RemoveFriendAsync(string friendCode)
@@ -310,15 +260,18 @@ namespace Core.Networking.Services
 
             GameLogger.Log($"Removing friend: {friend.DisplayName}");
 
-            // Delete friendship (both directions handled by database)
-            var query = $"or=(and(user_id.eq.{_myProductUserId},friend_id.eq.{friend.ProductUserId}),and(user_id.eq.{friend.ProductUserId},friend_id.eq.{_myProductUserId}))";
-            await _supabase.DeleteAsync("friends", query);
+            try
+            {
+                // Delete friendship in UGS (use member ID)
+                await _ugsInstance.DeleteFriendAsync(friendCode);
 
-            _friends.Remove(friend);
-            OnFriendRemoved?.Invoke(friendCode);
-            OnFriendsListUpdated?.Invoke();
-
-            GameLogger.Log("Friend removed");
+                GameLogger.Log("Friend removed");
+            }
+            catch (UGSExceptions.FriendsServiceException ex)
+            {
+                GameLogger.LogError($"Failed to remove friend: {ex.Message}");
+                throw;
+            }
         }
 
         #endregion
@@ -335,37 +288,25 @@ namespace Core.Networking.Services
                 var playerIdStr = productUserId.ToString();
 
                 // Don't add yourself
-                if (playerIdStr == _myProductUserId)
+                if (playerIdStr == _authManager.EosProductUserId)
                     return;
 
                 GameLogger.Log($"Adding recent player: {displayName}");
 
-                // Upsert to recent_players table
-                var recentData = new
-                {
-                    user_id = _myProductUserId,
-                    recent_player_id = playerIdStr,
-                    last_played_at = NTPTime.UtcNow.ToString("o")
-                };
-
-                var json = JsonUtility.ToJson(recentData);
-                await _supabase.PostAsync("recent_players", json);
+                // Note: We can't reverse-lookup Unity PlayerId from EOS ProductUserId
+                // without server-side tracking. For recent players from lobbies,
+                // we only have their EOS ProductUserId, so use that as FriendCode.
+                // When they become actual friends via Unity Friends API, we'll get their Unity PlayerId.
 
                 // Update local list
                 _recentPlayers.RemoveAll(p => p.ProductUserId == productUserId);
 
-                // Get friend code for this player
-                var query = $"product_user_id=eq.{playerIdStr}&select=friend_code";
-                var response = await _supabase.GetAsync("users", query);
-                var users = JsonHelper.FromJson<UserData>(response);
-                var friendCode = users?.Length > 0 ? users[0].friend_code : "UNKNOWN";
-
                 _recentPlayers.Insert(0, new FriendInfo
                 {
-                    FriendCode = friendCode,
+                    FriendCode = playerIdStr, // Use EOS ProductUserId as FriendCode for recent players
                     ProductUserId = productUserId,
                     DisplayName = displayName,
-                    LastSeen = NTPTime.UtcNow,
+                    LastSeen = DateTime.UtcNow,
                     IsOnline = true,
                     IsRecent = true
                 });
@@ -375,6 +316,8 @@ namespace Core.Networking.Services
                 {
                     _recentPlayers.RemoveRange(20, _recentPlayers.Count - 20);
                 }
+
+                await Task.CompletedTask;
             }
             catch (Exception ex)
             {
@@ -418,190 +361,175 @@ namespace Core.Networking.Services
 
         #endregion
 
-        #region Private Methods
+        #region Private Methods - Local Cache Updates
 
-        private async Task RegisterUserAsync()
+        private void UpdateLocalFriends()
         {
-            GameLogger.Log("Registering user...");
+            _friends.Clear();
 
-            // Check if user exists
-            var query = $"product_user_id=eq.{_myProductUserId}&select=friend_code";
-            var response = await _supabase.GetAsync("users", query);
-
-            var users = JsonHelper.FromJson<UserData>(response);
-
-            if (users != null && users.Length > 0)
+            foreach (var relationship in _ugsInstance.Friends)
             {
-                // User exists, use existing friend code
-                MyFriendCode = users[0].friend_code;
-                GameLogger.Log($"User exists with code: {MyFriendCode}");
+                var member = relationship.Member;
+                var profile = member.Profile;
+                var presence = member.Presence;
 
-                // Update last_seen
-                await UpdateLastSeenAsync();
-            }
-            else
-            {
-                // New user, generate friend code
-                MyFriendCode = await GenerateUniqueFriendCodeAsync();
+                // Determine online status from presence
+                bool isOnline = presence != null && presence.Availability == UGSModels.Availability.Online;
+                DateTime lastSeen = presence?.LastSeen ?? DateTime.MinValue;
 
-                var userData = new
+                // Note: We can't reverse-lookup EOS ProductUserId from Unity PlayerId
+                // without server-side tracking. For Unity Friends, we only have Unity PlayerId.
+                // The ProductUserId field will be null for friends from Unity Friends API.
+                // They can still join lobbies by sending invites through Unity Friends system.
+
+                _friends.Add(new FriendInfo
                 {
-                    product_user_id = _myProductUserId,
-                    display_name = _myDisplayName,
-                    friend_code = MyFriendCode,
-                    device_id = SystemInfo.deviceUniqueIdentifier
-                };
+                    FriendCode = member.Id, // Unity PlayerId for friends from Unity Friends API
+                    ProductUserId = null, // Can't reverse-lookup without server-side tracking
+                    DisplayName = profile?.Name ?? "Unknown",
+                    AddedAt = DateTime.UtcNow, // UGS doesn't provide this
+                    LastSeen = lastSeen,
+                    IsOnline = isOnline,
+                    IsRecent = false
+                });
+            }
 
-                var json = JsonUtility.ToJson(userData);
-                await _supabase.PostAsync("users", json);
+            // Sort: online first, then by name
+            _friends.Sort((a, b) =>
+            {
+                if (a.IsOnline != b.IsOnline)
+                    return b.IsOnline.CompareTo(a.IsOnline);
+                return string.Compare(a.DisplayName, b.DisplayName, StringComparison.Ordinal);
+            });
 
-                GameLogger.Log($"New user registered with code: {MyFriendCode}");
+            OnFriendsListUpdated?.Invoke();
+        }
+
+        private void UpdateLocalRequests()
+        {
+            _pendingRequests.Clear();
+
+            foreach (var request in _ugsInstance.IncomingFriendRequests)
+            {
+                _pendingRequests.Add(new FriendRequest
+                {
+                    Id = request.Id,
+                    FromUserId = request.Member.Id,
+                    FromUserName = request.Member.Profile?.Name ?? "Unknown",
+                    FromFriendCode = request.Member.Id,
+                    ToUserId = MyFriendCode,
+                    Status = "pending",
+                    CreatedAt = DateTime.UtcNow // UGS doesn't provide this
+                });
+            }
+
+            // Notify about new requests
+            foreach (var request in _pendingRequests)
+            {
+                OnFriendRequestReceived?.Invoke(request);
             }
         }
 
-        private async Task<string> GenerateUniqueFriendCodeAsync()
+        #endregion
+
+        #region Event Subscription
+
+        private void SubscribeToEvents()
         {
-            const int maxAttempts = 10;
+            // Subscribe to relationship changes
+            _ugsInstance.RelationshipAdded += OnRelationshipAdded;
+            _ugsInstance.RelationshipDeleted += OnRelationshipDeleted;
 
-            for (int i = 0; i < maxAttempts; i++)
+            // Subscribe to presence changes
+            _ugsInstance.PresenceUpdated += OnPresenceUpdated;
+
+            GameLogger.Log("Subscribed to UGS Friends events");
+        }
+
+        private void UnsubscribeFromEvents()
+        {
+            if (_ugsInstance != null)
             {
-                var code = GenerateFriendCode();
+                _ugsInstance.RelationshipAdded -= OnRelationshipAdded;
+                _ugsInstance.RelationshipDeleted -= OnRelationshipDeleted;
+                _ugsInstance.PresenceUpdated -= OnPresenceUpdated;
+            }
+        }
 
-                // Check if code exists
-                var query = $"friend_code=eq.{code}&select=friend_code";
-                var response = await _supabase.GetAsync("users", query);
-                var users = JsonHelper.FromJson<UserData>(response);
+        #endregion
 
-                if (users == null || users.Length == 0)
+        #region Event Handlers
+
+        private void OnRelationshipAdded(UGSNotifications.IRelationshipAddedEvent eventData)
+        {
+            var relationship = eventData.Relationship;
+            GameLogger.Log($"Relationship added: {relationship.Member.Profile?.Name ?? "Unknown"}");
+
+            // Update local cache
+            if (relationship.Type == UGSModels.RelationshipType.Friend)
+            {
+                UpdateLocalFriends();
+
+                // Notify about new friend
+                var friend = _friends.FirstOrDefault(f => f.FriendCode == relationship.Member.Id);
+                if (friend != null)
                 {
-                    return code; // Unique code found
+                    OnFriendAdded?.Invoke(friend);
                 }
             }
-
-            throw new Exception("Failed to generate unique friend code");
-        }
-
-        private string GenerateFriendCode()
-        {
-            const string letters = "ABCDEFGHJKLMNPQRSTUVWXYZ";
-            const string numbers = "0123456789";
-
-            var random = new System.Random();
-            var code = new char[8];
-
-            for (int i = 0; i < 3; i++)
-                code[i] = letters[random.Next(letters.Length)];
-
-            for (int i = 3; i < 8; i++)
-                code[i] = numbers[random.Next(numbers.Length)];
-
-            return new string(code);
-        }
-
-        private async Task UpdateLastSeenAsync()
-        {
-            try
+            else if (relationship.Type == UGSModels.RelationshipType.FriendRequest)
             {
-                var updateData = new { last_seen = NTPTime.UtcNow.ToString("o") };
-                var json = JsonUtility.ToJson(updateData);
-                var query = $"product_user_id=eq.{_myProductUserId}";
-
-                await _supabase.PatchAsync("users", query, json);
+                UpdateLocalRequests();
             }
-            catch (Exception ex)
+            else if (relationship.Type == UGSModels.RelationshipType.FriendRequest)
             {
-                GameLogger.LogWarning($"Failed to update last_seen: {ex.Message}");
+                UpdateLocalRequests();
             }
         }
 
-        private bool IsUserOnline(string lastSeenStr)
+        private void OnRelationshipDeleted(UGSNotifications.IRelationshipDeletedEvent eventData)
         {
-            if (string.IsNullOrEmpty(lastSeenStr))
-                return false;
+            var relationship = eventData.Relationship;
+            GameLogger.Log($"Relationship deleted: {relationship.Member.Profile?.Name ?? "Unknown"}");
 
-            try
-            {
-                var lastSeen = DateTime.Parse(lastSeenStr);
-                var timeSince = NTPTime.UtcNow - lastSeen;
-                return timeSince.TotalMinutes < 5; // Online if seen in last 5 minutes
-            }
-            catch
-            {
-                return false;
-            }
+            // Remove from local list
+            var friendCode = relationship.Member.Id;
+            _friends.RemoveAll(f => f.FriendCode == friendCode);
+            _pendingRequests.RemoveAll(r => r.FromFriendCode == friendCode);
+
+            OnFriendRemoved?.Invoke(friendCode);
+            OnFriendsListUpdated?.Invoke();
         }
 
-        private string GetDisplayName()
+        private void OnPresenceUpdated(UGSNotifications.IPresenceUpdatedEvent eventData)
         {
-            // Try to get display name from EOS or use default
-            return $"Player_{UnityEngine.Random.Range(1000, 9999)}";
+            var presence = eventData.Presence;
+            GameLogger.Log($"Presence updated for: {eventData.ID} - {presence.Availability}");
+
+            // Update friend's online status
+            var friend = _friends.FirstOrDefault(f => f.FriendCode == eventData.ID);
+            if (friend != null)
+            {
+                friend.IsOnline = presence.Availability == UGSModels.Availability.Online;
+                friend.LastSeen = presence.LastSeen;
+
+                OnFriendsListUpdated?.Invoke();
+            }
         }
 
         #endregion
 
-        #region Serialization Classes
+        #region Cleanup
 
-        [Serializable]
-        private class UserData
+        public void Dispose()
         {
-            public string product_user_id;
-            public string display_name;
-            public string friend_code;
-            public string last_seen;
-        }
-
-        [Serializable]
-        private class FriendRequestData
-        {
-            public string id;
-            public string from_user_id;
-            public string to_user_id;
-            public string status;
-            public string created_at;
-        }
-
-        [Serializable]
-        private class FriendRequestWithUserData
-        {
-            public string id;
-            public string from_user_id;
-            public string to_user_id;
-            public string status;
-            public string created_at;
-            public UserData from_user;
-        }
-
-        [Serializable]
-        private class FriendshipData
-        {
-            public string user_id;
-            public string friend_id;
-            public string added_at;
-            public UserData user;
-            public UserData friend;
+            UnsubscribeFromEvents();
+            _friends.Clear();
+            _recentPlayers.Clear();
+            _pendingRequests.Clear();
+            IsInitialized = false;
         }
 
         #endregion
-    }
-
-    /// <summary>
-    /// Helper for JSON array deserialization
-    /// </summary>
-    public static class JsonHelper
-    {
-        public static T[] FromJson<T>(string json)
-        {
-            if (string.IsNullOrEmpty(json) || json == "[]")
-                return new T[0];
-
-            var wrapper = JsonUtility.FromJson<Wrapper<T>>("{\"items\":" + json + "}");
-            return wrapper.items;
-        }
-
-        [Serializable]
-        private class Wrapper<T>
-        {
-            public T[] items;
-        }
     }
 }

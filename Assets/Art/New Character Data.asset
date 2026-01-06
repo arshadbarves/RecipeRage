@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00039a084bcc94f6185f7d1271a7db0b, type: 3}
+  m_Name: New Character Data
+  m_EditorClassIdentifier: Assembly-CSharp::Core.Characters.CharacterData
+  _id: 
+  _displayName: 
+  _description: 
+  _icon: {fileID: 0}
+  _prefab: {fileID: 0}
+  _movementSpeedMultiplier: 1
+  _interactionSpeedModifier: 1
+  _primaryAbility: {fileID: 11400000, guid: 0ca834959b6104b00a938771cf85e47b, type: 2}

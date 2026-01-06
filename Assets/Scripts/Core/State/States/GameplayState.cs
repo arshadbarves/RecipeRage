@@ -23,6 +23,8 @@ namespace Core.State.States
         private readonly IUIService _uiService;
         private readonly SessionManager _sessionManager;
         private ICameraController _cameraController;
+        private IMapLoader _mapLoader;
+        private IGameModeService _gameModeService;
 
         public GameplayState(IUIService uiService, SessionManager sessionManager)
         {
@@ -54,6 +56,7 @@ namespace Core.State.States
 
         private async UniTaskVoid InitializeGameplayAsync()
         {
+            // Load base Game scene if not already loaded
             if (SceneManager.GetActiveScene().name != "Game")
             {
                 await SceneManager.LoadSceneAsync("Game");
@@ -62,7 +65,37 @@ namespace Core.State.States
             await UniTask.Yield();
 
             var sessionContainer = _sessionManager?.SessionContainer;
-            
+
+            // Resolve services from session container
+            if (sessionContainer != null)
+            {
+                _mapLoader = sessionContainer.Resolve<IMapLoader>();
+                _gameModeService = sessionContainer.Resolve<IGameModeService>();
+            }
+
+            // Load map scene additively based on selected game mode
+            if (_mapLoader != null && _gameModeService?.SelectedGameMode != null)
+            {
+                string mapName = _gameModeService.SelectedGameMode.DefaultMap;
+
+                if (!string.IsNullOrEmpty(mapName))
+                {
+                    GameLogger.Log($"Loading map: {mapName}");
+                    bool mapLoaded = await _mapLoader.LoadMapAsync(mapName);
+
+                    if (!mapLoaded)
+                    {
+                        GameLogger.LogError($"Failed to load map: {mapName}");
+                    }
+                }
+                else
+                {
+                    GameLogger.LogWarning("No map specified in game mode, proceeding without map");
+                }
+            }
+
+            await UniTask.Yield();
+
             var networkInitializer = Object.FindFirstObjectByType<NetworkInitializer>();
             if (networkInitializer != null && sessionContainer != null)
             {
@@ -76,8 +109,6 @@ namespace Core.State.States
             {
                 var networkingServices = sessionContainer.Resolve<INetworkingServices>();
                 networkingServices?.GameStarter?.StartGame();
-
-                var gameModeService = sessionContainer.Resolve<IGameModeService>();
             }
 
             _uiService?.HideAllScreens(true);
@@ -100,18 +131,23 @@ namespace Core.State.States
         public override void Exit()
         {
             base.Exit();
+
+            // Unload map scene
+            if (_mapLoader != null)
+            {
+                _mapLoader.UnloadCurrentMapAsync().Forget();
+            }
+
             _cameraController?.Dispose();
             _cameraController = null;
             GameplayContext.Reset();
 
-            var sessionContainer = _sessionManager?.SessionContainer;
-            if (sessionContainer != null)
-            {
-                var gameModeService = sessionContainer.Resolve<IGameModeService>();
-            }
-
             OrderManager orderManager = Object.FindFirstObjectByType<OrderManager>();
             orderManager?.StopGeneratingOrders();
+
+            // Clear references
+            _mapLoader = null;
+            _gameModeService = null;
         }
 
         public override void Update()

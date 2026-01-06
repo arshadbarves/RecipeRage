@@ -3,6 +3,7 @@ using Core.Logging;
 using Core.Networking.Bot;
 using Core.Networking.Interfaces;
 using Core.Networking.Services;
+using Core.SDK;
 using Core.State;
 using PlayEveryWare.EpicOnlineServices;
 using PlayEveryWare.EpicOnlineServices.Samples;
@@ -37,6 +38,7 @@ namespace Core.Networking
         private bool _isInitialized;
         private readonly IUIService _uiService;
         private readonly IGameStateManager _stateManager;
+        private UGSAuthenticationManager _ugsAuthManager;
 
         #endregion
 
@@ -98,23 +100,73 @@ namespace Core.Networking
             // BotSpawner will be initialized when bot prefab is available
             BotSpawner = null; // Set this in GameplayState when prefab is loaded
 
-            // 7. Friends Service (depends on LobbyManager and Supabase)
-            var supabaseConfig = UnityEngine.Resources.Load<SupabaseConfig>("SupabaseConfig");
-            if (supabaseConfig != null && supabaseConfig.IsValid())
-            {
-                FriendsService = new FriendsService(LobbyManager, supabaseConfig);
-                FriendsService.Initialize();
-            }
-            else
-            {
-                GameLogger.LogWarning("SupabaseConfig not found or invalid - Friends system disabled");
-            }
+            // 7. Initialize Unity Gaming Services (for friends)
+            InitializeUGSAsync();
+
+            // 8. Friends Service will be initialized after UGS authentication completes
 
             // P2P networking now handled by Unity Netcode + EOSTransport
             // No need for custom P2PService
 
             _isInitialized = true;
             GameLogger.Log("Initialized successfully");
+        }
+
+        /// <summary>
+        /// Initialize Unity Gaming Services asynchronously
+        /// FLOW: EOS (Primary) → Unity Auth (Secondary)
+        /// </summary>
+        private async void InitializeUGSAsync()
+        {
+            try
+            {
+                // Load UGS config
+                var ugsConfig = UnityEngine.Resources.Load<UGSConfig>("UGSConfig");
+                if (ugsConfig == null || !ugsConfig.IsValid())
+                {
+                    GameLogger.LogWarning("UGSConfig not found or invalid - Friends system disabled");
+                    return;
+                }
+
+                // 1. Initialize Unity Authentication
+                _ugsAuthManager = new UGSAuthenticationManager(ugsConfig);
+                var initialized = await _ugsAuthManager.InitializeAsync();
+
+                if (!initialized)
+                {
+                    GameLogger.LogError("Failed to initialize Unity Authentication");
+                    return;
+                }
+
+                GameLogger.Log("Unity Authentication initialized");
+
+                // 2. Sign in to Unity using EOS ProductUserId (EOS is PRIMARY)
+                var signedIn = await _ugsAuthManager.SignInWithEOSAsync();
+
+                if (!signedIn)
+                {
+                    GameLogger.LogError("Failed to sign in to Unity with EOS identity");
+                    return;
+                }
+
+                // 3. At this point, EOS ProductUserId → Unity PlayerId mapping is stored SERVER-SIDE
+                // NO PlayerPrefs needed - works across all devices!
+                GameLogger.Log($"✅ Authentication complete:");
+                GameLogger.Log($"   EOS ProductUserId: {_ugsAuthManager.EosProductUserId} (PRIMARY)");
+                GameLogger.Log($"   Unity PlayerId: {_ugsAuthManager.PlayerId} (SECONDARY)");
+
+                // 4. Initialize Friends Service
+                if (ugsConfig.enableFriendsSystem)
+                {
+                    FriendsService = new FriendsService(LobbyManager, _ugsAuthManager);
+                    FriendsService.Initialize();
+                    GameLogger.Log("Unity Friends Service initialized");
+                }
+            }
+            catch (Exception ex)
+            {
+                GameLogger.LogError($"Failed to initialize authentication: {ex.Message}");
+            }
         }
 
         #endregion
@@ -175,6 +227,9 @@ namespace Core.Networking
 
             // Despawn bots if any
             BotSpawner?.DespawnAllBots();
+
+            // Dispose UGS authentication
+            _ugsAuthManager?.Dispose();
 
             // Clear references
             FriendsService = null;

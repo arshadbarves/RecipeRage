@@ -35,6 +35,7 @@ namespace Core.Bootstrap
 
             // Game Systems
             builder.Register<GameModeService>(Lifetime.Singleton).AsImplementedInterfaces();
+            builder.Register<MapLoader>(Lifetime.Singleton).AsImplementedInterfaces();
             builder.Register<CharacterService>(Lifetime.Singleton).AsImplementedInterfaces();
             builder.Register<SkinsService>(Lifetime.Singleton).AsImplementedInterfaces();
             builder.Register<NetworkingServiceContainer>(Lifetime.Singleton).AsImplementedInterfaces();
