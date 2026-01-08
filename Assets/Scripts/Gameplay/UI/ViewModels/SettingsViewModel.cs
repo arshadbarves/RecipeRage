@@ -1,6 +1,6 @@
 using Modules.Persistence;
 using Modules.Shared;
-using RecipeRage.Modules.Auth.Core;
+using Modules.Auth.Core;
 using Modules.UI.Core;
 using VContainer;
 

@@ -6,7 +6,7 @@ using Modules.UI;
 using Cysharp.Threading.Tasks;
 using Modules.UI.Core;
 using UnityEngine.UIElements;
-using RecipeRage.Modules.Auth.Core;
+using Modules.Auth.Core;
 using VContainer;
 
 namespace Gameplay.UI.Screens

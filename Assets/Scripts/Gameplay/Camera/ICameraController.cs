@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Core.Camera
+namespace Gameplay.Camera
 {
     /// <summary>
     /// Interface for camera control during gameplay.

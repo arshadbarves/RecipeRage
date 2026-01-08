@@ -7,7 +7,6 @@ using Modules.UI.Core;
 using UnityEngine.UIElements;
 using VContainer;
 using Modules.Persistence;
-using Core.Currency;
 using Gameplay.Characters;
 using Modules.UI;
 using Gameplay.UI.ViewModels;

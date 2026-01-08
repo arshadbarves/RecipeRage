@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Core.Input
+namespace Modules.Input
 {
     /// <summary>
     /// Input service - pure C# class, no MonoBehaviour

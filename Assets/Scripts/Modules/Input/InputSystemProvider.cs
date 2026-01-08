@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using Modules.Logging;
 
-namespace Core.Input
+namespace Modules.Input
 {
     /// <summary>
     /// Input provider that uses the Unity Input System package.

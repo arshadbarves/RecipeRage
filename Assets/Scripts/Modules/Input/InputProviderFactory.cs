@@ -1,6 +1,6 @@
 using Modules.Logging;
 
-namespace Core.Input
+namespace Modules.Input
 {
     /// <summary>
     /// Factory for creating platform-appropriate input providers

@@ -1,7 +1,7 @@
 using UnityEngine;
 using Modules.Logging;
 
-namespace Core.Input
+namespace Modules.Input
 {
     /// <summary>
     /// Debug helper to visualize input values in the console.

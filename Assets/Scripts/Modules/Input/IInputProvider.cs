@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Core.Input
+namespace Modules.Input
 {
     /// <summary>
     /// Interface for input providers that handle different input methods.

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Core.Configuration
+namespace Gameplay.Configuration
 {
     [Serializable]
     public class BootstrapConfiguration
