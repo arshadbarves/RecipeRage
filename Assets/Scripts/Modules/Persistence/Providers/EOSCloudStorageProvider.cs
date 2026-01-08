@@ -7,7 +7,7 @@ using PlayEveryWare.EpicOnlineServices;
 using PlayEveryWare.EpicOnlineServices.Samples;
 using UnityEngine;
 
-namespace Core.SaveSystem
+namespace Modules.Persistence
 {
     /// <summary>
     /// Epic Online Services cloud storage provider.

@@ -1,4 +1,4 @@
-namespace Core.SaveSystem
+namespace Modules.Persistence
 {
     /// <summary>
     /// Interface for encryption/decryption

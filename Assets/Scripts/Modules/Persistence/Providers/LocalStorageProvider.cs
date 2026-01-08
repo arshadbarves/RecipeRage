@@ -4,7 +4,7 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using Modules.Logging;
 
-namespace Core.SaveSystem
+namespace Modules.Persistence
 {
     /// <summary>
     /// Local file system storage provider.

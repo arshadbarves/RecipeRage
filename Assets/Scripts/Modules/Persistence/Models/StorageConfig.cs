@@ -1,6 +1,6 @@
 using System;
 
-namespace Core.SaveSystem
+namespace Modules.Persistence
 {
     /// <summary>
     /// Configuration for a specific data type's storage.

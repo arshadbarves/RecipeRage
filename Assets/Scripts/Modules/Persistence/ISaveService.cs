@@ -2,7 +2,7 @@ using System;
 using Core.Bootstrap;
 using Cysharp.Threading.Tasks;
 
-namespace Core.SaveSystem
+namespace Modules.Persistence
 {
     /// <summary>
     /// Interface for save/load operations with multi-provider support

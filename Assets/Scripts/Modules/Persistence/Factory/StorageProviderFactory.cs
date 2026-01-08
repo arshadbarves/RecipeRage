@@ -1,4 +1,4 @@
-namespace Core.SaveSystem
+namespace Modules.Persistence
 {
     /// <summary>
     /// Factory for creating storage providers.

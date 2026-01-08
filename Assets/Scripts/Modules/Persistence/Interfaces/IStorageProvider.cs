@@ -1,6 +1,6 @@
 using Cysharp.Threading.Tasks;
 
-namespace Core.SaveSystem
+namespace Modules.Persistence
 {
     /// <summary>
     /// Base interface for all storage providers.

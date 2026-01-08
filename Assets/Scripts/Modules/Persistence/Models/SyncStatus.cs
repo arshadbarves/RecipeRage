@@ -1,7 +1,7 @@
 using System;
 using Core.RemoteConfig;
 
-namespace Core.SaveSystem
+namespace Modules.Persistence
 {
     /// <summary>
     /// Tracks the synchronization status of cloud data.

@@ -1,4 +1,4 @@
-namespace Core.SaveSystem
+namespace Modules.Persistence
 {
     /// <summary>
     /// Defines how data should be stored and retrieved.

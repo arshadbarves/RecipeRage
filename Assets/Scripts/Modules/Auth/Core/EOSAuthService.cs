@@ -6,7 +6,7 @@ using Epic.OnlineServices;
 using Epic.OnlineServices.Connect;
 using UnityEngine;
 using Core.Events;
-using Core.SaveSystem;
+using Modules.Persistence;
 
 namespace RecipeRage.Modules.Auth.Core
 {

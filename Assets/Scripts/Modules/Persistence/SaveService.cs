@@ -4,7 +4,7 @@ using Core.Bootstrap;
 using Cysharp.Threading.Tasks;
 using Modules.Logging;
 
-namespace Core.SaveSystem
+namespace Modules.Persistence
 {
     /// <summary>
     /// Multi-provider save service with cloud and local storage support.
