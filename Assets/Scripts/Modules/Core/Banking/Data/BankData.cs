@@ -6,17 +6,15 @@ namespace Modules.Core.Banking.Data
     [Serializable]
     public class BankData
     {
-        public int Coins;
-        public int Gems;
-        public List<string> UnlockedSkinIds = new List<string>();
-        public Dictionary<int, string> EquippedSkinIds = new Dictionary<int, string>();
+        // Currency Balances (e.g., "coins" -> 100, "gems" -> 50)
+        public Dictionary<string, long> Balances = new Dictionary<string, long>();
+
+        // Owned Items / Inventory (e.g., "skin_blue", "weapon_sword")
+        public HashSet<string> Inventory = new HashSet<string>();
+
+        // Generic Key-Value Storage (e.g., "level" -> "5", "tutorial_complete" -> "true")
+        public Dictionary<string, string> Data = new Dictionary<string, string>();
 
         public BankData() { }
-
-        public BankData(int coins, int gems)
-        {
-            Coins = coins;
-            Gems = gems;
-        }
     }
 }
