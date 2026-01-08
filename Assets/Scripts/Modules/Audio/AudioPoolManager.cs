@@ -3,7 +3,7 @@ using UnityEngine;
 using System;
 using Modules.Logging;
 
-namespace Core.Audio
+namespace Modules.Audio
 {
     /// <summary>
     /// Manages audio source pooling - requires Transform for GameObject parenting

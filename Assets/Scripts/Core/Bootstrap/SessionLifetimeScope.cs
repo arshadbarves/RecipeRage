@@ -1,4 +1,4 @@
-using Core.Audio;
+using Modules.Audio;
 using Core.Characters;
 using Core.Currency;
 using Core.GameModes;

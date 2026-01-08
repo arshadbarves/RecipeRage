@@ -2,7 +2,7 @@ using System.Collections;
 using Core.Utilities;
 using UnityEngine;
 
-namespace Core.Audio
+namespace Modules.Audio
 {
     /// <summary>
     /// Handles SFX playback using audio pool

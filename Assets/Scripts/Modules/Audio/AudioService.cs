@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Core.Audio
+namespace Modules.Audio
 {
     /// <summary>
     /// Main audio service - delegates to specialized components

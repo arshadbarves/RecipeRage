@@ -3,7 +3,7 @@ using Modules.Persistence;
 using UnityEngine;
 using UnityEngine.Audio;
 
-namespace Core.Audio
+namespace Modules.Audio
 {
     /// <summary>
     /// Handles volume control - pure C# class

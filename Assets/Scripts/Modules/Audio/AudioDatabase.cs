@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Modules.Logging;
 using UnityEngine;
 
-namespace Core.Audio
+namespace Modules.Audio
 {
     /// <summary>
     /// Scriptable object that stores references to audio clips.
