@@ -1,5 +1,5 @@
 using Gameplay.Characters;
-using Core.Interaction;
+using Gameplay.Interaction;
 using Modules.Networking.Interfaces;
 using Modules.Networking.Services;
 using Gameplay.Cooking;

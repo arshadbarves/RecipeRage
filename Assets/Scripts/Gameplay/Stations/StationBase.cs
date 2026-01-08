@@ -1,5 +1,5 @@
 using Gameplay.Characters;
-using Core.Interaction;
+using Gameplay.Interaction;
 using Modules.Logging;
 using Unity.Netcode;
 using UnityEngine;

@@ -1,7 +1,7 @@
 using Gameplay.Characters;
 using UnityEngine;
 
-namespace Core.Interaction
+namespace Gameplay.Interaction
 {
     /// <summary>
     /// Base class for objects that can be interacted with by the player.
