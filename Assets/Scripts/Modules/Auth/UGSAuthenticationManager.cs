@@ -8,7 +8,7 @@ using Unity.Services.Authentication;
 using Unity.Services.Core;
 using UnityEngine;
 
-namespace Core.SDK
+namespace Modules.Auth
 {
     /// <summary>
     /// Manages Unity Gaming Services authentication

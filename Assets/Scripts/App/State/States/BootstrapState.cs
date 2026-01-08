@@ -1,11 +1,11 @@
 using System;
 using Modules.Localization;
 using Modules.Logging;
-using Core.Maintenance;
+using Modules.RemoteConfig;
 using Modules.RemoteConfig;
 using Modules.Persistence;
 using Core.UI;
-using Core.Update;
+using Modules.RemoteConfig;
 using Cysharp.Threading.Tasks;
 using UI;
 using UI.Screens;

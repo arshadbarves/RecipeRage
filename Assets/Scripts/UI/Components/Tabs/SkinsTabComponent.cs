@@ -1,5 +1,5 @@
 using Modules.Logging;
-using Core.Skins.Data;
+using Modules.Skins.Data;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UI.Data;

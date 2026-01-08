@@ -41,23 +41,32 @@
 - [x] 6c5dea1 Task: Migrate Networking (Core portions)
     - [x] Move `Core/Networking` to `Modules/Networking`.
     - [x] Update namespaces.
+- [ ] Task: Migrate Remaining Core Services
+    - [ ] Move `Core/Update` & `Core/Maintenance` to `Modules/RemoteConfig`.
+    - [ ] Move `Core/Reactive` to `Modules/Shared`.
+    - [ ] Move `Core/Extensions` to `Modules/Shared/Extensions`.
+    - [ ] Move `Core/Events/EventBus.cs` to `Modules/Shared/Events`.
+    - [ ] Move `Core/Skins` to `Modules/Skins`.
+    - [ ] Move `Core/SDK` to `Modules/Auth` or `Modules/Core/Backends`.
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Service Migration' [checkpoint: 416fc48]
 
-## Phase 3: Gameplay Separation (Core -> Gameplay)
+## Phase 3: Gameplay Separation (Core -> Gameplay) [checkpoint: f0670b0]
 - [x] 64df672 Task: Move Character Logic
     - [x] Move `Core/Characters` to `Assets/Scripts/Gameplay/Characters`.
     - [x] Update namespaces (`Core.Characters` -> `Gameplay.Characters`).
 - [x] 77ecd82 Task: Move Game Modes
-    - [ ] Move `Core/GameModes` to `Assets/Scripts/Gameplay/GameModes`.
-    - [ ] Update namespaces.
+    - [x] Move `Core/GameModes` to `Assets/Scripts/Gameplay/GameModes`.
+    - [x] Update namespaces.
 - [x] 94b897e Task: Move Camera Logic
+    - [x] Move `Core/Camera` to `Assets/Scripts/Gameplay/Camera` (Merge if exists).
+    - [x] Update namespaces.
 - [x] 6418fab Task: Move Interaction Logic
-    - [ ] Move `Core/Interaction` to `Assets/Scripts/Gameplay/Interaction`.
-    - [ ] Update namespaces.
-- [~] Task: Move Stats/Enums/Utils
-    - [ ] Analyze `Core/Stats`, `Core/Enums`, `Core/Utilities`.
-    - [ ] Move to `Modules/Shared` or `Gameplay/Shared` depending on usage.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Gameplay Separation'
+    - [x] Move `Core/Interaction` to `Assets/Scripts/Gameplay/Interaction`.
+    - [x] Update namespaces.
+- [x] f0670b0 Task: Move Stats/Enums/Utils
+    - [x] Analyze `Core/Stats`, `Core/Enums`, `Core/Utilities`.
+    - [x] Move to `Modules/Shared` or `Gameplay/Shared` depending on usage.
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Gameplay Separation'
 
 ## Phase 4: Final Cleanup & Assembly Check
 - [ ] Task: Update Assembly Definitions

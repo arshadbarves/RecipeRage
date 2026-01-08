@@ -1,5 +1,5 @@
 using Modules.Persistence;
-using Core.Reactive;
+using Modules.Shared;
 using RecipeRage.Modules.Auth.Core;
 using UI.Core;
 using VContainer;

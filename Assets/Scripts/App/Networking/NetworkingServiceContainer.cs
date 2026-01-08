@@ -3,7 +3,7 @@ using Modules.Logging;
 using Modules.Networking;
 using Modules.Networking.Interfaces;
 using Modules.Networking.Services;
-using Core.SDK;
+using Modules.Auth;
 using App.State;
 using Core.UI;
 using PlayEveryWare.EpicOnlineServices;

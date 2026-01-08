@@ -3,7 +3,7 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 using Modules.Logging;
-using Core.Events;
+using Modules.Shared.Events;
 using Core.Bootstrap;
 
 namespace Modules.Networking

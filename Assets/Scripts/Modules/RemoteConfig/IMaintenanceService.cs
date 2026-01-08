@@ -1,7 +1,7 @@
 using Core.Bootstrap;
 using Cysharp.Threading.Tasks;
 
-namespace Core.Maintenance
+namespace Modules.RemoteConfig
 {
     public interface IMaintenanceService : IInitializable
     {

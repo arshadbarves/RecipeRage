@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 using Modules.Localization;
-using Core.Reactive;
+using Modules.Shared;
 using Cysharp.Threading.Tasks;
 using UI.Core;
 using UnityEngine;

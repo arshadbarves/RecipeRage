@@ -1,7 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 
-namespace Core.Extensions
+namespace Modules.Shared.Extensions
 {
     public static class TweenExtensions
     {

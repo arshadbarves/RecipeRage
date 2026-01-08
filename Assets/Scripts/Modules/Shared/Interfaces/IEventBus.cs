@@ -1,7 +1,7 @@
 using System;
 using Core.Bootstrap;
 
-namespace Core.Events
+namespace Modules.Shared.Events
 {
     /// <summary>
     /// Event bus interface for decoupled communication between services

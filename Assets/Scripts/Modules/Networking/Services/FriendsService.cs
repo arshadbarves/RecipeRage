@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Modules.Logging;
 using Modules.Networking.Interfaces;
-using Core.SDK;
+using Modules.Auth;
 using Epic.OnlineServices;
 using UGSFriends = Unity.Services.Friends;
 using UGSModels = Unity.Services.Friends.Models;

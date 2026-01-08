@@ -5,7 +5,7 @@ using Modules.Localization;
 using Modules.Networking;
 using Modules.Networking.Common;
 using Modules.Networking.Interfaces;
-using Core.Reactive;
+using Modules.Shared;
 using Cysharp.Threading.Tasks;
 using UI.Core;
 using UnityEngine;

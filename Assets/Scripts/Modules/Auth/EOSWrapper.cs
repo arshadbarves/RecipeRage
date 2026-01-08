@@ -2,7 +2,7 @@ using Epic.OnlineServices;
 using Epic.OnlineServices.Connect;
 using PlayEveryWare.EpicOnlineServices;
 
-namespace Core.SDK
+namespace Modules.Auth
 {
     public interface IEOSWrapper
     {

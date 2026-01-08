@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Core.Skins.Data;
+using Modules.Skins.Data;
 
-namespace Core.Skins
+namespace Modules.Skins
 {
     /// <summary>
     /// Interface for skins service

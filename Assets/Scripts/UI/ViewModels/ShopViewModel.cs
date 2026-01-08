@@ -1,5 +1,5 @@
 using Core.Bootstrap;
-using Core.Reactive;
+using Modules.Shared;
 using Modules.Core.Banking;
 using Modules.Core.Banking.Interfaces;
 using UI.Core;

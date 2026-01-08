@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Core.Reactive
+namespace Modules.Shared
 {
     /// <summary>
     /// Lightweight reactive property for MVVM binding.

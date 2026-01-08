@@ -1,8 +1,8 @@
 using Core.Bootstrap;
 using Gameplay.Characters;
 using Modules.Logging;
-using Core.Skins;
-using Core.Skins.Data;
+using Modules.Skins;
+using Modules.Skins.Data;
 using Core.UI;
 using UI.Core;
 using UI.Data;

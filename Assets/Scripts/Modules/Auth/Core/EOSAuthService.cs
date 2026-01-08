@@ -5,7 +5,7 @@ using Modules.Logging;
 using Epic.OnlineServices;
 using Epic.OnlineServices.Connect;
 using UnityEngine;
-using Core.Events;
+using Modules.Shared.Events;
 using Modules.Persistence;
 
 namespace RecipeRage.Modules.Auth.Core

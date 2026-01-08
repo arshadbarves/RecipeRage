@@ -1,6 +1,6 @@
 using Core.UI;
 
-namespace Core.Events
+namespace Modules.Shared.Events
 {
     // ============================================
     // CURRENCY EVENTS

@@ -1,5 +1,5 @@
 using Core.Bootstrap;
-using Core.Events;
+using Modules.Shared.Events;
 using Modules.Logging;
 using Modules.Core.Banking;
 using Modules.Core.Banking.Interfaces;

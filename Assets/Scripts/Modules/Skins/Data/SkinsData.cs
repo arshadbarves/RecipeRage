@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Core.Skins.Data
+namespace Modules.Skins.Data
 {
     [CreateAssetMenu(fileName = "SkinsData", menuName = "RecipeRage/SkinsData")]
     public class SkinsData : ScriptableObject

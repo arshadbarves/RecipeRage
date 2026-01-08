@@ -1,12 +1,12 @@
 using System;
 using Core.Bootstrap;
-using Core.Events;
+using Modules.Shared.Events;
 using Modules.Logging;
 using Modules.RemoteConfig;
 using Modules.RemoteConfig.Models;
 using Cysharp.Threading.Tasks;
 
-namespace Core.Maintenance
+namespace Modules.RemoteConfig
 {
     public class MaintenanceService : IMaintenanceService
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using Firebase.RemoteConfig;
 
-namespace Core.SDK
+namespace Modules.Auth
 {
     public interface IFirebaseWrapper
     {

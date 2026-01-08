@@ -6,7 +6,7 @@ using Cysharp.Threading.Tasks;
 using Core.UI;
 using UnityEngine;
 
-namespace Core.Update
+namespace Modules.RemoteConfig
 {
     /// <summary>
     /// Checks for required app updates and handles force update flow

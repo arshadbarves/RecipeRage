@@ -1,7 +1,7 @@
 using System;
 using Modules.Localization;
 using Modules.Logging;
-using Core.Reactive;
+using Modules.Shared;
 using RecipeRage.Modules.Auth.Core;
 using UI.Core;
 using VContainer;

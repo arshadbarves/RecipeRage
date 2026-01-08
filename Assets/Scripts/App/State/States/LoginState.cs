@@ -1,4 +1,4 @@
-using Core.Events;
+using Modules.Shared.Events;
 using Modules.Logging;
 using Core.UI;
 using UI;

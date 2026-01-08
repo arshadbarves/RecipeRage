@@ -1,5 +1,5 @@
 using System;
-using Core.Events;
+using Modules.Shared.Events;
 using Modules.Logging;
 using VContainer;
 using VContainer.Unity;

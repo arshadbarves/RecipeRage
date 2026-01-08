@@ -1,7 +1,7 @@
 using System;
-using Core.Events;
+using Modules.Shared.Events;
 using Modules.Logging;
-using Core.Maintenance;
+using Modules.RemoteConfig;
 using Core.UI;
 using Cysharp.Threading.Tasks;
 using UI.Core;

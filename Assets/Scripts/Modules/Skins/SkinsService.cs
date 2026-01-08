@@ -4,10 +4,10 @@ using System.Linq;
 using Modules.Logging;
 using Modules.RemoteConfig;
 using Modules.RemoteConfig.Models;
-using Core.Skins.Data;
+using Modules.Skins.Data;
 using VContainer;
 
-namespace Core.Skins
+namespace Modules.Skins
 {
     /// <summary>
     /// Skins service - manages character skins

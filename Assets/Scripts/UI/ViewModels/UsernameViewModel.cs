@@ -1,7 +1,7 @@
 using System;
 using Core.Bootstrap;
 using Modules.Logging;
-using Core.Reactive;
+using Modules.Shared;
 using Modules.Persistence;
 using Core.UI;
 using Modules.Core.Banking;

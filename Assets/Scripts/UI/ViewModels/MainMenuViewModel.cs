@@ -1,4 +1,4 @@
-using Core.Reactive;
+using Modules.Shared;
 using UI.Core;
 using VContainer;
 

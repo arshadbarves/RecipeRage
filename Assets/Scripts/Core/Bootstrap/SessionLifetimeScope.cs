@@ -5,7 +5,7 @@ using Gameplay.GameModes;
 using Core.Input;
 using Modules.Networking;
 using Modules.Networking.Services;
-using Core.Skins;
+using Modules.Skins;
 using Modules.Core.Banking;
 using Modules.Core.Banking.Backends;
 using Modules.Core.Banking.Interfaces;

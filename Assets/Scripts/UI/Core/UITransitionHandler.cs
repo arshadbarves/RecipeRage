@@ -2,7 +2,7 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Core.Extensions;
+using Modules.Shared.Extensions;
 
 namespace UI.Core
 {

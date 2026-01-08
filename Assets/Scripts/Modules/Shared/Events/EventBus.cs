@@ -6,7 +6,7 @@ using Modules.Logging;
 using UnityEngine;
 using VContainer;
 
-namespace Core.Events
+namespace Modules.Shared.Events
 {
     /// <summary>
     /// Centralized event bus for decoupled communication
