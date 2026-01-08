@@ -31,32 +31,22 @@ namespace UI.ViewModels
         public void UpdateCurrency()
         {
             if (BankService == null) return;
-            CoinsText.Value = BankService.FormatCurrency(BankService.Coins);
-            GemsText.Value = BankService.FormatCurrency(BankService.Gems);
+            CoinsText.Value = BankService.GetBalance("coins").ToString();
+            GemsText.Value = BankService.GetBalance("gems").ToString();
         }
 
         public bool BuyItem(ShopItem item)
         {
             if (BankService == null) return false;
 
-            bool success = false;
-            if (item.currency == "coins")
-            {
-                success = BankService.SpendCoins(item.price);
-            }
-            else if (item.currency == "gems")
-            {
-                success = BankService.SpendGems(item.price);
-            }
+            // Use the new atomic Purchase method
+            // Ensure currency ID is lowercase as per our convention
+            string currencyId = item.currency.ToLower();
+            bool success = BankService.Purchase(item.id, item.price, currencyId);
 
             if (success)
             {
                 UpdateCurrency();
-                
-                if (item.type == "skin")
-                {
-                    BankService.UnlockSkin(item.id);
-                }
             }
             return success;
         }

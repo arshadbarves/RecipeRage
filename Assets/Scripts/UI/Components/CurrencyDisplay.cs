@@ -54,7 +54,7 @@ namespace UI.Components
             SetupButtons();
 
             // Initial update
-            UpdateUI(_currencyService.Coins, _currencyService.Gems);
+            UpdateUI((int)_bankService.GetBalance("coins"), (int)_bankService.GetBalance("gems"));
         }
 
         private void SetupButtons()
@@ -84,12 +84,12 @@ namespace UI.Components
         {
             if (_coinsLabel != null)
             {
-                _coinsLabel.text = _currencyService.FormatCurrency(coins);
+                _coinsLabel.text = coins.ToString(); // Simplified formatting
             }
 
             if (_gemsLabel != null)
             {
-                _gemsLabel.text = _currencyService.FormatCurrency(gems);
+                _gemsLabel.text = gems.ToString();
             }
         }
 
@@ -99,7 +99,7 @@ namespace UI.Components
 
 #if UNITY_EDITOR
             // Editor only - add test currency
-            _currencyService.AddCoins(500);
+            _bankService.ModifyBalance("coins", 500);
 #else
             // Production - open store
 #endif
@@ -111,7 +111,7 @@ namespace UI.Components
 
 #if UNITY_EDITOR
             // Editor only - add test currency
-            _currencyService.AddGems(50);
+            _bankService.ModifyBalance("gems", 50);
 #else
             // Production - open store
 #endif
