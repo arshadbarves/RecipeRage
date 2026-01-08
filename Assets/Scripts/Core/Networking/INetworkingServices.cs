@@ -34,12 +34,12 @@ namespace Core.Networking
         /// <summary>
         /// Game starter service for Unity Netcode integration
         /// </summary>
-        GameStarter GameStarter { get; }
+        IGameStarter GameStarter { get; }
         
         /// <summary>
         /// Bot spawner service for spawning AI bots
         /// </summary>
-        BotSpawner BotSpawner { get; }
+        IBotSpawner BotSpawner { get; }
         
         /// <summary>
         /// Friends service for EOS friends management

@@ -5,7 +5,7 @@ using Core.Bootstrap;
 using Core.Logging;
 using Core.RemoteConfig;
 using Core.RemoteConfig.Models;
-using UI.Data;
+using Core.Skins.Data;
 using UnityEngine;
 using VContainer;
 

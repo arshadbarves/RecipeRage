@@ -6,6 +6,7 @@ using UnityEngine.UIElements;
 using Core.Logging;
 using Core.RemoteConfig;
 using Core.RemoteConfig.Models;
+using Core.UI;
 using VContainer;
 
 namespace UI.Screens

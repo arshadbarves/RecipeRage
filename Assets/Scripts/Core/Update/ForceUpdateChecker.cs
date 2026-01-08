@@ -3,7 +3,7 @@ using Core.Logging;
 using Core.RemoteConfig;
 using Core.RemoteConfig.Models;
 using Cysharp.Threading.Tasks;
-using UI;
+using Core.UI;
 using UnityEngine;
 
 namespace Core.Update

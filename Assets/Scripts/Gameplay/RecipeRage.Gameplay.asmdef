@@ -1,0 +1,21 @@
+{
+    "name": "RecipeRage.Gameplay",
+    "rootNamespace": "Gameplay",
+    "references": [
+        "RecipeRage.Core",
+        "Unity.Netcode.Runtime",
+        "VContainer",
+        "UniTask",
+        "com.playeveryware.eos.samples",
+        "Unity.Cinemachine"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

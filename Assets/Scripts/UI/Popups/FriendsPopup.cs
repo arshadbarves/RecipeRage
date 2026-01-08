@@ -4,6 +4,7 @@ using Core.Bootstrap;
 using Core.Logging;
 using Core.Networking;
 using Core.Networking.Interfaces;
+using Core.UI; // Added
 using UI;
 using UI.Core;
 using UI.Screens;

@@ -1,6 +1,6 @@
 using Core.Events;
 using Core.SaveSystem;
-using UI;
+using Core.UI;
 
 namespace Core.Currency
 {

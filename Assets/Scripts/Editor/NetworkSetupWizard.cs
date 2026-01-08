@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 using Unity.Netcode;
-using Core.State;
+using App.State;
 using Gameplay;
 using Gameplay.Cooking;
 using Gameplay.Scoring;

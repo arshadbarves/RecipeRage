@@ -1,4 +1,4 @@
-using Core.Logging;
+using Core.UI;
 using UI;
 using UI.Core;
 using UI.ViewModels;

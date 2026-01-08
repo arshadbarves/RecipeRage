@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using UI.Data;
+using Core.Skins.Data;
 
 namespace Core.Skins
 {

@@ -1,3 +1,4 @@
+using Core.Enums;
 using UnityEngine;
 
 namespace Gameplay.Spawning
@@ -90,15 +91,5 @@ namespace Gameplay.Spawning
             Gizmos.color = Color.yellow;
             Gizmos.DrawWireSphere(transform.position, _spawnRadius);
         }
-    }
-
-    /// <summary>
-    /// Team categories for spawn points
-    /// </summary>
-    public enum TeamCategory
-    {
-        Neutral = 0,
-        TeamA = 1,
-        TeamB = 2
     }
 }

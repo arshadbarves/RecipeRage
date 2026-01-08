@@ -1,3 +1,5 @@
+using Core.Characters;
+using Core.Logging;
 using Gameplay.Cooking;
 using Unity.Netcode;
 using UnityEngine;
@@ -7,7 +9,7 @@ namespace Gameplay.Stations
     /// <summary>
     /// A station for disposing of unwanted ingredients.
     /// </summary>
-    public class TrashBin : CookingStation
+    public class TrashBin : StationBase
     {
         [Header("Trash Bin Settings")]
         [SerializeField] private ParticleSystem _trashParticles;
@@ -24,36 +26,26 @@ namespace Gameplay.Stations
             _stationName = "Trash Bin";
         }
 
-        /// <summary>
-        /// Process the ingredient.
-        /// </summary>
-        /// <param name="ingredientItem">The ingredient to process</param>
-        /// <returns>True if the ingredient was processed successfully</returns>
-        protected override bool ProcessIngredient(IngredientItem ingredientItem)
+        protected override void HandleInteraction(PlayerController player)
         {
-            if (!IsServer)
+            // If the player is holding an ingredient
+            if (player.IsHoldingObject())
             {
-                return false;
+                GameObject heldObject = player.GetHeldObject();
+                IngredientItem ingredientItem = heldObject.GetComponent<IngredientItem>();
+
+                if (ingredientItem != null)
+                {
+                    // Take the ingredient (to destroy it)
+                    player.DropObject();
+
+                    // Play trash effects
+                    PlayTrashEffectsClientRpc();
+
+                    // Destroy the ingredient
+                    ingredientItem.NetworkObject.Despawn();
+                }
             }
-
-            // Play trash effects
-            PlayTrashEffectsClientRpc();
-
-            // Destroy the ingredient
-            ingredientItem.NetworkObject.Despawn();
-
-            return true;
-        }
-
-        /// <summary>
-        /// Check if the ingredient can be processed by this station.
-        /// </summary>
-        /// <param name="ingredientItem">The ingredient to check</param>
-        /// <returns>True if the ingredient can be processed</returns>
-        protected override bool CanProcessIngredient(IngredientItem ingredientItem)
-        {
-            // Trash bins accept all ingredients
-            return ingredientItem != null;
         }
 
         /// <summary>

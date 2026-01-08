@@ -4,6 +4,7 @@ using System.Linq;
 using Core.Animation;
 using Core.Bootstrap;
 using Core.Logging;
+using Core.UI; // Added
 using Cysharp.Threading.Tasks;
 using UI.Core;
 using UI.Screens;
@@ -49,10 +50,10 @@ namespace UI
         /// </summary>
         void IInitializable.Initialize()
         {
-            // UIService uses Initialize(UIDocument) for document-specific setup
+            // UIService uses Initialize(object) for document-specific setup
         }
 
-        public void Initialize(UIDocument uiDocument)
+        public void Initialize(object uiDocumentObj)
         {
             if (_isInitialized)
             {
@@ -60,9 +61,16 @@ namespace UI
                 return;
             }
 
-            _uiDocument = uiDocument;
-            UIScreenRegistry.Initialize();
-            SetupUIDocument();
+            if (uiDocumentObj is UIDocument uiDocument)
+            {
+                _uiDocument = uiDocument;
+                UIScreenRegistry.Initialize();
+                SetupUIDocument();
+            }
+            else
+            {
+                _loggingService.LogError("Initialize called with invalid type. Expected UIDocument.");
+            }
         }
 
         public void InitializeScreens()
@@ -271,7 +279,7 @@ namespace UI
             ShowScreenInternal(screen, animate);
         }
 
-        public T GetScreen<T>() where T : BaseUIScreen
+        public T GetScreen<T>() where T : class
         {
             foreach (BaseUIScreen screen in _screens.Values)
             {
@@ -281,13 +289,13 @@ namespace UI
             return null;
         }
 
-        public BaseUIScreen GetScreen(UIScreenType screenType)
+        public object GetScreen(UIScreenType screenType)
         {
             _screens.TryGetValue(screenType, out BaseUIScreen screen);
             return screen;
         }
 
-        public T GetScreen<T>(UIScreenType screenType) where T : BaseUIScreen
+        public T GetScreen<T>(UIScreenType screenType) where T : class
         {
             _screens.TryGetValue(screenType, out BaseUIScreen screen);
             return screen as T;
@@ -466,7 +474,7 @@ namespace UI
             return _stackManager.IsBlockedByHigherCategory(category);
         }
 
-        public async UniTask ShowNotification(string message, UI.NotificationType type = UI.NotificationType.Info, float duration = 3f)
+        public async UniTask ShowNotification(string message, Core.UI.NotificationType type = Core.UI.NotificationType.Info, float duration = 3f)
         {
             var notificationScreen = GetScreen<NotificationScreen>(UIScreenType.Notification);
             if (notificationScreen == null)
@@ -478,7 +486,7 @@ namespace UI
             await notificationScreen.Show(message, type, duration);
         }
 
-        public async UniTask ShowNotification(string title, string message, UI.NotificationType type = UI.NotificationType.Info, float duration = 3f)
+        public async UniTask ShowNotification(string title, string message, Core.UI.NotificationType type = Core.UI.NotificationType.Info, float duration = 3f)
         {
             var notificationScreen = GetScreen<NotificationScreen>(UIScreenType.Notification);
             if (notificationScreen == null)

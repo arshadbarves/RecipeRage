@@ -1,0 +1,23 @@
+{
+    "name": "RecipeRage.UI",
+    "rootNamespace": "UI",
+    "references": [
+        "RecipeRage.Core",
+        "RecipeRage.Gameplay",
+        "Unity.TextMeshPro",
+        "DOTween.Modules",
+        "VContainer",
+        "Unity.Netcode.Runtime",
+        "UniTask",
+        "com.playeveryware.eos.samples"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

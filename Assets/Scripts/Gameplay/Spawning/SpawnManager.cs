@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Core.Bootstrap;
+using Core.Enums;
 using Core.Logging;
 using Core.Networking.Bot;
 using Unity.Netcode;
@@ -289,7 +290,7 @@ namespace Gameplay.Spawning
         /// </summary>
         public bool HasAvailableSpawnPoints(TeamCategory team)
         {
-            return GetAvailableSpawnPointCount(team) > 0 || 
+            return GetAvailableSpawnPointCount(team) > 0 ||
                    (_reuseSpawnPoints && GetSpawnPointCount(team) > 0);
         }
     }

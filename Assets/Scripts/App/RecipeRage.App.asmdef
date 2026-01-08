@@ -1,0 +1,26 @@
+{
+    "name": "RecipeRage.App",
+    "rootNamespace": "App",
+    "references": [
+        "RecipeRage.Core",
+        "RecipeRage.Gameplay",
+        "RecipeRage.UI",
+        "VContainer",
+        "Unity.Netcode.Runtime",
+        "UniTask",
+        "DOTween.Modules",
+        "com.playeveryware.eos.samples",
+        "com.Epic.OnlineServices",
+        "com.playeveryware.eos.samples.networking",
+        "com.playeveryware.eos.core"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

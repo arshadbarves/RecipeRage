@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Unity.Netcode;
-using UnityEngine;
 using Core.Logging;
 
 namespace Gameplay.Scoring
@@ -16,32 +15,32 @@ namespace Gameplay.Scoring
         /// The list of player scores.
         /// </summary>
         private NetworkList<PlayerScore> _playerScores;
-        
+
         /// <summary>
         /// Team A score (for team modes).
         /// </summary>
         private NetworkVariable<int> _teamAScore = new NetworkVariable<int>(0);
-        
+
         /// <summary>
         /// Team B score (for team modes).
         /// </summary>
         private NetworkVariable<int> _teamBScore = new NetworkVariable<int>(0);
-        
+
         /// <summary>
         /// Event triggered when a player's score is updated.
         /// </summary>
         public event Action<ulong, int> OnPlayerScoreUpdated;
-        
+
         /// <summary>
         /// Event triggered when a team's score is updated.
         /// </summary>
         public event Action<int, int> OnTeamScoreUpdated;
-        
+
         /// <summary>
         /// Event triggered when the scoreboard should be updated.
         /// </summary>
         public event Action OnScoreboardUpdated;
-        
+
         /// <summary>
         /// Initialize the network score manager.
         /// </summary>
@@ -49,31 +48,31 @@ namespace Gameplay.Scoring
         {
             _playerScores = new NetworkList<PlayerScore>();
         }
-        
+
         /// <summary>
         /// Set up network variable callbacks.
         /// </summary>
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
-            
+
             _playerScores.OnListChanged += OnPlayerScoresChanged;
             _teamAScore.OnValueChanged += OnTeamAScoreChanged;
             _teamBScore.OnValueChanged += OnTeamBScoreChanged;
         }
-        
+
         /// <summary>
         /// Clean up network variable callbacks.
         /// </summary>
         public override void OnNetworkDespawn()
         {
             base.OnNetworkDespawn();
-            
+
             _playerScores.OnListChanged -= OnPlayerScoresChanged;
             _teamAScore.OnValueChanged -= OnTeamAScoreChanged;
             _teamBScore.OnValueChanged -= OnTeamBScoreChanged;
         }
-        
+
         /// <summary>
         /// Add score to a player.
         /// </summary>
@@ -86,13 +85,13 @@ namespace Gameplay.Scoring
         {
             // Find or create player score
             int index = FindPlayerScoreIndex(playerId);
-            
+
             if (index >= 0)
             {
                 // Update existing score
                 PlayerScore score = _playerScores[index];
                 score.Score += points;
-                
+
                 // Update stats based on reason
                 if (reason == ScoreReason.DishCompleted)
                 {
@@ -102,7 +101,7 @@ namespace Gameplay.Scoring
                 {
                     score.PerfectDishes++;
                 }
-                
+
                 _playerScores[index] = score;
             }
             else
@@ -115,16 +114,16 @@ namespace Gameplay.Scoring
                     DishesCompleted = reason == ScoreReason.DishCompleted ? 1 : 0,
                     PerfectDishes = reason == ScoreReason.PerfectDish ? 1 : 0
                 };
-                
+
                 _playerScores.Add(newScore);
             }
-            
+
             // Show score popup on all clients
             ShowScorePopupClientRpc(playerId, points, reason);
-            
+
             GameLogger.Log($"Added {points} points to player {playerId} for {reason}");
         }
-        
+
         /// <summary>
         /// Add score to a team.
         /// </summary>
@@ -143,10 +142,10 @@ namespace Gameplay.Scoring
             {
                 _teamBScore.Value += points;
             }
-            
+
             GameLogger.Log($"Added {points} points to team {teamId} for {reason}");
         }
-        
+
         /// <summary>
         /// Get a player's score.
         /// </summary>
@@ -157,7 +156,7 @@ namespace Gameplay.Scoring
             int index = FindPlayerScoreIndex(playerId);
             return index >= 0 ? _playerScores[index].Score : 0;
         }
-        
+
         /// <summary>
         /// Get all player scores.
         /// </summary>
@@ -171,17 +170,17 @@ namespace Gameplay.Scoring
             }
             return scores;
         }
-        
+
         /// <summary>
         /// Get team A score.
         /// </summary>
         public int GetTeamAScore() => _teamAScore.Value;
-        
+
         /// <summary>
         /// Get team B score.
         /// </summary>
         public int GetTeamBScore() => _teamBScore.Value;
-        
+
         /// <summary>
         /// Reset all scores.
         /// </summary>
@@ -191,10 +190,10 @@ namespace Gameplay.Scoring
             _playerScores.Clear();
             _teamAScore.Value = 0;
             _teamBScore.Value = 0;
-            
+
             GameLogger.Log("Reset all scores");
         }
-        
+
         /// <summary>
         /// Find the index of a player's score.
         /// </summary>
@@ -209,7 +208,7 @@ namespace Gameplay.Scoring
             }
             return -1;
         }
-        
+
         /// <summary>
         /// Handle player scores list changes.
         /// </summary>
@@ -221,10 +220,10 @@ namespace Gameplay.Scoring
                 PlayerScore score = _playerScores[changeEvent.Index];
                 OnPlayerScoreUpdated?.Invoke(score.ClientId, score.Score);
             }
-            
+
             OnScoreboardUpdated?.Invoke();
         }
-        
+
         /// <summary>
         /// Handle team A score changes.
         /// </summary>
@@ -233,7 +232,7 @@ namespace Gameplay.Scoring
             OnTeamScoreUpdated?.Invoke(0, newValue);
             OnScoreboardUpdated?.Invoke();
         }
-        
+
         /// <summary>
         /// Handle team B score changes.
         /// </summary>
@@ -242,7 +241,7 @@ namespace Gameplay.Scoring
             OnTeamScoreUpdated?.Invoke(1, newValue);
             OnScoreboardUpdated?.Invoke();
         }
-        
+
         /// <summary>
         /// Show a score popup on all clients.
         /// </summary>
@@ -252,7 +251,7 @@ namespace Gameplay.Scoring
             // UI can subscribe to this to show score popups
             GameLogger.Log($"Player {playerId} earned {points} points for {reason}");
         }
-        
+
         /// <summary>
         /// Update the scoreboard on all clients.
         /// </summary>
@@ -262,7 +261,7 @@ namespace Gameplay.Scoring
             OnScoreboardUpdated?.Invoke();
         }
     }
-    
+
     /// <summary>
     /// Player score data structure.
     /// </summary>
@@ -272,7 +271,7 @@ namespace Gameplay.Scoring
         public int Score;
         public int DishesCompleted;
         public int PerfectDishes;
-        
+
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
             serializer.SerializeValue(ref ClientId);
@@ -280,13 +279,13 @@ namespace Gameplay.Scoring
             serializer.SerializeValue(ref DishesCompleted);
             serializer.SerializeValue(ref PerfectDishes);
         }
-        
+
         public bool Equals(PlayerScore other)
         {
             return ClientId == other.ClientId;
         }
     }
-    
+
     /// <summary>
     /// Reasons for scoring.
     /// </summary>

@@ -208,7 +208,7 @@
     padding: 8px;
     margin: 30px 0 30px 50px; /* Added bottom margin for cleaner separation */
     width: auto;
-    align-self: flex-start;
+    align-self: fwlex-start;
 }
 
 .main-tabs .unity-tab-view__content-container {

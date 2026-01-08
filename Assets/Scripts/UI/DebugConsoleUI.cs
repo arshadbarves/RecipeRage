@@ -53,7 +53,7 @@ namespace UI
             return;
 #endif
 
-            var scope = LifetimeScope.Find<GameLifetimeScope>();
+            var scope = LifetimeScope.Find<LifetimeScope>();
             if (scope != null)
             {
                 scope.Container.Inject(this);

@@ -9,6 +9,7 @@ using VContainer;
 using Core.SaveSystem;
 using Core.Currency;
 using Core.Characters;
+using Core.UI;
 using UI.ViewModels;
 
 namespace UI.Screens

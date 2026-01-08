@@ -1,4 +1,4 @@
-using UI;
+using Core.UI;
 
 namespace Core.Events
 {

@@ -1,7 +1,7 @@
 using System;
 using Core.Bootstrap;
 using Core.Input;
-using Gameplay;
+using Core.Camera;
 using Unity.Netcode;
 using UnityEngine;
 using Core.Logging;
@@ -49,6 +49,9 @@ namespace Core.Characters
         [Inject]
         private SessionManager _sessionManager;
 
+        [Inject]
+        private ICameraController _cameraController;
+
         #endregion
 
         #region Components
@@ -91,14 +94,14 @@ namespace Core.Characters
         private void Awake()
         {
             // VContainer injection for NGO-spawned object
-            var scope = LifetimeScope.Find<GameLifetimeScope>();
+            var scope = LifetimeScope.Find<LifetimeScope>();
             if (scope != null)
             {
                 scope.Container.Inject(this);
             }
             else
             {
-                GameLogger.LogError("GameLifetimeScope not found! PlayerController dependencies will fail.");
+                GameLogger.LogError("LifetimeScope not found! PlayerController dependencies will fail.");
             }
 
             _rigidbody = GetComponent<Rigidbody>();
@@ -203,10 +206,9 @@ namespace Core.Characters
 
         private void SetupCamera()
         {
-            var cameraController = GameplayContext.CameraController;
-            if (cameraController != null && cameraController.IsInitialized)
+            if (_cameraController != null && _cameraController.IsInitialized)
             {
-                cameraController.SetFollowTarget(transform);
+                _cameraController.SetFollowTarget(transform);
             }
             else
             {
@@ -220,10 +222,9 @@ namespace Core.Characters
 
             if (IsLocalPlayer)
             {
-                var cameraController = GameplayContext.CameraController;
-                if (cameraController != null)
+                if (_cameraController != null)
                 {
-                    cameraController.ClearFollowTarget();
+                    _cameraController.ClearFollowTarget();
                 }
             }
 

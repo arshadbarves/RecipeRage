@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Core.Characters;
 using Core.Logging;
 using Gameplay.Cooking;
 using Gameplay.Scoring;
@@ -11,7 +12,7 @@ namespace Gameplay.Stations
     /// A station for serving completed dishes to fulfill orders.
     /// Integrates with NetworkScoreManager for score tracking and IDishValidator for validation.
     /// </summary>
-    public class ServingStation : CookingStation
+    public class ServingStation : StationBase
     {
         [Header("Serving Station Settings")]
         [SerializeField] private OrderManager _orderManager;
@@ -65,67 +66,62 @@ namespace Gameplay.Stations
             _roundTimer = FindFirstObjectByType<RoundTimer>();
         }
 
-        /// <summary>
-        /// Check if the ingredient can be processed by this station.
-        /// </summary>
-        /// <param name="ingredientItem">The ingredient to check</param>
-        /// <returns>True if the ingredient can be processed</returns>
-        protected override bool CanProcessIngredient(IngredientItem ingredientItem)
+        protected override void HandleInteraction(PlayerController player)
         {
-            // Accept plates with assembled dishes or individual ingredients
-            // In a full implementation, you'd only accept completed plates
-            return ingredientItem != null;
+            // If the player is holding an ingredient
+            if (player.IsHoldingObject())
+            {
+                GameObject heldObject = player.GetHeldObject();
+                IngredientItem ingredientItem = heldObject.GetComponent<IngredientItem>();
+
+                if (ingredientItem != null)
+                {
+                    // Take the ingredient (it is being served)
+                    player.DropObject();
+
+                    // Process the serving logic
+                    bool orderCompleted = ProcessServing(ingredientItem, player.OwnerClientId);
+
+                    // Show visual feedback
+                    if (orderCompleted)
+                    {
+                        ShowSuccessVisual();
+                        GameLogger.Log($"Order completed! Player {player.OwnerClientId} earned points");
+                    }
+                    else
+                    {
+                        ShowFailureVisual();
+                        GameLogger.Log("Order failed - no matching order or invalid dish");
+                    }
+
+                    // Despawn the served item
+                    if (ingredientItem.NetworkObject != null && ingredientItem.NetworkObject.IsSpawned)
+                    {
+                        ingredientItem.NetworkObject.Despawn();
+                    }
+                }
+            }
         }
 
         /// <summary>
-        /// Process the ingredient (serve the dish).
+        /// Process the serving of an item.
         /// </summary>
-        /// <param name="ingredientItem">The ingredient to process</param>
-        /// <returns>True if the ingredient was processed successfully</returns>
-        protected override bool ProcessIngredient(IngredientItem ingredientItem)
+        private bool ProcessServing(IngredientItem ingredientItem, ulong playerId)
         {
-            if (!IsServer)
-            {
-                return false;
-            }
-
             // Try to get plate component (for assembled dishes)
             PlateItem plate = ingredientItem.GetComponent<PlateItem>();
-
-            bool orderCompleted = false;
             int scoreAwarded = 0;
-            ulong playerId = ingredientItem.GetComponent<NetworkObject>()?.OwnerClientId ?? 0;
 
             if (plate != null && plate.IngredientCount > 0)
             {
                 // This is an assembled dish on a plate
-                orderCompleted = ProcessPlate(plate, playerId, out scoreAwarded);
+                return ProcessPlate(plate, playerId, out scoreAwarded);
             }
             else
             {
                 // This is a single ingredient (simplified serving)
-                orderCompleted = ProcessSingleIngredient(ingredientItem, playerId, out scoreAwarded);
+                return ProcessSingleIngredient(ingredientItem, playerId, out scoreAwarded);
             }
-
-            // Show visual feedback
-            if (orderCompleted)
-            {
-                ShowSuccessVisual();
-                GameLogger.Log($"Order completed! Player {playerId} earned {scoreAwarded} points");
-            }
-            else
-            {
-                ShowFailureVisual();
-                GameLogger.Log("Order failed - no matching order or invalid dish");
-            }
-
-            // Despawn the ingredient/plate
-            if (ingredientItem.NetworkObject != null && ingredientItem.NetworkObject.IsSpawned)
-            {
-                ingredientItem.NetworkObject.Despawn();
-            }
-
-            return orderCompleted;
         }
 
         /// <summary>

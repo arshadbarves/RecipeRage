@@ -10,7 +10,7 @@ namespace Gameplay.Cooking
     /// Represents a plate that holds ingredients for dish assembly.
     /// Follows Single Responsibility Principle - handles only plate state.
     /// </summary>
-    public class PlateItem : NetworkBehaviour, IInteractable
+    public class PlateItem : ItemBase
     {
         [Header("Plate Settings")]
         [SerializeField] private int _maxIngredients = 5;
@@ -31,16 +31,6 @@ namespace Gameplay.Cooking
         /// Whether the dish is complete.
         /// </summary>
         private NetworkVariable<bool> _isComplete = new NetworkVariable<bool>(false);
-
-        /// <summary>
-        /// Whether the plate is being held by a player.
-        /// </summary>
-        private NetworkVariable<bool> _isHeld = new NetworkVariable<bool>(false);
-
-        /// <summary>
-        /// The ID of the player holding this plate.
-        /// </summary>
-        private NetworkVariable<ulong> _heldByPlayerId = new NetworkVariable<ulong>(ulong.MaxValue);
 
         /// <summary>
         /// Get the recipe ID.
@@ -74,7 +64,6 @@ namespace Gameplay.Cooking
 
             _ingredientIds.OnListChanged += OnIngredientListChanged;
             _isComplete.OnValueChanged += OnIsCompleteChanged;
-            _isHeld.OnValueChanged += OnIsHeldChanged;
         }
 
         /// <summary>
@@ -86,13 +75,11 @@ namespace Gameplay.Cooking
 
             _ingredientIds.OnListChanged -= OnIngredientListChanged;
             _isComplete.OnValueChanged -= OnIsCompleteChanged;
-            _isHeld.OnValueChanged -= OnIsHeldChanged;
         }
 
         /// <summary>
         /// Set the target recipe for this plate.
         /// </summary>
-        /// <param name="recipeId">The recipe ID</param>
         public void SetRecipe(int recipeId)
         {
             if (!IsServer)
@@ -107,8 +94,6 @@ namespace Gameplay.Cooking
         /// <summary>
         /// Add an ingredient to the plate.
         /// </summary>
-        /// <param name="ingredientNetworkId">The ingredient's NetworkObject ID</param>
-        /// <returns>True if the ingredient was added</returns>
         public bool AddIngredient(ulong ingredientNetworkId)
         {
             if (!IsServer)
@@ -161,8 +146,6 @@ namespace Gameplay.Cooking
         /// <summary>
         /// Remove an ingredient from the plate.
         /// </summary>
-        /// <param name="ingredientNetworkId">The ingredient's NetworkObject ID</param>
-        /// <returns>True if the ingredient was removed</returns>
         public bool RemoveIngredient(ulong ingredientNetworkId)
         {
             if (!IsServer)
@@ -194,7 +177,6 @@ namespace Gameplay.Cooking
         /// <summary>
         /// Get all ingredients on the plate.
         /// </summary>
-        /// <returns>A list of ingredient items</returns>
         public List<IngredientItem> GetIngredients()
         {
             List<IngredientItem> ingredients = new List<IngredientItem>();
@@ -254,51 +236,9 @@ namespace Gameplay.Cooking
         }
 
         /// <summary>
-        /// Pick up the plate.
-        /// </summary>
-        /// <param name="playerId">The player ID</param>
-        public void PickUp(ulong playerId)
-        {
-            if (!IsServer)
-            {
-                GameLogger.LogWarning("Only the server can pick up plates");
-                return;
-            }
-
-            _isHeld.Value = true;
-            _heldByPlayerId.Value = playerId;
-        }
-
-        /// <summary>
-        /// Drop the plate.
-        /// </summary>
-        public void Drop()
-        {
-            if (!IsServer)
-            {
-                GameLogger.LogWarning("Only the server can drop plates");
-                return;
-            }
-
-            _isHeld.Value = false;
-            _heldByPlayerId.Value = ulong.MaxValue;
-        }
-
-        /// <summary>
-        /// Interact with the plate.
-        /// </summary>
-        /// <param name="player">The player interacting</param>
-        public void Interact(PlayerController player)
-        {
-            // Request pickup or drop via RPC
-            RequestPickupDropServerRpc(player.NetworkObject);
-        }
-
-        /// <summary>
         /// Get the interaction prompt.
         /// </summary>
-        /// <returns>The interaction prompt text</returns>
-        public string GetInteractionPrompt()
+        public override string GetInteractionPrompt()
         {
             if (_isHeld.Value)
             {
@@ -310,51 +250,13 @@ namespace Gameplay.Cooking
             }
         }
 
-        /// <summary>
-        /// Check if the plate can be interacted with.
-        /// </summary>
-        /// <param name="player">The player trying to interact</param>
-        /// <returns>True if the plate can be interacted with</returns>
-        public bool CanInteract(PlayerController player)
+        protected override void OnIsHeldChanged(bool previousValue, bool newValue)
         {
-            // If held, only the holder can interact
-            if (_isHeld.Value)
+            base.OnIsHeldChanged(previousValue, newValue);
+            // Update collider or visuals specific to Plate
+            if (_plateVisual != null)
             {
-                return _heldByPlayerId.Value == player.OwnerClientId;
-            }
-
-            // Otherwise, any player can pick it up
-            return true;
-        }
-
-        /// <summary>
-        /// Request to pick up or drop the plate.
-        /// </summary>
-        /// <param name="playerNetworkObject">The player's network object</param>
-        [ServerRpc(RequireOwnership = false)]
-        private void RequestPickupDropServerRpc(NetworkObjectReference playerNetworkObject)
-        {
-            if (playerNetworkObject.TryGet(out NetworkObject networkObject))
-            {
-                PlayerController player = networkObject.GetComponent<PlayerController>();
-                if (player != null)
-                {
-                    ulong playerId = player.OwnerClientId;
-
-                    if (_isHeld.Value)
-                    {
-                        // Only the holder can drop
-                        if (_heldByPlayerId.Value == playerId)
-                        {
-                            Drop();
-                        }
-                    }
-                    else
-                    {
-                        // Any player can pick up
-                        PickUp(playerId);
-                    }
-                }
+                // Could add visual feedback here
             }
         }
 
@@ -376,18 +278,6 @@ namespace Gameplay.Cooking
             {
                 GameLogger.Log("Dish completed!");
                 // Update visuals or trigger effects
-            }
-        }
-
-        /// <summary>
-        /// Handle held state changes.
-        /// </summary>
-        private void OnIsHeldChanged(bool previousValue, bool newValue)
-        {
-            // Update collider or visuals
-            if (_plateVisual != null)
-            {
-                // Could add visual feedback here
             }
         }
     }

@@ -6,7 +6,7 @@ namespace Gameplay.Stations
     /// <summary>
     /// A station for cutting ingredients.
     /// </summary>
-    public class CuttingStation : CookingStation
+    public class CuttingStation : ProcessingStation
     {
         [Header("Cutting Station Settings")]
         [SerializeField] private GameObject _knifeObject;
