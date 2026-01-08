@@ -1,4 +1,4 @@
-using Core.Characters;
+using Gameplay.Characters;
 using Core.Interaction;
 using Modules.Logging;
 using Unity.Netcode;

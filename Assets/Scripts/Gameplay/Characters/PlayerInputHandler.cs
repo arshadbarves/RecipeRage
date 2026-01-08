@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Core.Characters
+namespace Gameplay.Characters
 {
     /// <summary>
     /// Handles input smoothing and processing.

@@ -1,6 +1,6 @@
 using System;
 
-namespace Core.Characters
+namespace Gameplay.Characters
 {
     public interface ICharacterService
     {

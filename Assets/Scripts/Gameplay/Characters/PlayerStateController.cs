@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using Modules.Logging;
 
-namespace Core.Characters
+namespace Gameplay.Characters
 {
     /// <summary>
     /// Manages player movement state machine.

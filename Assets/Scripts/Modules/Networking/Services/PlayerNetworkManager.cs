@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Core.Characters;
+using Gameplay.Characters;
 using Modules.Logging;
 
 namespace Modules.Networking.Services

@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Core.Characters;
+using Gameplay.Characters;
 using Modules.Logging;
 using Unity.Netcode;
 using UnityEngine;

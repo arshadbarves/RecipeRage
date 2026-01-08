@@ -1,5 +1,5 @@
 using Core.Bootstrap;
-using Core.Characters;
+using Gameplay.Characters;
 using Modules.Logging;
 using Core.Skins;
 using Core.Skins.Data;

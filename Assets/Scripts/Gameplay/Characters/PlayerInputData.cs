@@ -1,7 +1,7 @@
 using Unity.Netcode;
 using UnityEngine;
 
-namespace Core.Characters
+namespace Gameplay.Characters
 {
     /// <summary>
     /// Represents a single frame of player input for network prediction.

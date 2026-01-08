@@ -1,4 +1,4 @@
-using Core.Characters;
+using Gameplay.Characters;
 using UnityEngine;
 
 namespace Core.Interaction

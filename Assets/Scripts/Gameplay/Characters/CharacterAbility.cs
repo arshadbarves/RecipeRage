@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using UnityEngine;
 using Modules.Logging;
 
-namespace Core.Characters
+namespace Gameplay.Characters
 {
     /// <summary>
     /// Base class for character abilities in RecipeRage.

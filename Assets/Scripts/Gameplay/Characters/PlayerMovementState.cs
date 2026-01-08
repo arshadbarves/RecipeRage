@@ -1,4 +1,4 @@
-namespace Core.Characters
+namespace Gameplay.Characters
 {
     /// <summary>
     /// Defines the possible movement states for a player character.

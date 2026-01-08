@@ -1,5 +1,5 @@
 using System;
-using Core.Characters;
+using Gameplay.Characters;
 using Modules.Logging;
 using Gameplay.Cooking;
 using Unity.Netcode;

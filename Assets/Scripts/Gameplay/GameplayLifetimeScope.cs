@@ -1,4 +1,4 @@
-using Core.Characters;
+using Gameplay.Characters;
 using Core.Interaction;
 using Modules.Networking.Interfaces;
 using Modules.Networking.Services;

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Core.Characters
+namespace Gameplay.Characters
 {
     /// <summary>
     /// Handles Rigidbody-based physics movement for the player.

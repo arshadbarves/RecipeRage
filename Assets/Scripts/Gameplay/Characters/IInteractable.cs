@@ -1,4 +1,4 @@
-namespace Core.Characters
+namespace Gameplay.Characters
 {
     /// <summary>
     /// Interface for objects that can be interacted with by the player.

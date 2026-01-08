@@ -10,7 +10,7 @@ using Core.Stats;
 using VContainer;
 using VContainer.Unity;
 
-namespace Core.Characters
+namespace Gameplay.Characters
 {
     /// <summary>
     /// Main player controller - orchestrates all player subsystems.

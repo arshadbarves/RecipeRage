@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Core.Characters
+namespace Gameplay.Characters
 {
     /// <summary>
     /// Handles player interactions and abilities.

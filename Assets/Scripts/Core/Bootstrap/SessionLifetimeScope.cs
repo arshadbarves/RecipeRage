@@ -1,5 +1,5 @@
 using Modules.Audio;
-using Core.Characters;
+using Gameplay.Characters;
 using Core.Currency;
 using Core.GameModes;
 using Core.Input;

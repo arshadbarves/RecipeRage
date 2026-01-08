@@ -1,7 +1,7 @@
 using Unity.Netcode;
 using UnityEngine;
 
-namespace Core.Characters
+namespace Gameplay.Characters
 {
     /// <summary>
     /// Represents the authoritative state of a player at a specific point in time.

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Core.Characters
+namespace Gameplay.Characters
 {
     /// <summary>
     /// Scriptable object that defines a character class in RecipeRage.

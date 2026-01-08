@@ -3,7 +3,7 @@ using Unity.Netcode;
 using UnityEngine;
 using Modules.Logging;
 
-namespace Core.Characters
+namespace Gameplay.Characters
 {
     /// <summary>
     /// Handles client-side prediction and server reconciliation.

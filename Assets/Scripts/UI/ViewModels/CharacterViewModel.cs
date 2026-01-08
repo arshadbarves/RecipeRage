@@ -1,5 +1,5 @@
 using Core.Bootstrap; // Added
-using Core.Characters;
+using Gameplay.Characters;
 using UI.Core;
 using VContainer;
 

@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using Modules.Logging;
 
-namespace Core.Characters
+namespace Gameplay.Characters
 {
     /// <summary>
     /// Character service - pure C# class, no MonoBehaviour
