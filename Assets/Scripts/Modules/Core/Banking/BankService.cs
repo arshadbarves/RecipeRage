@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Core.Currency;
 using Core.Events;
 using Core.UI;
 using Modules.Core.Banking.Data;
@@ -16,11 +15,8 @@ namespace Modules.Core.Banking
         private readonly IUIService _uiService;
         private BankData _data;
 
-        public int Coins => _data?.Coins ?? 0;
-        public int Gems => _data?.Gems ?? 0;
-
-        public event Action<string> OnSkinUnlocked;
-        public event Action<int, string> OnSkinEquipped;
+        public event Action<string, long> OnBalanceChanged;
+        public event Action<string> OnItemUnlocked;
 
         public BankService(IBankBackend backend, IEventBus eventBus, IUIService uiService)
         {
@@ -32,99 +28,104 @@ namespace Modules.Core.Banking
         public async Task InitializeAsync()
         {
             _data = await _backend.LoadDataAsync();
-            PublishCurrencyChanged();
-        }
-
-        public void AddCoins(int amount)
-        {
-            if (amount <= 0) return;
-            _data.Coins += amount;
-            SaveToDisk();
-            PublishCurrencyChanged();
-            _uiService?.ShowNotification($"+{amount} coins!", NotificationType.Success, 2f);
-        }
-
-        public void AddGems(int amount)
-        {
-            if (amount <= 0) return;
-            _data.Gems += amount;
-            SaveToDisk();
-            PublishCurrencyChanged();
-            _uiService?.ShowNotification($"+{amount} gems!", NotificationType.Success, 2f);
-        }
-
-        public bool SpendCoins(int amount)
-        {
-            if (amount <= 0) return false;
-            if (_data.Coins >= amount)
+            // Trigger initial events for all balances
+            foreach (var kvp in _data.Balances)
             {
-                _data.Coins -= amount;
-                SaveToDisk();
-                PublishCurrencyChanged();
-                return true;
+                OnBalanceChanged?.Invoke(kvp.Key, kvp.Value);
             }
-            _uiService?.ShowNotification("Not enough coins", NotificationType.Error);
-            return false;
         }
 
-        public bool SpendGems(int amount)
+        public long GetBalance(string currencyId)
         {
-            if (amount <= 0) return false;
-            if (_data.Gems >= amount)
-            {
-                _data.Gems -= amount;
-                SaveToDisk();
-                PublishCurrencyChanged();
-                return true;
-            }
-            _uiService?.ShowNotification("Not enough gems", NotificationType.Error);
-            return false;
+            if (_data == null) return 0;
+            return _data.Balances.TryGetValue(currencyId, out long balance) ? balance : 0;
         }
 
-        public List<string> GetUnlockedSkins() => new List<string>(_data.UnlockedSkinIds);
-
-        public bool IsSkinUnlocked(string skinId) => _data.UnlockedSkinIds.Contains(skinId);
-
-        public bool UnlockSkin(string skinId)
+        public void ModifyBalance(string currencyId, long amount)
         {
-            if (string.IsNullOrEmpty(skinId) || IsSkinUnlocked(skinId)) return false;
-            _data.UnlockedSkinIds.Add(skinId);
+            if (_data == null || amount == 0) return;
+
+            long current = GetBalance(currencyId);
+            long next = current + amount;
+            
+            _data.Balances[currencyId] = next;
             SaveToDisk();
-            OnSkinUnlocked?.Invoke(skinId);
+
+            OnBalanceChanged?.Invoke(currencyId, next);
+            
+            // Legacy/Compat: Notify UI for standard currencies
+            if (amount > 0 && (currencyId == "coins" || currencyId == "gems"))
+            {
+                _uiService?.ShowNotification($"+{amount} {currencyId}!", NotificationType.Success, 2f);
+            }
+
+            // Publish legacy event for backwards compatibility with existing UI components
+            PublishLegacyCurrencyEvent();
+        }
+
+        public bool HasItem(string itemId)
+        {
+            return _data?.Inventory.Contains(itemId) ?? false;
+        }
+
+        public void AddItem(string itemId)
+        {
+            if (_data == null || string.IsNullOrEmpty(itemId) || HasItem(itemId)) return;
+
+            _data.Inventory.Add(itemId);
+            SaveToDisk();
+            OnItemUnlocked?.Invoke(itemId);
+        }
+
+        public string GetData(string key)
+        {
+            if (_data == null) return null;
+            return _data.Data.TryGetValue(key, out string value) ? value : null;
+        }
+
+        public void SetData(string key, string value)
+        {
+            if (_data == null) return;
+            _data.Data[key] = value;
+            SaveToDisk();
+        }
+
+        public bool Purchase(string itemId, long cost, string currencyId)
+        {
+            if (_data == null) return false;
+
+            // Check if already owned
+            if (HasItem(itemId)) return false;
+
+            // Check funds
+            long balance = GetBalance(currencyId);
+            if (balance < cost)
+            {
+                _uiService?.ShowNotification($"Not enough {currencyId}", NotificationType.Error);
+                return false;
+            }
+
+            // Atomic Deduct & Grant
+            ModifyBalance(currencyId, -cost);
+            AddItem(itemId);
+
+            _uiService?.ShowNotification($"Purchased {itemId}!", NotificationType.Success);
             return true;
         }
 
-        public string GetEquippedSkinId(int characterId)
-        {
-            return _data.EquippedSkinIds.TryGetValue(characterId, out var skinId) ? skinId : null;
-        }
-
-        public bool EquipSkin(int characterId, string skinId)
-        {
-            if (!IsSkinUnlocked(skinId)) return false;
-            _data.EquippedSkinIds[characterId] = skinId;
-            SaveToDisk();
-            OnSkinEquipped?.Invoke(characterId, skinId);
-            return true;
-        }
-
-        public void LoadFromSave()
-        {
-            // Legacy support - using sync version if needed, but we prefer async Initialize
-            _data = _backend.LoadDataAsync().GetAwaiter().GetResult();
-            PublishCurrencyChanged();
-        }
-
-        public void SaveToDisk()
+        private void SaveToDisk()
         {
             _backend.SaveDataAsync(_data).Wait();
         }
 
-        public string FormatCurrency(int amount) => amount.ToString();
-
-        private void PublishCurrencyChanged()
+        private void PublishLegacyCurrencyEvent()
         {
-            _eventBus?.Publish(new CurrencyChangedEvent { Coins = Coins, Gems = Gems });
+            // Compatibility with UI components listening to CurrencyChangedEvent
+            _eventBus?.Publish(new CurrencyChangedEvent 
+            { 
+                Coins = (int)GetBalance("coins"), 
+                Gems = (int)GetBalance("gems") 
+            });
         }
     }
 }

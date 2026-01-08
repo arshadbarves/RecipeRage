@@ -20,7 +20,9 @@ namespace Modules.Core.Banking.Backends
             BankData data = _saveService.LoadData<BankData>(SAVE_KEY);
             if (data == null)
             {
-                data = new BankData(1250, 85); // Default values
+                data = new BankData();
+                data.Balances["coins"] = 1250;
+                data.Balances["gems"] = 85;
             }
             return Task.FromResult(data);
         }
