@@ -1,6 +1,6 @@
 using Core.Bootstrap;
 using Modules.Logging;
-using Core.Networking.Services;
+using Modules.Networking.Services;
 using Unity.Netcode;
 using UnityEngine;
 using VContainer;

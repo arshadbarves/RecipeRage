@@ -1,5 +1,5 @@
 using Core.Bootstrap;
-using Core.Networking;
+using Modules.Networking;
 using Modules.Persistence;
 using Core.UI;
 using UI.Core;

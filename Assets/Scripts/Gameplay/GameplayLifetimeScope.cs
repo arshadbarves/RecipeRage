@@ -1,7 +1,7 @@
 using Core.Characters;
 using Core.Interaction;
-using Core.Networking.Interfaces;
-using Core.Networking.Services;
+using Modules.Networking.Interfaces;
+using Modules.Networking.Services;
 using Gameplay.Cooking;
 using Gameplay.Scoring;
 using Gameplay.Stations;

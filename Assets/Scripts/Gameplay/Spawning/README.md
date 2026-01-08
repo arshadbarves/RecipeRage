@@ -85,7 +85,7 @@ spawnManager.SpawnPlayer(clientId, TeamCategory.TeamA);
 #### Spawning Bots
 
 ```csharp
-using Core.Networking.Bot;
+using Gameplay.Networking.Bot;
 using Gameplay.Spawning;
 
 // Create bot player

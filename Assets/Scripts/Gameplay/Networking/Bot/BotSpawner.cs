@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Modules.Logging;
-using Core.Networking.Bot;
-using Core.Networking.Interfaces;
+using Gameplay.Networking.Bot;
+using Modules.Networking.Interfaces;
 using Core.Enums;
 using Gameplay;
 using Gameplay.Spawning;

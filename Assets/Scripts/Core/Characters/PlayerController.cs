@@ -5,7 +5,7 @@ using Core.Camera;
 using Unity.Netcode;
 using UnityEngine;
 using Modules.Logging;
-using Core.Networking.Services;
+using Modules.Networking.Services;
 using Core.Stats;
 using VContainer;
 using VContainer.Unity;

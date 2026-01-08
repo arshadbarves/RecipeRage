@@ -3,7 +3,7 @@ using System.Linq;
 using Core.Bootstrap;
 using Core.Enums;
 using Modules.Logging;
-using Core.Networking.Bot;
+using Gameplay.Networking.Bot;
 using Unity.Netcode;
 using UnityEngine;
 

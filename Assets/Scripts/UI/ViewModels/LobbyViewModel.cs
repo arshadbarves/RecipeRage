@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 using Core.Bootstrap;
-using Core.Networking.Interfaces;
+using Modules.Networking.Interfaces;
 using Core.Reactive;
 using App.State;
 using App.State.States;

@@ -1,6 +1,6 @@
 using Core.Bootstrap;
-using Core.Networking;
-using Core.Networking.Common;
+using Modules.Networking;
+using Modules.Networking.Common;
 using UI;
 using UnityEngine;
 using VContainer;

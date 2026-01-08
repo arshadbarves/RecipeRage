@@ -3,7 +3,7 @@ using Core.Camera;
 using Gameplay.Scoring;
 using UI;
 using UnityEngine;
-using Core.Networking;
+using Modules.Networking;
 using Core.GameModes;
 using VContainer;
 using Cysharp.Threading.Tasks;

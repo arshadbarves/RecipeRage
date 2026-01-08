@@ -1,6 +1,6 @@
 using Core.Bootstrap;
 using UI;
-using Core.Networking;
+using Modules.Networking;
 using Core.UI;
 using VContainer;
 

@@ -1,8 +1,8 @@
 using System;
 using Modules.Logging;
-using Core.Networking;
-using Core.Networking.Interfaces;
-using Core.Networking.Services;
+using Modules.Networking;
+using Modules.Networking.Interfaces;
+using Modules.Networking.Services;
 using Core.SDK;
 using App.State;
 using Core.UI;

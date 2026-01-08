@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Modules.Logging;
-using Core.Networking;
+using Modules.Networking;
 using Epic.OnlineServices;
 using PlayEveryWare.EpicOnlineServices;
 using Unity.Services.Authentication;

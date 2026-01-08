@@ -1,6 +1,6 @@
 using System;
 using Modules.Logging;
-using Core.Networking;
+using Modules.Networking;
 using Core.UI;
 using UI.Core;
 using UnityEngine.UIElements;

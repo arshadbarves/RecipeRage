@@ -61,7 +61,7 @@ public class MyGameState : IState
 ### Spawn Bots
 
 ```csharp
-using Core.Networking.Bot;
+using Gameplay.Networking.Bot;
 using Gameplay.Spawning;
 
 // Create bots

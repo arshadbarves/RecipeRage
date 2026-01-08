@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEditor;
 using Unity.Netcode;
 using App.State;
-using Core.Networking;
+using Modules.Networking;
 using Gameplay;
 using Gameplay.Cooking;
 using Gameplay.Scoring;
