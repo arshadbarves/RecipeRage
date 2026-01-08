@@ -1,13 +1,12 @@
 using Modules.Audio;
 using Gameplay.Characters;
-using Core.Currency;
 using Gameplay.GameModes;
 using Modules.Input;
 using Modules.Networking;
 using Modules.Networking.Services;
 using Modules.Skins;
 using Modules.Core.Banking;
-using Modules.Core.Banking.Backends;
+using Core.Banking.Backends;
 using Modules.Core.Banking.Interfaces;
 using VContainer;
 using VContainer.Unity;

@@ -3,7 +3,7 @@ using Modules.Persistence;
 using Modules.Core.Banking.Data;
 using Modules.Core.Banking.Interfaces;
 
-namespace Modules.Core.Banking.Backends
+namespace Core.Banking.Backends
 {
     public class LocalDiskBankBackend : IBankBackend
     {

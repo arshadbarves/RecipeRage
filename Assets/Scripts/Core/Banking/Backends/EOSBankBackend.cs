@@ -4,7 +4,7 @@ using Modules.Core.Banking.Data;
 using Modules.Core.Banking.Interfaces;
 using UnityEngine;
 
-namespace Modules.Core.Banking.Backends
+namespace Core.Banking.Backends
 {
     public class EOSBankBackend : IBankBackend
     {
