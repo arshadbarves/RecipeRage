@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
-using Core.Logging;
+using Modules.Logging;
 using Core.RemoteConfig.Models;
 using Firebase.RemoteConfig;
 using UnityEngine;

@@ -1,5 +1,5 @@
 using System;
-using Core.Logging;
+using Modules.Logging;
 using Cysharp.Threading.Tasks;
 using Epic.OnlineServices;
 using Epic.OnlineServices.PlayerDataStorage;

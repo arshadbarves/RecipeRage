@@ -1,5 +1,5 @@
 using Core.Events;
-using Core.Logging;
+using Modules.Logging;
 using Core.UI;
 using UI;
 using UnityEditor.PackageManager;

@@ -1,5 +1,5 @@
 using System;
-using Core.Logging;
+using Modules.Logging;
 using Core.Networking;
 using Core.Networking.Interfaces;
 using Core.Networking.Services;

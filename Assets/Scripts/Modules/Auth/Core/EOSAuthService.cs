@@ -1,7 +1,7 @@
 using System;
 using Cysharp.Threading.Tasks;
 using PlayEveryWare.EpicOnlineServices;
-using Core.Logging;
+using Modules.Logging;
 using Epic.OnlineServices;
 using Epic.OnlineServices.Connect;
 using UnityEngine;

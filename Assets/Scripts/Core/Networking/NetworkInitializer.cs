@@ -1,5 +1,5 @@
 using Core.Bootstrap;
-using Core.Logging;
+using Modules.Logging;
 using Core.Networking.Services;
 using Unity.Netcode;
 using UnityEngine;

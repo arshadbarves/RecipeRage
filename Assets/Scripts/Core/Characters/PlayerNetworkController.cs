@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
-using Core.Logging;
+using Modules.Logging;
 
 namespace Core.Characters
 {

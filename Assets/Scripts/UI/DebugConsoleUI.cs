@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using Core.Bootstrap;
-using Core.Logging;
+using Modules.Logging;
 using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;

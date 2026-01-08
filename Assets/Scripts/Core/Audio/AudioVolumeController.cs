@@ -1,4 +1,4 @@
-using Core.Logging;
+using Modules.Logging;
 using Core.SaveSystem;
 using UnityEngine;
 using UnityEngine.Audio;

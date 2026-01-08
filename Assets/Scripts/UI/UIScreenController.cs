@@ -2,7 +2,7 @@ using System;
 using Core.Animation;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Core.Logging;
+using Modules.Logging;
 using Core.UI;
 
 namespace UI

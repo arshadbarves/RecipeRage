@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Core.Bootstrap;
 using Cysharp.Threading.Tasks;
-using Core.Logging;
+using Modules.Logging;
 using VContainer;
 
 namespace Core.RemoteConfig

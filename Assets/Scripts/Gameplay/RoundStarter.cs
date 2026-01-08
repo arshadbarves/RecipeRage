@@ -1,4 +1,4 @@
-using Core.Logging;
+using Modules.Logging;
 using App.State;
 using Unity.Netcode;
 using UnityEngine;

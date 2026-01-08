@@ -1,6 +1,6 @@
 using Core.Characters;
 using Core.Interaction;
-using Core.Logging;
+using Modules.Logging;
 using Unity.Netcode;
 using UnityEngine;
 

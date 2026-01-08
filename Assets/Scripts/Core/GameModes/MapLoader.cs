@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Core.Logging;
+using Modules.Logging;
 
 namespace Core.GameModes
 {

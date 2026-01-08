@@ -3,7 +3,7 @@ using UI.Data;
 using UI.Screens;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Core.Logging;
+using Modules.Logging;
 using Core.UI;
 using UI.ViewModels;
 using VContainer;

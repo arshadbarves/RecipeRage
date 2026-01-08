@@ -5,7 +5,7 @@ using UI;
 using UnityEngine;
 using VContainer;
 using Cysharp.Threading.Tasks;
-using Core.Logging;
+using Modules.Logging;
 using Core.UI;
 
 namespace App.State.States

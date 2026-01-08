@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Core.Logging;
+using Modules.Logging;
 using Core.Networking.Bot;
 using Core.Networking.Interfaces;
 using Core.Enums;

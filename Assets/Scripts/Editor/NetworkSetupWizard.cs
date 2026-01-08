@@ -7,7 +7,7 @@ using Gameplay.Cooking;
 using Gameplay.Scoring;
 using Gameplay.Stations;
 using System.Collections.Generic;
-using Core.Logging;
+using Modules.Logging;
 
 namespace Editor
 {

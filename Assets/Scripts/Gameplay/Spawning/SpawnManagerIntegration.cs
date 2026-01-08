@@ -1,5 +1,5 @@
 using Core.Bootstrap;
-using Core.Logging;
+using Modules.Logging;
 using Gameplay.Spawning;
 using UnityEngine;
 

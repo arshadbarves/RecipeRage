@@ -1,6 +1,6 @@
 using System;
 using Core.Events;
-using Core.Logging;
+using Modules.Logging;
 using Core.Maintenance;
 using Core.UI;
 using Cysharp.Threading.Tasks;

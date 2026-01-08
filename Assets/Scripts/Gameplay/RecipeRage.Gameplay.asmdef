@@ -7,7 +7,8 @@
         "VContainer",
         "UniTask",
         "com.playeveryware.eos.samples",
-        "Unity.Cinemachine"
+        "Unity.Cinemachine",
+        "RecipeRage.Modules"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

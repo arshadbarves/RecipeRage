@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Core.Bootstrap;
-using Core.Logging;
+using Modules.Logging;
 using Core.Networking;
 using Core.Networking.Interfaces;
 using Core.UI; // Added

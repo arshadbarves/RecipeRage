@@ -1,6 +1,6 @@
 using Unity.Netcode;
 using UnityEngine;
-using Core.Logging;
+using Modules.Logging;
 using Unity.Collections;
 using System;
 

@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
-using Core.Logging;
+using Modules.Logging;
 
 namespace Core.SaveSystem
 {

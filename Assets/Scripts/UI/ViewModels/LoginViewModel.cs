@@ -1,6 +1,6 @@
 using System;
 using Core.Localization;
-using Core.Logging;
+using Modules.Logging;
 using Core.Reactive;
 using RecipeRage.Modules.Auth.Core;
 using UI.Core;

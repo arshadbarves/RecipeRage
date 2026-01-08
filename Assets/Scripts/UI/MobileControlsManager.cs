@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
-using Core.Logging;
+using Modules.Logging;
 
 namespace UI
 {

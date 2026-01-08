@@ -1,4 +1,4 @@
-using Core.Logging;
+using Modules.Logging;
 using UnityEngine;
 
 namespace App.State

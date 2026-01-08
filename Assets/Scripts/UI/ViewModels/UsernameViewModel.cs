@@ -1,6 +1,6 @@
 using System;
 using Core.Bootstrap;
-using Core.Logging;
+using Modules.Logging;
 using Core.Reactive;
 using Core.SaveSystem;
 using Core.UI;

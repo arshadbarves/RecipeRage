@@ -1,6 +1,6 @@
 using Core.Bootstrap;
 using Core.Characters;
-using Core.Logging;
+using Modules.Logging;
 using Core.Skins;
 using Core.Skins.Data;
 using Core.UI;

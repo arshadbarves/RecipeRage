@@ -1,6 +1,6 @@
 using Cysharp.Threading.Tasks;
 using UI;
-using Core.Logging;
+using Modules.Logging;
 using Core.SaveSystem;
 using Modules.Core.Banking.Interfaces;
 using UI.Screens;

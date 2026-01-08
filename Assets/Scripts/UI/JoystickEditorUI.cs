@@ -1,6 +1,6 @@
 using System;
 using Core.Animation;
-using Core.Logging;
+using Modules.Logging;
 using Core.UI;
 using UI.Core;
 using UnityEngine;

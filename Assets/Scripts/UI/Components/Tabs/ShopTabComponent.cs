@@ -1,4 +1,4 @@
-using Core.Logging;
+using Modules.Logging;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UI.Data;

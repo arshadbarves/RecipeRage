@@ -2,7 +2,7 @@ using Cysharp.Threading.Tasks;
 using UI;
 using UI.Popups;
 using UnityEngine.SceneManagement;
-using Core.Logging;
+using Modules.Logging;
 using Core.SaveSystem;
 using Core.UI;
 using UI.Core;

@@ -1,6 +1,6 @@
 using System;
 
-namespace Core.Logging
+namespace Modules.Logging
 {
     /// <summary>
     /// Represents a single log entry

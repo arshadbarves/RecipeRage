@@ -8,7 +8,7 @@ using Core.GameModes;
 using VContainer;
 using Cysharp.Threading.Tasks;
 using UnityEngine.SceneManagement;
-using Core.Logging;
+using Modules.Logging;
 using Core.UI;
 using Gameplay;
 using Gameplay.Camera;

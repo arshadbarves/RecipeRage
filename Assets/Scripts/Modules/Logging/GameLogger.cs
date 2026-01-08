@@ -4,7 +4,7 @@ using Core.Bootstrap;
 using UnityEngine;
 using VContainer;
 
-namespace Core.Logging
+namespace Modules.Logging
 {
     /// <summary>
     /// Static helper for easy logging throughout the codebase

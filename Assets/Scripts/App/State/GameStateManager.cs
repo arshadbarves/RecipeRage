@@ -1,6 +1,6 @@
 using System;
 using Core.Bootstrap;
-using Core.Logging;
+using Modules.Logging;
 using VContainer;
 
 namespace App.State

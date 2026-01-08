@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Core.Characters;
-using Core.Logging;
+using Modules.Logging;
 using Unity.Netcode;
 using UnityEngine;
 

@@ -1,7 +1,7 @@
 using System;
 using Newtonsoft.Json;
 using UnityEngine;
-using Core.Logging;
+using Modules.Logging;
 
 namespace Core.Characters
 {

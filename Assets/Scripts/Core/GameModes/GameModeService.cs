@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Core.Bootstrap;
-using Core.Logging;
+using Modules.Logging;
 using Core.RemoteConfig;
 using Core.RemoteConfig.Models;
 using VContainer;

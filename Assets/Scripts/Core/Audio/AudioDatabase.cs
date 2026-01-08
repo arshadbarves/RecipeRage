@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Core.Logging;
+using Modules.Logging;
 using UnityEngine;
 
 namespace Core.Audio

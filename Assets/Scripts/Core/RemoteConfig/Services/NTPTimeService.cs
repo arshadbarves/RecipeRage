@@ -3,7 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using Core.Bootstrap;
 using Cysharp.Threading.Tasks;
-using Core.Logging;
+using Modules.Logging;
 using UnityEngine;
 
 namespace Core.RemoteConfig

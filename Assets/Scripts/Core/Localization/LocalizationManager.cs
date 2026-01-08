@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Core.Logging;
+using Modules.Logging;
 using UnityEngine;
 
 namespace Core.Localization

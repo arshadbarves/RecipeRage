@@ -2,7 +2,7 @@ using System;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
-using Core.Logging;
+using Modules.Logging;
 using Core.Events;
 using Core.Bootstrap;
 

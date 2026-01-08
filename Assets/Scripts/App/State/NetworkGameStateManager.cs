@@ -1,7 +1,7 @@
 using System;
 using App.Bootstrap;
 using Core.Bootstrap;
-using Core.Logging;
+using Modules.Logging;
 using App.State.States;
 using Unity.Netcode;
 using UnityEngine;

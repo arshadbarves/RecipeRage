@@ -1,7 +1,7 @@
 using System;
 using Core.Bootstrap;
 using Core.Events;
-using Core.Logging;
+using Modules.Logging;
 using Core.RemoteConfig;
 using Core.RemoteConfig.Models;
 using Cysharp.Threading.Tasks;

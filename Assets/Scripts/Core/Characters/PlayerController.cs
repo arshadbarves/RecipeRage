@@ -4,7 +4,7 @@ using Core.Input;
 using Core.Camera;
 using Unity.Netcode;
 using UnityEngine;
-using Core.Logging;
+using Modules.Logging;
 using Core.Networking.Services;
 using Core.Stats;
 using VContainer;

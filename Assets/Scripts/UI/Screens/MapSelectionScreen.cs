@@ -3,7 +3,7 @@ using UI.Core;
 using UI.Data;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Core.Logging;
+using Modules.Logging;
 using Core.RemoteConfig;
 using Core.RemoteConfig.Models;
 using Core.UI;

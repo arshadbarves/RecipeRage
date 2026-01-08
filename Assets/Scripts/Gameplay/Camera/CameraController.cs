@@ -1,6 +1,6 @@
 using System;
 using Core.Camera;
-using Core.Logging;
+using Modules.Logging;
 using Unity.Cinemachine;
 using UnityEngine;
 

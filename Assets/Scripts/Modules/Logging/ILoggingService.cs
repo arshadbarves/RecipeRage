@@ -1,7 +1,7 @@
 using System;
 using Core.Bootstrap;
 
-namespace Core.Logging
+namespace Modules.Logging
 {
     /// <summary>
     /// Interface for the logging service

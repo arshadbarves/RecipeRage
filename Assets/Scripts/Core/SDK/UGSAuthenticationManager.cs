@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using Core.Logging;
+using Modules.Logging;
 using Core.Networking;
 using Epic.OnlineServices;
 using PlayEveryWare.EpicOnlineServices;

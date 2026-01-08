@@ -1,6 +1,6 @@
 using Core.Bootstrap;
 using Core.Events;
-using Core.Logging;
+using Modules.Logging;
 using UI.Components;
 using UI.Components.Tabs;
 using UI.Core;

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Core.Characters;
-using Core.Logging;
+using Modules.Logging;
 
 namespace Core.Networking.Services
 {

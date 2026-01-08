@@ -1,4 +1,4 @@
-namespace Core.Logging
+namespace Modules.Logging
 {
     /// <summary>
     /// Log severity levels

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Core.Bootstrap;
 using Core.Enums;
-using Core.Logging;
+using Modules.Logging;
 using Core.Networking.Bot;
 using Unity.Netcode;
 using UnityEngine;
