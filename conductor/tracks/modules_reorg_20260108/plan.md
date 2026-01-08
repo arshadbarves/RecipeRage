@@ -9,14 +9,14 @@
 - [x] 5c3f62f Task: Conductor - User Manual Verification 'Phase 1: Directory Structure & Core Setup' (Protocol in workflow.md)
 
 ## Phase 2: BankService Analysis & Refactor (Core)
-- [ ] Task: Analyze CurrencyService Dependencies
-    - [ ] Map all public methods (`AddCoins`, `SpendGems`, etc.) to the new `BankService` API.
-    - [ ] Identify all Event Bus events (`CurrencyChangedEvent`) that must be maintained or mapped.
-    - [ ] Analyze `ISaveService` usage to ensure data is correctly migrated/handled by the new Backend.
-- [ ] Task: Define Interfaces
-    - [ ] Create `IBankBackend.cs` in `Modules/Core/Banking/Interfaces/`.
-    - [ ] Create `IBankService.cs` (extending or replacing `ICurrencyService`) to ensure API compatibility.
-- [ ] Task: Implement BankService
+- [x] Task: Analyze CurrencyService Dependencies
+    - [x] Map all public methods (`AddCoins`, `SpendGems`, etc.) to the new `BankService` API.
+    - [x] Identify all Event Bus events (`CurrencyChangedEvent`) that must be maintained or mapped.
+    - [x] Analyze `ISaveService` usage to ensure data is correctly migrated/handled by the new Backend.
+- [x] 930a4a7 Task: Define Interfaces
+    - [x] Create `IBankBackend.cs` in `Modules/Core/Banking/Interfaces/`.
+    - [x] Create `IBankService.cs` (extending or replacing `ICurrencyService`) to ensure API compatibility.
+- [~] Task: Implement BankService
     - [ ] Create `BankService.cs` in `Modules/Core/Banking/`.
     - [ ] Implement support for multiple currencies (Coins, Gems) and Inventory (Skins).
     - [ ] Ensure `IEventBus` integration triggers existing events (or compatible new ones).
