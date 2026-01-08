@@ -6,7 +6,7 @@ using Cysharp.Threading.Tasks;
 using Modules.Logging;
 using UnityEngine;
 
-namespace Core.RemoteConfig
+namespace Modules.RemoteConfig
 {
     /// <summary>
     /// Service for synchronizing time with NTP servers

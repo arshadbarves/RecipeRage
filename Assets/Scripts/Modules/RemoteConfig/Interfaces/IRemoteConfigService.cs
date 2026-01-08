@@ -2,7 +2,7 @@ using System;
 using Core.Bootstrap;
 using Cysharp.Threading.Tasks;
 
-namespace Core.RemoteConfig
+namespace Modules.RemoteConfig
 {
     /// <summary>
     /// Core service interface for managing remote configuration

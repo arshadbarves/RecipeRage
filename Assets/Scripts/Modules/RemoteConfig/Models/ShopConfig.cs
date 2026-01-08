@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 
-namespace Core.RemoteConfig.Models
+namespace Modules.RemoteConfig.Models
 {
     /// <summary>
     /// Configuration model for shop system with rotation support

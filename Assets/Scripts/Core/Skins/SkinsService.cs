@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Modules.Logging;
-using Core.RemoteConfig;
-using Core.RemoteConfig.Models;
+using Modules.RemoteConfig;
+using Modules.RemoteConfig.Models;
 using Core.Skins.Data;
 using VContainer;
 

@@ -2,7 +2,7 @@ using System;
 using Modules.Localization;
 using Modules.Logging;
 using Core.Maintenance;
-using Core.RemoteConfig;
+using Modules.RemoteConfig;
 using Modules.Persistence;
 using Core.UI;
 using Core.Update;

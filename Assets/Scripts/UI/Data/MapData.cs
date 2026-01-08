@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Modules.Logging;
-using Core.RemoteConfig;
+using Modules.RemoteConfig;
 
 namespace UI.Data
 {

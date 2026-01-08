@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Modules.Logging;
-using Core.RemoteConfig.Models;
+using Modules.RemoteConfig.Models;
 
-namespace Core.RemoteConfig
+namespace Modules.RemoteConfig
 {
     /// <summary>
     /// Calculates current shop rotation based on NTP time

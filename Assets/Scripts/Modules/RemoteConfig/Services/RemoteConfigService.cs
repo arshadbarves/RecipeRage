@@ -5,7 +5,7 @@ using Cysharp.Threading.Tasks;
 using Modules.Logging;
 using VContainer;
 
-namespace Core.RemoteConfig
+namespace Modules.RemoteConfig
 {
     public class RemoteConfigService : IRemoteConfigService
     {

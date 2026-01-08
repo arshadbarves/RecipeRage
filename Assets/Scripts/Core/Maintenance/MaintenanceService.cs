@@ -2,8 +2,8 @@ using System;
 using Core.Bootstrap;
 using Core.Events;
 using Modules.Logging;
-using Core.RemoteConfig;
-using Core.RemoteConfig.Models;
+using Modules.RemoteConfig;
+using Modules.RemoteConfig.Models;
 using Cysharp.Threading.Tasks;
 
 namespace Core.Maintenance

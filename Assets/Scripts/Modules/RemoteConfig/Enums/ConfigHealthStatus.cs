@@ -1,4 +1,4 @@
-namespace Core.RemoteConfig
+namespace Modules.RemoteConfig
 {
     /// <summary>
     /// Defines the health status of the configuration system

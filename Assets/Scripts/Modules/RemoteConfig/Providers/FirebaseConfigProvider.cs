@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using Modules.Logging;
-using Core.RemoteConfig.Models;
+using Modules.RemoteConfig.Models;
 using Firebase.RemoteConfig;
 using UnityEngine;
 
-namespace Core.RemoteConfig.Providers
+namespace Modules.RemoteConfig.Providers
 {
     public class FirebaseConfigProvider : IConfigProvider
     {

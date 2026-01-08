@@ -1,7 +1,7 @@
 using System;
 using Newtonsoft.Json;
 
-namespace Core.RemoteConfig.Models
+namespace Modules.RemoteConfig.Models
 {
     /// <summary>
     /// Configuration model for maintenance mode

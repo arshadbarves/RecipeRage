@@ -1,6 +1,6 @@
 using System;
 
-namespace Core.RemoteConfig
+namespace Modules.RemoteConfig
 {
     /// <summary>
     /// Base interface for all configuration models

@@ -1,5 +1,5 @@
 using System;
-using Core.RemoteConfig;
+using Modules.RemoteConfig;
 
 namespace Modules.Persistence
 {

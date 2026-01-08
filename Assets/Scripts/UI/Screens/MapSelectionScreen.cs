@@ -4,8 +4,8 @@ using UI.Data;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Modules.Logging;
-using Core.RemoteConfig;
-using Core.RemoteConfig.Models;
+using Modules.RemoteConfig;
+using Modules.RemoteConfig.Models;
 using Core.UI;
 using VContainer;
 

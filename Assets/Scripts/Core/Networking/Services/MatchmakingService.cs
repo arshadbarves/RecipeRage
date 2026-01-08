@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Modules.Logging;
 using Core.Networking.Common;
 using Core.Networking.Interfaces;
-using Core.RemoteConfig;
+using Modules.RemoteConfig;
 using Epic.OnlineServices;
 using Epic.OnlineServices.Lobby;
 using PlayEveryWare.EpicOnlineServices;

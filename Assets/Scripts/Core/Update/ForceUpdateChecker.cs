@@ -1,7 +1,7 @@
 using System;
 using Modules.Logging;
-using Core.RemoteConfig;
-using Core.RemoteConfig.Models;
+using Modules.RemoteConfig;
+using Modules.RemoteConfig.Models;
 using Cysharp.Threading.Tasks;
 using Core.UI;
 using UnityEngine;

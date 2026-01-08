@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace Core.RemoteConfig.Models
+namespace Modules.RemoteConfig.Models
 {
     /// <summary>
     /// Configuration model for character definitions
