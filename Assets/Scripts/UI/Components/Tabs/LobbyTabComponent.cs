@@ -4,7 +4,7 @@ using UI.Screens;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Modules.Logging;
-using Core.UI;
+using Modules.UI;
 using UI.ViewModels;
 using VContainer;
 

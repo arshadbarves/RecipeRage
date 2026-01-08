@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Core.Bootstrap;
+using Modules.Shared.Interfaces;
 using Modules.Logging;
 using Modules.RemoteConfig;
 using Modules.RemoteConfig.Models;

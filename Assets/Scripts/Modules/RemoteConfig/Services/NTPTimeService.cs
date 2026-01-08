@@ -1,7 +1,7 @@
 using System;
 using System.Net;
 using System.Net.Sockets;
-using Core.Bootstrap;
+using Modules.Shared.Interfaces;
 using Cysharp.Threading.Tasks;
 using Modules.Logging;
 using UnityEngine;

@@ -1,5 +1,5 @@
 using System;
-using Core.Bootstrap;
+using Modules.Shared.Interfaces;
 
 namespace App.State
 {

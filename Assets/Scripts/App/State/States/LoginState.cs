@@ -1,6 +1,6 @@
 using Modules.Shared.Events;
 using Modules.Logging;
-using Core.UI;
+using Modules.UI;
 using UI;
 using UnityEditor.PackageManager;
 

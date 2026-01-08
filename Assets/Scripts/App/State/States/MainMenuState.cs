@@ -4,7 +4,7 @@ using UI.Popups;
 using UnityEngine.SceneManagement;
 using Modules.Logging;
 using Modules.Persistence;
-using Core.UI;
+using Modules.UI;
 using UI.Core;
 
 namespace App.State.States

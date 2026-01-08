@@ -1,4 +1,4 @@
-using Core.Bootstrap;
+using Modules.Shared.Interfaces;
 using Modules.Shared.Events;
 using Modules.Logging;
 using UI.Components;
@@ -9,7 +9,7 @@ using VContainer;
 using Modules.Persistence;
 using Core.Currency;
 using Gameplay.Characters;
-using Core.UI;
+using Modules.UI;
 using UI.ViewModels;
 
 namespace UI.Screens

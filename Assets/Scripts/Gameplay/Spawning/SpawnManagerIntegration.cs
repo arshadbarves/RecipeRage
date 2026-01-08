@@ -1,4 +1,4 @@
-using Core.Bootstrap;
+using Modules.Shared.Interfaces;
 using Modules.Logging;
 using Gameplay.Spawning;
 using UnityEngine;

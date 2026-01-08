@@ -1,5 +1,5 @@
 using System;
-using Core.Bootstrap;
+using Modules.Shared.Interfaces;
 using Core.Input;
 using Core.Camera;
 using Unity.Netcode;

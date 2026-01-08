@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Modules.Shared.Events;
-using Core.UI;
+using Modules.UI;
 using Modules.Core.Banking.Data;
 using Modules.Core.Banking.Interfaces;
 

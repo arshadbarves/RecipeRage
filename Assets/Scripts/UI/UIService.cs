@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Modules.Animation;
-using Core.Bootstrap;
+using Modules.Shared.Interfaces;
 using Modules.Logging;
-using Core.UI; // Added
+using Modules.UI; // Added
 using Cysharp.Threading.Tasks;
 using UI.Core;
 using UI.Screens;

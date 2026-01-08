@@ -2,7 +2,7 @@ using System;
 using Modules.Shared.Events;
 using Modules.Logging;
 using Modules.RemoteConfig;
-using Core.UI;
+using Modules.UI;
 using Cysharp.Threading.Tasks;
 using UI.Core;
 using UnityEngine.UIElements;

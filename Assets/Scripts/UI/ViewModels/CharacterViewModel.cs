@@ -1,4 +1,4 @@
-using Core.Bootstrap; // Added
+using Modules.Shared.Interfaces; // Added
 using Gameplay.Characters;
 using UI.Core;
 using VContainer;

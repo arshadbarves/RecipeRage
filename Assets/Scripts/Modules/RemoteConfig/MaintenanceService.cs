@@ -1,5 +1,5 @@
 using System;
-using Core.Bootstrap;
+using Modules.Shared.Interfaces;
 using Modules.Shared.Events;
 using Modules.Logging;
 using Modules.RemoteConfig;

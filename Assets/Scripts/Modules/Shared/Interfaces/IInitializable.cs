@@ -1,4 +1,4 @@
-namespace Core.Bootstrap
+namespace Modules.Shared.Interfaces
 {
     /// <summary>
     /// Interface for services that require two-phase initialization.

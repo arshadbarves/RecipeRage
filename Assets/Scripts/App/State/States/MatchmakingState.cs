@@ -1,4 +1,4 @@
-using Core.Bootstrap;
+using Modules.Shared.Interfaces;
 using Modules.Networking;
 using Modules.Networking.Common;
 using UI;
@@ -6,7 +6,7 @@ using UnityEngine;
 using VContainer;
 using Cysharp.Threading.Tasks;
 using Modules.Logging;
-using Core.UI;
+using Modules.UI;
 
 namespace App.State.States
 {

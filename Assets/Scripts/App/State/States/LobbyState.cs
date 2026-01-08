@@ -1,7 +1,7 @@
-using Core.Bootstrap;
+using Modules.Shared.Interfaces;
 using UI;
 using Modules.Networking;
-using Core.UI;
+using Modules.UI;
 using VContainer;
 
 namespace App.State.States

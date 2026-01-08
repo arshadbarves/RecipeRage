@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using Core.Bootstrap;
+using Modules.Shared.Interfaces;
 using Modules.Logging;
 using Modules.Networking;
 using Modules.Networking.Interfaces;
-using Core.UI; // Added
+using Modules.UI; // Added
 using UI;
 using UI.Core;
 using UI.Screens;

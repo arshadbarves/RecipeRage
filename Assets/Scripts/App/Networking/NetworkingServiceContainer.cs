@@ -5,7 +5,7 @@ using Modules.Networking.Interfaces;
 using Modules.Networking.Services;
 using Modules.Auth;
 using App.State;
-using Core.UI;
+using Modules.UI;
 using PlayEveryWare.EpicOnlineServices;
 using PlayEveryWare.EpicOnlineServices.Samples;
 using VContainer;

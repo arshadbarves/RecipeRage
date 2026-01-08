@@ -1,4 +1,4 @@
-using Core.UI;
+using Modules.UI;
 using UI;
 using UI.Core;
 using UI.ViewModels;

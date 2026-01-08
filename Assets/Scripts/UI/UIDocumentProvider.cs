@@ -1,8 +1,8 @@
-using Core.Bootstrap;
+using Modules.Shared.Interfaces;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Modules.Logging;
-using Core.UI;
+using Modules.UI;
 
 namespace UI
 {

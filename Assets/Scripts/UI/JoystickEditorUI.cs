@@ -1,7 +1,7 @@
 using System;
 using Modules.Animation;
 using Modules.Logging;
-using Core.UI;
+using Modules.UI;
 using UI.Core;
 using UnityEngine;
 using UnityEngine.UIElements;

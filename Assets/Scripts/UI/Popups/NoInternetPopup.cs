@@ -1,7 +1,7 @@
 using System;
 using Modules.Logging;
 using Modules.Networking;
-using Core.UI;
+using Modules.UI;
 using UI.Core;
 using UnityEngine.UIElements;
 using VContainer;

@@ -1,4 +1,4 @@
-using Core.UI;
+using Modules.UI;
 using DG.Tweening;
 using UI.Controls;
 using UI.Core;

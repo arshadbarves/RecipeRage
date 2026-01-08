@@ -4,7 +4,7 @@ using Modules.Logging;
 using Modules.RemoteConfig;
 using Modules.RemoteConfig;
 using Modules.Persistence;
-using Core.UI;
+using Modules.UI;
 using Modules.RemoteConfig;
 using Cysharp.Threading.Tasks;
 using UI;

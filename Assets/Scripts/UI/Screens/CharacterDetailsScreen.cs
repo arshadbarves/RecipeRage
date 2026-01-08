@@ -1,9 +1,9 @@
-using Core.Bootstrap;
+using Modules.Shared.Interfaces;
 using Gameplay.Characters;
 using Modules.Logging;
 using Modules.Skins;
 using Modules.Skins.Data;
-using Core.UI;
+using Modules.UI;
 using UI.Core;
 using UI.Data;
 using UnityEngine;

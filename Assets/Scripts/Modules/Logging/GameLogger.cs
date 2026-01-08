@@ -1,6 +1,6 @@
 using System.IO;
 using System.Runtime.CompilerServices;
-using Core.Bootstrap;
+using Modules.Shared.Interfaces;
 using UnityEngine;
 using VContainer;
 

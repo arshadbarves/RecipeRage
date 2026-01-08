@@ -3,7 +3,7 @@ using Modules.Logging;
 using Modules.RemoteConfig;
 using Modules.RemoteConfig.Models;
 using Cysharp.Threading.Tasks;
-using Core.UI;
+using Modules.UI;
 using UnityEngine;
 
 namespace Modules.RemoteConfig

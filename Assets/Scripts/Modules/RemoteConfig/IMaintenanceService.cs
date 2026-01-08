@@ -1,4 +1,4 @@
-using Core.Bootstrap;
+using Modules.Shared.Interfaces;
 using Cysharp.Threading.Tasks;
 
 namespace Modules.RemoteConfig

@@ -1,8 +1,8 @@
 using System;
-using Core.Bootstrap;
+using Modules.Shared.Interfaces;
 using Cysharp.Threading.Tasks;
 
-namespace Core.UI
+namespace Modules.UI
 {
     public interface IUIService : IInitializable
     {

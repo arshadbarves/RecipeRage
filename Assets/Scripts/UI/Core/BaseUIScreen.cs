@@ -1,5 +1,5 @@
 using System;
-using Core.UI;
+using Modules.UI;
 using UnityEngine.UIElements;
 using VContainer;
 

@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using Modules.Logging;
 using Modules.Shared.Events;
-using Core.Bootstrap;
+using Modules.Shared.Interfaces;
 
 namespace Modules.Networking
 {

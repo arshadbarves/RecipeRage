@@ -1,4 +1,4 @@
-namespace Core.UI
+namespace Modules.UI
 {
     /// <summary>
     /// Defines different types of UI screens for categorization and behavior

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Core.Bootstrap;
+using Modules.Shared.Interfaces;
 using Modules.Logging;
 using UnityEngine;
 using VContainer;

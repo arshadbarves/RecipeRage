@@ -1,7 +1,7 @@
-using Core.Bootstrap;
+using Modules.Shared.Interfaces;
 using Modules.Networking;
 using Modules.Persistence;
-using Core.UI;
+using Modules.UI;
 using UI.Core;
 using UnityEngine;
 using UnityEngine.UIElements;

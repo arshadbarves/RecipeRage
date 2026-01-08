@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Core.Bootstrap;
+using Modules.Shared.Interfaces;
 using Cysharp.Threading.Tasks;
 using Modules.Logging;
 

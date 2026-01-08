@@ -1,4 +1,4 @@
-using Core.UI;
+using Modules.UI;
 
 namespace Modules.Shared.Events
 {

@@ -1,9 +1,9 @@
 using System;
-using Core.Bootstrap;
+using Modules.Shared.Interfaces;
 using Modules.Logging;
 using Modules.Shared;
 using Modules.Persistence;
-using Core.UI;
+using Modules.UI;
 using Modules.Core.Banking;
 using Modules.Core.Banking.Interfaces;
 using UI.Core;

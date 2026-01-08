@@ -4,8 +4,8 @@ using Modules.Logging;
 using Modules.Persistence;
 using Modules.Core.Banking.Interfaces;
 using UI.Screens;
-using Core.Bootstrap;
-using Core.UI;
+using Modules.Shared.Interfaces;
+using Modules.UI;
 using VContainer;
 
 namespace App.State.States

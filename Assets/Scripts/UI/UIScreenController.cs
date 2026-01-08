@@ -3,7 +3,7 @@ using Modules.Animation;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Modules.Logging;
-using Core.UI;
+using Modules.UI;
 
 namespace UI
 {

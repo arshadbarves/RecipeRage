@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Modules.Logging;
-using Core.UI;
+using Modules.UI;
 
 namespace UI
 {

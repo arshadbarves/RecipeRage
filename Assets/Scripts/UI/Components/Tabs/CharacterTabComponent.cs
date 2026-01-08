@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Gameplay.Characters;
 using Modules.Logging;
-using Core.UI;
+using Modules.UI;
 using UI.Screens;
 using UnityEngine.UIElements;
 using VContainer;

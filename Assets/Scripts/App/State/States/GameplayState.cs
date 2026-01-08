@@ -1,4 +1,4 @@
-using Core.Bootstrap;
+using Modules.Shared.Interfaces;
 using Core.Camera;
 using Gameplay.Scoring;
 using UI;
@@ -9,7 +9,7 @@ using VContainer;
 using Cysharp.Threading.Tasks;
 using UnityEngine.SceneManagement;
 using Modules.Logging;
-using Core.UI;
+using Modules.UI;
 using Gameplay;
 using Gameplay.Camera;
 using Gameplay.Cooking;

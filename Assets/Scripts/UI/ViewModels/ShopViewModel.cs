@@ -1,4 +1,4 @@
-using Core.Bootstrap;
+using Modules.Shared.Interfaces;
 using Modules.Shared;
 using Modules.Core.Banking;
 using Modules.Core.Banking.Interfaces;

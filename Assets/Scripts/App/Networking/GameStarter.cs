@@ -8,7 +8,7 @@ using App.State;
 using Modules.Networking;
 using Modules.Networking.Interfaces;
 using Modules.Shared.Enums;
-using Core.UI;
+using Modules.UI;
 using Epic.OnlineServices;
 using PlayEveryWare.EpicOnlineServices;
 using PlayEveryWare.EpicOnlineServices.Samples.Network;

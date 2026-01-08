@@ -1,6 +1,6 @@
 using System;
 using System.Threading;
-using Core.Bootstrap;
+using Modules.Shared.Interfaces;
 using Modules.Localization;
 using Modules.Networking;
 using Modules.Networking.Common;
