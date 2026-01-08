@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Core.Bootstrap;
-using Core.Enums;
+using Modules.Shared.Enums;
 using Modules.Logging;
 using Gameplay.Networking.Bot;
 using Unity.Netcode;

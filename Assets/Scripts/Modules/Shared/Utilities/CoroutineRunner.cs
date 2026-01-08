@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-namespace Core.Utilities
+namespace Modules.Shared.Utilities
 {
     /// <summary>
     /// Static helper class to run coroutines from non-MonoBehaviour classes

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Modules.Logging;
 
-namespace Core.Utilities
+namespace Modules.Shared.Utilities
 {
     /// <summary>
     /// Extension methods for Task to work with Unity coroutines.

@@ -1,5 +1,5 @@
 using System.Collections;
-using Core.Utilities;
+using Modules.Shared.Utilities;
 using UnityEngine;
 
 namespace Modules.Audio

@@ -1,4 +1,4 @@
-using Core.Enums;
+using Modules.Shared.Enums;
 using UnityEngine;
 
 namespace Gameplay.Spawning

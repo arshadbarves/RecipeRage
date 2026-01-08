@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Core.Utilities
+namespace Modules.Shared.Utilities
 {
     public static class PlatformUtils
     {

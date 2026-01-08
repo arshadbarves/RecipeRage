@@ -9,9 +9,10 @@
 - **Services SDK:** Epic Online Services (EOS) - Identity, Friends, P2P
 
 ## Architecture & Design Patterns
-- **Architecture:** Modular Monorepo
+- **Architecture:** Modular Assembly-based Monorepo
 - **Dependency Injection:** VContainer
 - **Async Handling:** UniTask
+- **Modules:** Custom Assembly (RecipeRage.Modules) for high-level, project-agnostic logic.
 
 ## User Interface
 - **UI System:** UI Toolkit
@@ -21,3 +22,4 @@
 - **Logging:** Custom Logging Module
 - **Version Control:** Git LFS
 - **Authentication:** Custom EOS Auth Module
+- **Banking:** Generic Banking System with EOS Player Data Storage backend.

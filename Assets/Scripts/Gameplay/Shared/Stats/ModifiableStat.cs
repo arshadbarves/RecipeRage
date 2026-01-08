@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Core.Stats
+namespace Gameplay.Shared.Stats
 {
     [Serializable]
     public class ModifiableStat

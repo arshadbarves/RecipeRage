@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Gameplay.Networking.Bot;
-using Core.Enums;
+using Modules.Shared.Enums;
 
 namespace Modules.Networking.Interfaces
 {

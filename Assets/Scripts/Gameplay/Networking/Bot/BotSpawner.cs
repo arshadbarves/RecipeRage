@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Modules.Logging;
 using Gameplay.Networking.Bot;
 using Modules.Networking.Interfaces;
-using Core.Enums;
+using Modules.Shared.Enums;
 using Gameplay;
 using Gameplay.Spawning;
 using Unity.Netcode;

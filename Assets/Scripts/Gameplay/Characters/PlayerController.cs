@@ -6,7 +6,7 @@ using Unity.Netcode;
 using UnityEngine;
 using Modules.Logging;
 using Modules.Networking.Services;
-using Core.Stats;
+using Gameplay.Shared.Stats;
 using VContainer;
 using VContainer.Unity;
 

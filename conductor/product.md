@@ -18,8 +18,9 @@ RecipeRage is designed to be the definitive multiplayer cooking competition expe
 ## Priority Features
 - **Real-time Multiplayer:** Supporting 2-4 players in chaotic cooking matches.
 - **Social Hub:** A robust friends list, online status tracking, and P2P-powered chat.
-- **Progression & Customization:** Player leveling, character/cosmetic unlocks, and a modular shop system.
+- **Progression & Customization:** Data-driven player leveling, character/cosmetic unlocks, and a generic, scalable banking and shop system.
 - **EOS Authentication:** Production-ready authentication flow using Epic Online Services Device ID.
+- **Cloud Persistence:** Unified cloud-based storage for player currency, inventory, and progression using EOS Player Data Storage.
 
 ## Competitive Advantages
 - **Native Social Experience:** Built-in P2P communication and deep EOS integration for low-latency social interactions.

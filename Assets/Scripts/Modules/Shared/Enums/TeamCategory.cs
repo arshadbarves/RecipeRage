@@ -1,4 +1,4 @@
-namespace Core.Enums
+namespace Modules.Shared.Enums
 {
     public enum TeamCategory
     {

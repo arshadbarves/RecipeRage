@@ -1,4 +1,4 @@
-namespace Core.Stats
+namespace Gameplay.Shared.Stats
 {
     public enum StatModifierType
     {

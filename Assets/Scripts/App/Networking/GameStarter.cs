@@ -7,7 +7,7 @@ using UnityEngine;
 using App.State;
 using Modules.Networking;
 using Modules.Networking.Interfaces;
-using Core.Enums;
+using Modules.Shared.Enums;
 using Core.UI;
 using Epic.OnlineServices;
 using PlayEveryWare.EpicOnlineServices;
