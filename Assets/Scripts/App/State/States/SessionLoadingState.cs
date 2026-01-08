@@ -2,7 +2,7 @@ using Cysharp.Threading.Tasks;
 using UI;
 using Core.Logging;
 using Core.SaveSystem;
-using Core.Currency;
+using Modules.Core.Banking.Interfaces;
 using UI.Screens;
 using Core.Bootstrap;
 using Core.UI;
@@ -63,9 +63,9 @@ namespace App.State.States
                 // 3. Load Currency (Refresh from SaveService)
                 if (loadingScreen != null) loadingScreen.UpdateProgress(0.6f, "Updating Wallet...");
                 
-                // Resolve CurrencyService from Session Scope
-                var currencyService = _sessionManager.SessionContainer.Resolve<ICurrencyService>();
-                currencyService.LoadFromSave();
+                // Resolve BankService from Session Scope
+                var bankService = _sessionManager.SessionContainer.Resolve<IBankService>();
+                await bankService.InitializeAsync();
 
                 // 4. Simulate a small delay for visual smoothness if everything was too fast
                 // (Optional, but often requested to prevent flickering loading screens)

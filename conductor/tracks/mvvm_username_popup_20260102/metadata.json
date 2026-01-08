@@ -1,8 +1,0 @@
-{
-  "track_id": "mvvm_username_popup_20260102",
-  "type": "refactor",
-  "status": "new",
-  "created_at": "2026-01-02T10:15:00Z",
-  "updated_at": "2026-01-02T10:15:00Z",
-  "description": "Refactor UsernamePopup to use MVVM pattern with a dedicated ViewModel and reactive bindings."
-}

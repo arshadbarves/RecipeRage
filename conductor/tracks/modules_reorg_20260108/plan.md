@@ -21,11 +21,11 @@
     - [x] Implement support for multiple currencies (Coins, Gems) and Inventory (Skins).
     - [x] Ensure `IEventBus` integration triggers existing events (or compatible new ones).
     - [x] Ensure `IUIService` integration (notifications) is preserved.
-- [~] Task: Migrate CurrencyService
-    - [ ] Find all references to `CurrencyService`.
-    - [ ] Replace usage with `BankService`.
-    - [ ] Verify `CurrencyChangedEvent` is still triggered correctly for UI updates.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: BankService Refactor (Core)' (Protocol in workflow.md)
+- [x] Task: Migrate CurrencyService
+    - [x] Find all references to `CurrencyService`.
+    - [x] Replace usage with `BankService`.
+    - [x] Verify `CurrencyChangedEvent` is still triggered correctly for UI updates.
+- [~] Task: Conductor - User Manual Verification 'Phase 2: BankService Refactor (Core)' (Protocol in workflow.md)
 
 ## Phase 3: EOS Backend Implementation
 - [ ] Task: Implement EOS Backend

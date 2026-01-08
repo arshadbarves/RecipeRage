@@ -1,7 +1,7 @@
 using Core.Bootstrap;
-using Core.Currency;
 using Core.Events;
 using Core.Logging;
+using Modules.Core.Banking.Interfaces;
 using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;
@@ -19,17 +19,17 @@ namespace UI.Components
         private IEventBus _eventBus;
 
         private readonly VisualElement _root;
-        private readonly ICurrencyService _currencyService;
+        private readonly IBankService _bankService;
 
         private Label _coinsLabel;
         private Label _gemsLabel;
         private Button _addCoinsButton;
         private Button _addGemsButton;
 
-        public CurrencyDisplay(VisualElement root, ICurrencyService currencyService)
+        public CurrencyDisplay(VisualElement root, IBankService bankService)
         {
             _root = root;
-            _currencyService = currencyService;
+            _bankService = bankService;
         }
 
         public void Initialize()

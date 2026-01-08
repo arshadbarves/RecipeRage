@@ -5,6 +5,7 @@ using Core.Logging;
 using Core.Reactive;
 using Core.SaveSystem;
 using Core.UI;
+using Modules.Core.Banking.Interfaces;
 using UI.Core;
 using VContainer;
 
@@ -29,14 +30,14 @@ namespace UI.ViewModels
         private bool _isFirstTime = false;
         private Action<string> _onConfirmCallback;
 
-        private ICurrencyService CurrencyService
+        private IBankService BankService
         {
             get
             {
                 var sessionContainer = _sessionManager?.SessionContainer;
                 if (sessionContainer != null)
                 {
-                    return sessionContainer.Resolve<ICurrencyService>();
+                    return sessionContainer.Resolve<IBankService>();
                 }
                 return null;
             }
@@ -156,14 +157,14 @@ namespace UI.ViewModels
             // Check cost
             if (_changeCost > 0)
             {
-                if (CurrencyService == null)
+                if (BankService == null)
                 {
                     StatusMessage.Value = "Session Error. Try restarting.";
                     IsStatusError.Value = true;
                     return;
                 }
 
-                if (CurrencyService.Gems < _changeCost)
+                if (BankService.Gems < _changeCost)
                 {
                     StatusMessage.Value = "Not enough gems!";
                     IsStatusError.Value = true;
@@ -178,9 +179,9 @@ namespace UI.ViewModels
 
             try
             {
-                if (_changeCost > 0 && CurrencyService != null)
+                if (_changeCost > 0 && BankService != null)
                 {
-                    CurrencyService.SpendGems(_changeCost);
+                    BankService.SpendGems(_changeCost);
                 }
 
                 _saveService.UpdatePlayerStats(stats =>

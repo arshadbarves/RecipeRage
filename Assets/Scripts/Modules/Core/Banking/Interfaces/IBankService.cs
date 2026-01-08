@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Core.Currency;
 using Core.Skins.Data;
 
@@ -7,7 +8,7 @@ namespace Modules.Core.Banking.Interfaces
 {
     public interface IBankService : ICurrencyService
     {
-        // Inventory / Skins
+        // Inventory / Skins Ownership & State
         List<string> GetUnlockedSkins();
         bool IsSkinUnlocked(string skinId);
         bool UnlockSkin(string skinId);
@@ -17,7 +18,7 @@ namespace Modules.Core.Banking.Interfaces
         event Action<string> OnSkinUnlocked;
         event Action<int, string> OnSkinEquipped;
         
-        // Async loading
-        System.Threading.Tasks.Task InitializeAsync();
+        // Initialization
+        Task InitializeAsync();
     }
 }

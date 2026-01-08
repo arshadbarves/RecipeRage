@@ -1,6 +1,6 @@
 using Core.Bootstrap;
-using Core.Currency;
 using Core.Reactive;
+using Modules.Core.Banking.Interfaces;
 using UI.Core;
 using UI.Data; // Added
 using UnityEngine; // Added
@@ -11,7 +11,7 @@ namespace UI.ViewModels
     public class ShopViewModel : BaseViewModel
     {
         private readonly SessionManager _sessionManager;
-        private ICurrencyService CurrencyService => _sessionManager.SessionContainer?.Resolve<ICurrencyService>();
+        private IBankService BankService => _sessionManager.SessionContainer?.Resolve<IBankService>();
 
         public BindableProperty<string> CoinsText { get; } = new BindableProperty<string>("0");
         public BindableProperty<string> GemsText { get; } = new BindableProperty<string>("0");
@@ -30,32 +30,33 @@ namespace UI.ViewModels
 
         public void UpdateCurrency()
         {
-            if (CurrencyService == null) return;
-            CoinsText.Value = CurrencyService.FormatCurrency(CurrencyService.Coins);
-            GemsText.Value = CurrencyService.FormatCurrency(CurrencyService.Gems);
+            if (BankService == null) return;
+            CoinsText.Value = BankService.FormatCurrency(BankService.Coins);
+            GemsText.Value = BankService.FormatCurrency(BankService.Gems);
         }
 
         public bool BuyItem(ShopItem item)
         {
-            if (CurrencyService == null) return false;
+            if (BankService == null) return false;
 
             bool success = false;
             if (item.currency == "coins")
             {
-                success = CurrencyService.SpendCoins(item.price);
+                success = BankService.SpendCoins(item.price);
             }
             else if (item.currency == "gems")
             {
-                success = CurrencyService.SpendGems(item.price);
+                success = BankService.SpendGems(item.price);
             }
 
             if (success)
             {
                 UpdateCurrency();
-                // Persist ownership (Legacy: PlayerPrefs)
-                PlayerPrefs.SetInt($"Owned_{item.id}", 1);
-                if (item.type == "skin") PlayerPrefs.SetInt($"Unlocked_{item.id}", 1);
-                PlayerPrefs.Save();
+                
+                if (item.type == "skin")
+                {
+                    BankService.UnlockSkin(item.id);
+                }
             }
             return success;
         }

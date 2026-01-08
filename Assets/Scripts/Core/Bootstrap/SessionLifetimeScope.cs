@@ -6,6 +6,9 @@ using Core.Input;
 using Core.Networking;
 using Core.Networking.Services;
 using Core.Skins;
+using Modules.Core.Banking;
+using Modules.Core.Banking.Backends;
+using Modules.Core.Banking.Interfaces;
 using VContainer;
 using VContainer.Unity;
 
@@ -19,8 +22,9 @@ namespace Core.Bootstrap
     {
         protected override void Configure(IContainerBuilder builder)
         {
-            // Application Services
-            builder.Register<CurrencyService>(Lifetime.Singleton).AsImplementedInterfaces();
+            // Banking & Currency
+            builder.Register<LocalDiskBankBackend>(Lifetime.Singleton).AsImplementedInterfaces();
+            builder.Register<BankService>(Lifetime.Singleton).AsImplementedInterfaces();
             
             // Audio System
             builder.Register<AudioPoolManager>(Lifetime.Singleton).WithParameter(transform);

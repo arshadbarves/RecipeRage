@@ -23,19 +23,36 @@ namespace Core.Skins
         private SkinsData _skinsData;
         private readonly Dictionary<string, SkinItem> _skinsById = new Dictionary<string, SkinItem>();
         private readonly Dictionary<int, List<SkinItem>> _skinsByCharacter = new Dictionary<int, List<SkinItem>>();
-        private readonly HashSet<string> _unlockedSkins = new HashSet<string>();
-        private readonly Dictionary<int, string> _equippedSkins = new Dictionary<int, string>();
         private readonly IRemoteConfigService _remoteConfigService;
+        private readonly IBankService _bankService;
 
         public event Action<string> OnSkinUnlocked;
         public event Action<int, string> OnSkinEquipped;
 
         [Inject]
-        public SkinsService(IRemoteConfigService remoteConfigService)
+        public SkinsService(IRemoteConfigService remoteConfigService, IBankService bankService)
         {
             _remoteConfigService = remoteConfigService;
-            LoadPlayerProgress();
+            _bankService = bankService;
+            
+            _bankService.OnSkinUnlocked += (id) => OnSkinUnlocked?.Invoke(id);
+            _bankService.OnSkinEquipped += (charId, id) => OnSkinEquipped?.Invoke(charId, id);
+
+            LoadSkinsData();
+            EnsureDefaultSkinsUnlocked();
             SubscribeToConfigUpdates();
+        }
+
+        private void EnsureDefaultSkinsUnlocked()
+        {
+            if (_skinsData == null) return;
+            foreach (var skin in _skinsData.skins)
+            {
+                if (skin.unlockedByDefault && !_bankService.IsSkinUnlocked(skin.id))
+                {
+                    _bankService.UnlockSkin(skin.id);
+                }
+            }
         }
 
         private void LoadSkinsData()
@@ -107,12 +124,6 @@ namespace Core.Skins
                     _skinsByCharacter[skin.characterId] = new List<SkinItem>();
                 }
                 _skinsByCharacter[skin.characterId].Add(skin);
-
-                // Auto-unlock default skins
-                if (skin.unlockedByDefault)
-                {
-                    _unlockedSkins.Add(skin.id);
-                }
             }
         }
 
@@ -140,70 +151,9 @@ namespace Core.Skins
             }
         }
 
-        private void LoadPlayerProgress()
-        {
-            // Load unlocked skins from PlayerPrefs
-            string unlockedData = PlayerPrefs.GetString("UnlockedSkins", "");
-            if (!string.IsNullOrEmpty(unlockedData))
-            {
-                var unlockedIds = unlockedData.Split(',');
-                foreach (var id in unlockedIds)
-                {
-                    if (!string.IsNullOrEmpty(id))
-                    {
-                        _unlockedSkins.Add(id);
-                    }
-                }
-            }
-
-            // Load equipped skins from PlayerPrefs
-            string equippedData = PlayerPrefs.GetString(EQUIPPED_SKINS_KEY, "");
-            if (!string.IsNullOrEmpty(equippedData))
-            {
-                var pairs = equippedData.Split(';');
-                foreach (var pair in pairs)
-                {
-                    var parts = pair.Split(':');
-                    if (parts.Length == 2 && int.TryParse(parts[0], out int characterId))
-                    {
-                        _equippedSkins[characterId] = parts[1];
-                    }
-                }
-            }
-
-            // Ensure each character has a default skin equipped
-            foreach (var characterId in _skinsByCharacter.Keys)
-            {
-                if (!_equippedSkins.ContainsKey(characterId))
-                {
-                    var defaultSkin = GetDefaultSkinForCharacter(characterId);
-                    if (defaultSkin != null)
-                    {
-                        _equippedSkins[characterId] = defaultSkin.id;
-                    }
-                }
-            }
-
-            SavePlayerProgress();
-        }
-
-        private void SavePlayerProgress()
-        {
-            // Save unlocked skins
-            string unlockedData = string.Join(",", _unlockedSkins);
-            PlayerPrefs.SetString("UnlockedSkins", unlockedData);
-
-            // Save equipped skins
-            var equippedPairs = _equippedSkins.Select(kvp => $"{kvp.Key}:{kvp.Value}");
-            string equippedData = string.Join(";", equippedPairs);
-            PlayerPrefs.SetString(EQUIPPED_SKINS_KEY, equippedData);
-
-            PlayerPrefs.Save();
-        }
-
         public List<SkinItem> GetAllSkins()
         {
-            return _skinsData.skins;
+            return _skinsData?.skins ?? new List<SkinItem>();
         }
 
         public List<SkinItem> GetSkinsForCharacter(int characterId)
@@ -236,7 +186,7 @@ namespace Core.Skins
 
         public bool IsSkinUnlocked(string skinId)
         {
-            return _unlockedSkins.Contains(skinId);
+            return _bankService.IsSkinUnlocked(skinId);
         }
 
         public bool UnlockSkin(string skinId)
@@ -247,24 +197,13 @@ namespace Core.Skins
                 return false;
             }
 
-            if (_unlockedSkins.Contains(skinId))
-            {
-                GameLogger.Log($"Skin already unlocked: {skinId}");
-                return true;
-            }
-
-            _unlockedSkins.Add(skinId);
-            SavePlayerProgress();
-
-            OnSkinUnlocked?.Invoke(skinId);
-            GameLogger.Log($"Unlocked skin: {skinId}");
-
-            return true;
+            return _bankService.UnlockSkin(skinId);
         }
 
         public SkinItem GetEquippedSkin(int characterId)
         {
-            if (_equippedSkins.TryGetValue(characterId, out var skinId))
+            string skinId = _bankService.GetEquippedSkinId(characterId);
+            if (!string.IsNullOrEmpty(skinId))
             {
                 return GetSkin(skinId);
             }
@@ -290,21 +229,7 @@ namespace Core.Skins
                 return false;
             }
 
-            // Validate skin is unlocked
-            if (!IsSkinUnlocked(skinId))
-            {
-                GameLogger.LogError($"Cannot equip locked skin: {skinId}");
-                return false;
-            }
-
-            // Equip skin
-            _equippedSkins[characterId] = skinId;
-            SavePlayerProgress();
-
-            OnSkinEquipped?.Invoke(characterId, skinId);
-            GameLogger.Log($"Equipped skin {skinId} for character {characterId}");
-
-            return true;
+            return _bankService.EquipSkin(characterId, skinId);
         }
 
         public void Dispose()
@@ -315,11 +240,8 @@ namespace Core.Skins
                 _remoteConfigService.OnSpecificConfigUpdated -= OnConfigUpdated;
             }
 
-            SavePlayerProgress();
             _skinsById.Clear();
             _skinsByCharacter.Clear();
-            _unlockedSkins.Clear();
-            _equippedSkins.Clear();
         }
     }
 }
