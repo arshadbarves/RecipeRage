@@ -7,7 +7,7 @@ using Modules.Logging;
 using Modules.UI; // Added
 using Cysharp.Threading.Tasks;
 using Modules.UI.Core;
-using UI.Screens;
+using Gameplay.UI.Screens;
 using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;
