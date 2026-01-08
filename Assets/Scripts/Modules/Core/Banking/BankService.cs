@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Core.Events;
 using Core.UI;
@@ -47,12 +46,12 @@ namespace Modules.Core.Banking
 
             long current = GetBalance(currencyId);
             long next = current + amount;
-            
+
             _data.Balances[currencyId] = next;
             SaveToDisk();
 
             OnBalanceChanged?.Invoke(currencyId, next);
-            
+
             // Legacy/Compat: Notify UI for standard currencies
             if (amount > 0 && (currencyId == BankKeys.CurrencyCoins || currencyId == BankKeys.CurrencyGems))
             {
@@ -121,10 +120,10 @@ namespace Modules.Core.Banking
         private void PublishLegacyCurrencyEvent()
         {
             // Compatibility with UI components listening to CurrencyChangedEvent
-            _eventBus?.Publish(new CurrencyChangedEvent 
-            { 
-                Coins = (int)GetBalance(BankKeys.CurrencyCoins), 
-                Gems = (int)GetBalance(BankKeys.CurrencyGems) 
+            _eventBus?.Publish(new CurrencyChangedEvent
+            {
+                Coins = (int)GetBalance(BankKeys.CurrencyCoins),
+                Gems = (int)GetBalance(BankKeys.CurrencyGems)
             });
         }
     }

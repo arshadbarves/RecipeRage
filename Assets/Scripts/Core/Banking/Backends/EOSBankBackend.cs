@@ -20,16 +20,14 @@ namespace Modules.Core.Banking.Backends
         {
             if (!_provider.IsAvailable)
             {
-                // Fallback to defaults if not logged in
-                var defaultData = new BankData();
-                defaultData.Balances[BankKeys.CurrencyCoins] = 1250;
-                defaultData.Balances[BankKeys.CurrencyGems] = 85;
-                return defaultData;
+                Debug.LogError("EOSCloudStorageProvider is not available, This should never happen");
+                return null;
             }
 
             string json = await _provider.ReadAsync(SAVE_KEY);
             if (string.IsNullOrEmpty(json))
             {
+                Debug.LogWarning("No data found in EOSCloudStorageProvider, This should never happen on first login");
                 var data = new BankData();
                 data.Balances[BankKeys.CurrencyCoins] = 1250;
                 data.Balances[BankKeys.CurrencyGems] = 85;

@@ -14,7 +14,8 @@
         "com.playeveryware.eos.samples",
         "com.Epic.OnlineServices",
         "com.playeveryware.eos.core",
-        "Unity.Services.Friends"
+        "Unity.Services.Friends",
+        "RecipeRage.Modules"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
