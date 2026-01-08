@@ -23,7 +23,8 @@ namespace Core.Bootstrap
         protected override void Configure(IContainerBuilder builder)
         {
             // Banking & Currency
-            builder.Register<LocalDiskBankBackend>(Lifetime.Singleton).AsImplementedInterfaces();
+            // builder.Register<LocalDiskBankBackend>(Lifetime.Singleton).AsImplementedInterfaces();
+            builder.Register<EOSBankBackend>(Lifetime.Singleton).AsImplementedInterfaces();
             builder.Register<BankService>(Lifetime.Singleton).AsImplementedInterfaces();
             
             // Audio System
