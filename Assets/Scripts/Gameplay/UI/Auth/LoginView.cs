@@ -1,7 +1,7 @@
 using Modules.UI;
 using Modules.UI;
 using Modules.UI.Core;
-using UI.ViewModels;
+using Gameplay.UI.ViewModels;
 using UnityEngine.UIElements;
 using VContainer;
 
