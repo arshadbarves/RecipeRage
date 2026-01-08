@@ -2,7 +2,7 @@ using Modules.Audio;
 using Gameplay.Characters;
 using Core.Currency;
 using Gameplay.GameModes;
-using Core.Input;
+using Modules.Input;
 using Modules.Networking;
 using Modules.Networking.Services;
 using Modules.Skins;

@@ -1,7 +1,7 @@
 using System;
 using Modules.Shared.Interfaces;
-using Core.Input;
-using Core.Camera;
+using Modules.Input;
+using Gameplay.Camera;
 using Unity.Netcode;
 using UnityEngine;
 using Modules.Logging;

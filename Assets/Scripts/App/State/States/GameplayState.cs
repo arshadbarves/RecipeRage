@@ -1,5 +1,5 @@
 using Modules.Shared.Interfaces;
-using Core.Camera;
+using Gameplay.Camera;
 using Gameplay.Scoring;
 using UI;
 using UnityEngine;
