@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Modules.Logging;
 
-namespace Core.GameModes
+namespace Gameplay.GameModes
 {
     /// <summary>
     /// Service for loading and unloading map scenes additively.

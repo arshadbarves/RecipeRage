@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Core.GameModes
+namespace Gameplay.GameModes
 {
     /// <summary>
     /// Scriptable object that defines a game mode in RecipeRage.

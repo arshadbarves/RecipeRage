@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Core.GameModes
+namespace Gameplay.GameModes
 {
     /// <summary>
     /// Defines a map that can be loaded additively for gameplay.

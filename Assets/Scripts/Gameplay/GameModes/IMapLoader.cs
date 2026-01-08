@@ -1,6 +1,6 @@
 using Cysharp.Threading.Tasks;
 
-namespace Core.GameModes
+namespace Gameplay.GameModes
 {
     /// <summary>
     /// Service for loading and unloading map scenes additively.

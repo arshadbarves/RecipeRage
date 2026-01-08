@@ -1,6 +1,6 @@
 using System;
 
-namespace Core.GameModes
+namespace Gameplay.GameModes
 {
     public interface IGameModeService
     {

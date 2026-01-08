@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Core.GameModes;
+using Gameplay.GameModes;
 using Modules.Logging;
 using Unity.Netcode;
 using UnityEngine;

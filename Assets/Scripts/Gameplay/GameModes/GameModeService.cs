@@ -7,7 +7,7 @@ using Modules.RemoteConfig;
 using Modules.RemoteConfig.Models;
 using VContainer;
 
-namespace Core.GameModes
+namespace Gameplay.GameModes
 {
     /// <summary>
     /// Game mode service - pure C# class, no MonoBehaviour

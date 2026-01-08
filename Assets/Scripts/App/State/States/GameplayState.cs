@@ -4,7 +4,7 @@ using Gameplay.Scoring;
 using UI;
 using UnityEngine;
 using Modules.Networking;
-using Core.GameModes;
+using Gameplay.GameModes;
 using VContainer;
 using Cysharp.Threading.Tasks;
 using UnityEngine.SceneManagement;
