@@ -12,7 +12,8 @@
         "com.playeveryware.eos.samples",
         "com.Epic.OnlineServices",
         "com.playeveryware.eos.samples.networking",
-        "com.playeveryware.eos.core"
+        "com.playeveryware.eos.core",
+        "RecipeRage.Modules"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
