@@ -16,12 +16,12 @@
 - [x] 930a4a7 Task: Define Interfaces
     - [x] Create `IBankBackend.cs` in `Modules/Core/Banking/Interfaces/`.
     - [x] Create `IBankService.cs` (extending or replacing `ICurrencyService`) to ensure API compatibility.
-- [~] Task: Implement BankService
-    - [ ] Create `BankService.cs` in `Modules/Core/Banking/`.
-    - [ ] Implement support for multiple currencies (Coins, Gems) and Inventory (Skins).
-    - [ ] Ensure `IEventBus` integration triggers existing events (or compatible new ones).
-    - [ ] Ensure `IUIService` integration (notifications) is preserved.
-- [ ] Task: Migrate CurrencyService
+- [x] f8aff0d Task: Implement BankService
+    - [x] Create `BankService.cs` in `Modules/Core/Banking/`.
+    - [x] Implement support for multiple currencies (Coins, Gems) and Inventory (Skins).
+    - [x] Ensure `IEventBus` integration triggers existing events (or compatible new ones).
+    - [x] Ensure `IUIService` integration (notifications) is preserved.
+- [~] Task: Migrate CurrencyService
     - [ ] Find all references to `CurrencyService`.
     - [ ] Replace usage with `BankService`.
     - [ ] Verify `CurrencyChangedEvent` is still triggered correctly for UI updates.
