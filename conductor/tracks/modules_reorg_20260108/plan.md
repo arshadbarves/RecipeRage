@@ -21,7 +21,7 @@
     - [x] Implement support for multiple currencies (Coins, Gems) and Inventory (Skins).
     - [x] Ensure `IEventBus` integration triggers existing events (or compatible new ones).
     - [x] Ensure `IUIService` integration (notifications) is preserved.
-- [x] Task: Migrate CurrencyService
+- [x] c9dcebc Task: Migrate CurrencyService
     - [x] Find all references to `CurrencyService`.
     - [x] Replace usage with `BankService`.
     - [x] Verify `CurrencyChangedEvent` is still triggered correctly for UI updates.
