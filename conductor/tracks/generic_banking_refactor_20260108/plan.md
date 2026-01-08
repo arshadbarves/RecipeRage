@@ -35,5 +35,9 @@
     - [x] Integrate with `EOSCloudStorageProvider` or `PlayerDataStorageService`.
     - [x] Ensure it supports async Load/Save.
 - [x] e539545 Task: Update Dependency Injection
-    - [x] Update `SessionLifetimeScope` to register `EOSBankBackend` (possibly with a fallback or switch).
+- [x] eec398f Task: Fix Assembly Dependencies
+    - [x] Create `RecipeRage.Modules.asmdef`.
+    - [x] Move `IEventBus`, `IUIService`, `GameEvents` to `Modules/Shared` to break circular dependency.
+    - [x] Move Backends (`EOSBankBackend`, `LocalDiskBankBackend`) to `Core/Banking/Backends` to break circular dependency.
+    - [x] Update Assembly References.
 - [~] Task: Conductor - User Manual Verification 'Phase 3: Constants & EOS Backend'
