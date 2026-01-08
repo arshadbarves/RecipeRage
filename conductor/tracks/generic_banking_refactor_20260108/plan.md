@@ -24,9 +24,16 @@
     - [x] Ensure `Purchase` method handles balance checks, deduction, and item granting atomically.
     - [x] Implement generic Events (`OnBalanceChanged(id, amount)`, `OnItemUnlocked(id)`).
 - [x] 8e64c50 Task: Migrate Consumers
-    - [x] Update `SessionLifetimeScope` (already updated in previous track).
-    - [x] Refactor `CurrencyDisplay.cs` to listen for generic events and fetch specific IDs ("coins", "gems").
-    - [x] Refactor `ShopViewModel.cs` to use `Purchase()`.
-    - [x] Refactor `UsernameViewModel.cs` to use `ModifyBalance("gems", -cost)`.
-    - [x] Refactor `SkinsService` (internal logic updated in previous track to use IBankService).
-- [~] Task: Conductor - User Manual Verification 'Phase 2: Implementation & Migration'
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Implementation & Migration'
+
+## Phase 3: Constants & EOS Backend
+- [x] 2bc59fc Task: Define Bank Constants & Refactor
+    - [x] Create `BankKeys.cs` with constants for "coins", "gems", etc.
+    - [x] Refactor `BankService`, `ShopViewModel`, `CurrencyDisplay`, `LocalDiskBankBackend` to use constants.
+- [x] b40cd3b Task: Implement EOSBankBackend
+    - [x] Create `EOSBankBackend.cs` implementing `IBankBackend`.
+    - [x] Integrate with `EOSCloudStorageProvider` or `PlayerDataStorageService`.
+    - [x] Ensure it supports async Load/Save.
+- [x] e539545 Task: Update Dependency Injection
+    - [x] Update `SessionLifetimeScope` to register `EOSBankBackend` (possibly with a fallback or switch).
+- [~] Task: Conductor - User Manual Verification 'Phase 3: Constants & EOS Backend'
