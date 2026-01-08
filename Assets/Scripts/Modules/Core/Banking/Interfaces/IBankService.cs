@@ -1,22 +1,28 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using Core.Currency;
-using Core.Skins.Data;
 
 namespace Modules.Core.Banking.Interfaces
 {
-    public interface IBankService : ICurrencyService
+    public interface IBankService
     {
-        // Inventory / Skins Ownership & State
-        List<string> GetUnlockedSkins();
-        bool IsSkinUnlocked(string skinId);
-        bool UnlockSkin(string skinId);
-        string GetEquippedSkinId(int characterId);
-        bool EquipSkin(int characterId, string skinId);
+        // Generic Currency
+        long GetBalance(string currencyId);
+        void ModifyBalance(string currencyId, long amount); // Can be positive (add) or negative (spend)
 
-        event Action<string> OnSkinUnlocked;
-        event Action<int, string> OnSkinEquipped;
+        // Generic Inventory
+        bool HasItem(string itemId);
+        void AddItem(string itemId);
+
+        // Generic Data
+        string GetData(string key);
+        void SetData(string key, string value);
+
+        // Transaction
+        bool Purchase(string itemId, long cost, string currencyId);
+
+        // Events
+        event Action<string, long> OnBalanceChanged; // currencyId, newBalance
+        event Action<string> OnItemUnlocked;         // itemId
         
         // Initialization
         Task InitializeAsync();
