@@ -29,7 +29,7 @@ A professional-grade localization system for Unity mobile games with support for
 ### Basic Text Retrieval
 
 ```csharp
-using Core.Localization;
+using Modules.Localization;
 
 public class UIController : MonoBehaviour
 {

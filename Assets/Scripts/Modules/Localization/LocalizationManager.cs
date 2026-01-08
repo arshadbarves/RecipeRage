@@ -5,7 +5,7 @@ using System.Text;
 using Modules.Logging;
 using UnityEngine;
 
-namespace Core.Localization
+namespace Modules.Localization
 {
     public class LocalizationManager : ILocalizationManager
     {

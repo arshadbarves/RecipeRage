@@ -1,6 +1,6 @@
 using System;
 using System.Threading;
-using Core.Localization;
+using Modules.Localization;
 using Core.Reactive;
 using Cysharp.Threading.Tasks;
 using UI.Core;

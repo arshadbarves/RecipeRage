@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 using Core.Bootstrap;
-using Core.Localization;
+using Modules.Localization;
 using Core.Networking;
 using Core.Networking.Common;
 using Core.Networking.Interfaces;

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Core.Localization
+namespace Modules.Localization
 {
     public interface ILocalizationManager
     {

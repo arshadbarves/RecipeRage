@@ -1,5 +1,5 @@
 using System;
-using Core.Localization;
+using Modules.Localization;
 using Modules.Logging;
 using Core.Maintenance;
 using Core.RemoteConfig;
