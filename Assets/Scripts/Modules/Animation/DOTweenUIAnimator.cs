@@ -1,4 +1,3 @@
-using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
@@ -30,7 +29,7 @@ namespace Modules.Animation
                 useSafeMode: true,
                 logBehaviour: LogBehaviour.ErrorsOnly
             );
-            
+
             init?.SetCapacity(200, 50);
 
             _isInitialized = true;

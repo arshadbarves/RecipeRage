@@ -1,6 +1,6 @@
 using Modules.Shared.Interfaces; // Added
 using Gameplay.Characters;
-using UI.Core;
+using Modules.UI.Core;
 using VContainer;
 
 namespace UI.ViewModels

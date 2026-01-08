@@ -2,7 +2,7 @@ using Modules.Shared.Interfaces;
 using Modules.Networking;
 using Modules.Persistence;
 using Modules.UI;
-using UI.Core;
+using Modules.UI.Core;
 using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;

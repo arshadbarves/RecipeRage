@@ -2,7 +2,7 @@ using Modules.Shared.Interfaces;
 using Modules.Shared;
 using Modules.Core.Banking;
 using Modules.Core.Banking.Interfaces;
-using UI.Core;
+using Modules.UI.Core;
 using UI.Data; // Added
 using UnityEngine; // Added
 using VContainer;

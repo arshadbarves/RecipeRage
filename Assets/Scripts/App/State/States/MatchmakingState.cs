@@ -1,7 +1,7 @@
 using Modules.Shared.Interfaces;
 using Modules.Networking;
 using Modules.Networking.Common;
-using UI;
+using Modules.UI;
 using UnityEngine;
 using VContainer;
 using Cysharp.Threading.Tasks;

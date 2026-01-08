@@ -7,7 +7,7 @@ using Modules.Persistence;
 using Modules.UI;
 using Modules.RemoteConfig;
 using Cysharp.Threading.Tasks;
-using UI;
+using Modules.UI;
 using UI.Screens;
 
 namespace App.State.States

@@ -3,7 +3,7 @@ using System.Threading;
 using Modules.Localization;
 using Modules.Shared;
 using Cysharp.Threading.Tasks;
-using UI.Core;
+using Modules.UI.Core;
 using UnityEngine;
 using VContainer;
 

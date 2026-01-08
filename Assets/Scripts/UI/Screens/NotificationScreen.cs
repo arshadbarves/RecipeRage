@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Modules.UI;
 using Cysharp.Threading.Tasks;
-using UI.Core;
+using Modules.UI.Core;
 using UnityEngine;
 using UnityEngine.UIElements;
 

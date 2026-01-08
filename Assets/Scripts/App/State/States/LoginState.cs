@@ -1,7 +1,7 @@
 using Modules.Shared.Events;
 using Modules.Logging;
 using Modules.UI;
-using UI;
+using Modules.UI;
 using UnityEditor.PackageManager;
 
 namespace App.State.States

@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Modules.Shared.Interfaces;
 using Modules.Logging;
-using UnityEngine;
 using VContainer;
 
 namespace Modules.Shared.Events
@@ -76,7 +74,7 @@ namespace Modules.Shared.Events
                 if (_subscriptions.TryGetValue(eventType, out List<Delegate> handlers))
                 {
                     handlers.Remove(handler);
-                    
+
                     // Clean up empty lists
                     if (handlers.Count == 0)
                     {

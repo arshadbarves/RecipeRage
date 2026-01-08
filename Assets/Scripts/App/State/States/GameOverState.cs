@@ -1,6 +1,6 @@
 using Modules.UI;
 using Gameplay.Scoring;
-using UI;
+using Modules.UI;
 using UnityEngine;
 
 namespace App.State.States

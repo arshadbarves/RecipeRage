@@ -6,7 +6,7 @@ using Modules.Persistence;
 using Modules.UI;
 using Modules.Core.Banking;
 using Modules.Core.Banking.Interfaces;
-using UI.Core;
+using Modules.UI.Core;
 using VContainer;
 
 namespace UI.ViewModels

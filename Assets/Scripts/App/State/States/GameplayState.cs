@@ -1,7 +1,7 @@
 using Modules.Shared.Interfaces;
 using Gameplay.Camera;
 using Gameplay.Scoring;
-using UI;
+using Modules.UI;
 using UnityEngine;
 using Modules.Networking;
 using Gameplay.GameModes;

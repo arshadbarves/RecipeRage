@@ -5,8 +5,8 @@ using Modules.Logging;
 using Modules.Networking;
 using Modules.Networking.Interfaces;
 using Modules.UI; // Added
-using UI;
-using UI.Core;
+using Modules.UI;
+using Modules.UI.Core;
 using UI.Screens;
 using UnityEngine;
 using UnityEngine.UIElements;

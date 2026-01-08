@@ -4,7 +4,7 @@ using Modules.Logging;
 using Modules.RemoteConfig;
 using Modules.UI;
 using Cysharp.Threading.Tasks;
-using UI.Core;
+using Modules.UI.Core;
 using UnityEngine.UIElements;
 using RecipeRage.Modules.Auth.Core;
 using VContainer;

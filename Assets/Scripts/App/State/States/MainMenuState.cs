@@ -1,11 +1,11 @@
 using Cysharp.Threading.Tasks;
-using UI;
+using Modules.UI;
 using UI.Popups;
 using UnityEngine.SceneManagement;
 using Modules.Logging;
 using Modules.Persistence;
 using Modules.UI;
-using UI.Core;
+using Modules.UI.Core;
 
 namespace App.State.States
 {

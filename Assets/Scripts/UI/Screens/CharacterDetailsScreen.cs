@@ -4,7 +4,7 @@ using Modules.Logging;
 using Modules.Skins;
 using Modules.Skins.Data;
 using Modules.UI;
-using UI.Core;
+using Modules.UI.Core;
 using UI.Data;
 using UnityEngine;
 using UnityEngine.UIElements;

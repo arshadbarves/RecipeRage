@@ -2,7 +2,7 @@ using System;
 using Modules.Animation;
 using Modules.Logging;
 using Modules.UI;
-using UI.Core;
+using Modules.UI.Core;
 using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;

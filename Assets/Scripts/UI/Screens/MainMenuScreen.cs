@@ -3,7 +3,7 @@ using Modules.Shared.Events;
 using Modules.Logging;
 using UI.Components;
 using UI.Components.Tabs;
-using UI.Core;
+using Modules.UI.Core;
 using UnityEngine.UIElements;
 using VContainer;
 using Modules.Persistence;

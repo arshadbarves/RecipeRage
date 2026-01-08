@@ -7,7 +7,7 @@ using Modules.Networking.Common;
 using Modules.Networking.Interfaces;
 using Modules.Shared;
 using Cysharp.Threading.Tasks;
-using UI.Core;
+using Modules.UI.Core;
 using UnityEngine;
 using VContainer;
 

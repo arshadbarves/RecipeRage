@@ -1,5 +1,5 @@
 using Cysharp.Threading.Tasks;
-using UI;
+using Modules.UI;
 using Modules.Logging;
 using Modules.Persistence;
 using Modules.Core.Banking.Interfaces;

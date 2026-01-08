@@ -1,5 +1,5 @@
 using Modules.Shared;
-using UI.Core;
+using Modules.UI.Core;
 using VContainer;
 
 namespace UI.ViewModels

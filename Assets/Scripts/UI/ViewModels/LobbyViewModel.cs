@@ -6,7 +6,7 @@ using Modules.Shared;
 using App.State;
 using App.State.States;
 using Cysharp.Threading.Tasks;
-using UI.Core;
+using Modules.UI.Core;
 using UI.Data;
 using UnityEngine;
 using VContainer;

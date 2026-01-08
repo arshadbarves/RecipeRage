@@ -1,5 +1,5 @@
 using Modules.Shared.Interfaces;
-using UI;
+using Modules.UI;
 using Modules.Networking;
 using Modules.UI;
 using VContainer;

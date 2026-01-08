@@ -1,7 +1,7 @@
 using Modules.UI;
 using DG.Tweening;
 using UI.Controls;
-using UI.Core;
+using Modules.UI.Core;
 using UI.ViewModels;
 using UnityEngine.UIElements;
 using VContainer;

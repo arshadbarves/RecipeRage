@@ -1,7 +1,7 @@
 using System;
 using Modules.UI;
 using DG.Tweening;
-using UI.Core;
+using Modules.UI.Core;
 using UI.ViewModels;
 using UnityEngine;
 using UnityEngine.UIElements;
