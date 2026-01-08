@@ -5,7 +5,7 @@ using DG.Tweening;
 using UnityEngine;
 using Core.Extensions;
 
-namespace Core.Animation
+namespace Modules.Animation
 {
     /// <summary>
     /// DOTween-based Transform animator implementation using modern async/await patterns

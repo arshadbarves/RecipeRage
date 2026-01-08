@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Core.Animation;
+using Modules.Animation;
 using Core.Bootstrap;
 using Modules.Logging;
 using Core.UI; // Added

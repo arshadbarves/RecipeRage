@@ -1,5 +1,5 @@
 using System;
-using Core.Animation;
+using Modules.Animation;
 using Modules.Logging;
 using Core.UI;
 using UI.Core;

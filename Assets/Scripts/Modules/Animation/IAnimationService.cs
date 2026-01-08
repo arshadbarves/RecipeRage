@@ -4,7 +4,7 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Core.Animation
+namespace Modules.Animation
 {
     /// <summary>
     /// Animation service interface - supports both UI Toolkit and GameObject animations

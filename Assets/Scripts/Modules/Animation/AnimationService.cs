@@ -5,7 +5,7 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Core.Animation
+namespace Modules.Animation
 {
     /// <summary>
     /// Main animation service - facade for UI and Transform animators

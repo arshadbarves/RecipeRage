@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using Core.Extensions;
 
-namespace Core.Animation
+namespace Modules.Animation
 {
     /// <summary>
     /// DOTween-based UI animator implementation using modern async/await patterns

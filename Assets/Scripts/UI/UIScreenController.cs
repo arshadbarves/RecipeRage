@@ -1,5 +1,5 @@
 using System;
-using Core.Animation;
+using Modules.Animation;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Modules.Logging;

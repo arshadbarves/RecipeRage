@@ -2,7 +2,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine.UIElements;
 
-namespace Core.Animation
+namespace Modules.Animation
 {
     /// <summary>
     /// UI-specific animation interface using modern async/await patterns

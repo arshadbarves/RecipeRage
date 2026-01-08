@@ -2,7 +2,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-namespace Core.Animation
+namespace Modules.Animation
 {
     /// <summary>
     /// GameObject/Transform animation interface using modern async/await patterns
