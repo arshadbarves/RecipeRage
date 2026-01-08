@@ -54,7 +54,7 @@ namespace Modules.Core.Banking
             OnBalanceChanged?.Invoke(currencyId, next);
             
             // Legacy/Compat: Notify UI for standard currencies
-            if (amount > 0 && (currencyId == "coins" || currencyId == "gems"))
+            if (amount > 0 && (currencyId == BankKeys.CurrencyCoins || currencyId == BankKeys.CurrencyGems))
             {
                 _uiService?.ShowNotification($"+{amount} {currencyId}!", NotificationType.Success, 2f);
             }
@@ -123,8 +123,8 @@ namespace Modules.Core.Banking
             // Compatibility with UI components listening to CurrencyChangedEvent
             _eventBus?.Publish(new CurrencyChangedEvent 
             { 
-                Coins = (int)GetBalance("coins"), 
-                Gems = (int)GetBalance("gems") 
+                Coins = (int)GetBalance(BankKeys.CurrencyCoins), 
+                Gems = (int)GetBalance(BankKeys.CurrencyGems) 
             });
         }
     }

@@ -7,7 +7,7 @@ namespace Modules.Core.Banking.Backends
 {
     public class LocalDiskBankBackend : IBankBackend
     {
-        private const string SAVE_KEY = "player_bank_data";
+        private const string SAVE_KEY = BankKeys.SaveKey;
         private readonly ISaveService _saveService;
 
         public LocalDiskBankBackend(ISaveService saveService)
@@ -21,8 +21,8 @@ namespace Modules.Core.Banking.Backends
             if (data == null)
             {
                 data = new BankData();
-                data.Balances["coins"] = 1250;
-                data.Balances["gems"] = 85;
+                data.Balances[BankKeys.CurrencyCoins] = 1250;
+                data.Balances[BankKeys.CurrencyGems] = 85;
             }
             return Task.FromResult(data);
         }

@@ -1,5 +1,6 @@
 using Core.Bootstrap;
 using Core.Reactive;
+using Modules.Core.Banking;
 using Modules.Core.Banking.Interfaces;
 using UI.Core;
 using UI.Data; // Added
@@ -31,8 +32,8 @@ namespace UI.ViewModels
         public void UpdateCurrency()
         {
             if (BankService == null) return;
-            CoinsText.Value = BankService.GetBalance("coins").ToString();
-            GemsText.Value = BankService.GetBalance("gems").ToString();
+            CoinsText.Value = BankService.GetBalance(BankKeys.CurrencyCoins).ToString();
+            GemsText.Value = BankService.GetBalance(BankKeys.CurrencyGems).ToString();
         }
 
         public bool BuyItem(ShopItem item)

@@ -4,6 +4,7 @@ using Core.Logging;
 using Core.Reactive;
 using Core.SaveSystem;
 using Core.UI;
+using Modules.Core.Banking;
 using Modules.Core.Banking.Interfaces;
 using UI.Core;
 using VContainer;
@@ -163,7 +164,7 @@ namespace UI.ViewModels
                     return;
                 }
 
-                if (BankService.GetBalance("gems") < _changeCost)
+                if (BankService.GetBalance(BankKeys.CurrencyGems) < _changeCost)
                 {
                     StatusMessage.Value = "Not enough gems!";
                     IsStatusError.Value = true;
@@ -180,7 +181,7 @@ namespace UI.ViewModels
             {
                 if (_changeCost > 0 && BankService != null)
                 {
-                    BankService.ModifyBalance("gems", -_changeCost);
+                    BankService.ModifyBalance(BankKeys.CurrencyGems, -_changeCost);
                 }
 
                 _saveService.UpdatePlayerStats(stats =>

@@ -1,6 +1,7 @@
 using Core.Bootstrap;
 using Core.Events;
 using Core.Logging;
+using Modules.Core.Banking;
 using Modules.Core.Banking.Interfaces;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -54,7 +55,7 @@ namespace UI.Components
             SetupButtons();
 
             // Initial update
-            UpdateUI((int)_bankService.GetBalance("coins"), (int)_bankService.GetBalance("gems"));
+            UpdateUI((int)_bankService.GetBalance(BankKeys.CurrencyCoins), (int)_bankService.GetBalance(BankKeys.CurrencyGems));
         }
 
         private void SetupButtons()
@@ -99,7 +100,7 @@ namespace UI.Components
 
 #if UNITY_EDITOR
             // Editor only - add test currency
-            _bankService.ModifyBalance("coins", 500);
+            _bankService.ModifyBalance(BankKeys.CurrencyCoins, 500);
 #else
             // Production - open store
 #endif
@@ -111,7 +112,7 @@ namespace UI.Components
 
 #if UNITY_EDITOR
             // Editor only - add test currency
-            _bankService.ModifyBalance("gems", 50);
+            _bankService.ModifyBalance(BankKeys.CurrencyGems, 50);
 #else
             // Production - open store
 #endif
