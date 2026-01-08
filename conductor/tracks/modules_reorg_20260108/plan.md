@@ -1,7 +1,7 @@
 # Implementation Plan - Modules Reorganization
 
 ## Phase 1: Directory Structure & Core Setup
-- [~] Task: Create Directory Structure
+- [x] a71ab97 Task: Create Directory Structure
     - [ ] Create `Assets/Scripts/Modules/`
     - [ ] Create `Assets/Scripts/Modules/Core/`
     - [ ] Create `Assets/Scripts/Modules/Networking/`
