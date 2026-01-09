@@ -5,7 +5,6 @@ using Core.Auth.Core;
 using Core.Logging;
 using Core.RemoteConfig;
 using Core.Shared.Events;
-using Core.UI;
 using Core.UI.Core;
 using Core.UI.Interfaces;
 using UnityEngine.UIElements;

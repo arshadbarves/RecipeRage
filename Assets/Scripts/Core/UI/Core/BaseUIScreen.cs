@@ -1,9 +1,9 @@
 using System;
-using Core.Core.UI.Interfaces;
+using Core.UI.Interfaces;
 using UnityEngine.UIElements;
 using VContainer;
 
-namespace Core.Core.UI.Core
+namespace Core.UI.Core
 {
     /// <summary>
     /// Pure C# base class for all UI screens - no MonoBehaviour dependency
@@ -46,10 +46,7 @@ namespace Core.Core.UI.Core
             Priority = priority;
             Controller = controller;
 
-            if (UIService != null)
-            {
-                Category = UIService.GetScreenCategory(screenType);
-            }
+            // Category is set through the constructor or property, GetScreenCategory was removed from IUIService
 
             if (Controller != null)
             {

@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Core.Core.Logging;
+using Core.Logging;
 using UnityEngine;
 
-namespace Core.Core.Audio
+namespace Core.Audio
 {
     /// <summary>
     /// Scriptable object that stores references to audio clips.

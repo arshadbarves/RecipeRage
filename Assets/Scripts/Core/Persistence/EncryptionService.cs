@@ -1,4 +1,4 @@
-namespace Core.Core.Persistence
+namespace Core.Persistence
 {
     /// <summary>
     /// Simple XOR encryption service

@@ -1,7 +1,7 @@
 using System;
-using Core.Core.Shared.Interfaces;
+using Core.Shared.Interfaces;
 
-namespace Core.Core.Shared.Events
+namespace Core.Shared.Events
 {
     /// <summary>
     /// Event bus interface for decoupled communication between services

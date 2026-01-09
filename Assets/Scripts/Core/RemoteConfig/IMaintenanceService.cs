@@ -1,7 +1,7 @@
-using Core.Core.Shared.Interfaces;
+using Core.Shared.Interfaces;
 using Cysharp.Threading.Tasks;
 
-namespace Core.Core.RemoteConfig
+namespace Core.RemoteConfig
 {
     public interface IMaintenanceService : IInitializable
     {

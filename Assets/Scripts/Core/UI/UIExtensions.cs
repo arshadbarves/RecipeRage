@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Core.Core.UI
+namespace Core.UI
 {
     /// <summary>
     /// Extension methods for UI Toolkit elements

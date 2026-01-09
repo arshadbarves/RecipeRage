@@ -1,6 +1,6 @@
 using Cysharp.Threading.Tasks;
 
-namespace Core.Core.UI.Interfaces
+namespace Core.UI.Interfaces
 {
     public interface INotificationScreen
     {

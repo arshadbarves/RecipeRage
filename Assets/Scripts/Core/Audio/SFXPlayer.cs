@@ -1,8 +1,8 @@
 using System.Collections;
-using Core.Core.Shared.Utilities;
+using Core.Shared.Utilities;
 using UnityEngine;
 
-namespace Core.Core.Audio
+namespace Core.Audio
 {
     /// <summary>
     /// Handles SFX playback using audio pool

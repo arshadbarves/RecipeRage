@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Core.Core.Banking.Data
+namespace Core.Banking.Data
 {
     [Serializable]
     public class BankData

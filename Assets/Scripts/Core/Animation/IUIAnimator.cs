@@ -2,12 +2,8 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine.UIElements;
 
-namespace Core.Core.Animation
+namespace Core.Animation
 {
-    /// <summary>
-    /// UI-specific animation interface using modern async/await patterns
-    /// Follows Interface Segregation Principle
-    /// </summary>
     public interface IUIAnimator
     {
         UniTask FadeIn(VisualElement element, float duration, CancellationToken token = default);
@@ -23,7 +19,7 @@ namespace Core.Core.Animation
         UniTask Pulse(VisualElement element, float duration, CancellationToken token = default);
         UniTask Shake(VisualElement element, float duration, float intensity, CancellationToken token = default);
     }
-    
+
     public enum SlideDirection
     {
         Left,

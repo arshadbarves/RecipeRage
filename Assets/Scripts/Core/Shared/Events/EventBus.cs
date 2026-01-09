@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Core.Core.Logging;
+using Core.Logging;
 using VContainer;
 
-namespace Core.Core.Shared.Events
+namespace Core.Shared.Events
 {
     /// <summary>
     /// Centralized event bus for decoupled communication

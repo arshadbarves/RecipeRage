@@ -1,4 +1,4 @@
-namespace Core.Core.UI.Interfaces
+namespace Core.UI.Interfaces
 {
     /// <summary>
     /// Defines different types of UI screens for categorization and behavior

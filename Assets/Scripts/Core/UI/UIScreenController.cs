@@ -1,10 +1,10 @@
 using System;
-using Core.Core.Logging;
-using Core.Core.UI.Interfaces;
+using Core.Logging;
+using Core.UI.Interfaces;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Core.Core.UI
+namespace Core.UI
 {
     /// <summary>
     /// Controls individual UI screens within the unified UI system

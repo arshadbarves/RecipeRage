@@ -1,12 +1,12 @@
 using System;
-using Core.Core.Logging;
-using Core.Core.Persistence.Interfaces;
+using Core.Logging;
+using Core.Persistence.Interfaces;
 using Cysharp.Threading.Tasks;
 using Epic.OnlineServices;
 using PlayEveryWare.EpicOnlineServices;
 using PlayEveryWare.EpicOnlineServices.Samples;
 
-namespace Core.Core.Persistence.Providers
+namespace Core.Persistence.Providers
 {
     /// <summary>
     /// Epic Online Services cloud storage provider.

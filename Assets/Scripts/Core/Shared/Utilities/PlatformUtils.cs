@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Core.Core.Shared.Utilities
+namespace Core.Shared.Utilities
 {
     public static class PlatformUtils
     {

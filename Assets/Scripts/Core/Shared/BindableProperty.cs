@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Core.Core.Shared
+namespace Core.Shared
 {
     /// <summary>
     /// Lightweight reactive property for MVVM binding.
@@ -52,7 +52,7 @@ namespace Core.Core.Shared
         {
             OnValueChanged -= callback;
         }
-        
+
         public static implicit operator T(BindableProperty<T> property) => property.Value;
     }
 }

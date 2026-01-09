@@ -1,7 +1,7 @@
 using System;
-using Core.Core.RemoteConfig.Interfaces;
+using Core.RemoteConfig.Interfaces;
 
-namespace Core.Core.RemoteConfig.Services
+namespace Core.RemoteConfig.Services
 {
     /// <summary>
     /// Static accessor for NTP-synchronized time.

@@ -1,4 +1,4 @@
-namespace Core.Core.Banking
+namespace Core.Banking
 {
     public static class BankKeys
     {

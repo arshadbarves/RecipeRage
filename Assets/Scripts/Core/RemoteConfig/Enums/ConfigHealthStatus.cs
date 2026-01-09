@@ -1,4 +1,4 @@
-namespace Core.Core.RemoteConfig.Enums
+namespace Core.RemoteConfig.Enums
 {
     /// <summary>
     /// Defines the health status of the configuration system

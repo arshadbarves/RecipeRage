@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Core.Core.UI.Controls
+namespace Core.UI.Controls
 {
     /// <summary>
     /// A custom VisualElement that renders a skewed box with optional fill, border, and border wipe animation.

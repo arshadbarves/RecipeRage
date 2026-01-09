@@ -1,12 +1,13 @@
 using System;
-using Core.Core.Logging;
-using Core.Core.RemoteConfig.Interfaces;
-using Core.Core.RemoteConfig.Models;
-using Core.Core.UI.Interfaces;
+using Core.Logging;
+using Core.RemoteConfig.Interfaces;
+using Core.RemoteConfig.Models;
+using Core.Shared.Utilities;
+using Core.UI.Interfaces;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-namespace Core.Core.RemoteConfig
+namespace Core.RemoteConfig
 {
     /// <summary>
     /// Checks for required app updates and handles force update flow
@@ -36,7 +37,7 @@ namespace Core.Core.RemoteConfig
                     return false;
                 }
 
-                string platform = GetCurrentPlatform();
+                string platform = PlatformUtils.GetPlatform();
                 string currentVersion = Application.version;
                 var requirement = updateConfig.GetRequirementForPlatform(platform);
 
@@ -76,10 +77,10 @@ namespace Core.Core.RemoteConfig
                 if (_uiService != null)
                 {
                     _uiService.ShowScreen(UIScreenType.Notification);
-                    var notificationScreen = _uiService.GetScreen<NotificationScreen>(UIScreenType.Notification);
+                    var notificationScreen = _uiService.GetScreen<INotificationScreen>(UIScreenType.Notification);
                     if (notificationScreen != null)
                     {
-                        var notificationType = isRequired ? global::Core.Core.UI.Interfaces.NotificationType.Error : global::Core.Core.UI.Interfaces.NotificationType.Warning;
+                        var notificationType = isRequired ? NotificationType.Error : NotificationType.Warning;
                         await notificationScreen.Show(requirement.UpdateTitle, message, notificationType, isRequired ? 0f : 10f);
                     }
                 }
@@ -90,19 +91,6 @@ namespace Core.Core.RemoteConfig
             {
                 GameLogger.LogError($"Failed to show update popup: {ex.Message}");
             }
-        }
-
-        private string GetCurrentPlatform()
-        {
-#if UNITY_IOS
-            return "iOS";
-#elif UNITY_ANDROID
-            return "Android";
-#elif UNITY_STANDALONE
-            return "PC";
-#else
-            return "Unknown";
-#endif
         }
     }
 }

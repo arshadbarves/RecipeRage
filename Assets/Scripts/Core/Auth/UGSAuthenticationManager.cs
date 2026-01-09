@@ -1,12 +1,12 @@
 using System;
 using System.Threading.Tasks;
-using Core.Core.Logging;
-using Core.Core.Networking;
+using Core.Logging;
+using Core.Networking;
 using PlayEveryWare.EpicOnlineServices;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
 
-namespace Core.Core.Auth
+namespace Core.Auth
 {
     /// <summary>
     /// Manages Unity Gaming Services authentication

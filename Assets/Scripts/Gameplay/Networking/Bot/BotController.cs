@@ -1,5 +1,6 @@
 using Gameplay.Characters;
 using Core.Logging;
+using Core.Networking.Models;
 using Unity.Netcode;
 using UnityEngine;
 

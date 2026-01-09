@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
-using Core.Core.Logging;
-using Core.Core.Persistence.Factory;
-using Core.Core.Persistence.Interfaces;
-using Core.Core.Persistence.Models;
-using Core.Core.Persistence.Providers;
+using Core.Logging;
+using Core.Persistence.Factory;
+using Core.Persistence.Interfaces;
+using Core.Persistence.Models;
+using Core.Persistence.Providers;
 using Cysharp.Threading.Tasks;
 
-namespace Core.Core.Persistence
+namespace Core.Persistence
 {
     /// <summary>
     /// Multi-provider save service with cloud and local storage support.

@@ -1,9 +1,9 @@
 using System;
-using Core.Core.RemoteConfig.Enums;
-using Core.Core.Shared.Interfaces;
+using Core.RemoteConfig.Enums;
+using Core.Shared.Interfaces;
 using Cysharp.Threading.Tasks;
 
-namespace Core.Core.RemoteConfig.Interfaces
+namespace Core.RemoteConfig.Interfaces
 {
     /// <summary>
     /// Core service interface for managing remote configuration

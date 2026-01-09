@@ -1,4 +1,4 @@
-namespace Core.Core.Shared.Interfaces
+namespace Core.Shared.Interfaces
 {
     /// <summary>
     /// Interface for services that require two-phase initialization.

@@ -2,7 +2,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
-namespace Core.Core.Logging
+namespace Core.Logging
 {
     /// <summary>
     /// Static helper for easy logging throughout the codebase

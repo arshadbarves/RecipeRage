@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Threading.Tasks;
-using Core.Core.Logging;
+using Core.Logging;
 
-namespace Core.Core.Shared.Utilities
+namespace Core.Shared.Utilities
 {
     /// <summary>
     /// Extension methods for Task to work with Unity coroutines.
@@ -20,13 +20,13 @@ namespace Core.Core.Shared.Utilities
             {
                 yield return null;
             }
-            
+
             if (task.IsFaulted)
             {
                 GameLogger.LogError($"Task failed with exception: {task.Exception}");
             }
         }
-        
+
         /// <summary>
         /// Convert a Task<T> to a coroutine.
         /// </summary>
@@ -39,7 +39,7 @@ namespace Core.Core.Shared.Utilities
             {
                 yield return null;
             }
-            
+
             if (task.IsFaulted)
             {
                 GameLogger.LogError($"Task failed with exception: {task.Exception}");

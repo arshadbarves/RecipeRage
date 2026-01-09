@@ -1,8 +1,8 @@
 using System;
-using Core.Core.Shared.Interfaces;
+using Core.Shared.Interfaces;
 using Cysharp.Threading.Tasks;
 
-namespace Core.Core.RemoteConfig.Interfaces
+namespace Core.RemoteConfig.Interfaces
 {
     /// <summary>
     /// Interface for NTP time synchronization service

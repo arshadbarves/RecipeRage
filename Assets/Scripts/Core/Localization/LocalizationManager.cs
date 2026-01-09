@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Core.Core.Logging;
+using Core.Logging;
 using UnityEngine;
 
-namespace Core.Core.Localization
+namespace Core.Localization
 {
     public class LocalizationManager : ILocalizationManager
     {

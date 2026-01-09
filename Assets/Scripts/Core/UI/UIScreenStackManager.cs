@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Core.Core.Logging;
-using Core.Core.UI.Interfaces;
+using Core.Logging;
+using Core.UI.Interfaces;
 
-namespace Core.Core.UI
+namespace Core.UI
 {
     /// <summary>
     /// AAA-grade stack-based UI management system

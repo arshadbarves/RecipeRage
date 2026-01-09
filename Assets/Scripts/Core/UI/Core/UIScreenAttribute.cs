@@ -1,7 +1,7 @@
 using System;
-using Core.Core.UI.Interfaces;
+using Core.UI.Interfaces;
 
-namespace Core.Core.UI.Core
+namespace Core.UI.Core
 {
     /// <summary>
     /// Attribute to mark and configure UI screen classes for auto-registration

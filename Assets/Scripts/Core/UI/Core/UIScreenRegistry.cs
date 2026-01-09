@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Core.Core.Logging;
-using Core.Core.UI.Interfaces;
+using Core.Logging;
+using Core.UI.Interfaces;
 
-namespace Core.Core.UI.Core
+namespace Core.UI.Core
 {
     /// <summary>
     /// Registry system for managing UI screen classes

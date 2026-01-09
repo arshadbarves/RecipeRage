@@ -8,7 +8,6 @@ using Core.UI.Core;
 using Core.UI.Interfaces;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Core.UI;
 using VContainer;
 
 namespace Gameplay.UI.Screens

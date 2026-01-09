@@ -1,12 +1,12 @@
-using Core.Core.Logging;
-using Core.Core.Persistence;
+using Core.Logging;
+using Core.Persistence;
 using UnityEngine;
 using UnityEngine.Audio;
 
-namespace Core.Core.Audio
+namespace Core.Audio
 {
     /// <summary>
-    /// Handles volume control - pure C# class
+    /// Handles volume control
     /// </summary>
     public class AudioVolumeController : IAudioVolumeController
     {

@@ -1,7 +1,7 @@
 using System;
-using Core.Core.RemoteConfig.Services;
+using Core.RemoteConfig.Services;
 
-namespace Core.Core.Persistence.Models
+namespace Core.Persistence.Models
 {
     /// <summary>
     /// Tracks the synchronization status of cloud data.

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 
-namespace Core.Core.RemoteConfig.Interfaces
+namespace Core.RemoteConfig.Interfaces
 {
     /// <summary>
     /// Interface for configuration data providers

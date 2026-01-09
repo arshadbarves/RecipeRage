@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Core.Core.Persistence
+namespace Core.Persistence
 {
     /// <summary>
     /// Data class for player progress.

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Gameplay.Networking.Bot;
 using Core.Logging;
+using Core.Networking.Models;
 using Core.Shared.Enums;
 using Unity.Netcode;
 using UnityEngine;

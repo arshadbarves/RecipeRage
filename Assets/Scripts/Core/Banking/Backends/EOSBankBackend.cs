@@ -1,10 +1,10 @@
 using System.Threading.Tasks;
-using Core.Core.Banking.Data;
-using Core.Core.Banking.Interfaces;
-using Core.Core.Persistence.Providers;
+using Core.Banking.Data;
+using Core.Banking.Interfaces;
+using Core.Persistence.Providers;
 using UnityEngine;
 
-namespace Core.Core.Banking.Backends
+namespace Core.Banking.Backends
 {
     public class EOSBankBackend : IBankBackend
     {

@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Core.Core.Banking.Interfaces
+namespace Core.Banking.Interfaces
 {
     public interface IBankService
     {

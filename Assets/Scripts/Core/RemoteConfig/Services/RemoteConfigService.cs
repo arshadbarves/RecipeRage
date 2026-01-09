@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
-using Core.Core.Logging;
-using Core.Core.RemoteConfig.Enums;
-using Core.Core.RemoteConfig.Interfaces;
-using Core.Core.Shared.Interfaces;
+using Core.Logging;
+using Core.RemoteConfig.Enums;
+using Core.RemoteConfig.Interfaces;
+using Core.Shared.Interfaces;
 using Cysharp.Threading.Tasks;
 using VContainer;
 
-namespace Core.Core.RemoteConfig.Services
+namespace Core.RemoteConfig.Services
 {
     public class RemoteConfigService : IRemoteConfigService
     {

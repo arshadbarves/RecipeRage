@@ -1,12 +1,12 @@
 using System;
 using System.Net;
 using System.Net.Sockets;
-using Core.Core.Logging;
-using Core.Core.RemoteConfig.Interfaces;
+using Core.Logging;
+using Core.RemoteConfig.Interfaces;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-namespace Core.Core.RemoteConfig.Services
+namespace Core.RemoteConfig.Services
 {
     /// <summary>
     /// Service for synchronizing time with NTP servers

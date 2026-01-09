@@ -1,8 +1,8 @@
 using System;
-using Core.Core.Shared.Interfaces;
+using Core.Shared.Interfaces;
 using Cysharp.Threading.Tasks;
 
-namespace Core.Core.UI.Interfaces
+namespace Core.UI.Interfaces
 {
     public interface IUIService : IInitializable
     {

@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
-using Core.Core.Banking.Data;
+using Core.Banking.Data;
 
-namespace Core.Core.Banking.Interfaces
+namespace Core.Banking.Interfaces
 {
     public interface IBankBackend
     {

@@ -1,9 +1,9 @@
 using System.Threading.Tasks;
-using Core.Core.Banking.Data;
-using Core.Core.Banking.Interfaces;
-using Core.Core.Persistence;
+using Core.Banking.Data;
+using Core.Banking.Interfaces;
+using Core.Persistence;
 
-namespace Core.Core.Banking.Backends
+namespace Core.Banking.Backends
 {
     public class LocalDiskBankBackend : IBankBackend
     {

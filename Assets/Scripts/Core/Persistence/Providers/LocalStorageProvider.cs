@@ -1,11 +1,11 @@
 using System;
 using System.IO;
-using Core.Core.Logging;
-using Core.Core.Persistence.Interfaces;
+using Core.Logging;
+using Core.Persistence.Interfaces;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-namespace Core.Core.Persistence.Providers
+namespace Core.Persistence.Providers
 {
     /// <summary>
     /// Local file system storage provider.

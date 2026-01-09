@@ -1,4 +1,4 @@
-namespace Core.Core.Persistence.Models
+namespace Core.Persistence.Models
 {
     /// <summary>
     /// Defines how data should be stored and retrieved.

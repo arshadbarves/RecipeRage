@@ -1,4 +1,4 @@
-namespace Core.Core.RemoteConfig.Interfaces
+namespace Core.RemoteConfig.Interfaces
 {
     /// <summary>
     /// Base interface for all configuration models

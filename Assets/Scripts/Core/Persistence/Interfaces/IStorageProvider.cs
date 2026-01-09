@@ -1,6 +1,6 @@
 using Cysharp.Threading.Tasks;
 
-namespace Core.Core.Persistence.Interfaces
+namespace Core.Persistence.Interfaces
 {
     /// <summary>
     /// Base interface for all storage providers.

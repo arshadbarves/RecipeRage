@@ -1,9 +1,9 @@
 using System;
-using Core.Core.Persistence.Models;
-using Core.Core.Shared.Interfaces;
+using Core.Persistence.Models;
+using Core.Shared.Interfaces;
 using Cysharp.Threading.Tasks;
 
-namespace Core.Core.Persistence
+namespace Core.Persistence
 {
     /// <summary>
     /// Interface for save/load operations with multi-provider support

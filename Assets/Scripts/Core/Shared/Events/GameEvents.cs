@@ -1,6 +1,6 @@
-using Core.Core.UI.Interfaces;
+using Core.UI.Interfaces;
 
-namespace Core.Core.Shared.Events
+namespace Core.Shared.Events
 {
     // ============================================
     // CURRENCY EVENTS

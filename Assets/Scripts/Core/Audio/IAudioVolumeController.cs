@@ -1,4 +1,4 @@
-namespace Core.Core.Audio
+namespace Core.Audio
 {
     public interface IAudioVolumeController
     {

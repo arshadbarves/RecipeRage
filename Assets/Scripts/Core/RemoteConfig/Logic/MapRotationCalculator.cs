@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Core.Core.Logging;
-using Core.Core.RemoteConfig.Interfaces;
-using Core.Core.RemoteConfig.Models;
-using Core.Core.RemoteConfig.Services;
+using Core.Logging;
+using Core.RemoteConfig.Interfaces;
+using Core.RemoteConfig.Models;
+using Core.RemoteConfig.Services;
 
-namespace Core.Core.RemoteConfig.Logic
+namespace Core.RemoteConfig.Logic
 {
     /// <summary>
     /// Calculates active maps based on rotation schedules and NTP time

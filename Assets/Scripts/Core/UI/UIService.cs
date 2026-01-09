@@ -1,16 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Core.Core.Animation;
-using Core.Core.Logging;
-using Core.Core.Shared.Interfaces;
-using Core.Core.UI.Core;
-using Core.Core.UI.Interfaces;
+using Core.Animation;
+using Core.Logging;
+using Core.Shared.Interfaces;
+using Core.UI.Core;
+using Core.UI.Interfaces;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Core.Core.UI
+namespace Core.UI
 {
     /// <summary>
     /// Professional UI Service using category-based stack management

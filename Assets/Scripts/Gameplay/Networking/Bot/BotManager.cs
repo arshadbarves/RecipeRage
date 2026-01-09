@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Core.Logging;
+using Core.Networking.Models;
 
 namespace Gameplay.Networking.Bot
 {

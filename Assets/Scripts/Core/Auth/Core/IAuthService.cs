@@ -1,6 +1,6 @@
 using Cysharp.Threading.Tasks;
 
-namespace Core.Core.Auth.Core
+namespace Core.Auth.Core
 {
     public enum AuthType
     {

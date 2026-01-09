@@ -1,14 +1,14 @@
 using System;
 using System.Collections.Generic;
-using Core.Core.Logging;
-using Core.Core.RemoteConfig.Interfaces;
-using Core.Core.RemoteConfig.Models;
-using Core.Core.Shared.Utilities;
+using Core.Logging;
+using Core.RemoteConfig.Interfaces;
+using Core.RemoteConfig.Models;
+using Core.Shared.Utilities;
 using Cysharp.Threading.Tasks;
 using Firebase.RemoteConfig;
 using UnityEngine;
 
-namespace Core.Core.RemoteConfig.Providers
+namespace Core.RemoteConfig.Providers
 {
     public class FirebaseConfigProvider : IConfigProvider
     {

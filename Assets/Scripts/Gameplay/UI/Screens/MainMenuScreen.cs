@@ -7,7 +7,6 @@ using Gameplay.UI.ViewModels;
 using Core.Logging;
 using Core.Persistence;
 using Core.Shared.Events;
-using Core.UI;
 using Core.UI.Core;
 using Core.UI.Interfaces;
 using Core.Session;

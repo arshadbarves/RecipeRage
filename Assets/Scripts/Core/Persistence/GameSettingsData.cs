@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Core.Core.Persistence
+namespace Core.Persistence
 {
     /// <summary>
     /// Data class for game settings.

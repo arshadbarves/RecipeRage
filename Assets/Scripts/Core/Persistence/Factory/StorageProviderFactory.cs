@@ -1,8 +1,8 @@
-using Core.Core.Persistence.Interfaces;
-using Core.Core.Persistence.Models;
-using Core.Core.Persistence.Providers;
+using Core.Persistence.Interfaces;
+using Core.Persistence.Models;
+using Core.Persistence.Providers;
 
-namespace Core.Core.Persistence.Factory
+namespace Core.Persistence.Factory
 {
     /// <summary>
     /// Factory for creating storage providers.

@@ -1,6 +1,6 @@
 using System;
 
-namespace Core.Core.Logging
+namespace Core.Logging
 {
     /// <summary>
     /// Represents a single log entry
@@ -22,11 +22,11 @@ namespace Core.Core.Logging
             Category = category;
             Timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
             StackTrace = stackTrace;
-            
+
             if (UnityEngine.Application.isPlaying) // Simple check, but doesn't guarantee thread safety
             {
                 // We can use a try-catch for safety if we don't have a robust main-thread check
-                 try 
+                 try
                  {
                      FrameCount = UnityEngine.Time.frameCount;
                  }

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Core.Core.Shared
+namespace Core.Shared
 {
     /// <summary>
     /// Game-wide constants and configuration values

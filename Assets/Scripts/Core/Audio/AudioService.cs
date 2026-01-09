@@ -1,11 +1,7 @@
 using UnityEngine;
 
-namespace Core.Core.Audio
+namespace Core.Audio
 {
-    /// <summary>
-    /// Main audio service - delegates to specialized components
-    /// Pure C# class, no MonoBehaviour
-    /// </summary>
     public class AudioService : IAudioService
     {
         private readonly IMusicPlayer _musicPlayer;

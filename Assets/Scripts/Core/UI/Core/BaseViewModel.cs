@@ -1,6 +1,6 @@
 using System;
 
-namespace Core.Core.UI.Core
+namespace Core.UI.Core
 {
     /// <summary>
     /// Base class for all ViewModels in the MVVM architecture.

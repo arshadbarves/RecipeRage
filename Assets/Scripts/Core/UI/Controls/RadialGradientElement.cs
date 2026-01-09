@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Core.Core.UI.Controls
+namespace Core.UI.Controls
 {
     /// <summary>
     /// A custom VisualElement that draws a radial gradient background.

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Core.Core.Audio
+namespace Core.Audio
 {
     /// <summary>
     /// Main audio service interface

@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Core.Core.RemoteConfig.Interfaces;
+using Core.RemoteConfig.Interfaces;
 using Newtonsoft.Json;
 
-namespace Core.Core.RemoteConfig.Models
+namespace Core.RemoteConfig.Models
 {
     /// <summary>
     /// Configuration model for force update requirements

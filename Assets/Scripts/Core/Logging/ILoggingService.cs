@@ -1,7 +1,7 @@
 using System;
-using Core.Core.Shared.Interfaces;
+using Core.Shared.Interfaces;
 
-namespace Core.Core.Logging
+namespace Core.Logging
 {
     /// <summary>
     /// Interface for the logging service

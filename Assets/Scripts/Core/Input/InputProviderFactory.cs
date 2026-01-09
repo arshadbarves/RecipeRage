@@ -1,6 +1,6 @@
-using Core.Core.Logging;
+using Core.Logging;
 
-namespace Core.Core.Input
+namespace Core.Input
 {
     /// <summary>
     /// Factory for creating platform-appropriate input providers

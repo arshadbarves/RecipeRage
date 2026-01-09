@@ -1,4 +1,4 @@
-namespace Core.Core.UI.Core
+namespace Core.UI.Core
 {
     public enum UITransitionType
     {

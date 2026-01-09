@@ -1,25 +1,16 @@
 using System.Threading;
-using Core.Core.Shared.Extensions;
+using Core.Shared.Extensions;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
 
-namespace Core.Core.Animation
+namespace Core.Animation
 {
-    /// <summary>
-    /// DOTween-based Transform animator implementation using modern async/await patterns
-    /// Follows Single Responsibility Principle
-    /// </summary>
     public class DOTweenTransformAnimator : ITransformAnimator
     {
         private static bool _isInitialized;
 
         public DOTweenTransformAnimator()
-        {
-            EnsureInitialized();
-        }
-
-        private static void EnsureInitialized()
         {
             if (_isInitialized) return;
 
@@ -34,7 +25,8 @@ namespace Core.Core.Animation
             _isInitialized = true;
         }
 
-        public async UniTask MoveTo(Transform transform, Vector3 target, float duration, CancellationToken token = default)
+        public async UniTask MoveTo(Transform transform, Vector3 target, float duration,
+            CancellationToken token = default)
         {
             if (transform == null) return;
 
@@ -44,7 +36,8 @@ namespace Core.Core.Animation
                 .AttachExternalCancellation(token);
         }
 
-        public async UniTask ScaleTo(Transform transform, Vector3 target, float duration, CancellationToken token = default)
+        public async UniTask ScaleTo(Transform transform, Vector3 target, float duration,
+            CancellationToken token = default)
         {
             if (transform == null) return;
 
@@ -54,7 +47,8 @@ namespace Core.Core.Animation
                 .AttachExternalCancellation(token);
         }
 
-        public async UniTask RotateTo(Transform transform, Vector3 target, float duration, CancellationToken token = default)
+        public async UniTask RotateTo(Transform transform, Vector3 target, float duration,
+            CancellationToken token = default)
         {
             if (transform == null) return;
 
@@ -64,7 +58,8 @@ namespace Core.Core.Animation
                 .AttachExternalCancellation(token);
         }
 
-        public async UniTask Punch(Transform transform, Vector3 direction, float duration, CancellationToken token = default)
+        public async UniTask Punch(Transform transform, Vector3 direction, float duration,
+            CancellationToken token = default)
         {
             if (transform == null) return;
 
@@ -73,7 +68,8 @@ namespace Core.Core.Animation
                 .AttachExternalCancellation(token);
         }
 
-        public async UniTask Shake(Transform transform, float duration, float strength, CancellationToken token = default)
+        public async UniTask Shake(Transform transform, float duration, float strength,
+            CancellationToken token = default)
         {
             if (transform == null) return;
 

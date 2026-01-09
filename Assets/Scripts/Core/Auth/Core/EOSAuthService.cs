@@ -1,14 +1,14 @@
 using System;
-using Core.Core.Logging;
-using Core.Core.Persistence;
-using Core.Core.Shared.Events;
+using Core.Logging;
+using Core.Persistence;
+using Core.Shared.Events;
 using Cysharp.Threading.Tasks;
 using Epic.OnlineServices;
 using Epic.OnlineServices.Connect;
 using PlayEveryWare.EpicOnlineServices;
 using UnityEngine;
 
-namespace Core.Core.Auth.Core
+namespace Core.Auth.Core
 {
     public class EOSAuthService : IAuthService
     {

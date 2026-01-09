@@ -1,4 +1,4 @@
-using Core.Core.Persistence;
+using Core.Persistence;
 using Gameplay.Bootstrap;
 using UnityEditor;
 using UnityEngine;

@@ -1,11 +1,11 @@
 using System;
 using System.Threading.Tasks;
-using Core.Core.Banking.Data;
-using Core.Core.Banking.Interfaces;
-using Core.Core.Shared.Events;
-using Core.Core.UI.Interfaces;
+using Core.Banking.Data;
+using Core.Banking.Interfaces;
+using Core.Shared.Events;
+using Core.UI.Interfaces;
 
-namespace Core.Core.Banking
+namespace Core.Banking
 {
     public class BankService : IBankService
     {

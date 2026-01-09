@@ -7,7 +7,7 @@ using System.Text;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
-namespace Core.Core.Logging
+namespace Core.Logging
 {
     /// <summary>
     /// Powerful logging service with filtering, export, and Unity log capture

@@ -1,30 +1,21 @@
 using System.Threading;
-using Core.Core.Shared.Extensions;
+using Core.Shared.Extensions;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Core.Core.Animation
+namespace Core.Animation
 {
-    /// <summary>
-    /// DOTween-based UI animator implementation using modern async/await patterns
-    /// Follows Single Responsibility Principle
-    /// </summary>
     public class DOTweenUIAnimator : IUIAnimator
     {
         private static bool _isInitialized;
 
         public DOTweenUIAnimator()
         {
-            EnsureInitialized();
-        }
-
-        private static void EnsureInitialized()
-        {
             if (_isInitialized) return;
 
-            var init = DOTween.Init(
+            IDOTweenInit init = DOTween.Init(
                 recycleAllByDefault: true,
                 useSafeMode: true,
                 logBehaviour: LogBehaviour.ErrorsOnly
@@ -120,7 +111,7 @@ namespace Core.Core.Animation
             element.style.scale = new StyleScale(Vector2.zero);
             element.style.opacity = 0f;
 
-            var sequence = DOTween.Sequence();
+            Sequence sequence = DOTween.Sequence();
 
             sequence.Append(DOTween.To(() => 0f,
                 x => element.style.scale = new StyleScale(new Vector2(x, x)),
@@ -141,7 +132,7 @@ namespace Core.Core.Animation
         {
             if (element == null) return;
 
-            var sequence = DOTween.Sequence();
+            Sequence sequence = DOTween.Sequence();
 
             sequence.Append(DOTween.To(() => 1f,
                 x => element.style.scale = new StyleScale(new Vector2(x, x)),
@@ -162,13 +153,10 @@ namespace Core.Core.Animation
         {
             if (container == null) return;
 
-            VisualElement overlay = container.Q<VisualElement>("popup-overlay")
-                                    ?? container.Q<VisualElement>("modal-background");
+            VisualElement overlay = container.Q<VisualElement>("modal-background");
+            VisualElement content = container.Q<VisualElement>("modal-content");
 
-            VisualElement content = container.Q<VisualElement>("popup-container")
-                                 ?? container.Q<VisualElement>("modal-content");
-
-            var sequence = DOTween.Sequence();
+            Sequence sequence = DOTween.Sequence();
 
             if (overlay != null)
             {
@@ -205,15 +193,10 @@ namespace Core.Core.Animation
         {
             if (container == null) return;
 
-            VisualElement overlay = container.Q<VisualElement>("popup-background")
-                                 ?? container.Q<VisualElement>("modal-background")
-                                 ?? container.Q<VisualElement>("modal-bg")
-                                 ?? container.Q<VisualElement>("popup-bg");
+            VisualElement overlay = container.Q<VisualElement>("modal-background");
+            VisualElement content = container.Q<VisualElement>("modal-content");
 
-            VisualElement content = container.Q<VisualElement>("popup-content")
-                                 ?? container.Q<VisualElement>("modal-content");
-
-            var sequence = DOTween.Sequence();
+            Sequence sequence = DOTween.Sequence();
 
             if (content != null)
             {
@@ -249,7 +232,7 @@ namespace Core.Core.Animation
             const float pulseScale = 1.1f;
             float halfDuration = duration * 0.5f;
 
-            var sequence = DOTween.Sequence();
+            Sequence sequence = DOTween.Sequence();
             sequence.Append(DOTween.To(() => 1f,
                 x => element.style.scale = new StyleScale(new Vector2(x, x)),
                 pulseScale,

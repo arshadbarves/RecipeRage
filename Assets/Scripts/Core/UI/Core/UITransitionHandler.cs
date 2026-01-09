@@ -1,10 +1,10 @@
-using Core.Core.Shared.Extensions;
+using Core.Shared.Extensions;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Core.Core.UI.Core
+namespace Core.UI.Core
 {
     /// <summary>
     /// Standardized transition handler for UI Toolkit using DOTween.

@@ -1,8 +1,8 @@
 using System;
-using Core.Core.RemoteConfig.Interfaces;
+using Core.RemoteConfig.Interfaces;
 using Newtonsoft.Json;
 
-namespace Core.Core.RemoteConfig.Models
+namespace Core.RemoteConfig.Models
 {
     /// <summary>
     /// Configuration model for maintenance mode

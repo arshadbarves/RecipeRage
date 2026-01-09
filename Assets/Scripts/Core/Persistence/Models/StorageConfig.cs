@@ -1,6 +1,6 @@
 using System;
 
-namespace Core.Core.Persistence.Models
+namespace Core.Persistence.Models
 {
     /// <summary>
     /// Configuration for a specific data type's storage.

@@ -1,4 +1,4 @@
-namespace Core.Core.UI
+namespace Core.UI
 {
     /// <summary>
     /// Defines UI screen categories for stack-based management

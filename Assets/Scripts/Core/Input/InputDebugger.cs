@@ -1,7 +1,7 @@
-using Core.Core.Logging;
+using Core.Logging;
 using UnityEngine;
 
-namespace Core.Core.Input
+namespace Core.Input
 {
     /// <summary>
     /// Debug helper to visualize input values in the console.
@@ -22,7 +22,7 @@ namespace Core.Core.Input
         {
             // Create input provider
             _inputProvider = InputProviderFactory.CreateForPlatform();
-            
+
             if (_inputProvider == null)
             {
                 GameLogger.LogError("Failed to create input provider!");

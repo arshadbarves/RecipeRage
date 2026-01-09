@@ -1,4 +1,4 @@
-namespace Core.Core.UI
+namespace Core.UI
 {
     /// <summary>
     /// Defines UI screen priorities for proper sorting order
