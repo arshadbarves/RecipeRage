@@ -41,7 +41,6 @@ namespace Modules.Networking.Services
 
         private ILobbyManager _lobbyManager;
         private EOSLobbyManager _eosLobbyManager;
-        private BotManager _botManager;
         private bool _isInitialized;
 
         // Matchmaking state
@@ -65,7 +64,6 @@ namespace Modules.Networking.Services
         {
             _lobbyManager = lobbyManager ?? throw new ArgumentNullException(nameof(lobbyManager));
             _eosLobbyManager = eosLobbyManager ?? throw new ArgumentNullException(nameof(eosLobbyManager));
-            _botManager = new BotManager();
         }
 
         /// <summary>
@@ -110,9 +108,6 @@ namespace Modules.Networking.Services
             RequiredPlayers = teamSize * 2; // e.g., 4v4 = 8 total players
             PlayersFound = _partySize;
             _hasFilledWithBots = false;
-
-            // Clear any previous bots
-            _botManager.ClearBots();
 
             GameLogger.Log($"Starting matchmaking: Mode={gameMode}, TeamSize={teamSize}, PartySize={_partySize}");
 
@@ -674,29 +669,16 @@ namespace Modules.Networking.Services
                 return;
             }
 
-            GameLogger.Log($"Creating {neededBots} bots to fill match ({currentPlayers}/{RequiredPlayers} players)");
-
-            // CRITICAL: Update lobby status IMMEDIATELY to prevent new players from joining
-            // Bots don't take lobby slots in EOS, so we must mark the lobby as InProgress manually
-            bool statusUpdated = false;
-            if (_lobbyManager.IsMatchLobbyOwner)
-            {
-                GameLogger.Log("Updating lobby status to InProgress (bot-filled match)");
-                UpdateMatchLobbyStatus(matchLobby.LobbyId, "InProgress");
-                statusUpdated = true;
-            }
-
-            // Create bots
-            var bots = _botManager.CreateBots(neededBots, startingTeamId: 0);
-
-            // Update player count
-            PlayersFound = RequiredPlayers;
-            OnPlayersFound?.Invoke(PlayersFound, RequiredPlayers);
-
-            GameLogger.Log($"Match filled with bots! Starting game with {currentPlayers} human players and {neededBots} bots");
-
-            // Start the match (pass flag to avoid double status update)
-            HandleMatchReady(matchLobby, alreadyUpdatedStatus: statusUpdated);
+            // TODO: Implement BotManager logic within Modules or move BotManager to Modules
+            // For now, we stub this out or need to move BotManager to Modules.Networking.Services
+            // Since BotManager was in Gameplay.Networking.Bot, it's a Gameplay dependency.
+            // If MatchmakingService is in Modules, it cannot depend on BotManager in Gameplay.
+            // BotManager should likely be in Modules.Networking.Services if it manages non-gameplay Bot data.
+            
+            GameLogger.LogWarning("Bot filling not fully implemented after migration - BotManager dependency issue");
+            
+            // Temporary workaround: Just mark match as ready if bots are needed
+            HandleMatchReady(matchLobby);
         }
 
         /// <summary>
@@ -704,7 +686,8 @@ namespace Modules.Networking.Services
         /// </summary>
         public List<BotPlayer> GetActiveBots()
         {
-            return _botManager.GetActiveBots();
+            // Placeholder until BotManager is migrated
+            return new List<BotPlayer>();
         }
 
         #endregion
