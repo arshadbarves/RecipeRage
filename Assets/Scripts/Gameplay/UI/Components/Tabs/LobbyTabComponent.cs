@@ -1,7 +1,6 @@
 using Modules.Animation;
 using Gameplay.UI.Data;
 using Gameplay.UI.Screens;
-using UnityEngine;
 using UnityEngine.UIElements;
 using Modules.Logging;
 using Modules.UI;

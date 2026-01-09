@@ -4,8 +4,7 @@ using Modules.Logging;
 using Modules.Persistence;
 using Modules.Core.Banking.Interfaces;
 using Gameplay.UI.Screens;
-using Modules.Shared.Interfaces;
-using Modules.UI;
+using Modules.Session;
 using VContainer;
 
 namespace Gameplay.App.State.States

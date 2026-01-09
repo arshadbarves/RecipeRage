@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Gameplay.Characters;
 using Modules.Logging;
+using Modules.Networking.Interfaces;
 
 namespace Modules.Networking.Services
 {
@@ -12,12 +12,12 @@ namespace Modules.Networking.Services
     public class PlayerNetworkManager : IPlayerNetworkManager
     {
         private readonly ILoggingService _logger;
-        private readonly Dictionary<ulong, PlayerController> _players;
+        private readonly Dictionary<ulong, IPlayerController> _players;
 
         /// <summary>
         /// Event triggered when a player is registered.
         /// </summary>
-        public event Action<PlayerController> OnPlayerRegistered;
+        public event Action<IPlayerController> OnPlayerRegistered;
 
         /// <summary>
         /// Event triggered when a player is unregistered.
@@ -31,7 +31,7 @@ namespace Modules.Networking.Services
         public PlayerNetworkManager(ILoggingService logger)
         {
             _logger = logger;
-            _players = new Dictionary<ulong, PlayerController>();
+            _players = new Dictionary<ulong, IPlayerController>();
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace Modules.Networking.Services
         /// </summary>
         /// <param name="clientId">The client ID of the player</param>
         /// <param name="player">The player controller</param>
-        public void RegisterPlayer(ulong clientId, PlayerController player)
+        public void RegisterPlayer(ulong clientId, IPlayerController player)
         {
             if (player == null)
             {
@@ -82,9 +82,9 @@ namespace Modules.Networking.Services
         /// </summary>
         /// <param name="clientId">The client ID of the player</param>
         /// <returns>The player controller, or null if not found</returns>
-        public PlayerController GetPlayer(ulong clientId)
+        public IPlayerController GetPlayer(ulong clientId)
         {
-            if (_players.TryGetValue(clientId, out PlayerController player))
+            if (_players.TryGetValue(clientId, out IPlayerController player))
             {
                 return player;
             }
@@ -96,9 +96,9 @@ namespace Modules.Networking.Services
         /// Get all registered players.
         /// </summary>
         /// <returns>A read-only list of all players</returns>
-        public IReadOnlyList<PlayerController> GetAllPlayers()
+        public IReadOnlyList<IPlayerController> GetAllPlayers()
         {
-            return new List<PlayerController>(_players.Values);
+            return new List<IPlayerController>(_players.Values);
         }
 
         /// <summary>

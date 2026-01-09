@@ -1,7 +1,6 @@
-using Modules.Shared.Interfaces;
 using Modules.UI;
 using Modules.Networking;
-using Modules.UI;
+using Modules.Session;
 using VContainer;
 
 namespace Gameplay.App.State.States
@@ -16,8 +15,8 @@ namespace Gameplay.App.State.States
         private readonly IGameStateManager _stateManager;
 
         public LobbyState(
-            IUIService uiService, 
-            SessionManager sessionManager, 
+            IUIService uiService,
+            SessionManager sessionManager,
             IGameStateManager stateManager)
         {
             _uiService = uiService;

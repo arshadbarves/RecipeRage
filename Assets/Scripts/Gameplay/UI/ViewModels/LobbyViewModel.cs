@@ -1,6 +1,5 @@
 using System;
 using System.Threading;
-using Modules.Shared.Interfaces;
 using Modules.Networking.Interfaces;
 using Modules.Shared;
 using Gameplay.App.State;
@@ -8,6 +7,7 @@ using Gameplay.App.State.States;
 using Cysharp.Threading.Tasks;
 using Modules.UI.Core;
 using Gameplay.UI.Data;
+using Modules.Session;
 using UnityEngine;
 using VContainer;
 

@@ -1,5 +1,4 @@
 using System;
-using Modules.Logging;
 using Modules.Networking;
 using Modules.UI;
 using Modules.UI.Core;

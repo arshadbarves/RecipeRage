@@ -76,7 +76,7 @@ namespace Modules.RemoteConfig
                 if (_uiService != null)
                 {
                     _uiService.ShowScreen(UIScreenType.Notification);
-                    var notificationScreen = _uiService.GetScreen<UI.Screens.NotificationScreen>(UIScreenType.Notification);
+                    var notificationScreen = _uiService.GetScreen<NotificationScreen>(UIScreenType.Notification);
                     if (notificationScreen != null)
                     {
                         var notificationType = isRequired ? UI.NotificationType.Error : UI.NotificationType.Warning;

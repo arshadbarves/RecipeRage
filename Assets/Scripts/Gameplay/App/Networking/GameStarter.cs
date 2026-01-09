@@ -1,6 +1,6 @@
+using System.Collections.Generic;
 using Modules.Logging;
 using Gameplay.App.State.States;
-using Gameplay;
 using Gameplay.Spawning;
 using Unity.Netcode;
 using UnityEngine;
@@ -10,6 +10,7 @@ using Modules.Networking.Interfaces;
 using Modules.Shared.Enums;
 using Modules.UI;
 using Epic.OnlineServices;
+using Gameplay.Networking.Bot;
 using PlayEveryWare.EpicOnlineServices;
 using PlayEveryWare.EpicOnlineServices.Samples.Network;
 
@@ -29,7 +30,7 @@ namespace Gameplay.App.Networking
         private bool _isGameActive;
         private SpawnManager _spawnManager;
         private GameObject _playerPrefab; // Store player prefab for bot spawning
-        private Core.Networking.LatencyMonitor _latencyMonitor;
+        private LatencyMonitor _latencyMonitor;
 
         /// <summary>
         /// Constructor with dependencies
@@ -181,7 +182,7 @@ namespace Gameplay.App.Networking
         /// </summary>
         private void SpawnBotsIfNeeded()
         {
-            var bots = _networkingServices.MatchmakingService.GetActiveBots();
+            List<BotPlayer> bots = _networkingServices.MatchmakingService.GetActiveBots();
             if (bots.Count == 0)
             {
                 GameLogger.Log("No bots to spawn");
@@ -228,7 +229,7 @@ namespace Gameplay.App.Networking
 
             // Create pure C# monitor - works for both host and client
             // It will hook into CustomMessagingManager internally
-            _latencyMonitor = new Core.Networking.LatencyMonitor();
+            _latencyMonitor = new LatencyMonitor();
 
             GameLogger.Log("LatencyMonitor initialized (Pure C#)");
         }

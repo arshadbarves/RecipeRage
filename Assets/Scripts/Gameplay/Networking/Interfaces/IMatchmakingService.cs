@@ -1,4 +1,5 @@
 using System;
+using Gameplay.Networking.Bot;
 using Modules.Networking.Common;
 
 namespace Modules.Networking.Interfaces
@@ -10,72 +11,72 @@ namespace Modules.Networking.Interfaces
     public interface IMatchmakingService
     {
         #region Events
-        
+
         /// <summary>
         /// Fired when matchmaking starts
         /// </summary>
         event Action OnMatchmakingStarted;
-        
+
         /// <summary>
         /// Fired when matchmaking is cancelled
         /// </summary>
         event Action OnMatchmakingCancelled;
-        
+
         /// <summary>
         /// Fired when matchmaking fails
         /// </summary>
         event Action<string> OnMatchmakingFailed;
-        
+
         /// <summary>
         /// Fired when players are found (progress update)
         /// </summary>
         event Action<int, int> OnPlayersFound; // (current, required)
-        
+
         /// <summary>
         /// Fired when a match is found and ready
         /// </summary>
         event Action<LobbyInfo> OnMatchFound;
-        
+
         #endregion
-        
+
         #region Properties
-        
+
         /// <summary>
         /// Whether matchmaking is currently active
         /// </summary>
         bool IsSearching { get; }
-        
+
         /// <summary>
         /// Current number of players found
         /// </summary>
         int PlayersFound { get; }
-        
+
         /// <summary>
         /// Required number of players for the match
         /// </summary>
         int RequiredPlayers { get; }
-        
+
         #endregion
-        
+
         #region Methods
-        
+
         /// <summary>
         /// Initialize the matchmaking service
         /// </summary>
         void Initialize();
-        
+
         /// <summary>
         /// Start matchmaking for the current party
         /// </summary>
         /// <param name="gameMode">Game mode to search for</param>
         /// <param name="teamSize">Size of each team</param>
         void FindMatch(GameMode gameMode, int teamSize);
-        
+
         /// <summary>
         /// Cancel active matchmaking
         /// </summary>
         void CancelMatchmaking();
-        
+
         /// <summary>
         /// Search for available match lobbies
         /// </summary>
@@ -84,26 +85,26 @@ namespace Modules.Networking.Interfaces
         /// <param name="neededPlayers">Number of players needed</param>
         /// <returns>List of available lobbies</returns>
         void SearchForMatchLobbies(GameMode gameMode, int teamSize, int neededPlayers);
-        
+
         /// <summary>
         /// Create a new match lobby and wait for players
         /// </summary>
         /// <param name="gameMode">Game mode</param>
         /// <param name="teamSize">Team size</param>
         void CreateAndWaitForPlayers(GameMode gameMode, int teamSize);
-        
+
         /// <summary>
         /// Fill remaining slots with bots and start the match
         /// Called by MatchmakingState when timeout occurs
         /// </summary>
         void FillMatchWithBots();
-        
+
         /// <summary>
         /// Get active bots in the current match
         /// </summary>
         /// <returns>List of active bot players</returns>
-        System.Collections.Generic.List<Bot.BotPlayer> GetActiveBots();
-        
+        System.Collections.Generic.List<BotPlayer> GetActiveBots();
+
         #endregion
     }
 }

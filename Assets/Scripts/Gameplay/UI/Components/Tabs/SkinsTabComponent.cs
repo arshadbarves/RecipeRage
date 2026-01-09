@@ -2,7 +2,6 @@ using Modules.Logging;
 using Modules.Skins.Data;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Gameplay.UI.Data;
 
 namespace Gameplay.UI.Components.Tabs
 {

@@ -4,8 +4,6 @@ using Gameplay.UI.Popups;
 using UnityEngine.SceneManagement;
 using Modules.Logging;
 using Modules.Persistence;
-using Modules.UI;
-using Modules.UI.Core;
 
 namespace Gameplay.App.State.States
 {

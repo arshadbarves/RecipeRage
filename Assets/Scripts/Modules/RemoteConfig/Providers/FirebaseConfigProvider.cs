@@ -4,6 +4,7 @@ using Cysharp.Threading.Tasks;
 using Modules.Logging;
 using Modules.RemoteConfig.Models;
 using Firebase.RemoteConfig;
+using Modules.Shared.Utilities;
 using UnityEngine;
 
 namespace Modules.RemoteConfig.Providers
@@ -25,8 +26,8 @@ namespace Modules.RemoteConfig.Providers
             {
                 GameLogger.Log("Initializing Firebase Remote Config provider...");
 
-                string platform = Core.Utilities.PlatformUtils.GetPlatform();
-                string environment = Core.Utilities.PlatformUtils.GetEnvironment();
+                string platform = PlatformUtils.GetPlatform();
+                string environment = PlatformUtils.GetEnvironment();
 
                 FirebaseRemoteConfig remoteConfig = Firebase.RemoteConfig.FirebaseRemoteConfig.DefaultInstance;
 

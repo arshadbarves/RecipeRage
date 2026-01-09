@@ -1,5 +1,4 @@
 using Modules.UI;
-using Modules.UI;
 using Modules.UI.Core;
 using Gameplay.UI.ViewModels;
 using UnityEngine.UIElements;

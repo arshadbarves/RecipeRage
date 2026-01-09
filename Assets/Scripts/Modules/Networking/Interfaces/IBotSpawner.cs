@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Gameplay.Networking.Bot;
+using Modules.Networking.Models;
 using Modules.Shared.Enums;
 
 namespace Modules.Networking.Interfaces

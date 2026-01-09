@@ -1,11 +1,11 @@
 using System;
-using Modules.Shared.Interfaces;
 using Modules.Logging;
 using Modules.Shared;
 using Modules.Persistence;
 using Modules.UI;
 using Modules.Core.Banking;
 using Modules.Core.Banking.Interfaces;
+using Modules.Session;
 using Modules.UI.Core;
 using VContainer;
 

@@ -1,8 +1,7 @@
 using System;
-using App.Bootstrap;
-using Modules.Shared.Interfaces;
 using Modules.Logging;
 using Gameplay.App.State.States;
+using Gameplay.Bootstrap;
 using Unity.Netcode;
 using UnityEngine;
 using VContainer;

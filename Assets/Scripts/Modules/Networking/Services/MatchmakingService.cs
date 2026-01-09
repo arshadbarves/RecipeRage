@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Modules.Logging;
 using Modules.Networking.Common;
 using Modules.Networking.Interfaces;
+using Modules.Networking.Models;
 using Modules.RemoteConfig;
 using Epic.OnlineServices;
 using Epic.OnlineServices.Lobby;
@@ -40,7 +41,7 @@ namespace Modules.Networking.Services
 
         private ILobbyManager _lobbyManager;
         private EOSLobbyManager _eosLobbyManager;
-        private Bot.BotManager _botManager;
+        private BotManager _botManager;
         private bool _isInitialized;
 
         // Matchmaking state
@@ -64,7 +65,7 @@ namespace Modules.Networking.Services
         {
             _lobbyManager = lobbyManager ?? throw new ArgumentNullException(nameof(lobbyManager));
             _eosLobbyManager = eosLobbyManager ?? throw new ArgumentNullException(nameof(eosLobbyManager));
-            _botManager = new Bot.BotManager();
+            _botManager = new BotManager();
         }
 
         /// <summary>
@@ -195,7 +196,7 @@ namespace Modules.Networking.Services
             AddSearchFilter("GameMode", gameMode.ToString(), ComparisonOp.Equal);
             AddSearchFilter("TeamSize", teamSize.ToString(), ComparisonOp.Equal);
             AddSearchFilter("Status", "Filling", ComparisonOp.Equal);
-            
+
             // Additional safety filters
             // Note: EOS will automatically filter out full lobbies via AvailableSlots
 
@@ -352,12 +353,12 @@ namespace Modules.Networking.Services
 
             // Get lobby attributes to verify status
             string lobbyStatus = GetLobbyAttribute(lobbyDetails, "Status");
-            
+
             // Safety check: Don't join if status is not "Filling"
             if (lobbyStatus != "Filling" && !string.IsNullOrEmpty(lobbyStatus))
             {
                 GameLogger.LogWarning($"Skipping lobby {lobbyId} - Status is '{lobbyStatus}', not 'Filling'");
-                
+
                 // Try next lobby
                 var getCountOptions = new LobbySearchGetSearchResultCountOptions();
                 uint resultCount = _currentSearch.GetSearchResultCount(ref getCountOptions);
@@ -701,7 +702,7 @@ namespace Modules.Networking.Services
         /// <summary>
         /// Get active bots in the current match
         /// </summary>
-        public List<Bot.BotPlayer> GetActiveBots()
+        public List<BotPlayer> GetActiveBots()
         {
             return _botManager.GetActiveBots();
         }

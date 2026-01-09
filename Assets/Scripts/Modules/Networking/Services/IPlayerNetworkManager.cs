@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Gameplay.Characters;
+using Modules.Networking.Interfaces;
 
 namespace Modules.Networking.Services
 {
@@ -15,7 +15,7 @@ namespace Modules.Networking.Services
         /// </summary>
         /// <param name="clientId">The client ID of the player</param>
         /// <param name="player">The player controller</param>
-        void RegisterPlayer(ulong clientId, PlayerController player);
+        void RegisterPlayer(ulong clientId, IPlayerController player);
         
         /// <summary>
         /// Unregister a player.
@@ -28,13 +28,13 @@ namespace Modules.Networking.Services
         /// </summary>
         /// <param name="clientId">The client ID of the player</param>
         /// <returns>The player controller, or null if not found</returns>
-        PlayerController GetPlayer(ulong clientId);
+        IPlayerController GetPlayer(ulong clientId);
         
         /// <summary>
         /// Get all registered players.
         /// </summary>
         /// <returns>A read-only list of all players</returns>
-        IReadOnlyList<PlayerController> GetAllPlayers();
+        IReadOnlyList<IPlayerController> GetAllPlayers();
         
         /// <summary>
         /// Get the number of registered players.
@@ -52,7 +52,7 @@ namespace Modules.Networking.Services
         /// <summary>
         /// Event triggered when a player is registered.
         /// </summary>
-        event Action<PlayerController> OnPlayerRegistered;
+        event Action<IPlayerController> OnPlayerRegistered;
         
         /// <summary>
         /// Event triggered when a player is unregistered.

@@ -1,10 +1,10 @@
-using Modules.Shared.Interfaces;
 using Modules.Shared;
 using Modules.Core.Banking;
 using Modules.Core.Banking.Interfaces;
 using Modules.UI.Core;
-using Gameplay.UI.Data; // Added
-using UnityEngine; // Added
+using Gameplay.UI.Data;
+using Modules.Session; // Added
+// Added
 using VContainer;
 
 namespace Gameplay.UI.ViewModels

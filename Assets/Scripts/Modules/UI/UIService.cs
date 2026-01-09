@@ -4,13 +4,11 @@ using System.Linq;
 using Modules.Animation;
 using Modules.Shared.Interfaces;
 using Modules.Logging;
-using Modules.UI; // Added
 using Cysharp.Threading.Tasks;
 using Modules.UI.Core;
-using Gameplay.UI.Screens;
+using Modules.UI.Interfaces;
 using UnityEngine;
 using UnityEngine.UIElements;
-using VContainer;
 
 namespace Modules.UI
 {
@@ -474,9 +472,9 @@ namespace Modules.UI
             return _stackManager.IsBlockedByHigherCategory(category);
         }
 
-        public async UniTask ShowNotification(string message, Core.UI.NotificationType type = Core.UI.NotificationType.Info, float duration = 3f)
+        public async UniTask ShowNotification(string message, NotificationType type = NotificationType.Info, float duration = 3f)
         {
-            var notificationScreen = GetScreen<NotificationScreen>(UIScreenType.Notification);
+            var notificationScreen = GetScreen<INotificationScreen>(UIScreenType.Notification);
             if (notificationScreen == null)
             {
                 _loggingService.LogWarning("NotificationScreen not found - make sure it's registered");
@@ -486,9 +484,9 @@ namespace Modules.UI
             await notificationScreen.Show(message, type, duration);
         }
 
-        public async UniTask ShowNotification(string title, string message, Core.UI.NotificationType type = Core.UI.NotificationType.Info, float duration = 3f)
+        public async UniTask ShowNotification(string title, string message, NotificationType type = NotificationType.Info, float duration = 3f)
         {
-            var notificationScreen = GetScreen<NotificationScreen>(UIScreenType.Notification);
+            var notificationScreen = GetScreen<INotificationScreen>(UIScreenType.Notification);
             if (notificationScreen == null)
             {
                 _loggingService.LogWarning("NotificationScreen not found - make sure it's registered");

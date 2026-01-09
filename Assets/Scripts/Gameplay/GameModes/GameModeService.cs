@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Modules.Shared.Interfaces;
 using Modules.Logging;
 using Modules.RemoteConfig;
 using Modules.RemoteConfig.Models;
@@ -33,7 +32,7 @@ namespace Gameplay.GameModes
             LoadGameModes();
             SubscribeToConfigUpdates();
         }
-        
+
         private void LoadGameSettings()
         {
             if (_remoteConfigService != null && _remoteConfigService.TryGetConfig<GameSettingsConfig>(out var settings))
@@ -46,7 +45,7 @@ namespace Gameplay.GameModes
                 GameLogger.LogWarning("RemoteConfig not available, using default settings");
             }
         }
-        
+
         private void SubscribeToConfigUpdates()
         {
             if (_remoteConfigService != null)
@@ -54,7 +53,7 @@ namespace Gameplay.GameModes
                 _remoteConfigService.OnSpecificConfigUpdated += OnConfigUpdated;
             }
         }
-        
+
         private void OnConfigUpdated(Type configType, IConfigModel config)
         {
             if (configType == typeof(GameSettingsConfig) && config is GameSettingsConfig settings)
@@ -63,7 +62,7 @@ namespace Gameplay.GameModes
                 GameLogger.Log("Game settings updated from RemoteConfig");
             }
         }
-        
+
         /// <summary>
         /// Gets game settings from RemoteConfig
         /// </summary>
@@ -76,7 +75,7 @@ namespace Gameplay.GameModes
         {
             // Load from Resources
             GameMode[] modes = Resources.LoadAll<GameMode>("GameModes");
-            
+
             foreach (var mode in modes)
             {
                 if (mode != null && !string.IsNullOrEmpty(mode.Id))
@@ -127,7 +126,7 @@ namespace Gameplay.GameModes
 
             _selectedGameMode = mode;
             OnGameModeChanged?.Invoke(mode);
-            
+
             GameLogger.Log($"Selected: {mode.DisplayName}");
             return true;
         }
@@ -139,7 +138,7 @@ namespace Gameplay.GameModes
             {
                 _remoteConfigService.OnSpecificConfigUpdated -= OnConfigUpdated;
             }
-            
+
             GameLogger.Log("Disposing");
             _gameModes.Clear();
             _selectedGameMode = null;

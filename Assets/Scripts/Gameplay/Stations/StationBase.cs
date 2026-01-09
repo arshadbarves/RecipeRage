@@ -1,5 +1,4 @@
 using Gameplay.Characters;
-using Gameplay.Interaction;
 using Modules.Logging;
 using Unity.Netcode;
 using UnityEngine;

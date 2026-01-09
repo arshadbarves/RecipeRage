@@ -1,5 +1,4 @@
 using Gameplay.Camera;
-using Gameplay.Camera;
 
 namespace Gameplay
 {

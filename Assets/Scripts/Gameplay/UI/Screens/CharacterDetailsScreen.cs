@@ -1,11 +1,10 @@
-using Modules.Shared.Interfaces;
 using Gameplay.Characters;
 using Modules.Logging;
+using Modules.Session;
 using Modules.Skins;
 using Modules.Skins.Data;
 using Modules.UI;
 using Modules.UI.Core;
-using Gameplay.UI.Data;
 using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;
@@ -257,7 +256,7 @@ namespace Gameplay.UI.Screens
                 lockIcon.AddToClassList("lock-icon");
                 image.Add(lockIcon);
 
-                Label costLabel = new Label($"{skin.unlockCost} 💰");
+                Label costLabel = new Label($"{skin.price} 💰");
                 costLabel.style.position = Position.Absolute;
                 costLabel.style.bottom = 5;
                 costLabel.style.width = new Length(100, LengthUnit.Percent);
@@ -292,7 +291,7 @@ namespace Gameplay.UI.Screens
             if (!isUnlocked)
             {
                 GameLogger.Log($"Skin is locked: {skin.name}");
-                _uiService?.ShowNotification($"{skin.name} is locked! Cost: {skin.unlockCost} coins", NotificationType.Info, 3f);
+                _uiService?.ShowNotification($"{skin.name} is locked! Cost: {skin.price} coins", NotificationType.Info, 3f);
                 return;
             }
 

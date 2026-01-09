@@ -1,6 +1,6 @@
-using Modules.Shared.Interfaces;
 using Modules.Logging;
 using Modules.Networking.Services;
+using Modules.Session;
 using Unity.Netcode;
 using UnityEngine;
 using VContainer;

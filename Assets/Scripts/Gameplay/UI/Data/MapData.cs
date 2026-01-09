@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 using Modules.Logging;
 using Modules.RemoteConfig;
 
@@ -46,14 +45,14 @@ namespace Gameplay.UI.Data
         public List<MapCategory> categories;
         public string currentMapId;
         public string rotationStartTime; // ISO 8601 format
-        
+
         /// <summary>
         /// Get map by ID (search all categories)
         /// </summary>
         public MapInfo GetMapById(string mapId)
         {
             if (categories == null) return null;
-            
+
             foreach (var category in categories)
             {
                 var map = category.maps?.Find(m => m.id == mapId);
@@ -61,7 +60,7 @@ namespace Gameplay.UI.Data
             }
             return null;
         }
-        
+
         /// <summary>
         /// Get current map
         /// </summary>
@@ -69,7 +68,7 @@ namespace Gameplay.UI.Data
         {
             return GetMapById(currentMapId);
         }
-        
+
         /// <summary>
         /// Get available maps from all categories
         /// </summary>
@@ -77,7 +76,7 @@ namespace Gameplay.UI.Data
         {
             var allMaps = new List<MapInfo>();
             if (categories == null) return allMaps;
-            
+
             foreach (var category in categories)
             {
                 if (category.maps != null)
@@ -87,7 +86,7 @@ namespace Gameplay.UI.Data
             }
             return allMaps;
         }
-        
+
         /// <summary>
         /// Get category by ID
         /// </summary>
@@ -95,7 +94,7 @@ namespace Gameplay.UI.Data
         {
             return categories?.Find(c => c.id == categoryId);
         }
-        
+
         /// <summary>
         /// Calculate time remaining until next rotation
         /// </summary>
@@ -103,18 +102,18 @@ namespace Gameplay.UI.Data
         {
             if (string.IsNullOrEmpty(rotationStartTime))
                 return TimeSpan.Zero;
-            
+
             try
             {
                 DateTime startTime = DateTime.Parse(rotationStartTime);
                 MapInfo currentMap = GetCurrentMap();
-                
+
                 if (currentMap == null)
                     return TimeSpan.Zero;
-                
+
                 DateTime nextRotation = startTime.AddSeconds(currentMap.rotationTime);
                 TimeSpan remaining = nextRotation - NTPTime.UtcNow;
-                
+
                 return remaining.TotalSeconds > 0 ? remaining : TimeSpan.Zero;
             }
             catch (Exception e)

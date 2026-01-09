@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Modules.Shared.Interfaces;
 using Modules.Shared.Enums;
 using Modules.Logging;
 using Gameplay.Networking.Bot;

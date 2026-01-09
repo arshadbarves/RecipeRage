@@ -1,4 +1,3 @@
-using Modules.Shared.Interfaces;
 using Modules.Shared.Events;
 using Modules.Logging;
 using Gameplay.UI.Components;
@@ -7,9 +6,9 @@ using Modules.UI.Core;
 using UnityEngine.UIElements;
 using VContainer;
 using Modules.Persistence;
-using Gameplay.Characters;
 using Modules.UI;
 using Gameplay.UI.ViewModels;
+using Modules.Session;
 
 namespace Gameplay.UI.Screens
 {

@@ -1,5 +1,4 @@
 using Modules.Logging;
-using UnityEngine;
 
 namespace Gameplay.App.State
 {

@@ -5,8 +5,8 @@ using Modules.RemoteConfig;
 using Modules.UI;
 using Cysharp.Threading.Tasks;
 using Modules.UI.Core;
+using RecipeRage.Modules.Auth.Core;
 using UnityEngine.UIElements;
-using Modules.Auth.Core;
 using VContainer;
 
 namespace Gameplay.UI.Screens

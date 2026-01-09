@@ -1,6 +1,6 @@
 using Modules.UI;
 using DG.Tweening;
-using Gameplay.UI.Controls;
+using Modules.UI.Controls;
 using Modules.UI.Core;
 using UnityEngine;
 using UnityEngine.UIElements;

@@ -1,11 +1,12 @@
-using Modules.Shared.Interfaces;
 using Modules.Logging;
 using Modules.Networking.Services;
+using Modules.Session;
+using Gameplay.Characters;
 using Unity.Netcode;
 using UnityEngine;
 using VContainer;
 
-namespace Modules.Networking
+namespace Gameplay.Networking
 {
     /// <summary>
     /// Initializes network services and handles network callbacks.
@@ -109,7 +110,7 @@ namespace Modules.Networking
             if (NetworkManager.Singleton.SpawnManager.GetPlayerNetworkObject(clientId) != null)
             {
                 var playerObject = NetworkManager.Singleton.SpawnManager.GetPlayerNetworkObject(clientId);
-                var playerController = playerObject.GetComponent<Core.Characters.PlayerController>();
+                var playerController = playerObject.GetComponent<PlayerController>();
 
                 if (playerController != null)
                 {

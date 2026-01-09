@@ -1,11 +1,9 @@
 using System;
-using Modules.Animation;
 using Modules.Logging;
 using Modules.UI;
 using Modules.UI.Core;
 using UnityEngine;
 using UnityEngine.UIElements;
-using VContainer;
 
 namespace Gameplay.UI
 {

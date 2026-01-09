@@ -2,13 +2,11 @@ using System;
 using Modules.Localization;
 using Modules.Logging;
 using Modules.RemoteConfig;
-using Modules.RemoteConfig;
 using Modules.Persistence;
 using Modules.UI;
-using Modules.RemoteConfig;
 using Cysharp.Threading.Tasks;
-using Modules.UI;
 using Gameplay.UI.Screens;
+using RecipeRage.Modules.Auth.Core;
 
 namespace Gameplay.App.State.States
 {
