@@ -4,10 +4,9 @@ using Gameplay.Camera;
 using Unity.Netcode;
 using UnityEngine;
 using Core.Networking.Services;
+using Core.Networking.Interfaces; // Added
 using Gameplay.Shared.Stats;
-using Core.Input;
 using Core.Logging;
-using Core.Networking.Services;
 using Core.Session;
 using VContainer;
 using VContainer.Unity;
@@ -18,7 +17,7 @@ namespace Gameplay.Characters
     /// Main player controller - orchestrates all player subsystems.
     /// Follows Single Responsibility Principle by delegating to specialized controllers.
     /// </summary>
-    public class PlayerController : NetworkBehaviour
+    public class PlayerController : NetworkBehaviour, IPlayerController // Added interface
     {
         #region Inspector Settings
 
