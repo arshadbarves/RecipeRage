@@ -1,9 +1,9 @@
 using System;
 using System.Threading;
-using Modules.Localization;
-using Modules.Shared;
 using Cysharp.Threading.Tasks;
-using Modules.UI.Core;
+using Core.Localization;
+using Core.Shared;
+using Core.UI.Core;
 using UnityEngine;
 using VContainer;
 

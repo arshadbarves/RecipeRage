@@ -1,5 +1,5 @@
 using System;
-using Modules.Logging;
+using Core.Logging;
 using Unity.Cinemachine;
 using UnityEngine;
 

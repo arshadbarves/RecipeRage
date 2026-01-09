@@ -1,9 +1,9 @@
-using Modules.Shared;
-using Modules.Core.Banking;
-using Modules.Core.Banking.Interfaces;
-using Modules.UI.Core;
 using Gameplay.UI.Data;
-using Modules.Session; // Added
+using Core.Banking;
+using Core.Banking.Interfaces;
+using Core.Shared;
+using Core.UI.Core;
+using Core.Session; // Added
 // Added
 using VContainer;
 

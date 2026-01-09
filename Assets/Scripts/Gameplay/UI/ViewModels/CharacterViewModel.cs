@@ -1,6 +1,6 @@
 using Gameplay.Characters;
-using Modules.Session;
-using Modules.UI.Core;
+using Core.UI.Core;
+using Core.Session;
 using VContainer;
 
 namespace Gameplay.UI.ViewModels

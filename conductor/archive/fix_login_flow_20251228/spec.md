@@ -24,7 +24,7 @@ Ensure the `LoginView` appears on the first launch of the game (or after logout)
 - **Better Approach:** Handle saving in `EOSAuthService` so it works for both UI-driven and Auto-driven logins.
 
 ## Implementation Details
-- **File:** `Assets/Scripts/Modules/Auth/Core/EOSAuthService.cs`
+- **File:** `Assets/Scripts/Core/Auth/Core/EOSAuthService.cs`
     - Inject `ISaveService` (if available in constructor) OR use `PlayerPrefs` directly for this simple flag if `ISaveService` is too heavy (but we have `ServiceContainer` so injection is easy).
     - In `LoginAsync`, if success, save flag.
     - In `LogoutAsync`, clear flag.

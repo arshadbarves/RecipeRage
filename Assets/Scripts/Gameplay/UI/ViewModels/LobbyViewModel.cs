@@ -1,13 +1,13 @@
 using System;
 using System.Threading;
-using Modules.Networking.Interfaces;
-using Modules.Shared;
+using Core.Networking.Interfaces;
 using Gameplay.App.State;
 using Gameplay.App.State.States;
 using Cysharp.Threading.Tasks;
-using Modules.UI.Core;
 using Gameplay.UI.Data;
-using Modules.Session;
+using Core.Shared;
+using Core.UI.Core;
+using Core.Session;
 using UnityEngine;
 using VContainer;
 

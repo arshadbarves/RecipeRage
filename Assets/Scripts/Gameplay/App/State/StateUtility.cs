@@ -1,4 +1,4 @@
-using Modules.Logging;
+using Core.Logging;
 
 namespace Gameplay.App.State
 {

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
+using Core.Logging;
 using UnityEngine;
-using Modules.Logging;
 
 namespace Gameplay.Characters
 {

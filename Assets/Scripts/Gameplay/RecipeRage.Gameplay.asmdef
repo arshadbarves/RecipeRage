@@ -16,7 +16,7 @@
         "com.playeveryware.eos.core",
         "Unity.Services.Friends",
         "Unity.Cinemachine",
-        "RecipeRage.Modules",
+        "RecipeRage.Core",
         "Unity.TextMeshPro",
         "com.playeveryware.eos.samples.networking"
     ],

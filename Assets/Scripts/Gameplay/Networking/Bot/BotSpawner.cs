@@ -1,8 +1,9 @@
 using System.Collections.Generic;
-using Modules.Logging;
-using Modules.Networking.Interfaces;
-using Modules.Shared.Enums;
+using Core.Networking.Interfaces;
 using Gameplay.Spawning;
+using Core.Logging;
+using Core.Networking.Interfaces;
+using Core.Shared.Enums;
 using Unity.Netcode;
 using UnityEngine;
 

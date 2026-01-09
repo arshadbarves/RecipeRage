@@ -4,15 +4,15 @@
 Establishes the module structure and defines the contracts for authentication.
 
 - [x] Task: Create Auth Module Structure 695a603
-    - Create directories: `Assets/Scripts/Modules/Auth/{Core,UI,Tests}`.
+    - Create directories: `Assets/Scripts/Core/Auth/{Core,UI,Tests}`.
     - Create `IAuthService.cs` interface with `LoginAsync`, `LogoutAsync`, `IsLoggedIn`, `GetCurrentUserId`.
-    - Create Assembly Definition `RecipeRage.Modules.Auth` and reference `RecipeRage.Core`, `Unity.Netcode.Runtime`, `VContainer`, `UniTask`, `Epic.OnlineServices`.
+    - Create Assembly Definition `RecipeRage.Core.Auth` and reference `RecipeRage.Core`, `Unity.Netcode.Runtime`, `VContainer`, `UniTask`, `Epic.OnlineServices`.
 - [x] Task: Configure VContainer & Bootstrapper 6eeab5c
     - Create `AuthScope` or update `GameLifetimeScope` to register `IAuthService`.
     - Create a mock `MockAuthService` for initial testing.
     - Update `Bootstrapper.cs` to resolve and initialize `IAuthService`.
 - [x] Task: Create Basic Auth Tests 8ce9fd0
-    - Create `Assets/Scripts/Modules/Auth/Tests/AuthServiceTests.cs`.
+    - Create `Assets/Scripts/Core/Auth/Tests/AuthServiceTests.cs`.
     - Write tests to verify VContainer resolution and `MockAuthService` behavior.
 - [ ] Task: Conductor - User Manual Verification 'Setup & Initialization' (Protocol in workflow.md)
 
@@ -36,7 +36,7 @@ Implements the actual EOS connection logic using the PlayEveryWare plugin.
 Connects the backend logic to the frontend UI and integrates with the Friends system.
 
 - [x] Task: Create Login UI Layout (UXML/USS) fa6c675
-    - Create `LoginView.uxml` and `LoginView.uss` in `Assets/Scripts/Modules/Auth/UI/`.
+    - Create `LoginView.uxml` and `LoginView.uss` in `Assets/Scripts/Core/Auth/UI/`.
     - Implement "Skewed Shop" style: Dark background, skewed buttons (-10deg), Red/Yellow accents.
     - Add buttons: "Connect (Device)", "Connect (Epic)".
 - [x] Task: Implement LoginView Logic a5d4709

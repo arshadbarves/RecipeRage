@@ -1,12 +1,14 @@
 using System;
-using Modules.Input;
+using Core.Input;
 using Gameplay.Camera;
 using Unity.Netcode;
 using UnityEngine;
-using Modules.Logging;
-using Modules.Networking.Services;
+using Core.Networking.Services;
 using Gameplay.Shared.Stats;
-using Modules.Session;
+using Core.Input;
+using Core.Logging;
+using Core.Networking.Services;
+using Core.Session;
 using VContainer;
 using VContainer.Unity;
 

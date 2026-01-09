@@ -1,9 +1,10 @@
 using Cysharp.Threading.Tasks;
-using Modules.UI;
+using Core.UI;
 using Gameplay.UI.Popups;
+using Core.Logging;
+using Core.Persistence;
+using Core.UI.Interfaces;
 using UnityEngine.SceneManagement;
-using Modules.Logging;
-using Modules.Persistence;
 
 namespace Gameplay.App.State.States
 {

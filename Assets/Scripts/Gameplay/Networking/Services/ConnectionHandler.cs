@@ -1,9 +1,10 @@
 using System.Collections.Generic;
-using Modules.Logging;
+using Core.Logging;
+using Core.Networking.Services;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace Modules.Networking.Services
+namespace Core.Networking.Services
 {
     /// <summary>
     /// Handles player connections and disconnections gracefully.

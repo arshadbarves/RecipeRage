@@ -1,7 +1,8 @@
 using System;
-using Modules.Networking.Interfaces;
+using Core.Networking.Interfaces;
+using Core.Networking.Interfaces;
 
-namespace Modules.Networking
+namespace Core.Networking
 {
     /// <summary>
     /// Interface for all networking services

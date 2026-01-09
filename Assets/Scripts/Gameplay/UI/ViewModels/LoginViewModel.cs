@@ -1,11 +1,11 @@
 using System;
-using Modules.Localization;
-using Modules.Logging;
-using Modules.Shared;
-using Modules.UI.Core;
 using VContainer;
 using Cysharp.Threading.Tasks;
-using RecipeRage.Modules.Auth.Core;
+using Core.Auth.Core;
+using Core.Localization;
+using Core.Logging;
+using Core.Shared;
+using Core.UI.Core;
 
 namespace Gameplay.UI.ViewModels
 {

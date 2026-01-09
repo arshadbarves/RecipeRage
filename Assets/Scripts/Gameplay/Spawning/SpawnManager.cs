@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
-using Modules.Shared.Enums;
-using Modules.Logging;
 using Gameplay.Networking.Bot;
+using Core.Logging;
+using Core.Shared.Enums;
 using Unity.Netcode;
 using UnityEngine;
 

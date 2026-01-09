@@ -1,11 +1,13 @@
 using System;
-using Modules.Shared.Events;
-using Modules.Logging;
-using Modules.RemoteConfig;
-using Modules.UI;
+using Core.UI;
 using Cysharp.Threading.Tasks;
-using Modules.UI.Core;
-using RecipeRage.Modules.Auth.Core;
+using Core.Auth.Core;
+using Core.Logging;
+using Core.RemoteConfig;
+using Core.Shared.Events;
+using Core.UI;
+using Core.UI.Core;
+using Core.UI.Interfaces;
 using UnityEngine.UIElements;
 using VContainer;
 

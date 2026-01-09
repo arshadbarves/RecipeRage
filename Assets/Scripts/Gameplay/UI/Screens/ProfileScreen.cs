@@ -1,8 +1,10 @@
-using Modules.Networking;
-using Modules.Persistence;
-using Modules.Session;
-using Modules.UI;
-using Modules.UI.Core;
+using Core.Persistence;
+using Core.UI;
+using Core.UI.Core;
+using Core.UI.Interfaces;
+using Core.Networking;
+using Core.Session;
+using Core.UI;
 using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;

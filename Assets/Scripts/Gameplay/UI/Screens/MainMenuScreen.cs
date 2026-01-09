@@ -1,14 +1,16 @@
-using Modules.Shared.Events;
-using Modules.Logging;
 using Gameplay.UI.Components;
 using Gameplay.UI.Components.Tabs;
-using Modules.UI.Core;
 using UnityEngine.UIElements;
 using VContainer;
-using Modules.Persistence;
-using Modules.UI;
+using Core.UI;
 using Gameplay.UI.ViewModels;
-using Modules.Session;
+using Core.Logging;
+using Core.Persistence;
+using Core.Shared.Events;
+using Core.UI;
+using Core.UI.Core;
+using Core.UI.Interfaces;
+using Core.Session;
 
 namespace Gameplay.UI.Screens
 {

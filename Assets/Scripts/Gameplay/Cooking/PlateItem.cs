@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Modules.Logging;
+using Core.Logging;
 using Unity.Netcode;
 using UnityEngine;
 

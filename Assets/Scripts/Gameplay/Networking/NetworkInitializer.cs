@@ -1,7 +1,8 @@
-using Modules.Logging;
-using Modules.Networking.Services;
-using Modules.Session;
+using Core.Networking.Services;
+using Core.Session;
 using Gameplay.Characters;
+using Core.Logging;
+using Core.Networking.Services;
 using Unity.Netcode;
 using UnityEngine;
 using VContainer;

@@ -1,10 +1,10 @@
 using Unity.Netcode;
 using UnityEngine;
-using Modules.Logging;
 using Unity.Collections;
 using System;
+using Core.Logging;
 
-namespace Modules.Networking
+namespace Core.Networking
 {
     /// <summary>
     /// Monitors Round Trip Time (RTT) during gameplay using Unity Netcode.

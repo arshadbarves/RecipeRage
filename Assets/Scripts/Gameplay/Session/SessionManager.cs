@@ -1,11 +1,11 @@
 using System;
 using Gameplay.Bootstrap;
-using Modules.Shared.Events;
-using Modules.Logging;
+using Core.Logging;
+using Core.Shared.Events;
 using VContainer;
 using VContainer.Unity;
 
-namespace Modules.Session
+namespace Core.Session
 {
     public class SessionManager : IInitializable, IDisposable
     {

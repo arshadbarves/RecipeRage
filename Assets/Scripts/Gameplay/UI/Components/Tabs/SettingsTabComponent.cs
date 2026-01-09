@@ -1,6 +1,7 @@
 using System.Collections.Generic;
-using Modules.UI;
+using Core.UI;
 using Gameplay.UI.ViewModels;
+using Core.UI.Interfaces;
 using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;

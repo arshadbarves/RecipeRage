@@ -1,5 +1,5 @@
-using Modules.Shared;
-using Modules.UI.Core;
+using Core.Shared;
+using Core.UI.Core;
 using VContainer;
 
 namespace Gameplay.UI.ViewModels

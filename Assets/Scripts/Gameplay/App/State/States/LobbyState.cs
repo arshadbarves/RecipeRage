@@ -1,6 +1,7 @@
-using Modules.UI;
-using Modules.Networking;
-using Modules.Session;
+using Core.UI.Interfaces;
+using Core.UI;
+using Core.Networking;
+using Core.Session;
 using VContainer;
 
 namespace Gameplay.App.State.States

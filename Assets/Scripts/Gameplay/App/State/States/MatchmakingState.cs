@@ -1,11 +1,12 @@
-using Modules.Networking;
-using Modules.Networking.Common;
-using Modules.UI;
+using Core.Networking;
+using Core.UI;
 using UnityEngine;
 using VContainer;
 using Cysharp.Threading.Tasks;
-using Modules.RemoteConfig;
-using Modules.Session;
+using Core.Networking.Common;
+using Core.RemoteConfig;
+using Core.UI.Interfaces;
+using Core.Session;
 
 namespace Gameplay.App.State.States
 {

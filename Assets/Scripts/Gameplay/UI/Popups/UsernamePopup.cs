@@ -1,8 +1,10 @@
 using System;
-using Modules.UI;
+using Core.UI;
 using DG.Tweening;
-using Modules.UI.Core;
 using Gameplay.UI.ViewModels;
+using Core.UI;
+using Core.UI.Core;
+using Core.UI.Interfaces;
 using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;

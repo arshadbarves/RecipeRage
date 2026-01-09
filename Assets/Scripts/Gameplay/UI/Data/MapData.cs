@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Modules.Logging;
-using Modules.RemoteConfig;
+using Core.Logging;
+using Core.RemoteConfig.Services;
 
 namespace Gameplay.UI.Data
 {

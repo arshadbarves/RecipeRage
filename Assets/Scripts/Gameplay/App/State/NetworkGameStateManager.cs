@@ -1,7 +1,7 @@
 using System;
-using Modules.Logging;
 using Gameplay.App.State.States;
 using Gameplay.Bootstrap;
+using Core.Logging;
 using Unity.Netcode;
 using UnityEngine;
 using VContainer;

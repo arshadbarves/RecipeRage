@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
-using Modules.UI;
+using Core.UI;
 using Cysharp.Threading.Tasks;
-using Modules.UI.Core;
-using Modules.UI.Interfaces;
+using Core.UI;
+using Core.UI.Core;
+using Core.UI.Interfaces;
+using Core.UI.Interfaces;
 using UnityEngine;
 using UnityEngine.UIElements;
 

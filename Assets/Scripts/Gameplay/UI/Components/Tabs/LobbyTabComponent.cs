@@ -1,10 +1,11 @@
-using Modules.Animation;
 using Gameplay.UI.Data;
 using Gameplay.UI.Screens;
 using UnityEngine.UIElements;
-using Modules.Logging;
-using Modules.UI;
+using Core.UI;
 using Gameplay.UI.ViewModels;
+using Core.Animation;
+using Core.Logging;
+using Core.UI.Interfaces;
 using VContainer;
 
 namespace Gameplay.UI.Components.Tabs

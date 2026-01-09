@@ -1,8 +1,8 @@
 using System;
 using Gameplay.Networking.Bot;
-using Modules.Networking.Common;
+using Core.Networking.Common;
 
-namespace Modules.Networking.Interfaces
+namespace Core.Networking.Interfaces
 {
     /// <summary>
     /// Interface for matchmaking operations

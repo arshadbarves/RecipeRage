@@ -1,11 +1,11 @@
 # Specification: Service Migration & Gameplay Separation
 
 ## Overview
-Reorganize the `Assets/Scripts` directory to enforce a strict modular architecture. Services currently residing in `Core` will be moved to `Modules`, grouped by functionality. Gameplay-specific logic will be moved from `Core` to `Gameplay`. `Core` will be reduced to essential bootstrapping and low-level infrastructure.
+Reorganize the `Assets/Scripts` directory to enforce a strict modular architecture. Services currently residing in `Core` will be moved to `Core`, grouped by functionality. Gameplay-specific logic will be moved from `Core` to `Gameplay`. `Core` will be reduced to essential bootstrapping and low-level infrastructure.
 
 ## Target Structure
 
-### Modules (`Assets/Scripts/Modules/`)
+### Core (`Assets/Scripts/Core/`)
 Reusable, project-agnostic(ish) systems.
 - `Audio/`: `AudioService`, `MusicPlayer`, etc.
 - `Input/`: `InputService`, `InputProvider`.
@@ -16,7 +16,7 @@ Reusable, project-agnostic(ish) systems.
 - `Localization/`: `LocalizationManager`.
 - `RemoteConfig/`: `RemoteConfigService`.
 - `Shared/`: Common interfaces (`IInitializable`) and events.
-- `Core/`: *Renamed to avoid confusion?* Maybe keep `Banking` here or move to `Modules/Economy`.
+- `Core/`: *Renamed to avoid confusion?* Maybe keep `Banking` here or move to `Core/Economy`.
 
 ### Gameplay (`Assets/Scripts/Gameplay/`)
 Game-specific logic and mechanics.
@@ -31,22 +31,22 @@ Game-specific logic and mechanics.
 Bootstrapping and Glue.
 - `Bootstrap/`: `SessionLifetimeScope`, `AppLifetimeScope`.
 - `Configuration/`: App config.
-- `Backends/`: Concrete implementations that might link Modules to specific infra (if strictly necessary to keep separate, otherwise move to Modules).
+- `Backends/`: Concrete implementations that might link Core to specific infra (if strictly necessary to keep separate, otherwise move to Core).
 
 ## Namespace Convention
-- `Modules.<ModuleName>` (e.g., `Modules.Audio`, `Modules.Persistence`).
+- `Core.<ModuleName>` (e.g., `Core.Audio`, `Core.Persistence`).
 - `Gameplay.<Feature>` (e.g., `Gameplay.Characters`).
 - `Core.Bootstrap`.
 
 ## Dependency Flow
-`App` -> `Gameplay` -> `Modules` -> `Core` (Bootstrap/Glue)? 
+`App` -> `Gameplay` -> `Core` -> `Core` (Bootstrap/Glue)? 
 Actually:
-`App` (Entry) -> `Core` (DI Root) -> `Gameplay` & `Modules`.
-`Gameplay` -> `Modules`.
-`Modules` -> `Modules` (Shared).
+`App` (Entry) -> `Core` (DI Root) -> `Gameplay` & `Core`.
+`Gameplay` -> `Core`.
+`Core` -> `Core` (Shared).
 
 ## Assembly Definitions
-- `RecipeRage.Modules`: Contains all `Modules/*`. No dependency on `Gameplay` or `Core` (except maybe Bootstrap interfaces if not in Shared).
-- `RecipeRage.Gameplay`: Depends on `Modules`.
-- `RecipeRage.Core`: Depends on `Modules` (to register services) and `Gameplay` (to start game).
+- `RecipeRage.Core`: Contains all `Core/*`. No dependency on `Gameplay` or `Core` (except maybe Bootstrap interfaces if not in Shared).
+- `RecipeRage.Gameplay`: Depends on `Core`.
+- `RecipeRage.Core`: Depends on `Core` (to register services) and `Gameplay` (to start game).
 - `RecipeRage.App`: Entry point.

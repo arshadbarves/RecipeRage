@@ -1,6 +1,7 @@
+using Gameplay.App.Networking;
 using UnityEngine;
 
-namespace Modules.Networking
+namespace Core.Networking
 {
     /// <summary>
     /// MonoBehaviour wrapper for NetworkingServiceContainer
@@ -9,7 +10,7 @@ namespace Modules.Networking
     public class NetworkingServiceUpdater : MonoBehaviour
     {
         private INetworkingServices _networkingServices;
-        
+
         /// <summary>
         /// Initialize with networking services
         /// </summary>
@@ -17,7 +18,7 @@ namespace Modules.Networking
         {
             _networkingServices = networkingServices;
         }
-        
+
         /// <summary>
         /// Update networking services
         /// </summary>
@@ -28,7 +29,7 @@ namespace Modules.Networking
                 container.Update();
             }
         }
-        
+
         /// <summary>
         /// Cleanup on destroy
         /// </summary>

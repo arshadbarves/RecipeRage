@@ -1,7 +1,7 @@
-using Modules.Persistence;
-using Modules.Shared;
-using Modules.UI.Core;
-using RecipeRage.Modules.Auth.Core;
+using Core.Auth.Core;
+using Core.Persistence;
+using Core.Shared;
+using Core.UI.Core;
 using VContainer;
 
 namespace Gameplay.UI.ViewModels

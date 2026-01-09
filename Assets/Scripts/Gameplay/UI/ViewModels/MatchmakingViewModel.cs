@@ -1,12 +1,12 @@
 using System;
 using System.Threading;
-using Modules.Localization;
-using Modules.Networking.Common;
-using Modules.Networking.Interfaces;
-using Modules.Shared;
+using Core.Networking.Interfaces;
 using Cysharp.Threading.Tasks;
-using Modules.Session;
-using Modules.UI.Core;
+using Core.Localization;
+using Core.Networking.Common;
+using Core.Shared;
+using Core.UI.Core;
+using Core.Session;
 using UnityEngine;
 using VContainer;
 

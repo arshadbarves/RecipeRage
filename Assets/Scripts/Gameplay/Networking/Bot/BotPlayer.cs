@@ -1,4 +1,4 @@
-using Modules.Networking.Common;
+using Core.Networking.Common;
 
 namespace Gameplay.Networking.Bot
 {

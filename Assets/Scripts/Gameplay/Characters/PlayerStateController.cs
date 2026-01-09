@@ -1,6 +1,6 @@
 using System;
+using Core.Logging;
 using UnityEngine;
-using Modules.Logging;
 
 namespace Gameplay.Characters
 {

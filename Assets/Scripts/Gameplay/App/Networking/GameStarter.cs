@@ -1,16 +1,18 @@
 using System.Collections.Generic;
-using Modules.Logging;
 using Gameplay.App.State.States;
 using Gameplay.Spawning;
 using Unity.Netcode;
 using UnityEngine;
 using Gameplay.App.State;
-using Modules.Networking;
-using Modules.Networking.Interfaces;
-using Modules.Shared.Enums;
-using Modules.UI;
+using Core.Networking;
+using Core.Networking.Interfaces;
+using Core.UI;
 using Epic.OnlineServices;
 using Gameplay.Networking.Bot;
+using Core.Logging;
+using Core.Networking.Interfaces;
+using Core.Shared.Enums;
+using Core.UI.Interfaces;
 using PlayEveryWare.EpicOnlineServices;
 using PlayEveryWare.EpicOnlineServices.Samples.Network;
 

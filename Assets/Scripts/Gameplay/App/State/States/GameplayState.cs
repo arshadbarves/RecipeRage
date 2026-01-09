@@ -1,14 +1,16 @@
 using Gameplay.Camera;
 using Gameplay.Scoring;
-using Modules.UI;
+using Core.UI;
 using UnityEngine;
-using Modules.Networking;
+using Core.Networking;
 using Gameplay.GameModes;
 using Cysharp.Threading.Tasks;
 using UnityEngine.SceneManagement;
-using Modules.Logging;
 using Gameplay.Cooking;
-using Modules.Session;
+using Gameplay.Networking;
+using Core.Logging;
+using Core.UI.Interfaces;
+using Core.Session;
 using VContainer;
 
 namespace Gameplay.App.State.States

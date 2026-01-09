@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Core.Logging;
 using UnityEngine;
-using Modules.Logging;
 
 namespace Gameplay.Characters
 {

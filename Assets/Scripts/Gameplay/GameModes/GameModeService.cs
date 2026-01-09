@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
+using Core.Logging;
+using Core.RemoteConfig.Interfaces;
+using Core.RemoteConfig.Models;
 using UnityEngine;
-using Modules.Logging;
-using Modules.RemoteConfig;
-using Modules.RemoteConfig.Models;
 using VContainer;
 
 namespace Gameplay.GameModes
