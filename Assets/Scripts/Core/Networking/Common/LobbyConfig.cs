@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Core.Core.Networking.Common
+namespace Core.Networking.Common
 {
     /// <summary>
     /// Configuration for creating a lobby

@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using Core.Core.Logging;
+using Core.Logging;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace Core.Core.Networking.Services
+namespace Core.Networking.Services
 {
     /// <summary>
     /// Network object pooling implementation.

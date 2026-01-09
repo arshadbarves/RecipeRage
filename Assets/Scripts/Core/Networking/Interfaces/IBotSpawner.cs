@@ -1,7 +1,8 @@
 using System.Collections.Generic;
-using Core.Core.Shared.Enums;
+using Core.Networking.Models;
+using Core.Shared.Enums;
 
-namespace Core.Core.Networking.Interfaces
+namespace Core.Networking.Interfaces
 {
     public interface IBotSpawner
     {

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Epic.OnlineServices;
 
-namespace Core.Core.Networking.Common
+namespace Core.Networking.Common
 {
     /// <summary>
     /// Information about a lobby

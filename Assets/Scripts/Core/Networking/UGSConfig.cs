@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Core.Core.Networking
+namespace Core.Networking
 {
     /// <summary>
     /// Unity Gaming Services configuration

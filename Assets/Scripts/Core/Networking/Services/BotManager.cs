@@ -1,6 +1,7 @@
 using System.Collections.Generic;
+using Core.Networking.Models;
 
-namespace Core.Core.Networking.Services
+namespace Core.Networking.Services
 {
     /// <summary>
     /// Placeholder for BotManager to allow compilation.

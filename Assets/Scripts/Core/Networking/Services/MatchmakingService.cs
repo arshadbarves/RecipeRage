@@ -1,16 +1,17 @@
 using System;
 using System.Collections.Generic;
-using Core.Core.Logging;
-using Core.Core.Networking.Common;
-using Core.Core.Networking.Interfaces;
-using Core.Core.RemoteConfig.Services;
+using Core.Logging;
+using Core.Networking.Common;
+using Core.Networking.Interfaces;
+using Core.Networking.Models;
+using Core.RemoteConfig.Services;
 using Epic.OnlineServices;
 using Epic.OnlineServices.Lobby;
 using PlayEveryWare.EpicOnlineServices;
 using PlayEveryWare.EpicOnlineServices.Samples;
 using UnityEngine;
 
-namespace Core.Core.Networking.Services
+namespace Core.Networking.Services
 {
     /// <summary>
     /// Service for matchmaking operations

@@ -1,4 +1,4 @@
-namespace Core.Core.Networking.Common
+namespace Core.Networking.Common
 {
     /// <summary>
     /// Types of lobbies in the game

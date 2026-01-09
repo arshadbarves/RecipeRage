@@ -2,16 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Core.Core.Auth;
-using Core.Core.Logging;
-using Core.Core.Networking.Interfaces;
+using Core.Auth;
+using Core.Logging;
+using Core.Networking.Interfaces;
 using Epic.OnlineServices;
 using UGSFriends = Unity.Services.Friends;
 using UGSModels = Unity.Services.Friends.Models;
 using UGSNotifications = Unity.Services.Friends.Notifications;
 using UGSExceptions = Unity.Services.Friends.Exceptions;
 
-namespace Core.Core.Networking.Services
+namespace Core.Networking.Services
 {
     /// <summary>
     /// Unity Gaming Services Friends implementation

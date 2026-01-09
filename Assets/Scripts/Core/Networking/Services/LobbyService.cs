@@ -1,13 +1,13 @@
 using System;
-using Core.Core.Logging;
-using Core.Core.Networking.Common;
-using Core.Core.Networking.Interfaces;
+using Core.Logging;
+using Core.Networking.Common;
+using Core.Networking.Interfaces;
 using Epic.OnlineServices;
 using Epic.OnlineServices.Lobby;
 using PlayEveryWare.EpicOnlineServices;
 using PlayEveryWare.EpicOnlineServices.Samples;
 
-namespace Core.Core.Networking.Services
+namespace Core.Networking.Services
 {
     /// <summary>
     /// Service for managing lobbies (Party and Match)

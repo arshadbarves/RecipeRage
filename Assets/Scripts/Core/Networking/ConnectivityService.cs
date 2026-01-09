@@ -1,12 +1,12 @@
 using System;
-using Core.Core.Logging;
-using Core.Core.Shared.Events;
-using Core.Core.Shared.Interfaces;
+using Core.Logging;
+using Core.Shared.Events;
+using Core.Shared.Interfaces;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace Core.Core.Networking
+namespace Core.Networking
 {
     public interface IConnectivityService : IInitializable
     {

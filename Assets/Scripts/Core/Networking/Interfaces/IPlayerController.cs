@@ -1,6 +1,6 @@
 using Unity.Netcode;
 
-namespace Core.Core.Networking.Interfaces
+namespace Core.Networking.Interfaces
 {
     public interface IPlayerController
     {

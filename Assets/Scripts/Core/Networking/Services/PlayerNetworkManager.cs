@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Core.Core.Logging;
-using Core.Core.Networking.Interfaces;
+using Core.Logging;
+using Core.Networking.Interfaces;
 
-namespace Core.Core.Networking.Services
+namespace Core.Networking.Services
 {
     /// <summary>
     /// Manages player network registration and lookup.

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using Core.Core.Networking.Common;
+using Core.Networking.Common;
 
-namespace Core.Core.Networking.Interfaces
+namespace Core.Networking.Interfaces
 {
     /// <summary>
     /// Interface for team management

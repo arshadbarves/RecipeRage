@@ -1,4 +1,4 @@
-namespace Core.Core.Networking.Common
+namespace Core.Networking.Common
 {
     /// <summary>
     /// Network message types for P2P communication

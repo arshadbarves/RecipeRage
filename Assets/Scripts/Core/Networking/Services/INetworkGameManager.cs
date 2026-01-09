@@ -2,7 +2,7 @@ using System;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace Core.Core.Networking.Services
+namespace Core.Networking.Services
 {
     /// <summary>
     /// Interface for managing network game lifecycle and object spawning.

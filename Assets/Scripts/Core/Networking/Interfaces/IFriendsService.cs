@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Epic.OnlineServices;
 
-namespace Core.Core.Networking.Interfaces
+namespace Core.Networking.Interfaces
 {
     /// <summary>
     /// Interface for custom Friends service

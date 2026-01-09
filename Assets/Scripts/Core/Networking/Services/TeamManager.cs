@@ -1,10 +1,10 @@
 using System.Collections.Generic;
-using Core.Core.Networking.Common;
-using Core.Core.Networking.Interfaces;
+using Core.Networking.Common;
+using Core.Networking.Interfaces;
 using PlayEveryWare.EpicOnlineServices;
 using PlayEveryWare.EpicOnlineServices.Samples;
 
-namespace Core.Core.Networking.Services
+namespace Core.Networking.Services
 {
     /// <summary>
     /// Manages team assignments and player info caching

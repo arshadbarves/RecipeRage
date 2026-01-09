@@ -1,6 +1,6 @@
-using Core.Core.Networking.Common;
+using Core.Networking.Common;
 
-namespace Core.Core.Networking.Interfaces
+namespace Core.Networking.Interfaces
 {
     /// <summary>
     /// Strategy interface for different matchmaking approaches

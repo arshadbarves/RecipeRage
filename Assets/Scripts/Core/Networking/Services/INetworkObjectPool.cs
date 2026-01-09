@@ -1,7 +1,7 @@
 using Unity.Netcode;
 using UnityEngine;
 
-namespace Core.Core.Networking.Services
+namespace Core.Networking.Services
 {
     /// <summary>
     /// Interface for network object pooling.

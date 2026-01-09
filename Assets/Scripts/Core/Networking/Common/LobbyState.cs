@@ -1,4 +1,4 @@
-namespace Core.Core.Networking.Common
+namespace Core.Networking.Common
 {
     /// <summary>
     /// Current state of a lobby
