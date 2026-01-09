@@ -1,12 +1,11 @@
 using Gameplay.Characters;
 using Core.Logging;
-using Core.Skins;
-using Core.Skins.Data;
+using Gameplay.Skins;
+using Gameplay.Skins.Data;
 using Core.UI;
 using Core.UI.Core;
 using Core.UI.Interfaces;
 using Core.Session;
-using Core.UI;
 using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;
@@ -258,7 +257,7 @@ namespace Gameplay.UI.Screens
                 lockIcon.AddToClassList("lock-icon");
                 image.Add(lockIcon);
 
-                Label costLabel = new Label($"{skin.price} 💰");
+                Label costLabel = new Label($"{skin.Price} 💰");
                 costLabel.style.position = Position.Absolute;
                 costLabel.style.bottom = 5;
                 costLabel.style.width = new Length(100, LengthUnit.Percent);
@@ -272,6 +271,27 @@ namespace Gameplay.UI.Screens
             Label nameLabel = new Label(skin.name.ToUpper());
             nameLabel.AddToClassList("skin-item-name");
             skinItem.Add(nameLabel);
+
+            // Add rarity badge
+            Label rarityLabel = new Label(skin.rarity.ToString().ToUpper());
+            rarityLabel.AddToClassList("skin-rarity-badge");
+            rarityLabel.AddToClassList($"rarity-{skin.rarity.ToString().ToLower()}");
+            rarityLabel.style.fontSize = 10;
+            rarityLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
+            rarityLabel.style.marginTop = 2;
+            rarityLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
+
+            // Set rarity color
+            Color rarityColor = skin.rarity switch
+            {
+                SkinRarity.Common => new Color(0.7f, 0.7f, 0.7f),
+                SkinRarity.Rare => new Color(0.3f, 0.6f, 1f),
+                SkinRarity.Epic => new Color(0.8f, 0.3f, 1f),
+                SkinRarity.Legendary => new Color(1f, 0.7f, 0.2f),
+                _ => Color.white
+            };
+            rarityLabel.style.color = rarityColor;
+            skinItem.Add(rarityLabel);
 
             if (isEquipped)
             {
@@ -293,7 +313,7 @@ namespace Gameplay.UI.Screens
             if (!isUnlocked)
             {
                 GameLogger.Log($"Skin is locked: {skin.name}");
-                _uiService?.ShowNotification($"{skin.name} is locked! Cost: {skin.price} coins", NotificationType.Info, 3f);
+                _uiService?.ShowNotification($"{skin.name} is locked! Cost: {skin.Price} coins", NotificationType.Info, 3f);
                 return;
             }
 

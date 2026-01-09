@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Core.Core.Skins.Data;
+using Gameplay.Skins.Data;
 
-namespace Core.Core.Skins
+namespace Gameplay.Skins
 {
     /// <summary>
     /// Interface for skins service
