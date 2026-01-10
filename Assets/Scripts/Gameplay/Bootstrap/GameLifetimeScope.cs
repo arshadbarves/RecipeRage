@@ -23,10 +23,11 @@ namespace Gameplay.Bootstrap
         {
             // Logging
             builder.Register<LoggingService>(Lifetime.Singleton).As<ILoggingService>();
+            builder.RegisterEntryPoint<GameLoggerInitializer>();
 
             // Localization
             builder.Register<LocalizationManager>(Lifetime.Singleton).As<ILocalizationManager>();
-            GameLogger.Log("Localization System registered");
+            // Logging via GameLogger is not available here yet.
 
             // Auth
             var ugsConfig = Resources.Load<UGSConfig>("UGSConfig");
@@ -34,11 +35,11 @@ namespace Gameplay.Bootstrap
             {
                 builder.RegisterInstance(ugsConfig);
                 builder.Register<UGSAuthenticationManager>(Lifetime.Singleton).As<IAuthenticationManager>();
-                GameLogger.Log("Auth System registered");
             }
             else
             {
-                GameLogger.LogError("UGSConfig asset not found in Resources/! Please create it.");
+                // Fallback to Unity Debug as GameLogger is not ready
+                Debug.LogError("UGSConfig asset not found in Resources/! Please create it.");
             }
 
             // Networking Core
@@ -55,7 +56,7 @@ namespace Gameplay.Bootstrap
             }
             else
             {
-                GameLogger.LogError("AudioSettings asset not found in Resources/Audio/! Please create it.");
+                Debug.LogError("AudioSettings asset not found in Resources/Audio/! Please create it.");
             }
 
             // Register Audio Components
@@ -67,7 +68,7 @@ namespace Gameplay.Bootstrap
             builder.Register<MusicPlayer>(Lifetime.Singleton).As<IMusicPlayer>();
             builder.Register<AudioService>(Lifetime.Singleton).As<IAudioService>();
 
-            GameLogger.Log("Audio System registered in GameLifetimeScope");
+            // GameLogger.Log("Audio System registered in GameLifetimeScope");
         }
     }
 }
