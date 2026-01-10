@@ -22,7 +22,9 @@ namespace Gameplay.Bootstrap
         private void RegisterCoreSystems(IContainerBuilder builder)
         {
             // Logging
-            builder.Register<LoggingService>(Lifetime.Singleton).As<ILoggingService>();
+            builder.Register<LoggingService>(Lifetime.Singleton)
+                .As<ILoggingService>()
+                .WithParameter(5000); // maxLogEntries
             builder.RegisterEntryPoint<GameLoggerInitializer>();
 
             // Localization
