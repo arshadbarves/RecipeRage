@@ -13,6 +13,11 @@ namespace Core.Animation
 
         public DOTweenUIAnimator()
         {
+            EnsureInitialized();
+        }
+
+        private static void EnsureInitialized()
+        {
             if (_isInitialized) return;
 
             IDOTweenInit init = DOTween.Init(

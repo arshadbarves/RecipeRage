@@ -12,9 +12,14 @@ namespace Core.Animation
 
         public DOTweenTransformAnimator()
         {
+            EnsureInitialized();
+        }
+
+        private static void EnsureInitialized()
+        {
             if (_isInitialized) return;
 
-            var init = DOTween.Init(
+            IDOTweenInit init = DOTween.Init(
                 recycleAllByDefault: true,
                 useSafeMode: true,
                 logBehaviour: LogBehaviour.ErrorsOnly
