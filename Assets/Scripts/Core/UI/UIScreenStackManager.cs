@@ -11,7 +11,7 @@ namespace Core.UI
     /// Each category has its own stack, preventing priority conflicts
     /// Enables clean state management and proper back navigation
     /// </summary>
-    public class UIScreenStackManager
+    public class UIScreenStackManager : IUIScreenStackManager
     {
         // Category-based stacks
         private readonly Dictionary<UIScreenCategory, Stack<UIScreenType>> _categoryStacks = new();
