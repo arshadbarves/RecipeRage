@@ -66,7 +66,7 @@ namespace Core.Networking.Common
         /// <summary>
         /// List of players in the lobby
         /// </summary>
-        public List<PlayerInfo> Players { get; set; } = new List<PlayerInfo>();
+        public List<PlayerInfo> Players { get; set; } = new List<PlayerInfo>(); // TODO:: Need to set and use this
 
         /// <summary>
         /// Available slots in the lobby
@@ -91,19 +91,13 @@ namespace Core.Networking.Common
         /// <summary>
         /// Custom attributes for the lobby
         /// </summary>
-        public Dictionary<string, string> Attributes { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, string> Attributes { get; set; } = new Dictionary<string, string>(); // TODO:: Need to use this
 
-        /// <summary>
-        /// Check if the specified user is the owner
-        /// </summary>
         public bool IsOwner(ProductUserId userId)
         {
             return OwnerId == userId;
         }
 
-        /// <summary>
-        /// Check if the specified user is the party leader
-        /// </summary>
         public bool IsPartyLeader(ProductUserId userId)
         {
             return PartyLeaderId == userId;

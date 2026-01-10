@@ -23,9 +23,6 @@ namespace Core.Networking
         [Tooltip("Authentication profile (for testing multiple accounts)")]
         public string authenticationProfile = "default";
 
-        /// <summary>
-        /// Validates configuration
-        /// </summary>
         public bool IsValid()
         {
             if (string.IsNullOrEmpty(projectId))

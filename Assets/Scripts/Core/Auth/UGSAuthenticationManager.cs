@@ -39,9 +39,6 @@ namespace Core.Auth
             _config = config ?? throw new ArgumentNullException(nameof(config));
         }
 
-        /// <summary>
-        /// Initialize Unity Gaming Services
-        /// </summary>
         public async Task<bool> InitializeAsync()
         {
             if (IsInitialized)

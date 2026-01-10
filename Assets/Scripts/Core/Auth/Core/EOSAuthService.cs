@@ -15,14 +15,12 @@ namespace Core.Auth.Core
         private const int TIMEOUT_SECONDS = 15;
         private readonly IEventBus _eventBus;
         private readonly ISaveService _saveService;
-        private readonly ILoggingService _logger;
         private readonly Action _onLoginSuccess;
 
-        public EOSAuthService(IEventBus eventBus, ISaveService saveService, ILoggingService logger, Action onLoginSuccess = null)
+        public EOSAuthService(IEventBus eventBus, ISaveService saveService, Action onLoginSuccess = null)
         {
             _eventBus = eventBus;
             _saveService = saveService;
-            _logger = logger;
             _onLoginSuccess = onLoginSuccess;
         }
 
@@ -40,7 +38,7 @@ namespace Core.Auth.Core
 
         public async UniTask<bool> LoginAsync(AuthType type)
         {
-            _logger.LogInfo($"Attempting login with type: {type}", "Auth");
+            GameLogger.LogInfo($"Attempting login with type: {type}", "Auth");
 
             bool success = false;
             switch (type)
@@ -49,7 +47,7 @@ namespace Core.Auth.Core
                     success = await LoginWithDeviceIdAsync();
                     break;
                 default:
-                    _logger.LogError($"Unsupported AuthType: {type}", "Auth");
+                    GameLogger.LogError($"Unsupported AuthType: {type}", "Auth");
                     break;
             }
 
@@ -63,7 +61,7 @@ namespace Core.Auth.Core
 
                 _onLoginSuccess?.Invoke();
 
-                _logger.LogInfo("Login successful. Publishing LoginSuccessEvent...", "Auth");
+                GameLogger.LogInfo("Login successful. Publishing LoginSuccessEvent...", "Auth");
                 _eventBus?.Publish(new LoginSuccessEvent { UserId = GetCurrentUserId(), DisplayName = "User" });
             }
             else
@@ -87,7 +85,7 @@ namespace Core.Auth.Core
             if (productUserId != null && productUserId.IsValid())
             {
                 EOSManager.Instance.ClearConnectId(productUserId);
-                _logger.LogInfo("Logged out from EOS", "Auth");
+                GameLogger.LogInfo("Logged out from EOS", "Auth");
             }
 
             _eventBus?.Publish(new LogoutEvent { UserId = userIdStr });
@@ -111,12 +109,12 @@ namespace Core.Auth.Core
                 {
                     if (callbackInfo.ResultCode == Result.Success)
                     {
-                        _logger.LogInfo("Device ID login successful", "Auth");
+                        GameLogger.LogInfo("Device ID login successful", "Auth");
                         tcs.TrySetResult(true);
                     }
                     else
                     {
-                        _logger.LogError($"Device ID login failed: {callbackInfo.ResultCode}", "Auth");
+                        GameLogger.LogError($"Device ID login failed: {callbackInfo.ResultCode}", "Auth");
                         tcs.TrySetResult(false);
                     }
                 }
@@ -141,7 +139,7 @@ namespace Core.Auth.Core
                 }
                 else
                 {
-                    _logger.LogError($"Failed to create Device ID: {info.ResultCode}", "Auth");
+                    GameLogger.LogError($"Failed to create Device ID: {info.ResultCode}", "Auth");
                     tcs.TrySetResult(false);
                 }
             });

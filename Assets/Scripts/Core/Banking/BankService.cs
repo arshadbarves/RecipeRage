@@ -51,7 +51,7 @@ namespace Core.Banking
             SaveToDisk();
 
             OnBalanceChanged?.Invoke(currencyId, next);
-
+            // TODO: Need to Remove Legacy
             // Legacy/Compat: Notify UI for standard currencies
             if (amount > 0 && (currencyId == BankKeys.CurrencyCoins || currencyId == BankKeys.CurrencyGems))
             {

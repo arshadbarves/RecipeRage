@@ -17,7 +17,7 @@ namespace Gameplay.App.Networking
     /// Implements IDisposable for proper cleanup on logout
     /// PUBG-style architecture with Party + Match lobbies
     /// </summary>
-    public class NetworkingServiceContainer : INetworkingServices, IDisposable
+    public class NetworkingServiceContainer : INetworkingServices
     {
         #region Properties
 

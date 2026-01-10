@@ -3,6 +3,7 @@ using Epic.OnlineServices;
 
 namespace Core.Networking.Common
 {
+    // TODO: Do we need this?
     /// <summary>
     /// Enum representing the different game modes in RecipeRage.
     /// </summary>
@@ -13,6 +14,8 @@ namespace Core.Networking.Common
         TeamBattle
     }
 
+
+    // TODO: Do we need this?
     /// <summary>
     /// Enum representing the different character classes in RecipeRage.
     /// </summary>
@@ -24,9 +27,8 @@ namespace Core.Networking.Common
         Manager
     }
 
-    /// <summary>
-    /// Enum representing the different team IDs in RecipeRage.
-    /// </summary>
+
+    // TODO: Need to have multiple teams
     public enum TeamId
     {
         TeamA = 0,
@@ -88,9 +90,8 @@ namespace Core.Networking.Common
         /// </summary>
         public Dictionary<string, string> CustomData { get; set; }
 
-        /// <summary>
-        /// Create a new player info.
-        /// </summary>
+
+        // TODO: This needs to be create by somewhere
         public PlayerInfo()
         {
             PlayerId = string.Empty;
@@ -151,9 +152,7 @@ namespace Core.Networking.Common
         /// </summary>
         public string MapName { get; set; }
 
-        /// <summary>
-        /// Create a new game session info.
-        /// </summary>
+        // TODO: This needs to be create by somewhere
         public GameSessionInfo()
         {
             SessionId = string.Empty;

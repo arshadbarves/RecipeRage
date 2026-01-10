@@ -8,11 +8,6 @@ using PlayEveryWare.EpicOnlineServices.Samples;
 
 namespace Core.Persistence.Providers
 {
-    /// <summary>
-    /// Epic Online Services cloud storage provider.
-    /// Persistent, cross-device storage for player data.
-    /// Wraps EOS PlayerDataStorageService.
-    /// </summary>
     public class EOSCloudStorageProvider : IStorageProvider
     {
         private readonly PlayerDataStorageService _eosStorage;
@@ -49,7 +44,7 @@ namespace Core.Persistence.Providers
                 return cachedData;
             }
 
-            // Synchronous read not recommended for cloud storage
+            // Synchronous read isn't recommended for cloud storage
             // Return null and log warning
             GameLogger.LogWarning($"Synchronous read for {key} - use ReadAsync instead");
             return null;
@@ -63,7 +58,7 @@ namespace Core.Persistence.Providers
                 return;
             }
 
-            // Synchronous write not recommended for cloud storage
+            // Synchronously write not recommended for cloud storage
             // Queue async write instead
             GameLogger.LogWarning($"Synchronous write for {key} - use WriteAsync instead");
             WriteAsync(key, content).Forget();

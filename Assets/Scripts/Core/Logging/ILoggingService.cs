@@ -3,9 +3,6 @@ using Core.Shared.Interfaces;
 
 namespace Core.Logging
 {
-    /// <summary>
-    /// Interface for the logging service
-    /// </summary>
     public interface ILoggingService : IInitializable, IDisposable
     {
         event Action<LogEntry> OnLogAdded;

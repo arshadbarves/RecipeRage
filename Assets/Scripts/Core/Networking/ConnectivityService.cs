@@ -42,13 +42,7 @@ namespace Core.Networking
             StartMonitoring().Forget();
         }
 
-        /// <summary>
-        /// Called after all services are constructed.
-        /// </summary>
-        public void Initialize()
-        {
-            // ConnectivityService doesn't need cross-service setup
-        }
+        public void Initialize() { }
 
         private async UniTaskVoid StartMonitoring()
         {
@@ -121,6 +115,8 @@ namespace Core.Networking
             _logger.LogInfo(isConnected ? "Internet Restored" : "Internet Lost", "ConnectivityService");
             OnConnectionStatusChanged?.Invoke(isConnected);
 
+
+            // TODO: We need to subscribe on Disconnection logic
             // Also publish via EventBus for loosely coupled systems
             // _eventBus?.Publish(new ConnectionStatusChangedEvent { IsConnected = isConnected });
         }

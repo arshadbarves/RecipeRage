@@ -4,9 +4,6 @@ using Epic.OnlineServices;
 
 namespace Core.Networking.Interfaces
 {
-    /// <summary>
-    /// Interface for player-specific operations
-    /// </summary>
     public interface IPlayerManager
     {
         // Events

@@ -1,8 +1,5 @@
 namespace Core.Logging
 {
-    /// <summary>
-    /// Log severity levels
-    /// </summary>
     public enum LogLevel
     {
         Verbose = 0,

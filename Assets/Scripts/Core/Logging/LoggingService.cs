@@ -32,13 +32,7 @@ namespace Core.Logging
             Application.logMessageReceived += HandleUnityLog;
         }
 
-        /// <summary>
-        /// Called after all services are constructed.
-        /// </summary>
-        public void Initialize()
-        {
-            // Logging service doesn't need cross-service setup
-        }
+        public void Initialize() { }
 
         [HideInCallstack]
         public void Log(string message, LogLevel level = LogLevel.Info, string category = "General")
@@ -220,7 +214,7 @@ namespace Core.Logging
         {
             try
             {
-                var content = ExportLogs();
+                string content = ExportLogs();
                 File.WriteAllText(filePath, content);
                 Debug.Log($"Logs saved to: {filePath}");
             }

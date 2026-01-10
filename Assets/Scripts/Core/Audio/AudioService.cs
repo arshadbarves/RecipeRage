@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Core.Audio
@@ -7,15 +8,18 @@ namespace Core.Audio
         private readonly IMusicPlayer _musicPlayer;
         private readonly ISFXPlayer _sfxPlayer;
         private readonly IAudioVolumeController _volumeController;
+        private readonly AudioSettings _audioSettings;
 
         public AudioService(
             IMusicPlayer musicPlayer,
             ISFXPlayer sfxPlayer,
-            IAudioVolumeController volumeController)
+            IAudioVolumeController volumeController,
+            AudioSettings audioSettings)
         {
             _musicPlayer = musicPlayer;
             _sfxPlayer = sfxPlayer;
             _volumeController = volumeController;
+            _audioSettings = audioSettings;
         }
 
         // Music delegation
@@ -40,6 +44,22 @@ namespace Core.Audio
 
         public void StopSound(AudioSource source, float fadeTime = 0f)
             => _sfxPlayer.StopSound(source, fadeTime);
+
+        // UI SFX
+        public void PlayUISFX()
+        {
+            if (_audioSettings?.UISFX != null)
+            {
+                PlaySFX(_audioSettings.UISFX);
+            }
+        }
+
+        // Music Helpers
+        public AudioClip GetMusicTrack(int index)
+            => _audioSettings?.GetMusicTrack(index);
+
+        public IReadOnlyList<AudioClip> GetAllMusicTracks()
+            => _audioSettings?.GetAllMusicTracks();
 
         // Volume delegation
         public void SetMasterVolume(float volume)

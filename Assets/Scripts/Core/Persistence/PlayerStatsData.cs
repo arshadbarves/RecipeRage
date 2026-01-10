@@ -4,9 +4,6 @@ using UnityEngine;
 
 namespace Core.Persistence
 {
-    /// <summary>
-    /// Data class for player statistics.
-    /// </summary>
     [Serializable]
     public class PlayerStatsData
     {
@@ -21,8 +18,8 @@ namespace Core.Persistence
 
         // Currency
         [Header("Currency")]
-        public int Coins = 0;
-        public int Gems = 0;
+        public int Coins = 0; // TODO: Need to be removed we use Bank system
+        public int Gems = 0;  // TODO: Need to be removed we use Bank system
 
         // Game stats
         [Header("Game Stats")]

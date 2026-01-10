@@ -14,8 +14,8 @@ namespace Core.Networking.Interfaces
 
         // Party Lobby Events
         event Action<Result, LobbyInfo> OnPartyCreated;
-        event Action<PlayerInfo> OnPartyMemberJoined;
-        event Action<PlayerInfo> OnPartyMemberLeft;
+        event Action<PlayerInfo> OnPartyMemberJoined; // TODO: Utilise this
+        event Action<PlayerInfo> OnPartyMemberLeft; // TODO: Utilise this
         event Action OnPartyUpdated;
 
         // Match Lobby Events
@@ -149,17 +149,8 @@ namespace Core.Networking.Interfaces
 
         #region Methods - Utility
 
-        /// <summary>
-        /// Check if all players in the lobby are ready
-        /// </summary>
-        /// <returns>True if all players are ready</returns>
         bool AreAllPlayersReady();
 
-        /// <summary>
-        /// Get lobby info by ID
-        /// </summary>
-        /// <param name="lobbyId">Lobby ID</param>
-        /// <returns>Lobby info or null if not found</returns>
         LobbyInfo GetLobbyInfo(string lobbyId);
 
         #endregion

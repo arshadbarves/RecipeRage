@@ -15,7 +15,7 @@ namespace Core.Networking.Interfaces
         /// <summary>
         /// Fired when matchmaking starts
         /// </summary>
-        event Action OnMatchmakingStarted;
+        event Action OnMatchmakingStarted; // TODO: Should be triggered on all client to switch to matchmaking screen
 
         /// <summary>
         /// Fired when matchmaking is cancelled

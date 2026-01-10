@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Core.Audio
@@ -17,6 +18,13 @@ namespace Core.Audio
         AudioSource PlaySFX(AudioClip clip, float pitch = 1f);
         AudioSource PlaySFXAtPosition(AudioClip clip, Vector3 position);
         void StopSound(AudioSource source, float fadeTime = 0f);
+
+        // UI SFX
+        void PlayUISFX();
+
+        // Music Helpers
+        AudioClip GetMusicTrack(int index);
+        IReadOnlyList<AudioClip> GetAllMusicTracks();
 
         // Volume
         void SetMasterVolume(float volume);

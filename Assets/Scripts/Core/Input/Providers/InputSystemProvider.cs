@@ -1,10 +1,9 @@
 using System;
 using Core.Logging;
-using Core.Input;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Core.Input
+namespace Core.Input.Providers
 {
     /// <summary>
     /// Input provider that uses the Unity Input System package.

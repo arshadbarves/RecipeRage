@@ -4,18 +4,11 @@ using Core.Persistence.Providers;
 
 namespace Core.Persistence.Factory
 {
-    /// <summary>
-    /// Factory for creating storage providers.
-    /// Follows Factory Pattern for extensibility.
-    /// </summary>
     public class StorageProviderFactory
     {
         private LocalStorageProvider _localProvider;
         private EOSCloudStorageProvider _cloudProvider;
 
-        /// <summary>
-        /// Get or create local storage provider (singleton per factory).
-        /// </summary>
         public IStorageProvider GetLocalProvider()
         {
             if (_localProvider == null)
@@ -25,9 +18,6 @@ namespace Core.Persistence.Factory
             return _localProvider;
         }
 
-        /// <summary>
-        /// Get or create cloud storage provider (singleton per factory).
-        /// </summary>
         public IStorageProvider GetCloudProvider()
         {
             if (_cloudProvider == null)
@@ -37,9 +27,7 @@ namespace Core.Persistence.Factory
             return _cloudProvider;
         }
 
-        /// <summary>
-        /// Get provider based on strategy.
-        /// </summary>
+        // TODO: Do we need this?
         public IStorageProvider GetProvider(StorageStrategy strategy)
         {
             return strategy switch

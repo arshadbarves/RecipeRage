@@ -1,8 +1,6 @@
 namespace Core.Networking.Common
 {
-    /// <summary>
-    /// Current state of a lobby
-    /// </summary>
+    // TODO: Need to use all this enums
     public enum LobbyState
     {
         /// <summary>

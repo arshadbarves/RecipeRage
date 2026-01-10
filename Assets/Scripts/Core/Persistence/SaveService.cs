@@ -70,13 +70,7 @@ namespace Core.Persistence
             GameLogger.Log("SaveService initialized");
         }
 
-        /// <summary>
-        /// Called after all services are constructed.
-        /// </summary>
-        public void Initialize()
-        {
-            // SaveService doesn't need cross-service setup
-        }
+        public void Initialize() { }
 
         /// <summary>
         /// Notify cloud provider that user has logged in.

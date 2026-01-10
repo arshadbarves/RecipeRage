@@ -1,5 +1,7 @@
 namespace Core.Networking.Common
 {
+
+    // TODO: Is this needed, since we use Netcode
     /// <summary>
     /// Network message types for P2P communication
     /// </summary>
