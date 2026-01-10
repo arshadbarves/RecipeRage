@@ -8,10 +8,10 @@
 - [ ] Task: Conductor - User Manual Verification 'Core Registration' (Protocol in workflow.md)
 
 ## Phase 2: Session-Based Registration (`SessionLifetimeScope`)
-- [ ] Task: Audit and Define Interfaces for Session Managers (Player, Lobby, Team, UI Stack)
-- [ ] Task: Update `SessionLifetimeScope.cs` to register `IPlayerManager`, `ILobbyManager`, and `ITeamManager`
-- [ ] Task: Register `IUIScreenStackManager` for persistent UI navigation
-- [ ] Task: Ensure session-scoped managers are registered as `As<IInterface>`
+- [x] Task: Audit and Define Interfaces for Session Managers (Player, Lobby, Team, UI Stack) <!-- id: b2958ad -->
+- [x] Task: Update `SessionLifetimeScope.cs` to register `IPlayerManager`, `ILobbyManager`, and `ITeamManager` <!-- id: 3e0554b -->
+- [x] Task: Register `IUIScreenStackManager` for persistent UI navigation <!-- id: 3e0554b -->
+- [x] Task: Ensure session-scoped managers are registered as `As<IInterface>` <!-- id: 3e0554b -->
 - [ ] Task: Conductor - User Manual Verification 'Session Registration' (Protocol in workflow.md)
 
 ## Phase 3: Gameplay-Specific Registration (`GameplayLifetimeScope`)
