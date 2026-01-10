@@ -1,12 +1,12 @@
-using Modules.Shared.Interfaces;
-using Modules.Networking;
-using Modules.Networking.Common;
-using Modules.UI;
+using Core.Networking;
+using Core.UI;
 using UnityEngine;
 using VContainer;
 using Cysharp.Threading.Tasks;
-using Modules.Logging;
-using Modules.UI;
+using Core.Networking.Common;
+using Core.RemoteConfig;
+using Core.UI.Interfaces;
+using Core.Session;
 
 namespace Gameplay.App.State.States
 {
@@ -19,7 +19,7 @@ namespace Gameplay.App.State.States
         private readonly IUIService _uiService;
         private readonly SessionManager _sessionManager;
         private readonly IGameStateManager _stateManager;
-        private readonly Core.Maintenance.IMaintenanceService _maintenanceService;
+        private readonly IMaintenanceService _maintenanceService;
 
         private INetworkingServices _networkingServices;
         private bool _isMatchmakingInProgress;
@@ -41,7 +41,7 @@ namespace Gameplay.App.State.States
             IUIService uiService,
             SessionManager sessionManager,
             IGameStateManager stateManager,
-            Core.Maintenance.IMaintenanceService maintenanceService)
+            IMaintenanceService maintenanceService)
         {
             _uiService = uiService;
             _sessionManager = sessionManager;

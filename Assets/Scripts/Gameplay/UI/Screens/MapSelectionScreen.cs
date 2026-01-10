@@ -1,12 +1,13 @@
 using System;
-using Modules.UI.Core;
 using Gameplay.UI.Data;
+using Core.Logging;
+using Core.RemoteConfig.Interfaces;
+using Core.RemoteConfig.Models;
+using Core.UI;
+using Core.UI.Core;
+using Core.UI.Interfaces;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Modules.Logging;
-using Modules.RemoteConfig;
-using Modules.RemoteConfig.Models;
-using Modules.UI;
 using VContainer;
 
 namespace Gameplay.UI.Screens

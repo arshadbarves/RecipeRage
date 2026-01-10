@@ -1,11 +1,11 @@
 using Cysharp.Threading.Tasks;
-using Modules.UI;
-using Modules.Logging;
-using Modules.Persistence;
-using Modules.Core.Banking.Interfaces;
+using Core.UI;
 using Gameplay.UI.Screens;
-using Modules.Shared.Interfaces;
-using Modules.UI;
+using Core.Banking.Interfaces;
+using Core.Logging;
+using Core.Persistence;
+using Core.UI.Interfaces;
+using Core.Session;
 using VContainer;
 
 namespace Gameplay.App.State.States

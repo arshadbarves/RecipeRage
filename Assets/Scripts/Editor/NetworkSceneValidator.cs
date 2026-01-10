@@ -2,11 +2,11 @@ using UnityEngine;
 using UnityEditor;
 using Unity.Netcode;
 using Gameplay.App.State;
-using Modules.Networking;
 using Gameplay;
 using Gameplay.Cooking;
 using Gameplay.Scoring;
 using System.Collections.Generic;
+using Gameplay.Networking;
 
 namespace Editor
 {
@@ -17,33 +17,33 @@ namespace Editor
     {
         private Vector2 _scrollPosition;
         private List<ValidationResult> _results = new List<ValidationResult>();
-        
+
         [MenuItem("RecipeRage/Validate Network Setup")]
         public static void ShowWindow()
         {
             GetWindow<NetworkSceneValidator>("Network Validator");
         }
-        
+
         private void OnGUI()
         {
             GUILayout.Label("Network Setup Validator", EditorStyles.boldLabel);
             GUILayout.Space(10);
-            
+
             if (GUILayout.Button("Run Validation", GUILayout.Height(40)))
             {
                 RunValidation();
             }
-            
+
             GUILayout.Space(10);
-            
+
             if (_results.Count > 0)
             {
                 _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition);
-                
+
                 int passCount = 0;
                 int failCount = 0;
                 int warningCount = 0;
-                
+
                 foreach (var result in _results)
                 {
                     switch (result.Type)
@@ -63,12 +63,12 @@ namespace Editor
                     }
                     GUILayout.Space(5);
                 }
-                
+
                 EditorGUILayout.EndScrollView();
-                
+
                 GUILayout.Space(10);
                 GUILayout.Label($"Results: {passCount} passed, {failCount} failed, {warningCount} warnings", EditorStyles.boldLabel);
-                
+
                 if (failCount == 0)
                 {
                     EditorGUILayout.HelpBox("✓ All critical checks passed! Your scene is ready for networking.", MessageType.Info);
@@ -79,29 +79,29 @@ namespace Editor
                 }
             }
         }
-        
+
         private void RunValidation()
         {
             _results.Clear();
-            
+
             // Scene Components
             ValidateNetworkManager();
             ValidateNetworkManagers();
             ValidateNetworkInitializer();
-            
+
             // Prefabs
             ValidatePrefabs();
-            
+
             // Transport
             ValidateTransport();
-            
+
             Repaint();
         }
-        
+
         private void ValidateNetworkManager()
         {
             NetworkManager nm = FindObjectOfType<NetworkManager>();
-            
+
             if (nm == null)
             {
                 _results.Add(new ValidationResult
@@ -111,13 +111,13 @@ namespace Editor
                 });
                 return;
             }
-            
+
             _results.Add(new ValidationResult
             {
                 Type = ValidationType.Pass,
                 Message = "NetworkManager found in scene"
             });
-            
+
             // Check player prefab
             if (nm.NetworkConfig.PlayerPrefab == null)
             {
@@ -135,7 +135,7 @@ namespace Editor
                     Message = $"Player Prefab set: {nm.NetworkConfig.PlayerPrefab.name}"
                 });
             }
-            
+
             // Check network prefabs
             int prefabCount = nm.NetworkConfig.Prefabs.Prefabs.Count;
             if (prefabCount == 0)
@@ -155,11 +155,11 @@ namespace Editor
                 });
             }
         }
-        
+
         private void ValidateNetworkManagers()
         {
             GameObject networkManagers = GameObject.Find("NetworkManagers");
-            
+
             if (networkManagers == null)
             {
                 _results.Add(new ValidationResult
@@ -169,24 +169,24 @@ namespace Editor
                 });
                 return;
             }
-            
+
             _results.Add(new ValidationResult
             {
                 Type = ValidationType.Pass,
                 Message = "NetworkManagers GameObject found"
             });
-            
+
             // Check components
             CheckComponent<NetworkGameStateManager>(networkManagers, "NetworkGameStateManager");
             CheckComponent<NetworkScoreManager>(networkManagers, "NetworkScoreManager");
             CheckComponent<RoundTimer>(networkManagers, "RoundTimer");
             CheckComponent<IngredientNetworkSpawner>(networkManagers, "IngredientNetworkSpawner");
         }
-        
+
         private void ValidateNetworkInitializer()
         {
             NetworkInitializer initializer = FindObjectOfType<NetworkInitializer>();
-            
+
             if (initializer == null)
             {
                 _results.Add(new ValidationResult
@@ -204,7 +204,7 @@ namespace Editor
                 });
             }
         }
-        
+
         private void ValidatePrefabs()
         {
             string[] prefabPaths = new string[]
@@ -216,7 +216,7 @@ namespace Editor
                 "Assets/Prefabs/Stations/ServingStation.prefab",
                 "Assets/Prefabs/Plate.prefab"
             };
-            
+
             foreach (string path in prefabPaths)
             {
                 GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
@@ -250,7 +250,7 @@ namespace Editor
                 }
             }
         }
-        
+
         private void ValidateTransport()
         {
             NetworkManager nm = FindObjectOfType<NetworkManager>();
@@ -288,7 +288,7 @@ namespace Editor
                 }
             }
         }
-        
+
         private void CheckComponent<T>(GameObject obj, string componentName) where T : Component
         {
             T component = obj.GetComponent<T>();
@@ -309,13 +309,13 @@ namespace Editor
                 });
             }
         }
-        
+
         private struct ValidationResult
         {
             public ValidationType Type;
             public string Message;
         }
-        
+
         private enum ValidationType
         {
             Pass,

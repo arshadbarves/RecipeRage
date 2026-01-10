@@ -1,6 +1,5 @@
 using System;
-using Gameplay.Camera;
-using Modules.Logging;
+using Core.Logging;
 using Unity.Cinemachine;
 using UnityEngine;
 

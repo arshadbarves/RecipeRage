@@ -1,7 +1,7 @@
 using System;
+using Core.Logging;
 using Newtonsoft.Json;
 using UnityEngine;
-using Modules.Logging;
 
 namespace Gameplay.Characters
 {

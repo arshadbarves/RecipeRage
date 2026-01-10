@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using Gameplay.Characters;
-using Modules.Logging;
 using Gameplay.Cooking;
 using Unity.Netcode;
 using UnityEngine;
@@ -57,7 +55,7 @@ namespace Gameplay.Stations
         {
             GameObject heldObject = player.DropObject();
             ItemBase item = heldObject.GetComponent<ItemBase>();
-            
+
             if (item != null)
             {
                 // Physically move to counter
@@ -95,7 +93,7 @@ namespace Gameplay.Stations
                     PlaySound(_placeSound);
                 }
             }
-            
+
             // Scenario B: Player holds Plate, Counter has Ingredient -> Add to Plate (Pickup)
             // Note: In Overcooked, you usually pick up the ingredient with the plate.
             // This would require the Counter to release the ingredient and the Plate (on player) to accept it.

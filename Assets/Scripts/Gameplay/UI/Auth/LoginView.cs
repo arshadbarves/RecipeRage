@@ -1,7 +1,8 @@
-using Modules.UI;
-using Modules.UI;
-using Modules.UI.Core;
+using Core.UI;
 using Gameplay.UI.ViewModels;
+using Core.UI;
+using Core.UI.Core;
+using Core.UI.Interfaces;
 using UnityEngine.UIElements;
 using VContainer;
 

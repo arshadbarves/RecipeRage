@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
+using Core.Logging;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Modules.Logging;
 
 namespace Gameplay.GameModes
 {

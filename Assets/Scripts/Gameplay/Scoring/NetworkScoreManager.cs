@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Core.Logging;
 using Unity.Netcode;
-using Modules.Logging;
 
 namespace Gameplay.Scoring
 {

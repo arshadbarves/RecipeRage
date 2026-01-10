@@ -1,14 +1,14 @@
 using System;
-using Modules.Localization;
-using Modules.Logging;
-using Modules.RemoteConfig;
-using Modules.RemoteConfig;
-using Modules.Persistence;
-using Modules.UI;
-using Modules.RemoteConfig;
+using Core.UI;
 using Cysharp.Threading.Tasks;
-using Modules.UI;
 using Gameplay.UI.Screens;
+using Core.Auth.Core;
+using Core.Localization;
+using Core.Logging;
+using Core.Persistence;
+using Core.RemoteConfig;
+using Core.RemoteConfig.Interfaces;
+using Core.UI.Interfaces;
 
 namespace Gameplay.App.State.States
 {

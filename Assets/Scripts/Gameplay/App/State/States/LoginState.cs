@@ -1,8 +1,7 @@
-using Modules.Shared.Events;
-using Modules.Logging;
-using Modules.UI;
-using Modules.UI;
-using UnityEditor.PackageManager;
+using Core.Logging;
+using Core.Shared.Events;
+using Core.UI.Interfaces;
+using Core.UI;
 
 namespace Gameplay.App.State.States
 {
@@ -35,7 +34,7 @@ namespace Gameplay.App.State.States
             _uiService.ShowScreen(UIScreenType.Login);
 
             // Subscribe to login events
-            _eventBus.Subscribe<Events.LoginSuccessEvent>(OnLoginSuccess);
+            _eventBus.Subscribe<LoginSuccessEvent>(OnLoginSuccess);
         }
 
         public override void Exit()
@@ -47,10 +46,10 @@ namespace Gameplay.App.State.States
             _uiService.HideScreen(UIScreenType.Login);
 
             // Unsubscribe
-            _eventBus.Unsubscribe<Events.LoginSuccessEvent>(OnLoginSuccess);
+            _eventBus.Unsubscribe<LoginSuccessEvent>(OnLoginSuccess);
         }
 
-        private void OnLoginSuccess(Events.LoginSuccessEvent evt)
+        private void OnLoginSuccess(LoginSuccessEvent evt)
         {
             GameLogger.Log($"[LoginState] EVENT RECEIVED: Login successful for user: {evt.UserId}");
 

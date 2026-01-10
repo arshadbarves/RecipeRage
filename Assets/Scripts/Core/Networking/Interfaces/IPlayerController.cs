@@ -1,0 +1,11 @@
+using Unity.Netcode;
+
+namespace Core.Networking.Interfaces
+{
+    public interface IPlayerController
+    {
+        ulong OwnerClientId { get; }
+        NetworkObject NetworkObject { get; }
+        bool IsLocalPlayer { get; }
+    }
+}

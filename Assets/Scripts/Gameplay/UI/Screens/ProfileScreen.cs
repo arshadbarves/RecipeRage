@@ -1,8 +1,9 @@
-using Modules.Shared.Interfaces;
-using Modules.Networking;
-using Modules.Persistence;
-using Modules.UI;
-using Modules.UI.Core;
+using Core.Persistence;
+using Core.UI;
+using Core.UI.Core;
+using Core.UI.Interfaces;
+using Core.Networking;
+using Core.Session;
 using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;
@@ -97,7 +98,7 @@ namespace Gameplay.UI.Screens
                 if (friendsService != null && friendsService.IsInitialized)
                 {
                     GUIUtility.systemCopyBuffer = friendsService.MyFriendCode;
-                    UIService?.ShowNotification("Friend Code copied to clipboard!", UI.NotificationType.Success);
+                    UIService?.ShowNotification("Friend Code copied to clipboard!", NotificationType.Success);
                 }
             }
         }

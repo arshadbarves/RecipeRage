@@ -1,5 +1,3 @@
-using System;
-
 namespace Gameplay.App.State
 {
     /// <summary>

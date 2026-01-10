@@ -1,5 +1,5 @@
 using System;
-using Modules.Shared.Interfaces;
+using Core.Shared.Interfaces;
 
 namespace Gameplay.App.State
 {

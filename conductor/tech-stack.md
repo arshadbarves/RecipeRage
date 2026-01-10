@@ -9,10 +9,10 @@
 - **Services SDK:** Epic Online Services (EOS) - Identity, Friends, P2P
 
 ## Architecture & Design Patterns
-- **Architecture:** Strict Two-Bucket Assembly Architecture (Modules & Gameplay)
+- **Architecture:** Strict Two-Bucket Assembly Architecture (Core & Gameplay)
 - **Dependency Injection:** VContainer
 - **Async Handling:** UniTask
-- **Modules:** Custom Assembly (RecipeRage.Modules) for high-level, project-agnostic logic.
+- **Core:** Custom Assembly (RecipeRage.Core) for high-level, project-agnostic logic.
 - **Gameplay:** Separated Gameplay Assembly (RecipeRage.Gameplay) for game-specific mechanics.
 
 ## User Interface

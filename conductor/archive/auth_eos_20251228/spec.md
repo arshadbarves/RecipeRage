@@ -37,7 +37,7 @@ Replace the placeholder authentication system with a fully functional module pow
 
 ### Module Structure
 ```
-Assets/Scripts/Modules/Auth/
+Assets/Scripts/Core/Auth/
 ├── Core/
 │   ├── IAuthService.cs
 │   ├── EOSAuthService.cs

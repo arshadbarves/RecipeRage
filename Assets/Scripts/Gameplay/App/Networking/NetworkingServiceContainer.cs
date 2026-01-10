@@ -1,11 +1,11 @@
 using System;
-using Modules.Logging;
-using Modules.Networking;
-using Modules.Networking.Interfaces;
-using Modules.Networking.Services;
-using Modules.Auth;
+using Core.Networking;
+using Core.Networking.Interfaces;
+using Core.Networking.Services;
 using Gameplay.App.State;
-using Modules.UI;
+using Core.Auth;
+using Core.Logging;
+using Core.UI.Interfaces;
 using PlayEveryWare.EpicOnlineServices;
 using PlayEveryWare.EpicOnlineServices.Samples;
 using VContainer;
@@ -17,7 +17,7 @@ namespace Gameplay.App.Networking
     /// Implements IDisposable for proper cleanup on logout
     /// PUBG-style architecture with Party + Match lobbies
     /// </summary>
-    public class NetworkingServiceContainer : INetworkingServices, IDisposable
+    public class NetworkingServiceContainer : INetworkingServices
     {
         #region Properties
 

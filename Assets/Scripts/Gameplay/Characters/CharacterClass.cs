@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using Gameplay.Skins.Data;
 using UnityEngine;
 
 namespace Gameplay.Characters
@@ -21,9 +23,6 @@ namespace Gameplay.Characters
         
         [Tooltip("Icon for the character class")]
         [SerializeField] private Sprite _icon;
-        
-        [Tooltip("Character model prefab")]
-        [SerializeField] private GameObject _characterPrefab;
         
         [Header("Stat Modifiers")]
         [Tooltip("Movement speed modifier")]
@@ -58,6 +57,10 @@ namespace Gameplay.Characters
         [Tooltip("Primary ability parameters (JSON format)")]
         [SerializeField] private string _primaryAbilityParameters;
         
+        [Header("Skins")]
+        [Tooltip("Available skins for this character")]
+        [SerializeField] private List<SkinItem> _skins = new List<SkinItem>();
+        
         [Header("Unlock Settings")]
         [Tooltip("Whether the character is unlocked by default")]
         [SerializeField] private bool _unlockedByDefault = false;
@@ -89,9 +92,9 @@ namespace Gameplay.Characters
         public Sprite Icon => _icon;
         
         /// <summary>
-        /// Character model prefab.
+        /// Available skins for this character.
         /// </summary>
-        public GameObject CharacterPrefab => _characterPrefab;
+        public List<SkinItem> Skins => _skins;
         
         /// <summary>
         /// Movement speed modifier.

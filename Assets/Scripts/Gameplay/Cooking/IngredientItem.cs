@@ -1,5 +1,4 @@
-using Gameplay.Characters;
-using Modules.Logging;
+using Core.Logging;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -175,13 +174,13 @@ namespace Gameplay.Cooking
             // Update the visuals based on state
             if (_rawVisual != null)
                 _rawVisual.SetActive(!_state.Value.IsCut && !_state.Value.IsCooked && !_state.Value.IsBurned);
-            
+
             if (_cutVisual != null)
                 _cutVisual.SetActive(_state.Value.IsCut && !_state.Value.IsCooked && !_state.Value.IsBurned);
-            
+
             if (_cookedVisual != null)
                 _cookedVisual.SetActive(_state.Value.IsCooked && !_state.Value.IsBurned);
-            
+
             if (_burnedVisual != null)
                 _burnedVisual.SetActive(_state.Value.IsBurned);
         }

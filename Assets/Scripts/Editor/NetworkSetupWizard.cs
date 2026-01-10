@@ -7,7 +7,7 @@ using Gameplay.Cooking;
 using Gameplay.Scoring;
 using Gameplay.Stations;
 using System.Collections.Generic;
-using Modules.Logging;
+using Core.Logging;
 
 namespace Editor
 {
@@ -19,65 +19,65 @@ namespace Editor
         private GameObject _networkManagersObject;
         private NetworkManager _networkManager;
         private bool _setupComplete = false;
-        
+
         [MenuItem("RecipeRage/Network Setup Wizard")]
         public static void ShowWindow()
         {
             GetWindow<NetworkSetupWizard>("Network Setup Wizard");
         }
-        
+
         private void OnGUI()
         {
             GUILayout.Label("RecipeRage Network Setup Wizard", EditorStyles.boldLabel);
             GUILayout.Space(10);
-            
+
             EditorGUILayout.HelpBox(
                 "This wizard will help you set up all network components in your Game scene.",
                 MessageType.Info
             );
-            
+
             GUILayout.Space(10);
-            
+
             // Step 1: Create Network Managers GameObject
             if (GUILayout.Button("Step 1: Create Network Managers GameObject", GUILayout.Height(40)))
             {
                 CreateNetworkManagersObject();
             }
-            
+
             GUILayout.Space(5);
-            
+
             // Step 2: Find/Create NetworkManager
             if (GUILayout.Button("Step 2: Setup NetworkManager", GUILayout.Height(40)))
             {
                 SetupNetworkManager();
             }
-            
+
             GUILayout.Space(5);
-            
+
             // Step 3: Add Station Controllers
             if (GUILayout.Button("Step 3: Add StationNetworkController to Stations", GUILayout.Height(40)))
             {
                 AddStationControllers();
             }
-            
+
             GUILayout.Space(5);
-            
+
             // Step 4: Configure Prefabs
             if (GUILayout.Button("Step 4: Add NetworkObject to Prefabs", GUILayout.Height(40)))
             {
                 ConfigurePrefabs();
             }
-            
+
             GUILayout.Space(5);
-            
+
             // Step 5: Register Prefabs
             if (GUILayout.Button("Step 5: Register Prefabs in NetworkManager", GUILayout.Height(40)))
             {
                 RegisterPrefabsInNetworkManager();
             }
-            
+
             GUILayout.Space(20);
-            
+
             if (_setupComplete)
             {
                 EditorGUILayout.HelpBox(
@@ -85,9 +85,9 @@ namespace Editor
                     MessageType.Info
                 );
             }
-            
+
             GUILayout.Space(10);
-            
+
             if (GUILayout.Button("Complete Setup (All Steps)", GUILayout.Height(50)))
             {
                 CreateNetworkManagersObject();
@@ -98,12 +98,12 @@ namespace Editor
                 _setupComplete = true;
             }
         }
-        
+
         private void CreateNetworkManagersObject()
         {
             // Check if already exists
             _networkManagersObject = GameObject.Find("NetworkManagers");
-            
+
             if (_networkManagersObject == null)
             {
                 _networkManagersObject = new GameObject("NetworkManagers");
@@ -114,21 +114,21 @@ namespace Editor
             {
                 GameLogger.Log($"NetworkManagers GameObject already exists");
             }
-            
+
             // Add components if they don't exist
             AddComponentIfMissing<NetworkGameStateManager>(_networkManagersObject);
             AddComponentIfMissing<NetworkScoreManager>(_networkManagersObject);
             AddComponentIfMissing<RoundTimer>(_networkManagersObject);
             AddComponentIfMissing<IngredientNetworkSpawner>(_networkManagersObject);
-            
+
             EditorUtility.SetDirty(_networkManagersObject);
             GameLogger.Log($"Added all network manager components");
         }
-        
+
         private void SetupNetworkManager()
         {
             _networkManager = FindObjectOfType<NetworkManager>();
-            
+
             if (_networkManager == null)
             {
                 GameObject nmObject = new GameObject("NetworkManager");
@@ -140,14 +140,14 @@ namespace Editor
             {
                 GameLogger.Log($"NetworkManager already exists");
             }
-            
+
             // Configure NetworkManager settings
             _networkManager.NetworkConfig.TickRate = 30;
-            
+
             EditorUtility.SetDirty(_networkManager);
             GameLogger.Log($"Configured NetworkManager settings");
         }
-        
+
         private void AddStationControllers()
         {
             string[] stationPaths = new string[]
@@ -157,9 +157,9 @@ namespace Editor
                 "Assets/Prefabs/Stations/AssemblyStation.prefab",
                 "Assets/Prefabs/Stations/ServingStation.prefab"
             };
-            
+
             int addedCount = 0;
-            
+
             foreach (string path in stationPaths)
             {
                 GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
@@ -168,7 +168,7 @@ namespace Editor
                     // Load prefab for editing
                     string prefabPath = AssetDatabase.GetAssetPath(prefab);
                     GameObject prefabInstance = PrefabUtility.LoadPrefabContents(prefabPath);
-                    
+
                     // Add StationNetworkController if missing
                     if (prefabInstance.GetComponent<StationNetworkController>() == null)
                     {
@@ -176,19 +176,19 @@ namespace Editor
                         addedCount++;
                         GameLogger.Log($"Added StationNetworkController to {prefab.name}");
                     }
-                    
+
                     // Save prefab
                     PrefabUtility.SaveAsPrefabAsset(prefabInstance, prefabPath);
                     PrefabUtility.UnloadPrefabContents(prefabInstance);
                 }
             }
-            
+
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-            
+
             GameLogger.Log($"Added StationNetworkController to {addedCount} stations");
         }
-        
+
         private void ConfigurePrefabs()
         {
             string[] prefabPaths = new string[]
@@ -200,9 +200,9 @@ namespace Editor
                 "Assets/Prefabs/Stations/ServingStation.prefab",
                 "Assets/Prefabs/Plate.prefab"
             };
-            
+
             int configuredCount = 0;
-            
+
             foreach (string path in prefabPaths)
             {
                 GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
@@ -211,7 +211,7 @@ namespace Editor
                     // Load prefab for editing
                     string prefabPath = AssetDatabase.GetAssetPath(prefab);
                     GameObject prefabInstance = PrefabUtility.LoadPrefabContents(prefabPath);
-                    
+
                     // Add NetworkObject if missing
                     if (prefabInstance.GetComponent<NetworkObject>() == null)
                     {
@@ -219,35 +219,35 @@ namespace Editor
                         configuredCount++;
                         GameLogger.Log($"Added NetworkObject to {prefab.name}");
                     }
-                    
+
                     // Save prefab
                     PrefabUtility.SaveAsPrefabAsset(prefabInstance, prefabPath);
                     PrefabUtility.UnloadPrefabContents(prefabInstance);
                 }
             }
-            
+
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-            
+
             GameLogger.Log($"Configured {configuredCount} prefabs with NetworkObject");
         }
-        
+
         private void RegisterPrefabsInNetworkManager()
         {
             if (_networkManager == null)
             {
                 _networkManager = FindObjectOfType<NetworkManager>();
             }
-            
+
             if (_networkManager == null)
             {
                 GameLogger.LogError($"NetworkManager not found! Run Step 2 first.");
                 return;
             }
-            
+
             // Load prefabs
             List<GameObject> prefabsToRegister = new List<GameObject>();
-            
+
             string[] prefabPaths = new string[]
             {
                 "Assets/Prefabs/Player/Player.prefab",
@@ -257,7 +257,7 @@ namespace Editor
                 "Assets/Prefabs/Stations/ServingStation.prefab",
                 "Assets/Prefabs/Plate.prefab"
             };
-            
+
             foreach (string path in prefabPaths)
             {
                 GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
@@ -266,10 +266,10 @@ namespace Editor
                     prefabsToRegister.Add(prefab);
                 }
             }
-            
+
             // Get existing prefab list
             var networkPrefabs = _networkManager.NetworkConfig.Prefabs;
-            
+
             // Add prefabs that aren't already registered
             int addedCount = 0;
             foreach (GameObject prefab in prefabsToRegister)
@@ -283,7 +283,7 @@ namespace Editor
                         break;
                     }
                 }
-                
+
                 if (!alreadyRegistered)
                 {
                     networkPrefabs.Add(new NetworkPrefab { Prefab = prefab });
@@ -291,7 +291,7 @@ namespace Editor
                     GameLogger.Log($"Registered {prefab.name} in NetworkManager");
                 }
             }
-            
+
             // Set player prefab
             GameObject playerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Player/Player.prefab");
             if (playerPrefab != null)
@@ -299,13 +299,13 @@ namespace Editor
                 _networkManager.NetworkConfig.PlayerPrefab = playerPrefab;
                 GameLogger.Log($"Set Player prefab as PlayerPrefab in NetworkManager");
             }
-            
+
             EditorUtility.SetDirty(_networkManager);
             AssetDatabase.SaveAssets();
-            
+
             GameLogger.Log($"Registered {addedCount} new prefabs in NetworkManager");
         }
-        
+
         private T AddComponentIfMissing<T>(GameObject obj) where T : Component
         {
             T component = obj.GetComponent<T>();

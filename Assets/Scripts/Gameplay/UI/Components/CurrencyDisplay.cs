@@ -1,9 +1,7 @@
-using Modules.Shared.Interfaces;
-using Modules.Shared.Events;
-using Modules.Logging;
-using Modules.Core.Banking;
-using Modules.Core.Banking.Interfaces;
-using UnityEngine;
+using Core.Banking;
+using Core.Banking.Interfaces;
+using Core.Logging;
+using Core.Shared.Events;
 using UnityEngine.UIElements;
 using VContainer;
 

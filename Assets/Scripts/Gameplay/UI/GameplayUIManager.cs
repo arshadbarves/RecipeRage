@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using Gameplay.Characters;
-using Modules.Logging;
 using Gameplay.App.State;
-using Gameplay;
 using Gameplay.Cooking;
 using Gameplay.Scoring;
+using Core.Logging;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;

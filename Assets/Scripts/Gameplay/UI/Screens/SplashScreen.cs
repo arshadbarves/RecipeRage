@@ -1,9 +1,10 @@
-using Modules.UI;
+using Core.UI;
 using DG.Tweening;
-using Gameplay.UI.Controls;
-using Modules.UI.Core;
+using Core.UI.Core;
+using Core.UI.Interfaces;
 using UnityEngine;
 using UnityEngine.UIElements;
+using SkewedBoxElement = Core.UI.Controls.SkewedBoxElement;
 
 namespace Gameplay.UI.Screens
 {

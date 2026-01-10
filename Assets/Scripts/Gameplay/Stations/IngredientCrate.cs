@@ -1,6 +1,6 @@
 using Gameplay.Characters;
-using Modules.Logging;
 using Gameplay.Cooking;
+using Core.Logging;
 using Unity.Netcode;
 using UnityEngine;
 

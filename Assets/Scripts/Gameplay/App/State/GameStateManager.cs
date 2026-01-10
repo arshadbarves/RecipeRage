@@ -1,6 +1,6 @@
 using System;
-using Modules.Shared.Interfaces;
-using Modules.Logging;
+using Core.Logging;
+using Core.Shared.Interfaces;
 using VContainer;
 
 namespace Gameplay.App.State

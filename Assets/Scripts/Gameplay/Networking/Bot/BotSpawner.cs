@@ -1,10 +1,10 @@
 using System.Collections.Generic;
-using Modules.Logging;
-using Gameplay.Networking.Bot;
-using Modules.Networking.Interfaces;
-using Modules.Shared.Enums;
-using Gameplay;
+using Core.Networking.Interfaces;
 using Gameplay.Spawning;
+using Core.Logging;
+using Core.Networking.Interfaces;
+using Core.Networking.Models;
+using Core.Shared.Enums;
 using Unity.Netcode;
 using UnityEngine;
 

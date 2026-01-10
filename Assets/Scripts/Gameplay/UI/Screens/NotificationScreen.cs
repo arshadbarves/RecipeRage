@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Modules.UI;
+using Core.UI;
 using Cysharp.Threading.Tasks;
-using Modules.UI.Core;
+using Core.UI.Core;
+using Core.UI.Interfaces;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -12,7 +13,7 @@ namespace Gameplay.UI.Screens
     /// Persistent notification screen for toasts and messages
     /// </summary>
     [UIScreen(UIScreenType.Notification, UIScreenCategory.Persistent, "Popups/NotificationTemplate")]
-    public class NotificationScreen : BaseUIScreen
+    public class NotificationScreen : BaseUIScreen, INotificationScreen
     {
         private VisualElement _notificationContainer;
         private VisualTreeAsset _toastTemplate;
@@ -25,13 +26,13 @@ namespace Gameplay.UI.Screens
             _toastTemplate = Resources.Load<VisualTreeAsset>("UI/Templates/Components/NotificationToast");
         }
 
-        public async UniTask Show(string message, UI.NotificationType type, float duration)
+        public async UniTask Show(string message, NotificationType type, float duration)
         {
             _queue.Enqueue(new NotificationRequest { Message = message, Type = type, Duration = duration });
             if (!_isShowing) await ProcessQueue();
         }
 
-        public async UniTask Show(string title, string message, UI.NotificationType type, float duration)
+        public async UniTask Show(string title, string message, NotificationType type, float duration)
         {
             _queue.Enqueue(new NotificationRequest { Title = title, Message = message, Type = type, Duration = duration });
             if (!_isShowing) await ProcessQueue();
@@ -79,7 +80,7 @@ namespace Gameplay.UI.Screens
         {
             public string Title;
             public string Message;
-            public UI.NotificationType Type;
+            public NotificationType Type;
             public float Duration;
         }
     }
