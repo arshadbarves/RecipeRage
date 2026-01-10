@@ -24,7 +24,8 @@ namespace Gameplay.App.State.States
             base.Enter();
 
             // Show the game over UI
-            _uiService?.ShowScreen(UIScreenType.GameOver, true, false);
+            // TODO: GameOverScreen doesn't exist yet - implement when needed
+            // _uiService?.Show<GameOverScreen>(true, false);
 
             // Get the final scores
             ScoreManager scoreManager = Object.FindFirstObjectByType<ScoreManager>();
@@ -43,7 +44,8 @@ namespace Gameplay.App.State.States
             base.Exit();
 
             // Hide the game over UI
-            _uiService?.HideScreen(UIScreenType.GameOver, true);
+            // TODO: GameOverScreen doesn't exist yet
+            // _uiService?.Hide<GameOverScreen>(true);
         }
 
         /// <summary>

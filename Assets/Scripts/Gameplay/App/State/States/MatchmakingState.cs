@@ -6,6 +6,7 @@ using Core.Networking.Common;
 using Core.RemoteConfig;
 using Core.UI.Interfaces;
 using Core.Session;
+using Gameplay.UI.Screens;
 
 namespace Gameplay.App.State.States
 {
@@ -99,10 +100,10 @@ namespace Gameplay.App.State.States
             if (_uiService != null)
             {
                 // Hide main menu
-                _uiService.HideScreen(UIScreenType.MainMenu, true);
+                _uiService.Hide<MainMenuScreen>(true);
 
                 // Show matchmaking screen
-                _uiService.ShowScreen(UIScreenType.Matchmaking, true, false);
+                _uiService.Show<MatchmakingScreen>(true, false);
                 LogMessage("Matchmaking screen shown");
             }
 
@@ -123,7 +124,7 @@ namespace Gameplay.App.State.States
             base.Exit();
 
             // Hide matchmaking UI
-            _uiService?.HideScreen(UIScreenType.Matchmaking, true);
+            _uiService?.Hide<MatchmakingScreen>(true);
 
             // Unsubscribe from events
             if (_networkingServices != null)

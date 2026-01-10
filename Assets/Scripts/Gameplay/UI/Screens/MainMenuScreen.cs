@@ -16,7 +16,7 @@ namespace Gameplay.UI.Screens
     /// <summary>
     /// Main menu screen - Fortnite-style lobby with nav pills and sidebar
     /// </summary>
-    [UIScreen(UIScreenType.MainMenu, UIScreenCategory.Screen, "Screens/MainMenuTemplate")]
+    [UIScreen(UIScreenCategory.Screen, "Screens/MainMenuTemplate")]
     public class MainMenuScreen : BaseUIScreen
     {
         #region Dependencies

@@ -1,8 +1,8 @@
-<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" xmlns:ui="UI.Controls" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd" editor-extension-mode="False">
+<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" xmlns:ui="Core.UI.Controls" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/Resources/UI/Styles/Screens/SplashScreen.uss?fileID=7433441132597879392&amp;guid=b724b6d18cc4f4d4990e45d83782907e&amp;type=3#SplashScreen"/>
     <VisualElement name="screen-container" class="splash-screen">
         <ui:RadialGradientElement name="background-gradient" center-color="rgb(26, 26, 26)" edge-color="rgb(0, 0, 0)" radius-scale="1.2" style="position: absolute; width: 100%; height: 100%;"/>
-        
+
         <VisualElement name="splash-content" class="splash-content">
             <VisualElement name="master-container" class="master-container">
                 <VisualElement name="logo-row" class="logo-row">

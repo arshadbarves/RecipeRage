@@ -2,27 +2,28 @@ using System;
 using Core.Logging;
 using Core.RemoteConfig.Interfaces;
 using Core.RemoteConfig.Models;
+using Core.Shared.Events;
 using Core.Shared.Utilities;
-using Core.UI.Interfaces;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace Core.RemoteConfig
 {
     /// <summary>
-    /// Checks for required app updates and handles force update flow
+    /// Checks for required app updates and handles force update flow.
+    /// Uses events to notify UI layer - decoupled from Gameplay assembly.
     /// </summary>
     public class ForceUpdateChecker
     {
         private readonly IRemoteConfigService _configService;
-        private readonly IUIService _uiService;
+        private readonly IEventBus _eventBus;
 
         public ForceUpdateChecker(
             IRemoteConfigService configService,
-            IUIService uiService)
+            IEventBus eventBus)
         {
             _configService = configService;
-            _uiService = uiService;
+            _eventBus = eventBus;
         }
 
         public async UniTask<bool> CheckForUpdateAsync()
@@ -48,12 +49,12 @@ namespace Core.RemoteConfig
 
                 if (isRequired)
                 {
-                    await ShowForceUpdatePopupAsync(requirement, true);
+                    PublishForceUpdateEvent(requirement, true);
                     return true;
                 }
                 else if (isRecommended && requirement.UpdateUrgency == UpdateUrgency.Recommended)
                 {
-                    await ShowForceUpdatePopupAsync(requirement, false);
+                    PublishForceUpdateEvent(requirement, false);
                     return false;
                 }
 
@@ -66,31 +67,21 @@ namespace Core.RemoteConfig
             }
         }
 
-        private async UniTask ShowForceUpdatePopupAsync(PlatformVersionRequirement requirement, bool isRequired)
+        private void PublishForceUpdateEvent(PlatformVersionRequirement requirement, bool isRequired)
         {
-            try
-            {
-                string message = $"{requirement.UpdateMessage}\n\n" +
-                                $"Current Version: {Application.version}\n" +
-                                $"Minimum Version: {requirement.MinimumVersion}";
+            string message = $"{requirement.UpdateMessage}\n\n" +
+                            $"Current Version: {Application.version}\n" +
+                            $"Minimum Version: {requirement.MinimumVersion}";
 
-                if (_uiService != null)
-                {
-                    _uiService.ShowScreen(UIScreenType.Notification);
-                    var notificationScreen = _uiService.GetScreen<INotificationScreen>(UIScreenType.Notification);
-                    if (notificationScreen != null)
-                    {
-                        var notificationType = isRequired ? NotificationType.Error : NotificationType.Warning;
-                        await notificationScreen.Show(requirement.UpdateTitle, message, notificationType, isRequired ? 0f : 10f);
-                    }
-                }
-
-                await UniTask.Yield();
-            }
-            catch (Exception ex)
+            _eventBus?.Publish(new ForceUpdateEvent
             {
-                GameLogger.LogError($"Failed to show update popup: {ex.Message}");
-            }
+                Title = requirement.UpdateTitle,
+                Message = message,
+                IsRequired = isRequired,
+                Duration = isRequired ? 0f : 10f
+            });
+
+            GameLogger.LogInfo($"Force update event published: IsRequired={isRequired}");
         }
     }
 }

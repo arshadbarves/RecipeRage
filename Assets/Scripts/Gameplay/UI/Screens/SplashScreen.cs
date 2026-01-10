@@ -12,7 +12,7 @@ namespace Gameplay.UI.Screens
     /// Splash screen shown at startup.
     /// Implements the "Conductor Workflow" for intro animation sequencing.
     /// </summary>
-    [UIScreen(UIScreenType.Splash, UIScreenCategory.System, "Screens/SplashScreenTemplate")]
+    [UIScreen(UIScreenCategory.System, "Screens/SplashScreenTemplate")]
     public class SplashScreen : BaseUIScreen
     {
 

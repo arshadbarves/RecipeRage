@@ -7,13 +7,12 @@ namespace Core.UI.Core
 {
     /// <summary>
     /// Pure C# base class for all UI screens - no MonoBehaviour dependency
-    /// Professional screen-class based architecture
+    /// TYPE-BASED: Identified by class Type, not enum
     /// </summary>
     public abstract class BaseUIScreen
     {
         #region Properties
 
-        public UIScreenType ScreenType { get; private set; }
         public UIScreenCategory Category { get; private set; }
         public UIScreenPriority Priority { get; private set; }
         public bool IsVisible { get; private set; }
@@ -40,13 +39,11 @@ namespace Core.UI.Core
 
         #region Lifecycle
 
-        public void Initialize(UIScreenType screenType, UIScreenPriority priority, UIScreenController controller)
+        public void Initialize(UIScreenPriority priority, UIScreenCategory category, UIScreenController controller)
         {
-            ScreenType = screenType;
             Priority = priority;
+            Category = category;
             Controller = controller;
-
-            // Category is set through the constructor or property, GetScreenCategory was removed from IUIService
 
             if (Controller != null)
             {
@@ -86,12 +83,12 @@ namespace Core.UI.Core
 
         public void Show(bool animate = true, bool addToHistory = true)
         {
-            UIService?.ShowScreen(ScreenType, animate, addToHistory);
+            UIService?.Show(this.GetType(), animate, addToHistory);
         }
 
         public void Hide(bool animate = true)
         {
-            UIService?.HideScreen(ScreenType, animate);
+            UIService?.Hide(this.GetType(), animate);
         }
 
         public void Toggle(bool animate = true)

@@ -1,4 +1,5 @@
 using Gameplay.UI.Data;
+using Gameplay.UI.Popups;
 using Gameplay.UI.Screens;
 using UnityEngine.UIElements;
 using Gameplay.UI.ViewModels;
@@ -115,7 +116,7 @@ namespace Gameplay.UI.Components.Tabs
 
         private void OnInviteClicked(int slotIndex)
         {
-            _uiService?.ShowScreen(UIScreenType.FriendsPopup);
+            _uiService?.Show<FriendsPopup>();
         }
 
         public void Update(float deltaTime) { }

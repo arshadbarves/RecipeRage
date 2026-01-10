@@ -16,7 +16,7 @@ namespace Gameplay.UI.Screens
     /// Character details screen - shows character info and available skins
     /// Matches the style of SkinsTabComponent
     /// </summary>
-    [UIScreen(UIScreenType.CharacterSelection, UIScreenCategory.Screen, "Screens/CharacterDetailsTemplate")]
+    [UIScreen(UIScreenCategory.Screen, "Screens/CharacterDetailsTemplate")]
     public class CharacterDetailsScreen : BaseUIScreen
     {
         [Inject]
@@ -339,9 +339,7 @@ namespace Gameplay.UI.Screens
                 bool wentBack = _uiService.GoBack(true);
 
                 if (!wentBack)
-                {
-                    _uiService.ShowScreen(UIScreenType.MainMenu, true, false);
-                }
+                    _uiService.Show<MainMenuScreen>(true, false);
             }
         }
 

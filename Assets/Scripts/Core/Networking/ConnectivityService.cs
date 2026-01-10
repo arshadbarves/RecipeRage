@@ -3,6 +3,7 @@ using Core.Logging;
 using Core.Shared.Events;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using VContainer.Unity;
 using UnityEngine.Networking;
 
 namespace Core.Networking
@@ -14,7 +15,7 @@ namespace Core.Networking
         UniTask<bool> ForceCheckAsync();
     }
 
-    public class ConnectivityService : IConnectivityService, IDisposable
+    public class ConnectivityService : IConnectivityService, IStartable, IDisposable
     {
         // Check "Active" internet (Ping) every 30 seconds
         private const float ACTIVE_CHECK_INTERVAL = 30f;
@@ -37,7 +38,10 @@ namespace Core.Networking
         public ConnectivityService(IEventBus eventBus)
         {
             _eventBus = eventBus;
-            // _logger = logger; // Removed
+        }
+
+        public void Start()
+        {
             StartMonitoring().Forget();
         }
 

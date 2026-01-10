@@ -19,6 +19,10 @@ using Core.UI;
 using Core.UI.Interfaces;
 using Gameplay.App.State;
 using Gameplay.App.State.States;
+using Gameplay.UI;
+using Gameplay.UI.Auth;
+using Gameplay.UI.Popups;
+using Gameplay.UI.Screens;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
@@ -42,14 +46,13 @@ namespace Gameplay.Bootstrap
                 .As<IStartable>()
                 .WithParameter(5000); // maxLogEntries
 
-            // Entry Point
-            builder.RegisterEntryPoint<GameBootstrapper>();
+
 
             // Event Bus
             builder.Register<EventBus>(Lifetime.Singleton).As<IEventBus>();
 
             // Localization
-            builder.Register<LocalizationManager>(Lifetime.Singleton).As<ILocalizationManager>();
+            builder.Register<LocalizationManager>(Lifetime.Singleton).As<ILocalizationManager>().As<IInitializable>();
 
             // 2. Animation & UI
             builder.Register<DOTweenUIAnimator>(Lifetime.Singleton).As<IUIAnimator>();
@@ -57,7 +60,40 @@ namespace Gameplay.Bootstrap
             builder.Register<AnimationService>(Lifetime.Singleton).As<IAnimationService>();
 
             // UIService
-            builder.Register<UIService>(Lifetime.Singleton).As<IUIService>().As<IDisposable>();
+            // Find UIDocument in the scene
+            var uiDocument = GameObject.FindObjectOfType<UnityEngine.UIElements.UIDocument>();
+            if (uiDocument != null)
+            {
+                builder.RegisterInstance(uiDocument);
+            }
+            else
+            {
+                GameLogger.LogError("UIDocument not found in scene! UI will not work.");
+            }
+            builder.Register<UIService>(Lifetime.Singleton).As<IUIService>().As<IStartable>().As<IDisposable>();
+
+            // Register UI Screens (Transient - instantiated by UIService)
+            // System
+            builder.Register<SplashScreen>(Lifetime.Transient);
+            builder.Register<LoadingScreen>(Lifetime.Transient);
+            builder.Register<MaintenanceScreen>(Lifetime.Transient);
+
+            // Auth
+            builder.Register<LoginView>(Lifetime.Transient);
+
+            // Screens
+            builder.Register<MainMenuScreen>(Lifetime.Transient);
+            builder.Register<ProfileScreen>(Lifetime.Transient);
+            builder.Register<CharacterDetailsScreen>(Lifetime.Transient);
+            builder.Register<MapSelectionScreen>(Lifetime.Transient);
+            builder.Register<MatchmakingScreen>(Lifetime.Transient);
+
+            // Popups & Components
+            builder.Register<NotificationScreen>(Lifetime.Transient).AsImplementedInterfaces().AsSelf();
+            builder.Register<UsernamePopup>(Lifetime.Transient);
+            builder.Register<FriendsPopup>(Lifetime.Transient);
+            builder.Register<NoInternetPopup>(Lifetime.Transient);
+            builder.Register<JoystickEditorUI>(Lifetime.Transient);
 
             // 3. Persistence
             builder.Register<EncryptionService>(Lifetime.Singleton)
@@ -76,7 +112,7 @@ namespace Gameplay.Bootstrap
             // 6. Session & Connectivity
             builder.Register<SessionManager>(Lifetime.Singleton).AsSelf().As<IInitializable>().As<IDisposable>();
 
-            builder.Register<ConnectivityService>(Lifetime.Singleton).As<IConnectivityService>().As<IDisposable>();
+            builder.Register<ConnectivityService>(Lifetime.Singleton).As<IConnectivityService>().As<IStartable>().As<IDisposable>();
 
             builder.Register<MaintenanceService>(Lifetime.Singleton).As<IMaintenanceService>();
 
@@ -113,6 +149,9 @@ namespace Gameplay.Bootstrap
 
             // Networking Core (Low level)
             builder.Register<PlayerNetworkManager>(Lifetime.Singleton).As<IPlayerNetworkManager>();
+
+            // 9. Bootstrapper (EntryPoint)
+            builder.Register<GameBootstrapper>(Lifetime.Singleton).As<IStartable>();
         }
 
         private void RegisterAudioSystem(IContainerBuilder builder)
@@ -128,11 +167,22 @@ namespace Gameplay.Bootstrap
                 Debug.LogError("AudioSettings asset not found in Resources/Audio/! Please create it.");
             }
 
-            // Register Audio Components
+            // ViewModels
+            builder.Register<Gameplay.UI.ViewModels.LoadingViewModel>(Lifetime.Transient);
+            builder.Register<Gameplay.UI.ViewModels.LobbyViewModel>(Lifetime.Transient);
+            builder.Register<Gameplay.UI.ViewModels.MainMenuViewModel>(Lifetime.Transient);
+            builder.Register<Gameplay.UI.ViewModels.CharacterViewModel>(Lifetime.Transient);
+            builder.Register<Gameplay.UI.ViewModels.LoginViewModel>(Lifetime.Transient);
+            builder.Register<Gameplay.UI.ViewModels.MatchmakingViewModel>(Lifetime.Transient);
+            builder.Register<Gameplay.UI.ViewModels.SettingsViewModel>(Lifetime.Transient);
+            builder.Register<Gameplay.UI.ViewModels.ShopViewModel>(Lifetime.Transient);
+            builder.Register<Gameplay.UI.ViewModels.UsernameViewModel>(Lifetime.Transient);
+
+            // Audio System
             // AudioPoolManager needs a parent transform, we use this scope's transform
             builder.Register<AudioPoolManager>(Lifetime.Singleton).WithParameter(transform);
 
-            builder.Register<AudioVolumeController>(Lifetime.Singleton).As<IAudioVolumeController>();
+            builder.Register<AudioVolumeController>(Lifetime.Singleton).As<IAudioVolumeController>().As<IInitializable>();
             builder.Register<SFXPlayer>(Lifetime.Singleton).As<ISFXPlayer>();
             builder.Register<MusicPlayer>(Lifetime.Singleton).As<IMusicPlayer>();
             builder.Register<AudioService>(Lifetime.Singleton).As<IAudioService>();

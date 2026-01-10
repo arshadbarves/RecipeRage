@@ -9,12 +9,11 @@ namespace Core.UI.Core
 {
     /// <summary>
     /// Registry system for managing UI screen classes
-    /// Handles auto-registration and screen creation
+    /// TYPE-BASED: Uses Type as key instead of UIScreenType enum
     /// </summary>
     public static class UIScreenRegistry
     {
-        private static readonly Dictionary<UIScreenType, Type> _screenTypes = new();
-        private static readonly Dictionary<UIScreenType, UIScreenAttribute> _screenAttributes = new();
+        private static readonly Dictionary<Type, UIScreenAttribute> _screenAttributes = new();
         private static bool _isInitialized = false;
 
         /// <summary>
@@ -24,14 +23,13 @@ namespace Core.UI.Core
         {
             if (_isInitialized) return;
 
-            _screenTypes.Clear();
             _screenAttributes.Clear();
 
             // Scan all assemblies for screen classes
             ScanForScreenClasses();
 
             _isInitialized = true;
-            GameLogger.Log($"Initialized with {_screenTypes.Count} screen types");
+            GameLogger.Log($"UIScreenRegistry initialized with {_screenAttributes.Count} screen types");
         }
 
         /// <summary>
@@ -54,7 +52,7 @@ namespace Core.UI.Core
                         UIScreenAttribute attribute = type.GetCustomAttribute<UIScreenAttribute>();
                         if (attribute != null && attribute.AutoRegister)
                         {
-                            RegisterScreenType(attribute.ScreenType, type, attribute);
+                            RegisterScreen(type, attribute);
                         }
                     }
                 }
@@ -68,7 +66,7 @@ namespace Core.UI.Core
         /// <summary>
         /// Register a screen type manually
         /// </summary>
-        public static void RegisterScreenType(UIScreenType screenType, Type screenClass, UIScreenAttribute attribute = null)
+        public static void RegisterScreen(Type screenClass, UIScreenAttribute attribute = null)
         {
             if (!screenClass.IsSubclassOf(typeof(BaseUIScreen)))
             {
@@ -76,76 +74,66 @@ namespace Core.UI.Core
                 return;
             }
 
-            _screenTypes[screenType] = screenClass;
-            _screenAttributes[screenType] = attribute ?? new UIScreenAttribute(screenType, UIScreenCategory.Screen);
+            _screenAttributes[screenClass] = attribute ?? new UIScreenAttribute(UIScreenCategory.Screen);
 
-            GameLogger.Log($"Registered {screenType} -> {screenClass.Name}");
+            GameLogger.Log($"Registered screen: {screenClass.Name}");
         }
 
         /// <summary>
-        /// Create an instance of a screen by type
+        /// Get screen attribute for a screen class
         /// </summary>
-        public static BaseUIScreen CreateScreen(UIScreenType screenType)
+        public static UIScreenAttribute GetScreenAttribute(Type screenClass)
         {
-            if (!_screenTypes.TryGetValue(screenType, out Type screenClass))
-            {
-                GameLogger.LogError($"No screen class registered for {screenType}");
-                return null;
-            }
-
-            try
-            {
-                var screen = (BaseUIScreen)Activator.CreateInstance(screenClass);
-                return screen;
-            }
-            catch (Exception ex)
-            {
-                GameLogger.LogError($"Failed to create screen {screenType}: {ex.Message}");
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Get screen attribute for a screen type
-        /// </summary>
-        public static UIScreenAttribute GetScreenAttribute(UIScreenType screenType)
-        {
-            _screenAttributes.TryGetValue(screenType, out UIScreenAttribute attribute);
+            _screenAttributes.TryGetValue(screenClass, out UIScreenAttribute attribute);
             return attribute;
+        }
+
+        /// <summary>
+        /// Get screen attribute for a screen class (generic)
+        /// </summary>
+        public static UIScreenAttribute GetScreenAttribute<T>() where T : BaseUIScreen
+        {
+            return GetScreenAttribute(typeof(T));
         }
 
         /// <summary>
         /// Get all registered screen types
         /// </summary>
-        public static IEnumerable<UIScreenType> GetRegisteredScreenTypes()
+        public static IEnumerable<Type> GetRegisteredScreenTypes()
         {
-            return _screenTypes.Keys;
+            return _screenAttributes.Keys;
         }
 
         /// <summary>
         /// Check if a screen type is registered
         /// </summary>
-        public static bool IsScreenRegistered(UIScreenType screenType)
+        public static bool IsScreenRegistered(Type screenClass)
         {
-            return _screenTypes.ContainsKey(screenType);
+            return _screenAttributes.ContainsKey(screenClass);
         }
 
         /// <summary>
-        /// Get the class type for a screen
+        /// Check if a screen type is registered (generic)
         /// </summary>
-        public static Type GetScreenClassType(UIScreenType screenType)
+        public static bool IsScreenRegistered<T>() where T : BaseUIScreen
         {
-            _screenTypes.TryGetValue(screenType, out Type type);
-            return type;
+            return IsScreenRegistered(typeof(T));
         }
 
         /// <summary>
         /// Unregister a screen type
         /// </summary>
-        public static void UnregisterScreenType(UIScreenType screenType)
+        public static void UnregisterScreen(Type screenClass)
         {
-            _screenTypes.Remove(screenType);
-            _screenAttributes.Remove(screenType);
+            _screenAttributes.Remove(screenClass);
+        }
+
+        /// <summary>
+        /// Unregister a screen type (generic)
+        /// </summary>
+        public static void UnregisterScreen<T>() where T : BaseUIScreen
+        {
+            UnregisterScreen(typeof(T));
         }
 
         /// <summary>
@@ -153,7 +141,6 @@ namespace Core.UI.Core
         /// </summary>
         public static void Clear()
         {
-            _screenTypes.Clear();
             _screenAttributes.Clear();
             _isInitialized = false;
         }
@@ -163,11 +150,11 @@ namespace Core.UI.Core
         /// </summary>
         public static string GetDebugInfo()
         {
-            string info = $"UIScreenRegistry - {_screenTypes.Count} registered screens:\n";
-            foreach (KeyValuePair<UIScreenType, Type> kvp in _screenTypes)
+            string info = $"UIScreenRegistry - {_screenAttributes.Count} registered screens:\n";
+            foreach (KeyValuePair<Type, UIScreenAttribute> kvp in _screenAttributes)
             {
-                UIScreenAttribute attribute = _screenAttributes[kvp.Key];
-                info += $"  {kvp.Key} -> {kvp.Value.Name} (Priority: {attribute.Priority})\n";
+                UIScreenAttribute attribute = kvp.Value;
+                info += $"  {kvp.Key.Name} (Category: {attribute.Category}, Priority: {attribute.Priority})\n";
             }
             return info;
         }

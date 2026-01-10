@@ -1,4 +1,4 @@
-<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" xmlns:ui="UI.Controls" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" xmlns:ui="Core.UI.Controls" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Template name="CharacterTabTemplate" src="project://database/Assets/Resources/UI/Templates/Screens/CharacterTabTemplate.uxml?fileID=9197481963319205126&amp;guid=ac8e05f0b8d6c4ef79f194a1f70828d2&amp;type=3#CharacterTabTemplate"/>
     <Template name="LobbyTemplate" src="project://database/Assets/Resources/UI/Templates/Screens/LobbyTemplate.uxml?fileID=9197481963319205126&amp;guid=3da2194908d8a4d65b7a6a67f37ee6f6&amp;type=3#LobbyTemplate"/>
     <Template name="ShopTemplate" src="project://database/Assets/Resources/UI/Templates/Screens/ShopTemplate.uxml?fileID=9197481963319205126&amp;guid=0824e79abae0447b990331c5e433d706&amp;type=3#ShopTemplate"/>

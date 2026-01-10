@@ -1,48 +1,69 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Core.Animation;
 using Core.Logging;
 using Core.UI.Core;
 using Core.UI.Interfaces;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
+using VContainer.Unity;
 
 namespace Core.UI
 {
     /// <summary>
     /// Professional UI Service using category-based stack management
-    /// Each category (System, Overlay, Modal, Popup, Screen, Persistent) has its own stack
-    /// Eliminates priority conflicts and scales to 100+ screens
-    /// Follows service-based architecture - no MonoBehaviour dependency
+    /// TYPE-BASED: Uses class Type instead of UIScreenType enum
     /// </summary>
-    public class UIService : IUIService, IDisposable
+    /// <summary>
+    /// Professional UI Service using category-based stack management
+    /// TYPE-BASED: Uses class Type instead of UIScreenType enum
+    /// </summary>
+    public class UIService : IUIService, IStartable, IDisposable
     {
         private UIDocument _uiDocument;
         private VisualElement _root;
-        private readonly Dictionary<UIScreenType, UIScreenController> _controllers = new();
-        private readonly Dictionary<UIScreenType, BaseUIScreen> _screens = new();
+        private readonly Dictionary<Type, UIScreenController> _controllers = new();
+        private readonly Dictionary<Type, BaseUIScreen> _screens = new();
         private readonly UIScreenStackManager _stackManager;
-        private readonly IAnimationService _animationService;
         private readonly VContainer.IObjectResolver _container;
 
-        public event Action<UIScreenType> OnScreenShown;
-        public event Action<UIScreenType> OnScreenHidden;
+        public event Action<Type> OnScreenShown;
+        public event Action<Type> OnScreenHidden;
         public event Action OnAllScreensHidden;
 
         private bool _isInitialized = false;
 
-        public UIService(IAnimationService animationService, VContainer.IObjectResolver container)
+        public UIService(VContainer.IObjectResolver container, UIDocument uiDocument)
         {
-            _animationService = animationService ?? throw new ArgumentNullException(nameof(animationService));
             _container = container ?? throw new ArgumentNullException(nameof(container));
+            _uiDocument = uiDocument;
             _stackManager = new UIScreenStackManager();
         }
 
+        /// <summary>
+        /// IStartable.Start - Called by VContainer after initialization.
+        /// Ensures UIDocument is ready (OnEnable has run).
+        /// </summary>
+        public void Start()
+        {
+            if (_isInitialized) return;
 
+            if (_uiDocument != null)
+            {
+                InitializeWithDocument(_uiDocument);
+                InitializeScreens();
+            }
+            else
+            {
+                GameLogger.LogError("UIDocument is null - cannot initialize UIService");
+            }
+        }
 
-        public void Initialize(object uiDocumentObj)
+        /// <summary>
+        /// Initialize with a UIDocument (can be called manually if needed)
+        /// </summary>
+        public void InitializeWithDocument(UIDocument uiDocument)
         {
             if (_isInitialized)
             {
@@ -50,16 +71,9 @@ namespace Core.UI
                 return;
             }
 
-            if (uiDocumentObj is UIDocument uiDocument)
-            {
-                _uiDocument = uiDocument;
-                UIScreenRegistry.Initialize();
-                SetupUIDocument();
-            }
-            else
-            {
-                GameLogger.LogError("Initialize called with invalid type. Expected UIDocument.");
-            }
+            _uiDocument = uiDocument;
+            UIScreenRegistry.Initialize();
+            SetupUIDocument();
         }
 
         public void InitializeScreens()
@@ -96,7 +110,9 @@ namespace Core.UI
             }
             else
             {
-                _uiDocument.rootVisualElement?.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+                // Fix: Cannot register callback on null root.
+                // Since we are in Start(), root SHOULD be ready. If not, we are in trouble.
+                GameLogger.LogError("UIDocument.rootVisualElement is null in Start(). Ensure UIDocument is Enabled in scene.");
             }
         }
 
@@ -122,7 +138,7 @@ namespace Core.UI
 
         private void CreateScreenControllers()
         {
-            foreach (UIScreenType screenType in UIScreenRegistry.GetRegisteredScreenTypes())
+            foreach (Type screenType in UIScreenRegistry.GetRegisteredScreenTypes())
             {
                 CreateScreen(screenType);
             }
@@ -131,38 +147,31 @@ namespace Core.UI
             SortScreensByCategory();
         }
 
-        private void CreateScreen(UIScreenType screenType)
+        private void CreateScreen(Type screenType)
         {
             UIScreenAttribute attribute = UIScreenRegistry.GetScreenAttribute(screenType);
             if (attribute == null)
             {
-                GameLogger.LogError($"No attribute found for screen type {screenType}");
+                GameLogger.LogError($"No attribute found for screen type {screenType.Name}");
                 return;
             }
 
             VisualTreeAsset template = LoadTemplateFromPath(attribute.TemplatePath);
 
-            var controller = new UIScreenController(screenType, attribute.Priority, template, _root);
+            var controller = new UIScreenController(screenType, attribute.Priority, attribute.Category, template, _root);
             _controllers[screenType] = controller;
 
             SortScreensByCategory();
 
-            Type screenClass = UIScreenRegistry.GetScreenClassType(screenType);
-            if (screenClass == null)
-            {
-                GameLogger.LogError($"No screen class registered for {screenType}");
-                return;
-            }
-
-            BaseUIScreen screen = (BaseUIScreen)_container.Resolve(screenClass);
+            var screen = (BaseUIScreen)_container.Resolve(screenType);
             if (screen != null)
             {
-                screen.Initialize(screenType, attribute.Priority, controller);
+                screen.Initialize(attribute.Priority, attribute.Category, controller);
                 _screens[screenType] = screen;
             }
             else
             {
-                GameLogger.LogError($"Failed to create screen instance for {screenType}");
+                GameLogger.LogError($"Failed to create screen instance for {screenType.Name}");
             }
         }
 
@@ -176,7 +185,6 @@ namespace Core.UI
 
             try
             {
-                // Template path should already include the category (Screens/, Components/, Popups/)
                 string resourcePath = $"UI/Templates/{templatePath}";
                 VisualTreeAsset template = Resources.Load<VisualTreeAsset>(resourcePath);
 
@@ -186,7 +194,7 @@ namespace Core.UI
                 }
                 else
                 {
-                    GameLogger.LogError($"Template '{templatePath}' not found at '{resourcePath}'. Make sure the template exists in Resources/UI/Templates/ with proper category (Screens/, Components/, Popups/)");
+                    GameLogger.LogError($"Template '{templatePath}' not found at '{resourcePath}'.");
                     return null;
                 }
             }
@@ -215,32 +223,35 @@ namespace Core.UI
 
         public bool IsInitialized => _isInitialized && _root != null;
 
-        public void ShowScreen(UIScreenType screenType, bool animate = true, bool addToHistory = true)
+        public void Show<T>(bool animate = true, bool addToHistory = true) where T : class
+        {
+            Show(typeof(T), animate, addToHistory);
+        }
+
+        public void Show(Type screenType, bool animate = true, bool addToHistory = true)
         {
             if (!_screens.TryGetValue(screenType, out BaseUIScreen screen))
             {
-                GameLogger.LogError($"Screen {screenType} not found");
+                GameLogger.LogError($"Screen {screenType.Name} not found");
                 return;
             }
 
             // Get category for this screen
-            UIScreenCategory category = _stackManager.GetCategory(screenType);
+            UIScreenCategory category = _controllers[screenType].Category;
 
             // Handle category-specific logic
             switch (category)
             {
                 case UIScreenCategory.System:
-                    // System screens replace all other UI
                     HideAllScreens(animate: false);
                     _stackManager.ClearAll();
                     break;
 
                 case UIScreenCategory.Screen:
-                    // Only one main screen at a time
-                    UIScreenType? currentScreen = _stackManager.Peek(UIScreenCategory.Screen);
-                    if (currentScreen.HasValue && currentScreen.Value != screenType)
+                    Type currentScreenType = _stackManager.Peek(UIScreenCategory.Screen);
+                    if (currentScreenType != null && currentScreenType != screenType)
                     {
-                        if (_screens.TryGetValue(currentScreen.Value, out BaseUIScreen current))
+                        if (_screens.TryGetValue(currentScreenType, out BaseUIScreen current))
                         {
                             HideScreenInternal(current, animate);
                         }
@@ -251,7 +262,6 @@ namespace Core.UI
                 case UIScreenCategory.Modal:
                 case UIScreenCategory.Popup:
                 case UIScreenCategory.Persistent:
-                    // These can stack or coexist
                     break;
             }
 
@@ -260,7 +270,7 @@ namespace Core.UI
                 bool pushed = _stackManager.Push(screenType, category);
                 if (!pushed)
                 {
-                    GameLogger.LogWarning($"Failed to push {screenType} to stack");
+                    GameLogger.LogWarning($"Failed to push {screenType.Name} to stack");
                     return;
                 }
             }
@@ -278,49 +288,29 @@ namespace Core.UI
             return null;
         }
 
-        public object GetScreen(UIScreenType screenType)
+        public void Hide<T>(bool animate = true) where T : class
         {
-            _screens.TryGetValue(screenType, out BaseUIScreen screen);
-            return screen;
+            Hide(typeof(T), animate);
         }
 
-        public T GetScreen<T>(UIScreenType screenType) where T : class
-        {
-            _screens.TryGetValue(screenType, out BaseUIScreen screen);
-            return screen as T;
-        }
-
-        public void HideScreen(UIScreenType screenType, bool animate = true)
+        public void Hide(Type screenType, bool animate = true)
         {
             if (!_screens.TryGetValue(screenType, out BaseUIScreen screen))
             {
-                GameLogger.LogError($"Screen {screenType} not found");
+                GameLogger.LogError($"Screen {screenType.Name} not found");
                 return;
             }
 
-            UIScreenCategory category = _stackManager.GetCategory(screenType);
-            bool removed = _stackManager.PopSpecific(screenType, category);
-
-            if (!removed)
-            {
-                GameLogger.LogWarning($"Screen {screenType} not in stack");
-            }
+            UIScreenCategory category = _controllers[screenType].Category;
+            _stackManager.PopSpecific(screenType, category);
 
             HideScreenInternal(screen, animate);
-        }
-
-        public void HideScreensOfType(UIScreenType screenType, bool animate = true)
-        {
-            if (_stackManager.IsVisible(screenType))
-            {
-                HideScreen(screenType, animate);
-            }
         }
 
         public void HideAllPopups(bool animate = true)
         {
             var popups = _stackManager.GetVisibleInCategory(UIScreenCategory.Popup);
-            foreach (UIScreenType popupType in popups)
+            foreach (Type popupType in popups)
             {
                 if (_screens.TryGetValue(popupType, out BaseUIScreen popup))
                 {
@@ -333,7 +323,7 @@ namespace Core.UI
         public void HideAllModals(bool animate = true)
         {
             var modals = _stackManager.GetVisibleInCategory(UIScreenCategory.Modal);
-            foreach (UIScreenType modalType in modals)
+            foreach (Type modalType in modals)
             {
                 if (_screens.TryGetValue(modalType, out BaseUIScreen modal))
                 {
@@ -345,16 +335,15 @@ namespace Core.UI
 
         public void HideAllGameScreens(bool animate = true)
         {
-            // Clear all categories except System and Persistent
             _stackManager.ClearCategory(UIScreenCategory.Screen);
             _stackManager.ClearCategory(UIScreenCategory.Overlay);
             _stackManager.ClearCategory(UIScreenCategory.Modal);
             _stackManager.ClearCategory(UIScreenCategory.Popup);
 
             var allVisible = _stackManager.GetAllVisible();
-            foreach (UIScreenType screenType in allVisible)
+            foreach (Type screenType in allVisible)
             {
-                UIScreenCategory category = _stackManager.GetCategory(screenType);
+                UIScreenCategory category = _controllers[screenType].Category;
                 if (category != UIScreenCategory.Persistent && category != UIScreenCategory.System)
                 {
                     if (_screens.TryGetValue(screenType, out BaseUIScreen screen))
@@ -368,7 +357,7 @@ namespace Core.UI
         public void HideAllScreens(bool animate = false)
         {
             var allVisible = _stackManager.GetAllVisible();
-            foreach (UIScreenType screenType in allVisible)
+            foreach (Type screenType in allVisible)
             {
                 if (_screens.TryGetValue(screenType, out BaseUIScreen screen))
                 {
@@ -382,7 +371,6 @@ namespace Core.UI
         {
             GameLogger.Log("GoBack called");
 
-            // Try to go back in each category (highest priority first)
             UIScreenCategory[] categories = new[]
             {
                 UIScreenCategory.Modal,
@@ -398,18 +386,18 @@ namespace Core.UI
 
                 if (depth > 1)
                 {
-                    UIScreenType? current = _stackManager.Pop(category);
-                    GameLogger.Log($"Popped {current} from {category}");
+                    Type current = _stackManager.Pop(category);
+                    GameLogger.Log($"Popped {current?.Name} from {category}");
 
-                    if (current.HasValue && _screens.TryGetValue(current.Value, out BaseUIScreen currentScreen))
+                    if (current != null && _screens.TryGetValue(current, out BaseUIScreen currentScreen))
                     {
                         HideScreenInternal(currentScreen, animate);
                     }
 
-                    UIScreenType? previous = _stackManager.Peek(category);
-                    GameLogger.Log($"Showing previous screen: {previous}");
+                    Type previous = _stackManager.Peek(category);
+                    GameLogger.Log($"Showing previous screen: {previous?.Name}");
 
-                    if (previous.HasValue && _screens.TryGetValue(previous.Value, out BaseUIScreen previousScreen))
+                    if (previous != null && _screens.TryGetValue(previous, out BaseUIScreen previousScreen))
                     {
                         ShowScreenInternal(previousScreen, animate);
                         return true;
@@ -421,7 +409,12 @@ namespace Core.UI
             return false;
         }
 
-        public bool IsScreenVisible(UIScreenType screenType)
+        public bool IsScreenVisible<T>() where T : class
+        {
+            return IsScreenVisible(typeof(T));
+        }
+
+        public bool IsScreenVisible(Type screenType)
         {
             return _stackManager.IsVisible(screenType);
         }
@@ -431,7 +424,7 @@ namespace Core.UI
             var visibleTypes = _stackManager.GetAllVisible();
             var visibleScreens = new List<BaseUIScreen>();
 
-            foreach (UIScreenType screenType in visibleTypes)
+            foreach (Type screenType in visibleTypes)
             {
                 if (_screens.TryGetValue(screenType, out BaseUIScreen screen))
                 {
@@ -452,20 +445,9 @@ namespace Core.UI
             _stackManager.ClearAll();
         }
 
-        public UIScreenCategory GetScreenCategory(UIScreenType screenType)
-        {
-            return _stackManager.GetCategory(screenType);
-        }
-
-        public bool IsInteractionBlocked(UIScreenType screenType)
-        {
-            UIScreenCategory category = _stackManager.GetCategory(screenType);
-            return _stackManager.IsBlockedByHigherCategory(category);
-        }
-
         public async UniTask ShowNotification(string message, NotificationType type = NotificationType.Info, float duration = 3f)
         {
-            var notificationScreen = GetScreen<INotificationScreen>(UIScreenType.Notification);
+            var notificationScreen = GetScreen<INotificationScreen>();
             if (notificationScreen == null)
             {
                 GameLogger.LogWarning("NotificationScreen not found - make sure it's registered");
@@ -477,7 +459,7 @@ namespace Core.UI
 
         public async UniTask ShowNotification(string title, string message, NotificationType type = NotificationType.Info, float duration = 3f)
         {
-            var notificationScreen = GetScreen<INotificationScreen>(UIScreenType.Notification);
+            var notificationScreen = GetScreen<INotificationScreen>();
             if (notificationScreen == null)
             {
                 GameLogger.LogWarning("NotificationScreen not found - make sure it's registered");
@@ -495,13 +477,13 @@ namespace Core.UI
         {
             if (screen.IsVisible) return;
 
-            if (!_controllers.TryGetValue(screen.ScreenType, out UIScreenController controller))
+            Type screenType = screen.GetType();
+            if (!_controllers.TryGetValue(screenType, out UIScreenController controller))
             {
-                GameLogger.LogError($"No controller found for screen {screen.ScreenType}");
+                GameLogger.LogError($"No controller found for screen {screenType.Name}");
                 return;
             }
 
-            // Ensure proper layering before showing
             SortScreensByCategory();
 
             float duration = screen.GetAnimationDuration();
@@ -510,7 +492,7 @@ namespace Core.UI
             controller.Show(screen.AnimateShow, duration, animate, () =>
             {
                 screen.OnAfterShowAnimation();
-                OnScreenShown?.Invoke(screen.ScreenType);
+                OnScreenShown?.Invoke(screenType);
             });
         }
 
@@ -518,9 +500,10 @@ namespace Core.UI
         {
             if (!screen.IsVisible) return;
 
-            if (!_controllers.TryGetValue(screen.ScreenType, out UIScreenController controller))
+            Type screenType = screen.GetType();
+            if (!_controllers.TryGetValue(screenType, out UIScreenController controller))
             {
-                GameLogger.LogError($"No controller found for screen {screen.ScreenType}");
+                GameLogger.LogError($"No controller found for screen {screenType.Name}");
                 return;
             }
 
@@ -530,7 +513,7 @@ namespace Core.UI
             controller.Hide(screen.AnimateHide, duration, animate, () =>
             {
                 screen.OnAfterHideAnimation();
-                OnScreenHidden?.Invoke(screen.ScreenType);
+                OnScreenHidden?.Invoke(screenType);
 
                 if (_stackManager.GetAllVisible().Count == 0)
                 {
@@ -550,15 +533,11 @@ namespace Core.UI
 
         private void SortScreensByCategory()
         {
-            // Sort controllers by category priority
-            // Lower category enum value = higher visual priority (appears on top)
-            // Order: Persistent(5) -> Screen(4) -> Popup(3) -> Modal(2) -> Overlay(1) -> System(0)
             var sortedControllers = _controllers.Values
-                .OrderByDescending(c => (int)_stackManager.GetCategory(c.ScreenType))
+                .OrderByDescending(c => (int)c.Category)
                 .ThenBy(c => (int)c.Priority)
                 .ToList();
 
-            // BringToFront in order so highest priority categories are on top
             foreach (UIScreenController controller in sortedControllers)
             {
                 if (controller.Container?.parent != null)
@@ -583,18 +562,18 @@ namespace Core.UI
         {
             GameLogger.Log($"Root Element Size: {_root.resolvedStyle.width}x{_root.resolvedStyle.height}");
 
-            foreach (KeyValuePair<UIScreenType, UIScreenController> kvp in _controllers)
+            foreach (KeyValuePair<Type, UIScreenController> kvp in _controllers)
             {
                 UIScreenController controller = kvp.Value;
                 VisualElement container = controller.Container;
-                GameLogger.Log($"{kvp.Key} Container Size: {container.resolvedStyle.width}x{container.resolvedStyle.height}, Position: ({container.resolvedStyle.left}, {container.resolvedStyle.top}), Display: {container.resolvedStyle.display}");
+                GameLogger.Log($"{kvp.Key.Name} Container Size: {container.resolvedStyle.width}x{container.resolvedStyle.height}, Position: ({container.resolvedStyle.left}, {container.resolvedStyle.top}), Display: {container.resolvedStyle.display}");
             }
         }
 
         [ContextMenu("Force Resize All Screens")]
         public void ForceResizeAllScreens()
         {
-            foreach (KeyValuePair<UIScreenType, UIScreenController> kvp in _controllers)
+            foreach (KeyValuePair<Type, UIScreenController> kvp in _controllers)
             {
                 VisualElement container = kvp.Value.Container;
                 container.style.width = Length.Percent(100);

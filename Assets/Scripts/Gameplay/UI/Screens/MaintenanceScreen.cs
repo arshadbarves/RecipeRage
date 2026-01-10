@@ -15,7 +15,7 @@ namespace Gameplay.UI.Screens
     /// <summary>
     /// Maintenance screen - displays maintenance information with optional countdown
     /// </summary>
-    [UIScreen(UIScreenType.Maintenance, UIScreenCategory.System, "Screens/MaintenanceTemplate")]
+    [UIScreen(UIScreenCategory.System, "Screens/MaintenanceTemplate")]
     public class MaintenanceScreen : BaseUIScreen
     {
         #region Dependencies

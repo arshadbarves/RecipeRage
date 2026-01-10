@@ -13,7 +13,7 @@ namespace Gameplay.UI.Screens
     /// <summary>
     /// User profile screen - shows player stats and friend code
     /// </summary>
-    [UIScreen(UIScreenType.Profile, UIScreenCategory.Screen, "Screens/ProfileTemplate")]
+    [UIScreen(UIScreenCategory.Screen, "Screens/ProfileTemplate")]
     public class ProfileScreen : BaseUIScreen
     {
         [Inject] private SessionManager _sessionManager;
@@ -103,9 +103,8 @@ namespace Gameplay.UI.Screens
             }
         }
 
-        private void OnChangeNameClicked()
-        {
-            UIService?.ShowScreen(UIScreenType.UsernamePopup);
+        private void OnChangeNameClicked(){
+            // TODO: Show username popup - need to create UsernamePopup class or use existing
         }
 
         private void OnBackClicked()

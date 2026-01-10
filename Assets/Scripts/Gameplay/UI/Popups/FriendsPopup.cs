@@ -16,7 +16,7 @@ namespace Gameplay.UI.Popups
     /// <summary>
     /// Friends popup - shows friends list and requests
     /// </summary>
-    [UIScreen(UIScreenType.FriendsPopup, UIScreenCategory.Popup, "Popups/FriendsPopupTemplate")]
+    [UIScreen(UIScreenCategory.Popup, "Popups/FriendsPopupTemplate")]
     public class FriendsPopup : BaseUIScreen
     {
         [Inject]

@@ -8,11 +8,13 @@ namespace Core.UI
 {
     /// <summary>
     /// Controls individual UI screens within the unified UI system
+    /// TYPE-BASED: Uses Type instead of UIScreenType enum
     /// </summary>
     public class UIScreenController
     {
-        public UIScreenType ScreenType { get; private set; }
+        public Type ScreenType { get; private set; }
         public UIScreenPriority Priority { get; private set; }
+        public UIScreenCategory Category { get; private set; }
         public VisualElement Container { get; private set; }
         public TemplateContainer TemplateContainer { get; private set; }
         public bool IsVisible { get; private set; }
@@ -27,10 +29,11 @@ namespace Core.UI
         public event Action<UIScreenController> OnAnimationStarted;
         public event Action<UIScreenController> OnAnimationCompleted;
 
-        public UIScreenController(UIScreenType screenType, UIScreenPriority priority, VisualTreeAsset template, VisualElement root)
+        public UIScreenController(Type screenType, UIScreenPriority priority, UIScreenCategory category, VisualTreeAsset template, VisualElement root)
         {
             ScreenType = screenType;
             Priority = priority;
+            Category = category;
             _template = template;
             _root = root;
 
@@ -41,9 +44,9 @@ namespace Core.UI
         {
             // Create main container for this screen
             Container = new VisualElement();
-            Container.name = $"screen-{ScreenType.ToString().ToLower()}";
+            Container.name = $"screen-{ScreenType.Name.ToLower()}";
             Container.AddToClassList("ui-screen");
-            Container.AddToClassList($"ui-screen--{ScreenType.ToString().ToLower()}");
+            Container.AddToClassList($"ui-screen--{ScreenType.Name.ToLower()}");
 
             // Set initial state - FULL SCREEN COVERAGE
             Container.style.display = DisplayStyle.None;
@@ -87,14 +90,14 @@ namespace Core.UI
                 if (screenContainer != null)
                 {
                     // Apply screen-specific styling and ensure full coverage
-                    screenContainer.AddToClassList($"screen-{ScreenType.ToString().ToLower()}");
+                    screenContainer.AddToClassList($"screen-{ScreenType.Name.ToLower()}");
                     screenContainer.style.width = Length.Percent(100);
                     screenContainer.style.height = Length.Percent(100);
                 }
             }
             catch (Exception e)
             {
-                GameLogger.LogError($"Failed to load template for {ScreenType}: {e.Message}");
+                GameLogger.LogError($"Failed to load template for {ScreenType.Name}: {e.Message}");
             }
         }
 

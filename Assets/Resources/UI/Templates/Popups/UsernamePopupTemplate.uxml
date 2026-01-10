@@ -1,22 +1,22 @@
-<UXML xmlns="UnityEngine.UIElements" xmlns:ui="UI.Controls" editor-extension-mode="False">
+<UXML xmlns="UnityEngine.UIElements" xmlns:ui="Core.UI.Controls" editor-extension-mode="False">
     <Style src="project://database/Assets/Resources/UI/Styles/Popups/UsernamePopup.uss?fileID=7433441132597879392&amp;guid=d60aaa89678cc47e39da55e1a6434beb&amp;type=3#UsernamePopup"/>
     <VisualElement name="username-popup-root" class="popup-root-fullscreen">
         <VisualElement name="popup-card-wrapper" class="popup-skewed-container">
             <VisualElement name="popup-card" class="popup-card">
                 <ui:SkewedBoxElement name="popup-bg" skew-angle="-10" enable-fill="true" fill-color="#111111" enable-border="true" border-color="#FFD700" border-width="2" corner-radius="15" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"/>
                 <VisualElement name="accent-corner" class="red-accent-corner"/>
-                
+
                 <Label name="popup-title" text="Identify Yourself" class="popup-title"/>
                 <Label name="popup-desc" text="Enter your operator callsign" class="popup-desc"/>
-                
+
                 <TextField name="username-input" placeholder-text="USERNAME..." max-length="16" class="username-input-field"/>
                 <Label name="status-message" class="status-label"/>
-                
+
                 <VisualElement name="cost-container" class="cost-container">
                     <Label text="CHANGE COST:" class="cost-label-static"/>
                     <Label name="cost-value" text="50" class="cost-value"/>
                 </VisualElement>
-                
+
                 <VisualElement name="popup-actions" class="popup-actions">
                     <Button name="cancel-button" text="Cancel" class="btn-popup btn-cancel"/>
                     <Button name="confirm-button" text="Confirm Access" class="btn-popup btn-confirm"/>

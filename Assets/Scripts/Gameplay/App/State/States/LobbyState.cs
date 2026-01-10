@@ -31,8 +31,8 @@ namespace Gameplay.App.State.States
         {
             base.Enter();
 
-            // Show the lobby UI
-            _uiService?.ShowScreen(UIScreenType.Lobby, true, false);
+            // TODO: LobbyScreen doesn't exist yet - implement when needed
+            // _uiService?.Show<LobbyScreen>(true, false);
         }
 
         /// <summary>
@@ -42,8 +42,8 @@ namespace Gameplay.App.State.States
         {
             base.Exit();
 
-            // Hide the lobby UI
-            _uiService?.HideScreen(UIScreenType.Lobby, true);
+            // TODO: LobbyScreen doesn't exist yet
+            // _uiService?.Hide<LobbyScreen>(true);
         }
 
         /// <summary>

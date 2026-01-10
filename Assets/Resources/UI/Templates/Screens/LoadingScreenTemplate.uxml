@@ -1,4 +1,4 @@
-<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" xmlns:ui="UI.Controls" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd" editor-extension-mode="False">
+<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" xmlns:ui="Core.UI.Controls" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/Resources/UI/Styles/Screens/LoadingScreen.uss?fileID=7433441132597879392&amp;guid=d8e0a677a7c6e42878ca14ea675de3de&amp;type=3#LoadingScreen"/>
     <VisualElement name="screen-container" class="loading-screen">
         <ui:RadialGradientElement name="background" center-color="#1a1a1a" edge-color="#000000" radius-scale="1.5" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;"/>

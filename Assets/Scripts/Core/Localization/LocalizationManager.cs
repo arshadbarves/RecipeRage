@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using Core.Logging;
 using UnityEngine;
+using VContainer.Unity;
 
 namespace Core.Localization
 {
-    public class LocalizationManager : ILocalizationManager
+    public class LocalizationManager : ILocalizationManager, IInitializable
     {
         private const string DefaultLanguage = "English";
         private const string LocalizationResourcePath = "Data/Localization"; // Resources/Data/Localization.csv
@@ -30,7 +31,6 @@ namespace Core.Localization
 
         public LocalizationManager()
         {
-            Initialize();
         }
 
         public void Initialize()

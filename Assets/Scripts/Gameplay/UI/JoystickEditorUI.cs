@@ -2,7 +2,6 @@ using System;
 using Core.Logging;
 using Core.UI;
 using Core.UI.Core;
-using Core.UI.Interfaces;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -11,7 +10,7 @@ namespace Gameplay.UI
     /// <summary>
     /// Joystick editor screen for mobile control customization
     /// </summary>
-    [UIScreen(UIScreenType.Modal, UIScreenCategory.Modal, "Components/JoystickEditorTemplate")]
+    [UIScreen(UIScreenCategory.Modal, "Components/JoystickEditorTemplate")]
     public class JoystickEditorUI : BaseUIScreen
     {
         private Button _closeButton;

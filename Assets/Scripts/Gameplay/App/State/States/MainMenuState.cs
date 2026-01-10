@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using Gameplay.UI.Popups;
+using Gameplay.UI.Screens;
 using Core.Logging;
 using Core.Persistence;
 using Core.UI.Interfaces;
@@ -33,7 +34,7 @@ namespace Gameplay.App.State.States
             }
 
             // Show the main menu UI
-            _uiService?.ShowScreen(UIScreenType.MainMenu, true, false);
+            _uiService?.Show<MainMenuScreen>(true, false);
 
             // Check if this is first time user (no username set)
             CheckAndShowUsernamePopupAsync();
@@ -84,7 +85,7 @@ namespace Gameplay.App.State.States
             base.Exit();
 
             // Hide the main menu UI
-            _uiService?.HideScreen(UIScreenType.MainMenu, true);
+            _uiService?.Hide<MainMenuScreen>(true);
         }
 
         /// <summary>

@@ -15,7 +15,7 @@ namespace Gameplay.UI.Popups
     /// Used for both first-time setup and subsequent changes
     /// Refactored to MVVM
     /// </summary>
-    [UIScreen(UIScreenType.UsernamePopup, UIScreenCategory.Modal, "Popups/UsernamePopupTemplate")]
+    [UIScreen(UIScreenCategory.Modal, "Popups/UsernamePopupTemplate")]
     public class UsernamePopup : BaseUIScreen
     {
         [Inject] private UsernameViewModel _viewModel;

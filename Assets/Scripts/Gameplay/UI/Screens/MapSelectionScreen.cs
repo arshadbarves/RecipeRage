@@ -15,7 +15,7 @@ namespace Gameplay.UI.Screens
     /// <summary>
     /// Map selection screen - shows all maps grouped by category
     /// </summary>
-    [UIScreen(UIScreenType.MapSelection, UIScreenCategory.Screen, "Screens/MapSelectionTemplate")]
+    [UIScreen(UIScreenCategory.Screen, "Screens/MapSelectionTemplate")]
     public class MapSelectionScreen : BaseUIScreen
     {
         [Inject]
@@ -375,10 +375,7 @@ namespace Gameplay.UI.Screens
                 bool wentBack = _uiService.GoBack(false);
 
                 if (!wentBack)
-                {
-                    // If no history, go to main menu
-                    _uiService.ShowScreen(UIScreenType.MainMenu, true, false);
-                }
+                    _uiService.Show<MainMenuScreen>(true, false);
             }
         }
 

@@ -1,4 +1,4 @@
-using Core.UI.Interfaces;
+using System;
 
 namespace Core.Shared.Events
 {
@@ -94,6 +94,17 @@ namespace Core.Shared.Events
         public string Error { get; set; }
     }
 
+    /// <summary>
+    /// Published when a force update is required or recommended
+    /// </summary>
+    public class ForceUpdateEvent
+    {
+        public string Title { get; set; }
+        public string Message { get; set; }
+        public bool IsRequired { get; set; }
+        public float Duration { get; set; }
+    }
+
     // ============================================
     // UI EVENTS
     // ============================================
@@ -103,7 +114,7 @@ namespace Core.Shared.Events
     /// </summary>
     public class ScreenShownEvent
     {
-        public UIScreenType ScreenType { get; set; }
+        public Type ScreenType { get; set; }
     }
 
     /// <summary>
@@ -111,7 +122,7 @@ namespace Core.Shared.Events
     /// </summary>
     public class ScreenHiddenEvent
     {
-        public UIScreenType ScreenType { get; set; }
+        public Type ScreenType { get; set; }
     }
 
     // ============================================

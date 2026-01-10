@@ -12,7 +12,7 @@ namespace Gameplay.UI.Screens
     /// <summary>
     /// Loading screen - shows initialization progress
     /// </summary>
-    [UIScreen(UIScreenType.Loading, UIScreenCategory.Overlay, "Screens/LoadingScreenTemplate")]
+    [UIScreen(UIScreenCategory.Overlay, "Screens/LoadingScreenTemplate")]
     public class LoadingScreen : BaseUIScreen
     {
         [Inject] private LoadingViewModel _viewModel;

@@ -7,6 +7,7 @@ using Core.Logging;
 using Core.Persistence;
 using Core.RemoteConfig;
 using Core.RemoteConfig.Interfaces;
+using Core.Shared.Events;
 using Core.UI.Interfaces;
 
 namespace Gameplay.App.State.States
@@ -26,6 +27,7 @@ namespace Gameplay.App.State.States
         private readonly IMaintenanceService _maintenanceService;
         private readonly IGameStateManager _stateManager;
         private readonly ILocalizationManager _localizationManager;
+        private readonly IEventBus _eventBus;
 
         public BootstrapState(
             IUIService uiService,
@@ -35,7 +37,8 @@ namespace Gameplay.App.State.States
             ISaveService saveService,
             IMaintenanceService maintenanceService,
             IGameStateManager stateManager,
-            ILocalizationManager localizationManager)
+            ILocalizationManager localizationManager,
+            IEventBus eventBus)
         {
             _uiService = uiService;
             _ntpTimeService = ntpTimeService;
@@ -45,6 +48,7 @@ namespace Gameplay.App.State.States
             _maintenanceService = maintenanceService;
             _stateManager = stateManager;
             _localizationManager = localizationManager;
+            _eventBus = eventBus;
         }
 
         public override async void Enter()
@@ -58,20 +62,20 @@ namespace Gameplay.App.State.States
                 await ShowSplashScreenAsync();
 
                 // 2. Start Loading Sequence
-                _uiService.ShowScreen(UIScreenType.Loading);
+                _uiService.Show<LoadingScreen>();
                 await InitializeGameSequence();
             }
             catch (Exception ex)
             {
                 GameLogger.LogException(ex);
-                _uiService.HideScreen(UIScreenType.Loading);
+                _uiService.Hide<LoadingScreen>();
                 _stateManager.ChangeState<LoginState>();
             }
         }
 
         private async UniTask InitializeGameSequence()
         {
-            var loadingScreen = _uiService.GetScreen<LoadingScreen>(UIScreenType.Loading);
+            var loadingScreen = _uiService.GetScreen<LoadingScreen>();
 
             // --- STEP 1: Foundation (0% - 30%) ---
 
@@ -110,7 +114,7 @@ namespace Gameplay.App.State.States
 
             if (!isAuthenticated)
             {
-                _uiService.HideScreen(UIScreenType.Loading);
+                _uiService.Hide<LoadingScreen>();
                 _stateManager.ChangeState<LoginState>();
                 return;
             }
@@ -119,7 +123,7 @@ namespace Gameplay.App.State.States
             loadingScreen?.UpdateProgress(0.6f, "Checking Updates...");
             await _remoteConfigService.RefreshConfig();
 
-            var forceUpdateChecker = new ForceUpdateChecker(_remoteConfigService, _uiService);
+            var forceUpdateChecker = new ForceUpdateChecker(_remoteConfigService, _eventBus);
             await forceUpdateChecker.CheckForUpdateAsync();
 
             loadingScreen?.UpdateProgress(0.8f, "Checking Maintenance...");
@@ -132,16 +136,16 @@ namespace Gameplay.App.State.States
             loadingScreen?.UpdateProgress(1.0f, "READY!");
             await UniTask.Delay(TimeSpan.FromSeconds(1.0f));
 
-            _uiService.HideScreen(UIScreenType.Loading);
+            _uiService.Hide<LoadingScreen>();
             GameLogger.Log("Initialization complete. Transitioning to MainMenu.");
             _stateManager.ChangeState<MainMenuState>();
         }
 
         private async UniTask ShowSplashScreenAsync()
         {
-            _uiService.ShowScreen(UIScreenType.Splash);
+            _uiService.Show<SplashScreen>();
             await UniTask.Delay(TimeSpan.FromSeconds(SplashDuration));
-            _uiService.HideScreen(UIScreenType.Splash);
+            _uiService.Hide<SplashScreen>();
             await UniTask.Delay(500);
         }
     }

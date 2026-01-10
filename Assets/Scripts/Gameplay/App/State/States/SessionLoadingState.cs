@@ -38,7 +38,7 @@ namespace Gameplay.App.State.States
             GameLogger.Log("[SessionLoadingState] Entered - Loading session data...");
 
             // Show Loading Screen
-            _uiService.ShowScreen(UIScreenType.Loading);
+            _uiService.Show<LoadingScreen>();
             var loadingScreen = _uiService.GetScreen<LoadingScreen>();
             if (loadingScreen != null)
             {
@@ -90,7 +90,7 @@ namespace Gameplay.App.State.States
             // but explicit hiding is safer if MainMenu is an Overlay/Screen combo.
             // MainMenuState calls ShowScreen(MainMenu), which (if it's a Screen category) usually hides others.
             // But LoadingScreen is likely a Screen or Overlay.
-            _uiService.HideScreen(UIScreenType.Loading);
+            _uiService.Hide<LoadingScreen>();
         }
     }
 }

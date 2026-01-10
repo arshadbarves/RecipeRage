@@ -1,6 +1,7 @@
 using Core.Logging;
 using Core.Shared.Events;
 using Core.UI.Interfaces;
+using Gameplay.UI.Auth;
 
 namespace Gameplay.App.State.States
 {
@@ -30,7 +31,7 @@ namespace Gameplay.App.State.States
             GameLogger.Log("[LoginState] Entered - Subscribing to events");
 
             // Show Login Screen
-            _uiService.ShowScreen(UIScreenType.Login);
+            _uiService.Show<LoginView>();
 
             // Subscribe to login events
             _eventBus.Subscribe<LoginSuccessEvent>(OnLoginSuccess);
@@ -42,7 +43,7 @@ namespace Gameplay.App.State.States
             GameLogger.Log("[LoginState] Exiting - Unsubscribing");
 
             // Hide Login Screen
-            _uiService.HideScreen(UIScreenType.Login);
+            _uiService.Hide<LoginView>();
 
             // Unsubscribe
             _eventBus.Unsubscribe<LoginSuccessEvent>(OnLoginSuccess);

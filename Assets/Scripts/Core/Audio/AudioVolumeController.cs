@@ -2,13 +2,14 @@ using Core.Logging;
 using Core.Persistence;
 using UnityEngine;
 using UnityEngine.Audio;
+using VContainer.Unity;
 
 namespace Core.Audio
 {
     /// <summary>
     /// Handles volume control
     /// </summary>
-    public class AudioVolumeController : IAudioVolumeController
+    public class AudioVolumeController : IAudioVolumeController, IInitializable
     {
         private readonly ISaveService _saveService;
         private AudioMixer _audioMixer;
@@ -20,6 +21,10 @@ namespace Core.Audio
         public AudioVolumeController(ISaveService saveService)
         {
             _saveService = saveService;
+        }
+
+        public void Initialize()
+        {
             LoadAudioMixer();
             ApplySettings();
         }

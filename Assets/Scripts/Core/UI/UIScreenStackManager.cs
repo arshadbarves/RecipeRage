@@ -8,16 +8,16 @@ namespace Core.UI
 {
     /// <summary>
     /// AAA-grade stack-based UI management system
+    /// TYPE-BASED: Uses Type instead of UIScreenType enum
     /// Each category has its own stack, preventing priority conflicts
-    /// Enables clean state management and proper back navigation
     /// </summary>
     public class UIScreenStackManager : IUIScreenStackManager
     {
-        // Category-based stacks
-        private readonly Dictionary<UIScreenCategory, Stack<UIScreenType>> _categoryStacks = new();
+        // Category-based stacks (Type-based)
+        private readonly Dictionary<UIScreenCategory, Stack<Type>> _categoryStacks = new();
 
         // Track all visible screens across categories
-        private readonly HashSet<UIScreenType> _visibleScreens = new();
+        private readonly HashSet<Type> _visibleScreens = new();
 
         // Category configuration
         private readonly Dictionary<UIScreenCategory, CategoryConfig> _categoryConfigs = new();
@@ -32,7 +32,7 @@ namespace Core.UI
         {
             foreach (UIScreenCategory category in Enum.GetValues(typeof(UIScreenCategory)))
             {
-                _categoryStacks[category] = new Stack<UIScreenType>();
+                _categoryStacks[category] = new Stack<Type>();
             }
         }
 
@@ -96,10 +96,10 @@ namespace Core.UI
         /// <summary>
         /// Push a screen onto its category stack
         /// </summary>
-        public bool Push(UIScreenType screenType, UIScreenCategory category)
+        public bool Push(Type screenType, UIScreenCategory category)
         {
             CategoryConfig config = _categoryConfigs[category];
-            Stack<UIScreenType> stack = _categoryStacks[category];
+            Stack<Type> stack = _categoryStacks[category];
 
             // Check if we can add to this category
             if (!config.AllowMultiple && stack.Count > 0)
@@ -120,7 +120,7 @@ namespace Core.UI
             else if (!config.AllowStacking && _visibleScreens.Contains(screenType))
             {
                 // Screen already visible, don't add again
-                GameLogger.LogWarning($"Screen {screenType} already visible in category {category}");
+                GameLogger.LogWarning($"Screen {screenType.Name} already visible in category {category}");
                 return false;
             }
             else
@@ -131,33 +131,33 @@ namespace Core.UI
 
             _visibleScreens.Add(screenType);
 
-            GameLogger.Log($"Pushed {screenType} to {category} stack (depth: {stack.Count})");
+            GameLogger.Log($"Pushed {screenType.Name} to {category} stack (depth: {stack.Count})");
             return true;
         }
 
         /// <summary>
         /// Pop the top screen from a category stack
         /// </summary>
-        public UIScreenType? Pop(UIScreenCategory category)
+        public Type Pop(UIScreenCategory category)
         {
-            Stack<UIScreenType> stack = _categoryStacks[category];
+            Stack<Type> stack = _categoryStacks[category];
 
             if (stack.Count == 0)
                 return null;
 
-            UIScreenType screenType = stack.Pop();
+            Type screenType = stack.Pop();
             _visibleScreens.Remove(screenType);
 
-            GameLogger.Log($"Popped {screenType} from {category} stack (remaining: {stack.Count})");
+            GameLogger.Log($"Popped {screenType.Name} from {category} stack (remaining: {stack.Count})");
             return screenType;
         }
 
         /// <summary>
         /// Pop a specific screen from its category
         /// </summary>
-        public bool PopSpecific(UIScreenType screenType, UIScreenCategory category)
+        public bool PopSpecific(Type screenType, UIScreenCategory category)
         {
-            Stack<UIScreenType> stack = _categoryStacks[category];
+            Stack<Type> stack = _categoryStacks[category];
 
             if (stack.Count == 0)
                 return false;
@@ -170,12 +170,12 @@ namespace Core.UI
             }
 
             // Otherwise, we need to rebuild the stack without this screen
-            var temp = new List<UIScreenType>();
+            var temp = new List<Type>();
             bool found = false;
 
             while (stack.Count > 0)
             {
-                UIScreenType current = stack.Pop();
+                Type current = stack.Pop();
                 if (current == screenType)
                 {
                     found = true;
@@ -193,7 +193,7 @@ namespace Core.UI
             if (found)
             {
                 _visibleScreens.Remove(screenType);
-                GameLogger.Log($"Removed {screenType} from {category} stack");
+                GameLogger.Log($"Removed {screenType.Name} from {category} stack");
             }
 
             return found;
@@ -202,9 +202,9 @@ namespace Core.UI
         /// <summary>
         /// Peek at the top screen in a category without removing it
         /// </summary>
-        public UIScreenType? Peek(UIScreenCategory category)
+        public Type Peek(UIScreenCategory category)
         {
-            Stack<UIScreenType> stack = _categoryStacks[category];
+            Stack<Type> stack = _categoryStacks[category];
             return stack.Count > 0 ? stack.Peek() : null;
         }
 
@@ -213,9 +213,9 @@ namespace Core.UI
         /// </summary>
         public void ClearCategory(UIScreenCategory category)
         {
-            Stack<UIScreenType> stack = _categoryStacks[category];
+            Stack<Type> stack = _categoryStacks[category];
 
-            foreach (UIScreenType screenType in stack)
+            foreach (Type screenType in stack)
             {
                 _visibleScreens.Remove(screenType);
             }
@@ -241,15 +241,15 @@ namespace Core.UI
         /// <summary>
         /// Get all visible screens in a category
         /// </summary>
-        public IReadOnlyList<UIScreenType> GetVisibleInCategory(UIScreenCategory category)
+        public IReadOnlyList<Type> GetVisibleInCategory(UIScreenCategory category)
         {
             return _categoryStacks[category].ToList().AsReadOnly();
         }
 
         /// <summary>
-        /// Get all visible screens across all categories, sorted by priority
+        /// Get all visible screens across all categories
         /// </summary>
-        public IReadOnlyList<UIScreenType> GetAllVisible()
+        public IReadOnlyList<Type> GetAllVisible()
         {
             return _visibleScreens.ToList().AsReadOnly();
         }
@@ -257,38 +257,9 @@ namespace Core.UI
         /// <summary>
         /// Check if a screen is visible
         /// </summary>
-        public bool IsVisible(UIScreenType screenType)
+        public bool IsVisible(Type screenType)
         {
             return _visibleScreens.Contains(screenType);
-        }
-
-        /// <summary>
-        /// Get the category of a screen type
-        /// </summary>
-        public UIScreenCategory GetCategory(UIScreenType screenType)
-        {
-            // This should be configured via attributes or a mapping
-            // For now, return based on screen type
-            return screenType switch
-            {
-                UIScreenType.Splash => UIScreenCategory.System,
-                UIScreenType.Maintenance => UIScreenCategory.System,
-
-                UIScreenType.Loading => UIScreenCategory.Overlay,
-                UIScreenType.Login => UIScreenCategory.Overlay,
-
-                UIScreenType.Modal => UIScreenCategory.Modal,
-
-                UIScreenType.Popup => UIScreenCategory.Popup,
-                UIScreenType.FriendsPopup => UIScreenCategory.Popup,
-                UIScreenType.UsernamePopup => UIScreenCategory.Popup,
-                UIScreenType.Notification => UIScreenCategory.Popup,
-
-                UIScreenType.HUD => UIScreenCategory.Persistent,
-                UIScreenType.Background => UIScreenCategory.Persistent,
-
-                _ => UIScreenCategory.Screen
-            };
         }
 
         /// <summary>
@@ -328,13 +299,13 @@ namespace Core.UI
 
             foreach (UIScreenCategory category in Enum.GetValues(typeof(UIScreenCategory)))
             {
-                Stack<UIScreenType> stack = _categoryStacks[category];
+                Stack<Type> stack = _categoryStacks[category];
                 if (stack.Count > 0)
                 {
                     GameLogger.Log($"{category} ({stack.Count}):");
-                    foreach (UIScreenType screenType in stack.Reverse())
+                    foreach (Type screenType in stack.Reverse())
                     {
-                        GameLogger.Log($"  - {screenType}");
+                        GameLogger.Log($"  - {screenType.Name}");
                     }
                 }
             }

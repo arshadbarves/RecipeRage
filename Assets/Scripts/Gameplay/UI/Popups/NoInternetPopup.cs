@@ -11,7 +11,7 @@ namespace Gameplay.UI.Popups
     /// <summary>
     /// Popup displayed when internet connection is unavailable
     /// </summary>
-    [UIScreen(UIScreenType.NoInternet, UIScreenCategory.Popup, "Popups/NoInternetPopupTemplate")]
+    [UIScreen(UIScreenCategory.Popup, "Popups/NoInternetPopupTemplate")]
     public class NoInternetPopup : BaseUIScreen
     {
         [Inject]

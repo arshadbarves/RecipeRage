@@ -12,7 +12,7 @@ namespace Gameplay.UI.Screens
     /// <summary>
     /// Persistent notification screen for toasts and messages
     /// </summary>
-    [UIScreen(UIScreenType.Notification, UIScreenCategory.Persistent, "Popups/NotificationTemplate")]
+    [UIScreen(UIScreenCategory.Persistent, "Popups/NotificationTemplate")]
     public class NotificationScreen : BaseUIScreen, INotificationScreen
     {
         private VisualElement _notificationContainer;
