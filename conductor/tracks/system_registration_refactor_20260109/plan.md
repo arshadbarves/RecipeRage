@@ -1,6 +1,6 @@
 # Plan: System Registration and Dependency Injection Refactor
 
-## Phase 1: Core and Pre-Auth Registration (`GameLifetimeScope`)
+## Phase 1: Core and Pre-Auth Registration (`GameLifetimeScope`) [checkpoint: 71ec672]
 - [x] Task: Audit and Define Interfaces for Core Managers (Localization, UGS Auth) <!-- id: cb9d290 -->
 - [x] Task: Update `GameLifetimeScope.cs` to register `ILocalizationManager` and `UGSAuthenticationManager` <!-- id: db64af1 -->
 - [x] Task: Implement `ScriptableObject` loading for Core settings (Localization, UGS Config) <!-- id: db64af1 -->
