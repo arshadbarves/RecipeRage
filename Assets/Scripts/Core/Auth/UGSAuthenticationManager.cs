@@ -15,7 +15,7 @@ namespace Core.Auth
     /// Flow: EOS Login (Primary) → Unity Auth (using EOS ProductUserId as external token)
     /// NO PlayerPrefs needed - Unity handles mapping server-side!
     /// </summary>
-    public class UGSAuthenticationManager
+    public class UGSAuthenticationManager : IAuthenticationManager
     {
         #region Properties
 
