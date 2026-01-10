@@ -15,13 +15,9 @@ namespace Gameplay.Bootstrap
             // Team Manager
             builder.Register<TeamManager>(Lifetime.Singleton).As<ITeamManager>();
 
-            // EOS Lobby Manager (Find in scene as it's a plugin MonoBehaviour)
-            // Note: In a production setup, this would be part of a persistent prefab
-            var eosLobbyManager = FindObjectOfType<EOSLobbyManager>();
-            if (eosLobbyManager != null)
-            {
-                builder.RegisterInstance(eosLobbyManager);
-            }
+            // EOS Lobby Manager (Get from EOSManager singleton)
+            // Use factory registration to defer access until resolution time
+            builder.Register(resolver => EOSManager.Instance.GetOrCreateManager<EOSLobbyManager>(), Lifetime.Scoped);
 
             // Lobby Service
             builder.Register<LobbyService>(Lifetime.Singleton).As<ILobbyManager>();
