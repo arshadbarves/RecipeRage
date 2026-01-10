@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1159256033589980387}
   - component: {fileID: 2203266933821147587}
   - component: {fileID: 4646105006637090929}
+  - component: {fileID: 6832556859625349763}
   m_Layer: 0
   m_Name: GameBootstrap
   m_TagString: Untagged
@@ -32,7 +33,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 3684795964470520955}
   - {fileID: 8432972302416662543}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -52,7 +52,6 @@ MonoBehaviour:
     TypeName: 
   autoRun: 1
   autoInjectGameObjects: []
-  _uiDocumentProvider: {fileID: 7525430368098650970}
 --- !u!114 &2203266933821147587
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -110,6 +109,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ServerUserIdToConnectToInput: 
   ServerUserIDForCopying: 
+--- !u!114 &6832556859625349763
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 278132838411788017}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55c06b9b50cdcdf45839b7da18fa5e5b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: com.playeveryware.eos.core::PlayEveryWare.EpicOnlineServices.EOSManager
+  ShouldShutdownOnApplicationQuit: 1
 --- !u!1 &282745282915237301
 GameObject:
   m_ObjectHideFlags: 0
@@ -120,7 +132,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8432972302416662543}
   - component: {fileID: 7968856636002483841}
-  - component: {fileID: 7525430368098650970}
   m_Layer: 0
   m_Name: UI
   m_TagString: Untagged
@@ -166,60 +177,3 @@ MonoBehaviour:
   m_PivotReferenceSize: 0
   m_Pivot: 0
   m_WorldSpaceCollider: {fileID: 0}
---- !u!114 &7525430368098650970
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 282745282915237301}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4cc107a09001488ba190bea2c8f334a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!1 &7252799237765879498
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 3684795964470520955}
-  - component: {fileID: 8896040767316703634}
-  m_Layer: 0
-  m_Name: EOS
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &3684795964470520955
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7252799237765879498}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 6887119164124692602}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8896040767316703634
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7252799237765879498}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 55c06b9b50cdcdf45839b7da18fa5e5b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShouldShutdownOnApplicationQuit: 1

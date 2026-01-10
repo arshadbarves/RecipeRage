@@ -246,7 +246,7 @@ namespace Core.Logging
         [Conditional("DEVELOPMENT_BUILD"), Conditional("UNITY_EDITOR")]
         private void OutputToUnityConsole(LogEntry entry)
         {
-            string formattedMessage = $"[RecipeRage] - [{entry.Category}] {entry.Message}";
+            string formattedMessage = $"[{Application.productName}] - [{entry.Category}] {entry.Message}";
 
             switch (entry.Level)
             {

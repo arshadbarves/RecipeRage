@@ -1,4 +1,3 @@
-using VContainer;
 using VContainer.Unity;
 using Core.Logging;
 

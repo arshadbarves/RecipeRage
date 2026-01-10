@@ -6,5 +6,6 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-## [ ] Track: System Registration and DI Refactor
+## [~] Track: System Registration and DI Refactor
+
 *Link: [./conductor/tracks/system_registration_refactor_20260109/](./conductor/tracks/system_registration_refactor_20260109/)*
