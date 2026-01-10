@@ -2,9 +2,9 @@
 
 ## Phase 1: Core and Pre-Auth Registration (`GameLifetimeScope`)
 - [x] Task: Audit and Define Interfaces for Core Managers (Localization, UGS Auth) <!-- id: cb9d290 -->
-- [ ] Task: Update `GameLifetimeScope.cs` to register `ILocalizationManager` and `UGSAuthenticationManager`
-- [ ] Task: Implement `ScriptableObject` loading for Core settings (Localization, UGS Config)
-- [ ] Task: Register `IPlayerNetworkManager` as a Project-scope singleton
+- [x] Task: Update `GameLifetimeScope.cs` to register `ILocalizationManager` and `UGSAuthenticationManager` <!-- id: db64af1 -->
+- [x] Task: Implement `ScriptableObject` loading for Core settings (Localization, UGS Config) <!-- id: db64af1 -->
+- [x] Task: Register `IPlayerNetworkManager` as a Project-scope singleton <!-- id: db64af1 -->
 - [ ] Task: Conductor - User Manual Verification 'Core Registration' (Protocol in workflow.md)
 
 ## Phase 2: Session-Based Registration (`SessionLifetimeScope`)
