@@ -1,5 +1,4 @@
 using Cysharp.Threading.Tasks;
-using Core.UI;
 using Gameplay.UI.Popups;
 using Core.Logging;
 using Core.Persistence;

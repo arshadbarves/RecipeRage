@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Core.Logging;
-using Core.Networking.Services;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -12,22 +11,18 @@ namespace Core.Networking.Services
     /// </summary>
     public class ConnectionHandler
     {
-        private readonly ILoggingService _logger;
         private readonly IPlayerNetworkManager _playerNetworkManager;
         private readonly INetworkGameManager _networkGameManager;
 
         /// <summary>
         /// Initialize the connection handler.
         /// </summary>
-        /// <param name="logger">The logging service</param>
         /// <param name="playerNetworkManager">The player network manager</param>
         /// <param name="networkGameManager">The network game manager</param>
         public ConnectionHandler(
-            ILoggingService logger,
             IPlayerNetworkManager playerNetworkManager,
             INetworkGameManager networkGameManager)
         {
-            _logger = logger;
             _playerNetworkManager = playerNetworkManager;
             _networkGameManager = networkGameManager;
         }

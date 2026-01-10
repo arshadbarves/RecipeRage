@@ -12,29 +12,19 @@ namespace Core.RemoteConfig
     {
         private readonly IEventBus _eventBus;
         private readonly IRemoteConfigService _remoteConfigService;
-        private readonly ILoggingService _logger;
         private bool _isChecking;
 
-        public MaintenanceService(IEventBus eventBus, IRemoteConfigService remoteConfigService, ILoggingService logger)
+        public MaintenanceService(IEventBus eventBus, IRemoteConfigService remoteConfigService)
         {
             _eventBus = eventBus ?? throw new ArgumentNullException(nameof(eventBus));
             _remoteConfigService = remoteConfigService;
-            _logger = logger;
-        }
-
-        /// <summary>
-        /// Called after all services are constructed.
-        /// </summary>
-        public void Initialize()
-        {
-            // MaintenanceService doesn't need cross-service setup
         }
 
         public async UniTask<bool> CheckMaintenanceStatusAsync()
         {
             if (_isChecking)
             {
-                _logger.LogWarning("Already checking maintenance status", "Maintenance");
+                GameLogger.LogWarning("Already checking maintenance status");
                 return false;
             }
 
@@ -42,7 +32,7 @@ namespace Core.RemoteConfig
 
             try
             {
-                _logger.LogInfo("Checking maintenance status from Firebase...", "Maintenance");
+                GameLogger.LogInfo("Checking maintenance status from Firebase...");
 
                 if (!_remoteConfigService.TryGetConfig<MaintenanceConfig>(out var maintenanceConfig))
                 {
@@ -52,14 +42,14 @@ namespace Core.RemoteConfig
 
                 if (maintenanceConfig == null)
                 {
-                    _logger.LogInfo("No maintenance config found - service is operational", "Maintenance");
+                    GameLogger.LogInfo("No maintenance config found - service is operational");
                     _isChecking = false;
                     return false;
                 }
 
                 if (!maintenanceConfig.IsMaintenanceActive)
                 {
-                    _logger.LogInfo("Maintenance is not active - service is operational", "Maintenance");
+                    GameLogger.LogInfo("Maintenance is not active - service is operational");
                     _isChecking = false;
                     return false;
                 }
@@ -69,19 +59,19 @@ namespace Core.RemoteConfig
 
                 if (isInWindow)
                 {
-                    _logger.LogInfo("Maintenance mode is active", "Maintenance");
+                    GameLogger.LogInfo("Maintenance mode is active");
                     PublishMaintenanceEvent(maintenanceConfig);
                     _isChecking = false;
                     return true;
                 }
 
-                _logger.LogInfo("Maintenance scheduled but not in window yet", "Maintenance");
+                GameLogger.LogInfo("Maintenance scheduled but not in window yet");
                 _isChecking = false;
                 return false;
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Exception during maintenance check: {ex.Message}", "Maintenance");
+                GameLogger.LogError($"Exception during maintenance check: {ex.Message}");
                 _eventBus?.Publish(new MaintenanceCheckFailedEvent
                 {
                     Error = $"Maintenance check error: {ex.Message}"
@@ -93,7 +83,7 @@ namespace Core.RemoteConfig
 
         public void ShowServerDownMaintenance(string error)
         {
-            _logger.LogInfo($"Showing server down maintenance: {error}", "Maintenance");
+            GameLogger.LogInfo($"Showing server down maintenance: {error}");
 
             _eventBus?.Publish(new MaintenanceModeEvent
             {
@@ -106,7 +96,7 @@ namespace Core.RemoteConfig
 
         private void PublishMaintenanceEvent(MaintenanceConfig config)
         {
-            _logger.LogInfo($"Publishing maintenance mode event: {config.MaintenanceMessage}", "Maintenance");
+            GameLogger.LogInfo($"Publishing maintenance mode event: {config.MaintenanceMessage}");
 
             _eventBus?.Publish(new MaintenanceModeEvent
             {

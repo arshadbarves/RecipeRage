@@ -70,7 +70,7 @@ namespace Core.Persistence
             GameLogger.Log("SaveService initialized");
         }
 
-        public void Initialize() { }
+
 
         /// <summary>
         /// Notify cloud provider that user has logged in.

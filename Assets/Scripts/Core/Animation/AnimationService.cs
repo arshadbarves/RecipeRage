@@ -19,9 +19,7 @@ namespace Core.Animation
             Transform = transformAnimator ?? throw new ArgumentNullException(nameof(transformAnimator));
         }
 
-        public void Initialize()
-        {
-        }
+
 
         public void KillAnimations(VisualElement element)
         {

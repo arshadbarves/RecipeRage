@@ -27,7 +27,6 @@ namespace Gameplay.UI.Screens
         [Inject] private ISaveService _saveService;
         [Inject] private IEventBus _eventBus;
         [Inject] private SessionManager _sessionManager;
-        [Inject] private ILoggingService _loggingService;
 
         #endregion
 
@@ -35,7 +34,7 @@ namespace Gameplay.UI.Screens
         private ShopTabComponent _shopTab;
         private CharacterTabComponent _characterTab;
         private CurrencyDisplay _currencyDisplay;
-        
+
         // Currency & Profile labels
         private Label _playerLevelLabel; // Bottom left sub-text
         private Label _playerNameLabel;  // Bottom left name
@@ -54,10 +53,10 @@ namespace Gameplay.UI.Screens
         {
             _goldAmountLabel = GetElement<Label>("gold-amount");
             _gemsAmountLabel = GetElement<Label>("gems-amount");
-            
+
             _playerNameLabel = GetElement<Label>("player-name-main");
             _playerLevelLabel = GetElement<Label>("player-sub-main");
-            
+
             _mainTabs = GetElement<TabView>("main-tabs");
         }
 
@@ -105,10 +104,10 @@ namespace Gameplay.UI.Screens
             // CurrencyDisplay might need update to handle new labels if passed directly
             // Or we can manually bind here if CurrencyDisplay is too rigid.
             // For now, let's assume CurrencyDisplay needs refactor or simple bind.
-            
+
             if (_sessionManager?.IsSessionActive == true)
             {
-                // Note: CurrencyDisplay logic is separated. 
+                // Note: CurrencyDisplay logic is separated.
                 // We'll update text manually for now or injected service handles it.
             }
         }
@@ -127,7 +126,7 @@ namespace Gameplay.UI.Screens
                 sessionContainer.Inject(_lobbyTab);
                 _lobbyTab.Initialize(lobbyRoot);
             }
-            
+
             var shopRoot = GetElement<VisualElement>("shop-root");
             if (shopRoot != null)
             {
@@ -142,10 +141,10 @@ namespace Gameplay.UI.Screens
             if (_saveService == null) return;
             var stats = _saveService.GetPlayerStats();
             var progress = _saveService.GetPlayerProgress();
-            
-            if (_playerLevelLabel != null) 
+
+            if (_playerLevelLabel != null)
                 _playerLevelLabel.text = $"LVL. {progress.HighestLevel} // VANGUARD";
-            
+
             if (_playerNameLabel != null)
                 _playerNameLabel.text = "STRYKER"; // Or stats.Username
         }

@@ -1,7 +1,6 @@
 using Gameplay.UI.Data;
 using Gameplay.UI.Screens;
 using UnityEngine.UIElements;
-using Core.UI;
 using Gameplay.UI.ViewModels;
 using Core.Animation;
 using Core.Logging;
@@ -14,7 +13,7 @@ namespace Gameplay.UI.Components.Tabs
     {
         [Inject] private IUIService _uiService;
         [Inject] private IAnimationService _animationService;
-        [Inject] private ILoggingService _loggingService;
+
 
         private VisualElement _root;
         private readonly LobbyViewModel _viewModel;

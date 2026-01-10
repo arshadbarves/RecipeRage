@@ -1,14 +1,13 @@
 using System;
 using Core.Logging;
 using Core.Shared.Events;
-using Core.Shared.Interfaces;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 
 namespace Core.Networking
 {
-    public interface IConnectivityService : IInitializable
+    public interface IConnectivityService
     {
         bool IsInternetAvailable { get; }
         event Action<bool> OnConnectionStatusChanged;
@@ -33,16 +32,14 @@ namespace Core.Networking
         public event Action<bool> OnConnectionStatusChanged;
 
         private readonly IEventBus _eventBus;
-        private readonly ILoggingService _logger;
+        // private readonly ILoggingService _logger; // Removed
 
-        public ConnectivityService(IEventBus eventBus, ILoggingService logger)
+        public ConnectivityService(IEventBus eventBus)
         {
             _eventBus = eventBus;
-            _logger = logger;
+            // _logger = logger; // Removed
             StartMonitoring().Forget();
         }
-
-        public void Initialize() { }
 
         private async UniTaskVoid StartMonitoring()
         {
@@ -112,7 +109,7 @@ namespace Core.Networking
         private void UpdateStatus(bool isConnected)
         {
             _activeInternetStatus = isConnected;
-            _logger.LogInfo(isConnected ? "Internet Restored" : "Internet Lost", "ConnectivityService");
+            GameLogger.LogInfo(isConnected ? "Internet Restored" : "Internet Lost");
             OnConnectionStatusChanged?.Invoke(isConnected);
 
 

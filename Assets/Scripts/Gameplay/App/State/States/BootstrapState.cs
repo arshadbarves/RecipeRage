@@ -1,5 +1,4 @@
 using System;
-using Core.UI;
 using Cysharp.Threading.Tasks;
 using Gameplay.UI.Screens;
 using Core.Auth.Core;

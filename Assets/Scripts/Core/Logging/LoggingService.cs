@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using VContainer.Unity;
 using Debug = UnityEngine.Debug;
 
 namespace Core.Logging
@@ -12,7 +13,7 @@ namespace Core.Logging
     /// <summary>
     /// Powerful logging service with filtering, export, and Unity log capture
     /// </summary>
-    public class LoggingService : ILoggingService
+    public class LoggingService : ILoggingService, IStartable
     {
         private readonly List<LogEntry> _logs = new List<LogEntry>();
         private readonly HashSet<string> _disabledCategories = new HashSet<string>();
@@ -32,8 +33,12 @@ namespace Core.Logging
             Application.logMessageReceived += HandleUnityLog;
         }
 
-        public void Initialize() { }
 
+        public void Start()
+        {
+            GameLogger.Initialize(this);
+            LogInfo("GameLogger initialized via LoggingService IStartable.");
+        }
         [HideInCallstack]
         public void Log(string message, LogLevel level = LogLevel.Info, string category = "General")
         {

@@ -1,9 +1,8 @@
 using System;
-using Core.Shared.Interfaces;
 
 namespace Core.Logging
 {
-    public interface ILoggingService : IInitializable, IDisposable
+    public interface ILoggingService : IDisposable
     {
         event Action<LogEntry> OnLogAdded;
 

@@ -1,6 +1,5 @@
 using System;
 using Core.Logging;
-using Core.Shared.Interfaces;
 using VContainer;
 
 namespace Gameplay.App.State
@@ -13,7 +12,7 @@ namespace Gameplay.App.State
     {
         private readonly IStateMachine _stateMachine;
         private readonly IStateFactory _stateFactory;
-        private readonly ILoggingService _logger;
+
 
         public event Action<IState, IState> OnStateChanged;
 
@@ -21,31 +20,24 @@ namespace Gameplay.App.State
         public IState PreviousState => _stateMachine.PreviousState;
 
         [Inject]
-        public GameStateManager(IStateFactory stateFactory, ILoggingService logger)
+        public GameStateManager(IStateFactory stateFactory)
         {
             _stateMachine = new StateMachine();
             _stateFactory = stateFactory;
-            _logger = logger;
             _stateMachine.OnStateChanged += (prev, curr) => OnStateChanged?.Invoke(prev, curr);
         }
 
-        /// <summary>
-        /// Called after all services are constructed (IInitializable).
-        /// </summary>
-        void IInitializable.Initialize()
-        {
-            // GameStateManager uses Initialize(IState) for state-specific setup
-        }
+
 
         public void Initialize(IState initialState)
         {
-            _logger.Log($"Initializing with state: {initialState?.GetType().Name}");
+            GameLogger.Log($"Initializing with state: {initialState?.GetType().Name}");
             _stateMachine.Initialize(initialState);
         }
 
         public void ChangeState(IState newState)
         {
-            _logger.Log($"Changing state to: {newState?.GetType().Name}");
+            GameLogger.Log($"Changing state to: {newState?.GetType().Name}");
             _stateMachine.ChangeState(newState);
         }
 
@@ -66,7 +58,7 @@ namespace Gameplay.App.State
 
         public void Dispose()
         {
-            _logger.Log("Disposing GameStateManager");
+            GameLogger.Log("Disposing GameStateManager");
 
             // Exit current state
             CurrentState?.Exit();

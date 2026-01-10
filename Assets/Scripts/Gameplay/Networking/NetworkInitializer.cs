@@ -2,7 +2,6 @@ using Core.Networking.Services;
 using Core.Session;
 using Gameplay.Characters;
 using Core.Logging;
-using Core.Networking.Services;
 using Unity.Netcode;
 using UnityEngine;
 using VContainer;
@@ -21,8 +20,6 @@ namespace Gameplay.Networking
         [Inject]
         private SessionManager _sessionManager;
 
-        [Inject]
-        private ILoggingService _loggingService;
 
         private INetworkGameManager _networkGameManager;
         private IPlayerNetworkManager _playerNetworkManager;
@@ -40,10 +37,9 @@ namespace Gameplay.Networking
         }
 
         [Inject]
-        public void Construct(SessionManager sessionManager, ILoggingService loggingService)
+        public void Construct(SessionManager sessionManager)
         {
             _sessionManager = sessionManager;
-            _loggingService = loggingService;
 
             if (_autoInitialize)
             {
@@ -69,7 +65,6 @@ namespace Gameplay.Networking
 
             // Create connection handler
             _connectionHandler = new ConnectionHandler(
-                _loggingService,
                 _playerNetworkManager,
                 _networkGameManager
             );

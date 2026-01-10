@@ -12,7 +12,7 @@ namespace Core.Networking.Services
     /// </summary>
     public class NetworkGameManager : INetworkGameManager
     {
-        private readonly ILoggingService _logger;
+
         private readonly IPlayerNetworkManager _playerNetworkManager;
         private readonly Dictionary<ulong, NetworkObject> _spawnedPlayers;
         private bool _isGameActive;
@@ -35,11 +35,8 @@ namespace Core.Networking.Services
         /// <summary>
         /// Initialize the network game manager.
         /// </summary>
-        /// <param name="logger">The logging service</param>
-        /// <param name="playerNetworkManager">The player network manager</param>
-        public NetworkGameManager(ILoggingService logger, IPlayerNetworkManager playerNetworkManager)
+        public NetworkGameManager(IPlayerNetworkManager playerNetworkManager)
         {
-            _logger = logger;
             _playerNetworkManager = playerNetworkManager;
             _spawnedPlayers = new Dictionary<ulong, NetworkObject>();
             _isGameActive = false;

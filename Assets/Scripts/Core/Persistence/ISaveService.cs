@@ -1,6 +1,5 @@
 using System;
 using Core.Persistence.Models;
-using Core.Shared.Interfaces;
 using Cysharp.Threading.Tasks;
 
 namespace Core.Persistence
@@ -8,7 +7,7 @@ namespace Core.Persistence
     /// <summary>
     /// Interface for save/load operations with multi-provider support
     /// </summary>
-    public interface ISaveService : IInitializable
+    public interface ISaveService
     {
         // Settings
         GameSettingsData GetSettings();

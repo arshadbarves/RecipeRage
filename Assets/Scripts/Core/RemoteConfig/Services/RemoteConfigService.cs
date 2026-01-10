@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using Core.Logging;
 using Core.RemoteConfig.Enums;
 using Core.RemoteConfig.Interfaces;
-using Core.Shared.Interfaces;
 using Cysharp.Threading.Tasks;
 using VContainer;
+using VContainer.Unity;
 
 namespace Core.RemoteConfig.Services
 {
-    public class RemoteConfigService : IRemoteConfigService
+    public class RemoteConfigService : IRemoteConfigService, IStartable
     {
         private readonly Dictionary<Type, IConfigModel> _configCache;
         private readonly IConfigProvider _firebaseProvider;
@@ -35,12 +35,9 @@ namespace Core.RemoteConfig.Services
             _isInitialized = false;
         }
 
-        /// <summary>
-        /// Called after all services are constructed (IInitializable).
-        /// </summary>
-        void IInitializable.Initialize()
+        public void Start()
         {
-            // RemoteConfigService uses async initialization via Initialize() method
+            Initialize().Forget();
         }
 
         public async UniTask<bool> Initialize()

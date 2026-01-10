@@ -1,6 +1,5 @@
 using System;
 using Core.RemoteConfig.Enums;
-using Core.Shared.Interfaces;
 using Cysharp.Threading.Tasks;
 
 namespace Core.RemoteConfig.Interfaces
@@ -9,7 +8,7 @@ namespace Core.RemoteConfig.Interfaces
     /// Core service interface for managing remote configuration
     /// Provides centralized access to all configuration domains
     /// </summary>
-    public interface IRemoteConfigService : IInitializable
+    public interface IRemoteConfigService
     {
         // Initialization
 

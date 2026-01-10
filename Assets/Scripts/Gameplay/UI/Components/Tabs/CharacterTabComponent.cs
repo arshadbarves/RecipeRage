@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Gameplay.Characters;
-using Core.UI;
 using Gameplay.UI.Screens;
 using Core.Logging;
 using Core.UI.Interfaces;

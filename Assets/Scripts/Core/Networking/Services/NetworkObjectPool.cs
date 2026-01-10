@@ -11,17 +11,15 @@ namespace Core.Networking.Services
     /// </summary>
     public class NetworkObjectPool : INetworkObjectPool
     {
-        private readonly ILoggingService _logger;
+
         private readonly Dictionary<GameObject, Queue<NetworkObject>> _pools;
         private readonly HashSet<NetworkObject> _activeObjects;
 
         /// <summary>
         /// Initialize the network object pool.
         /// </summary>
-        /// <param name="logger">The logging service</param>
-        public NetworkObjectPool(ILoggingService logger)
+        public NetworkObjectPool()
         {
-            _logger = logger;
             _pools = new Dictionary<GameObject, Queue<NetworkObject>>();
             _activeObjects = new HashSet<NetworkObject>();
         }

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Core.UI;
 using Gameplay.UI.ViewModels;
 using Core.UI.Interfaces;
 using UnityEngine;

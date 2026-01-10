@@ -1,9 +1,8 @@
-using Core.Shared.Interfaces;
 using Cysharp.Threading.Tasks;
 
 namespace Core.RemoteConfig
 {
-    public interface IMaintenanceService : IInitializable
+    public interface IMaintenanceService
     {
         UniTask<bool> CheckMaintenanceStatusAsync();
 

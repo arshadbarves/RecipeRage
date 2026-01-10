@@ -5,6 +5,7 @@ using Core.Logging;
 using Core.RemoteConfig.Interfaces;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using VContainer.Unity;
 
 namespace Core.RemoteConfig.Services
 {
@@ -12,7 +13,7 @@ namespace Core.RemoteConfig.Services
     /// Service for synchronizing time with NTP servers
     /// Provides reliable server time for rotation schedules and time-based features
     /// </summary>
-    public class NTPTimeService : INTPTimeService
+    public class NTPTimeService : INTPTimeService, IInitializable
     {
         // Multiple NTP servers for fallback
         private static readonly string[] NTP_SERVERS = new[]

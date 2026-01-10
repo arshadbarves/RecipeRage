@@ -1,10 +1,9 @@
 using System;
-using Core.Shared.Interfaces;
 using Cysharp.Threading.Tasks;
 
 namespace Core.UI.Interfaces
 {
-    public interface IUIService : IInitializable
+    public interface IUIService
     {
         bool IsInitialized { get; }
         // Initialize with generic object to avoid UI dependency

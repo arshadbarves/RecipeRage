@@ -3,8 +3,6 @@ using Core.Networking;
 using Core.UI;
 using Core.UI.Core;
 using Core.UI.Interfaces;
-using Core.Networking;
-using Core.UI;
 using UnityEngine.UIElements;
 using VContainer;
 

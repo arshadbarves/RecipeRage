@@ -29,8 +29,6 @@ namespace Gameplay.UI.Screens
         [Inject]
         private IMaintenanceService _maintenanceService;
 
-        [Inject]
-        private ILoggingService _loggingService;
 
         #endregion
 
@@ -62,7 +60,7 @@ namespace Gameplay.UI.Screens
             SetupButtonHandlers();
             SubscribeToEvents();
 
-            _loggingService?.LogInfo("Initialized");
+            GameLogger.LogInfo("Initialized");
         }
 
         protected override void OnShow()
@@ -70,13 +68,13 @@ namespace Gameplay.UI.Screens
             _isRetrying = false;
             UpdateUI();
 
-            _loggingService?.LogInfo("Showing maintenance screen");
+            GameLogger.LogInfo("Showing maintenance screen");
         }
 
         protected override void OnHide()
         {
             _isRetrying = false;
-            _loggingService?.LogInfo("Hiding maintenance screen");
+            GameLogger.LogInfo("Hiding maintenance screen");
         }
 
         public override void Update(float deltaTime)
@@ -107,10 +105,10 @@ namespace Gameplay.UI.Screens
             _countdownLabel = GetElement<Label>("countdown-label");
             _retryButton = GetElement<Button>("retry-button");
 
-            if (_titleLabel == null) _loggingService?.LogWarning("maintenance-title not found");
-            if (_countdownContainer == null) _loggingService?.LogWarning("countdown-container not found");
-            if (_countdownLabel == null) _loggingService?.LogWarning("countdown-label not found");
-            if (_retryButton == null) _loggingService?.LogWarning("retry-button not found");
+            if (_titleLabel == null) GameLogger.LogWarning("maintenance-title not found");
+            if (_countdownContainer == null) GameLogger.LogWarning("countdown-container not found");
+            if (_countdownLabel == null) GameLogger.LogWarning("countdown-label not found");
+            if (_retryButton == null) GameLogger.LogWarning("retry-button not found");
         }
 
         private void SetupButtonHandlers()
@@ -210,7 +208,7 @@ namespace Gameplay.UI.Screens
 
         private void HandleMaintenanceModeEvent(MaintenanceModeEvent evt)
         {
-            _loggingService?.LogInfo($"Maintenance mode event received - IsMaintenanceMode: {evt.IsMaintenanceMode}");
+            GameLogger.LogInfo($"Maintenance mode event received - IsMaintenanceMode: {evt.IsMaintenanceMode}");
 
             if (!evt.IsMaintenanceMode)
             {
@@ -227,11 +225,11 @@ namespace Gameplay.UI.Screens
                 try
                 {
                     _estimatedEndTime = DateTime.Parse(evt.EstimatedEndTime, null, System.Globalization.DateTimeStyles.RoundtripKind);
-                    _loggingService?.LogInfo($"Estimated end time: {_estimatedEndTime}");
+                    GameLogger.LogInfo($"Estimated end time: {_estimatedEndTime}");
                 }
                 catch (Exception ex)
                 {
-                    _loggingService?.LogError($"Failed to parse estimated end time: {ex.Message}");
+                    GameLogger.LogError($"Failed to parse estimated end time: {ex.Message}");
                     _hasEstimatedTime = false;
                 }
             }
@@ -242,14 +240,14 @@ namespace Gameplay.UI.Screens
 
         private void HandleMaintenanceCheckFailed(MaintenanceCheckFailedEvent evt)
         {
-            _loggingService?.LogWarning($"Maintenance check failed: {evt.Error}");
+            GameLogger.LogWarning($"Maintenance check failed: {evt.Error}");
         }
 
         private void OnRetryClicked()
         {
             if (_isRetrying) return;
 
-            _loggingService?.LogInfo("Retry button clicked");
+            GameLogger.LogInfo("Retry button clicked");
             _isRetrying = true;
             UpdateUI();
 
@@ -264,7 +262,7 @@ namespace Gameplay.UI.Screens
 
                 if (_authService == null)
                 {
-                    _loggingService?.LogError("AuthService not available");
+                    GameLogger.LogError("AuthService not available");
                     _isRetrying = false;
                     UpdateUI();
                     return;
@@ -274,7 +272,7 @@ namespace Gameplay.UI.Screens
 
                 if (success)
                 {
-                    _loggingService?.LogInfo("Reconnect successful");
+                    GameLogger.LogInfo("Reconnect successful");
                     if (_maintenanceService != null)
                     {
                         await _maintenanceService.CheckMaintenanceStatusAsync();
@@ -282,14 +280,14 @@ namespace Gameplay.UI.Screens
                 }
                 else
                 {
-                    _loggingService?.LogWarning("Reconnect failed");
+                    GameLogger.LogWarning("Reconnect failed");
                     _isRetrying = false;
                     UpdateUI();
                 }
             }
             catch (Exception ex)
             {
-                _loggingService?.LogError($"Reconnect error: {ex.Message}");
+                GameLogger.LogError($"Reconnect error: {ex.Message}");
                 _isRetrying = false;
                 UpdateUI();
             }

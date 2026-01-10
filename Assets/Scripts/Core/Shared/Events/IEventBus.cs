@@ -1,5 +1,4 @@
 using System;
-using Core.Shared.Interfaces;
 
 namespace Core.Shared.Events
 {
@@ -7,7 +6,7 @@ namespace Core.Shared.Events
     /// Event bus interface for decoupled communication between services
     /// Follows Observer Pattern and Dependency Inversion Principle
     /// </summary>
-    public interface IEventBus : IInitializable
+    public interface IEventBus
     {
         /// <summary>
         /// Subscribe to an event type

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Core.Logging;
-using VContainer;
 
 namespace Core.Shared.Events
 {
@@ -14,30 +13,13 @@ namespace Core.Shared.Events
     {
         private readonly Dictionary<Type, List<Delegate>> _subscriptions = new Dictionary<Type, List<Delegate>>();
         private readonly object _lock = new object();
-        private readonly ILoggingService _logger;
 
-        [Inject]
-        public EventBus(ILoggingService logger)
-        {
-            _logger = logger;
-        }
 
-        /// <summary>
-        /// Called after all services are constructed.
-        /// </summary>
-        public void Initialize()
-        {
-            // EventBus doesn't need cross-service setup
-        }
-
-        /// <summary>
-        /// Subscribe to an event type
-        /// </summary>
         public void Subscribe<T>(Action<T> handler) where T : class
         {
             if (handler == null)
             {
-                _logger.LogWarning("Attempted to subscribe with null handler", "EventBus");
+                GameLogger.LogWarning("Attempted to subscribe with null handler");
                 return;
             }
 
@@ -54,15 +36,10 @@ namespace Core.Shared.Events
                 if (!_subscriptions[eventType].Contains(handler))
                 {
                     _subscriptions[eventType].Add(handler);
-                    // Reduced verbosity for standard subscriptions to avoid spam
-                    // _logger.LogInfo($"Subscribed to {eventType.Name} (Total: {_subscriptions[eventType].Count})", "EventBus");
                 }
             }
         }
 
-        /// <summary>
-        /// Unsubscribe from an event type
-        /// </summary>
         public void Unsubscribe<T>(Action<T> handler) where T : class
         {
             if (handler == null) return;
@@ -84,14 +61,11 @@ namespace Core.Shared.Events
             }
         }
 
-        /// <summary>
-        /// Publish an event to all subscribers
-        /// </summary>
         public void Publish<T>(T eventData) where T : class
         {
             if (eventData == null)
             {
-                _logger.LogWarning("Attempted to publish null event data", "EventBus");
+                GameLogger.LogWarning("Attempted to publish null event data");
                 return;
             }
 
@@ -119,17 +93,11 @@ namespace Core.Shared.Events
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError($"Error invoking handler for {eventType.Name}: {ex.Message}\n{ex.StackTrace}", "EventBus");
+                    GameLogger.LogError($"Error invoking handler for {eventType.Name}: {ex.Message}\n{ex.StackTrace}");
                 }
             }
-
-            // Optional: Log publication if needed for debugging
-            // _logger.LogInfo($"Published {eventType.Name} to {handlersCopy.Count} subscribers", "EventBus");
         }
 
-        /// <summary>
-        /// Clear all subscriptions for a specific event type
-        /// </summary>
         public void ClearSubscriptions<T>() where T : class
         {
             lock (_lock)
@@ -137,27 +105,21 @@ namespace Core.Shared.Events
                 Type eventType = typeof(T);
                 if (_subscriptions.Remove(eventType))
                 {
-                    _logger.LogInfo($"Cleared all subscriptions for {eventType.Name}", "EventBus");
+                    GameLogger.LogInfo($"Cleared all subscriptions for {eventType.Name}");
                 }
             }
         }
 
-        /// <summary>
-        /// Clear all subscriptions
-        /// </summary>
         public void ClearAllSubscriptions()
         {
             lock (_lock)
             {
                 int count = _subscriptions.Count;
                 _subscriptions.Clear();
-                _logger.LogInfo($"Cleared all subscriptions ({count} event types)", "EventBus");
+                GameLogger.LogInfo($"Cleared all subscriptions ({count} event types)");
             }
         }
 
-        /// <summary>
-        /// Get subscription count for debugging
-        /// </summary>
         public int GetSubscriptionCount<T>() where T : class
         {
             lock (_lock)
@@ -167,9 +129,6 @@ namespace Core.Shared.Events
             }
         }
 
-        /// <summary>
-        /// Get total subscription count across all event types
-        /// </summary>
         public int GetTotalSubscriptionCount()
         {
             lock (_lock)

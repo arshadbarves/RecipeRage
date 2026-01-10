@@ -1,9 +1,8 @@
 using System;
-using Core.Shared.Interfaces;
 
 namespace Gameplay.App.State
 {
-    public interface IGameStateManager : IInitializable
+    public interface IGameStateManager
     {
         IState CurrentState { get; }
         IState PreviousState { get; }

@@ -1,7 +1,6 @@
 using Core.Logging;
 using Core.Shared.Events;
 using Core.UI.Interfaces;
-using Core.UI;
 
 namespace Gameplay.App.State.States
 {

@@ -1,5 +1,4 @@
 using System;
-using Core.Shared.Interfaces;
 using Cysharp.Threading.Tasks;
 
 namespace Core.RemoteConfig.Interfaces
@@ -8,7 +7,7 @@ namespace Core.RemoteConfig.Interfaces
     /// Interface for NTP time synchronization service
     /// Provides reliable server time for rotation schedules and time-based features
     /// </summary>
-    public interface INTPTimeService : IInitializable
+    public interface INTPTimeService
     {
         /// <summary>
         /// Synchronizes time with NTP server

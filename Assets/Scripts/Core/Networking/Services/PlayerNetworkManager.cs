@@ -11,7 +11,7 @@ namespace Core.Networking.Services
     /// </summary>
     public class PlayerNetworkManager : IPlayerNetworkManager
     {
-        private readonly ILoggingService _logger;
+
         private readonly Dictionary<ulong, IPlayerController> _players;
 
         /// <summary>
@@ -27,10 +27,8 @@ namespace Core.Networking.Services
         /// <summary>
         /// Initialize the player network manager.
         /// </summary>
-        /// <param name="logger">The logging service</param>
-        public PlayerNetworkManager(ILoggingService logger)
+        public PlayerNetworkManager()
         {
-            _logger = logger;
             _players = new Dictionary<ulong, IPlayerController>();
         }
 
