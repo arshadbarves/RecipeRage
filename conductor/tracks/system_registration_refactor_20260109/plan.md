@@ -1,7 +1,7 @@
 # Plan: System Registration and Dependency Injection Refactor
 
 ## Phase 1: Core and Pre-Auth Registration (`GameLifetimeScope`)
-- [ ] Task: Audit and Define Interfaces for Core Managers (Localization, UGS Auth)
+- [x] Task: Audit and Define Interfaces for Core Managers (Localization, UGS Auth) <!-- id: cb9d290 -->
 - [ ] Task: Update `GameLifetimeScope.cs` to register `ILocalizationManager` and `UGSAuthenticationManager`
 - [ ] Task: Implement `ScriptableObject` loading for Core settings (Localization, UGS Config)
 - [ ] Task: Register `IPlayerNetworkManager` as a Project-scope singleton
