@@ -16,10 +16,8 @@ namespace Core.Persistence
         public int Experience = 0;
         public int ExperienceToNextLevel = 100;
 
-        // Currency
-        [Header("Currency")]
-        public int Coins = 0; // TODO: Need to be removed we use Bank system
-        public int Gems = 0;  // TODO: Need to be removed we use Bank system
+        // Currency - Deprecated, use BankService
+
 
         // Game stats
         [Header("Game Stats")]
@@ -67,23 +65,7 @@ namespace Core.Persistence
             return leveledUp;
         }
 
-        /// <summary>
-        /// Add coins to the player.
-        /// </summary>
-        /// <param name="amount">The amount of coins to add</param>
-        public void AddCoins(int amount)
-        {
-            Coins += amount;
-        }
 
-        /// <summary>
-        /// Add gems to the player.
-        /// </summary>
-        /// <param name="amount">The amount of gems to add</param>
-        public void AddGems(int amount)
-        {
-            Gems += amount;
-        }
 
         /// <summary>
         /// Record a game played.

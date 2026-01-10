@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 using Gameplay.UI.Data;
-using Gameplay.UI.ViewModels;
+using Gameplay.UI.Features.Shop;
 using Core.Logging;
 
 namespace Gameplay.UI.Components.Tabs

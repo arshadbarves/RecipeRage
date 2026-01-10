@@ -1,11 +1,10 @@
-using Gameplay.UI.Data;
-using Gameplay.UI.Popups;
-using Gameplay.UI.Screens;
+using Gameplay.UI.Features.Lobby;
+using Gameplay.UI.Features.Maps;
+using Gameplay.UI.Features.Social;
 using UnityEngine.UIElements;
-using Gameplay.UI.ViewModels;
 using Core.Animation;
-using Core.Logging;
 using Core.UI.Interfaces;
+using Gameplay.UI.Data;
 using VContainer;
 
 namespace Gameplay.UI.Components.Tabs
@@ -24,12 +23,12 @@ namespace Gameplay.UI.Components.Tabs
         private Button _mapSelector;
         private Label _mapNameLabel;
         private Label _regionInfo;
-        
+
         // Squad slots
         private Button[] _squadSlots = new Button[4];
         private Label[] _playerNames = new Label[4];
         private Label[] _playerStatuses = new Label[4];
-        
+
         private bool _buttonsInitialized = false;
 
         public LobbyTabComponent(LobbyViewModel viewModel)
@@ -53,7 +52,7 @@ namespace Gameplay.UI.Components.Tabs
             _mapSelector = _root.Q<Button>("map-selector");
             _mapNameLabel = _root.Q<Label>("map-name");
             _regionInfo = _root.Q<Label>("region-info");
-            
+
             // Query squad slots
             for (int i = 0; i < 4; i++)
             {
@@ -66,10 +65,10 @@ namespace Gameplay.UI.Components.Tabs
         private void SetupButtons()
         {
             if (_buttonsInitialized) return;
-            
+
             if (_playButton != null) _playButton.clicked += OnPlayClicked;
             if (_mapSelector != null) _mapSelector.clicked += OnMapClicked;
-            
+
             // Setup empty squad slots to open friends
             for (int i = 1; i < 4; i++) // Skip slot 0 (player)
             {
@@ -79,7 +78,7 @@ namespace Gameplay.UI.Components.Tabs
                     _squadSlots[i].clicked += () => OnInviteClicked(slotIndex);
                 }
             }
-            
+
             _buttonsInitialized = true;
         }
 

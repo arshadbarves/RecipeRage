@@ -27,7 +27,7 @@ namespace Core.Persistence.Factory
             return _cloudProvider;
         }
 
-        // TODO: Do we need this?
+
         public IStorageProvider GetProvider(StorageStrategy strategy)
         {
             return strategy switch

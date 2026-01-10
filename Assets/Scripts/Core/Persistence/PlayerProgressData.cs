@@ -11,7 +11,7 @@ namespace Core.Persistence
         [Header("Unlocked Content")]
         public List<string> UnlockedCharacters = new List<string>();
         public List<string> UnlockedMaps = new List<string>();
-        public List<string> UnlockedRecipes = new List<string>();
+
         public List<string> UnlockedCosmetics = new List<string>();
 
         // Game progress
@@ -28,7 +28,7 @@ namespace Core.Persistence
         // Tutorial progress
         [Header("Tutorial Progress")]
         public bool TutorialCompleted = false;
-        public List<string> CompletedTutorialSteps = new List<string>(); // TODO: Need to be removed not neeeded
+
 
         public bool IsCharacterUnlocked(string characterId)
         {
@@ -56,20 +56,7 @@ namespace Core.Persistence
             }
         }
 
-        // TODO: Need to be removed
-        public bool IsRecipeUnlocked(string recipeId)
-        {
-            return UnlockedRecipes.Contains(recipeId);
-        }
 
-        // TODO: Need to be removed
-        public void UnlockRecipe(string recipeId)
-        {
-            if (!UnlockedRecipes.Contains(recipeId))
-            {
-                UnlockedRecipes.Add(recipeId);
-            }
-        }
 
         public bool IsCosmeticUnlocked(string cosmeticId)
         {
@@ -119,18 +106,6 @@ namespace Core.Persistence
             AchievementProgress[achievementId] = progress;
         }
 
-        // TODO: Need to be removed
-        public void CompleteTutorialStep(string stepId)
-        {
-            if (!CompletedTutorialSteps.Contains(stepId))
-            {
-                CompletedTutorialSteps.Add(stepId);
-            }
-        }
 
-        public bool IsTutorialStepCompleted(string stepId)
-        {
-            return CompletedTutorialSteps.Contains(stepId);
-        }
     }
 }

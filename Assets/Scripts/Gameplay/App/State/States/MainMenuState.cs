@@ -1,6 +1,6 @@
 using Cysharp.Threading.Tasks;
-using Gameplay.UI.Popups;
-using Gameplay.UI.Screens;
+using Gameplay.UI.Features.MainMenu;
+using Gameplay.UI.Features.User;
 using Core.Logging;
 using Core.Persistence;
 using Core.UI.Interfaces;

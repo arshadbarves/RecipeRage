@@ -17,12 +17,22 @@ using Core.Session;
 using Core.Shared.Events;
 using Core.UI;
 using Core.UI.Interfaces;
+using Gameplay.UI.Features.Auth;
+using Gameplay.UI.Features.Character;
+using Gameplay.UI.Features.Loading;
+using Gameplay.UI.Features.Lobby;
+using Gameplay.UI.Features.MainMenu;
+using Gameplay.UI.Features.Maps;
+using Gameplay.UI.Features.Matchmaking;
+using Gameplay.UI.Features.Profile;
+using Gameplay.UI.Features.Settings;
+using Gameplay.UI.Features.Shop;
+using Gameplay.UI.Features.Social;
+using Gameplay.UI.Features.System;
+using Gameplay.UI.Features.User;
 using Gameplay.App.State;
 using Gameplay.App.State.States;
 using Gameplay.UI;
-using Gameplay.UI.Auth;
-using Gameplay.UI.Popups;
-using Gameplay.UI.Screens;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
@@ -168,15 +178,15 @@ namespace Gameplay.Bootstrap
             }
 
             // ViewModels
-            builder.Register<Gameplay.UI.ViewModels.LoadingViewModel>(Lifetime.Transient);
-            builder.Register<Gameplay.UI.ViewModels.LobbyViewModel>(Lifetime.Transient);
-            builder.Register<Gameplay.UI.ViewModels.MainMenuViewModel>(Lifetime.Transient);
-            builder.Register<Gameplay.UI.ViewModels.CharacterViewModel>(Lifetime.Transient);
-            builder.Register<Gameplay.UI.ViewModels.LoginViewModel>(Lifetime.Transient);
-            builder.Register<Gameplay.UI.ViewModels.MatchmakingViewModel>(Lifetime.Transient);
-            builder.Register<Gameplay.UI.ViewModels.SettingsViewModel>(Lifetime.Transient);
-            builder.Register<Gameplay.UI.ViewModels.ShopViewModel>(Lifetime.Transient);
-            builder.Register<Gameplay.UI.ViewModels.UsernameViewModel>(Lifetime.Transient);
+            builder.Register<LoadingViewModel>(Lifetime.Transient);
+            builder.Register<LobbyViewModel>(Lifetime.Transient);
+            builder.Register<MainMenuViewModel>(Lifetime.Transient);
+            builder.Register<CharacterViewModel>(Lifetime.Transient);
+            builder.Register<LoginViewModel>(Lifetime.Transient);
+            builder.Register<MatchmakingViewModel>(Lifetime.Transient);
+            builder.Register<SettingsViewModel>(Lifetime.Transient);
+            builder.Register<ShopViewModel>(Lifetime.Transient);
+            builder.Register<UsernameViewModel>(Lifetime.Transient);
 
             // Audio System
             // AudioPoolManager needs a parent transform, we use this scope's transform

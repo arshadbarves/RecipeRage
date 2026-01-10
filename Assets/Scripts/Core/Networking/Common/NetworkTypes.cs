@@ -3,7 +3,7 @@ using Epic.OnlineServices;
 
 namespace Core.Networking.Common
 {
-    // TODO: Do we need this?
+
     /// <summary>
     /// Enum representing the different game modes in RecipeRage.
     /// </summary>
@@ -15,7 +15,7 @@ namespace Core.Networking.Common
     }
 
 
-    // TODO: Do we need this?
+
     /// <summary>
     /// Enum representing the different character classes in RecipeRage.
     /// </summary>

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Gameplay.Characters;
-using Gameplay.UI.Screens;
+using Gameplay.UI.Features.Character;
 using Core.Logging;
 using Core.UI.Interfaces;
 using UnityEngine.UIElements;

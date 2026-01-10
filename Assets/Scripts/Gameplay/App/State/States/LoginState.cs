@@ -1,7 +1,7 @@
 using Core.Logging;
 using Core.Shared.Events;
 using Core.UI.Interfaces;
-using Gameplay.UI.Auth;
+using Gameplay.UI.Features.Auth;
 
 namespace Gameplay.App.State.States
 {

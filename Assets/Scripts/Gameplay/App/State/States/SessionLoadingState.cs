@@ -1,5 +1,5 @@
 using Cysharp.Threading.Tasks;
-using Gameplay.UI.Screens;
+using Gameplay.UI.Features.Loading;
 using Core.Banking.Interfaces;
 using Core.Logging;
 using Core.Persistence;

@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Gameplay.UI.ViewModels;
+using Gameplay.UI.Features.Settings;
 using Core.UI.Interfaces;
 using UnityEngine;
 using UnityEngine.UIElements;

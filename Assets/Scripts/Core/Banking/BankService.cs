@@ -51,15 +51,6 @@ namespace Core.Banking
             SaveToDisk();
 
             OnBalanceChanged?.Invoke(currencyId, next);
-            // TODO: Need to Remove Legacy
-            // Legacy/Compat: Notify UI for standard currencies
-            if (amount > 0 && (currencyId == BankKeys.CurrencyCoins || currencyId == BankKeys.CurrencyGems))
-            {
-                _uiService?.ShowNotification($"+{amount} {currencyId}!", NotificationType.Success, 2f);
-            }
-
-            // Publish legacy event for backwards compatibility with existing UI components
-            PublishLegacyCurrencyEvent();
         }
 
         public bool HasItem(string itemId)
@@ -117,14 +108,6 @@ namespace Core.Banking
             _backend.SaveDataAsync(_data).Wait();
         }
 
-        private void PublishLegacyCurrencyEvent()
-        {
-            // Compatibility with UI components listening to CurrencyChangedEvent
-            _eventBus?.Publish(new CurrencyChangedEvent
-            {
-                Coins = (int)GetBalance(BankKeys.CurrencyCoins),
-                Gems = (int)GetBalance(BankKeys.CurrencyGems)
-            });
-        }
+
     }
 }
