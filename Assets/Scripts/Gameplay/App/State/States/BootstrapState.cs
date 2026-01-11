@@ -3,7 +3,6 @@ using Cysharp.Threading.Tasks;
 using Gameplay.UI.Features.Loading;
 using Gameplay.UI.Features.System;
 using Core.Auth.Core;
-using Core.Localization;
 using Core.Logging;
 using Core.Persistence;
 using Core.RemoteConfig;
@@ -27,7 +26,6 @@ namespace Gameplay.App.State.States
         private readonly ISaveService _saveService;
         private readonly IMaintenanceService _maintenanceService;
         private readonly IGameStateManager _stateManager;
-        private readonly ILocalizationManager _localizationManager;
         private readonly IEventBus _eventBus;
 
         public BootstrapState(
@@ -38,7 +36,6 @@ namespace Gameplay.App.State.States
             ISaveService saveService,
             IMaintenanceService maintenanceService,
             IGameStateManager stateManager,
-            ILocalizationManager localizationManager,
             IEventBus eventBus)
         {
             _uiService = uiService;
@@ -48,7 +45,6 @@ namespace Gameplay.App.State.States
             _saveService = saveService;
             _maintenanceService = maintenanceService;
             _stateManager = stateManager;
-            _localizationManager = localizationManager;
             _eventBus = eventBus;
         }
 
@@ -94,15 +90,49 @@ namespace Gameplay.App.State.States
             loadingScreen?.UpdateProgress(0.2f, "Loading Configuration...");
             await _remoteConfigService.Initialize();
 
-            // --- STEP 2: Authentication (30% - 60%) ---
-            loadingScreen?.UpdateProgress(0.3f, "Authenticating...");
+            // --- STEP 1.5: System Checks (Pre-Login) ---
+            // These checks must pass before we allow any login (auto or manual).
+
+            // 1. Refresh Remote Config
+            loadingScreen?.UpdateProgress(0.25f, "Syncing Configuration...");
+            await _remoteConfigService.RefreshConfig();
+
+            // 2. Force Update Check
+            loadingScreen?.UpdateProgress(0.3f, "Checking for Updates...");
+            var forceUpdateChecker = new ForceUpdateChecker(_remoteConfigService, _eventBus);
+            bool isUpdateRequired = await forceUpdateChecker.CheckForUpdateAsync();
+
+            if (isUpdateRequired)
+            {
+                GameLogger.LogInfo("[Bootstrap] Force update required. Halting boot sequence.");
+                _uiService.Hide<LoadingScreen>();
+
+                // TODO: Show Force Upgrade Popup, Move the Logic to show from the Core itself liek using Interface or something.
+                // The ForceUpdateChecker publishes an event that should show the Update Popup.
+                // We stop here to prevent login.
+                return;
+            }
+
+            // 3. Maintenance Check
+            loadingScreen?.UpdateProgress(0.35f, "Checking Maintenance...");
+            if (_maintenanceService != null)
+            {
+                // TODO: We need to show maintenance screen and return here if it under maintenance
+                // Assuming CheckMaintenanceStatusAsync shows a Blocking UI if under maintenance.
+                // We rely on the service to handle the UI.
+                // If maintenance is strict, we might need a return value, but usually it pops a screen.
+                await _maintenanceService.CheckMaintenanceStatusAsync();
+            }
+
+            // --- STEP 2: Authentication (40% - 70%) ---
+            loadingScreen?.UpdateProgress(0.4f, "Authenticating...");
 
             bool isAuthenticated = _authService.IsLoggedIn();
 
             if (!isAuthenticated)
             {
                 string lastLogin = _saveService.GetSettings().LastLoginMethod;
-                if (!string.IsNullOrEmpty(lastLogin) && lastLogin == "DeviceID")
+                if (!string.IsNullOrEmpty(lastLogin) && lastLogin == nameof(AuthType.DeviceID))
                 {
                     GameLogger.Log("[Bootstrap] Attempting auto-login with DeviceID");
                     isAuthenticated = await _authService.LoginAsync(AuthType.DeviceID);
@@ -120,26 +150,13 @@ namespace Gameplay.App.State.States
                 return;
             }
 
-            // --- STEP 3: Post-Login (60% - 90%) ---
-            loadingScreen?.UpdateProgress(0.6f, "Checking Updates...");
-            await _remoteConfigService.RefreshConfig();
-
-            var forceUpdateChecker = new ForceUpdateChecker(_remoteConfigService, _eventBus);
-            await forceUpdateChecker.CheckForUpdateAsync();
-
-            loadingScreen?.UpdateProgress(0.8f, "Checking Maintenance...");
-            if (_maintenanceService != null)
-            {
-                await _maintenanceService.CheckMaintenanceStatusAsync();
-            }
-
-            // --- STEP 4: Ready (100%) ---
+            // --- STEP 3: Ready (100%) ---
             loadingScreen?.UpdateProgress(1.0f, "READY!");
-            await UniTask.Delay(TimeSpan.FromSeconds(1.0f));
+            await UniTask.Delay(TimeSpan.FromSeconds(0.5f));
 
-            _uiService.Hide<LoadingScreen>();
-            GameLogger.Log("Initialization complete. Transitioning to MainMenu.");
-            _stateManager.ChangeState<MainMenuState>();
+            // _uiService.Hide<LoadingScreen>();
+            GameLogger.Log("Initialization complete. Transitioning to SessionLoadingState.");
+            _stateManager.ChangeState<SessionLoadingState>();
         }
 
         private async UniTask ShowSplashScreenAsync()

@@ -50,9 +50,8 @@ namespace Gameplay.App.State.States
                 // 1. Ensure Session Scope is ready
                 if (!_sessionManager.IsSessionActive)
                 {
-                    GameLogger.LogError("[SessionLoadingState] No active session found!");
-                    _stateManager.ChangeState<LoginState>();
-                    return;
+                    GameLogger.Log("[SessionLoadingState] No active session found. Creating new session...");
+                    _sessionManager.CreateSession();
                 }
 
                 // 2. Sync Cloud/Disk Data
@@ -61,13 +60,12 @@ namespace Gameplay.App.State.States
 
                 // 3. Load Currency (Refresh from SaveService)
                 if (loadingScreen != null) loadingScreen.UpdateProgress(0.6f, "Updating Wallet...");
-                
+
                 // Resolve BankService from Session Scope
                 var bankService = _sessionManager.SessionContainer.Resolve<IBankService>();
                 await bankService.InitializeAsync();
 
                 // 4. Simulate a small delay for visual smoothness if everything was too fast
-                // (Optional, but often requested to prevent flickering loading screens)
                 if (loadingScreen != null) loadingScreen.UpdateProgress(0.9f, "Finalizing...");
                 await UniTask.Delay(500);
 
@@ -77,8 +75,6 @@ namespace Gameplay.App.State.States
             catch (System.Exception ex)
             {
                 GameLogger.LogException(ex);
-                // On critical failure, maybe go back to login or show error?
-                // For now, try to proceed or go back to login.
                 _stateManager.ChangeState<LoginState>();
             }
         }
@@ -86,7 +82,7 @@ namespace Gameplay.App.State.States
         public override void Exit()
         {
             base.Exit();
-            // Hide loading screen is handled by the next state (MainMenu usually hides others), 
+            // Hide loading screen is handled by the next state (MainMenu usually hides others),
             // but explicit hiding is safer if MainMenu is an Overlay/Screen combo.
             // MainMenuState calls ShowScreen(MainMenu), which (if it's a Screen category) usually hides others.
             // But LoadingScreen is likely a Screen or Overlay.

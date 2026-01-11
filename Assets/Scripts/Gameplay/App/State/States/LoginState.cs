@@ -30,10 +30,7 @@ namespace Gameplay.App.State.States
             base.Enter();
             GameLogger.Log("[LoginState] Entered - Subscribing to events");
 
-            // Show Login Screen
             _uiService.Show<LoginView>();
-
-            // Subscribe to login events
             _eventBus.Subscribe<LoginSuccessEvent>(OnLoginSuccess);
         }
 
@@ -42,19 +39,13 @@ namespace Gameplay.App.State.States
             base.Exit();
             GameLogger.Log("[LoginState] Exiting - Unsubscribing");
 
-            // Hide Login Screen
             _uiService.Hide<LoginView>();
-
-            // Unsubscribe
             _eventBus.Unsubscribe<LoginSuccessEvent>(OnLoginSuccess);
         }
 
         private void OnLoginSuccess(LoginSuccessEvent evt)
         {
             GameLogger.Log($"[LoginState] EVENT RECEIVED: Login successful for user: {evt.UserId}");
-
-            // Session is created internally by AuthenticationService after successful auth
-            // Transition to loading state to fetch profile/currency before showing MainMenu
             _stateManager.ChangeState<SessionLoadingState>();
         }
     }

@@ -1,5 +1,4 @@
 using Core.Persistence.Interfaces;
-using Core.Persistence.Models;
 using Core.Persistence.Providers;
 
 namespace Core.Persistence.Factory
@@ -25,18 +24,6 @@ namespace Core.Persistence.Factory
                 _cloudProvider = new EOSCloudStorageProvider();
             }
             return _cloudProvider;
-        }
-
-
-        public IStorageProvider GetProvider(StorageStrategy strategy)
-        {
-            return strategy switch
-            {
-                StorageStrategy.LocalOnly => GetLocalProvider(),
-                StorageStrategy.CloudOnly => GetCloudProvider(),
-                StorageStrategy.CloudWithCache => GetCloudProvider(), // SaveService handles caching
-                _ => GetLocalProvider()
-            };
         }
     }
 }
