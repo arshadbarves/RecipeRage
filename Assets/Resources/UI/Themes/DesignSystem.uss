@@ -205,12 +205,8 @@ Button, .unity-button {
     transition-timing-function: ease-in-out-sine;
 }
 
-Button:hover, .unity-button:hover {
-    scale: 1.03;
-}
-
 Button:active, .unity-button:active {
-    scale: 0.95;
+    scale: 0.98;
 }
 
 .header {
@@ -351,14 +347,6 @@ Button, .unity-button {
     border-color: var(--color-card-border);
     font-size: var(--font-size-xl);
     color: var(--color-text-primary);
-}
-
-Button:hover, .unity-button:hover, .skew-button:hover {
-    scale: 1.03;
-}
-
-Button:active, .unity-button:active, .skew-button:active {
-    scale: 0.93;
 }
 
 /* ============================================

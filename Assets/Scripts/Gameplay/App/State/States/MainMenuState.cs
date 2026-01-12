@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using Gameplay.UI.Features.MainMenu;
 using Gameplay.UI.Features.User;
+using Gameplay.UI.Features.Loading;
 using Gameplay.Persistence;
 using Core.Logging;
 using Core.UI.Interfaces;
@@ -12,6 +13,7 @@ namespace Gameplay.App.State.States
 {
     /// <summary>
     /// State for the main menu.
+    /// Hides loading screen after MainMenu scene is loaded.
     /// </summary>
     public class MainMenuState : BaseState
     {
@@ -24,16 +26,26 @@ namespace Gameplay.App.State.States
             _sessionManager = sessionManager;
         }
 
-        public override void Enter()
+        public override async void Enter()
         {
             base.Enter();
 
+            // Load MainMenu scene if needed
             if (SceneManager.GetActiveScene().name != "MainMenu")
             {
-                SceneManager.LoadScene("MainMenu");
+                await SceneManager.LoadSceneAsync("MainMenu").ToUniTask();
             }
 
+            // Update loading to 100% and hide it
+            var loadingScreen = _uiService.GetScreen<LoadingScreen>();
+            loadingScreen?.UpdateProgress(1.0f, "Welcome!");
+            await UniTask.Delay(200);
+            _uiService.Hide<LoadingScreen>();
+
+            // Show MainMenu UI
             _uiService?.Show<MainMenuScreen>(true, false);
+
+            // Check for first-time username
             CheckAndShowUsernamePopupAsync();
         }
 

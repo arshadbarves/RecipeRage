@@ -150,11 +150,9 @@ namespace Gameplay.App.State.States
                 return;
             }
 
-            // --- STEP 3: Ready (100%) ---
-            loadingScreen?.UpdateProgress(1.0f, "READY!");
-            await UniTask.Delay(TimeSpan.FromSeconds(0.5f));
+            // --- STEP 3: Transition to SessionLoading (50%) ---
+            loadingScreen?.UpdateProgress(0.5f, "Loading Session...");
 
-            // _uiService.Hide<LoadingScreen>();
             GameLogger.Log("Initialization complete. Transitioning to SessionLoadingState.");
             _stateManager.ChangeState<SessionLoadingState>();
         }

@@ -3,6 +3,13 @@
     <Template name="SquadSlotTemplate" src="project://database/Assets/Resources/UI/Templates/Components/SquadSlotTemplate.uxml?fileID=9197481963319205126&amp;guid=da2040443a9c4410882587733bd873bd&amp;type=3#SquadSlotTemplate"/>
     <Style src="project://database/Assets/Resources/UI/Styles/Screens/Lobby.uss?fileID=7433441132597879392&amp;guid=0dc93b02b55854976be67fbd874f44ac&amp;type=3#Lobby"/>
     <VisualElement name="lobby-root" class="lobby-root">
+        <VisualElement name="character-zone" class="character-zone">
+            <VisualElement class="squad-slot-container">
+                <Instance template="SquadSlotTemplate"/>
+                <Instance template="CenterSlotTemplate"/>
+                <Instance template="SquadSlotTemplate"/>
+            </VisualElement>
+        </VisualElement>
         <VisualElement name="lobby-sidebar" class="lobby-sidebar">
             <Button name="friends-btn" class="side-icon-btn">
                 <VisualElement class="icon friends-icon"/>
@@ -19,13 +26,6 @@
             <Button name="settings-btn" class="side-icon-btn">
                 <VisualElement class="icon settings-icon"/>
             </Button>
-        </VisualElement>
-        <VisualElement name="character-zone" class="character-zone">
-            <VisualElement class="squad-slot-container">
-                <Instance template="SquadSlotTemplate"/>
-                <Instance template="CenterSlotTemplate"/>
-                <Instance template="SquadSlotTemplate"/>
-            </VisualElement>
         </VisualElement>
         <VisualElement name="right-panel" class="right-panel">
             <VisualElement name="lobby-controls" class="lobby-controls">

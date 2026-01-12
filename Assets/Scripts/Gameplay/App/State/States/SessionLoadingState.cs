@@ -12,7 +12,9 @@ namespace Gameplay.App.State.States
 {
     /// <summary>
     /// State responsible for loading session-specific data (profile, currency, etc.)
-    /// before showing the Main Menu to prevent UI pop-in.
+    /// before showing the Main Menu.
+    /// Progress: 50% (from Bootstrap) -> 90% (before MainMenu)
+    /// Loading screen is hidden by MainMenuState after scene loads.
     /// </summary>
     public class SessionLoadingState : BaseState
     {
@@ -38,36 +40,36 @@ namespace Gameplay.App.State.States
             base.Enter();
             GameLogger.Log("[SessionLoadingState] Entered - Loading session data...");
 
-            _uiService.Show<LoadingScreen>();
+            // Get existing loading screen (already shown by BootstrapState)
             var loadingScreen = _uiService.GetScreen<LoadingScreen>();
-            loadingScreen?.UpdateProgress(0f, "Loading Profile...");
 
             try
             {
-                // 1. Ensure Session Scope is ready
+                // 1. Ensure Session Scope is ready (50% -> 55%)
+                loadingScreen?.UpdateProgress(0.55f, "Preparing Session...");
                 if (!_sessionManager.IsSessionActive)
                 {
-                    GameLogger.Log("[SessionLoadingState] No active session found. Creating new session...");
+                    GameLogger.Log("[SessionLoadingState] Creating new session...");
                     _sessionManager.CreateSession();
                 }
 
-                // 2. Sync Cloud/Disk Data
-                loadingScreen?.UpdateProgress(0.2f, "Syncing Data...");
+                // 2. Sync Cloud/Disk Data (55% -> 65%)
+                loadingScreen?.UpdateProgress(0.6f, "Syncing Data...");
                 await _saveService.SyncAllCloudDataAsync();
 
-                // 3. Initialize Economy (Currency, Inventory)
-                loadingScreen?.UpdateProgress(0.4f, "Updating Wallet...");
+                // 3. Initialize Economy (65% -> 75%)
+                loadingScreen?.UpdateProgress(0.7f, "Loading Wallet...");
                 var economyService = _sessionManager.SessionContainer.Resolve<EconomyService>();
                 economyService.Initialize();
 
-                // 4. Initialize Player Data (Progress, Stats)
-                loadingScreen?.UpdateProgress(0.6f, "Loading Progress...");
+                // 4. Initialize Player Data (75% -> 85%)
+                loadingScreen?.UpdateProgress(0.8f, "Loading Progress...");
                 var playerDataService = _sessionManager.SessionContainer.Resolve<PlayerDataService>();
                 playerDataService.Initialize();
 
-                // 5. Finalize
-                loadingScreen?.UpdateProgress(0.9f, "Finalizing...");
-                await UniTask.Delay(500);
+                // 5. Ready - MainMenu will hide loading screen (85% -> 90%)
+                loadingScreen?.UpdateProgress(0.9f, "Ready!");
+                await UniTask.Delay(300);
 
                 GameLogger.Log("[SessionLoadingState] Loading complete. Transitioning to MainMenu.");
                 _stateManager.ChangeState<MainMenuState>();
@@ -82,7 +84,7 @@ namespace Gameplay.App.State.States
         public override void Exit()
         {
             base.Exit();
-            _uiService.Hide<LoadingScreen>();
+            // DON'T hide loading screen here - MainMenuState will hide it after scene loads
         }
     }
 }
