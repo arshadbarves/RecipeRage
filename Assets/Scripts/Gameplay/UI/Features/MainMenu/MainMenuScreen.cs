@@ -1,11 +1,10 @@
 using Gameplay.UI.Components;
 using Gameplay.UI.Components.Tabs;
+using Gameplay.Persistence;
 using UnityEngine.UIElements;
 using VContainer;
 using Core.UI;
-
 using Core.Logging;
-using Core.Persistence;
 using Core.Shared.Events;
 using Core.UI.Core;
 using Core.UI.Interfaces;
@@ -24,7 +23,6 @@ namespace Gameplay.UI.Features.MainMenu
         [Inject] private MainMenuViewModel _viewModel;
         [Inject] private IObjectResolver _container;
         [Inject] private IUIService _uiService;
-        [Inject] private ISaveService _saveService;
         [Inject] private IEventBus _eventBus;
         [Inject] private SessionManager _sessionManager;
 
@@ -35,9 +33,8 @@ namespace Gameplay.UI.Features.MainMenu
         private CharacterTabComponent _characterTab;
         private CurrencyDisplay _currencyDisplay;
 
-        // Currency & Profile labels
-        private Label _playerLevelLabel; // Bottom left sub-text
-        private Label _playerNameLabel;  // Bottom left name
+        private Label _playerLevelLabel;
+        private Label _playerNameLabel;
         private Label _goldAmountLabel;
         private Label _gemsAmountLabel;
 
@@ -53,23 +50,17 @@ namespace Gameplay.UI.Features.MainMenu
         {
             _goldAmountLabel = GetElement<Label>("gold-amount");
             _gemsAmountLabel = GetElement<Label>("gems-amount");
-
             _playerNameLabel = GetElement<Label>("player-name-main");
             _playerLevelLabel = GetElement<Label>("player-sub-main");
-
             _mainTabs = GetElement<TabView>("main-tabs");
         }
 
-        private void OnLogout(LogoutEvent evt)
-        {
-            ClearSessionComponents();
-        }
+        private void OnLogout(LogoutEvent evt) => ClearSessionComponents();
 
         private void ClearSessionComponents()
         {
             _lobbyTab?.Dispose();
             _currencyDisplay?.Dispose();
-
             _lobbyTab = null;
             _currencyDisplay = null;
         }
@@ -90,7 +81,6 @@ namespace Gameplay.UI.Features.MainMenu
         private void InitializeSessionComponents()
         {
             if (_sessionManager?.IsSessionActive == false) return;
-
             if (_lobbyTab != null) return;
 
             InitializeCurrencyDisplay();
@@ -101,14 +91,9 @@ namespace Gameplay.UI.Features.MainMenu
 
         private void InitializeCurrencyDisplay()
         {
-            // CurrencyDisplay might need update to handle new labels if passed directly
-            // Or we can manually bind here if CurrencyDisplay is too rigid.
-            // For now, let's assume CurrencyDisplay needs refactor or simple bind.
-
             if (_sessionManager?.IsSessionActive == true)
             {
-                // Note: CurrencyDisplay logic is separated.
-                // We'll update text manually for now or injected service handles it.
+                // Currency display is handled separately
             }
         }
 
@@ -138,15 +123,19 @@ namespace Gameplay.UI.Features.MainMenu
 
         private void UpdatePlayerInfo()
         {
-            if (_saveService == null) return;
-            var stats = _saveService.GetPlayerStats();
-            var progress = _saveService.GetPlayerProgress();
+            if (_sessionManager?.IsSessionActive != true) return;
+
+            var playerDataService = _sessionManager.SessionContainer?.Resolve<PlayerDataService>();
+            if (playerDataService == null) return;
+
+            var stats = playerDataService.GetStats();
+            var progress = playerDataService.GetProgress();
 
             if (_playerLevelLabel != null)
-                _playerLevelLabel.text = $"LVL. {progress.HighestLevel} // VANGUARD";
+                _playerLevelLabel.text = $"LVL. {progress?.HighestLevel ?? 0} // VANGUARD";
 
             if (_playerNameLabel != null)
-                _playerNameLabel.text = "STRYKER"; // Or stats.Username
+                _playerNameLabel.text = string.IsNullOrEmpty(stats?.PlayerName) ? "STRYKER" : stats.PlayerName.ToUpper();
         }
     }
 }

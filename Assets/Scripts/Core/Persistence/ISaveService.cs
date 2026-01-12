@@ -5,31 +5,16 @@ using Cysharp.Threading.Tasks;
 namespace Core.Persistence
 {
     /// <summary>
-    /// Interface for save/load operations with multi-provider support
+    /// Generic interface for save/load operations with multi-provider support.
+    /// Does NOT hold game-specific data models.
     /// </summary>
     public interface ISaveService
     {
-        // Settings
+        // Settings (Core-owned, device-level)
         GameSettingsData GetSettings();
         void SaveSettings(GameSettingsData settings);
         void UpdateSettings(Action<GameSettingsData> updateAction);
         event Action<GameSettingsData> OnSettingsChanged;
-
-        // Player Progress
-        PlayerProgressData GetPlayerProgress();
-        void SavePlayerProgress(PlayerProgressData progress);
-        void UpdatePlayerProgress(Action<PlayerProgressData> updateAction);
-        event Action<PlayerProgressData> OnPlayerProgressChanged;
-
-        // Player Stats
-        PlayerStatsData GetPlayerStats();
-        void SavePlayerStats(PlayerStatsData stats);
-        void UpdatePlayerStats(Action<PlayerStatsData> updateAction);
-        event Action<PlayerStatsData> OnPlayerStatsChanged;
-
-        // Utility
-        void DeleteAllData();
-        void ClearUserCache(); // Clear user-specific cache without deleting data
 
         // Cloud sync
         SyncStatus GetSyncStatus(string key);
@@ -39,8 +24,11 @@ namespace Core.Persistence
         void OnUserLoggedIn();
         void OnUserLoggedOut();
 
-        // Generic save/load (for custom data like currency)
+        // Generic save/load (for any data type)
         T LoadData<T>(string key) where T : class, new();
         void SaveData<T>(string key, T data) where T : class, new();
+        
+        // Dynamic storage config
+        void RegisterStorageConfig(string key, StorageStrategy strategy, bool encrypt);
     }
 }

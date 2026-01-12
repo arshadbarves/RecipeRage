@@ -1,10 +1,8 @@
 using Gameplay.UI.Data;
-using Core.Banking;
-using Core.Banking.Interfaces;
+using Gameplay.Economy;
 using Core.Shared;
 using Core.UI.Core;
-using Core.Session; // Added
-// Added
+using Core.Session;
 using VContainer;
 
 namespace Gameplay.UI.Features.Shop
@@ -12,7 +10,7 @@ namespace Gameplay.UI.Features.Shop
     public class ShopViewModel : BaseViewModel
     {
         private readonly SessionManager _sessionManager;
-        private IBankService BankService => _sessionManager.SessionContainer?.Resolve<IBankService>();
+        private EconomyService EconomyService => _sessionManager.SessionContainer?.Resolve<EconomyService>();
 
         public BindableProperty<string> CoinsText { get; } = new BindableProperty<string>("0");
         public BindableProperty<string> GemsText { get; } = new BindableProperty<string>("0");
@@ -31,24 +29,19 @@ namespace Gameplay.UI.Features.Shop
 
         public void UpdateCurrency()
         {
-            if (BankService == null) return;
-            CoinsText.Value = BankService.GetBalance(BankKeys.CurrencyCoins).ToString();
-            GemsText.Value = BankService.GetBalance(BankKeys.CurrencyGems).ToString();
+            if (EconomyService == null) return;
+            CoinsText.Value = EconomyService.GetBalance(EconomyKeys.CurrencyCoins).ToString();
+            GemsText.Value = EconomyService.GetBalance(EconomyKeys.CurrencyGems).ToString();
         }
 
         public bool BuyItem(ShopItem item)
         {
-            if (BankService == null) return false;
+            if (EconomyService == null) return false;
 
-            // Use the new atomic Purchase method
-            // Ensure currency ID is lowercase as per our convention
             string currencyId = item.currency.ToLower();
-            bool success = BankService.Purchase(item.id, item.price, currencyId);
+            bool success = EconomyService.Purchase(item.id, item.price, currencyId);
 
-            if (success)
-            {
-                UpdateCurrency();
-            }
+            if (success) UpdateCurrency();
             return success;
         }
     }

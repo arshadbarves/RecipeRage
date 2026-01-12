@@ -1,8 +1,7 @@
 using System;
-using Core.Banking;
-using Core.Banking.Interfaces;
+using Gameplay.Economy;
+using Gameplay.Persistence;
 using Core.Logging;
-using Core.Persistence;
 using Core.Shared;
 using Core.UI.Core;
 using Core.UI.Interfaces;
@@ -13,7 +12,6 @@ namespace Gameplay.UI.Features.User
 {
     public class UsernameViewModel : BaseViewModel
     {
-        private readonly ISaveService _saveService;
         private readonly SessionManager _sessionManager;
         private readonly IUIService _uiService;
 
@@ -30,23 +28,12 @@ namespace Gameplay.UI.Features.User
         private bool _isFirstTime = false;
         private Action<string> _onConfirmCallback;
 
-        private IBankService BankService
-        {
-            get
-            {
-                var sessionContainer = _sessionManager?.SessionContainer;
-                if (sessionContainer != null)
-                {
-                    return sessionContainer.Resolve<IBankService>();
-                }
-                return null;
-            }
-        }
+        private EconomyService EconomyService => _sessionManager?.SessionContainer?.Resolve<EconomyService>();
+        private PlayerDataService PlayerDataService => _sessionManager?.SessionContainer?.Resolve<PlayerDataService>();
 
         [Inject]
-        public UsernameViewModel(ISaveService saveService, SessionManager sessionManager, IUIService uiService)
+        public UsernameViewModel(SessionManager sessionManager, IUIService uiService)
         {
-            _saveService = saveService;
             _sessionManager = sessionManager;
             _uiService = uiService;
         }
@@ -67,24 +54,20 @@ namespace Gameplay.UI.Features.User
             IsCostVisible.Value = _changeCost > 0;
             CostText.Value = _changeCost.ToString();
 
-            // Load current name if not first time
             if (!isFirstTime)
             {
-                var stats = _saveService.GetPlayerStats();
-                Username.Value = stats.PlayerName ?? "";
+                var stats = PlayerDataService?.GetStats();
+                Username.Value = stats?.PlayerName ?? "";
             }
             else
             {
                 Username.Value = "";
             }
-            
+
             ValidateInput(Username.Value);
         }
 
-        private void OnUsernameChanged(string newValue)
-        {
-            ValidateInput(newValue);
-        }
+        private void OnUsernameChanged(string newValue) => ValidateInput(newValue);
 
         private void ValidateInput(string name)
         {
@@ -109,23 +92,9 @@ namespace Gameplay.UI.Features.User
 
         private bool ValidateUsernameLogic(string name, out string error)
         {
-            if (string.IsNullOrEmpty(name))
-            {
-                error = "Username cannot be empty";
-                return false;
-            }
-
-            if (name.Length < 3)
-            {
-                error = "Minimum 3 characters required";
-                return false;
-            }
-
-            if (name.Length > 16)
-            {
-                error = "Maximum 16 characters allowed";
-                return false;
-            }
+            if (string.IsNullOrEmpty(name)) { error = "Username cannot be empty"; return false; }
+            if (name.Length < 3) { error = "Minimum 3 characters required"; return false; }
+            if (name.Length > 16) { error = "Maximum 16 characters allowed"; return false; }
 
             foreach (char c in name)
             {
@@ -145,8 +114,7 @@ namespace Gameplay.UI.Features.User
             if (IsLoading.Value || !IsConfirmEnabled.Value) return;
 
             string newName = Username.Value?.Trim();
-            
-            // Re-validate just in case
+
             if (!ValidateUsernameLogic(newName, out string error))
             {
                 StatusMessage.Value = error;
@@ -154,17 +122,16 @@ namespace Gameplay.UI.Features.User
                 return;
             }
 
-            // Check cost
             if (_changeCost > 0)
             {
-                if (BankService == null)
+                if (EconomyService == null)
                 {
                     StatusMessage.Value = "Session Error. Try restarting.";
                     IsStatusError.Value = true;
                     return;
                 }
 
-                if (BankService.GetBalance(BankKeys.CurrencyGems) < _changeCost)
+                if (EconomyService.GetBalance(EconomyKeys.CurrencyGems) < _changeCost)
                 {
                     StatusMessage.Value = "Not enough gems!";
                     IsStatusError.Value = true;
@@ -179,15 +146,12 @@ namespace Gameplay.UI.Features.User
 
             try
             {
-                if (_changeCost > 0 && BankService != null)
+                if (_changeCost > 0 && EconomyService != null)
                 {
-                    BankService.ModifyBalance(BankKeys.CurrencyGems, -_changeCost);
+                    EconomyService.AddCurrency(EconomyKeys.CurrencyGems, -_changeCost);
                 }
 
-                _saveService.UpdatePlayerStats(stats =>
-                {
-                    stats.PlayerName = newName;
-                });
+                PlayerDataService?.SetPlayerName(newName);
 
                 _onConfirmCallback?.Invoke(newName);
                 _uiService.ShowNotification("Username updated successfully!", NotificationType.Success);
@@ -197,7 +161,7 @@ namespace Gameplay.UI.Features.User
                 GameLogger.LogError($"Failed to save username: {ex.Message}");
                 StatusMessage.Value = "Failed to save. Try again.";
                 IsStatusError.Value = true;
-                IsConfirmEnabled.Value = true; // Re-enable so they can try again
+                IsConfirmEnabled.Value = true;
             }
             finally
             {

@@ -4,6 +4,8 @@ using Core.Networking.Services;
 using Core.Networking.Interfaces;
 using Core.UI;
 using Core.UI.Interfaces;
+using Gameplay.Economy;
+using Gameplay.Persistence;
 using PlayEveryWare.EpicOnlineServices;
 using PlayEveryWare.EpicOnlineServices.Samples;
 
@@ -36,9 +38,9 @@ namespace Gameplay.Bootstrap
                 .As<Core.Networking.INetworkingServices>()
                 .As<System.IDisposable>();
 
-            // 2. Banking
-            builder.Register<Core.Banking.Backends.EOSBankBackend>(Lifetime.Singleton).As<Core.Banking.Interfaces.IBankBackend>();
-            builder.Register<Core.Banking.BankService>(Lifetime.Singleton).As<Core.Banking.Interfaces.IBankService>();
+            // 2. Economy & Player Data (Game Layer Services)
+            builder.Register<EconomyService>(Lifetime.Singleton);
+            builder.Register<PlayerDataService>(Lifetime.Singleton);
         }
     }
 }

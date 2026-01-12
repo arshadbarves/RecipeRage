@@ -1,5 +1,8 @@
 using Core.Persistence;
 using Gameplay.Bootstrap;
+using Gameplay.Persistence;
+using Gameplay.Economy;
+using Core.Session;
 using UnityEditor;
 using UnityEngine;
 using VContainer;
@@ -11,7 +14,9 @@ namespace Editor
     /// </summary>
     public static class DevelopmentTools
     {
-        private static ISaveService SaveService => VContainer.Unity.LifetimeScope.Find<GameLifetimeScope>()?.Container?.Resolve<ISaveService>();
+        private static GameLifetimeScope GameScope => VContainer.Unity.LifetimeScope.Find<GameLifetimeScope>() as GameLifetimeScope;
+        private static ISaveService SaveService => GameScope?.Container?.Resolve<ISaveService>();
+        private static SessionManager SessionManager => GameScope?.Container?.Resolve<SessionManager>();
 
         [MenuItem("RecipeRage/Development/Clear All Saved Data")]
         public static void ClearAllSavedData()
@@ -22,35 +27,23 @@ namespace Editor
                 "• Settings (audio, graphics, etc.)\n" +
                 "• Player progress\n" +
                 "• Player stats\n" +
-                "• Authentication data\n\n" +
+                "• Economy data\n\n" +
                 "This action cannot be undone. Continue?",
                 "Yes, Clear All Data",
                 "Cancel"))
             {
-                // Clear save files if game is running
-                if (Application.isPlaying && SaveService != null)
-                {
-                    SaveService.DeleteAllData();
-                    Debug.Log("[DevelopmentTools] ✅ All saved data cleared (runtime)");
-                }
-                else
-                {
-                    // Clear save files manually when not playing
-                    string savePath = Application.persistentDataPath;
+                // Clear save files manually
+                string savePath = Application.persistentDataPath;
 
-                    if (System.IO.Directory.Exists(savePath))
+                if (System.IO.Directory.Exists(savePath))
+                {
+                    string[] files = System.IO.Directory.GetFiles(savePath, "*.json");
+                    foreach (string file in files)
                     {
-                        string[] files = System.IO.Directory.GetFiles(savePath, "*.json");
-                        foreach (string file in files)
-                        {
-                            System.IO.File.Delete(file);
-                        }
-                        Debug.Log($"[DevelopmentTools] ✅ Deleted {files.Length} save files from: {savePath}");
+                        System.IO.File.Delete(file);
                     }
+                    Debug.Log($"[DevelopmentTools] ✅ Deleted {files.Length} save files from: {savePath}");
                 }
-
-                // Note: EOS plugin may use PlayerPrefs internally for its own data
-                // We don't clear PlayerPrefs to avoid breaking EOS functionality
 
                 Debug.Log("[DevelopmentTools] ✅ All saved data cleared successfully!");
                 EditorUtility.DisplayDialog(
@@ -80,7 +73,6 @@ namespace Editor
                 }
                 else
                 {
-                    // Clear settings file manually when not playing
                     string savePath = Application.persistentDataPath;
                     string settingsFile = System.IO.Path.Combine(savePath, "settings.json");
 
@@ -128,13 +120,35 @@ namespace Editor
             }
 
             var settings = saveService.GetSettings();
-            var progress = saveService.GetPlayerProgress();
-            var stats = saveService.GetPlayerStats();
 
             Debug.Log("=== CURRENT SAVE DATA ===");
             Debug.Log($"Settings: {JsonUtility.ToJson(settings, true)}");
-            Debug.Log($"Progress: {JsonUtility.ToJson(progress, true)}");
-            Debug.Log($"Stats: {JsonUtility.ToJson(stats, true)}");
+
+            // Get player data from session if active
+            if (SessionManager?.IsSessionActive == true)
+            {
+                var playerDataService = SessionManager.SessionContainer?.Resolve<PlayerDataService>();
+                var economyService = SessionManager.SessionContainer?.Resolve<EconomyService>();
+
+                if (playerDataService != null)
+                {
+                    var progress = playerDataService.GetProgress();
+                    var stats = playerDataService.GetStats();
+                    Debug.Log($"Progress: {JsonUtility.ToJson(progress, true)}");
+                    Debug.Log($"Stats: {JsonUtility.ToJson(stats, true)}");
+                }
+
+                if (economyService != null)
+                {
+                    Debug.Log($"Coins: {economyService.GetBalance(EconomyKeys.CurrencyCoins)}");
+                    Debug.Log($"Gems: {economyService.GetBalance(EconomyKeys.CurrencyGems)}");
+                }
+            }
+            else
+            {
+                Debug.Log("Session not active - player data not available");
+            }
+
             Debug.Log("========================");
         }
 
@@ -145,4 +159,3 @@ namespace Editor
         }
     }
 }
-

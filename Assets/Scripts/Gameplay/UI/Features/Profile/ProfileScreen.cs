@@ -1,4 +1,4 @@
-using Core.Persistence;
+using Gameplay.Persistence;
 using Core.UI;
 using Core.UI.Core;
 using Core.UI.Interfaces;
@@ -17,7 +17,6 @@ namespace Gameplay.UI.Features.Profile
     public class ProfileScreen : BaseUIScreen
     {
         [Inject] private SessionManager _sessionManager;
-        [Inject] private ISaveService _saveService;
 
         private Label _playerNameLabel;
         private Label _playerLevelLabel;
@@ -35,14 +34,9 @@ namespace Gameplay.UI.Features.Profile
             _changeNameButton = GetElement<Button>("change-name-button");
             _backButton = GetElement<Button>("back-button");
 
-            if (_copyCodeButton != null)
-                _copyCodeButton.clicked += OnCopyCodeClicked;
-
-            if (_changeNameButton != null)
-                _changeNameButton.clicked += OnChangeNameClicked;
-
-            if (_backButton != null)
-                _backButton.clicked += OnBackClicked;
+            if (_copyCodeButton != null) _copyCodeButton.clicked += OnCopyCodeClicked;
+            if (_changeNameButton != null) _changeNameButton.clicked += OnChangeNameClicked;
+            if (_backButton != null) _backButton.clicked += OnBackClicked;
         }
 
         protected override void OnShow()
@@ -53,22 +47,24 @@ namespace Gameplay.UI.Features.Profile
 
         private void UpdatePlayerInfo()
         {
-            if (_saveService == null) return;
+            if (_sessionManager?.IsSessionActive != true) return;
 
-            var stats = _saveService.GetPlayerStats();
-            var progress = _saveService.GetPlayerProgress();
+            var playerDataService = _sessionManager.SessionContainer?.Resolve<PlayerDataService>();
+            if (playerDataService == null) return;
+
+            var stats = playerDataService.GetStats();
+            var progress = playerDataService.GetProgress();
 
             if (_playerNameLabel != null)
-                _playerNameLabel.text = string.IsNullOrEmpty(stats.PlayerName) ? "GUEST" : stats.PlayerName.ToUpper();
+                _playerNameLabel.text = string.IsNullOrEmpty(stats?.PlayerName) ? "GUEST" : stats.PlayerName.ToUpper();
 
             if (_playerLevelLabel != null)
-                _playerLevelLabel.text = $"LEVEL {progress.HighestLevel}";
+                _playerLevelLabel.text = $"LEVEL {progress?.HighestLevel ?? 0}";
         }
 
         private void UpdateFriendCode()
         {
-            if (_friendCodeLabel == null)
-                return;
+            if (_friendCodeLabel == null) return;
 
             var sessionContainer = _sessionManager?.SessionContainer;
             if (sessionContainer != null)
@@ -103,25 +99,18 @@ namespace Gameplay.UI.Features.Profile
             }
         }
 
-        private void OnChangeNameClicked(){
-            // TODO: Show username popup - need to create UsernamePopup class or use existing
+        private void OnChangeNameClicked()
+        {
+            // TODO: Show username popup
         }
 
-        private void OnBackClicked()
-        {
-            UIService?.GoBack();
-        }
+        private void OnBackClicked() => UIService?.GoBack();
 
         protected override void OnDispose()
         {
-            if (_copyCodeButton != null)
-                _copyCodeButton.clicked -= OnCopyCodeClicked;
-
-            if (_changeNameButton != null)
-                _changeNameButton.clicked -= OnChangeNameClicked;
-
-            if (_backButton != null)
-                _backButton.clicked -= OnBackClicked;
+            if (_copyCodeButton != null) _copyCodeButton.clicked -= OnCopyCodeClicked;
+            if (_changeNameButton != null) _changeNameButton.clicked -= OnChangeNameClicked;
+            if (_backButton != null) _backButton.clicked -= OnBackClicked;
         }
     }
 }

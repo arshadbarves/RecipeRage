@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using Gameplay.UI.Features.Loading;
-using Core.Banking.Interfaces;
+using Gameplay.Economy;
+using Gameplay.Persistence;
 using Core.Logging;
 using Core.Persistence;
 using Core.UI.Interfaces;
@@ -37,13 +38,9 @@ namespace Gameplay.App.State.States
             base.Enter();
             GameLogger.Log("[SessionLoadingState] Entered - Loading session data...");
 
-            // Show Loading Screen
             _uiService.Show<LoadingScreen>();
             var loadingScreen = _uiService.GetScreen<LoadingScreen>();
-            if (loadingScreen != null)
-            {
-                loadingScreen.UpdateProgress(0f, "Loading Profile...");
-            }
+            loadingScreen?.UpdateProgress(0f, "Loading Profile...");
 
             try
             {
@@ -55,18 +52,21 @@ namespace Gameplay.App.State.States
                 }
 
                 // 2. Sync Cloud/Disk Data
-                if (loadingScreen != null) loadingScreen.UpdateProgress(0.3f, "Syncing Data...");
+                loadingScreen?.UpdateProgress(0.2f, "Syncing Data...");
                 await _saveService.SyncAllCloudDataAsync();
 
-                // 3. Load Currency (Refresh from SaveService)
-                if (loadingScreen != null) loadingScreen.UpdateProgress(0.6f, "Updating Wallet...");
+                // 3. Initialize Economy (Currency, Inventory)
+                loadingScreen?.UpdateProgress(0.4f, "Updating Wallet...");
+                var economyService = _sessionManager.SessionContainer.Resolve<EconomyService>();
+                economyService.Initialize();
 
-                // Resolve BankService from Session Scope
-                var bankService = _sessionManager.SessionContainer.Resolve<IBankService>();
-                await bankService.InitializeAsync();
+                // 4. Initialize Player Data (Progress, Stats)
+                loadingScreen?.UpdateProgress(0.6f, "Loading Progress...");
+                var playerDataService = _sessionManager.SessionContainer.Resolve<PlayerDataService>();
+                playerDataService.Initialize();
 
-                // 4. Simulate a small delay for visual smoothness if everything was too fast
-                if (loadingScreen != null) loadingScreen.UpdateProgress(0.9f, "Finalizing...");
+                // 5. Finalize
+                loadingScreen?.UpdateProgress(0.9f, "Finalizing...");
                 await UniTask.Delay(500);
 
                 GameLogger.Log("[SessionLoadingState] Loading complete. Transitioning to MainMenu.");
@@ -82,10 +82,6 @@ namespace Gameplay.App.State.States
         public override void Exit()
         {
             base.Exit();
-            // Hide loading screen is handled by the next state (MainMenu usually hides others),
-            // but explicit hiding is safer if MainMenu is an Overlay/Screen combo.
-            // MainMenuState calls ShowScreen(MainMenu), which (if it's a Screen category) usually hides others.
-            // But LoadingScreen is likely a Screen or Overlay.
             _uiService.Hide<LoadingScreen>();
         }
     }
