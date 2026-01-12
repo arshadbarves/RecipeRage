@@ -1,10 +1,9 @@
-using Gameplay.UI.Components;
 using Gameplay.UI.Components.Tabs;
 using Gameplay.Persistence;
+using Gameplay.Economy;
 using UnityEngine.UIElements;
 using VContainer;
 using Core.UI;
-using Core.Logging;
 using Core.Shared.Events;
 using Core.UI.Core;
 using Core.UI.Interfaces;
@@ -12,32 +11,24 @@ using Core.Session;
 
 namespace Gameplay.UI.Features.MainMenu
 {
-    /// <summary>
-    /// Main menu screen - Fortnite-style lobby with nav pills and sidebar
-    /// </summary>
     [UIScreen(UIScreenCategory.Screen, "Screens/MainMenuTemplate")]
     public class MainMenuScreen : BaseUIScreen
     {
-        #region Dependencies
-
         [Inject] private MainMenuViewModel _viewModel;
         [Inject] private IObjectResolver _container;
         [Inject] private IUIService _uiService;
         [Inject] private IEventBus _eventBus;
         [Inject] private SessionManager _sessionManager;
 
-        #endregion
-
         private LobbyTabComponent _lobbyTab;
         private ShopTabComponent _shopTab;
         private CharacterTabComponent _characterTab;
-        private CurrencyDisplay _currencyDisplay;
+        private EconomyService _economyService;
 
         private Label _playerLevelLabel;
         private Label _playerNameLabel;
         private Label _goldAmountLabel;
         private Label _gemsAmountLabel;
-
         private TabView _mainTabs;
 
         protected override void OnInitialize()
@@ -59,10 +50,15 @@ namespace Gameplay.UI.Features.MainMenu
 
         private void ClearSessionComponents()
         {
+            // Unsubscribe from economy events
+            if (_economyService != null)
+            {
+                _economyService.OnBalanceChanged -= OnBalanceChanged;
+                _economyService = null;
+            }
+
             _lobbyTab?.Dispose();
-            _currencyDisplay?.Dispose();
             _lobbyTab = null;
-            _currencyDisplay = null;
         }
 
         protected override void OnDispose()
@@ -74,28 +70,47 @@ namespace Gameplay.UI.Features.MainMenu
         protected override void OnShow()
         {
             UpdatePlayerInfo();
+            SubscribeToCurrencyUpdates();
             InitializeSessionComponents();
             _lobbyTab?.PlayIntroAnimations(null);
+        }
+
+        private void SubscribeToCurrencyUpdates()
+        {
+            if (_sessionManager?.IsSessionActive != true) return;
+
+            _economyService = _sessionManager.SessionContainer?.Resolve<EconomyService>();
+            if (_economyService == null) return;
+
+            // Subscribe to balance changes
+            _economyService.OnBalanceChanged += OnBalanceChanged;
+
+            // Initial update
+            UpdateCurrencyLabel(EconomyKeys.CurrencyCoins, _economyService.GetBalance(EconomyKeys.CurrencyCoins));
+            UpdateCurrencyLabel(EconomyKeys.CurrencyGems, _economyService.GetBalance(EconomyKeys.CurrencyGems));
+        }
+
+        private void OnBalanceChanged(string currencyId, long newBalance)
+        {
+            UpdateCurrencyLabel(currencyId, newBalance);
+        }
+
+        private void UpdateCurrencyLabel(string currencyId, long balance)
+        {
+            if (currencyId == EconomyKeys.CurrencyCoins && _goldAmountLabel != null)
+                _goldAmountLabel.text = balance.ToString();
+            else if (currencyId == EconomyKeys.CurrencyGems && _gemsAmountLabel != null)
+                _gemsAmountLabel.text = balance.ToString();
         }
 
         private void InitializeSessionComponents()
         {
             if (_sessionManager?.IsSessionActive == false) return;
             if (_lobbyTab != null) return;
-
-            InitializeCurrencyDisplay();
             InitializeAllTabs();
         }
 
         public override void Update(float deltaTime) => _lobbyTab?.Update(deltaTime);
-
-        private void InitializeCurrencyDisplay()
-        {
-            if (_sessionManager?.IsSessionActive == true)
-            {
-                // Currency display is handled separately
-            }
-        }
 
         private void InitializeAllTabs()
         {
