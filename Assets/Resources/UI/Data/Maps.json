@@ -3,7 +3,6 @@
         {
             "id": "special",
             "name": "SPECIAL EVENTS",
-            "backgroundColor": "rgb(255, 100, 150)",
             "maps": [
                 {
                     "id": "crumb_haven",
@@ -15,7 +14,6 @@
                     "maxPlayers": 2,
                     "gameMode": "2v2",
                     "rotationTime": 108000,
-                    "timerText": "",
                     "isAvailable": true
                 },
                 {
@@ -28,7 +26,6 @@
                     "maxPlayers": 4,
                     "gameMode": "4v4",
                     "rotationTime": 108000,
-                    "timerText": "",
                     "isAvailable": false
                 }
             ]
@@ -36,7 +33,6 @@
         {
             "id": "trophies",
             "name": "TROPHY EVENTS",
-            "backgroundColor": "rgb(100, 200, 255)",
             "maps": [
                 {
                     "id": "spice_station",
@@ -48,7 +44,6 @@
                     "maxPlayers": 4,
                     "gameMode": "4v4",
                     "rotationTime": 108000,
-                    "timerText": "",
                     "isAvailable": true
                 },
                 {
@@ -61,7 +56,6 @@
                     "maxPlayers": 4,
                     "gameMode": "4v4",
                     "rotationTime": 108000,
-                    "timerText": "",
                     "isAvailable": true
                 },
                 {
@@ -74,7 +68,6 @@
                     "maxPlayers": 4,
                     "gameMode": "4v4",
                     "rotationTime": 108000,
-                    "timerText": "",
                     "isAvailable": true
                 }
             ]
@@ -82,7 +75,6 @@
         {
             "id": "ranked",
             "name": "RANKED",
-            "backgroundColor": "rgb(255, 200, 0)",
             "maps": [
                 {
                     "id": "sushi_central",
@@ -94,7 +86,6 @@
                     "maxPlayers": 4,
                     "gameMode": "3v3",
                     "rotationTime": 108000,
-                    "timerText": "",
                     "isAvailable": true
                 },
                 {
@@ -107,7 +98,6 @@
                     "maxPlayers": 4,
                     "gameMode": "3v3",
                     "rotationTime": 108000,
-                    "timerText": "",
                     "isAvailable": false
                 }
             ]
@@ -115,7 +105,6 @@
         {
             "id": "community",
             "name": "COMMUNITY",
-            "backgroundColor": "rgb(150, 100, 255)",
             "maps": [
                 {
                     "id": "food_truck",
@@ -127,7 +116,6 @@
                     "maxPlayers": 2,
                     "gameMode": "2v2",
                     "rotationTime": 108000,
-                    "timerText": "",
                     "isAvailable": true
                 }
             ]

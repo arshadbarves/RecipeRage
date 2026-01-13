@@ -20,7 +20,6 @@ namespace Gameplay.UI.Data
         public int maxPlayers;
         public string gameMode; // "2v2", "3v3", "4v4"
         public int rotationTime; // in seconds
-        public string timerText; // "New Event in: 20h 45m"
         public bool isAvailable;
     }
 
@@ -32,7 +31,6 @@ namespace Gameplay.UI.Data
     {
         public string id;
         public string name;
-        public string backgroundColor;
         public List<MapInfo> maps;
     }
 

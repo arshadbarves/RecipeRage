@@ -47,10 +47,6 @@
 }
 
 .player-tag-container {
-    position: absolute;
-    top: -120px;
-    left: 50%;
-    translate: -50% 0;
     width: 240px;
     border-radius: var(--radius-md);
     padding: 8px 12px;
@@ -107,17 +103,24 @@
 .player-nick {
     font-size: var(--font-size-body-md);
     -unity-font-definition: var(--font-anton-sdf);
-    -unity-font-style: bold;
     color: var(--color-black);
     margin: 0;
     -unity-text-align: middle-center;
+}
+
+.player-level {
+    font-size: var(--font-size-caption-sm);
+    color: var(--text-gray);
+    margin-top: 2px;
+    -unity-text-align: middle-center;
+    -unity-font-definition: var(--font-anton-sdf);
+    letter-spacing: 0.5px;
 }
 
 .player-status {
     font-size: var(--font-size-caption-xs);
     color: var(--theme-amber);
     margin-top: 2px;
-    -unity-font-style: bold;
     -unity-text-align: middle-center;
 }
 
@@ -185,7 +188,7 @@
     height: 100%;
     margin: 0 40px;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
 }
 
 .right-panel {
@@ -271,7 +274,6 @@
     font-size: var(--font-size-caption-xs);
     color: var(--text-gray);
     letter-spacing: 1px;
-    -unity-font-style: bold;
     margin: 0;
 }
 
@@ -307,5 +309,140 @@
 }
 
 .region-info {
+    display: none;
+}
+
+/* ============================================
+   PLAYER INFO PANEL (Fortnite Style)
+   ============================================ */
+
+.player-info-panel {
+    position: absolute;
+    bottom: 50px;
+    left: 50px; /* Aligned with sidebar margin */
+    width: 440px;
+    height: 124px;
+    flex-direction: row;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.45);
+    border-radius: var(--radius-lg);
+    border-width: 2.5px;
+    border-color: var(--glass-border);
+    padding: 12px;
+    transition-duration: 0.2s;
+    opacity: 1;
+}
+
+.player-info-panel:hover {
+    background-color: rgba(0, 0, 0, 0.6);
+    border-color: var(--glass-border-bright);
+}
+
+.player-avatar-container {
+    width: 96px;
+    height: 96px;
+    margin-right: 20px;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    background-color: rgba(255,255,255,0.05);
+    border-radius: var(--radius-md);
+    border-width: 2px;
+    border-color: var(--glass-border);
+}
+
+.player-avatar {
+    width: 100%;
+    height: 100%;
+    /* Placeholder fallback */
+    background-color: var(--theme-yellow);
+    -unity-background-scale-mode: scale-to-fit;
+    border-radius: 14px;
+}
+
+.level-badge {
+    position: absolute;
+    bottom: -8px;
+    right: -8px;
+    width: 36px;
+    height: 36px;
+    background-color: var(--theme-yellow);
+    border-radius: 50%;
+    border-width: 3px;
+    border-color: var(--color-black);
+    align-items: center;
+    justify-content: center;
+}
+
+.level-badge-text {
+    font-size: 18px;
+    color: var(--color-black);
+    -unity-font-definition: var(--font-anton-sdf);
+    margin: 0;
+    padding: 0;
+    -unity-text-align: middle-center;
+}
+
+.player-details {
+    flex-grow: 1;
+    flex-direction: column;
+    justify-content: center;
+    margin-right: 10px;
+}
+
+.player-name-display {
+    font-size: 32px;
+    color: var(--text-white);
+    -unity-font-definition: var(--font-anton-sdf);
+    margin: 0;
+    padding: 0;
+    letter-spacing: 0.5px;
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.5);
+}
+
+.player-rank-row {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 2px;
+    margin-bottom: 8px;
+}
+
+.rank-icon {
+    width: 20px;
+    height: 20px;
+    background-image: url("project://database/Assets/UI/Icons/crown.png?fileID=2800000&guid=eaff26e31928b415abd465de3f6819fa&type=3#crown");
+    -unity-background-image-tint-color: var(--theme-amber);
+    margin-right: 6px;
+}
+
+.player-rank-display {
+    font-size: 18px;
+    color: var(--theme-amber);
+    -unity-font-definition: var(--font-anton-sdf);
+    letter-spacing: 1px;
+    margin: 0;
+}
+
+.xp-progress-bar {
+    width: 100%;
+    height: 10px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+    overflow: hidden;
+    border-width: 1px;
+    border-color: rgba(255,255,255,0.1);
+}
+
+.xp-progress-fill {
+    height: 100%;
+    background-color: var(--theme-yellow);
+    border-radius: 5px;
+}
+
+.profile-edit-btn {
+    width: 0px;
+    height: 0px;
+    position: absolute;
+    /* Hidden for now unless user wants interaction */
     display: none;
 }

@@ -206,7 +206,7 @@ Button, .unity-button {
 }
 
 Button:active, .unity-button:active {
-    scale: 0.98;
+    scale: 0.95;
 }
 
 .header {

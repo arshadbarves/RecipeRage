@@ -102,7 +102,6 @@
     border-radius: var(--radius-lg);
     color: var(--text-white-muted);
     font-size: var(--font-size-body-md);
-    -unity-font-style: bold;
     background-color: transparent;
     border-width: 0;
     transition-duration: 0.1s;
@@ -116,7 +115,6 @@
     padding: 12px 32px;
     border-radius: var(--radius-sm);
     font-size: var(--font-size-body-md);
-    -unity-font-style: bold;
     border-width: 0;
     transition-duration: 0.1s;
     scale: 1.02;

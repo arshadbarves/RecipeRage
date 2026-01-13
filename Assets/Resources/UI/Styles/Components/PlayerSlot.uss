@@ -28,7 +28,6 @@
 .player-level-text {
     font-size: var(--font-size-lg);
     color: var(--color-text-primary);
-    -unity-font-style: bold;
 }
 
 .player-trophies {
@@ -52,7 +51,6 @@
 .small-trophy-count {
     font-size: var(--font-size-md);
     color: var(--color-text-light);
-    -unity-font-style: bold;
 }
 
 /* Player Character Display */
@@ -113,7 +111,6 @@
 .player-name-label {
     font-size: var(--font-size-md);
     color: var(--color-text-light);
-    -unity-font-style: bold;
     -unity-text-align: middle-center;
 }
 
@@ -158,7 +155,6 @@
 .add-player-icon {
     font-size: 50px;
     color: var(--color-text-light);
-    -unity-font-style: bold;
     margin-bottom: var(--spacing-xs);
 }
 

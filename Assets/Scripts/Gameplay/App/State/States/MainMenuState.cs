@@ -39,11 +39,12 @@ namespace Gameplay.App.State.States
             // Update loading to 100% and hide it
             var loadingScreen = _uiService.GetScreen<LoadingScreen>();
             loadingScreen?.UpdateProgress(1.0f, "Welcome!");
-            await UniTask.Delay(200);
-            _uiService.Hide<LoadingScreen>();
 
             // Show MainMenu UI
             _uiService?.Show<MainMenuScreen>(true, false);
+
+            await UniTask.Delay(1000);
+            _uiService.Hide<LoadingScreen>();
 
             // Check for first-time username
             CheckAndShowUsernamePopupAsync();

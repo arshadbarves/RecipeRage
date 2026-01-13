@@ -6,9 +6,30 @@
         <VisualElement name="character-zone" class="character-zone">
             <VisualElement class="squad-slot-container">
                 <Instance template="SquadSlotTemplate"/>
-                <Instance template="CenterSlotTemplate"/>
+                <Instance template="CenterSlotTemplate" style="height: 90%;"/>
                 <Instance template="SquadSlotTemplate"/>
             </VisualElement>
+        </VisualElement>
+        <VisualElement name="player-info-panel" class="player-info-panel">
+            <VisualElement name="player-avatar-container" class="player-avatar-container">
+                <VisualElement name="player-avatar" class="player-avatar"/>
+                <VisualElement name="level-badge" class="level-badge">
+                    <Label name="level-badge-text" text="1" class="level-badge-text"/>
+                </VisualElement>
+            </VisualElement>
+            <VisualElement name="player-details" class="player-details">
+                <Label name="player-name-main" text="PLAYER" class="player-name-display"/>
+                <VisualElement name="player-rank-row" class="player-rank-row">
+                    <VisualElement name="rank-icon" class="rank-icon"/>
+                    <Label name="player-sub-main" text="BRONZE I" class="player-rank-display"/>
+                </VisualElement>
+                <VisualElement name="xp-progress-bar" class="xp-progress-bar">
+                    <VisualElement name="xp-progress-fill" class="xp-progress-fill" style="width: 65%;"/>
+                </VisualElement>
+            </VisualElement>
+            <Button name="profile-btn" class="profile-edit-btn">
+                <VisualElement class="edit-icon"/>
+            </Button>
         </VisualElement>
         <VisualElement name="lobby-sidebar" class="lobby-sidebar">
             <Button name="friends-btn" class="side-icon-btn">

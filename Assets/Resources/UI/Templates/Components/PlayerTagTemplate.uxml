@@ -1,4 +1,5 @@
 <UXML xmlns="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Resources/UI/Styles/Screens/Lobby.uss?fileID=7433441132597879392&amp;guid=0dc93b02b55854976be67fbd874f44ac&amp;type=3#Lobby"/>
     <VisualElement class="player-tag-container">
         <VisualElement class="name-tag-speech-bubble-tail"/>
         <VisualElement name="crown-icon" class="crown-icon"/>

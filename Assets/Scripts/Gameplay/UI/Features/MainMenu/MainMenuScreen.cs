@@ -27,9 +27,9 @@ namespace Gameplay.UI.Features.MainMenu
 
         private Label _playerLevelLabel;
         private Label _playerNameLabel;
+        private Label _playerTagLabel;
         private Label _goldAmountLabel;
         private Label _gemsAmountLabel;
-        private TabView _mainTabs;
 
         protected override void OnInitialize()
         {
@@ -43,7 +43,7 @@ namespace Gameplay.UI.Features.MainMenu
             _gemsAmountLabel = GetElement<Label>("gems-amount");
             _playerNameLabel = GetElement<Label>("player-name-main");
             _playerLevelLabel = GetElement<Label>("player-sub-main");
-            _mainTabs = GetElement<TabView>("main-tabs");
+            _playerTagLabel = GetElement<Label>("player-nick");
         }
 
         private void OnLogout(LogoutEvent evt) => ClearSessionComponents();
@@ -149,8 +149,13 @@ namespace Gameplay.UI.Features.MainMenu
             if (_playerLevelLabel != null)
                 _playerLevelLabel.text = $"LVL. {progress?.HighestLevel ?? 0} // VANGUARD";
 
+            var playerName = string.IsNullOrEmpty(stats?.PlayerName) ? "STRYKER" : stats.PlayerName.ToUpper();
+
             if (_playerNameLabel != null)
-                _playerNameLabel.text = string.IsNullOrEmpty(stats?.PlayerName) ? "STRYKER" : stats.PlayerName.ToUpper();
+                _playerNameLabel.text = playerName;
+
+            if (_playerTagLabel != null)
+                _playerTagLabel.text = playerName;
         }
     }
 }
