@@ -41,10 +41,10 @@ namespace Gameplay.App.State.States
             loadingScreen?.UpdateProgress(1.0f, "Welcome!");
 
             // Show MainMenu UI
-            _uiService?.Show<MainMenuScreen>(true, false);
+            _uiService?.Show<MainMenuScreen>(true, true);
 
             await UniTask.Delay(1000);
-            _uiService.Hide<LoadingScreen>();
+            _uiService?.Hide<LoadingScreen>();
 
             // Check for first-time username
             CheckAndShowUsernamePopupAsync();

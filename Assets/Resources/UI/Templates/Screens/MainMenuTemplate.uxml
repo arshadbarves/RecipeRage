@@ -1,29 +1,36 @@
-<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" xmlns:ui="Core.UI.Controls" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Template name="CharacterTabTemplate" src="project://database/Assets/Resources/UI/Templates/Screens/CharacterTabTemplate.uxml?fileID=9197481963319205126&amp;guid=ac8e05f0b8d6c4ef79f194a1f70828d2&amp;type=3#CharacterTabTemplate"/>
-    <Template name="LobbyTemplate" src="project://database/Assets/Resources/UI/Templates/Screens/LobbyTemplate.uxml?fileID=9197481963319205126&amp;guid=3da2194908d8a4d65b7a6a67f37ee6f6&amp;type=3#LobbyTemplate"/>
-    <Template name="ShopTemplate" src="project://database/Assets/Resources/UI/Templates/Screens/ShopTemplate.uxml?fileID=9197481963319205126&amp;guid=0824e79abae0447b990331c5e433d706&amp;type=3#ShopTemplate"/>
-    <Style src="project://database/Assets/Resources/UI/Styles/Screens/MainMenu.uss?fileID=7433441132597879392&amp;guid=15bb364f81be046f5a66a2cf721fada9&amp;type=3#MainMenu"/>
+<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" xmlns:ui="Core.UI.Controls"
+      noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Template name="CharacterTabTemplate"
+              src="project://database/Assets/Resources/UI/Templates/Screens/CharacterTabTemplate.uxml?fileID=9197481963319205126&amp;guid=ac8e05f0b8d6c4ef79f194a1f70828d2&amp;type=3#CharacterTabTemplate" />
+    <Template name="LobbyTemplate"
+              src="project://database/Assets/Resources/UI/Templates/Screens/LobbyTemplate.uxml?fileID=9197481963319205126&amp;guid=3da2194908d8a4d65b7a6a67f37ee6f6&amp;type=3#LobbyTemplate" />
+    <Template name="ShopTemplate"
+              src="project://database/Assets/Resources/UI/Templates/Screens/ShopTemplate.uxml?fileID=9197481963319205126&amp;guid=0824e79abae0447b990331c5e433d706&amp;type=3#ShopTemplate" />
+    <Style
+        src="project://database/Assets/Resources/UI/Styles/Screens/MainMenu.uss?fileID=7433441132597879392&amp;guid=15bb364f81be046f5a66a2cf721fada9&amp;type=3#MainMenu" />
     <VisualElement name="main-menu-root" class="main-menu-root">
-        <VisualElement name="shader-background" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; z-index: 0; background-color: white; -unity-material: url(&quot;project://database/Assets/Shaders/UI/Unlit_TechGridBackground.mat?fileID=2100000&amp;guid=35e2b2ac29f324d979bb1c833cf93c4c&amp;type=2#Unlit_TechGridBackground&quot;);"/>
+        <VisualElement name="shader-background"
+                       style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; z-index: 0; background-color: white; -unity-material: url(&quot;project://database/Assets/Shaders/UI/Unlit_TechGridBackground.mat?fileID=2100000&amp;guid=35e2b2ac29f324d979bb1c833cf93c4c&amp;type=2#Unlit_TechGridBackground&quot;);" />
         <VisualElement name="currency-group" class="currency-group">
             <VisualElement name="wallet-pill-gems" class="wallet-pill">
-                <VisualElement class="wallet-icon gem-icon"/>
-                <Label name="gems-amount" text="1,250" class="wallet-amount"/>
+                <VisualElement class="wallet-icon gem-icon" />
+                <Label name="gems-amount" text="1,250" class="wallet-amount" />
             </VisualElement>
             <VisualElement name="wallet-pill-gold" class="wallet-pill">
-                <VisualElement class="wallet-icon gold-icon"/>
-                <Label name="gold-amount" text="24K" class="wallet-amount"/>
+                <VisualElement class="wallet-icon gold-icon" />
+                <Label name="gold-amount" text="24K" class="wallet-amount" />
             </VisualElement>
         </VisualElement>
         <TabView name="main-tabs" reorderable="false" view-data-key="MainMenuTabs" class="main-tabs">
             <Tab name="tab-lobby" label="PLAY" view-data-key="LobbyTab">
-                <Instance template="LobbyTemplate" name="lobby-content" style="flex-grow: 1; width: 100%; height: 100%;"/>
+                <Instance template="LobbyTemplate" name="lobby-content"
+                          style="flex-grow: 1; width: 100%; height: 100%;" />
             </Tab>
             <Tab name="tab-compete" label="COMPETE" view-data-key="CompeteTab">
-                <VisualElement style="flex-grow: 1;"/>
+                <VisualElement style="flex-grow: 1;" />
             </Tab>
             <Tab name="tab-shop" label="SHOP" view-data-key="ShopTab">
-                <Instance template="ShopTemplate" name="shop-content" style="flex-grow: 1; width: 100%; height: 100%;"/>
+                <Instance template="ShopTemplate" name="shop-content" style="flex-grow: 1; width: 100%; height: 100%;" />
             </Tab>
         </TabView>
     </VisualElement>

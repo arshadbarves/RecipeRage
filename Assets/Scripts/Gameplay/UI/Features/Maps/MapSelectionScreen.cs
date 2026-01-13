@@ -74,9 +74,6 @@ namespace Gameplay.UI.Features.Maps
             {
                 GameLogger.LogError("Failed to load MapCard template!");
             }
-            else
-            {
-            }
         }
 
         private void CacheUIElements()
@@ -105,14 +102,6 @@ namespace Gameplay.UI.Features.Maps
             if (jsonFile != null)
             {
                 _mapDatabase = JsonUtility.FromJson<MapDatabase>(jsonFile.text);
-                int totalMaps = 0;
-                if (_mapDatabase.categories != null)
-                {
-                    foreach (var category in _mapDatabase.categories)
-                    {
-                        totalMaps += category.maps?.Count ?? 0;
-                    }
-                }
             }
             else
             {
@@ -371,13 +360,7 @@ namespace Gameplay.UI.Features.Maps
 
         private void OnBackClicked()
         {
-            if (_uiService != null)
-            {
-                bool wentBack = _uiService.GoBack(false);
-
-                if (!wentBack)
-                    _uiService.Show<MainMenuScreen>(true, false);
-            }
+            _uiService?.GoBack(false);
         }
 
         protected override void OnDispose()
