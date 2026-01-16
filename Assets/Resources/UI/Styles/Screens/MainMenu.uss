@@ -48,7 +48,7 @@
 
 .gold-icon {
     background-image: url("project://database/Assets/UI/Icons/coins.png?fileID=2800000&guid=650dea46bcb0248aa916e895b5be1317&type=3#coins");
-    -unity-background-image-tint-color: var(--theme-yellow);
+    -unity-background-image-tint-color: var(--color-accent-yellow);
 }
 
 .wallet-amount {
@@ -110,7 +110,7 @@
 }
 
 .main-tabs .unity-tab__header:checked {
-    background-color: var(--theme-yellow);
+    background-color: var(--color-accent-yellow);
     color: var(--color-black);
     padding: 12px 32px;
     border-radius: var(--radius-sm);

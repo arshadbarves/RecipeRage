@@ -186,6 +186,9 @@
 
     /* Anton Font (SDF for better rendering) */
     --font-anton-sdf: url("project://database/Assets/Fonts/Anton-Regular%20SDF.asset?fileID=11400000&guid=aa820f8024bbb4ae08525ce0513021a5&type=2#Anton-Regular SDF");
+
+    /* Rajdhani Font (SDF) */
+    --font-rajdhani-sdf: url("project://database/Assets/Fonts/FontAssets/Rajdhani-Regular%20SDF.asset?fileID=11400000&guid=565750389479e460fb600faefd18bec7&type=2#Rajdhani-Regular SDF");
 }
 
 /* ============================================

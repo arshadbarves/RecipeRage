@@ -97,6 +97,7 @@ namespace Gameplay.Bootstrap
             builder.Register<CharacterDetailsScreen>(Lifetime.Transient);
             builder.Register<MapSelectionScreen>(Lifetime.Transient);
             builder.Register<MatchmakingScreen>(Lifetime.Transient);
+            builder.Register<SettingsScreen>(Lifetime.Transient);
 
             // Popups & Components
             builder.Register<NotificationScreen>(Lifetime.Transient).AsImplementedInterfaces().AsSelf();

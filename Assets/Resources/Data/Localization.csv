@@ -17,3 +17,57 @@ matchmaking_status_searching,Searching for players...,Buscando jugadores...
 matchmaking_status_found,Match Found!,Partida encontrada!
 matchmaking_button_cancel,CANCEL,CANCELAR
 matchmaking_status_joining,Joining match...,Uniéndose a la partida...
+settings_title,SETTINGS,CONFIGURACIÓN
+settings_tab_general,GENERAL,GENERAL
+settings_tab_graphics,GRAPHICS,GRÁFICOS
+settings_tab_controls,CONTROLS,CONTROLES
+settings_tab_gameplay,GAMEPLAY,JUEGO
+settings_tab_support,SUPPORT,SOPORTE
+settings_tab_account,ACCOUNT,CUENTA
+settings_header_audio,AUDIO SETTINGS,AJUSTES DE AUDIO
+settings_header_display,DISPLAY SETTINGS,AJUSTES DE PANTALLA
+settings_header_input,INPUT SETTINGS,AJUSTES DE ENTRADA
+settings_header_game,GAME OPTIONS,OPCIONES DE JUEGO
+settings_header_legal,HELP & LEGAL,AYUDA Y LEGAL
+settings_header_profile,PROFILE & DATA,PERFIL Y DATOS
+settings_sect_audio,AUDIO,AUDIO
+settings_sect_display,DISPLAY,PANTALLA
+settings_sect_input,INPUT,ENTRADA
+settings_sect_options,OPTIONS,OPCIONES
+settings_sect_info,INFORMATION,INFORMACIÓN
+settings_sect_session,SESSION,SESIÓN
+settings_sect_data,DATA MANAGEMENT,GESTIÓN DE DATOS
+settings_opt_music,Music Volume,Volumen Música
+settings_desc_music,Background music intensity,Intensidad de música de fondo
+settings_opt_sfx,SFX Volume,Volumen Efectos
+settings_desc_sfx,Sound effects and UI sounds,Efectos de sonido e interfaz
+settings_opt_mute,Mute All,Silenciar Todo
+settings_desc_mute,Disable all game audio,Desactivar todo el audio
+settings_opt_quality,Quality Preset,Calidad Gráfica
+settings_desc_quality,Overall graphics quality level,Nivel de calidad gráfica general
+settings_btn_edit_joystick,Edit Joystick Layout,Editar Joystick
+settings_btn_edit,EDIT,EDITAR
+settings_opt_vibration,Vibration,Vibración
+settings_desc_vibration,Haptic feedback on actions,Respuesta háptica
+settings_opt_language,Language,Idioma
+settings_desc_language,Game language preference,Preferencia de idioma
+settings_opt_notifications,Notifications,Notificaciones
+settings_desc_notifications,Push notification alerts,Alertas de notificación
+settings_btn_help,Help Center,Centro de Ayuda
+settings_btn_support,Contact Support,Soporte
+settings_btn_privacy,Privacy Policy,Política de Privacidad
+settings_btn_terms,Terms of Service,Términos de Servicio
+settings_btn_credits,Credits,Créditos
+settings_btn_parent,Parent Guide,Guía para Padres
+settings_opt_logout,Log Out,Cerrar Sesión
+settings_desc_logout,Sign out of your account,Salir de la cuenta
+settings_btn_logout,LOG OUT,CERRAR SESIÓN
+settings_btn_reset,RESET TO DEFAULTS,RESTAURAR DEFECTOS
+settings_btn_clear,CLEAR ALL DATA,BORRAR DATOS
+settings_btn_back,BACK,ATRÁS
+lobby_play_button,PLAY,JUGAR
+lobby_region_na,NORTH AMERICA,NORTEAMÉRICA
+lobby_invite,INVITE,INVITAR
+main_tab_play,PLAY,JUGAR
+main_tab_compete,COMPETE,COMPETIR
+main_tab_shop,SHOP,TIENDA

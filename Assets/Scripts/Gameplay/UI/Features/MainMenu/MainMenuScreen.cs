@@ -19,6 +19,7 @@ namespace Gameplay.UI.Features.MainMenu
         [Inject] private IUIService _uiService;
         [Inject] private IEventBus _eventBus;
         [Inject] private SessionManager _sessionManager;
+        [Inject] private Core.Localization.ILocalizationManager _localizationManager;
 
         private LobbyTabComponent _lobbyTab;
         private ShopTabComponent _shopTab;
@@ -35,6 +36,9 @@ namespace Gameplay.UI.Features.MainMenu
         {
             QueryElements();
             _eventBus?.Subscribe<LogoutEvent>(OnLogout);
+
+            if (_localizationManager != null)
+                _localizationManager.OnLanguageChanged += RefreshLocalization;
         }
 
         private void QueryElements()
@@ -65,6 +69,36 @@ namespace Gameplay.UI.Features.MainMenu
         {
             _eventBus?.Unsubscribe<LogoutEvent>(OnLogout);
             ClearSessionComponents();
+
+            if (_localizationManager != null)
+                _localizationManager.OnLanguageChanged -= RefreshLocalization;
+        }
+
+        private void RefreshLocalization()
+        {
+            if (_localizationManager == null) return;
+
+            // Main Menu Tabs
+            var tabs = GetElement<TabView>("main-tabs");
+            if (tabs != null)
+            {
+                var lobbyTab = tabs.Q<Tab>("tab-lobby");
+                if (lobbyTab != null) lobbyTab.label = _localizationManager.GetText("main_tab_play");
+                
+                var competeTab = tabs.Q<Tab>("tab-compete");
+                if (competeTab != null) competeTab.label = _localizationManager.GetText("main_tab_compete");
+                
+                var shopTab = tabs.Q<Tab>("tab-shop");
+                if (shopTab != null) shopTab.label = _localizationManager.GetText("main_tab_shop");
+            }
+
+            // Cascade refresh to tabs
+            _lobbyTab?.RefreshLocalization();
+            // _shopTab?.RefreshLocalization(); // Need to implement in ShopTab if desired
+            // _characterTab?.RefreshLocalization(); 
+
+            // Refresh Main Menu specific labels
+            UpdatePlayerInfo(); // Re-runs string formatting for "LVL." etc.
         }
 
         protected override void OnShow()
@@ -73,6 +107,9 @@ namespace Gameplay.UI.Features.MainMenu
             SubscribeToCurrencyUpdates();
             InitializeSessionComponents();
             _lobbyTab?.PlayIntroAnimations(null);
+            
+            // Ensure valid state on show
+            RefreshLocalization();
         }
 
         private void SubscribeToCurrencyUpdates()

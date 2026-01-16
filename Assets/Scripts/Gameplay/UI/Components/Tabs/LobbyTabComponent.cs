@@ -5,6 +5,7 @@ using UnityEngine.UIElements;
 using Core.Animation;
 using Core.UI.Interfaces;
 using Gameplay.UI.Data;
+using Gameplay.UI.Features.Settings;
 using VContainer;
 
 namespace Gameplay.UI.Components.Tabs
@@ -13,6 +14,7 @@ namespace Gameplay.UI.Components.Tabs
     {
         [Inject] private IUIService _uiService;
         [Inject] private IAnimationService _animationService;
+        [Inject] private Core.Localization.ILocalizationManager _localizationManager;
 
 
         private VisualElement _root;
@@ -23,6 +25,7 @@ namespace Gameplay.UI.Components.Tabs
         private Button _mapSelector;
         private Label _mapNameLabel;
         private Label _regionInfo;
+        private Button _settingsButton;
 
         // Squad slots
         private Button[] _squadSlots = new Button[4];
@@ -44,6 +47,32 @@ namespace Gameplay.UI.Components.Tabs
             SetupButtons();
             BindViewModel();
             SetupLocalPlayer();
+            RefreshLocalization();
+        }
+
+        public void RefreshLocalization()
+        {
+            if (_localizationManager == null || _root == null) return;
+
+            // Play Button
+            var playLabel = _playButton?.Q<Label>(); 
+            if (playLabel != null) playLabel.text = _localizationManager.GetText("lobby_play_button");
+
+            // Region
+            if (_regionInfo != null) _regionInfo.text = _localizationManager.GetText("lobby_region_na");
+
+            // Squad Slots (Invite Text)
+            for (int i = 1; i < 4; i++)
+            {
+                var slot = _squadSlots[i];
+                if (slot != null)
+                {
+                    // Assuming there is a label for "INVITE" or similar in the empty state
+                    // We might need to query by class or assume the only label is the invite text if empty
+                    var label = slot.Q<Label>(className: "invite-label"); // Guessing class name or checking structure
+                    if (label != null) label.text = _localizationManager.GetText("lobby_invite");
+                }
+            }
         }
 
         private void QueryElements()
@@ -52,6 +81,7 @@ namespace Gameplay.UI.Components.Tabs
             _mapSelector = _root.Q<Button>("map-selector");
             _mapNameLabel = _root.Q<Label>("map-name");
             _regionInfo = _root.Q<Label>("region-info");
+            _settingsButton = _root.Q<Button>("settings-btn");
 
             // Query squad slots
             for (int i = 0; i < 4; i++)
@@ -68,6 +98,7 @@ namespace Gameplay.UI.Components.Tabs
 
             if (_playButton != null) _playButton.clicked += OnPlayClicked;
             if (_mapSelector != null) _mapSelector.clicked += OnMapClicked;
+            if (_settingsButton != null) _settingsButton.clicked += OnSettingsClicked;
 
             // Setup empty squad slots to open friends
             for (int i = 1; i < 4; i++) // Skip slot 0 (player)
@@ -118,6 +149,11 @@ namespace Gameplay.UI.Components.Tabs
             _uiService?.Show<FriendsPopup>();
         }
 
+        private void OnSettingsClicked()
+        {
+            _uiService?.Show<SettingsScreen>(false);
+        }
+
         public void Update(float deltaTime) { }
 
         public void PlayIntroAnimations(IUIAnimator animator) { }
@@ -126,6 +162,7 @@ namespace Gameplay.UI.Components.Tabs
         {
             if (_playButton != null) _playButton.clicked -= OnPlayClicked;
             if (_mapSelector != null) _mapSelector.clicked -= OnMapClicked;
+            if (_settingsButton != null) _settingsButton.clicked -= OnSettingsClicked;
             _buttonsInitialized = false;
         }
     }

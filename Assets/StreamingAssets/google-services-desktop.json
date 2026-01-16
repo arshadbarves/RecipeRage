@@ -7,22 +7,20 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:574652461732:ios:05cdc2dbac3c16266b2c31",
+        "mobilesdk_app_id": "1:574652461732:android:70294f34cdf864d26b2c31",
         "android_client_info": {
           "package_name": "com.playcenter.reciperage"
         }
       },
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBHmpktCsoJvXZG7tDgMQm2EivXcZXkxf8"
+          "current_key": "AIzaSyCldv4DUl5TTmTxDXmcX4rM1e4fpr21O6s"
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 0
-        },
         "appinvite_service": {
-          "status": 1
+          "other_platform_oauth_client": []
         }
       }
     }

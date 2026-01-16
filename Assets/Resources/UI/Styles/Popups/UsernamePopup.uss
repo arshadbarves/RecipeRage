@@ -7,7 +7,7 @@
     align-items: center;
     justify-content: center;
     background-color: rgba(0, 0, 0, 0.85);
-    /* Note: backdrop-filter not supported in all UIElements versions, 
+    /* Note: backdrop-filter not supported in all UIElements versions,
        overlay background handles depth for now */
 }
 
@@ -25,7 +25,7 @@
     /* rotate: -10deg; Removed as per user request to use SkewedBoxElement instead */
 }
 
-/* Undo skew for children that should be straight if needed, 
+/* Undo skew for children that should be straight if needed,
    but Fortnite style often skews everything together */
 
 /* Decorative Red Corner */
@@ -74,7 +74,7 @@
 }
 
 .username-input-field:focus {
-    border-color: var(--theme-yellow);
+    border-color: var(--color-accent-yellow);
 }
 
 .username-input-field > TextInput {
@@ -101,7 +101,7 @@
 }
 
 .btn-confirm {
-    background-color: var(--theme-yellow);
+    background-color: var(--color-accent-yellow);
     color: black;
 }
 
@@ -132,20 +132,20 @@
 
 /* Cost Container */
 .cost-container {
-    flex-direction: row; 
-    align-items: center; 
+    flex-direction: row;
+    align-items: center;
     margin-bottom: 20px;
 }
 
 .cost-label-static {
-    color: grey; 
-    font-size: 14px; 
+    color: grey;
+    font-size: 14px;
     margin-right: 10px;
     -unity-font-definition: var(--font-anton-sdf);
 }
 
 .cost-value {
-    color: var(--theme-yellow); 
+    color: var(--color-accent-yellow);
     font-size: 18px;
     -unity-font-definition: var(--font-anton-sdf);
 }
@@ -173,7 +173,7 @@
     height: 50px;
     border-width: 4px;
     border-color: rgba(255, 255, 255, 0.3);
-    border-top-color: var(--theme-yellow);
+    border-top-color: var(--color-accent-yellow);
     border-radius: 50%;
 }
 

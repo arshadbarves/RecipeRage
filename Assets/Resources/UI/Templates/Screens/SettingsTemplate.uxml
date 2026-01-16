@@ -1,121 +1,223 @@
-<?xml version='1.0' encoding='utf-8'?>
-<ns0:UXML xmlns:ns0="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" schemaLocation="UnityEngine.UIElements ../../../UIElementsSchema/UnityEngine.UIElements.xsd" editor-extension-mode="False">
-    <ns0:Style src="project://database/Assets/UI/USS/Settings.uss?fileID=7433441132597879392&amp;guid=ce13c355a0e3346d586ee254f45c6391&amp;type=3#Settings" />
-    <ns0:VisualElement name="settings-root">
-        <ns0:VisualElement name="settings-header">
-            <ns0:Label text="SETTINGS" />
-            <ns0:Label text="Customize your experience" />
-        </ns0:VisualElement>
-        <ns0:ScrollView name="settings-scroll">
-            <ns0:VisualElement name="settings-section">
-                <ns0:Label text="🔊 AUDIO" />
-                <ns0:VisualElement name="audio-controls">
-                    <ns0:VisualElement>
-                        <ns0:Label text="Music Volume" />
-                        <ns0:VisualElement>
-                            <ns0:Slider name="music-volume" low-value="0" high-value="1" value="0.75" />
-                            <ns0:Label name="music-volume-value" text="75%" />
-                        </ns0:VisualElement>
-                    </ns0:VisualElement>
-                    <ns0:VisualElement>
-                        <ns0:Label text="SFX Volume" />
-                        <ns0:VisualElement>
-                            <ns0:Slider name="sfx-volume" low-value="0" high-value="1" value="0.75" />
-                            <ns0:Label name="sfx-volume-value" text="75%" />
-                        </ns0:VisualElement>
-                    </ns0:VisualElement>
-                    <ns0:VisualElement>
-                        <ns0:Label text="Mute All" />
-                        <ns0:Toggle name="mute-toggle" />
-                    </ns0:VisualElement>
-                </ns0:VisualElement>
-            </ns0:VisualElement>
-            <ns0:VisualElement name="graphics-section">
-                <ns0:Label text="🎨 GRAPHICS" />
-                <ns0:VisualElement name="graphics-controls">
-                    <ns0:VisualElement>
-                        <ns0:Label text="Quality Preset" />
-                        <ns0:DropdownField name="quality-dropdown" />
-                    </ns0:VisualElement>
-                    <ns0:VisualElement>
-                        <ns0:Label text="Resolution" />
-                        <ns0:DropdownField name="resolution-dropdown" />
-                    </ns0:VisualElement>
-                    <ns0:VisualElement>
-                        <ns0:Label text="Fullscreen" />
-                        <ns0:Toggle name="fullscreen-toggle" />
-                    </ns0:VisualElement>
-                    <ns0:VisualElement>
-                        <ns0:Label text="VSync" />
-                        <ns0:Toggle name="vsync-toggle" />
-                    </ns0:VisualElement>
-                    <ns0:VisualElement>
-                        <ns0:Label text="Show FPS" />
-                        <ns0:Toggle name="fps-toggle" />
-                    </ns0:VisualElement>
-                </ns0:VisualElement>
-            </ns0:VisualElement>
-            <ns0:VisualElement name="controls-section">
-                <ns0:Label text="🎮 CONTROLS" />
-                <ns0:VisualElement name="controls-group">
-                    <ns0:Button name="edit-joystick-button" text="✏️ EDIT JOYSTICK" />
-                    <ns0:VisualElement>
-                        <ns0:Label text="Sensitivity" />
-                        <ns0:VisualElement>
-                            <ns0:Slider name="sensitivity-slider" low-value="0.1" high-value="2" value="1" />
-                            <ns0:Label name="sensitivity-value" text="1.0x" />
-                        </ns0:VisualElement>
-                    </ns0:VisualElement>
-                    <ns0:VisualElement>
-                        <ns0:Label text="Vibration" />
-                        <ns0:Toggle name="vibration-toggle" value="true" />
-                    </ns0:VisualElement>
-                </ns0:VisualElement>
-            </ns0:VisualElement>
-            <ns0:VisualElement name="gameplay-section">
-                <ns0:Label text="⚡ GAMEPLAY" />
-                <ns0:VisualElement name="gameplay-controls">
-                    <ns0:VisualElement>
-                        <ns0:Label text="Language" />
-                        <ns0:DropdownField name="language-dropdown" />
-                    </ns0:VisualElement>
-                    <ns0:VisualElement>
-                        <ns0:Label text="Tutorials" />
-                        <ns0:Toggle name="tutorials-toggle" value="true" />
-                    </ns0:VisualElement>
-                    <ns0:VisualElement>
-                        <ns0:Label text="Notifications" />
-                        <ns0:Toggle name="notifications-toggle" value="true" />
-                    </ns0:VisualElement>
-                </ns0:VisualElement>
-            </ns0:VisualElement>
-            <ns0:VisualElement name="support-section">
-                <ns0:Label text="ℹ️ SUPPORT &amp; INFO" />
-                <ns0:VisualElement name="support-buttons">
-                    <ns0:Button name="help-button" text="❓ HELP" />
-                    <ns0:Button name="support-button" text="💬 SUPPORT" />
-                    <ns0:Button name="privacy-button" text="🔒 PRIVACY" />
-                    <ns0:Button name="terms-button" text="📄 TERMS" />
-                    <ns0:Button name="credits-button" text="⭐ CREDITS" />
-                    <ns0:Button name="parent-guide-button" text="👨‍👩‍👧 PARENT GUIDE" />
-                </ns0:VisualElement>
-            </ns0:VisualElement>
-            <ns0:VisualElement name="account-section">
-                <ns0:Label text="👤 ACCOUNT" />
-                <ns0:VisualElement name="account-buttons">
-                    <ns0:Button name="logout-button" text="🚪 LOGOUT" />
-                </ns0:VisualElement>
-            </ns0:VisualElement>
-            <ns0:VisualElement name="actions-section">
-                <ns0:VisualElement name="action-buttons">
-                    <ns0:Button name="reset-button" text="🔄 RESET TO DEFAULTS" />
-                    <ns0:Button name="clear-data-button" text="🗑️ CLEAR ALL DATA" />
-                </ns0:VisualElement>
-            </ns0:VisualElement>
-            <ns0:VisualElement name="version-info">
-                <ns0:Label name="version-label" text="Version 1.0.0" />
-                <ns0:Label text="Made with ❤️ by Recipe Rage Team" />
-            </ns0:VisualElement>
-        </ns0:ScrollView>
-    </ns0:VisualElement>
-</ns0:UXML>
+<UXML xmlns="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/USS/Settings.uss?fileID=7433441132597879392&amp;guid=a4f0b2b03ba2f40bc8aa46dcf54152ef&amp;type=3#Settings"/>
+    <VisualElement name="settings-root" class="settings-root">
+        <VisualElement name="shader-background"
+                       style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; z-index: 0; background-color: white; -unity-material: url(&quot;project://database/Assets/Shaders/UI/Unlit_TechGridBackground.mat?fileID=2100000&amp;guid=35e2b2ac29f324d979bb1c833cf93c4c&amp;type=2#Unlit_TechGridBackground&quot;);" />
+        <TabView name="settings-tabs" class="settings-tab-view">
+            <Tab label="GENERAL" name="tab-general" icon-image="project://database/Assets/UI/Icons/sliders.png?fileID=2800000&amp;guid=65c9396900fd04afdbd5a3cdb3f55712&amp;type=3#sliders" class="settings-tab">
+                <ScrollView class="tab-content-scroll">
+                    <VisualElement class="tab-content">
+                        <VisualElement class="content-header">
+                            <Label text="GENERAL" class="header-title"/>
+                            <Label text="AUDIO SETTINGS" class="header-sub"/>
+                        </VisualElement>
+                        <VisualElement class="settings-section">
+                            <VisualElement class="section-label">
+                                <Label text="AUDIO"/>
+                                <VisualElement class="section-label-line"/>
+                            </VisualElement>
+                            <VisualElement class="option-row">
+                                <VisualElement class="opt-info">
+                                    <Label text="Music Volume" class="opt-title"/>
+                                    <Label text="Background music intensity" class="opt-desc"/>
+                                </VisualElement>
+                                <VisualElement class="slider-wrapper">
+                                    <Slider name="music-volume" low-value="0" high-value="1" value="0.75" class="settings-slider"/>
+                                    <Label name="music-volume-value" text="75%" class="slider-val"/>
+                                </VisualElement>
+                            </VisualElement>
+                            <VisualElement class="option-row">
+                                <VisualElement class="opt-info">
+                                    <Label text="SFX Volume" class="opt-title"/>
+                                    <Label text="Sound effects and UI sounds" class="opt-desc"/>
+                                </VisualElement>
+                                <VisualElement class="slider-wrapper">
+                                    <Slider name="sfx-volume" low-value="0" high-value="1" value="0.75" class="settings-slider"/>
+                                    <Label name="sfx-volume-value" text="75%" class="slider-val"/>
+                                </VisualElement>
+                            </VisualElement>
+                            <VisualElement class="option-row">
+                                <VisualElement class="opt-info">
+                                    <Label text="Mute All" class="opt-title"/>
+                                    <Label text="Disable all game audio" class="opt-desc"/>
+                                </VisualElement>
+                                <Toggle name="mute-toggle" class="settings-toggle"/>
+                            </VisualElement>
+                        </VisualElement>
+                    </VisualElement>
+                </ScrollView>
+            </Tab>
+            <Tab label="GRAPHICS" name="tab-graphics" icon-image="project://database/Assets/UI/Icons/desktop.png?fileID=2800000&amp;guid=6a4111d6511f542b78cdb79a0d67a582&amp;type=3#desktop" class="settings-tab">
+                <ScrollView class="tab-content-scroll">
+                    <VisualElement class="tab-content">
+                        <VisualElement class="content-header">
+                            <Label text="GRAPHICS" class="header-title"/>
+                            <Label text="DISPLAY SETTINGS" class="header-sub"/>
+                        </VisualElement>
+                        <VisualElement class="settings-section">
+                            <VisualElement class="section-label">
+                                <Label text="DISPLAY"/>
+                                <VisualElement class="section-label-line"/>
+                            </VisualElement>
+                            <VisualElement class="option-row">
+                                <VisualElement class="opt-info">
+                                    <Label text="Quality Preset" class="opt-title"/>
+                                    <Label text="Overall graphics quality level" class="opt-desc"/>
+                                </VisualElement>
+                                <DropdownField name="quality-dropdown" class="settings-dropdown"/>
+                            </VisualElement>
+                        </VisualElement>
+                    </VisualElement>
+                </ScrollView>
+            </Tab>
+            <Tab label="CONTROLS" name="tab-controls" icon-image="project://database/Assets/UI/Icons/gamepad.png?fileID=2800000&amp;guid=8dae5b96343d448e584f7b68abc8da6f&amp;type=3#gamepad" class="settings-tab">
+                <ScrollView class="tab-content-scroll">
+                    <VisualElement class="tab-content">
+                        <VisualElement class="content-header">
+                            <Label text="CONTROLS" class="header-title"/>
+                            <Label text="INPUT SETTINGS" class="header-sub"/>
+                        </VisualElement>
+                        <Button name="edit-joystick-button" class="edit-joystick-btn">
+                            <Label text="Edit Joystick Layout" class="edit-joystick-label"/>
+                            <VisualElement class="edit-btn">
+                                <Label text="EDIT" class="edit-btn-label"/>
+                            </VisualElement>
+                        </Button>
+                        <VisualElement class="settings-section">
+                            <VisualElement class="section-label">
+                                <Label text="INPUT"/>
+                                <VisualElement class="section-label-line"/>
+                            </VisualElement>
+                            <VisualElement class="option-row">
+                                <VisualElement class="opt-info">
+                                    <Label text="Vibration" class="opt-title"/>
+                                    <Label text="Haptic feedback on actions" class="opt-desc"/>
+                                </VisualElement>
+                                <Toggle name="vibration-toggle" value="true" class="settings-toggle"/>
+                            </VisualElement>
+                        </VisualElement>
+                    </VisualElement>
+                </ScrollView>
+            </Tab>
+            <Tab label="GAMEPLAY" name="tab-gameplay" icon-image="project://database/Assets/UI/Icons/puzzle-piece.png?fileID=2800000&amp;guid=599625cd7b3c6451e84e7e938942c8b9&amp;type=3#puzzle-piece" class="settings-tab">
+                <ScrollView class="tab-content-scroll">
+                    <VisualElement class="tab-content">
+                        <VisualElement class="content-header">
+                            <Label text="GAMEPLAY" class="header-title"/>
+                            <Label text="GAME OPTIONS" class="header-sub"/>
+                        </VisualElement>
+                        <VisualElement class="settings-section">
+                            <VisualElement class="section-label">
+                                <Label text="OPTIONS"/>
+                                <VisualElement class="section-label-line"/>
+                            </VisualElement>
+                            <VisualElement class="option-row">
+                                <VisualElement class="opt-info">
+                                    <Label text="Language" class="opt-title"/>
+                                    <Label text="Game language preference" class="opt-desc"/>
+                                </VisualElement>
+                                <DropdownField name="language-dropdown" class="settings-dropdown"/>
+                            </VisualElement>
+                            <VisualElement class="option-row">
+                                <VisualElement class="opt-info">
+                                    <Label text="Notifications" class="opt-title"/>
+                                    <Label text="Push notification alerts" class="opt-desc"/>
+                                </VisualElement>
+                                <Toggle name="notifications-toggle" value="true" class="settings-toggle"/>
+                            </VisualElement>
+                        </VisualElement>
+                    </VisualElement>
+                </ScrollView>
+            </Tab>
+            <Tab label="SUPPORT" name="tab-support" icon-image="project://database/Assets/UI/Icons/book-open.png?fileID=2800000&amp;guid=bb91b5f5a54b646ee9b4409a7307fb63&amp;type=3#book-open" class="settings-tab">
+                <ScrollView class="tab-content-scroll">
+                    <VisualElement class="tab-content">
+                        <VisualElement class="content-header">
+                            <Label text="SUPPORT" class="header-title"/>
+                            <Label text="HELP &amp; LEGAL" class="header-sub"/>
+                        </VisualElement>
+                        <VisualElement class="settings-section">
+                            <VisualElement class="section-label">
+                                <Label text="INFORMATION"/>
+                                <VisualElement class="section-label-line"/>
+                            </VisualElement>
+                            <VisualElement class="legal-grid">
+                                <Button name="help-button" class="legal-btn">
+                                    <Label text="Help Center" class="legal-text"/>
+                                    <VisualElement class="legal-icon icon-help"/>
+                                </Button>
+                                <Button name="support-button" class="legal-btn">
+                                    <Label text="Contact Support" class="legal-text"/>
+                                    <VisualElement class="legal-icon icon-message"/>
+                                </Button>
+                                <Button name="privacy-button" class="legal-btn">
+                                    <Label text="Privacy Policy" class="legal-text"/>
+                                    <VisualElement class="legal-icon icon-external"/>
+                                </Button>
+                                <Button name="terms-button" class="legal-btn">
+                                    <Label text="Terms of Service" class="legal-text"/>
+                                    <VisualElement class="legal-icon icon-external"/>
+                                </Button>
+                                <Button name="credits-button" class="legal-btn">
+                                    <Label text="Credits" class="legal-text"/>
+                                    <VisualElement class="legal-icon icon-star"/>
+                                </Button>
+                                <Button name="parent-guide-button" class="legal-btn">
+                                    <Label text="Parent Guide" class="legal-text"/>
+                                    <VisualElement class="legal-icon icon-users"/>
+                                </Button>
+                            </VisualElement>
+                        </VisualElement>
+                    </VisualElement>
+                </ScrollView>
+            </Tab>
+            <Tab label="ACCOUNT" name="tab-account" icon-image="project://database/Assets/UI/Icons/user-shield.png?fileID=2800000&amp;guid=8ff9fb6f04f2440899dd0923d16d3773&amp;type=3#user-shield" class="settings-tab">
+                <ScrollView class="tab-content-scroll">
+                    <VisualElement class="tab-content">
+                        <VisualElement class="content-header">
+                            <Label text="ACCOUNT" class="header-title"/>
+                            <Label text="PROFILE &amp; DATA" class="header-sub"/>
+                        </VisualElement>
+                        <VisualElement class="settings-section">
+                            <VisualElement class="section-label">
+                                <Label text="SESSION"/>
+                                <VisualElement class="section-label-line"/>
+                            </VisualElement>
+                            <VisualElement class="option-row">
+                                <VisualElement class="opt-info">
+                                    <Label text="Log Out" class="opt-title"/>
+                                    <Label text="Sign out of your account" class="opt-desc"/>
+                                </VisualElement>
+                                <Button name="logout-button" class="action-btn btn-logout">
+                                    <Label text="LOG OUT" class="action-btn-label"/>
+                                </Button>
+                            </VisualElement>
+                        </VisualElement>
+                        <VisualElement class="settings-section">
+                            <VisualElement class="section-label">
+                                <Label text="DATA MANAGEMENT"/>
+                                <VisualElement class="section-label-line"/>
+                            </VisualElement>
+                            <VisualElement class="action-row">
+                                <Button name="reset-button" class="action-btn btn-reset">
+                                    <Label text="RESET TO DEFAULTS" class="action-btn-label"/>
+                                </Button>
+                                <Button name="clear-data-button" class="action-btn btn-clear">
+                                    <Label text="CLEAR ALL DATA" class="action-btn-label"/>
+                                </Button>
+                            </VisualElement>
+                        </VisualElement>
+                        <VisualElement class="version-container">
+                            <Label name="version-label" text="v1.0.0" class="version-text"/>
+                        </VisualElement>
+                    </VisualElement>
+                </ScrollView>
+            </Tab>
+        </TabView>
+        <Label text="SETTINGS" class="sidebar-title"/>
+        <Button name="back-button" class="btn-back-floating">
+            <VisualElement class="btn-back-icon"/>
+            <Label text="BACK" class="btn-back-label"/>
+        </Button>
+    </VisualElement>
+</UXML>

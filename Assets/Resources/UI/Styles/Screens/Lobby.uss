@@ -59,7 +59,7 @@
 }
 
 .player-tag-container.local-player {
-    border-color: var(--theme-yellow);
+    border-color: var(--color-accent-yellow);
     border-width: 4px;
 }
 
@@ -80,8 +80,8 @@
 }
 
 .player-tag-container.local-player .name-tag-speech-bubble-tail {
-    border-right-color: var(--theme-yellow);
-    border-bottom-color: var(--theme-yellow);
+    border-right-color: var(--color-accent-yellow);
+    border-bottom-color: var(--color-accent-yellow);
 }
 
 .crown-icon {
@@ -91,7 +91,7 @@
     width: 40px;
     height: 40px;
     background-image: url("project://database/Assets/UI/Icons/crown.png?fileID=2800000&guid=eaff26e31928b415abd465de3f6819fa&type=3#crown");
-    -unity-background-image-tint-color: var(--theme-yellow);
+    -unity-background-image-tint-color: var(--color-accent-yellow);
     rotate: 15deg;
     display: none;
 }
@@ -288,12 +288,12 @@
     width: var(--icon-size-xxs);
     height: var(--icon-size-xxs);
     background-image: url("project://database/Assets/UI/Icons/rotate.png?fileID=2800000&guid=46fbc0cdbcabc4e7ca4ad9e9fab1f0f1&type=3#rotate");
-    -unity-background-image-tint-color: var(--theme-yellow);
+    -unity-background-image-tint-color: var(--color-accent-yellow);
 }
 
 .play-btn-big {
     height: var(--height-button-lg);
-    background-color: var(--theme-yellow);
+    background-color: var(--color-accent-yellow);
     border-width: 2px;
     border-color: var(--color-black);
     border-radius: var(--radius-md);
@@ -355,7 +355,7 @@
     width: 100%;
     height: 100%;
     /* Placeholder fallback */
-    background-color: var(--theme-yellow);
+    background-color: var(--color-accent-yellow);
     -unity-background-scale-mode: scale-to-fit;
     border-radius: 14px;
 }
@@ -366,7 +366,7 @@
     right: -8px;
     width: 36px;
     height: 36px;
-    background-color: var(--theme-yellow);
+    background-color: var(--color-accent-yellow);
     border-radius: 50%;
     border-width: 3px;
     border-color: var(--color-black);
@@ -435,7 +435,7 @@
 
 .xp-progress-fill {
     height: 100%;
-    background-color: var(--theme-yellow);
+    background-color: var(--color-accent-yellow);
     border-radius: 5px;
 }
 
