@@ -519,6 +519,12 @@ namespace Core.UI
                 {
                     OnAllScreensHidden?.Invoke();
                 }
+
+                // Check if we should reset the state
+                if (!_stackManager.IsInHistory(screenType))
+                {
+                    screen.ResetState();
+                }
             });
         }
 

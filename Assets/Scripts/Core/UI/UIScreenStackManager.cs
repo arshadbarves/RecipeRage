@@ -291,6 +291,21 @@ namespace Core.UI
         }
 
         /// <summary>
+        /// Check if a screen is present in any category stack (history)
+        /// </summary>
+        public bool IsInHistory(Type screenType)
+        {
+            foreach (var stack in _categoryStacks.Values)
+            {
+                if (stack.Contains(screenType))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
         /// Debug: Print current stack state
         /// </summary>
         public void DebugPrintState()

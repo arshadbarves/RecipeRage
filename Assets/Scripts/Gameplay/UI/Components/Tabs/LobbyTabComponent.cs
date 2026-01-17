@@ -6,6 +6,8 @@ using Core.Animation;
 using Core.UI.Interfaces;
 using Gameplay.UI.Data;
 using Gameplay.UI.Features.Settings;
+using Gameplay.UI.Extensions;
+using Gameplay.UI.Localization;
 using VContainer;
 
 namespace Gameplay.UI.Components.Tabs
@@ -47,19 +49,27 @@ namespace Gameplay.UI.Components.Tabs
             SetupButtons();
             BindViewModel();
             SetupLocalPlayer();
-            RefreshLocalization();
+            BindLocalization();
         }
 
         public void RefreshLocalization()
         {
+            BindLocalization();
+        }
+
+        private void BindLocalization()
+        {
             if (_localizationManager == null || _root == null) return;
 
             // Play Button
-            var playLabel = _playButton?.Q<Label>(); 
-            if (playLabel != null) playLabel.text = _localizationManager.GetText("lobby_play_button");
+            _localizationManager.Bind(_playButton, LocKeys.LobbyPlayButton, this);
 
-            // Region
-            if (_regionInfo != null) _regionInfo.text = _localizationManager.GetText("lobby_region_na");
+            // Region - Register a binding to update when language changes
+            _localizationManager.RegisterBinding(this, LocKeys.LobbyRegionPrefix, _ => RefreshRegionInfo());
+
+            // Game Mode label
+            var mapInfo = _root.Q<VisualElement>(className: "map-info");
+            _localizationManager.Bind(mapInfo?.Q<Label>(className: "map-mode-label"), LocKeys.LobbyGameMode, this);
 
             // Squad Slots (Invite Text)
             for (int i = 1; i < 4; i++)
@@ -67,10 +77,7 @@ namespace Gameplay.UI.Components.Tabs
                 var slot = _squadSlots[i];
                 if (slot != null)
                 {
-                    // Assuming there is a label for "INVITE" or similar in the empty state
-                    // We might need to query by class or assume the only label is the invite text if empty
-                    var label = slot.Q<Label>(className: "invite-label"); // Guessing class name or checking structure
-                    if (label != null) label.text = _localizationManager.GetText("lobby_invite");
+                    _localizationManager.Bind(slot.Q<Label>(className: "invite-label"), LocKeys.LobbyInvite, this);
                 }
             }
         }
@@ -163,7 +170,19 @@ namespace Gameplay.UI.Components.Tabs
             if (_playButton != null) _playButton.clicked -= OnPlayClicked;
             if (_mapSelector != null) _mapSelector.clicked -= OnMapClicked;
             if (_settingsButton != null) _settingsButton.clicked -= OnSettingsClicked;
+            _localizationManager?.UnregisterAll(this);
             _buttonsInitialized = false;
+        }
+
+        private void RefreshRegionInfo()
+        {
+            if (_regionInfo == null || _localizationManager == null) return;
+            
+            string prefix = _localizationManager.GetText(LocKeys.LobbyRegionPrefix);
+            // hardcoding NA for now as per previous logic, but making it localized
+            string region = _localizationManager.GetText(LocKeys.LobbyRegionNa) ?? "NORTH AMERICA";
+            
+            _regionInfo.text = $"{prefix}: {region} (24ms)";
         }
     }
 }

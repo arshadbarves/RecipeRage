@@ -1,8 +1,7 @@
 <UXML xmlns="UnityEngine.UIElements" editor-extension-mode="False">
     <Style src="project://database/Assets/UI/USS/Settings.uss?fileID=7433441132597879392&amp;guid=a4f0b2b03ba2f40bc8aa46dcf54152ef&amp;type=3#Settings"/>
     <VisualElement name="settings-root" class="settings-root">
-        <VisualElement name="shader-background"
-                       style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; z-index: 0; background-color: white; -unity-material: url(&quot;project://database/Assets/Shaders/UI/Unlit_TechGridBackground.mat?fileID=2100000&amp;guid=35e2b2ac29f324d979bb1c833cf93c4c&amp;type=2#Unlit_TechGridBackground&quot;);" />
+        <VisualElement name="shader-background" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; z-index: 0; background-color: white; -unity-material: url(&quot;project://database/Assets/Shaders/UI/Unlit_TechGridBackground.mat?fileID=2100000&amp;guid=35e2b2ac29f324d979bb1c833cf93c4c&amp;type=2#Unlit_TechGridBackground&quot;);"/>
         <TabView name="settings-tabs" class="settings-tab-view">
             <Tab label="GENERAL" name="tab-general" icon-image="project://database/Assets/UI/Icons/sliders.png?fileID=2800000&amp;guid=65c9396900fd04afdbd5a3cdb3f55712&amp;type=3#sliders" class="settings-tab">
                 <ScrollView class="tab-content-scroll">
@@ -129,7 +128,7 @@
                     </VisualElement>
                 </ScrollView>
             </Tab>
-            <Tab label="SUPPORT" name="tab-support" icon-image="project://database/Assets/UI/Icons/book-open.png?fileID=2800000&amp;guid=bb91b5f5a54b646ee9b4409a7307fb63&amp;type=3#book-open" class="settings-tab">
+            <Tab label="LEGAL &amp; HELP" name="tab-legal" icon-image="project://database/Assets/UI/Icons/book-open.png?fileID=2800000&amp;guid=bb91b5f5a54b646ee9b4409a7307fb63&amp;type=3#book-open" class="settings-tab">
                 <ScrollView class="tab-content-scroll">
                     <VisualElement class="tab-content">
                         <VisualElement class="content-header">
@@ -138,18 +137,10 @@
                         </VisualElement>
                         <VisualElement class="settings-section">
                             <VisualElement class="section-label">
-                                <Label text="INFORMATION"/>
+                                <Label text="DOCUMENTS"/>
                                 <VisualElement class="section-label-line"/>
                             </VisualElement>
                             <VisualElement class="legal-grid">
-                                <Button name="help-button" class="legal-btn">
-                                    <Label text="Help Center" class="legal-text"/>
-                                    <VisualElement class="legal-icon icon-help"/>
-                                </Button>
-                                <Button name="support-button" class="legal-btn">
-                                    <Label text="Contact Support" class="legal-text"/>
-                                    <VisualElement class="legal-icon icon-message"/>
-                                </Button>
                                 <Button name="privacy-button" class="legal-btn">
                                     <Label text="Privacy Policy" class="legal-text"/>
                                     <VisualElement class="legal-icon icon-external"/>
@@ -168,6 +159,30 @@
                                 </Button>
                             </VisualElement>
                         </VisualElement>
+                        <VisualElement class="settings-section">
+                            <VisualElement class="section-label">
+                                <Label text="SUPPORT"/>
+                                <VisualElement class="section-label-line"/>
+                            </VisualElement>
+                            <VisualElement class="option-row">
+                                <VisualElement class="opt-info">
+                                    <Label text="Help Center" class="opt-title"/>
+                                    <Label text="Browse FAQ and known issues" class="opt-desc"/>
+                                </VisualElement>
+                                <Button name="help-button" class="link-btn">
+                                    <Label text="OPEN" class="edit-btn-label"/>
+                                </Button>
+                            </VisualElement>
+                            <VisualElement class="option-row">
+                                <VisualElement class="opt-info">
+                                    <Label text="Contact Support" class="opt-title"/>
+                                    <Label text="Start a live chat with us" class="opt-desc"/>
+                                </VisualElement>
+                                <Button name="support-button" class="link-btn">
+                                    <Label text="CHAT" class="edit-btn-label"/>
+                                </Button>
+                            </VisualElement>
+                        </VisualElement>
                     </VisualElement>
                 </ScrollView>
             </Tab>
@@ -176,20 +191,39 @@
                     <VisualElement class="tab-content">
                         <VisualElement class="content-header">
                             <Label text="ACCOUNT" class="header-title"/>
-                            <Label text="PROFILE &amp; DATA" class="header-sub"/>
+                            <Label text="PROFILE &amp; SECURITY" class="header-sub"/>
+                        </VisualElement>
+                        <VisualElement class="account-card">
+                            <VisualElement class="account-avatar-container">
+                                <VisualElement class="avatar-lg"/>
+                            </VisualElement>
+                            <VisualElement class="acct-details">
+                                <Label text="STRYKER" name="account-name" class="acct-name"/>
+                                <Label text="UID: 8944-201-992" name="account-uid" class="acct-uid"/>
+                            </VisualElement>
+                            <Button name="logout-button" class="btn-logout">
+                                <Label text="LOG OUT" class="btn-logout-label"/>
+                            </Button>
                         </VisualElement>
                         <VisualElement class="settings-section">
                             <VisualElement class="section-label">
-                                <Label text="SESSION"/>
+                                <Label text="CONNECTIONS"/>
                                 <VisualElement class="section-label-line"/>
                             </VisualElement>
                             <VisualElement class="option-row">
                                 <VisualElement class="opt-info">
-                                    <Label text="Log Out" class="opt-title"/>
-                                    <Label text="Sign out of your account" class="opt-desc"/>
+                                    <Label text="Google Play Games" class="opt-title"/>
+                                    <Label text="Sync your progress" class="opt-desc"/>
                                 </VisualElement>
-                                <Button name="logout-button" class="action-btn btn-logout">
-                                    <Label text="LOG OUT" class="action-btn-label"/>
+                                <Label text="CONNECTED" class="status-connected"/>
+                            </VisualElement>
+                            <VisualElement class="option-row">
+                                <VisualElement class="opt-info">
+                                    <Label text="Facebook" class="opt-title"/>
+                                    <Label text="Find your friends" class="opt-desc"/>
+                                </VisualElement>
+                                <Button class="link-btn">
+                                    <Label text="LINK" class="edit-btn-label"/>
                                 </Button>
                             </VisualElement>
                         </VisualElement>

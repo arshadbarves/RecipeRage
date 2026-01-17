@@ -65,9 +65,29 @@ settings_btn_logout,LOG OUT,CERRAR SESIÓN
 settings_btn_reset,RESET TO DEFAULTS,RESTAURAR DEFECTOS
 settings_btn_clear,CLEAR ALL DATA,BORRAR DATOS
 settings_btn_back,BACK,ATRÁS
+settings_tab_legal,LEGAL & HELP,LEGAL Y AYUDA
+settings_sect_connections,CONNECTIONS,CONEXIONES
+settings_sect_support,SUPPORT,SOPORTE
+settings_status_connected,CONNECTED,CONECTADO
+settings_btn_link,LINK,VINCULAR
+settings_btn_open,OPEN,ABRIR
+settings_btn_chat,CHAT,CHAT
+settings_opt_help_center,Help Center,Centro de Ayuda
+settings_desc_help_center,Browse FAQ and known issues,Ver FAQ y problemas conocidos
+settings_opt_support,Contact Support,Contactar Soporte
+settings_desc_support,Start a live chat with us,Iniciar chat en vivo
+settings_opt_google_play,Google Play Games,Google Play Games
+settings_desc_google_play,Sync your progress,Sincroniza tu progreso
+settings_opt_facebook,Facebook,Facebook
+settings_desc_facebook,Find your friends,Encuentra a tus amigos
 lobby_play_button,PLAY,JUGAR
 lobby_region_na,NORTH AMERICA,NORTEAMÉRICA
 lobby_invite,INVITE,INVITAR
 main_tab_play,PLAY,JUGAR
 main_tab_compete,COMPETE,COMPETIR
 main_tab_shop,SHOP,TIENDA
+lobby_game_mode,GAME MODE,MODO DE JUEGO
+lobby_region_prefix,REGION,REGIÓN
+main_menu_lvl_prefix,LVL.,NIVEL
+main_menu_rank_vanguard,VANGUARD,VANGUARDIA
+main_menu_rank_bronze_i,BRONZE I,BRONCE I

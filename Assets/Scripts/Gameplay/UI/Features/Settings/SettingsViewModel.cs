@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Core.Auth.Core;
+using Core.Auth;
 using Core.Persistence;
 using Core.Shared;
 using Core.UI.Core;
@@ -87,15 +87,15 @@ namespace Gameplay.UI.Features.Settings
             }
         }
 
-        public void Logout()
+        public async void Logout()
         {
-            _authService.LogoutAsync();
+            await _authService.LogoutAsync();
         }
 
         public void ResetToDefaults()
         {
             var defaultSettings = new GameSettingsData();
-            
+
             // Apply to properties to notify UI
             MusicVolume.Value = defaultSettings.MusicVolume;
             SFXVolume.Value = defaultSettings.SFXVolume;
@@ -113,10 +113,10 @@ namespace Gameplay.UI.Features.Settings
             // Clear all local preferences
             PlayerPrefs.DeleteAll();
             PlayerPrefs.Save();
-            
+
             // Reset in-memory settings
             ResetToDefaults();
-            
+
             // Ideally should also clear SaveService files if they exist outside PlayerPrefs
             // But relying on SaveService to handle its own persistence later
         }

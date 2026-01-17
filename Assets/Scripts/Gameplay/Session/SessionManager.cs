@@ -1,6 +1,9 @@
 using System;
 using Gameplay.Bootstrap;
+using Gameplay.App.State;
+using Gameplay.App.State.States;
 using Core.Logging;
+using Core.UI.Interfaces;
 using Core.Shared.Events;
 using VContainer;
 using VContainer.Unity;
@@ -11,6 +14,8 @@ namespace Core.Session
     {
         private readonly IObjectResolver _container;
         private readonly IEventBus _eventBus;
+        private readonly IUIService _uiService;
+        private readonly IGameStateManager _stateManager;
 
         private SessionLifetimeScope _sessionScope;
 
@@ -18,10 +23,16 @@ namespace Core.Session
         public bool IsSessionActive => _sessionScope != null;
 
         [Inject]
-        public SessionManager(IObjectResolver container, IEventBus eventBus)
+        public SessionManager(
+            IObjectResolver container,
+            IEventBus eventBus,
+            IUIService uiService,
+            IGameStateManager stateManager)
         {
             _container = container;
             _eventBus = eventBus;
+            _uiService = uiService;
+            _stateManager = stateManager;
         }
 
         public void Initialize()
@@ -31,6 +42,15 @@ namespace Core.Session
 
         private void HandleLogout(LogoutEvent evt)
         {
+            GameLogger.LogInfo("Orchestrating full logout flow...");
+
+            // 1. Clear UI
+            _uiService?.HideAllScreens(false);
+
+            // 2. Change State back to Login
+            _stateManager?.ChangeState<LoginState>();
+
+            // 3. Destroy Session Scope
             DestroySession();
         }
 

@@ -2,20 +2,19 @@ using Core.UI;
 using DG.Tweening;
 
 using Core.UI.Core;
-using Core.UI.Interfaces;
 using UnityEngine.UIElements;
 using VContainer;
 using SkewedBoxElement = Core.UI.Controls.SkewedBoxElement;
+using Gameplay.UI.Localization;
+using Core.Localization;
 
 namespace Gameplay.UI.Features.Loading
 {
-    /// <summary>
-    /// Loading screen - shows initialization progress
-    /// </summary>
     [UIScreen(UIScreenCategory.Overlay, "Screens/LoadingScreenTemplate")]
     public class LoadingScreen : BaseUIScreen
     {
         [Inject] private LoadingViewModel _viewModel;
+        [Inject] private ILocalizationManager _localizationManager;
 
         private SkewedBoxElement _progressFill;
         private Label _statusText;
@@ -38,6 +37,16 @@ namespace Gameplay.UI.Features.Loading
             TransitionType = UITransitionType.Fade;
 
             BindViewModel();
+            BindLocalization();
+        }
+
+        private void BindLocalization()
+        {
+            if (_localizationManager == null) return;
+            // The ViewModel properties (TipTitle, StatusText as defaults) are already localized 
+            // but don't react to language change unless we re-initialize or bind them to a key update.
+            // Since LoadingScreen might be active when language changes (in theory), we can bind them.
+            _localizationManager.RegisterBinding(this, LocKeys.LoadingTipTitle, _ => _viewModel.Initialize());
         }
 
         private void BindViewModel()
@@ -58,12 +67,12 @@ namespace Gameplay.UI.Features.Loading
         private void AnimateProgress(float progress)
         {
             if (_progressFill == null) return;
-            
+
             _progressTween?.Kill();
             float currentWidth = _progressFill.style.width.value.value;
             float targetWidth = progress * 100f;
 
-            _progressTween = DOTween.To(() => currentWidth, x => 
+            _progressTween = DOTween.To(() => currentWidth, x =>
             {
                 currentWidth = x;
                 _progressFill.style.width = new Length(x, LengthUnit.Percent);
@@ -79,6 +88,7 @@ namespace Gameplay.UI.Features.Loading
         {
             _progressTween?.Kill();
             _viewModel?.Dispose();
+            _localizationManager?.UnregisterAll(this);
         }
     }
 }

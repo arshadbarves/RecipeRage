@@ -58,6 +58,12 @@ namespace Gameplay.UI.Features.Auth
             // Reset logic if needed, but ViewModel state persists if not disposed
         }
 
+        public override void ResetState()
+        {
+            base.ResetState();
+            _viewModel?.Reset();
+        }
+
         private void OnGuestLoginClicked()
         {
             _viewModel?.LoginAsGuest();

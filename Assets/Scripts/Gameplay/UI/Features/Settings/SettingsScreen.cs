@@ -1,9 +1,14 @@
 using System.Collections.Generic;
 using Core.UI;
 using Core.UI.Interfaces;
+using Gameplay.UI.Extensions;
+using Gameplay.UI.Localization;
 using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;
+using Core.Auth;
+using Core.Session;
+using Gameplay.Persistence;
 
 using Core.UI.Core;
 
@@ -14,6 +19,8 @@ namespace Gameplay.UI.Features.Settings
     {
         [Inject] private SettingsViewModel _viewModel;
         [Inject] private IUIService _uiService;
+        [Inject] private SessionManager _sessionManager;
+        [Inject] private IAuthService _authService;
 
         private Slider _musicVolumeSlider;
         private Slider _sfxVolumeSlider;
@@ -25,6 +32,8 @@ namespace Gameplay.UI.Features.Settings
         private DropdownField _languageDropdown;
         private Toggle _notificationsToggle;
         private Label _versionLabel;
+        private Label _accountNameLabel;
+        private Label _accountUidLabel;
 
         [Inject] private Core.Localization.ILocalizationManager _localizationManager;
 
@@ -34,117 +43,139 @@ namespace Gameplay.UI.Features.Settings
             InitializeDropdowns();
             SetupValueChangeCallbacks();
             SetupButtons();
-
-            if (_localizationManager != null)
-                _localizationManager.OnLanguageChanged += RefreshLocalization;
+            BindLocalization();
         }
 
         protected override void OnDispose()
         {
-            if (_localizationManager != null)
-                _localizationManager.OnLanguageChanged -= RefreshLocalization;
+            _localizationManager?.UnregisterAll(this);
         }
 
-        private void RefreshLocalization()
+        private void BindLocalization()
         {
             if (_localizationManager == null) return;
 
             // Sidebar
-            SetTextByClass("sidebar-title", "settings_title");
+            var sidebarTitles = Container?.Query<Label>(className: "sidebar-title").ToList();
+            if (sidebarTitles != null) foreach (var l in sidebarTitles) _localizationManager.Bind(l, LocKeys.SettingsTitle, this);
 
             // Tabs
-            SetText("tab-general", "settings_tab_general");
-            SetText("tab-graphics", "settings_tab_graphics");
-            SetText("tab-controls", "settings_tab_controls");
-            SetText("tab-gameplay", "settings_tab_gameplay");
-            SetText("tab-support", "settings_tab_support");
-            SetText("tab-account", "settings_tab_account");
+            _localizationManager.Bind(GetElement<Tab>("tab-general"), LocKeys.SettingsTabGeneral, this);
+            _localizationManager.Bind(GetElement<Tab>("tab-graphics"), LocKeys.SettingsTabGraphics, this);
+            _localizationManager.Bind(GetElement<Tab>("tab-controls"), LocKeys.SettingsTabControls, this);
+            _localizationManager.Bind(GetElement<Tab>("tab-gameplay"), LocKeys.SettingsTabGameplay, this);
+            _localizationManager.Bind(GetElement<Tab>("tab-support"), LocKeys.SettingsTabSupport, this);
+            _localizationManager.Bind(GetElement<Tab>("tab-account"), LocKeys.SettingsTabAccount, this);
+            _localizationManager.Bind(GetElement<Tab>("tab-legal"), LocKeys.SettingsTabLegal, this); 
+            
+            // Sidebars can also be bound directly if there are more
+            // (already handled above for .sidebar-title)
 
-            // Headers
-            // Since we can't easily target specific headers by class without ID, we rely on structure or unique logic.
-            // However, headers usually just have static text in UXML.
-            // Let's assume we can find them by context if needed, but for now we'll stick to what we can target reliably.
-            // Actually, we can update headers by searching for "header-title" specifically
-            // But they all share the same class "header-title".
-            // We can iterate the tabs and find the header in each.
-            SetHeaderInTab("tab-general", "settings_tab_general", "settings_header_audio");
-            SetHeaderInTab("tab-graphics", "settings_tab_graphics", "settings_header_display");
-            SetHeaderInTab("tab-controls", "settings_tab_controls", "settings_header_input");
-            SetHeaderInTab("tab-gameplay", "settings_tab_gameplay", "settings_header_game");
-            SetHeaderInTab("tab-support", "settings_tab_support", "settings_header_legal");
-            SetHeaderInTab("tab-account", "settings_tab_account", "settings_header_profile");
-
-            // Section Labels (using similar tab-based search)
-            SetSectionLabelInTab("tab-general", "settings_sect_audio");
-            SetSectionLabelInTab("tab-graphics", "settings_sect_display");
-            SetSectionLabelInTab("tab-controls", "settings_sect_input");
-            SetSectionLabelInTab("tab-gameplay", "settings_sect_options");
-            SetSectionLabelsInSupportTab(); // Multiple sections
-            SetSectionLabelsInAccountTab(); // Multiple sections
+            // Headers & Sections
+            // Helper to bind headers inside tabs
+            BindHeaderInTab("tab-general", LocKeys.SettingsTabGeneral, LocKeys.SettingsHeaderAudio);
+            BindHeaderInTab("tab-graphics", LocKeys.SettingsTabGraphics, LocKeys.SettingsHeaderDisplay);
+            BindHeaderInTab("tab-controls", LocKeys.SettingsTabControls, LocKeys.SettingsHeaderInput);
+            BindHeaderInTab("tab-gameplay", LocKeys.SettingsTabGameplay, LocKeys.SettingsHeaderGame);
+            BindHeaderInTab("tab-legal", LocKeys.SettingsTabSupport, LocKeys.SettingsHeaderLegal);
+            BindHeaderInTab("tab-account", LocKeys.SettingsTabAccount, LocKeys.SettingsHeaderProfile);
+            
+            // Section Labels
+            BindSectionLabelInTab("tab-general", LocKeys.SettingsSectAudio);
+            BindSectionLabelInTab("tab-graphics", LocKeys.SettingsSectDisplay);
+            BindSectionLabelInTab("tab-controls", LocKeys.SettingsSectInput);
+            BindSectionLabelInTab("tab-gameplay", LocKeys.SettingsSectOptions);
+            BindSectionLabelInTab("tab-legal", LocKeys.SettingsSectInfo, 0);
+            BindSectionLabelInTab("tab-legal", LocKeys.SettingsSectSupport, 1);
+            BindSectionLabelInTab("tab-account", LocKeys.SettingsSectConnections, 0);
+            BindSectionLabelInTab("tab-account", LocKeys.SettingsSectData, 1);
 
             // General Options
-            SetOptionLabels("music-volume", "settings_opt_music", "settings_desc_music");
-            SetOptionLabels("sfx-volume", "settings_opt_sfx", "settings_desc_sfx");
-            SetOptionLabels("mute-toggle", "settings_opt_mute", "settings_desc_mute");
+            BindOptionLabels("music-volume", LocKeys.SettingsOptMusic, LocKeys.SettingsDescMusic);
+            BindOptionLabels("sfx-volume", LocKeys.SettingsOptSfx, LocKeys.SettingsDescSfx);
+            BindOptionLabels("mute-toggle", LocKeys.SettingsOptMute, LocKeys.SettingsDescMute);
 
             // Graphics Options
-            SetOptionLabels("quality-dropdown", "settings_opt_quality", "settings_desc_quality");
+            BindOptionLabels("quality-dropdown", LocKeys.SettingsOptQuality, LocKeys.SettingsDescQuality);
 
             // Controls Options
-            SetOptionLabels("vibration-toggle", "settings_opt_vibration", "settings_desc_vibration");
-            SetButtonLabel("edit-joystick-button", "settings_btn_edit_joystick", "edit-joystick-label");
-            SetButtonLabel("edit-joystick-button", "settings_btn_edit", "edit-btn-label"); // Sub-button
+            BindOptionLabels("vibration-toggle", LocKeys.SettingsOptVibration, LocKeys.SettingsDescVibration);
+            _localizationManager.Bind(GetElement<Button>("edit-joystick-button"), LocKeys.SettingsBtnEditJoystick, this, "edit-joystick-label");
+            _localizationManager.Bind(GetElement<Button>("edit-joystick-button"), LocKeys.SettingsBtnEdit, this, "edit-btn-label");
 
             // Gameplay Options
-            SetOptionLabels("language-dropdown", "settings_opt_language", "settings_desc_language");
-            SetOptionLabels("notifications-toggle", "settings_opt_notifications", "settings_desc_notifications");
-
-            // Account Options
-            SetOptionLabels("logout-button", "settings_opt_logout", "settings_desc_logout"); // Button inside option row
+            BindOptionLabels("language-dropdown", LocKeys.SettingsOptLanguage, LocKeys.SettingsDescLanguage);
+            BindOptionLabels("notifications-toggle", LocKeys.SettingsOptNotifications, LocKeys.SettingsDescNotifications);
 
             // Buttons
-            SetButtonLabel("logout-button", "settings_btn_logout", "action-btn-label");
-            SetButtonLabel("reset-button", "settings_btn_reset", "action-btn-label");
-            SetButtonLabel("clear-data-button", "settings_btn_clear", "action-btn-label");
-            SetButtonLabel("back-button", "settings_btn_back", "btn-back-label");
+            _localizationManager.Bind(GetElement<Button>("logout-button"), LocKeys.SettingsBtnLogout, this, "btn-logout-label");
+            _localizationManager.Bind(GetElement<Button>("reset-button"), LocKeys.SettingsBtnReset, this, "action-btn-label");
+            _localizationManager.Bind(GetElement<Button>("clear-data-button"), LocKeys.SettingsBtnClear, this, "action-btn-label");
+            _localizationManager.Bind(GetElement<Button>("back-button"), LocKeys.SettingsBtnBack, this, "btn-back-label");
 
-            // Legal Grid
-            SetButtonLabel("help-button", "settings_btn_help", "legal-text");
-            SetButtonLabel("support-button", "settings_btn_support", "legal-text");
-            SetButtonLabel("privacy-button", "settings_btn_privacy", "legal-text");
-            SetButtonLabel("terms-button", "settings_btn_terms", "legal-text");
-            SetButtonLabel("credits-button", "settings_btn_credits", "legal-text");
-            SetButtonLabel("parent-guide-button", "settings_btn_parent", "legal-text");
+            // Legal/Support Options
+            BindOptionLabels("help-button", LocKeys.SettingsOptHelpCenter, LocKeys.SettingsDescHelpCenter);
+            BindOptionLabels("support-button", LocKeys.SettingsOptSupport, LocKeys.SettingsDescSupport);
+            _localizationManager.Bind(GetElement<Button>("help-button"), LocKeys.SettingsBtnOpen, this, "edit-btn-label"); 
+            _localizationManager.Bind(GetElement<Button>("support-button"), LocKeys.SettingsBtnChat, this, "edit-btn-label");
+
+            // Account Options
+            BindAccountOptionLabels(0, LocKeys.SettingsOptGooglePlay, LocKeys.SettingsDescGooglePlay);
+            BindAccountOptionLabels(1, LocKeys.SettingsOptFacebook, LocKeys.SettingsDescFacebook);
+            
+            // Status and Link Buttons
+            var connectionRows = GetElement<Tab>("tab-account")?.Query<VisualElement>(className: "option-row").ToList();
+            if (connectionRows != null && connectionRows.Count > 0)
+            {
+                _localizationManager.Bind(connectionRows[0].Q<Label>(className: "status-connected"), LocKeys.SettingsStatusConnected, this);
+                _localizationManager.Bind(connectionRows[1].Q<Button>()?.Q<Label>(), LocKeys.SettingsBtnLink, this);
+            }
+            
+            // Re-binding remaining legal buttons if they exist
+            _localizationManager.Bind(GetElement<Button>("privacy-button"), LocKeys.SettingsBtnPrivacy, this, "legal-text");
+            _localizationManager.Bind(GetElement<Button>("terms-button"), LocKeys.SettingsBtnTerms, this, "legal-text");
+            _localizationManager.Bind(GetElement<Button>("credits-button"), LocKeys.SettingsBtnCredits, this, "legal-text");
+            _localizationManager.Bind(GetElement<Button>("parent-guide-button"), LocKeys.SettingsBtnParent, this, "legal-text");
         }
 
-        private void SetText(string elemName, string key)
+        private void BindSectionLabelInTab(string tabName, string key, int index = 0)
         {
-            var elem = GetElement<VisualElement>(elemName);
-            if (elem is Label l) l.text = _localizationManager.GetText(key);
-            else if (elem is Tab t) t.label = _localizationManager.GetText(key);
+            var tab = GetElement<Tab>(tabName);
+            if (tab == null) return;
+            var sections = tab.Query<VisualElement>(className: "section-label").ToList();
+            if (index < sections.Count)
+            {
+                _localizationManager.Bind(sections[index].Q<Label>(), key, this);
+            }
         }
 
-        private void SetTextByClass(string className, string key)
+        private void BindAccountOptionLabels(int rowIndex, string titleKey, string descKey)
         {
-            var labels = Container?.Query<Label>(className: className).ToList();
-            if (labels != null) foreach (var l in labels) l.text = _localizationManager.GetText(key);
+            var tab = GetElement<Tab>("tab-account");
+            var rows = tab?.Query<VisualElement>(className: "option-row").ToList();
+            if (rows != null && rowIndex < rows.Count)
+            {
+                _localizationManager.Bind(rows[rowIndex].Q<Label>(className: "opt-title"), titleKey, this);
+                _localizationManager.Bind(rows[rowIndex].Q<Label>(className: "opt-desc"), descKey, this);
+            }
         }
 
-        private void SetButtonLabel(string buttonName, string key, string labelClass)
+        private void BindHeaderInTab(string tabName, string titleKey, string subKey = null)
         {
-            var btn = GetElement<Button>(buttonName);
-            var label = btn?.Q<Label>(className: labelClass);
-            if (label != null) label.text = _localizationManager.GetText(key);
+            var tab = GetElement<Tab>(tabName);
+            if (tab == null) return;
+            _localizationManager.Bind(tab.Q<Label>(className: "header-title"), titleKey, this);
+            if (!string.IsNullOrEmpty(subKey))
+            {
+                _localizationManager.Bind(tab.Q<Label>(className: "header-sub"), subKey, this);
+            }
         }
 
-        private void SetOptionLabels(string controlName, string titleKey, string descKey)
+        private void BindOptionLabels(string controlName, string titleKey, string descKey)
         {
             var control = GetElement<VisualElement>(controlName);
             if (control == null) return;
 
-            // Walk up to option-row
-            // Structure: option-row -> (opt-info, wrapper/control)
-            // So control.parent is usually wrapper or option-row directly
             var parent = control.parent;
             while (parent != null && !parent.ClassListContains("option-row"))
             {
@@ -153,55 +184,45 @@ namespace Gameplay.UI.Features.Settings
 
             if (parent != null)
             {
-                var title = parent.Q<Label>(className: "opt-title");
-                var desc = parent.Q<Label>(className: "opt-desc");
-                if (title != null) title.text = _localizationManager.GetText(titleKey);
-                if (desc != null) desc.text = _localizationManager.GetText(descKey);
+                _localizationManager.Bind(parent.Q<Label>(className: "opt-title"), titleKey, this);
+                _localizationManager.Bind(parent.Q<Label>(className: "opt-desc"), descKey, this);
             }
-        }
-
-        private void SetHeaderInTab(string tabName, string titleKey, string subKey)
-        {
-            var tab = GetElement<Tab>(tabName);
-            if (tab == null) return;
-            var title = tab.Q<Label>(className: "header-title");
-            var sub = tab.Q<Label>(className: "header-sub");
-            if (title != null) title.text = _localizationManager.GetText(titleKey);
-            if (sub != null) sub.text = _localizationManager.GetText(subKey);
-        }
-
-        private void SetSectionLabelInTab(string tabName, string key)
-        {
-            var tab = GetElement<Tab>(tabName);
-            if (tab == null) return;
-            // Assumes one section per tab for the simpler ones, or first one found
-            var label = tab.Q<Label>(className: "section-box") ?? tab.Q<VisualElement>(className: "section-label").Q<Label>();
-            // Correct query: .section-label > Label
-            if (label != null) label.text = _localizationManager.GetText(key);
-        }
-
-        private void SetSectionLabelsInSupportTab()
-        {
-            var tab = GetElement<Tab>("tab-support");
-            if (tab == null) return;
-            var sections = tab.Query<VisualElement>(className: "section-label").ToList();
-            if (sections.Count > 0) sections[0].Q<Label>().text = _localizationManager.GetText("settings_sect_info");
-        }
-
-        private void SetSectionLabelsInAccountTab()
-        {
-            var tab = GetElement<Tab>("tab-account");
-            if (tab == null) return;
-            var sections = tab.Query<VisualElement>(className: "section-label").ToList();
-            if (sections.Count > 0) sections[0].Q<Label>().text = _localizationManager.GetText("settings_sect_session");
-            if (sections.Count > 1) sections[1].Q<Label>().text = _localizationManager.GetText("settings_sect_data");
         }
 
         protected override void OnShow()
         {
             _viewModel.Initialize();
             BindViewModel();
+            UpdateAccountInfo();
             UpdateVersionInfo();
+        }
+
+        private void UpdateAccountInfo()
+        {
+            if (_sessionManager?.IsSessionActive != true) return;
+
+            var playerDataService = _sessionManager.SessionContainer?.Resolve<PlayerDataService>();
+            if (playerDataService != null)
+            {
+                var stats = playerDataService.GetStats();
+                if (_accountNameLabel != null)
+                    _accountNameLabel.text = string.IsNullOrEmpty(stats?.PlayerName) ? "GUEST" : stats.PlayerName.ToUpper();
+            }
+
+            if (_accountUidLabel != null && _authService != null)
+            {
+                string uid = string.IsNullOrEmpty(_authService.EosProductUserId) ? "NOT SIGNED IN" : _authService.EosProductUserId;
+                _accountUidLabel.text = $"UID: {uid}";
+            }
+        }
+
+        private void OnCopyUidClicked()
+        {
+            if (_authService != null && !string.IsNullOrEmpty(_authService.EosProductUserId))
+            {
+                GUIUtility.systemCopyBuffer = _authService.EosProductUserId;
+                _uiService?.ShowNotification("Account UID copied to clipboard!", NotificationType.Success);
+            }
         }
 
         private void QueryElements()
@@ -216,6 +237,8 @@ namespace Gameplay.UI.Features.Settings
             _languageDropdown = GetElement<DropdownField>("language-dropdown");
             _notificationsToggle = GetElement<Toggle>("notifications-toggle");
             _versionLabel = GetElement<Label>("version-label");
+            _accountNameLabel = GetElement<Label>("account-name");
+            _accountUidLabel = GetElement<Label>("account-uid");
         }
 
         private void InitializeDropdowns()
@@ -333,6 +356,8 @@ namespace Gameplay.UI.Features.Settings
             GetElement<Button>("terms-button")?.RegisterCallback<ClickEvent>(_ => OnTermsClicked());
             GetElement<Button>("credits-button")?.RegisterCallback<ClickEvent>(_ => OnCreditsClicked());
             GetElement<Button>("parent-guide-button")?.RegisterCallback<ClickEvent>(_ => OnParentGuideClicked());
+            
+            _accountUidLabel?.RegisterCallback<ClickEvent>(_ => OnCopyUidClicked());
         }
 
         private void UpdateVolumeLabel(Label label, float value)

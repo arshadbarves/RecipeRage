@@ -1,7 +1,7 @@
 using System;
 using VContainer;
 using Cysharp.Threading.Tasks;
-using Core.Auth.Core;
+using Core.Auth;
 using Core.Localization;
 using Core.Logging;
 using Core.Shared;
@@ -27,6 +27,12 @@ namespace Gameplay.UI.Features.Auth
         public override void Initialize()
         {
             base.Initialize();
+            Reset();
+        }
+
+        public void Reset()
+        {
+            IsLoading.Value = false;
             StatusText.Value = _localization.GetText("login_status_ready");
         }
 

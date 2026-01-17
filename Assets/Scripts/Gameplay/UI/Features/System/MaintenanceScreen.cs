@@ -2,7 +2,7 @@ using System;
 using System.Globalization;
 using Core.UI;
 using Cysharp.Threading.Tasks;
-using Core.Auth.Core;
+using Core.Auth;
 using Core.Logging;
 using Core.RemoteConfig;
 using Core.Shared.Events;

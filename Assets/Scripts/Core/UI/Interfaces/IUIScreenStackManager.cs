@@ -20,6 +20,7 @@ namespace Core.UI.Interfaces
         bool IsVisible(Type screenType);
         int GetStackDepth(UIScreenCategory category);
         bool IsBlockedByHigherCategory(UIScreenCategory category);
+        bool IsInHistory(Type screenType);
         void DebugPrintState();
     }
 }

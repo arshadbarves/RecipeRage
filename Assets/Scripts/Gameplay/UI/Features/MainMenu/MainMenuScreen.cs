@@ -8,6 +8,9 @@ using Core.Shared.Events;
 using Core.UI.Core;
 using Core.UI.Interfaces;
 using Core.Session;
+using Gameplay.UI.Extensions;
+using Gameplay.UI.Localization;
+using UnityEngine;
 
 namespace Gameplay.UI.Features.MainMenu
 {
@@ -36,9 +39,7 @@ namespace Gameplay.UI.Features.MainMenu
         {
             QueryElements();
             _eventBus?.Subscribe<LogoutEvent>(OnLogout);
-
-            if (_localizationManager != null)
-                _localizationManager.OnLanguageChanged += RefreshLocalization;
+            BindLocalization();
         }
 
         private void QueryElements()
@@ -70,11 +71,10 @@ namespace Gameplay.UI.Features.MainMenu
             _eventBus?.Unsubscribe<LogoutEvent>(OnLogout);
             ClearSessionComponents();
 
-            if (_localizationManager != null)
-                _localizationManager.OnLanguageChanged -= RefreshLocalization;
+            _localizationManager?.UnregisterAll(this);
         }
 
-        private void RefreshLocalization()
+        private void BindLocalization()
         {
             if (_localizationManager == null) return;
 
@@ -82,23 +82,21 @@ namespace Gameplay.UI.Features.MainMenu
             var tabs = GetElement<TabView>("main-tabs");
             if (tabs != null)
             {
-                var lobbyTab = tabs.Q<Tab>("tab-lobby");
-                if (lobbyTab != null) lobbyTab.label = _localizationManager.GetText("main_tab_play");
-                
-                var competeTab = tabs.Q<Tab>("tab-compete");
-                if (competeTab != null) competeTab.label = _localizationManager.GetText("main_tab_compete");
-                
-                var shopTab = tabs.Q<Tab>("tab-shop");
-                if (shopTab != null) shopTab.label = _localizationManager.GetText("main_tab_shop");
+                _localizationManager.Bind(tabs.Q<Tab>("tab-lobby"), LocKeys.MainTabPlay, this);
+                _localizationManager.Bind(tabs.Q<Tab>("tab-compete"), LocKeys.MainTabCompete, this);
+                _localizationManager.Bind(tabs.Q<Tab>("tab-shop"), LocKeys.MainTabShop, this);
             }
 
             // Cascade refresh to tabs
             _lobbyTab?.RefreshLocalization();
-            // _shopTab?.RefreshLocalization(); // Need to implement in ShopTab if desired
-            // _characterTab?.RefreshLocalization(); 
 
-            // Refresh Main Menu specific labels
-            UpdatePlayerInfo(); // Re-runs string formatting for "LVL." etc.
+            // Static Player Labels with localized parts
+            _localizationManager.RegisterBinding(this, LocKeys.MainMenuLvlPrefix, _ => UpdatePlayerInfo());
+        }
+
+        private void RefreshLocalization()
+        {
+            BindLocalization();
         }
 
         protected override void OnShow()
@@ -107,9 +105,6 @@ namespace Gameplay.UI.Features.MainMenu
             SubscribeToCurrencyUpdates();
             InitializeSessionComponents();
             _lobbyTab?.PlayIntroAnimations(null);
-            
-            // Ensure valid state on show
-            RefreshLocalization();
         }
 
         private void SubscribeToCurrencyUpdates()
@@ -184,7 +179,11 @@ namespace Gameplay.UI.Features.MainMenu
             var progress = playerDataService.GetProgress();
 
             if (_playerLevelLabel != null)
-                _playerLevelLabel.text = $"LVL. {progress?.HighestLevel ?? 0} // VANGUARD";
+            {
+                string lvlPrefix = _localizationManager?.GetText(LocKeys.MainMenuLvlPrefix) ?? "LVL.";
+                string rankSuffix = _localizationManager?.GetText(LocKeys.MainMenuRankVanguard) ?? "VANGUARD";
+                _playerLevelLabel.text = $"{lvlPrefix} {progress?.HighestLevel ?? 0} // {rankSuffix}";
+            }
 
             var playerName = string.IsNullOrEmpty(stats?.PlayerName) ? "STRYKER" : stats.PlayerName.ToUpper();
 

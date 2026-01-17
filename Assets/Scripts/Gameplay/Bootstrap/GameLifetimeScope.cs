@@ -2,7 +2,7 @@ using System;
 using Core.Animation;
 using Core.Audio;
 using Core.Auth;
-using Core.Auth.Core;
+using Core.Auth;
 using Core.Localization;
 using Core.Logging;
 using Core.Networking;
@@ -141,22 +141,13 @@ namespace Gameplay.Bootstrap
             builder.Register<GameplayState>(Lifetime.Transient);
             builder.Register<GameOverState>(Lifetime.Transient);
 
-            // 7. Auth
-            // EOS Auth
-            builder.Register<EOSAuthService>(Lifetime.Singleton)
-                .As<IAuthService>();
-
-            // UGS Auth
+            // 7. Auth (Unified EOS + UGS)
             var ugsConfig = Resources.Load<UGSConfig>("UGSConfig");
-            if (ugsConfig != null)
-            {
-                builder.RegisterInstance(ugsConfig);
-                builder.Register<UGSAuthenticationManager>(Lifetime.Singleton).As<IAuthenticationManager>();
-            }
-            else
-            {
-                GameLogger.LogError("UGSConfig asset not found in Resources/! Please create it.");
-            }
+            if (ugsConfig != null) builder.RegisterInstance(ugsConfig);
+            else GameLogger.LogError("UGSConfig asset not found in Resources/! Please create it.");
+
+            builder.Register<AuthenticationService>(Lifetime.Singleton)
+                .AsImplementedInterfaces();
 
             // Networking Core (Low level)
             builder.Register<PlayerNetworkManager>(Lifetime.Singleton).As<IPlayerNetworkManager>();

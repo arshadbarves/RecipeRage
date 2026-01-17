@@ -59,6 +59,8 @@ namespace Core.UI.Core
         protected virtual void OnInitialize() { }
         protected virtual void OnShow() { }
         protected virtual void OnHide() { }
+        
+        public virtual void ResetState() { }
 
         public virtual void Update(float deltaTime) { }
 

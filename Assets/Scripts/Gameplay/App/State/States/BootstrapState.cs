@@ -2,7 +2,7 @@ using System;
 using Cysharp.Threading.Tasks;
 using Gameplay.UI.Features.Loading;
 using Gameplay.UI.Features.System;
-using Core.Auth.Core;
+using Core.Auth;
 using Core.Logging;
 using Core.Persistence;
 using Core.RemoteConfig;
@@ -89,6 +89,9 @@ namespace Gameplay.App.State.States
 
             loadingScreen?.UpdateProgress(0.2f, "Loading Configuration...");
             await _remoteConfigService.Initialize();
+            
+            loadingScreen?.UpdateProgress(0.25f, "Preparing Identity...");
+            await _authService.InitializeAsync();
 
             // --- STEP 1.5: System Checks (Pre-Login) ---
             // These checks must pass before we allow any login (auto or manual).
@@ -127,7 +130,7 @@ namespace Gameplay.App.State.States
             // --- STEP 2: Authentication (40% - 70%) ---
             loadingScreen?.UpdateProgress(0.4f, "Authenticating...");
 
-            bool isAuthenticated = _authService.IsLoggedIn();
+            bool isAuthenticated = _authService.IsSignedIn;
 
             if (!isAuthenticated)
             {

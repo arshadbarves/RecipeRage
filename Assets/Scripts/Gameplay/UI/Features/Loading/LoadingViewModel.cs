@@ -4,6 +4,7 @@ using Cysharp.Threading.Tasks;
 using Core.Localization;
 using Core.Shared;
 using Core.UI.Core;
+using Gameplay.UI.Localization;
 using UnityEngine;
 using VContainer;
 
@@ -13,7 +14,7 @@ namespace Gameplay.UI.Features.Loading
     {
         private readonly ILocalizationManager _localization;
         private CancellationTokenSource _cts;
-        private readonly string[] _tipKeys = { "loading_tip_1", "loading_tip_2", "loading_tip_3" };
+        private readonly string[] _tipKeys = { LocKeys.LoadingTip1, LocKeys.LoadingTip2, LocKeys.LoadingTip3 };
 
         public BindableProperty<string> StatusText { get; } = new BindableProperty<string>("");
         public BindableProperty<string> ProgressText { get; } = new BindableProperty<string>("0%");
@@ -31,10 +32,10 @@ namespace Gameplay.UI.Features.Loading
         public override void Initialize()
         {
             base.Initialize();
-            TipTitle.Value = _localization.GetText("loading_tip_title");
+            TipTitle.Value = _localization.GetText(LocKeys.LoadingTipTitle);
             
             // Set initial status
-            StatusText.Value = _localization.GetText("loading_status_preheating");
+            StatusText.Value = _localization.GetText(LocKeys.LoadingStatusPreheating);
 
             StartTipCycling();
         }

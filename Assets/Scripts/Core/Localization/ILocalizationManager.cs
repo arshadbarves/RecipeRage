@@ -23,5 +23,9 @@ namespace Core.Localization
         string GetStatistics();
 
         event System.Action OnLanguageChanged;
+
+        // Binding System
+        void RegisterBinding(object owner, string key, System.Action<string> onUpdate);
+        void UnregisterAll(object owner);
     }
 }

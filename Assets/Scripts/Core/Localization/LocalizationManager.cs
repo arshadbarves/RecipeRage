@@ -23,6 +23,10 @@ namespace Core.Localization
         private readonly HashSet<string> _reportedMissingKeys = new HashSet<string>();
         private readonly List<string> _fallbackLanguages = new List<string> { "English" };
 
+        // Binding System
+        // Maps Owner -> List of (Key, UpdateAction)
+        private readonly Dictionary<object, List<(string Key, Action<string> Action)>> _bindings = new Dictionary<object, List<(string, Action<string>)>>();
+
         public string CurrentLanguage => _currentLanguage;
         public IReadOnlyCollection<string> AvailableLanguages => _languageColumnIndices.Keys;
         public IReadOnlyCollection<string> MissingKeys => _missingKeys;
@@ -168,7 +172,9 @@ namespace Core.Localization
             {
                 _currentLanguage = languageCode;
                 BuildOptimizedCache(); // Rebuild cache for new language
+                BuildOptimizedCache(); // Rebuild cache for new language
                 OnLanguageChanged?.Invoke();
+                UpdateBindings();
                 GameLogger.Log($"[Localization] Language set to: {_currentLanguage}");
             }
             else
@@ -410,8 +416,44 @@ namespace Core.Localization
             stats.AppendLine($"- Current Language: {_currentLanguage}");
             stats.AppendLine($"- Cached Languages: {_optimizedCache.Count}");
             stats.AppendLine($"- Missing Keys: {_missingKeys.Count}");
+            stats.AppendLine($"- Active Bindings (Owners): {_bindings.Count}");
 
             return stats.ToString();
+        }
+
+        public void RegisterBinding(object owner, string key, Action<string> onUpdate)
+        {
+            if (owner == null) return;
+
+            if (!_bindings.ContainsKey(owner))
+            {
+                _bindings[owner] = new List<(string, Action<string>)>();
+            }
+
+            // Add binding
+            _bindings[owner].Add((key, onUpdate));
+
+            // Execute immediately
+            onUpdate?.Invoke(GetText(key));
+        }
+
+        public void UnregisterAll(object owner)
+        {
+            if (owner != null && _bindings.ContainsKey(owner))
+            {
+                _bindings.Remove(owner);
+            }
+        }
+
+        private void UpdateBindings()
+        {
+            foreach (var group in _bindings.Values)
+            {
+                foreach (var binding in group)
+                {
+                    binding.Action?.Invoke(GetText(binding.Key));
+                }
+            }
         }
     }
 }

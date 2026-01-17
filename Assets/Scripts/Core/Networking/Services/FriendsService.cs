@@ -45,7 +45,7 @@ namespace Core.Networking.Services
         #region Private Fields
 
         private readonly ILobbyManager _lobbyManager;
-        private readonly UGSAuthenticationManager _authManager;
+        private readonly IAuthService _authManager;
         private readonly List<FriendInfo> _friends = new List<FriendInfo>();
         private readonly List<FriendInfo> _recentPlayers = new List<FriendInfo>();
         private readonly List<FriendRequest> _pendingRequests = new List<FriendRequest>();
@@ -56,7 +56,7 @@ namespace Core.Networking.Services
 
         #region Initialization
 
-        public FriendsService(ILobbyManager lobbyManager, UGSAuthenticationManager authManager)
+        public FriendsService(ILobbyManager lobbyManager, IAuthService authManager)
         {
             _lobbyManager = lobbyManager ?? throw new ArgumentNullException(nameof(lobbyManager));
             _authManager = authManager ?? throw new ArgumentNullException(nameof(authManager));
@@ -75,7 +75,7 @@ namespace Core.Networking.Services
             try
             {
                 // Ensure UGS is authenticated
-                if (!_authManager.IsSignedIn)
+                if (!_authManager.IsUgsSignedIn)
                 {
                     GameLogger.LogError("UGS not signed in - cannot initialize friends");
                     return;
