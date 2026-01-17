@@ -98,5 +98,7 @@ namespace Gameplay.UI.Localization
         public const string MainMenuLvlPrefix = "main_menu_lvl_prefix";
         public const string MainMenuRankVanguard = "main_menu_rank_vanguard";
         public const string MainMenuRankBronzeI = "main_menu_rank_bronze_i";
+        public const string SettingsWarningGuest = "settings_warning_guest";
+        public const string GuestLoginLabel = "guest_login_label";
     }
 }

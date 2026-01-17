@@ -23,6 +23,7 @@ namespace Gameplay.UI.Features.Settings
         public BindableProperty<bool> NotificationsEnabled { get; } = new BindableProperty<bool>(true);
         public BindableProperty<int> GraphicsQuality { get; } = new BindableProperty<int>(2);
         public BindableProperty<string> Language { get; } = new BindableProperty<string>("English");
+        public BindableProperty<bool> IsGuest { get; } = new BindableProperty<bool>(false);
 
         public IReadOnlyCollection<string> AvailableLanguages => _localizationManager.AvailableLanguages;
 
@@ -38,6 +39,23 @@ namespace Gameplay.UI.Features.Settings
         {
             base.Initialize();
             LoadSettings();
+            CheckGuestStatus();
+        }
+
+        private void CheckGuestStatus()
+        {
+             // If signed in via DeviceID (and presumably not linked to anything else yet), treat as Guest
+             // Note: Currently we only support DeviceID, so this check is a bit redundant but future-proofs it.
+             // We can check LastLoginMethod from settings.
+             var settings = _saveService.GetSettings();
+             if (settings != null)
+             {
+                 IsGuest.Value = settings.LastLoginMethod == "DeviceID" || string.IsNullOrEmpty(settings.LastLoginMethod);
+             }
+             else
+             {
+                 IsGuest.Value = true;
+             }
         }
 
         private void LoadSettings()

@@ -52,15 +52,29 @@ public class IconDownloaderWindow : EditorWindow
         ("volume-high", "solid"),
         ("volume-xmark", "solid"),
         ("sliders", "solid"),
-        ("gamepad", "solid"),
         ("user-shield", "solid"),
         ("book-open", "solid"),
         ("desktop", "solid"),
         ("puzzle-piece", "solid"),
+        ("link", "solid"),
+        ("database", "solid"),
+        ("music", "solid"),
+        ("headphones", "solid"),
+        ("image", "solid"),
+        ("language", "solid"),
+        ("bell", "solid"),
+        ("mobile-screen-button", "solid"),
+        ("headset", "solid"),
+        ("rotate-left", "solid"),
+        ("triangle-exclamation", "solid"),
 
         // Regular
         ("newspaper", "regular"),
-        ("copy", "regular")
+        ("copy", "regular"),
+
+        // Brands
+        ("google-play", "brands"),
+        ("facebook", "brands")
     };
 
     [MenuItem("RecipeRage/Icon Downloader")]

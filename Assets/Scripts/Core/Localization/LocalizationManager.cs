@@ -33,10 +33,6 @@ namespace Core.Localization
 
         public event Action OnLanguageChanged;
 
-        public LocalizationManager()
-        {
-        }
-
         public void Initialize()
         {
             LoadLocalizationData();

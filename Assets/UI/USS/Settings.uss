@@ -439,6 +439,7 @@
     border-radius: var(--radius-sm);
     padding: 12px 30px;
     transition-duration: 0.2s;
+    height: 65px;
 }
 
 .btn-logout:active {
@@ -683,4 +684,164 @@
 
 .btn-back-floating:active .btn-back-icon {
     -unity-background-image-tint-color: var(--color-black);
+}
+
+.guest-warning {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    background-color: rgba(255, 80, 80, 0.15);
+    border-left-width: 4px;
+    border-left-color: var(--color-warning);
+    border-radius: 4px;
+    padding: 20px 25px;
+    margin-bottom: var(--spacing-panel);
+    display: none;
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+}
+
+.warning-icon {
+    width: 32px;
+    height: 32px;
+    margin-right: 15px;
+    -unity-background-image-tint-color: var(--color-warning);
+}
+
+.warning-text {
+    color: var(--text-white);
+    font-size: 20px;
+    -unity-font-definition: var(--font-anton-sdf);
+    letter-spacing: 1px;
+    text-shadow: 0 2px 0 rgba(0, 0, 0, 0.5);
+}
+
+.settings-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
+    -unity-background-image-tint-color: var(--color-accent-yellow);
+}
+
+.opt-info-container {
+    flex-direction: row;
+    align-items: center;
+}
+
+.opt-info-container .settings-icon {
+    -unity-background-image-tint-color: var(--text-white-muted);
+    width: 32px;
+    height: 32px;
+    margin-right: 15px;
+}
+
+.btn-icon-sm {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    -unity-background-image-tint-color: currentColor;
+}
+
+.btn-icon-container {
+    flex-direction: row;
+    align-items: center;
+}
+
+.btn-icon-container .settings-icon {
+    -unity-background-image-tint-color: var(--color-black);
+}
+
+.icon-volume-high {
+    background-image: url("project://database/Assets/UI/Icons/volume-high.png?fileID=2800000&guid=34dd81b09e02e40248d7617a9ffa5a8e&type=3#volume-high");
+}
+
+.icon-music {
+    background-image: url("project://database/Assets/UI/Icons/music.png?fileID=2800000&guid=e860915b97a5d408dbfb270f63b10bea&type=3#music");
+}
+
+.icon-headphones {
+    background-image: url("project://database/Assets/UI/Icons/headphones.png?fileID=2800000&guid=f2a7437757c7a4304a5afbe4e7e0cb05&type=3#headphones");
+}
+
+.icon-volume-xmark {
+    background-image: url("project://database/Assets/UI/Icons/volume-xmark.png?fileID=2800000&guid=e42169b1297e246dea149d1aca802b1a&type=3#volume-xmark");
+}
+
+.icon-desktop {
+    background-image: url("project://database/Assets/UI/Icons/desktop.png?fileID=2800000&guid=6a4111d6511f542b78cdb79a0d67a582&type=3#desktop");
+}
+
+.icon-image {
+    background-image: url("project://database/Assets/UI/Icons/image.png?fileID=2800000&guid=f5b485eab3a5948a38630376628fedcc&type=3#image");
+}
+
+.icon-gamepad {
+    background-image: url("project://database/Assets/UI/Icons/gamepad.png?fileID=2800000&guid=8dae5b96343d448e584f7b68abc8da6f&type=3#gamepad");
+}
+
+.icon-gamepad-lg {
+    background-image: url("project://database/Assets/UI/Icons/gamepad.png?fileID=2800000&guid=8dae5b96343d448e584f7b68abc8da6f&type=3#gamepad");
+    width: 32px;
+    height: 32px;
+}
+
+.icon-mobile-screen {
+    background-image: url("project://database/Assets/UI/Icons/mobile-screen-button.png?fileID=2800000&guid=c92d22dddbe3f4dacbb7be08c2b38a58&type=3#mobile-screen-button");
+}
+
+.icon-sliders {
+    background-image: url("project://database/Assets/UI/Icons/sliders.png?fileID=2800000&guid=65c9396900fd04afdbd5a3cdb3f55712&type=3#sliders");
+}
+
+.icon-language {
+    background-image: url("project://database/Assets/UI/Icons/language.png?fileID=2800000&guid=18e51b5248f914dfaad45b31befa06b6&type=3#language");
+}
+
+.icon-bell {
+    background-image: url("project://database/Assets/UI/Icons/bell.png?fileID=2800000&guid=218bc029f52224a27abdfe9cf8a82540&type=3#bell");
+}
+
+.icon-book-open {
+    background-image: url("project://database/Assets/UI/Icons/book-open.png?fileID=2800000&guid=bb91b5f5a54b646ee9b4409a7307fb63&type=3#book-open");
+}
+
+.icon-headset {
+    background-image: url("project://database/Assets/UI/Icons/headset.png?fileID=2800000&guid=049b426ffb26b4eebb63dc9aa76eace0&type=3#headset");
+}
+
+.icon-circle-question {
+    background-image: url("project://database/Assets/UI/Icons/circle-question.png?fileID=2800000&guid=3c7d1b6b77e1649a8b2ed0ee1a122f17&type=3#circle-question");
+}
+
+.icon-triangle-exclamation {
+    background-image: url("project://database/Assets/UI/Icons/triangle-exclamation.png?fileID=2800000&guid=b14c569b4e30d45ed9dcfaa445d3d5df&type=3#triangle-exclamation");
+}
+
+.icon-right-from-bracket {
+    background-image: url("project://database/Assets/UI/Icons/arrow-right-from-bracket.png?fileID=2800000&guid=fcbefd4a3578d44b68d248d97191fc63&type=3#arrow-right-from-bracket");
+}
+
+.icon-link {
+    background-image: url("project://database/Assets/UI/Icons/link.png?fileID=2800000&guid=7077258ddf8ec4a49a7b60c1753c7a69&type=3#link");
+}
+
+.icon-google-play {
+    background-image: url("project://database/Assets/UI/Icons/google-play.png?fileID=2800000&guid=18a29b810436a421f95a588df30eaeed&type=3#google-play");
+}
+
+.icon-facebook {
+    background-image: url("project://database/Assets/UI/Icons/facebook.png?fileID=2800000&guid=6379762b6dce84c56b4f4a27c452d96b&type=3#facebook");
+}
+
+.icon-database {
+    background-image: url("project://database/Assets/UI/Icons/database.png?fileID=2800000&guid=2d1e50256029f4bb78a7d4aa12bf7277&type=3#database");
+}
+
+.icon-rotate-left {
+    background-image: url("project://database/Assets/UI/Icons/rotate-left.png?fileID=2800000&guid=2c156a98eac964e27be7740429dda6e6&type=3#rotate-left");
+}
+
+.icon-trash {
+    background-image: url("project://database/Assets/UI/Icons/trash.png?fileID=2800000&guid=ef514df6c4ec642e6a58b1d436d223b9&type=3#trash");
 }

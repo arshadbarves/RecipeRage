@@ -35,6 +35,8 @@ namespace Gameplay.UI.Features.Settings
         private Label _accountNameLabel;
         private Label _accountUidLabel;
 
+        private VisualElement _guestWarningBlock;
+
         [Inject] private Core.Localization.ILocalizationManager _localizationManager;
 
         protected override void OnInitialize()
@@ -129,6 +131,12 @@ namespace Gameplay.UI.Features.Settings
             {
                 _localizationManager.Bind(connectionRows[0].Q<Label>(className: "status-connected"), LocKeys.SettingsStatusConnected, this);
                 _localizationManager.Bind(connectionRows[1].Q<Button>()?.Q<Label>(), LocKeys.SettingsBtnLink, this);
+            }
+
+            // Guest Warning
+            if (_guestWarningBlock != null)
+            {
+                _localizationManager.Bind(_guestWarningBlock.Q<Label>(className: "warning-text"), LocKeys.SettingsWarningGuest, this);
             }
             
             // Re-binding remaining legal buttons if they exist
@@ -239,6 +247,7 @@ namespace Gameplay.UI.Features.Settings
             _versionLabel = GetElement<Label>("version-label");
             _accountNameLabel = GetElement<Label>("account-name");
             _accountUidLabel = GetElement<Label>("account-uid");
+            _guestWarningBlock = GetElement<VisualElement>("guest-warning-block");
         }
 
         private void InitializeDropdowns()
@@ -292,6 +301,14 @@ namespace Gameplay.UI.Features.Settings
             _viewModel.Language.Bind(val =>
             {
                 if (_languageDropdown != null) _languageDropdown.value = val;
+            });
+
+            _viewModel.IsGuest.Bind(isGuest =>
+            {
+                if (_guestWarningBlock != null)
+                {
+                    _guestWarningBlock.style.display = isGuest ? DisplayStyle.Flex : DisplayStyle.None;
+                }
             });
         }
 
