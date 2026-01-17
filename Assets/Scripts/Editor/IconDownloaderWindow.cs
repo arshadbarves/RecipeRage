@@ -63,7 +63,7 @@ public class IconDownloaderWindow : EditorWindow
         ("copy", "regular")
     };
 
-    [MenuItem("Tools/Icon Downloader")]
+    [MenuItem("RecipeRage/Icon Downloader")]
     public static void ShowWindow()
     {
         GetWindow<IconDownloaderWindow>("Icon Downloader");

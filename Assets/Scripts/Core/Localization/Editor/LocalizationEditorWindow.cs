@@ -15,7 +15,7 @@ namespace Core.Localization.Editor
         private string _newEnglish = "";
         private string _newSpanish = "";
 
-        [MenuItem("Tools/Localization Manager")]
+        [MenuItem("RecipeRage/Localization Manager")]
         public static void ShowWindow()
         {
             GetWindow<LocalizationEditorWindow>("Localization Manager");

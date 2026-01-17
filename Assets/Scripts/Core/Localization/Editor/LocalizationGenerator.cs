@@ -14,14 +14,14 @@ namespace Core.Localization.Editor
         private const string CsvPath = "Assets/Resources/Data/Localization.csv";
         private const string OutputPath = "Assets/Scripts/Gameplay/UI/Localization/LocalizationKeys.g.cs";
 
-        [MenuItem("Tools/Localization/Generate Keys")]
+        [MenuItem("RecipeRage/Localization/Generate Keys")]
         public static void Generate()
         {
             string fullCsvPath = Path.Combine(Application.dataPath, "../../", CsvPath);
             // Since we are in Editor, we can use relative paths or Path.GetFullPath
             // Actually Application.dataPath is Assets/
             // "Assets/Resources/Data/Localization.csv" is perfect for absolute path if we combine with project root.
-            
+
             string projectRoot = Path.GetDirectoryName(Application.dataPath);
             string absoluteCsvPath = Path.Combine(projectRoot, CsvPath);
 
