@@ -6,15 +6,12 @@ using Gameplay.Persistence;
 using Core.Logging;
 using Core.UI.Interfaces;
 using Core.Session;
+using Core.Shared;
 using UnityEngine.SceneManagement;
 using VContainer;
 
 namespace Gameplay.App.State.States
 {
-    /// <summary>
-    /// State for the main menu.
-    /// Hides loading screen after MainMenu scene is loaded.
-    /// </summary>
     public class MainMenuState : BaseState
     {
         private readonly IUIService _uiService;
@@ -31,20 +28,20 @@ namespace Gameplay.App.State.States
             base.Enter();
 
             // Load MainMenu scene if needed
-            if (SceneManager.GetActiveScene().name != "MainMenu")
+            if (SceneManager.GetActiveScene().name != GameConstants.Scenes.MainMenu)
             {
-                await SceneManager.LoadSceneAsync("MainMenu").ToUniTask();
+                await SceneManager.LoadSceneAsync(GameConstants.Scenes.MainMenu).ToUniTask();
             }
 
             // Update loading to 100% and hide it
-            var loadingScreen = _uiService.GetScreen<LoadingScreen>();
+            var loadingScreen = _uiService.GetScreen<LoadingView>();
             loadingScreen?.UpdateProgress(1.0f, "Welcome!");
 
             // Show MainMenu UI
-            _uiService?.Show<MainMenuScreen>(true, true);
+            _uiService?.Show<MainMenuView>(false, true);
 
             await UniTask.Delay(1000);
-            _uiService?.Hide<LoadingScreen>();
+            _uiService?.Hide<LoadingView>();
 
             // Check for first-time username
             CheckAndShowUsernamePopupAsync();
@@ -84,7 +81,7 @@ namespace Gameplay.App.State.States
         public override void Exit()
         {
             base.Exit();
-            _uiService?.Hide<MainMenuScreen>(true);
+            _uiService?.Hide<MainMenuView>(true);
         }
 
         public override void Update() { }

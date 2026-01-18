@@ -14,10 +14,10 @@ using VContainer;
 namespace Gameplay.UI.Features.System
 {
     /// <summary>
-    /// Maintenance screen - displays maintenance information with optional countdown
+    /// Maintenance view - displays maintenance information with optional countdown
     /// </summary>
-    [UIScreen(UIScreenCategory.System, "Screens/MaintenanceTemplate")]
-    public class MaintenanceScreen : BaseUIScreen
+    [UIScreen(UIScreenCategory.System, "Screens/MaintenanceViewTemplate")]
+    public class MaintenanceView : BaseUIScreen
     {
         #region Dependencies
 

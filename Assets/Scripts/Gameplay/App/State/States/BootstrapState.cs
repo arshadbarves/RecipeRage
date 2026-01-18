@@ -56,23 +56,23 @@ namespace Gameplay.App.State.States
             try
             {
                 // 1. Show Splash
-                await ShowSplashScreenAsync();
+                await ShowSplashViewAsync();
 
                 // 2. Start Loading Sequence
-                _uiService.Show<LoadingScreen>();
+                _uiService.Show<LoadingView>();
                 await InitializeGameSequence();
             }
             catch (Exception ex)
             {
                 GameLogger.LogException(ex);
-                _uiService.Hide<LoadingScreen>();
+                _uiService.Hide<LoadingView>();
                 _stateManager.ChangeState<LoginState>();
             }
         }
 
         private async UniTask InitializeGameSequence()
         {
-            var loadingScreen = _uiService.GetScreen<LoadingScreen>();
+            var loadingScreen = _uiService.GetScreen<LoadingView>();
 
             // --- STEP 1: Foundation (0% - 30%) ---
 
@@ -108,7 +108,7 @@ namespace Gameplay.App.State.States
             if (isUpdateRequired)
             {
                 GameLogger.LogInfo("[Bootstrap] Force update required. Halting boot sequence.");
-                _uiService.Hide<LoadingScreen>();
+                _uiService.Hide<LoadingView>();
 
                 // TODO: Show Force Upgrade Popup, Move the Logic to show from the Core itself liek using Interface or something.
                 // The ForceUpdateChecker publishes an event that should show the Update Popup.
@@ -148,7 +148,7 @@ namespace Gameplay.App.State.States
 
             if (!isAuthenticated)
             {
-                _uiService.Hide<LoadingScreen>();
+                _uiService.Hide<LoadingView>();
                 _stateManager.ChangeState<LoginState>();
                 return;
             }
@@ -160,11 +160,11 @@ namespace Gameplay.App.State.States
             _stateManager.ChangeState<SessionLoadingState>();
         }
 
-        private async UniTask ShowSplashScreenAsync()
+        private async UniTask ShowSplashViewAsync()
         {
-            _uiService.Show<SplashScreen>();
+            _uiService.Show<SplashView>();
             await UniTask.Delay(TimeSpan.FromSeconds(SplashDuration));
-            _uiService.Hide<SplashScreen>();
+            _uiService.Hide<SplashView>();
             await UniTask.Delay(500);
         }
     }

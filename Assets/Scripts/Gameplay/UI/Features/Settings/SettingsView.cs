@@ -14,8 +14,8 @@ using Core.UI.Core;
 
 namespace Gameplay.UI.Features.Settings
 {
-    [UIScreen(UIScreenCategory.Screen, "Screens/SettingsTemplate")]
-    public class SettingsScreen : BaseUIScreen
+    [UIScreen(UIScreenCategory.Screen, "Screens/SettingsViewTemplate")]
+    public class SettingsView : BaseUIScreen
     {
         [Inject] private SettingsViewModel _viewModel;
         [Inject] private IUIService _uiService;

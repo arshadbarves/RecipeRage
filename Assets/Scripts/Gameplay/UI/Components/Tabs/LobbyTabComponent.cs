@@ -142,7 +142,7 @@ namespace Gameplay.UI.Components.Tabs
 
         private void OnMapClicked()
         {
-            var mapScreen = _uiService?.GetScreen<MapSelectionScreen>();
+            var mapScreen = _uiService?.GetScreen<MapSelectionView>();
             mapScreen?.ShowWithCallback(OnMapSelected);
         }
 
@@ -158,7 +158,7 @@ namespace Gameplay.UI.Components.Tabs
 
         private void OnSettingsClicked()
         {
-            _uiService?.Show<SettingsScreen>(false);
+            _uiService?.Show<SettingsView>(false);
         }
 
         public void Update(float deltaTime) { }

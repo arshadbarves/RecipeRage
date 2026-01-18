@@ -9,11 +9,11 @@ using SkewedBoxElement = Core.UI.Controls.SkewedBoxElement;
 namespace Gameplay.UI.Features.System
 {
     /// <summary>
-    /// Splash screen shown at startup.
-    /// Implements the "Conductor Workflow" for intro animation sequencing.
+    /// Splash view shown at startup.
+    /// Implements of "Conductor Workflow" for intro animation sequencing.
     /// </summary>
-    [UIScreen(UIScreenCategory.System, "Screens/SplashScreenTemplate")]
-    public class SplashScreen : BaseUIScreen
+    [UIScreen(UIScreenCategory.System, "Screens/SplashViewTemplate")]
+    public class SplashView : BaseUIScreen
     {
 
 

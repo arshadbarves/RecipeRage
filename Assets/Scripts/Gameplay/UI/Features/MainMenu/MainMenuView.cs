@@ -10,12 +10,11 @@ using Core.UI.Interfaces;
 using Core.Session;
 using Gameplay.UI.Extensions;
 using Gameplay.UI.Localization;
-using UnityEngine;
 
 namespace Gameplay.UI.Features.MainMenu
 {
-    [UIScreen(UIScreenCategory.Screen, "Screens/MainMenuTemplate")]
-    public class MainMenuScreen : BaseUIScreen
+    [UIScreen(UIScreenCategory.Screen, "Screens/MainMenuViewTemplate")]
+    public class MainMenuView : BaseUIScreen
     {
         [Inject] private MainMenuViewModel _viewModel;
         [Inject] private IObjectResolver _container;

@@ -11,10 +11,10 @@ using VContainer;
 namespace Gameplay.UI.Features.Profile
 {
     /// <summary>
-    /// User profile screen - shows player stats and friend code
+    /// User profile view - shows player stats and friend code
     /// </summary>
-    [UIScreen(UIScreenCategory.Screen, "Screens/ProfileTemplate")]
-    public class ProfileScreen : BaseUIScreen
+    [UIScreen(UIScreenCategory.Screen, "Screens/ProfileViewTemplate")]
+    public class ProfileView : BaseUIScreen
     {
         [Inject] private SessionManager _sessionManager;
 

@@ -11,7 +11,7 @@ namespace Gameplay.UI.Features.Auth
     /// New Login View implementing the Skewed Shop aesthetic.
     /// Handles production-ready EOS DeviceID authentication via ViewModel.
     /// </summary>
-    [UIScreen(UIScreenCategory.Overlay, "Screens/LoginView")]
+    [UIScreen(UIScreenCategory.Overlay, "Screens/LoginViewTemplate")]
     public class LoginView : BaseUIScreen
     {
         [Inject]

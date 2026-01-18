@@ -10,10 +10,10 @@ using UnityEngine.UIElements;
 namespace Gameplay.UI.Features.System
 {
     /// <summary>
-    /// Persistent notification screen for toasts and messages
+    /// Persistent notification view for toasts and messages
     /// </summary>
     [UIScreen(UIScreenCategory.Persistent, "Popups/NotificationTemplate")]
-    public class NotificationScreen : BaseUIScreen, INotificationScreen
+    public class NotificationView : BaseUIScreen, INotificationScreen
     {
         private VisualElement _notificationContainer;
         private VisualTreeAsset _toastTemplate;

@@ -84,23 +84,23 @@ namespace Gameplay.Bootstrap
 
             // Register UI Screens (Transient - instantiated by UIService)
             // System
-            builder.Register<SplashScreen>(Lifetime.Transient);
-            builder.Register<LoadingScreen>(Lifetime.Transient);
-            builder.Register<MaintenanceScreen>(Lifetime.Transient);
+            builder.Register<SplashView>(Lifetime.Transient);
+            builder.Register<LoadingView>(Lifetime.Transient);
+            builder.Register<MaintenanceView>(Lifetime.Transient);
 
             // Auth
             builder.Register<LoginView>(Lifetime.Transient);
 
             // Screens
-            builder.Register<MainMenuScreen>(Lifetime.Transient);
-            builder.Register<ProfileScreen>(Lifetime.Transient);
-            builder.Register<CharacterDetailsScreen>(Lifetime.Transient);
-            builder.Register<MapSelectionScreen>(Lifetime.Transient);
-            builder.Register<MatchmakingScreen>(Lifetime.Transient);
-            builder.Register<SettingsScreen>(Lifetime.Transient);
+            builder.Register<MainMenuView>(Lifetime.Transient);
+            builder.Register<ProfileView>(Lifetime.Transient);
+            builder.Register<CharacterDetailsView>(Lifetime.Transient);
+            builder.Register<MapSelectionView>(Lifetime.Transient);
+            builder.Register<MatchmakingView>(Lifetime.Transient);
+            builder.Register<SettingsView>(Lifetime.Transient);
 
             // Popups & Components
-            builder.Register<NotificationScreen>(Lifetime.Transient).AsImplementedInterfaces().AsSelf();
+            builder.Register<NotificationView>(Lifetime.Transient).AsImplementedInterfaces().AsSelf();
             builder.Register<UsernamePopup>(Lifetime.Transient);
             builder.Register<FriendsPopup>(Lifetime.Transient);
             builder.Register<NoInternetPopup>(Lifetime.Transient);

@@ -10,7 +10,7 @@ namespace Gameplay.UI.Components.Tabs
 {
     /// <summary>
     /// Character tab content component
-    /// Displays character grid - clicking opens CharacterDetailsScreen
+    /// Displays character grid - clicking opens CharacterDetailsView
     /// Matches the style of SkinsTabComponent
     /// </summary>
     public class CharacterTabComponent
@@ -178,17 +178,17 @@ namespace Gameplay.UI.Components.Tabs
 
             GameLogger.Log($"Character clicked: {character.DisplayName} - Opening details screen");
 
-            // Open CharacterDetailsScreen
+            // Open CharacterDetailsView
             if (_uiService != null)
             {
-                var detailsScreen = _uiService.GetScreen<CharacterDetailsScreen>();
+                var detailsScreen = _uiService.GetScreen<CharacterDetailsView>();
                 if (detailsScreen != null)
                 {
                     detailsScreen.ShowForCharacter(character);
                 }
                 else
                 {
-                    GameLogger.LogError("CharacterDetailsScreen not found");
+                    GameLogger.LogError("CharacterDetailsView not found");
                 }
             }
         }

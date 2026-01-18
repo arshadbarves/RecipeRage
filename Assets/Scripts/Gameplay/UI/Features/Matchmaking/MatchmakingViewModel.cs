@@ -33,15 +33,20 @@ namespace Gameplay.UI.Features.Matchmaking
             _localization = localization;
         }
 
-        public override void Initialize()
+        public void OnShow()
         {
-            base.Initialize();
             StatusText.Value = _localization.GetText("matchmaking_status_searching");
             IsMatchFound.Value = false;
             _rawSearchTime = 0f;
-
+            
             SubscribeToEvents();
             StartTimer();
+        }
+
+        public void OnHide()
+        {
+            UnsubscribeFromEvents();
+            StopTimer();
         }
 
         private void SubscribeToEvents()
@@ -66,8 +71,16 @@ namespace Gameplay.UI.Features.Matchmaking
 
         private void StartTimer()
         {
+            _cts?.Cancel();
             _cts = new CancellationTokenSource();
             UpdateTimerAsync(_cts.Token).Forget();
+        }
+
+        private void StopTimer()
+        {
+            _cts?.Cancel();
+            _cts?.Dispose();
+            _cts = null;
         }
 
         private async UniTaskVoid UpdateTimerAsync(CancellationToken token)
@@ -98,14 +111,20 @@ namespace Gameplay.UI.Features.Matchmaking
 
         public void CancelMatchmaking()
         {
-            MatchmakingService?.CancelMatchmaking();
+            Debug.Log("ViewModel: CancelMatchmaking requested");
+            var service = MatchmakingService;
+            if (service == null)
+            {
+                Debug.LogError("ViewModel: MatchmakingService is null!");
+                return;
+            }
+            
+            service.CancelMatchmaking();
         }
 
         public override void Dispose()
         {
-            UnsubscribeFromEvents();
-            _cts?.Cancel();
-            _cts?.Dispose();
+            StopTimer();
             base.Dispose();
         }
     }

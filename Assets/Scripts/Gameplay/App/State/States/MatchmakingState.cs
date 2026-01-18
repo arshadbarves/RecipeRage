@@ -101,10 +101,10 @@ namespace Gameplay.App.State.States
             if (_uiService != null)
             {
                 // Hide main menu
-                _uiService.Hide<MainMenuScreen>(true);
+                _uiService.Hide<MainMenuView>(true);
 
                 // Show matchmaking screen
-                _uiService.Show<MatchmakingScreen>(true, false);
+                _uiService.Show<MatchmakingView>(true, false);
                 LogMessage("Matchmaking screen shown");
             }
 
@@ -125,7 +125,7 @@ namespace Gameplay.App.State.States
             base.Exit();
 
             // Hide matchmaking UI
-            _uiService?.Hide<MatchmakingScreen>(true);
+            _uiService?.Hide<MatchmakingView>(true);
 
             // Unsubscribe from events
             if (_networkingServices != null)
@@ -197,7 +197,7 @@ namespace Gameplay.App.State.States
         private void HandlePlayersFound(int current, int required)
         {
             LogMessage($"Players found: {current}/{required}");
-            // MatchmakingScreen will update its UI via this event
+            // MatchmakingView will update its UI via this event
         }
 
         private void HandleMatchmakingCancelled()

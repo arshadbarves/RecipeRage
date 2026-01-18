@@ -14,10 +14,10 @@ using VContainer;
 namespace Gameplay.UI.Features.Maps
 {
     /// <summary>
-    /// Map selection screen - shows all maps grouped by category
+    /// Map selection view - shows all maps grouped by category
     /// </summary>
-    [UIScreen(UIScreenCategory.Screen, "Screens/MapSelectionTemplate")]
-    public class MapSelectionScreen : BaseUIScreen
+    [UIScreen(UIScreenCategory.Screen, "Screens/MapSelectionViewTemplate")]
+    public class MapSelectionView : BaseUIScreen
     {
         [Inject]
         private IRemoteConfigService _remoteConfigService;

@@ -41,7 +41,7 @@ namespace Gameplay.App.State.States
             GameLogger.Log("[SessionLoadingState] Entered - Loading session data...");
 
             // Get existing loading screen (already shown by BootstrapState)
-            var loadingScreen = _uiService.GetScreen<LoadingScreen>();
+            var loadingScreen = _uiService.GetScreen<LoadingView>();
 
             try
             {

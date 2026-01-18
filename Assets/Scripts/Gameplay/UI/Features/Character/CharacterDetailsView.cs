@@ -14,11 +14,11 @@ using VContainer;
 namespace Gameplay.UI.Features.Character
 {
     /// <summary>
-    /// Character details screen - shows character info and available skins
+    /// Character details view - shows character info and available skins
     /// Matches the style of SkinsTabComponent
     /// </summary>
-    [UIScreen(UIScreenCategory.Screen, "Screens/CharacterDetailsTemplate")]
-    public class CharacterDetailsScreen : BaseUIScreen
+    [UIScreen(UIScreenCategory.Screen, "Screens/CharacterDetailsViewTemplate")]
+    public class CharacterDetailsView : BaseUIScreen
     {
         [Inject]
         private SessionManager _sessionManager;
@@ -340,7 +340,7 @@ namespace Gameplay.UI.Features.Character
                 bool wentBack = _uiService.GoBack(true);
 
                 if (!wentBack)
-                    _uiService.Show<MainMenuScreen>(true, false);
+                    _uiService.Show<MainMenuView>(true, false);
             }
         }
 

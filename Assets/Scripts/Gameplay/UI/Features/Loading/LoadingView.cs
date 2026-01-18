@@ -10,8 +10,8 @@ using Core.Localization;
 
 namespace Gameplay.UI.Features.Loading
 {
-    [UIScreen(UIScreenCategory.Overlay, "Screens/LoadingScreenTemplate")]
-    public class LoadingScreen : BaseUIScreen
+    [UIScreen(UIScreenCategory.Overlay, "Screens/LoadingViewTemplate")]
+    public class LoadingView : BaseUIScreen
     {
         [Inject] private LoadingViewModel _viewModel;
         [Inject] private ILocalizationManager _localizationManager;

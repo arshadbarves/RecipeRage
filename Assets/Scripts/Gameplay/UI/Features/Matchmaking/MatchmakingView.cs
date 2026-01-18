@@ -8,11 +8,11 @@ using VContainer;
 namespace Gameplay.UI.Features.Matchmaking
 {
     /// <summary>
-    /// Dedicated matchmaking screen shown during player search
-    /// Replaces the widget overlay approach with a full screen
+    /// Dedicated matchmaking view shown during player search
+    /// Replaces widget overlay approach with a full screen view
     /// </summary>
-    [UIScreen(UIScreenCategory.Screen, "Screens/MatchmakingTemplate")]
-    public class MatchmakingScreen : BaseUIScreen
+    [UIScreen(UIScreenCategory.Screen, "Screens/MatchmakingViewTemplate")]
+    public class MatchmakingView : BaseUIScreen
     {
         [Inject] private MatchmakingViewModel _viewModel;
 
@@ -72,6 +72,18 @@ namespace Gameplay.UI.Features.Matchmaking
         private void OnCancelClicked()
         {
             _viewModel?.CancelMatchmaking();
+        }
+
+        protected override void OnShow()
+        {
+            base.OnShow();
+            _viewModel?.OnShow();
+        }
+
+        protected override void OnHide()
+        {
+            _viewModel?.OnHide();
+            base.OnHide();
         }
 
         protected override void OnDispose()
