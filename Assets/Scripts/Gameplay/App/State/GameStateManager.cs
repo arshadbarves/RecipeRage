@@ -4,15 +4,10 @@ using VContainer;
 
 namespace Gameplay.App.State
 {
-    /// <summary>
-    /// Game state manager - pure C# class, no MonoBehaviour
-    /// Implements IDisposable for proper cleanup on logout
-    /// </summary>
     public class GameStateManager : IGameStateManager, IDisposable
     {
-        private readonly IStateMachine _stateMachine;
-        private readonly IStateFactory _stateFactory;
-
+        private readonly StateMachine _stateMachine;
+        private readonly IObjectResolver _container;
 
         public event Action<IState, IState> OnStateChanged;
 
@@ -20,14 +15,12 @@ namespace Gameplay.App.State
         public IState PreviousState => _stateMachine.PreviousState;
 
         [Inject]
-        public GameStateManager(IStateFactory stateFactory)
+        public GameStateManager(IObjectResolver container)
         {
             _stateMachine = new StateMachine();
-            _stateFactory = stateFactory;
+            _container = container;
             _stateMachine.OnStateChanged += (prev, curr) => OnStateChanged?.Invoke(prev, curr);
         }
-
-
 
         public void Initialize(IState initialState)
         {
@@ -43,7 +36,7 @@ namespace Gameplay.App.State
 
         public void ChangeState<T>() where T : IState
         {
-            ChangeState(_stateFactory.CreateState<T>());
+            ChangeState(_container.Resolve<T>());
         }
 
         public void Update(float deltaTime)
@@ -62,9 +55,6 @@ namespace Gameplay.App.State
 
             // Exit current state
             CurrentState?.Exit();
-
-            // Clear state machine
-            // Note: StateMachine doesn't have a Dispose method, so we just clear references
         }
     }
 }

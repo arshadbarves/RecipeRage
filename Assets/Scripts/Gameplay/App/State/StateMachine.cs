@@ -1,11 +1,12 @@
 using System;
+using Core.Logging;
 
 namespace Gameplay.App.State
 {
     /// <summary>
     /// Implementation of a state machine.
     /// </summary>
-    public class StateMachine : IStateMachine
+    public class StateMachine
     {
         /// <summary>
         /// Event triggered when a state transition occurs.
@@ -31,7 +32,7 @@ namespace Gameplay.App.State
             CurrentState = initialState;
             CurrentState.Enter();
 
-            StateUtility.LogStateAction("StateMachine", $"Initialized with state: {initialState.GetType().Name}");
+            GameLogger.Log($"[StateMachine] Initialized with state: {initialState.GetType().Name}");
         }
 
         /// <summary>
@@ -42,13 +43,13 @@ namespace Gameplay.App.State
         {
             if (newState == null)
             {
-                StateUtility.LogStateError("StateMachine", "Cannot change to a null state");
+                GameLogger.LogError("[StateMachine] Cannot change to a null state");
                 return;
             }
 
             if (CurrentState == newState)
             {
-                StateUtility.LogStateWarning("StateMachine", $"Already in state: {newState.GetType().Name}");
+                GameLogger.LogWarning($"[StateMachine] Already in state: {newState.GetType().Name}");
                 return;
             }
 
@@ -70,7 +71,7 @@ namespace Gameplay.App.State
 
             string fromState = PreviousState != null ? PreviousState.GetType().Name : "null";
             string toState = CurrentState.GetType().Name;
-            StateUtility.LogStateTransition(fromState, toState);
+            GameLogger.Log($"State transition: {fromState} -> {toState}");
         }
 
         /// <summary>

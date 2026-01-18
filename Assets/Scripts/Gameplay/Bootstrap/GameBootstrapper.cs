@@ -1,6 +1,6 @@
 using Core.Logging;
 using Gameplay.App.State;
-using Gameplay.App.State.States; // Assuming BootstrapState is here
+using Gameplay.App.State.States;
 using VContainer;
 using VContainer.Unity;
 
@@ -9,13 +9,13 @@ namespace Gameplay.Bootstrap
     public class GameBootstrapper : IStartable
     {
         private readonly IGameStateManager _gameStateManager;
-        private readonly IStateFactory _stateFactory;
+        private readonly IObjectResolver _container;
 
         [Inject]
-        public GameBootstrapper(IGameStateManager gameStateManager, IStateFactory stateFactory)
+        public GameBootstrapper(IGameStateManager gameStateManager, IObjectResolver container)
         {
             _gameStateManager = gameStateManager;
-            _stateFactory = stateFactory;
+            _container = container;
         }
 
         public void Start()
@@ -23,7 +23,7 @@ namespace Gameplay.Bootstrap
             GameLogger.Log("GameBootstrapper starting...");
 
             // Create and enter the first state
-            BootstrapState bootstrapState = _stateFactory.CreateState<BootstrapState>();
+            BootstrapState bootstrapState = _container.Resolve<BootstrapState>();
             _gameStateManager.Initialize(bootstrapState);
         }
     }

@@ -1,5 +1,4 @@
 using System;
-using Gameplay.App.State.States;
 using Gameplay.Bootstrap;
 using Core.Logging;
 using Unity.Netcode;
@@ -10,23 +9,28 @@ using VContainer.Unity;
 namespace Gameplay.App.State
 {
     /// <summary>
-    /// Manages game state synchronization across the network.
-    /// Integrates with existing GameStateManager.
+    /// Manages game phase synchronization across network.
+    /// Controls preparation countdown and game duration.
     /// </summary>
     public class NetworkGameStateManager : NetworkBehaviour
     {
         /// <summary>
-        /// The current game phase.
+        /// Whether game is currently in preparation phase (countdown).
         /// </summary>
-        private NetworkVariable<GamePhase> _currentPhase = new NetworkVariable<GamePhase>(GamePhase.Waiting);
+        private NetworkVariable<bool> _isInPreparation = new NetworkVariable<bool>(false);
 
         /// <summary>
-        /// The time when the current phase started.
+        /// Whether game is currently in playing phase.
+        /// </summary>
+        private NetworkVariable<bool> _isInPlaying = new NetworkVariable<bool>(false);
+
+        /// <summary>
+        /// The time when current phase started.
         /// </summary>
         private NetworkVariable<float> _phaseStartTime = new NetworkVariable<float>(0f);
 
         /// <summary>
-        /// The duration of the current phase.
+        /// The duration of current phase.
         /// </summary>
         private NetworkVariable<float> _phaseDuration = new NetworkVariable<float>(0f);
 
@@ -34,17 +38,46 @@ namespace Gameplay.App.State
         private IGameStateManager _gameStateManager;
 
         /// <summary>
-        /// Event triggered when the game phase changes.
+        /// Event triggered when game phase changes.
         /// </summary>
+        public event Action<bool> OnPreparationChanged;
+        public event Action<bool> OnPlayingChanged;
         public event Action<GamePhase> OnPhaseChanged;
 
         /// <summary>
-        /// Get the current phase.
+        /// Get whether game is in preparation phase.
         /// </summary>
-        public GamePhase CurrentPhase => _currentPhase.Value;
+        public bool IsInPreparation => _isInPreparation.Value;
 
         /// <summary>
-        /// Get the time remaining in the current phase.
+        /// Get whether game is in playing phase.
+        /// </summary>
+        public bool IsInPlaying => _isInPlaying.Value;
+
+        /// <summary>
+        /// Get current game phase.
+        /// </summary>
+        public GamePhase Phase
+        {
+            get
+            {
+                if (_isInPreparation.Value)
+                {
+                    return GamePhase.Preparation;
+                }
+                else if (_isInPlaying.Value)
+                {
+                    return GamePhase.Playing;
+                }
+                else
+                {
+                    return GamePhase.Waiting;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get time remaining in current phase.
         /// </summary>
         public float TimeRemaining
         {
@@ -79,7 +112,8 @@ namespace Gameplay.App.State
         {
             base.OnNetworkSpawn();
 
-            _currentPhase.OnValueChanged += OnCurrentPhaseChanged;
+            _isInPreparation.OnValueChanged += OnIsInPreparationChanged;
+            _isInPlaying.OnValueChanged += OnIsInPlayingChanged;
         }
 
         /// <summary>
@@ -89,7 +123,8 @@ namespace Gameplay.App.State
         {
             base.OnNetworkDespawn();
 
-            _currentPhase.OnValueChanged -= OnCurrentPhaseChanged;
+            _isInPreparation.OnValueChanged -= OnIsInPreparationChanged;
+            _isInPlaying.OnValueChanged -= OnIsInPlayingChanged;
         }
 
         /// <summary>
@@ -102,55 +137,72 @@ namespace Gameplay.App.State
             // Only allow host to start game
             if (rpcParams.Receive.SenderClientId != NetworkManager.Singleton.LocalClientId)
             {
-                GameLogger.LogWarning("Only host can start the game");
+                GameLogger.LogWarning("Only host can start game");
                 return;
             }
 
-            // Start preparation phase
-            ChangePhase(GamePhase.Preparation, 10f);
+            // Start preparation phase (countdown)
+            StartPreparationPhase(10f);
         }
 
         /// <summary>
-        /// Change the game phase (server only).
+        /// Start preparation phase (countdown).
         /// </summary>
-        /// <param name="newPhase">The new phase</param>
-        /// <param name="duration">The duration of the phase</param>
-        public void ChangePhase(GamePhase newPhase, float duration)
+        /// <param name="duration">Countdown duration in seconds</param>
+        public void StartPreparationPhase(float duration)
         {
             if (!IsServer)
             {
-                GameLogger.LogWarning("Only the server can change game phase");
+                GameLogger.LogWarning("Only server can start preparation phase");
                 return;
             }
 
-            _currentPhase.Value = newPhase;
+            _isInPreparation.Value = true;
+            _isInPlaying.Value = false;
             _phaseStartTime.Value = Time.time;
             _phaseDuration.Value = duration;
 
-            // Notify clients
-            ChangePhaseClientRpc(newPhase, duration);
+            ShowCountdownClientRpc(Mathf.RoundToInt(duration));
 
-            // Integrate with existing state manager
-            if (_gameStateManager != null)
+            GameLogger.Log($"Started preparation phase for {duration} seconds");
+        }
+
+        /// <summary>
+        /// Start playing phase.
+        /// </summary>
+        /// <param name="duration">Game duration in seconds (default: 180s = 3 minutes)</param>
+        public void StartPlayingPhase(float duration = 180f)
+        {
+            if (!IsServer)
             {
-                switch (newPhase)
-                {
-                    case GamePhase.Waiting:
-                        _gameStateManager.ChangeState<LobbyState>();
-                        break;
-                    case GamePhase.Preparation:
-                        // Stay in lobby or transition to game
-                        break;
-                    case GamePhase.Playing:
-                        _gameStateManager.ChangeState<GameplayState>();
-                        break;
-                    case GamePhase.Results:
-                        _gameStateManager.ChangeState<GameOverState>();
-                        break;
-                }
+                GameLogger.LogWarning("Only server can start playing phase");
+                return;
             }
 
-            GameLogger.Log($"Changed phase to {newPhase} for {duration} seconds");
+            _isInPreparation.Value = false;
+            _isInPlaying.Value = true;
+            _phaseStartTime.Value = Time.time;
+            _phaseDuration.Value = duration;
+
+            GameLogger.Log($"Started playing phase for {duration} seconds");
+        }
+
+        /// <summary>
+        /// End current game phase.
+        /// </summary>
+        public void EndGame()
+        {
+            if (!IsServer)
+            {
+                GameLogger.LogWarning("Only server can end game");
+                return;
+            }
+
+            _isInPreparation.Value = false;
+            _isInPlaying.Value = false;
+            _phaseDuration.Value = 0f;
+
+            GameLogger.Log("Ended game phase");
         }
 
         /// <summary>
@@ -170,49 +222,32 @@ namespace Gameplay.App.State
             }
         }
 
-        /// <summary>
-        /// Handle phase timeout.
-        /// </summary>
         private void HandlePhaseTimeout()
         {
-            switch (_currentPhase.Value)
+            if (_isInPreparation.Value)
             {
-                case GamePhase.Preparation:
-                    // Start playing phase (e.g., 180 seconds = 3 minutes)
-                    ChangePhase(GamePhase.Playing, 180f);
-                    break;
-
-                case GamePhase.Playing:
-                    // End game and show results
-                    ChangePhase(GamePhase.Results, 30f);
-                    break;
-
-                case GamePhase.Results:
-                    // Return to waiting
-                    ChangePhase(GamePhase.Waiting, 0f);
-                    break;
+                // Transition to playing
+                StartPlayingPhase(180f);
+            }
+            else if (_isInPlaying.Value)
+            {
+                // End game
+                EndGame();
             }
         }
 
-        /// <summary>
-        /// Handle current phase changes.
-        /// </summary>
-        private void OnCurrentPhaseChanged(GamePhase previousValue, GamePhase newValue)
+        private void OnIsInPreparationChanged(bool previousValue, bool newValue)
         {
-            OnPhaseChanged?.Invoke(newValue);
-
-            GameLogger.Log($"Phase changed from {previousValue} to {newValue}");
+            OnPreparationChanged?.Invoke(newValue);
+            OnPhaseChanged?.Invoke(Phase);
+            GameLogger.Log($"Preparation phase: {newValue}");
         }
 
-        /// <summary>
-        /// Notify clients of phase change.
-        /// </summary>
-        [ClientRpc]
-        private void ChangePhaseClientRpc(GamePhase newPhase, float duration)
+        private void OnIsInPlayingChanged(bool previousValue, bool newValue)
         {
-            // Clients receive the phase change notification
-            // The NetworkVariable will already be updated
-            GameLogger.Log($"Client received phase change to {newPhase}");
+            OnPlayingChanged?.Invoke(newValue);
+            OnPhaseChanged?.Invoke(Phase);
+            GameLogger.Log($"Playing phase: {newValue}");
         }
 
         /// <summary>
@@ -220,21 +255,10 @@ namespace Gameplay.App.State
         /// </summary>
         /// <param name="seconds">The number of seconds to count down</param>
         [ClientRpc]
-        public void ShowCountdownClientRpc(int seconds)
+        private void ShowCountdownClientRpc(int seconds)
         {
             // UI can subscribe to this to show countdown
-            GameLogger.Log($"Countdown: {seconds}");
+            GameLogger.Log($"Countdown: {seconds} seconds");
         }
-    }
-
-    /// <summary>
-    /// Game phases.
-    /// </summary>
-    public enum GamePhase
-    {
-        Waiting,      // Waiting for players
-        Preparation,  // 10 second countdown
-        Playing,      // Active gameplay
-        Results       // Show scores
     }
 }

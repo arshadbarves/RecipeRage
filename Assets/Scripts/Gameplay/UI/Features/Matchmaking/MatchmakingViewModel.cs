@@ -23,6 +23,8 @@ namespace Gameplay.UI.Features.Matchmaking
         public BindableProperty<string> PlayerCountText { get; } = new BindableProperty<string>("0/0");
         public BindableProperty<string> SearchTimeText { get; } = new BindableProperty<string>("0:00");
         public BindableProperty<bool> IsMatchFound { get; } = new BindableProperty<bool>(false);
+        public BindableProperty<string> GameModeText { get; } = new BindableProperty<string>("FREE FOR ALL");
+        public BindableProperty<string> MapNameText { get; } = new BindableProperty<string>("Loading...");
 
         private IMatchmakingService MatchmakingService => _sessionManager.SessionContainer?.Resolve<IMatchmakingService>();
 
@@ -38,9 +40,34 @@ namespace Gameplay.UI.Features.Matchmaking
             StatusText.Value = _localization.GetText("matchmaking_status_searching");
             IsMatchFound.Value = false;
             _rawSearchTime = 0f;
-            
+
+            // Get current game mode from service if available
+            var service = MatchmakingService;
+            if (service != null)
+            {
+                // Update player count text with current values
+                PlayerCountText.Value = $"{service.PlayersFound}/{service.RequiredPlayers}";
+            }
+
+            // Load map data (similar to LobbyViewModel)
+            LoadMapData();
+
             SubscribeToEvents();
             StartTimer();
+        }
+
+        private void LoadMapData()
+        {
+            TextAsset jsonFile = Resources.Load<TextAsset>("UI/Data/Maps");
+            if (jsonFile != null)
+            {
+                var mapDatabase = JsonUtility.FromJson<Gameplay.UI.Data.MapDatabase>(jsonFile.text);
+                var currentMap = mapDatabase?.GetCurrentMap();
+                if (currentMap != null)
+                {
+                    MapNameText.Value = currentMap.name;
+                }
+            }
         }
 
         public void OnHide()

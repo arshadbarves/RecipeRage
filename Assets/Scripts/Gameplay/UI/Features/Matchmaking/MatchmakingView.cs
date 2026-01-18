@@ -68,6 +68,8 @@ namespace Gameplay.UI.Features.Matchmaking
                 _viewModel.PlayerCountText.Bind(UpdatePlayerCount);
                 _viewModel.SearchTimeText.Bind(OnTimerUpdate);
                 _viewModel.IsMatchFound.Bind(OnMatchFoundChanged);
+                _viewModel.GameModeText.Bind(UpdateGameMode);
+                _viewModel.MapNameText.Bind(UpdateMapName);
             }
 
             // Start Update Loop for animations will remain handled by the system calling Update()
@@ -99,13 +101,27 @@ namespace Gameplay.UI.Features.Matchmaking
         private void OnCancelClicked()
         {
             Debug.Log("[MatchmakingView] Cancel button clicked");
+            // Just call CancelMatchmaking - the MatchmakingService will fire OnMatchmakingCancelled
+            // which MatchmakingState listens to and will transition back to MainMenuState
+            // This is the proper state machine pattern - let the state handle cleanup and navigation
             _viewModel?.CancelMatchmaking();
-            UIService.GoBack();
         }
 
         private void UpdateStatus(string status)
         {
             // _statusLabel.text = status;
+        }
+
+        private void UpdateGameMode(string gameMode)
+        {
+            if (_modeLabel != null)
+                _modeLabel.text = gameMode;
+        }
+
+        private void UpdateMapName(string mapName)
+        {
+            if (_titleLabel != null)
+                _titleLabel.text = $"MATCHMAKING - {mapName.ToUpper()}";
         }
 
         private void UpdatePlayerCount(string countStr)

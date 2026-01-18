@@ -128,14 +128,12 @@ namespace Gameplay.Bootstrap
             builder.Register<MaintenanceService>(Lifetime.Singleton).As<IMaintenanceService>();
 
             // 6. State Management
-            builder.Register<StateFactory>(Lifetime.Singleton).As<IStateFactory>();
             builder.Register<GameStateManager>(Lifetime.Singleton).As<IGameStateManager>().As<IDisposable>();
 
             // Register Games States
             builder.Register<BootstrapState>(Lifetime.Transient);
             builder.Register<LoginState>(Lifetime.Transient);
             builder.Register<MainMenuState>(Lifetime.Transient);
-            builder.Register<LobbyState>(Lifetime.Transient);
             builder.Register<MatchmakingState>(Lifetime.Transient);
             builder.Register<SessionLoadingState>(Lifetime.Transient);
             builder.Register<GameplayState>(Lifetime.Transient);

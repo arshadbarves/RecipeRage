@@ -118,7 +118,7 @@ namespace Gameplay
                 return;
             }
 
-            _networkGameStateManager.ChangePhase(GamePhase.Results, 30f);
+            _networkGameStateManager.EndGame();
 
             GameLogger.Log("Round ended");
         }
