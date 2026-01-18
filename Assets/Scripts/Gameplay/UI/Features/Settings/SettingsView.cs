@@ -18,7 +18,6 @@ namespace Gameplay.UI.Features.Settings
     public class SettingsView : BaseUIScreen
     {
         [Inject] private SettingsViewModel _viewModel;
-        [Inject] private IUIService _uiService;
         [Inject] private SessionManager _sessionManager;
         [Inject] private IAuthService _authService;
 
@@ -229,7 +228,7 @@ namespace Gameplay.UI.Features.Settings
             if (_authService != null && !string.IsNullOrEmpty(_authService.EosProductUserId))
             {
                 GUIUtility.systemCopyBuffer = _authService.EosProductUserId;
-                _uiService?.ShowNotification("Account UID copied to clipboard!", NotificationType.Success);
+                UIService?.ShowNotification("Account UID copied to clipboard!", NotificationType.Success);
             }
         }
 
@@ -392,23 +391,23 @@ namespace Gameplay.UI.Features.Settings
         private void OnResetClicked()
         {
             _viewModel.ResetToDefaults();
-            _uiService?.ShowNotification("Settings Reset to Defaults", NotificationType.Success);
+            UIService?.ShowNotification("Settings Reset to Defaults", NotificationType.Success);
         }
 
         private void OnClearDataClicked()
         {
             _viewModel.ClearData();
-            _uiService?.ShowNotification("All Data Cleared", NotificationType.Warning);
+            UIService?.ShowNotification("All Data Cleared", NotificationType.Warning);
         }
 
         private void OnBackClicked()
         {
-            _uiService?.GoBack(false);
+            UIService?.GoBack(false);
         }
 
         private void OnEditJoystickClicked()
         {
-            _uiService?.ShowNotification("Joystick Editor Coming Soon", NotificationType.Info);
+            UIService?.ShowNotification("Joystick Editor Coming Soon", NotificationType.Info);
         }
 
         private void OnHelpClicked()
@@ -433,7 +432,7 @@ namespace Gameplay.UI.Features.Settings
 
         private void OnCreditsClicked()
         {
-            _uiService?.ShowNotification("Credits", NotificationType.Info);
+            UIService?.ShowNotification("Credits", NotificationType.Info);
         }
 
         private void OnParentGuideClicked()

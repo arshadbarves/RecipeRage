@@ -93,3 +93,8 @@ main_menu_rank_vanguard,VANGUARD,VANGUARDIA
 main_menu_rank_bronze_i,BRONZE I,BRONCE I
 settings_warning_guest,Guest Account: Login to save progress!,Cuenta de invitado: Inicia sesión para guardar!
 guest_login_label,GUEST,INVITADO
+matchmaking_header_title,MATCHMAKING,MATCHMAKING
+matchmaking_mode_ffa,FREE FOR ALL,TODOS CONTRA TODOS
+matchmaking_players_found_sub,PLAYERS FOUND,JUGADORES ENCONTRADOS
+matchmaking_est_time,ESTIMATED TIME: {0},TIEMPO ESTIMADO: {0}
+matchmaking_match_ready,MATCH READY - STARTING...,PARTIDA LISTA - INICIANDO...

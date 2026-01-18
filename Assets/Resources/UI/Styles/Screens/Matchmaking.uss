@@ -1,0 +1,197 @@
+@import url("project://database/Assets/Resources/UI/Themes/DesignSystem.uss?fileID=7433441132597879392&guid=74282f7acd0164afea4d8dc9dc05a968&type=3#DesignSystem");
+
+.matchmaking-root {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: absolute;
+}
+
+
+
+.header-container {
+    height: 100px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 30px 40px;
+}
+
+.mode-info {
+    flex-direction: column;
+}
+
+.header-title {
+    font-size: 60px;
+    -unity-font-definition: var(--font-anton-sdf);
+    color: var(--color-text-light);
+    margin: 0;
+    padding: 0;
+    letter-spacing: 2px;
+}
+
+.mode-label {
+    color: var(--theme-yellow);
+    -unity-font-definition: var(--font-rajdhani-sdf);
+    -unity-font-style: bold;
+    font-size: 18px;
+    letter-spacing: 4px;
+    margin-bottom: 5px;
+}
+
+.center-stage {
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+}
+
+.ring-container {
+    width: 300px;
+    height: 300px;
+    align-items: center;
+    justify-content: center;
+}
+
+.user-avatar-container {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border-width: 4px;
+    border-color: var(--theme-yellow);
+    overflow: hidden;
+    background-color: rgb(0, 0, 0);
+    align-items: center;
+    justify-content: center;
+}
+
+.user-avatar {
+    width: 100%;
+    height: 100%;
+    -unity-background-scale-mode: scale-to-fill;
+    background-color: rgb(51, 51, 51);
+}
+
+.pulse-wave {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-width: 2px;
+    border-color: var(--theme-yellow);
+    border-radius: 50%;
+    opacity: 0;
+}
+
+.slots-ring {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.slot-tick {
+    position: absolute;
+    width: 6px;
+    height: 20px;
+    background-color: rgb(34, 34, 34);
+    border-radius: 2px;
+    top: 0;
+    left: 50%;
+    margin-left: -3px;
+    transform-origin: 50% 150px;
+}
+
+.slot-tick.active {
+    background-color: var(--theme-yellow);
+    height: 25px;
+}
+
+.status-area {
+    margin-top: 60px;
+    align-items: center;
+}
+
+.count-display {
+    flex-direction: row;
+    align-items: baseline;
+}
+
+.count-current {
+    font-size: 80px;
+    color: var(--theme-yellow);
+    -unity-font-definition: var(--font-anton-sdf);
+    margin: 0;
+    padding: 0;
+}
+
+.count-separator {
+    font-size: 80px;
+    color: rgb(51, 51, 51);
+    -unity-font-definition: var(--font-anton-sdf);
+    margin: 0 5px;
+    padding: 0;
+}
+
+.count-max {
+    font-size: 80px;
+    color: rgb(51, 51, 51);
+    -unity-font-definition: var(--font-anton-sdf);
+    margin: 0;
+    padding: 0;
+}
+
+.count-sub {
+    color: rgb(136, 136, 136);
+    font-size: 18px;
+    -unity-font-style: bold;
+    letter-spacing: 3px;
+    margin-top: 5px;
+    -unity-font-definition: var(--font-rajdhani-sdf);
+}
+
+.timer-label {
+    margin-top: 15px;
+    color: var(--theme-yellow);
+    font-size: 20px;
+    -unity-font-definition: var(--font-rajdhani-sdf);
+}
+
+.footer {
+    height: 150px;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 40px;
+}
+
+.cancel-btn {
+    background-color: transparent;
+    border-color: rgb(51, 51, 51);
+    border-width: 2px;
+    border-radius: 50px;
+    padding: 15px 50px;
+    color: rgb(102, 102, 102);
+    font-size: 20px;
+    -unity-font-style: bold;
+    letter-spacing: 2px;
+    -unity-font-definition: var(--font-rajdhani-sdf);
+    transition-duration: 0.2s;
+    height: 100px;
+}
+
+.cancel-btn:hover {
+    border-color: rgb(255, 255, 255);
+    color: rgb(255, 255, 255);
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.cancel-btn:active {
+    scale: 0.95;
+}
+
+.shader-background {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: white;
+    -unity-material: url("project://database/Assets/Materials/UI/UI_TechGridBackground.mat?fileID=2100000&guid=055c17f7b6df440a6ae73b85eb5c8a84&type=2#UI_TechGridBackground");
+}

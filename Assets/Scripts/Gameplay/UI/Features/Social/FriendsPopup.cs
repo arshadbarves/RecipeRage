@@ -20,9 +20,6 @@ namespace Gameplay.UI.Features.Social
     public class FriendsPopup : BaseUIScreen
     {
         [Inject]
-        private IUIService _uiService;
-
-        [Inject]
         private SessionManager _sessionManager;
 
         private Button _closeButton;
@@ -193,7 +190,7 @@ namespace Gameplay.UI.Features.Social
             try
             {
                 await _friendsService.AcceptFriendRequestAsync(request.Id);
-                _uiService?.ShowNotification($"You are now friends with {request.FromUserName}!", NotificationType.Success);
+                UIService?.ShowNotification($"You are now friends with {request.FromUserName}!", NotificationType.Success);
                 LoadFriendRequests();
                 LoadFriends();
             }
@@ -215,7 +212,7 @@ namespace Gameplay.UI.Features.Social
         {
             if (_friendsService == null) return;
             GUIUtility.systemCopyBuffer = _friendsService.MyFriendCode;
-            _uiService?.ShowNotification("Copied!", NotificationType.Success);
+            UIService?.ShowNotification("Copied!", NotificationType.Success);
         }
 
         private void OnFriendsListUpdated() => LoadFriends();

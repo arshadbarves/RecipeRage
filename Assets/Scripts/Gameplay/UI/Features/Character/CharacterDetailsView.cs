@@ -23,9 +23,6 @@ namespace Gameplay.UI.Features.Character
         [Inject]
         private SessionManager _sessionManager;
 
-        [Inject]
-        private IUIService _uiService;
-
         private ICharacterService _characterService;
         private ISkinsService _skinsService;
 
@@ -314,7 +311,7 @@ namespace Gameplay.UI.Features.Character
             if (!isUnlocked)
             {
                 GameLogger.Log($"Skin is locked: {skin.name}");
-                _uiService?.ShowNotification($"{skin.name} is locked! Cost: {skin.Price} coins", NotificationType.Info, 3f);
+                UIService?.ShowNotification($"{skin.name} is locked! Cost: {skin.Price} coins", NotificationType.Info, 3f);
                 return;
             }
 
@@ -323,25 +320,19 @@ namespace Gameplay.UI.Features.Character
             if (success)
             {
                 _selectedSkinId = skin.id;
-                _uiService?.ShowNotification($"Equipped {skin.name}", NotificationType.Success, 2f);
+                UIService?.ShowNotification($"Equipped {skin.name}", NotificationType.Success, 2f);
                 PopulateSkins();
                 GameLogger.Log($"Skin equipped: {skin.name}");
             }
             else
             {
-                _uiService?.ShowNotification("Failed to equip skin", NotificationType.Error, 2f);
+                UIService?.ShowNotification("Failed to equip skin", NotificationType.Error, 2f);
             }
         }
 
         private void OnBackClicked()
         {
-            if (_uiService != null)
-            {
-                bool wentBack = _uiService.GoBack(true);
-
-                if (!wentBack)
-                    _uiService.Show<MainMenuView>(true, false);
-            }
+            UIService.GoBack();
         }
 
         private void OnSelectClicked()
@@ -357,14 +348,14 @@ namespace Gameplay.UI.Features.Character
             if (success)
             {
                 GameLogger.Log($"Character selected: {_currentCharacter.DisplayName}");
-                _uiService?.ShowNotification($"Selected {_currentCharacter.DisplayName}", NotificationType.Success, 2f);
+                UIService?.ShowNotification($"Selected {_currentCharacter.DisplayName}", NotificationType.Success, 2f);
                 UpdateSelectButton();
                 OnBackClicked();
             }
             else
             {
                 GameLogger.LogError($"Failed to select character: {_currentCharacter.DisplayName}");
-                _uiService?.ShowNotification("Failed to select character", NotificationType.Error, 2f);
+                UIService?.ShowNotification("Failed to select character", NotificationType.Error, 2f);
             }
         }
 

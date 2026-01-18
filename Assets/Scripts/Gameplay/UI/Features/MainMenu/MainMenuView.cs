@@ -18,7 +18,6 @@ namespace Gameplay.UI.Features.MainMenu
     {
         [Inject] private MainMenuViewModel _viewModel;
         [Inject] private IObjectResolver _container;
-        [Inject] private IUIService _uiService;
         [Inject] private IEventBus _eventBus;
         [Inject] private SessionManager _sessionManager;
         [Inject] private Core.Localization.ILocalizationManager _localizationManager;

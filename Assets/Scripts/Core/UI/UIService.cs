@@ -11,14 +11,6 @@ using VContainer.Unity;
 
 namespace Core.UI
 {
-    /// <summary>
-    /// Professional UI Service using category-based stack management
-    /// TYPE-BASED: Uses class Type instead of UIScreenType enum
-    /// </summary>
-    /// <summary>
-    /// Professional UI Service using category-based stack management
-    /// TYPE-BASED: Uses class Type instead of UIScreenType enum
-    /// </summary>
     public class UIService : IUIService, IStartable, IDisposable
     {
         private UIDocument _uiDocument;
@@ -419,7 +411,7 @@ namespace Core.UI
             return _stackManager.IsVisible(screenType);
         }
 
-        public IReadOnlyList<BaseUIScreen> GetVisibleScreens()
+        private IReadOnlyList<BaseUIScreen> GetVisibleScreens()
         {
             var visibleTypes = _stackManager.GetAllVisible();
             var visibleScreens = new List<BaseUIScreen>();

@@ -1,7 +1,7 @@
 <UXML xmlns="UnityEngine.UIElements" editor-extension-mode="False">
     <Style src="project://database/Assets/UI/USS/Settings.uss?fileID=7433441132597879392&amp;guid=a4f0b2b03ba2f40bc8aa46dcf54152ef&amp;type=3#Settings"/>
     <VisualElement name="settings-root" class="settings-root">
-        <VisualElement name="shader-background" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; z-index: 0; background-color: white; -unity-material: url(&quot;project://database/Assets/Shaders/UI/Unlit_TechGridBackground.mat?fileID=2100000&amp;guid=35e2b2ac29f324d979bb1c833cf93c4c&amp;type=2#Unlit_TechGridBackground&quot;);"/>
+        <VisualElement name="shader-background" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; z-index: 0; background-color: white; -unity-material: url(&quot;project://database/Assets/Materials/UI/UI_TechGridBackground.mat?fileID=2100000&amp;guid=055c17f7b6df440a6ae73b85eb5c8a84&amp;type=2#UI_TechGridBackground&quot;);"/>
         <TabView name="settings-tabs" class="settings-tab-view">
             <Tab label="GENERAL" name="tab-general" icon-image="project://database/Assets/UI/Icons/sliders.png?fileID=2800000&amp;guid=65c9396900fd04afdbd5a3cdb3f55712&amp;type=3#sliders" class="settings-tab">
                 <ScrollView class="tab-content-scroll">
@@ -229,13 +229,10 @@
                             <Label text="ACCOUNT" class="header-title"/>
                             <Label text="PROFILE &amp; SECURITY" class="header-sub"/>
                         </VisualElement>
-                        
-                        <!-- Guest Warning Block -->
                         <VisualElement name="guest-warning-block" class="guest-warning">
                             <VisualElement class="warning-icon icon-triangle-exclamation"/>
                             <Label text="Guest Account: Login to save progress!" class="warning-text"/>
                         </VisualElement>
-
                         <VisualElement class="account-card">
                             <VisualElement class="account-avatar-container">
                                 <VisualElement class="avatar-lg"/>

@@ -1,39 +1,33 @@
-<ns0:UXML xmlns:ns0="UnityEngine.UIElements" editor-extension-mode="False">
-    <Style src="project://database/Assets/Resources/UI/Styles/Screens/MatchmakingScreen.uss?fileID=7433441132597879392&amp;guid=a717c98668a174517a65cbe51354289b&amp;type=3#MatchmakingScreen" />
-    <ns0:VisualElement name="matchmaking-screen" class="matchmaking-screen">
-        <ns0:VisualElement name="shader-background" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; z-index: 0; background-color: white; -unity-material: url(&quot;project://database/Assets/Shaders/UI/Unlit_TechGridBackground.mat?fileID=2100000&amp;guid=35e2b2ac29f324d979bb1c833cf93c4c&amp;type=2#Unlit_TechGridBackground&quot;);" />
-        
-        <ns0:VisualElement name="content-layout" class="content-layout">
-            
-            <!-- Left Panel: Controls -->
-            <ns0:VisualElement name="side-panel" class="side-panel">
-                <ns0:Label text="MATCHMAKING" class="side-title" />
-                
-                <ns0:VisualElement class="spacer" />
-
-                <ns0:VisualElement name="status-container" class="status-container">
-                    <ns0:VisualElement name="status-indicator" class="status-indicator searching">
-                         <ns0:VisualElement class="status-indicator-inner" />
-                    </ns0:VisualElement>
-                    <ns0:Label name="status-text" text="SEARCHING..." class="status-text" />
-                    <ns0:Label name="search-time" text="00:00" class="search-timer" />
-                </ns0:VisualElement>
-
-                <ns0:VisualElement class="spacer" />
-                
-                <ns0:Button name="cancel-button" text="CANCEL SEARCH" class="play-btn-big cancel-btn" />
-            </ns0:VisualElement>
-
-            <!-- Right Panel: Visuals/Players -->
-            <ns0:VisualElement name="grid-area" class="grid-area">
-                <ns0:VisualElement class="grid-header">
-                    <ns0:Label text="PLAYERS FOUND" class="grid-title" />
-                    <ns0:Label name="player-count" text="1/8" class="grid-count" />
-                </ns0:VisualElement>
-                
-                <ns0:VisualElement name="player-list" class="player-list-grid" />
-            </ns0:VisualElement>
-            
-        </ns0:VisualElement>
-    </ns0:VisualElement>
-</ns0:UXML>
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Resources/UI/Styles/Screens/Matchmaking.uss?fileID=7433441132597879392&amp;guid=22b7f88cd9c6b4b87b5b46a3212e1fb5&amp;type=3#Matchmaking"/>
+    <ui:VisualElement name="Root" class="matchmaking-root">
+        <ui:VisualElement name="shader-background" class="shader-background"/>
+        <ui:VisualElement class="header-container">
+            <ui:VisualElement class="mode-info">
+                <ui:Label text="FREE FOR ALL" name="ModeLabel" class="mode-label"/>
+                <ui:Label text="MATCHMAKING" name="TitleLabel" class="header-title"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement class="center-stage">
+            <ui:VisualElement class="ring-container">
+                <ui:VisualElement name="PulseWave" class="pulse-wave"/>
+                <ui:VisualElement name="SlotsRing" class="slots-ring"/>
+                <ui:VisualElement class="user-avatar-container">
+                    <ui:VisualElement name="UserAvatar" class="user-avatar"/>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement class="status-area">
+                <ui:VisualElement class="count-display">
+                    <ui:Label text="1" name="CurrentCountLabel" class="count-current"/>
+                    <ui:Label text="/" class="count-separator"/>
+                    <ui:Label text="10" name="MaxCountLabel" class="count-max"/>
+                </ui:VisualElement>
+                <ui:Label text="PLAYERS FOUND" name="StatusSubLabel" class="count-sub"/>
+                <ui:Label text="ESTIMATED TIME: 00:45" name="TimerLabel" class="timer-label"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement class="footer">
+            <ui:Button text="CANCEL SEARCH" name="CancelButton" class="cancel-btn"/>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

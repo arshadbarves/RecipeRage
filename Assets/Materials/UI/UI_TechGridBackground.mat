@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Unlit_TechGridBackground
+  m_Name: UI_TechGridBackground
   m_Shader: {fileID: 4800000, guid: 74a02887cff414cb2800c08464391a08, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -27,17 +27,17 @@ Material:
     m_Ints: []
     m_Floats:
     - _CorrectAspect: 1
-    - _GradientFalloff: 1
-    - _GradientRadius: 2
-    - _GridAlpha: 0.01
-    - _GridSize: 75
+    - _GradientFalloff: 5
+    - _GradientRadius: 10
+    - _GridAlpha: 0.03
+    - _GridSize: 100
     - _LineWidth: 1
-    - _VignetteIntensity: 1
-    - _VignetteRoundness: 0.2
-    - _VignetteSmoothness: 0.5
+    - _VignetteIntensity: 1.2
+    - _VignetteRoundness: 1
+    - _VignetteSmoothness: 1.5
     m_Colors:
     - _CenterColor: {r: 0.101999976, g: 0.12499998, b: 0.17299995, a: 1}
-    - _EdgeColor: {r: 0.05490196, g: 0.05490196, b: 0.05490196, a: 1}
+    - _EdgeColor: {r: 0, g: 0, b: 0, a: 1}
     - _GridColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

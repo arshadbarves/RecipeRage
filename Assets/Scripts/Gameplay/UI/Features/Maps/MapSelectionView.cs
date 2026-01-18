@@ -22,9 +22,6 @@ namespace Gameplay.UI.Features.Maps
         [Inject]
         private IRemoteConfigService _remoteConfigService;
 
-        [Inject]
-        private IUIService _uiService;
-
         private MapDatabase _mapDatabase;
         private Action<MapInfo> _onMapSelected;
 
@@ -352,7 +349,7 @@ namespace Gameplay.UI.Features.Maps
             _onMapSelected?.Invoke(map);
 
             // Show toast
-            _uiService?.ShowNotification($"Map changed to {map.name}", NotificationType.Success, 2f);
+            UIService?.ShowNotification($"Map changed to {map.name}", NotificationType.Success, 2f);
 
             // Go back
             OnBackClicked();
@@ -360,7 +357,7 @@ namespace Gameplay.UI.Features.Maps
 
         private void OnBackClicked()
         {
-            _uiService?.GoBack(false);
+            UIService?.GoBack(false);
         }
 
         protected override void OnDispose()

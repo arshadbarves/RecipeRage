@@ -40,7 +40,7 @@ namespace Gameplay.App.State.States
             // Show MainMenu UI
             _uiService?.Show<MainMenuView>(false, true);
 
-            await UniTask.Delay(1000);
+            await UniTask.Delay(1500);
             _uiService?.Hide<LoadingView>();
 
             // Check for first-time username
