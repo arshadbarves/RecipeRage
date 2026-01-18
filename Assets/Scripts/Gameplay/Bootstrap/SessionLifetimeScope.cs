@@ -15,28 +15,24 @@ namespace Gameplay.Bootstrap
     {
         protected override void Configure(IContainerBuilder builder)
         {
-            // Team Manager
-            builder.Register<TeamManager>(Lifetime.Singleton).As<ITeamManager>();
-
-            // EOS Lobby Manager (Get from EOSManager singleton)
-            builder.Register(resolver => EOSManager.Instance.GetOrCreateManager<EOSLobbyManager>(), Lifetime.Scoped);
-
-            // Lobby Service
-            builder.Register<LobbyService>(Lifetime.Singleton).As<ILobbyManager>();
-
-            // Player Manager
-            builder.Register<PlayerManager>(Lifetime.Singleton).As<IPlayerManager>();
-
-            // Matchmaking Service
-            builder.Register<MatchmakingService>(Lifetime.Singleton).As<IMatchmakingService>();
-
-            // UI Stack Manager
-            builder.Register<UIScreenStackManager>(Lifetime.Singleton).As<IUIScreenStackManager>();
-
             // 1. Networking Service Container (The Main Controller)
+            // Register this FIRST as other services depend on it
             builder.Register<Gameplay.App.Networking.NetworkingServiceContainer>(Lifetime.Singleton)
                 .As<Core.Networking.INetworkingServices>()
                 .As<System.IDisposable>();
+
+            // 2. Delegate Interface Registrations to Container
+            // This ensures we use the EXACT SAME instances that NetworkingServiceContainer created
+            builder.Register(r => r.Resolve<Core.Networking.INetworkingServices>().LobbyManager, Lifetime.Singleton).As<ILobbyManager>();
+            builder.Register(r => r.Resolve<Core.Networking.INetworkingServices>().PlayerManager, Lifetime.Singleton).As<IPlayerManager>();
+            builder.Register(r => r.Resolve<Core.Networking.INetworkingServices>().MatchmakingService, Lifetime.Singleton).As<IMatchmakingService>();
+            builder.Register(r => r.Resolve<Core.Networking.INetworkingServices>().TeamManager, Lifetime.Singleton).As<ITeamManager>();
+
+            // EOS Lobby Manager (Wrapper for EOS SDK)
+            builder.Register(resolver => EOSManager.Instance.GetOrCreateManager<EOSLobbyManager>(), Lifetime.Scoped);
+
+            // UI Stack Manager
+            builder.Register<UIScreenStackManager>(Lifetime.Singleton).As<IUIScreenStackManager>();
 
             // 2. Economy & Player Data (Game Layer Services)
             builder.Register<EconomyService>(Lifetime.Singleton);
