@@ -57,9 +57,9 @@ namespace Gameplay.App.State.States
         private async UniTaskVoid InitializeGameplayAsync()
         {
             // Load base Game scene if not already loaded
-            if (SceneManager.GetActiveScene().name != "Game")
+            if (SceneManager.GetActiveScene().name != GameConstants.Scenes.Game)
             {
-                await SceneManager.LoadSceneAsync("Game");
+                await SceneManager.LoadSceneAsync(GameConstants.Scenes.Game);
             }
 
             await UniTask.Yield();

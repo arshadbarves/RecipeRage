@@ -3,108 +3,137 @@
 .map-selection-screen {
     width: 100%;
     height: 100%;
-    background-color: var(--color-accent-yellow);
-
+    background-color: white;
     flex-direction: column;
 }
 
+.header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    height: 120px;
+    padding: 0 40px;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+}
+
 .back-button {
-    width: 100px;
-    height: 60px;
-    font-size: var(--font-size-xl);
-    background-color: var(--color-accent-red);
+    width: 160px;
+    height: 64px;
+    font-size: 28px;
+    background-color: rgba(231, 76, 60, 0.9);
     border-radius: var(--radius-lg);
     border-width: 0;
-    color: var(--color-text-light);
+    color: white;
     -unity-font-style: bold;
-    transition-property: scale;
-    transition-duration: var(--transition-fast);
-    margin-right: var(--spacing-xl);
+    -unity-font-definition: var(--font-anton-sdf);
+    transition-duration: 0.1s;
+    transition-property: scale, background-color;
+    letter-spacing: 2px;
+}
+
+.back-button:hover {
+    scale: 1.05;
+    background-color: rgb(231, 76, 60);
+}
+
+.back-button:active {
+    scale: 0.95;
 }
 
 .screen-title {
-    font-size: 48px;
-    -unity-font-style: bold;
+    font-size: 64px;
+    -unity-font-definition: var(--font-anton-sdf);
     color: var(--color-text-light);
     -unity-text-align: middle-center;
-    text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.8);
-    letter-spacing: 2px;
+    text-shadow: 0 4px 0 rgba(0, 0, 0, 0.5);
+    letter-spacing: 4px;
     position: absolute;
     left: 50%;
-    translate: -50% -25px;
+    top: 50%;
+    translate: -50% -50%;
 }
 
 .header-spacer {
-    width: 100px;
+    width: 160px; /* Balances the back button size */
 }
 
 .categories-scroll {
     flex-grow: 1;
-    padding: var(--spacing-xxl);
-    margin: var(--spacing-xxl);
-    border-radius: var(--radius-lg);
-    border-width: var(--border-width-normal);
-    border-color: var(--color-card-border);
+    margin-top: 120px; /* Space for header */
+    padding: 20px 40px;
 }
 
 .categories-scroll > #unity-content-container {
     flex-direction: row;
     align-items: flex-start;
-    padding: 0;
+    padding-bottom: 40px;
+    padding-right: 40px;
 }
 
+.category-container {
+    width: 500px;
+    margin-right: 40px;
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: var(--radius-xl);
+    border-width: 2px;
+    border-color: var(--glass-border);
+    padding: 24px;
+    height: 100%;
+}
 
+.category-header {
+    margin-bottom: 24px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+    padding-bottom: 12px;
+    align-items: center;
+}
 
+.category-title {
+    font-size: 36px;
+    color: var(--text-white);
+    -unity-font-definition: var(--font-anton-sdf);
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+}
 
+.category-maps-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}
 
+/* Map Card Styling overrides/defaults if not in template */
+.map-card {
+    width: 100%;
+    margin-bottom: 16px;
+}
 
-
-
-
-
-
-.category-maps-grid 
-
-/* Spacing between cards */
+/* Ensure spacing based on C# logic if needed, but flex gap is better if supported, 
+   or the C# adds .has-spacing class which we can use */
 .category-maps-grid .map-card.has-spacing {
-    margin-right: var(--spacing-xl);
+    margin-bottom: 20px;
 }
 
-/* Coming Soon / Locked state */
+/* Coming Soon state */
 .category-maps-grid .map-card.coming-soon {
-    opacity: 0.5;
+    opacity: 0.6;
 }
 
-.category-maps-grid .map-card.coming-soon 
-
-/* Adjust card internals for better proportions */
-.category-maps-grid .map-card 
-
-.category-maps-grid .map-card 
-
-.category-maps-grid .map-card 
-
-.category-maps-grid .map-card 
-
-.category-maps-grid .map-card 
-
-.category-maps-grid .map-card 
-
-/* Coming Soon label */
-
-
-.category-maps-grid .map-card.has-spacing {
-    margin-right: var(--spacing-lg);
-}
-
-.category-maps-grid .map-card 
-
-.category-maps-grid .map-card 
-
-.category-maps-grid .map-card 
-
-.category-maps-grid .map-card 
-
-.category-maps-grid .map-card 
-
-.category-maps-grid .map-card 
+.coming-soon-label {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    -unity-text-align: middle-center;
+    background-color: rgba(0,0,0,0.8);
+    color: var(--color-accent-yellow);
+    font-size: 24px;
+    padding: 8px;
+    -unity-font-definition: var(--font-anton-sdf);
+    rotate: -10deg;
+} 

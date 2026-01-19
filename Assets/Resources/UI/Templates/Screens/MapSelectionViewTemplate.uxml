@@ -1,12 +1,13 @@
 <UXML xmlns="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <Style src="project://database/Assets/Resources/UI/Styles/Screens/MapSelection.uss?fileID=7433441132597879392&amp;guid=4e50b96f3ec364f3a9f4e3a01e1e0cb1&amp;type=3#MapSelection" />
     <VisualElement class="map-selection-screen">
+        <VisualElement name="shader-background" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; z-index: 0; background-color: white; -unity-material: url(&quot;project://database/Assets/Materials/UI/UI_TechGridBackground.mat?fileID=2100000&amp;guid=055c17f7b6df440a6ae73b85eb5c8a84&amp;type=2#UI_TechGridBackground&quot;);"/>
         <VisualElement class="header">
             <Button name="back-button" text="&lt; BACK" class="back-button" />
             <Label name="screen-title" text="SELECT KITCHEN" class="screen-title" />
             <VisualElement name="VisualElement" class="header-spacer" />
         </VisualElement>
         <ScrollView name="categories-scroll" mode="Horizontal" class="categories-scroll" />
-        <VisualElement class="header" />
+
     </VisualElement>
 </UXML>

@@ -13,11 +13,6 @@ using Cysharp.Threading.Tasks;
 
 namespace Gameplay.App.Networking
 {
-    /// <summary>
-    /// Container for all networking services
-    /// Implements IDisposable for proper cleanup on logout
-    /// PUBG-style architecture with Party + Match lobbies
-    /// </summary>
     public class NetworkingServiceContainer : INetworkingServices
     {
         #region Properties
@@ -108,8 +103,6 @@ namespace Gameplay.App.Networking
 
             // 8. Friends Service will be initialized after UGS authentication completes
 
-            // P2P networking now handled by Unity Netcode + EOSTransport
-            // No need for custom P2PService
 
             _isInitialized = true;
             GameLogger.Log("Initialized successfully");
@@ -171,9 +164,6 @@ namespace Gameplay.App.Networking
         {
             if (!_isInitialized)
                 return;
-
-            // Note: Matchmaking timeout is now handled by MatchmakingState.Update()
-            // No need to update service here
         }
 
         #endregion

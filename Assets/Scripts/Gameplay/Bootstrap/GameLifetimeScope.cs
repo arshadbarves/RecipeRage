@@ -128,7 +128,7 @@ namespace Gameplay.Bootstrap
             builder.Register<MaintenanceService>(Lifetime.Singleton).As<IMaintenanceService>();
 
             // 6. State Management
-            builder.Register<GameStateManager>(Lifetime.Singleton).As<IGameStateManager>().As<IDisposable>();
+            builder.Register<GameStateManager>(Lifetime.Singleton).As<IGameStateManager>().As<IDisposable>().As<ITickable>();
 
             // Register Games States
             builder.Register<BootstrapState>(Lifetime.Transient);

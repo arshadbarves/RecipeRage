@@ -1,10 +1,11 @@
 using System;
 using Core.Logging;
 using VContainer;
+using VContainer.Unity;
 
 namespace Gameplay.App.State
 {
-    public class GameStateManager : IGameStateManager, IDisposable
+    public class GameStateManager : IGameStateManager, IDisposable, ITickable
     {
         private readonly StateMachine _stateMachine;
         private readonly IObjectResolver _container;
@@ -55,6 +56,11 @@ namespace Gameplay.App.State
 
             // Exit current state
             CurrentState?.Exit();
+        }
+
+        public void Tick()
+        {
+            Update(UnityEngine.Time.deltaTime);
         }
     }
 }
