@@ -1,42 +1,88 @@
 using Gameplay.Camera;
-using Gameplay.Scoring;
 using UnityEngine;
-using Core.Networking;
-using Gameplay.GameModes;
 using Cysharp.Threading.Tasks;
 using UnityEngine.SceneManagement;
-using Gameplay.Cooking;
 using Gameplay.Networking;
 using Core.Logging;
+using Core.Networking;
 using Core.UI.Interfaces;
 using Core.Session;
+using Core.Shared.Events;
+using Gameplay.Shared.Events;
+using Gameplay.GameModes;
 using VContainer;
 
 namespace Gameplay.App.State.States
 {
     /// <summary>
     /// State for gameplay.
-    /// Manages gameplay-scoped systems including camera, orders, and scoring.
+    /// Simplified to just load/unload scenes and delegate to GameplayLifetimeScope.
     /// </summary>
     public class GameplayState : BaseState
     {
+        private readonly IEventBus _eventBus;
         private readonly IUIService _uiService;
         private readonly SessionManager _sessionManager;
+        private readonly IGameModeService _gameModeService;
         private ICameraController _cameraController;
-        private IMapLoader _mapLoader;
-        private IGameModeService _gameModeService;
 
-        public GameplayState(IUIService uiService, SessionManager sessionManager)
+        public GameplayState(IUIService uiService, SessionManager sessionManager, IEventBus eventBus, IGameModeService gameModeService)
         {
             _uiService = uiService;
             _sessionManager = sessionManager;
+            _eventBus = eventBus;
+            _gameModeService = gameModeService;
         }
 
         public override void Enter()
         {
             base.Enter();
             InitializeCameraSystem();
+            SubscribeToEvents();
             InitializeGameplayAsync().Forget();
+        }
+
+        public override void Exit()
+        {
+            base.Exit();
+
+            UnsubscribeFromEvents();
+
+            // Unload map scene
+            _gameModeService?.UnloadCurrentMapAsync().Forget();
+
+            _cameraController?.Dispose();
+            _cameraController = null;
+        }
+
+        private void SubscribeToEvents()
+        {
+            _eventBus?.Subscribe<LocalPlayerSpawnedEvent>(OnLocalPlayerSpawned);
+            _eventBus?.Subscribe<LocalPlayerDespawnedEvent>(OnLocalPlayerDespawned);
+        }
+
+        private void UnsubscribeFromEvents()
+        {
+            _eventBus?.Unsubscribe<LocalPlayerSpawnedEvent>(OnLocalPlayerSpawned);
+            _eventBus?.Unsubscribe<LocalPlayerDespawnedEvent>(OnLocalPlayerDespawned);
+        }
+
+        private void OnLocalPlayerSpawned(LocalPlayerSpawnedEvent evt)
+        {
+            if (_cameraController != null && _cameraController.IsInitialized)
+            {
+                GameLogger.Log("GameplayState: Linking Camera to Local Player");
+                _cameraController.SetFollowTarget(evt.PlayerTransform);
+            }
+        }
+
+        private void OnLocalPlayerDespawned(LocalPlayerDespawnedEvent evt)
+        {
+            if (_cameraController != null)
+            {
+                 GameLogger.Log("GameplayState: Unlinking Camera from Local Player");
+                _cameraController.ClearFollowTarget();
+            }
         }
 
         private void InitializeCameraSystem()
@@ -46,7 +92,6 @@ namespace Gameplay.App.State.States
                 var settings = Resources.Load<CameraSettings>("Data/CameraSettings/CameraSettings") ?? CameraSettings.CreateDefault();
                 _cameraController = new CameraController(settings);
                 _cameraController.Initialize();
-                GameplayContext.CameraController = _cameraController;
             }
             catch (System.Exception ex)
             {
@@ -64,90 +109,44 @@ namespace Gameplay.App.State.States
 
             await UniTask.Yield();
 
-            var sessionContainer = _sessionManager?.SessionContainer;
-
-            // Resolve services from session container
-            if (sessionContainer != null)
-            {
-                _mapLoader = sessionContainer.Resolve<IMapLoader>();
-                _gameModeService = sessionContainer.Resolve<IGameModeService>();
-            }
-
             // Load map scene additively based on selected game mode
-            if (_mapLoader != null && _gameModeService?.SelectedGameMode != null)
+            if (!string.IsNullOrEmpty(_gameModeService?.SelectedGameMode?.MapSceneName))
             {
-                string mapName = _gameModeService.SelectedGameMode.DefaultMap;
+                GameLogger.Log($"Loading map scene: {_gameModeService.SelectedGameMode.MapSceneName}");
+                bool mapLoaded = await _gameModeService.LoadMapAsync(_gameModeService.SelectedGameMode.MapSceneName);
 
-                if (!string.IsNullOrEmpty(mapName))
+                if (!mapLoaded)
                 {
-                    GameLogger.Log($"Loading map: {mapName}");
-                    bool mapLoaded = await _mapLoader.LoadMapAsync(mapName);
-
-                    if (!mapLoaded)
-                    {
-                        GameLogger.LogError($"Failed to load map: {mapName}");
-                    }
+                    GameLogger.LogError($"Failed to load map: {_gameModeService.SelectedGameMode.MapSceneName}");
                 }
-                else
-                {
-                    GameLogger.LogWarning("No map specified in game mode, proceeding without map");
-                }
+            }
+            else
+            {
+                GameLogger.LogWarning("No map scene specified in game mode");
             }
 
             await UniTask.Yield();
 
+            // Initialize network (GameplayLifetimeScope will inject dependencies)
             var networkInitializer = Object.FindFirstObjectByType<NetworkInitializer>();
-            if (networkInitializer != null && sessionContainer != null)
+            if (networkInitializer != null)
             {
-                sessionContainer.Inject(networkInitializer);
+                var sessionContainer = _sessionManager?.SessionContainer;
+                sessionContainer?.Inject(networkInitializer);
                 networkInitializer.Initialize();
             }
 
             await UniTask.Yield();
 
-            if (sessionContainer != null)
+            // Start game via networking services
+            var sessionContainer2 = _sessionManager?.SessionContainer;
+            if (sessionContainer2 != null)
             {
-                var networkingServices = sessionContainer.Resolve<INetworkingServices>();
+                var networkingServices = sessionContainer2.Resolve<INetworkingServices>();
                 networkingServices?.GameStarter?.StartGame();
             }
 
             _uiService?.HideAllScreens(true);
-
-            OrderManager orderManager = Object.FindFirstObjectByType<OrderManager>();
-            if (orderManager != null && sessionContainer != null)
-            {
-                sessionContainer.Inject(orderManager);
-                orderManager.StartGeneratingOrders();
-            }
-
-            ScoreManager scoreManager = Object.FindFirstObjectByType<ScoreManager>();
-            if (scoreManager != null && sessionContainer != null)
-            {
-                sessionContainer.Inject(scoreManager);
-                scoreManager.ResetScores();
-            }
-        }
-
-        public override void Exit()
-        {
-            base.Exit();
-
-            // Unload map scene
-            if (_mapLoader != null)
-            {
-                _mapLoader.UnloadCurrentMapAsync().Forget();
-            }
-
-            _cameraController?.Dispose();
-            _cameraController = null;
-            GameplayContext.Reset();
-
-            OrderManager orderManager = Object.FindFirstObjectByType<OrderManager>();
-            orderManager?.StopGeneratingOrders();
-
-            // Clear references
-            _mapLoader = null;
-            _gameModeService = null;
         }
 
         public override void Update()

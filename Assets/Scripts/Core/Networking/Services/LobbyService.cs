@@ -336,7 +336,7 @@ namespace Core.Networking.Services
         /// <summary>
         /// Set the game mode
         /// </summary>
-        public void SetGameMode(GameMode gameMode)
+        public void SetGameMode(string gameModeId)
         {
             if (!IsPartyLeader)
             {
@@ -346,8 +346,8 @@ namespace Core.Networking.Services
 
             if (CurrentPartyLobby != null)
             {
-                CurrentPartyLobby.GameMode = gameMode;
-                UpdateLobbyAttribute(CurrentPartyLobby.LobbyId, "GameMode", gameMode.ToString());
+                CurrentPartyLobby.GameModeId = gameModeId;
+                UpdateLobbyAttribute(CurrentPartyLobby.LobbyId, "GameMode", gameModeId);
                 OnPartyUpdated?.Invoke();
             }
         }
@@ -435,7 +435,7 @@ namespace Core.Networking.Services
                     LobbyPermissionLevel.Publicadvertised,
                 PresenceEnabled = config.PresenceEnabled,
                 AllowInvites = config.AllowInvites,
-                BucketId = config.GameMode.ToString(),
+                BucketId = config.GameModeId,
                 EnableRTCRoom = config.RTCEnabled
             };
 
@@ -478,7 +478,7 @@ namespace Core.Networking.Services
                 MaxPlayers = config.MaxPlayers,
                 CurrentPlayers = 1,
                 IsPrivate = config.IsPrivate,
-                GameMode = config.GameMode,
+                GameModeId = config.GameModeId,
                 MapName = config.MapName,
                 TeamSize = config.TeamSize,
                 OwnerId = EOSManager.Instance.GetProductUserId(),
@@ -655,7 +655,7 @@ namespace Core.Networking.Services
                             lobbyInfo.Type = Enum.TryParse<LobbyType>(value, out var lobbyType) ? lobbyType : LobbyType.Party;
                             break;
                         case "GameMode":
-                            lobbyInfo.GameMode = Enum.TryParse<GameMode>(value, out var gameMode) ? gameMode : GameMode.Classic;
+                            lobbyInfo.GameModeId = value;
                             break;
                         case "MapName":
                             lobbyInfo.MapName = value;
@@ -703,7 +703,7 @@ namespace Core.Networking.Services
             }
 
             // Add standard attributes
-            AddLobbyAttribute(modification, "GameMode", config.GameMode.ToString());
+            AddLobbyAttribute(modification, "GameMode", config.GameModeId);
             AddLobbyAttribute(modification, "MapName", config.MapName ?? "");
             AddLobbyAttribute(modification, "TeamSize", config.TeamSize.ToString());
 

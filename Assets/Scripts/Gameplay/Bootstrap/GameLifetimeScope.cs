@@ -113,6 +113,9 @@ namespace Gameplay.Bootstrap
             builder.Register<StorageProviderFactory>(Lifetime.Singleton);
             builder.Register<SaveService>(Lifetime.Singleton).As<ISaveService>();
 
+            // Game Modes (Global)
+            builder.Register<Gameplay.GameModes.GameModeService>(Lifetime.Singleton).As<Gameplay.GameModes.IGameModeService>().As<IDisposable>();
+
             // 4. Remote Config
             builder.Register<FirebaseConfigProvider>(Lifetime.Singleton).As<IConfigProvider>();
             builder.Register<RemoteConfigService>(Lifetime.Singleton) .As<IRemoteConfigService>() .As<IStartable>();

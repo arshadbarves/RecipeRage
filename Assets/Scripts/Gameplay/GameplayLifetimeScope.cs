@@ -1,5 +1,6 @@
 using Gameplay.Cooking;
 using Gameplay.Scoring;
+using Gameplay.GameModes;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
@@ -8,18 +9,18 @@ namespace Gameplay
 {
     /// <summary>
     /// Lifetime scope for the gameplay scene.
-    /// Registers gameplay-specific dependencies and services.
+    /// Registers gameplay-specific dependencies and systems.
     /// </summary>
     public class GameplayLifetimeScope : LifetimeScope
     {
         [Header("Scene References")]
         [SerializeField] private OrderManager _orderManager;
         [SerializeField] private ScoreManager _scoreManager;
-        [SerializeField] private RoundTimer _roundTimer;
+        [SerializeField] private GamePhaseSync _phaseSync;
         
         protected override void Configure(IContainerBuilder builder)
         {
-            // Register Managers if they exist in the scene
+            // Register Scene MonoBehaviour instances
             if (_orderManager != null)
             {
                 builder.RegisterInstance(_orderManager);
@@ -30,16 +31,27 @@ namespace Gameplay
                 builder.RegisterInstance(_scoreManager);
             }
             
-            if (_roundTimer != null)
+            if (_phaseSync != null)
             {
-                builder.RegisterInstance(_roundTimer);
+                builder.RegisterInstance(_phaseSync);
             }
 
-            // Register Interaction Service (if not already handled by PlayerController internally)
-            // In this architecture, PlayerController creates its own InteractionController, 
-            // but we might want a global registry for debug or AI.
-            
-            // Register Factories (if needed for dynamic spawning not handled by Netcode)
+            // Register GameModeController as ITickable
+            builder.Register<GameModeController>(Lifetime.Singleton).As<ITickable>();
+
+            // Register factory for IGameModeLogic
+            builder.Register<IGameModeLogic>(container =>
+            {
+                var gameModeService = container.Resolve<IGameModeService>();
+                var logic = gameModeService.CreateGameModeLogic();
+                
+                // Initialize the logic with managers
+                var orderManager = container.Resolve<OrderManager>();
+                var scoreManager = container.Resolve<ScoreManager>();
+                logic?.Initialize(gameModeService.SelectedGameMode, orderManager, scoreManager);
+                
+                return logic;
+            }, Lifetime.Singleton);
         }
     }
 }

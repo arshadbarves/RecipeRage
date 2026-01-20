@@ -8,6 +8,7 @@ using Gameplay.UI.Data;
 using Core.Shared;
 using Core.UI.Core;
 using Core.Session;
+using Gameplay.GameModes;
 using UnityEngine;
 using VContainer;
 
@@ -17,15 +18,14 @@ namespace Gameplay.UI.Features.Lobby
     {
         private readonly SessionManager _sessionManager;
         private readonly IGameStateManager _stateManager;
-        private MapDatabase _mapDatabase;
         private CancellationTokenSource _cts;
 
-        private IMatchmakingService MatchmakingService => _sessionManager.SessionContainer?.Resolve<IMatchmakingService>();
+        private IGameModeService GameModeService => _sessionManager.SessionContainer?.Resolve<IGameModeService>();
 
         public BindableProperty<bool> IsMatchmaking { get; } = new BindableProperty<bool>(false);
         public BindableProperty<int> PlayerCount { get; } = new BindableProperty<int>(1);
 
-        // Map Data
+        // Map Data (Now Game Mode Data)
         public BindableProperty<string> MapName { get; } = new BindableProperty<string>("Loading...");
         public BindableProperty<string> MapSubtitle { get; } = new BindableProperty<string>("");
         public BindableProperty<string> RotationTimer { get; } = new BindableProperty<string>("");
@@ -40,51 +40,39 @@ namespace Gameplay.UI.Features.Lobby
         public override void Initialize()
         {
             base.Initialize();
-            LoadMapData();
-            StartTimerLoop();
-        }
+            UpdateGameModeInfo();
 
-        private void LoadMapData()
-        {
-            TextAsset jsonFile = Resources.Load<TextAsset>("UI/Data/Maps");
-            if (jsonFile != null)
+            // Subscribe to game mode changes if service is available
+            var service = GameModeService;
+            if (service != null)
             {
-                _mapDatabase = JsonUtility.FromJson<MapDatabase>(jsonFile.text);
-                UpdateMapInfo();
+                service.OnGameModeChanged += OnGameModeChanged;
             }
         }
 
-        private void UpdateMapInfo()
+        private void OnGameModeChanged(GameMode mode)
         {
-            if (_mapDatabase == null) return;
-            var currentMap = _mapDatabase.GetCurrentMap();
-            if (currentMap != null)
-            {
-                MapName.Value = currentMap.name;
-                MapSubtitle.Value = currentMap.subtitle;
-            }
+            UpdateGameModeInfo();
         }
 
-        private void StartTimerLoop()
+        private void UpdateGameModeInfo()
         {
-            _cts = new CancellationTokenSource();
-            UpdateTimerAsync(_cts.Token).Forget();
+            var service = GameModeService;
+            if (service?.SelectedGameMode != null)
+            {
+                MapName.Value = service.SelectedGameMode.DisplayName.ToUpper();
+                MapSubtitle.Value = service.SelectedGameMode.Subtitle;
+            }
+
+            // Hide rotation timer for now as GameMode doesn't support it yet
+            RotationTimer.Value = "";
         }
 
-        private async UniTaskVoid UpdateTimerAsync(CancellationToken token)
-        {
-            while (!token.IsCancellationRequested)
-            {
-                if (_mapDatabase != null)
-                {
-                    TimeSpan remaining = _mapDatabase.GetTimeUntilRotation();
-                    RotationTimer.Value = remaining.TotalSeconds > 0
-                        ? $"NEW MAP IN : {remaining.Hours}h {remaining.Minutes}m"
-                        : "NEW MAP IN : --h --m";
-                }
-                await UniTask.Delay(TimeSpan.FromMinutes(1), cancellationToken: token);
-            }
-        }
+        // Timer removed for now
+        private void StartTimerLoop() { }
+        private async UniTaskVoid UpdateTimerAsync(CancellationToken token) { await UniTask.Yield(); }
+
+
 
         public void Play()
         {
@@ -99,6 +87,12 @@ namespace Gameplay.UI.Features.Lobby
 
         public override void Dispose()
         {
+            var service = GameModeService;
+            if (service != null)
+            {
+                service.OnGameModeChanged -= OnGameModeChanged;
+            }
+
             _cts?.Cancel();
             _cts?.Dispose();
             base.Dispose();

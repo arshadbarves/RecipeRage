@@ -45,7 +45,7 @@ namespace Core.Networking.Services
         private bool _isInitialized;
 
         // Matchmaking state
-        private GameMode _currentGameMode;
+        private string _currentGameModeId;
         private int _currentTeamSize;
         private int _partySize;
         private float _searchStartTime;
@@ -90,7 +90,7 @@ namespace Core.Networking.Services
         /// <summary>
         /// Start matchmaking for the current party
         /// </summary>
-        public void FindMatch(GameMode gameMode, int teamSize)
+        public void FindMatch(string gameModeId, int teamSize)
         {
             if (!_isInitialized)
             {
@@ -104,7 +104,7 @@ namespace Core.Networking.Services
                 return;
             }
 
-            _currentGameMode = gameMode;
+            _currentGameModeId = gameModeId;
             _currentTeamSize = teamSize;
             _partySize = _lobbyManager.CurrentPartyLobby?.CurrentPlayers ?? 1;
             RequiredPlayers = teamSize * 2; // e.g., 4v4 = 8 total players
@@ -114,7 +114,7 @@ namespace Core.Networking.Services
             // Clear any previous bots
             _botManager.ClearBots();
 
-            GameLogger.Log($"Starting matchmaking: Mode={gameMode}, TeamSize={teamSize}, PartySize={_partySize}");
+            GameLogger.Log($"Starting matchmaking: Mode={gameModeId}, TeamSize={teamSize}, PartySize={_partySize}");
 
             IsSearching = true;
             _searchStartTime = Time.time;
@@ -122,7 +122,7 @@ namespace Core.Networking.Services
             OnMatchmakingStarted?.Invoke();
 
             // Start searching for existing match lobbies
-            SearchForMatchLobbies(gameMode, teamSize, RequiredPlayers - _partySize);
+            SearchForMatchLobbies(gameModeId, teamSize, RequiredPlayers - _partySize);
         }
 
         /// <summary>
@@ -172,9 +172,9 @@ namespace Core.Networking.Services
         /// <summary>
         /// Search for available match lobbies
         /// </summary>
-        public void SearchForMatchLobbies(GameMode gameMode, int teamSize, int neededPlayers)
+        public void SearchForMatchLobbies(string gameModeId, int teamSize, int neededPlayers)
         {
-            GameLogger.Log($"Searching for match lobbies: Mode={gameMode}, TeamSize={teamSize}, Needed={neededPlayers}");
+            GameLogger.Log($"Searching for match lobbies: Mode={gameModeId}, TeamSize={teamSize}, Needed={neededPlayers}");
 
             // Create search parameters
             var searchOptions = new CreateLobbySearchOptions
@@ -193,7 +193,7 @@ namespace Core.Networking.Services
 
             // Add search filters
             AddSearchFilter("Type", LobbyType.Match.ToString(), ComparisonOp.Equal);
-            AddSearchFilter("GameMode", gameMode.ToString(), ComparisonOp.Equal);
+            AddSearchFilter("GameMode", gameModeId, ComparisonOp.Equal);
             AddSearchFilter("TeamSize", teamSize.ToString(), ComparisonOp.Equal);
             AddSearchFilter("Status", "Filling", ComparisonOp.Equal);
 
@@ -212,7 +212,7 @@ namespace Core.Networking.Services
         /// <summary>
         /// Create a new match lobby and wait for players
         /// </summary>
-        public void CreateAndWaitForPlayers(GameMode gameMode, int teamSize)
+        public void CreateAndWaitForPlayers(string gameModeId, int teamSize)
         {
             GameLogger.Log("Creating match lobby and waiting for players");
 
@@ -220,17 +220,17 @@ namespace Core.Networking.Services
             var config = new LobbyConfig
             {
                 Type = LobbyType.Match,
-                LobbyName = $"Match_{gameMode}_{NTPTime.UtcNow.Ticks}",
+                LobbyName = $"Match_{gameModeId}_{NTPTime.UtcNow.Ticks}",
                 MaxPlayers = teamSize * 2,
                 IsPrivate = false,
-                GameMode = gameMode,
+                GameModeId = gameModeId,
                 TeamSize = teamSize,
                 AllowInvites = false,
                 PresenceEnabled = false,
                 CustomAttributes = new Dictionary<string, string>
                 {
                     { "Type", "Match" },
-                    { "GameMode", gameMode.ToString() },
+                    { "GameMode", gameModeId },
                     { "TeamSize", teamSize.ToString() },
                     { "Status", "Filling" },
                     { "CreatedAt", NTPTime.UtcNow.ToString("o") }
@@ -283,7 +283,7 @@ namespace Core.Networking.Services
                 GameLogger.LogError($"Lobby search failed: {data.ResultCode}");
 
                 // No lobbies found, create our own
-                CreateAndWaitForPlayers(_currentGameMode, _currentTeamSize);
+                CreateAndWaitForPlayers(_currentGameModeId, _currentTeamSize);
                 return;
             }
 
@@ -296,7 +296,7 @@ namespace Core.Networking.Services
             if (resultCount == 0)
             {
                 // No lobbies found, create our own
-                CreateAndWaitForPlayers(_currentGameMode, _currentTeamSize);
+                CreateAndWaitForPlayers(_currentGameModeId, _currentTeamSize);
                 return;
             }
 
@@ -330,7 +330,7 @@ namespace Core.Networking.Services
                 }
                 else
                 {
-                    CreateAndWaitForPlayers(_currentGameMode, _currentTeamSize);
+                    CreateAndWaitForPlayers(_currentGameModeId, _currentTeamSize);
                 }
                 return;
             }
@@ -369,7 +369,7 @@ namespace Core.Networking.Services
                 }
                 else
                 {
-                    CreateAndWaitForPlayers(_currentGameMode, _currentTeamSize);
+                    CreateAndWaitForPlayers(_currentGameModeId, _currentTeamSize);
                 }
                 return;
             }
@@ -399,7 +399,7 @@ namespace Core.Networking.Services
                 else
                 {
                     // No suitable lobbies, create our own
-                    CreateAndWaitForPlayers(_currentGameMode, _currentTeamSize);
+                    CreateAndWaitForPlayers(_currentGameModeId, _currentTeamSize);
                 }
             }
 
@@ -474,7 +474,7 @@ namespace Core.Networking.Services
                 GameLogger.LogError($"Failed to join match lobby: {result}");
 
                 // Try to find another lobby or create one
-                SearchForMatchLobbies(_currentGameMode, _currentTeamSize, RequiredPlayers - _partySize);
+                SearchForMatchLobbies(_currentGameModeId, _currentTeamSize, RequiredPlayers - _partySize);
                 return;
             }
 

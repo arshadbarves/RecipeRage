@@ -68,9 +68,9 @@ namespace Core.Networking.Interfaces
         /// <summary>
         /// Start matchmaking for the current party
         /// </summary>
-        /// <param name="gameMode">Game mode to search for</param>
+        /// <param name="gameModeId">Game mode ID to search for</param>
         /// <param name="teamSize">Size of each team</param>
-        void FindMatch(GameMode gameMode, int teamSize);
+        void FindMatch(string gameModeId, int teamSize);
 
         /// <summary>
         /// Cancel active matchmaking
@@ -80,18 +80,18 @@ namespace Core.Networking.Interfaces
         /// <summary>
         /// Search for available match lobbies
         /// </summary>
-        /// <param name="gameMode">Game mode to search for</param>
+        /// <param name="gameModeId">Game mode ID to search for</param>
         /// <param name="teamSize">Team size</param>
         /// <param name="neededPlayers">Number of players needed</param>
         /// <returns>List of available lobbies</returns>
-        void SearchForMatchLobbies(GameMode gameMode, int teamSize, int neededPlayers);
+        void SearchForMatchLobbies(string gameModeId, int teamSize, int neededPlayers);
 
         /// <summary>
         /// Create a new match lobby and wait for players
         /// </summary>
-        /// <param name="gameMode">Game mode</param>
+        /// <param name="gameModeId">Game mode ID</param>
         /// <param name="teamSize">Team size</param>
-        void CreateAndWaitForPlayers(GameMode gameMode, int teamSize);
+        void CreateAndWaitForPlayers(string gameModeId, int teamSize);
 
         /// <summary>
         /// Fill remaining slots with bots and start the match

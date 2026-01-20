@@ -1,4 +1,5 @@
 using System;
+using Gameplay.GameModes;
 using System.Threading;
 using Core.Networking.Interfaces;
 using Cysharp.Threading.Tasks;
@@ -49,24 +50,20 @@ namespace Gameplay.UI.Features.Matchmaking
                 PlayerCountText.Value = $"{service.PlayersFound}/{service.RequiredPlayers}";
             }
 
-            // Load map data (similar to LobbyViewModel)
-            LoadMapData();
+            // Load game mode info
+            UpdateGameModeInfo();
 
             SubscribeToEvents();
             StartTimer();
         }
 
-        private void LoadMapData()
+        private void UpdateGameModeInfo()
         {
-            TextAsset jsonFile = Resources.Load<TextAsset>("UI/Data/Maps");
-            if (jsonFile != null)
+            var gameModeService = _sessionManager.SessionContainer?.Resolve<IGameModeService>();
+            if (gameModeService?.SelectedGameMode != null)
             {
-                var mapDatabase = JsonUtility.FromJson<Gameplay.UI.Data.MapDatabase>(jsonFile.text);
-                var currentMap = mapDatabase?.GetCurrentMap();
-                if (currentMap != null)
-                {
-                    MapNameText.Value = currentMap.name;
-                }
+                MapNameText.Value = gameModeService.SelectedGameMode.DisplayName;
+                GameModeText.Value = gameModeService.SelectedGameMode.Subtitle.ToUpper(); // Or use Description
             }
         }
 

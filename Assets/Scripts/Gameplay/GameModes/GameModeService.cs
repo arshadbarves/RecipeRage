@@ -1,24 +1,22 @@
 using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using Core.Logging;
 using Core.RemoteConfig.Interfaces;
 using Core.RemoteConfig.Models;
+using Gameplay.GameModes.Logic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using VContainer;
 
 namespace Gameplay.GameModes
 {
-    /// <summary>
-    /// Game mode service - pure C# class, no MonoBehaviour
-    /// Implements IDisposable for proper cleanup on logout
-    /// Uses RemoteConfigService for game settings
-    /// </summary>
     public class GameModeService : IGameModeService, IDisposable
     {
         private readonly Dictionary<string, GameMode> _gameModes = new Dictionary<string, GameMode>();
         private GameMode _selectedGameMode;
-        private GameSettingsConfig _gameSettings;
         private readonly IRemoteConfigService _remoteConfigService;
+        private string _currentLoadedSceneName;
 
         public event Action<GameMode> OnGameModeChanged;
 
@@ -37,7 +35,6 @@ namespace Gameplay.GameModes
         {
             if (_remoteConfigService != null && _remoteConfigService.TryGetConfig<GameSettingsConfig>(out var settings))
             {
-                _gameSettings = settings;
                 GameLogger.Log("Loaded game settings from RemoteConfig");
             }
             else
@@ -58,17 +55,8 @@ namespace Gameplay.GameModes
         {
             if (configType == typeof(GameSettingsConfig) && config is GameSettingsConfig settings)
             {
-                _gameSettings = settings;
                 GameLogger.Log("Game settings updated from RemoteConfig");
             }
-        }
-
-        /// <summary>
-        /// Gets game settings from RemoteConfig
-        /// </summary>
-        public GameSettingsConfig GetGameSettings()
-        {
-            return _gameSettings;
         }
 
         private void LoadGameModes()
@@ -131,6 +119,105 @@ namespace Gameplay.GameModes
             return true;
         }
 
+        /// <summary>
+        /// Create game mode logic implementation based on selected game mode
+        /// </summary>
+        public IGameModeLogic CreateGameModeLogic()
+        {
+            if (_selectedGameMode == null)
+            {
+                GameLogger.LogError("No game mode selected");
+                return null;
+            }
+
+            // For now, always return Classic logic
+            // In future, use _selectedGameMode.Id to select different implementations
+            return new ClassicGameModeLogic();
+        }
+
+        /// <summary>
+        /// Load map scene additively
+        /// </summary>
+        /// <summary>
+        /// Load map scene additively
+        /// </summary>
+        public async UniTask<bool> LoadMapAsync(string sceneName)
+        {
+            if (string.IsNullOrEmpty(sceneName))
+            {
+                GameLogger.LogError("Map scene name is null or empty");
+                return false;
+            }
+
+            // Unload current map if one is loaded
+            if (!string.IsNullOrEmpty(_currentLoadedSceneName))
+            {
+                await UnloadCurrentMapAsync();
+            }
+
+            try
+            {
+                GameLogger.Log($"Loading map scene: {sceneName}");
+
+                AsyncOperation loadOperation = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
+                if (loadOperation == null)
+                {
+                    GameLogger.LogError($"Failed to start loading scene: {sceneName}");
+                    return false;
+                }
+
+                await loadOperation;
+
+                Scene loadedScene = SceneManager.GetSceneByName(sceneName);
+                if (!loadedScene.isLoaded)
+                {
+                    GameLogger.LogError($"Scene loaded but not active: {sceneName}");
+                    return false;
+                }
+
+                SceneManager.SetActiveScene(loadedScene);
+                _currentLoadedSceneName = sceneName;
+
+                GameLogger.Log($"Map loaded successfully: {sceneName}");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                GameLogger.LogException(ex);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Unload currently loaded map scene
+        /// </summary>
+        public async UniTask UnloadCurrentMapAsync()
+        {
+            if (string.IsNullOrEmpty(_currentLoadedSceneName))
+            {
+                return;
+            }
+
+            try
+            {
+                GameLogger.Log($"Unloading map scene: {_currentLoadedSceneName}");
+
+                Scene sceneToUnload = SceneManager.GetSceneByName(_currentLoadedSceneName);
+                if (sceneToUnload.isLoaded)
+                {
+                    AsyncOperation unloadOperation = SceneManager.UnloadSceneAsync(sceneToUnload);
+                    await unloadOperation;
+                }
+
+                _currentLoadedSceneName = null;
+                GameLogger.Log("Map unloaded successfully");
+            }
+            catch (Exception ex)
+            {
+                GameLogger.LogException(ex);
+            }
+        }
+
         public void Dispose()
         {
             // Unsubscribe from config updates
@@ -142,7 +229,6 @@ namespace Gameplay.GameModes
             GameLogger.Log("Disposing");
             _gameModes.Clear();
             _selectedGameMode = null;
-            _gameSettings = null;
         }
     }
 }

@@ -10,6 +10,10 @@ using Core.Logging;
 using Core.Session;
 using VContainer;
 using VContainer.Unity;
+using Gameplay;
+
+using Gameplay.Shared.Events;
+using Core.Shared.Events;
 
 namespace Gameplay.Characters
 {
@@ -51,7 +55,7 @@ namespace Gameplay.Characters
         private SessionManager _sessionManager;
 
         [Inject]
-        private ICameraController _cameraController;
+        private IEventBus _eventBus;
 
         #endregion
 
@@ -199,22 +203,15 @@ namespace Gameplay.Characters
             if (IsLocalPlayer)
             {
                 SetupInput();
-                SetupCamera();
+                // Publish spawn event for systems (Camera, UI, etc.)
+                _eventBus?.Publish(new LocalPlayerSpawnedEvent 
+                { 
+                    PlayerTransform = transform, 
+                    PlayerObject = gameObject 
+                });
             }
 
             SetupCharacterClass();
-        }
-
-        private void SetupCamera()
-        {
-            if (_cameraController != null && _cameraController.IsInitialized)
-            {
-                _cameraController.SetFollowTarget(transform);
-            }
-            else
-            {
-                GameLogger.LogWarning("Camera controller not available - camera will not follow player");
-            }
         }
 
         public override void OnNetworkDespawn()
@@ -223,10 +220,7 @@ namespace Gameplay.Characters
 
             if (IsLocalPlayer)
             {
-                if (_cameraController != null)
-                {
-                    _cameraController.ClearFollowTarget();
-                }
+                _eventBus?.Publish(new LocalPlayerDespawnedEvent());
             }
 
             var sessionContainer = _sessionManager?.SessionContainer;

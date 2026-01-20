@@ -88,7 +88,7 @@ namespace Gameplay.App.Networking
             GameLogger.Log("Starting as host...");
 
             // Get SpawnManager
-            _spawnManager = SpawnManagerIntegration.GetSpawnManager();
+            _spawnManager = Object.FindFirstObjectByType<SpawnManager>();
 
             // Store player prefab before disabling automatic spawning (needed for bots)
             if (NetworkManager.Singleton.NetworkConfig != null)
@@ -244,7 +244,7 @@ namespace Gameplay.App.Networking
             GameLogger.Log($"Starting as client, connecting to host: {hostUserId}");
 
             // Get SpawnManager (clients need it too for reference)
-            _spawnManager = SpawnManagerIntegration.GetSpawnManager();
+            _spawnManager = Object.FindFirstObjectByType<SpawnManager>();
 
             // Get EOSTransport component
             var transport = NetworkManager.Singleton.GetComponent<EOSTransport>();

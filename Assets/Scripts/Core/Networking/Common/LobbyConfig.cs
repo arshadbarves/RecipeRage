@@ -28,9 +28,9 @@ namespace Core.Networking.Common
         public bool IsPrivate { get; set; } = true;
 
         /// <summary>
-        /// Game mode
+        /// Game mode ID
         /// </summary>
-        public GameMode GameMode { get; set; } = GameMode.Classic;
+        public string GameModeId { get; set; } = "classic";
 
         /// <summary>
         /// Map name

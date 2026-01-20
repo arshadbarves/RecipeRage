@@ -8,7 +8,7 @@ namespace Gameplay.App.State
     public class GameStateManager : IGameStateManager, IDisposable, ITickable
     {
         private readonly StateMachine _stateMachine;
-        private readonly IObjectResolver _container;
+        private IObjectResolver _container;
 
         public event Action<IState, IState> OnStateChanged;
 
@@ -38,6 +38,12 @@ namespace Gameplay.App.State
         public void ChangeState<T>() where T : IState
         {
             ChangeState(_container.Resolve<T>());
+        }
+
+        public void SetContainerResolver(IObjectResolver container)
+        {
+            _container = container;
+            GameLogger.Log("GameStateManager container updated.");
         }
 
         public void Update(float deltaTime)

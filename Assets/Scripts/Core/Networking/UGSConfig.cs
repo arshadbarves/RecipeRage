@@ -5,7 +5,7 @@ namespace Core.Networking
     /// <summary>
     /// Unity Gaming Services configuration
     /// </summary>
-    [CreateAssetMenu(fileName = "UGSConfig", menuName = "Config/UGS Config")]
+    [CreateAssetMenu(fileName = "UGSConfig", menuName = "RecipeRage/Config/UGS Config")]
     public class UGSConfig : ScriptableObject
     {
         [Header("Project Settings")]

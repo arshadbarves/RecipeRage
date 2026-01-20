@@ -1,7 +1,9 @@
 using Gameplay.App.State;
+using Gameplay.GameModes;
 using Core.Logging;
 using Unity.Netcode;
 using UnityEngine;
+using VContainer;
 
 namespace Gameplay
 {
@@ -16,7 +18,8 @@ namespace Gameplay
         [SerializeField] private float _roundDuration = 180f; // 3 minutes
         [SerializeField] private bool _autoStartOnHost = false;
 
-        private NetworkGameStateManager _networkGameStateManager;
+        [Inject] private GameModeController _gameModeController;
+        private GamePhaseSync _gamePhaseSync;
         private RoundTimer _roundTimer;
         private bool _gameStarted = false;
 
@@ -25,12 +28,12 @@ namespace Gameplay
         /// </summary>
         private void Start()
         {
-            _networkGameStateManager = FindFirstObjectByType<NetworkGameStateManager>();
+            _gamePhaseSync = FindFirstObjectByType<GamePhaseSync>();
             _roundTimer = FindFirstObjectByType<RoundTimer>();
 
-            if (_networkGameStateManager == null)
+            if (_gamePhaseSync == null)
             {
-                GameLogger.LogError("NetworkGameStateManager not found in scene!");
+                GameLogger.LogError("GamePhaseSync not found in scene!");
             }
 
             if (_roundTimer == null)
@@ -67,17 +70,16 @@ namespace Gameplay
                 return;
             }
 
-            if (_networkGameStateManager == null)
+            if (_gameModeController == null)
             {
-                GameLogger.LogError("NetworkGameStateManager not found. Cannot start round.");
-                return;
+                GameLogger.LogWarning("GameModeController not found. Game may not have been initialized yet.");
             }
-
-            _gameStarted = true;
-
-            _networkGameStateManager.RequestStartGameServerRpc();
-
-            GameLogger.Log("Round start requested");
+            else
+            {
+                _gameStarted = true;
+                _gameModeController.StartMatch();
+                GameLogger.Log("Match start requested");
+            }
         }
 
         /// <summary>
@@ -113,12 +115,12 @@ namespace Gameplay
                 return;
             }
 
-            if (_networkGameStateManager == null)
+            if (_gameModeController == null)
             {
                 return;
             }
 
-            _networkGameStateManager.EndGame();
+            _gameModeController.EndMatch();
 
             GameLogger.Log("Round ended");
         }

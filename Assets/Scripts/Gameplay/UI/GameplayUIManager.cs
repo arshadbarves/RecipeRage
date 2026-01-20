@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Gameplay.Characters;
 using Gameplay.App.State;
+using Gameplay.GameModes;
 using Gameplay.Cooking;
 using Gameplay.Scoring;
 using Core.Logging;
@@ -24,7 +25,7 @@ namespace Gameplay.UI
         [Header("Network Managers (Auto-found)")]
         private NetworkScoreManager _networkScoreManager;
         private RoundTimer _roundTimer;
-        private NetworkGameStateManager _networkGameStateManager;
+        private GamePhaseSync _gamePhaseSync;
 
         [Header("Interaction UI")]
         [SerializeField] private GameObject _interactionPromptPanel;
@@ -86,7 +87,7 @@ namespace Gameplay.UI
             // Find network managers
             _networkScoreManager = FindFirstObjectByType<NetworkScoreManager>();
             _roundTimer = FindFirstObjectByType<RoundTimer>();
-            _networkGameStateManager = FindFirstObjectByType<NetworkGameStateManager>();
+            _gamePhaseSync = FindFirstObjectByType<GamePhaseSync>();
 
             // Subscribe to order manager events
             if (_orderManager != null)
@@ -118,14 +119,14 @@ namespace Gameplay.UI
                 GameLogger.LogWarning("RoundTimer not found. Timer updates will not work.");
             }
 
-            // Subscribe to game state manager events
-            if (_networkGameStateManager != null)
+            // Subscribe to game phase sync events
+            if (_gamePhaseSync != null)
             {
-                _networkGameStateManager.OnPhaseChanged += HandlePhaseChanged;
+                _gamePhaseSync.OnPhaseChanged += HandlePhaseChanged;
             }
             else
             {
-                GameLogger.LogWarning("NetworkGameStateManager not found. Phase updates will not work.");
+                GameLogger.LogWarning("GamePhaseSync not found. Phase updates will not work.");
             }
         }
 
@@ -156,10 +157,10 @@ namespace Gameplay.UI
                 _roundTimer.OnTimerExpired -= HandleTimerExpired;
             }
 
-            // Unsubscribe from game state manager events
-            if (_networkGameStateManager != null)
+            // Unsubscribe from game phase sync events
+            if (_gamePhaseSync != null)
             {
-                _networkGameStateManager.OnPhaseChanged -= HandlePhaseChanged;
+                _gamePhaseSync.OnPhaseChanged -= HandlePhaseChanged;
             }
         }
 
@@ -379,10 +380,11 @@ namespace Gameplay.UI
         /// <summary>
         /// Handle game phase changed event.
         /// </summary>
+        /// <param name="previousPhase">The previous game phase</param>
         /// <param name="newPhase">The new game phase</param>
-        private void HandlePhaseChanged(GamePhase newPhase)
+        private void HandlePhaseChanged(GamePhase previousPhase, GamePhase newPhase)
         {
-            GameLogger.Log($"Game phase changed to: {newPhase}");
+            GameLogger.Log($"Game phase changed: {previousPhase} → {newPhase}");
 
             switch (newPhase)
             {
@@ -390,7 +392,7 @@ namespace Gameplay.UI
                     // Show waiting for players UI
                     break;
 
-                case GamePhase.Preparation:
+                case GamePhase.Warmup:
                     // Show countdown UI
                     break;
 
@@ -398,7 +400,7 @@ namespace Gameplay.UI
                     // Show gameplay UI
                     break;
 
-                case GamePhase.Results:
+                case GamePhase.GameOver:
                     // Show results/scoreboard UI
                     break;
             }

@@ -1,12 +1,14 @@
 using System;
-using Gameplay.UI.Data;
+using System.Collections.Generic;
+using System.Linq;
+using Gameplay.GameModes;
 using Core.Logging;
 using Core.RemoteConfig.Interfaces;
 using Core.RemoteConfig.Models;
 using Core.UI;
 using Core.UI.Core;
 using Core.UI.Interfaces;
-using Gameplay.UI.Features.MainMenu;
+using Gameplay.UI.Data;
 using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;
@@ -20,10 +22,12 @@ namespace Gameplay.UI.Features.Maps
     public class MapSelectionView : BaseUIScreen
     {
         [Inject]
+        private IGameModeService _gameModeService;
+
+        [Inject]
         private IRemoteConfigService _remoteConfigService;
 
-        private MapDatabase _mapDatabase;
-        private Action<MapInfo> _onMapSelected;
+        private Action<GameMode> _onGameModeSelected;
 
         // UI Elements
         private Button _backButton;
@@ -38,31 +42,9 @@ namespace Gameplay.UI.Features.Maps
             LoadTemplate();
             CacheUIElements();
             SetupButtons();
-            LoadMapDatabase();
-            SubscribeToRemoteConfig();
         }
 
-        private void SubscribeToRemoteConfig()
-        {
-            if (_remoteConfigService != null)
-            {
-                // Subscribe to MapConfig updates
-                _remoteConfigService.OnSpecificConfigUpdated += OnMapConfigUpdated;
-            }
-        }
 
-        private void OnMapConfigUpdated(Type configType, IConfigModel config)
-        {
-            // Check if this is a MapConfig update
-            if (configType == typeof(MapConfig))
-            {
-                // Refresh the UI with new map data
-                if (IsVisible)
-                {
-                    PopulateMaps();
-                }
-            }
-        }
 
         private void LoadTemplate()
         {
@@ -93,18 +75,7 @@ namespace Gameplay.UI.Features.Maps
             }
         }
 
-        private void LoadMapDatabase()
-        {
-            TextAsset jsonFile = Resources.Load<TextAsset>("UI/Data/Maps");
-            if (jsonFile != null)
-            {
-                _mapDatabase = JsonUtility.FromJson<MapDatabase>(jsonFile.text);
-            }
-            else
-            {
-                GameLogger.LogError("Failed to load Maps.json from Resources/Data");
-            }
-        }
+
 
         protected override void OnShow()
         {
@@ -114,50 +85,64 @@ namespace Gameplay.UI.Features.Maps
         /// <summary>
         /// Show the map selection screen with callback
         /// </summary>
-        public void ShowWithCallback(Action<MapInfo> onMapSelected)
+        public void ShowWithCallback(Action<GameMode> onGameModeSelected)
         {
-            _onMapSelected = onMapSelected;
+            _onGameModeSelected = onGameModeSelected;
             Show(false, true);
         }
 
         private void PopulateMaps()
         {
-            if (_categoriesScroll == null || _mapDatabase == null) return;
+            if (_categoriesScroll == null || _gameModeService == null) return;
 
             _categoriesScroll.Clear();
 
-            if (_mapDatabase.categories == null || _mapDatabase.categories.Count == 0)
+            var gameModes = _gameModeService.GetAvailableGameModes();
+            if (gameModes == null || !Enumerable.Any(gameModes))
             {
-                GameLogger.LogWarning("No categories found in map database");
+                GameLogger.LogWarning("No available game modes found");
                 return;
             }
 
-            // Create a container for each category
-            foreach (var category in _mapDatabase.categories)
+            // Group by category
+            var categorizedModes = new Dictionary<GameModeCategory, List<GameMode>>();
+            foreach (var mode in gameModes)
             {
-                if (category.maps == null || category.maps.Count == 0)
+                if (!categorizedModes.ContainsKey(mode.Category))
+                {
+                    categorizedModes[mode.Category] = new List<GameMode>();
+                }
+                categorizedModes[mode.Category].Add(mode);
+            }
+
+            // Create a container for each category
+            // Define sort order if needed, otherwise rely on Enum order or Keys
+            foreach (var category in categorizedModes.Keys)
+            {
+                var modes = categorizedModes[category];
+                if (modes == null || modes.Count == 0)
                     continue;
 
-                VisualElement categoryContainer = CreateCategoryContainer(category);
+                VisualElement categoryContainer = CreateCategoryContainer(category, modes);
                 _categoriesScroll.Add(categoryContainer);
             }
         }
 
-        private VisualElement CreateCategoryContainer(MapCategory category)
+        private VisualElement CreateCategoryContainer(GameModeCategory category, List<GameMode> modes)
         {
             // Main category container
             VisualElement container = new VisualElement();
             container.AddToClassList("category-container");
 
             // Add category-specific class for background color
-            container.AddToClassList(GetCategoryClass(category.id));
+            container.AddToClassList(GetCategoryClass(category));
 
             // Category header
             VisualElement header = new VisualElement();
             header.AddToClassList("category-header");
 
             // Category title (centered, no icon)
-            Label title = new Label(category.name.ToUpper());
+            Label title = new Label(category.ToString().ToUpper());
             title.AddToClassList("category-title");
             header.Add(title);
 
@@ -167,17 +152,15 @@ namespace Gameplay.UI.Features.Maps
             VisualElement mapsGrid = new VisualElement();
             mapsGrid.AddToClassList("category-maps-grid");
 
-            // Get all maps (including coming soon ones)
-            var allMaps = category.maps;
-            int mapCount = allMaps.Count;
+            int modeCount = modes.Count;
 
             // Add maps to grid with spacing
-            for (int i = 0; i < allMaps.Count; i++)
+            for (int i = 0; i < modes.Count; i++)
             {
-                VisualElement mapCard = CreateMapCard(allMaps[i]);
+                VisualElement mapCard = CreateMapCard(modes[i]);
 
                 // Add spacing class if there are multiple cards and this is not the last one
-                if (mapCount > 1 && i < mapCount - 1)
+                if (modeCount > 1 && i < modeCount - 1)
                 {
                     mapCard.AddToClassList("has-spacing");
                 }
@@ -190,14 +173,14 @@ namespace Gameplay.UI.Features.Maps
             return container;
         }
 
-        private string GetCategoryClass(string categoryId)
+        private string GetCategoryClass(GameModeCategory category)
         {
-            return categoryId?.ToLower() switch
+            return category switch
             {
-                "special" => "special-events",
-                "trophies" => "trophy-events",
-                "ranked" => "ranked",
-                "community" => "community",
+                GameModeCategory.Special => "special-events",
+                GameModeCategory.Trophies => "trophy-events",
+                GameModeCategory.Ranked => "ranked",
+                GameModeCategory.Community => "community",
                 _ => "trophy-events"
             };
         }
@@ -205,7 +188,10 @@ namespace Gameplay.UI.Features.Maps
         /// <summary>
         /// Create map card from template and populate with data
         /// </summary>
-        private VisualElement CreateMapCard(MapInfo map)
+        /// <summary>
+        /// Create map card from template and populate with data
+        /// </summary>
+        private VisualElement CreateMapCard(GameMode mode)
         {
             if (_mapCardTemplate == null)
             {
@@ -213,7 +199,7 @@ namespace Gameplay.UI.Features.Maps
                 return new VisualElement();
             }
 
-            bool isCurrentMap = map.id == _mapDatabase.currentMapId;
+            bool isSelected = _gameModeService.SelectedGameMode == mode;
 
             // Clone template
             TemplateContainer cardContainer = _mapCardTemplate.CloneTree();
@@ -226,36 +212,21 @@ namespace Gameplay.UI.Features.Maps
             }
 
             // Assign color based on map ID (Brawl Stars style)
-            string colorClass = GetMapColorClass(map.id);
+            string colorClass = GetMapColorClass(mode.Id);
             card.AddToClassList(colorClass);
 
             // Setup click handler
-            card.clicked += () => OnMapCardClicked(map);
+            card.clicked += () => OnGameModeClicked(mode);
 
             // Mark as current map
-            if (isCurrentMap)
+            if (isSelected)
             {
                 card.AddToClassList("current-map");
                 card.SetEnabled(false);
             }
 
-            // Check if map is coming soon (not yet available)
-            bool isComingSoon = !map.isAvailable;
-
-            // Add coming soon styling
-            if (isComingSoon)
-            {
-                card.AddToClassList("coming-soon");
-                card.SetEnabled(false);
-
-                // Add "COMING SOON" label overlay
-                Label comingSoonLabel = new Label("COMING SOON");
-                comingSoonLabel.AddToClassList("coming-soon-label");
-                cardContainer.Q<VisualElement>("map-thumbnail")?.Add(comingSoonLabel);
-            }
-
             // Populate data from template elements
-            PopulateCardData(cardContainer, map, isCurrentMap, isComingSoon);
+            PopulateCardData(cardContainer, mode, isSelected);
 
             return cardContainer;
         }
@@ -263,20 +234,24 @@ namespace Gameplay.UI.Features.Maps
         /// <summary>
         /// Populate card template with map data
         /// </summary>
-        private void PopulateCardData(VisualElement cardContainer, MapInfo map, bool isCurrentMap, bool isComingSoon = false)
+        /// <summary>
+        /// Populate card template with map data
+        /// </summary>
+        private void PopulateCardData(VisualElement cardContainer, GameMode mode, bool isSelected)
         {
             // Mode text
             Label modeText = cardContainer.Q<Label>("mode-text");
             if (modeText != null)
             {
-                modeText.text = !string.IsNullOrEmpty(map.gameMode) ? map.gameMode : $"{map.maxPlayers}v{map.maxPlayers}";
+                // Use Subtitle or GameMode type if available
+                modeText.text = !string.IsNullOrEmpty(mode.Subtitle) ? mode.Subtitle : $"{mode.MaxPlayers} PLAYERS";
             }
 
             // Selected label visibility
             Label currentLabel = cardContainer.Q<Label>("current-label");
             if (currentLabel != null)
             {
-                if (isCurrentMap)
+                if (isSelected)
                 {
                     currentLabel.RemoveFromClassList("hidden");
                 }
@@ -290,23 +265,24 @@ namespace Gameplay.UI.Features.Maps
             Label mapName = cardContainer.Q<Label>("map-name");
             if (mapName != null)
             {
-                mapName.text = map.name.ToUpper();
+                mapName.text = mode.DisplayName.ToUpper();
             }
 
-            // Map subtitle
+            // Map subtitle - reuse description or subtitle?
             Label mapSubtitle = cardContainer.Q<Label>("map-subtitle");
             if (mapSubtitle != null)
             {
-                mapSubtitle.text = map.subtitle;
+                // Just use max players as subtitle or empty
+                mapSubtitle.text = $"{mode.TeamCount} Teams";
             }
 
             // Map description
             Label mapDescription = cardContainer.Q<Label>("map-description");
             if (mapDescription != null)
             {
-                if (!string.IsNullOrEmpty(map.description))
+                if (!string.IsNullOrEmpty(mode.Description))
                 {
-                    mapDescription.text = map.description;
+                    mapDescription.text = mode.Description;
                 }
                 else
                 {
@@ -318,7 +294,7 @@ namespace Gameplay.UI.Features.Maps
             Label mapPlayers = cardContainer.Q<Label>("map-players");
             if (mapPlayers != null)
             {
-                mapPlayers.text = $"👥 {map.maxPlayers} PLAYERS";
+                mapPlayers.text = $"👥 {mode.MaxPlayers} PLAYERS";
             }
         }
 
@@ -333,26 +309,19 @@ namespace Gameplay.UI.Features.Maps
             return colors[Math.Abs(hash) % colors.Length];
         }
 
-        private void OnMapCardClicked(MapInfo map)
+        private void OnGameModeClicked(GameMode mode)
         {
+            if (_gameModeService.SelectGameMode(mode))
+            {
+                // Callback
+                _onGameModeSelected?.Invoke(mode);
 
-            // Update current map in database
-            _mapDatabase.currentMapId = map.id;
+                // Show toast
+                UIService?.ShowNotification($"Mode changed to {mode.DisplayName}", NotificationType.Success, 2f);
 
-            // Save to PlayerPrefs
-            PlayerPrefs.SetString("CurrentMap", map.name);
-            PlayerPrefs.SetString("CurrentMapSubtitle", map.subtitle);
-            PlayerPrefs.SetString("CurrentMapId", map.id);
-            PlayerPrefs.Save();
-
-            // Callback
-            _onMapSelected?.Invoke(map);
-
-            // Show toast
-            UIService?.ShowNotification($"Map changed to {map.name}", NotificationType.Success, 2f);
-
-            // Go back
-            OnBackClicked();
+                // Go back
+                OnBackClicked();
+            }
         }
 
         private void OnBackClicked()
@@ -365,12 +334,6 @@ namespace Gameplay.UI.Features.Maps
             if (_backButton != null)
             {
                 _backButton.clicked -= OnBackClicked;
-            }
-
-            // Unsubscribe from RemoteConfig
-            if (_remoteConfigService != null)
-            {
-                _remoteConfigService.OnSpecificConfigUpdated -= OnMapConfigUpdated;
             }
         }
     }

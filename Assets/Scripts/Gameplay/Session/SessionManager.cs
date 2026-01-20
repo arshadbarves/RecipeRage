@@ -64,6 +64,12 @@ namespace Core.Session
             var parentScope = _container.Resolve<LifetimeScope>();
             _sessionScope = parentScope.CreateChild<SessionLifetimeScope>();
 
+            // Update GameStateManager to use the session container so it can resolve session-scoped states (like GameplayState)
+            if (_stateManager is GameStateManager concreteStateManager)
+            {
+                concreteStateManager.SetContainerResolver(_sessionScope.Container);
+            }
+
             GameLogger.LogInfo("SessionLifetimeScope created.");
         }
 

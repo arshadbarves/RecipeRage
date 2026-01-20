@@ -48,7 +48,7 @@ namespace Gameplay.Networking.Bot
             }
 
             // Try to get SpawnManager
-            _spawnManager = SpawnManagerIntegration.GetSpawnManager();
+            _spawnManager = Object.FindFirstObjectByType<SpawnManager>();
 
             GameLogger.Log($"[BotSpawner] Spawning {botPlayers.Count} bots (Team: {team})");
 

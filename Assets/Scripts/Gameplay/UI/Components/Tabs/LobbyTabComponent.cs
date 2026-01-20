@@ -3,7 +3,9 @@ using Gameplay.UI.Features.Maps;
 using Gameplay.UI.Features.Social;
 using UnityEngine.UIElements;
 using Core.Animation;
+using Core.Networking.Common;
 using Core.UI.Interfaces;
+using Gameplay.GameModes;
 using Gameplay.UI.Data;
 using Gameplay.UI.Features.Settings;
 using Gameplay.UI.Extensions;
@@ -143,12 +145,12 @@ namespace Gameplay.UI.Components.Tabs
         private void OnMapClicked()
         {
             var mapScreen = _uiService?.GetScreen<MapSelectionView>();
-            mapScreen?.ShowWithCallback(OnMapSelected);
+            mapScreen?.ShowWithCallback(OnGameModeSelected);
         }
 
-        private void OnMapSelected(MapInfo map)
+        private void OnGameModeSelected(GameMode mode)
         {
-            if (_mapNameLabel != null) _mapNameLabel.text = map.name.ToUpper();
+            if (_mapNameLabel != null) _mapNameLabel.text = mode.DisplayName.ToUpper();
         }
 
         private void OnInviteClicked(int slotIndex)
@@ -177,11 +179,11 @@ namespace Gameplay.UI.Components.Tabs
         private void RefreshRegionInfo()
         {
             if (_regionInfo == null || _localizationManager == null) return;
-            
+
             string prefix = _localizationManager.GetText(LocKeys.LobbyRegionPrefix);
             // hardcoding NA for now as per previous logic, but making it localized
             string region = _localizationManager.GetText(LocKeys.LobbyRegionNa) ?? "NORTH AMERICA";
-            
+
             _regionInfo.text = $"{prefix}: {region} (24ms)";
         }
     }

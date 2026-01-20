@@ -3,15 +3,7 @@ using Epic.OnlineServices;
 
 namespace Core.Networking.Common
 {
-    /// <summary>
-    /// Enum representing the different game modes in RecipeRage.
-    /// </summary>
-    public enum GameMode
-    {
-        Classic,
-        TimeAttack,
-        TeamBattle
-    }
+
 
     /// <summary>
     /// Enum representing the different character classes in RecipeRage.
@@ -138,9 +130,9 @@ namespace Core.Networking.Common
         public string HostName { get; set; }
 
         /// <summary>
-        /// The game mode of the session.
+        /// The game mode ID of the session.
         /// </summary>
-        public GameMode GameMode { get; set; }
+        public string GameModeId { get; set; }
 
         /// <summary>
         /// The map name of the session.
@@ -156,7 +148,7 @@ namespace Core.Networking.Common
             MaxPlayers = 4;
             IsPrivate = false;
             HostName = string.Empty;
-            GameMode = GameMode.Classic;
+            GameModeId = "classic";
             MapName = "Kitchen";
         }
     }

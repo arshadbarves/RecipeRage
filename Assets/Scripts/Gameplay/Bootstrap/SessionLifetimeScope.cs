@@ -37,6 +37,9 @@ namespace Gameplay.Bootstrap
             // 2. Economy & Player Data (Game Layer Services)
             builder.Register<EconomyService>(Lifetime.Singleton);
             builder.Register<PlayerDataService>(Lifetime.Singleton);
+
+            // 3. Gameplay Services
+            builder.Register<Gameplay.Characters.CharacterService>(Lifetime.Singleton).As<Gameplay.Characters.ICharacterService>().As<System.IDisposable>();
         }
     }
 }

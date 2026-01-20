@@ -136,8 +136,8 @@ namespace Core.Networking.Interfaces
         /// <summary>
         /// Set the game mode (party leader only)
         /// </summary>
-        /// <param name="gameMode">Game mode to set</param>
-        void SetGameMode(GameMode gameMode);
+        /// <param name="gameModeId">Game mode ID to set</param>
+        void SetGameMode(string gameModeId);
 
         /// <summary>
         /// Set the map name (party leader only)

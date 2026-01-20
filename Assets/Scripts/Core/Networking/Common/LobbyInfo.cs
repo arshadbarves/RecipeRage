@@ -39,9 +39,9 @@ namespace Core.Networking.Common
         public bool IsPrivate { get; set; }
 
         /// <summary>
-        /// Game mode for this lobby
+        /// Game mode ID for this lobby
         /// </summary>
-        public GameMode GameMode { get; set; }
+        public string GameModeId { get; set; } = "classic";
 
         /// <summary>
         /// Selected map name

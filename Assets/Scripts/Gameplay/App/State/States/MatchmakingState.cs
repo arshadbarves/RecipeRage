@@ -32,7 +32,7 @@ namespace Gameplay.App.State.States
         private bool _hasFilledWithBots;
 
         // Matchmaking parameters
-        private GameMode _gameMode = GameMode.Classic;
+        private string _gameModeId = "classic";
         private int _teamSize = 4;
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace Gameplay.App.State.States
             _searchTime = 0f;
             _hasFilledWithBots = false;
 
-            LogMessage($"Starting matchmaking: {_gameMode}, Team Size: {_teamSize}");
+            LogMessage($"Starting matchmaking: {_gameModeId}, Team Size: {_teamSize}");
 
             // Show matchmaking UI
             if (_uiService != null)
@@ -115,7 +115,7 @@ namespace Gameplay.App.State.States
             _networkingServices.MatchmakingService.OnMatchmakingCancelled += HandleMatchmakingCancelled;
 
             // Start matchmaking
-            _networkingServices.MatchmakingService.FindMatch(_gameMode, _teamSize);
+            _networkingServices.MatchmakingService.FindMatch(_gameModeId, _teamSize);
 
             LogMessage("Matchmaking started - searching for players...");
         }
