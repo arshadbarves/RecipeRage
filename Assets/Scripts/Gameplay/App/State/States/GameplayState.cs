@@ -2,7 +2,6 @@ using Gameplay.Camera;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using UnityEngine.SceneManagement;
-using Gameplay.Networking;
 using Core.Logging;
 using Core.Networking;
 using Core.UI.Interfaces;
@@ -14,10 +13,6 @@ using VContainer;
 
 namespace Gameplay.App.State.States
 {
-    /// <summary>
-    /// State for gameplay.
-    /// Simplified to just load/unload scenes and delegate to GameplayLifetimeScope.
-    /// </summary>
     public class GameplayState : BaseState
     {
         private readonly IEventBus _eventBus;
@@ -37,7 +32,6 @@ namespace Gameplay.App.State.States
         public override void Enter()
         {
             base.Enter();
-            InitializeCameraSystem();
             SubscribeToEvents();
             InitializeGameplayAsync().Forget();
         }
@@ -71,7 +65,7 @@ namespace Gameplay.App.State.States
         {
             if (_cameraController != null && _cameraController.IsInitialized)
             {
-                GameLogger.Log("GameplayState: Linking Camera to Local Player");
+                GameLogger.Log("GameplayState: Linking Camera to Local Player (dynamic follow)");
                 _cameraController.SetFollowTarget(evt.PlayerTransform);
             }
         }
@@ -80,7 +74,7 @@ namespace Gameplay.App.State.States
         {
             if (_cameraController != null)
             {
-                 GameLogger.Log("GameplayState: Unlinking Camera from Local Player");
+                GameLogger.Log("GameplayState: Unlinking Camera from Local Player");
                 _cameraController.ClearFollowTarget();
             }
         }
@@ -92,6 +86,8 @@ namespace Gameplay.App.State.States
                 var settings = Resources.Load<CameraSettings>("Data/CameraSettings/CameraSettings") ?? CameraSettings.CreateDefault();
                 _cameraController = new CameraController(settings);
                 _cameraController.Initialize();
+
+                GameLogger.Log("Camera system initialized - will follow player when spawned");
             }
             catch (System.Exception ex)
             {
@@ -104,8 +100,11 @@ namespace Gameplay.App.State.States
             // Load base Game scene if not already loaded
             if (SceneManager.GetActiveScene().name != GameConstants.Scenes.Game)
             {
-                await SceneManager.LoadSceneAsync(GameConstants.Scenes.Game);
+                await SceneManager.LoadSceneAsync(GameConstants.Scenes.Game).ToUniTask();
             }
+
+            // Initialize camera system AFTER scene loads
+            InitializeCameraSystem();
 
             await UniTask.Yield();
 
@@ -123,17 +122,6 @@ namespace Gameplay.App.State.States
             else
             {
                 GameLogger.LogWarning("No map scene specified in game mode");
-            }
-
-            await UniTask.Yield();
-
-            // Initialize network (GameplayLifetimeScope will inject dependencies)
-            var networkInitializer = Object.FindFirstObjectByType<NetworkInitializer>();
-            if (networkInitializer != null)
-            {
-                var sessionContainer = _sessionManager?.SessionContainer;
-                sessionContainer?.Inject(networkInitializer);
-                networkInitializer.Initialize();
             }
 
             await UniTask.Yield();

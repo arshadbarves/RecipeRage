@@ -53,11 +53,11 @@ namespace Gameplay.UI
             // Subscribe to score manager events
             if (_scoreManager != null)
             {
-                _scoreManager.OnScoreChanged += HandleScoreChanged;
-                _scoreManager.OnComboAchieved += HandleComboAchieved;
+                _scoreManager.OnTeamScoreChanged += HandleScoreChanged;
+                _scoreManager.OnTeamComboAchieved += HandleComboAchieved;
                 
                 // Initialize the score
-                _currentScore = _scoreManager.GetScore();
+                _currentScore = _scoreManager.GetScore(GetLocalPlayerTeamId());
                 UpdateScoreUI();
             }
             
@@ -82,9 +82,21 @@ namespace Gameplay.UI
             // Unsubscribe from score manager events
             if (_scoreManager != null)
             {
-                _scoreManager.OnScoreChanged -= HandleScoreChanged;
-                _scoreManager.OnComboAchieved -= HandleComboAchieved;
+                _scoreManager.OnTeamScoreChanged -= HandleScoreChanged;
+                _scoreManager.OnTeamComboAchieved -= HandleComboAchieved;
             }
+        }
+
+        private int GetLocalPlayerTeamId()
+        {
+            if (Unity.Netcode.NetworkManager.Singleton != null && 
+                Unity.Netcode.NetworkManager.Singleton.LocalClient != null &&
+                Unity.Netcode.NetworkManager.Singleton.LocalClient.PlayerObject != null)
+            {
+                 var player = Unity.Netcode.NetworkManager.Singleton.LocalClient.PlayerObject.GetComponent<Gameplay.Characters.PlayerController>();
+                 if (player != null) return player.TeamId;
+            }
+            return 0; // Default to Team 0 if not found
         }
         
         /// <summary>
@@ -132,9 +144,14 @@ namespace Gameplay.UI
         /// <summary>
         /// Handle score changed event.
         /// </summary>
+        /// <param name="teamId">The team ID</param>
         /// <param name="newScore">The new score</param>
-        private void HandleScoreChanged(int newScore)
+        private void HandleScoreChanged(int teamId, int newScore)
         {
+            // Only update if it's our team
+            int localTeamId = GetLocalPlayerTeamId();
+            if (teamId != localTeamId) return;
+
             // Calculate score change
             int scoreChange = newScore - _currentScore;
             
@@ -159,9 +176,14 @@ namespace Gameplay.UI
         /// <summary>
         /// Handle combo achieved event.
         /// </summary>
+        /// <param name="teamId">The team ID</param>
         /// <param name="comboCount">The combo count</param>
-        private void HandleComboAchieved(int comboCount)
+        private void HandleComboAchieved(int teamId, int comboCount)
         {
+            // Only update if it's our team
+            int localTeamId = GetLocalPlayerTeamId();
+            if (teamId != localTeamId) return;
+
             // Show combo
             if (_comboPanel != null)
             {

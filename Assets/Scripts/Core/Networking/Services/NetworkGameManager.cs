@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Core.Logging;
+using Core.Networking.Interfaces;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -219,6 +220,19 @@ namespace Core.Networking.Services
         private void OnClientConnected(ulong clientId)
         {
             GameLogger.Log($"[NetworkGameManager] Client {clientId} connected");
+
+            // Register player when they spawn (using base IPlayerController interface)
+            if (NetworkManager.Singleton.SpawnManager.GetPlayerNetworkObject(clientId) != null)
+            {
+                var playerObject = NetworkManager.Singleton.SpawnManager.GetPlayerNetworkObject(clientId);
+                var playerController = playerObject.GetComponent<IPlayerController>();
+
+                if (playerController != null)
+                {
+                    _playerNetworkManager?.RegisterPlayer(clientId, playerController);
+                }
+            }
+
             OnPlayerJoined?.Invoke(clientId);
         }
 
@@ -230,13 +244,67 @@ namespace Core.Networking.Services
         {
             GameLogger.Log($"[NetworkGameManager] Client {clientId} disconnected");
 
-            // Clean up player if spawned
-            if (_spawnedPlayers.ContainsKey(clientId))
+            // Clean up player objects
+            CleanupPlayerObjects(clientId);
+
+            // Unregister player
+            if (_playerNetworkManager.IsPlayerRegistered(clientId))
             {
-                DespawnPlayer(clientId);
+                _playerNetworkManager.UnregisterPlayer(clientId);
             }
 
             OnPlayerLeft?.Invoke(clientId);
+        }
+
+        /// <summary>
+        /// Clean up all objects owned by a disconnected player.
+        /// </summary>
+        /// <param name="clientId">The client ID</param>
+        private void CleanupPlayerObjects(ulong clientId)
+        {
+            // Null checks for shutdown scenarios
+            if (NetworkManager.Singleton == null || !NetworkManager.Singleton.IsServer)
+            {
+                return;
+            }
+
+            if (NetworkManager.Singleton.SpawnManager == null || NetworkManager.Singleton.SpawnManager.SpawnedObjects == null)
+            {
+                GameLogger.LogWarning("[NetworkGameManager] SpawnManager or SpawnedObjects is null during cleanup");
+                return;
+            }
+
+            List<NetworkObject> objectsToCleanup = new List<NetworkObject>();
+
+            // Find all objects owned by this client
+            foreach (var kvp in NetworkManager.Singleton.SpawnManager.SpawnedObjects)
+            {
+                NetworkObject networkObject = kvp.Value;
+
+                if (networkObject != null && networkObject.OwnerClientId == clientId)
+                {
+                    objectsToCleanup.Add(networkObject);
+                }
+            }
+
+            // Clean up objects
+            foreach (NetworkObject networkObject in objectsToCleanup)
+            {
+                if (networkObject == null) continue;
+
+                // Check if it's a player object
+                if (networkObject.IsPlayerObject)
+                {
+                    DespawnPlayer(clientId);
+                }
+                else
+                {
+                    // For other objects, despawn them
+                    DespawnNetworkObject(networkObject);
+                }
+            }
+
+            GameLogger.Log($"[NetworkGameManager] Cleaned up {objectsToCleanup.Count} objects for client {clientId}");
         }
 
         /// <summary>

@@ -12,42 +12,47 @@ namespace Gameplay.Cooking
         /// The unique ID of the order.
         /// </summary>
         public int OrderId;
-        
+
         /// <summary>
         /// The ID of the recipe for this order.
         /// </summary>
         public int RecipeId;
-        
+
         /// <summary>
         /// The time when the order was created.
         /// </summary>
         public float CreationTime;
-        
+
         /// <summary>
         /// The time limit for this order.
         /// </summary>
         public float TimeLimit;
-        
+
         /// <summary>
         /// The remaining time for this order.
         /// </summary>
         public float RemainingTime;
-        
+
         /// <summary>
         /// Whether the order has been completed.
         /// </summary>
         public bool IsCompleted;
-        
+
         /// <summary>
         /// Whether the order has expired.
         /// </summary>
         public bool IsExpired;
-        
+
         /// <summary>
         /// The point value of the order.
         /// </summary>
         public int PointValue;
-        
+
+        /// <summary>
+        /// The ID of the team that completed this order (or -1 if none/co-op).
+        /// </summary>
+        public int CompletedByTeamId;
+
         /// <summary>
         /// Serialize the order state to the network.
         /// </summary>
@@ -62,8 +67,9 @@ namespace Gameplay.Cooking
             serializer.SerializeValue(ref IsCompleted);
             serializer.SerializeValue(ref IsExpired);
             serializer.SerializeValue(ref PointValue);
+            serializer.SerializeValue(ref CompletedByTeamId);
         }
-        
+
         /// <summary>
         /// Check if this order state is equal to another.
         /// </summary>
@@ -78,9 +84,10 @@ namespace Gameplay.Cooking
                    RemainingTime == other.RemainingTime &&
                    IsCompleted == other.IsCompleted &&
                    IsExpired == other.IsExpired &&
-                   PointValue == other.PointValue;
+                   PointValue == other.PointValue &&
+                   CompletedByTeamId == other.CompletedByTeamId;
         }
-        
+
         /// <summary>
         /// Check if this order state is equal to another object.
         /// </summary>
@@ -90,14 +97,14 @@ namespace Gameplay.Cooking
         {
             return obj is RecipeOrderState other && Equals(other);
         }
-        
+
         /// <summary>
         /// Get the hash code for this order state.
         /// </summary>
         /// <returns>The hash code</returns>
         public override int GetHashCode()
         {
-            return OrderId.GetHashCode();
+            return HashCode.Combine(OrderId, RecipeId, CreationTime, TimeLimit, RemainingTime, IsCompleted, IsExpired, PointValue);
         }
     }
 }

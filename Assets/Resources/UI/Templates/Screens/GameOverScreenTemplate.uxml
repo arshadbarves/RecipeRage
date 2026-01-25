@@ -1,0 +1,25 @@
+<UXML xmlns="UnityEngine.UIElements">
+    <Style src="project://database/Assets/Resources/UI/Styles/Screens/GameOver.uss?fileID=7433441132597879392&amp;guid=0dc93b02b55854976be67fbd874f44ac&amp;type=3#GameOver"/>
+    <VisualElement name="game-over-root" class="game-over-root">
+        <VisualElement name="content-panel" class="content-panel">
+            <Label name="title-label" text="GAME OVER" class="title-label"/>
+            <Label name="winner-label" text="MATCH COMPLETE" class="winner-label"/>
+            
+            <VisualElement name="score-container" class="score-container">
+                <VisualElement class="team-score-box team-blue">
+                    <Label text="TEAM 1" class="team-name"/>
+                    <Label name="score-team-0" text="0" class="team-score"/>
+                </VisualElement>
+                
+                <Label text="-" class="score-divider"/>
+                
+                <VisualElement class="team-score-box team-red">
+                    <Label text="TEAM 2" class="team-name"/>
+                    <Label name="score-team-1" text="0" class="team-score"/>
+                </VisualElement>
+            </VisualElement>
+
+            <Button name="lobby-btn" text="RETURN TO LOBBY" class="primary-button"/>
+        </VisualElement>
+    </VisualElement>
+</UXML>

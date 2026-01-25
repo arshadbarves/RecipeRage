@@ -30,9 +30,11 @@ using Gameplay.UI.Features.Shop;
 using Gameplay.UI.Features.Social;
 using Gameplay.UI.Features.System;
 using Gameplay.UI.Features.User;
+using Gameplay.UI.Features.GameOver;
 using Gameplay.App.State;
 using Gameplay.App.State.States;
 using Gameplay.UI;
+using Gameplay.UI.Features.GameOver;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
@@ -98,6 +100,7 @@ namespace Gameplay.Bootstrap
             builder.Register<MapSelectionView>(Lifetime.Transient);
             builder.Register<MatchmakingView>(Lifetime.Transient);
             builder.Register<SettingsView>(Lifetime.Transient);
+            builder.Register<GameOverScreen>(Lifetime.Transient);
 
             // Popups & Components
             builder.Register<NotificationView>(Lifetime.Transient).AsImplementedInterfaces().AsSelf();

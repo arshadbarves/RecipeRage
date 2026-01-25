@@ -130,14 +130,15 @@ namespace Gameplay.GameModes
                 return null;
             }
 
-            // For now, always return Classic logic
-            // In future, use _selectedGameMode.Id to select different implementations
+            if (_selectedGameMode.Id == "kitchen_wars")
+            {
+                return new CompetitiveGameModeLogic();
+            }
+
+            // Default to Classic
             return new ClassicGameModeLogic();
         }
 
-        /// <summary>
-        /// Load map scene additively
-        /// </summary>
         /// <summary>
         /// Load map scene additively
         /// </summary>

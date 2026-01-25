@@ -1,48 +1,37 @@
 using System;
 using Core.Logging;
+using DG.Tweening;
 using Unity.Cinemachine;
 using UnityEngine;
 
 namespace Gameplay.Camera
 {
-    /// <summary>
-    /// Main camera controller for Brawl Stars-like top-down gameplay.
-    /// Manages Cinemachine virtual camera and all camera behaviors.
-    /// Follows Single Responsibility Principle by delegating to specialized controllers.
-    /// </summary>
     public class CameraController : ICameraController
     {
         private readonly CameraSettings _settings;
-        private readonly CameraFollowController _followController;
-        private readonly CameraBoundsController _boundsController;
-        private readonly CameraZoomController _zoomController;
-        private readonly CameraShakeController _shakeController;
 
         private GameObject _cameraRig;
+        private GameObject _virtualCameraObj;
         private UnityEngine.Camera _mainCamera;
         private CinemachineCamera _virtualCamera;
+        private CinemachineBasicMultiChannelPerlin _noise;
+        private CinemachineConfiner3D _confiner;
+        private BoxCollider _boundsCollider;
+
+        private float _shakeTimer;
+        private float _shakeDuration;
+        private float _shakeIntensity;
+        private Tween _zoomTween;
         private bool _isInitialized;
 
         public UnityEngine.Camera MainCamera => _mainCamera;
         public bool IsInitialized => _isInitialized;
 
-        /// <summary>
-        /// Constructor with dependency injection
-        /// </summary>
         public CameraController(CameraSettings settings = null)
         {
             _settings = settings ?? CameraSettings.CreateDefault();
-
-            // Create specialized controllers
-            _followController = new CameraFollowController(_settings);
-            _boundsController = new CameraBoundsController(_settings);
-            _zoomController = new CameraZoomController(_settings);
-            _shakeController = new CameraShakeController(_settings);
         }
 
-        /// <summary>
-        /// Initialize the camera system
-        /// </summary>
         public void Initialize()
         {
             if (_isInitialized)
@@ -51,31 +40,8 @@ namespace Gameplay.Camera
                 return;
             }
 
-            try
-            {
-                CreateCameraRig();
-                SetupMainCamera();
-                SetupVirtualCamera();
+            _cameraRig = new GameObject("GameplayCamera") { tag = "MainCamera" };
 
-                _isInitialized = true;
-                GameLogger.Log("CameraController initialized successfully");
-            }
-            catch (Exception ex)
-            {
-                GameLogger.LogException(ex);
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Create the camera rig GameObject
-        /// </summary>
-        private void CreateCameraRig()
-        {
-            _cameraRig = new GameObject("GameplayCamera");
-            _cameraRig.tag = "MainCamera";
-
-            // Add main camera component
             _mainCamera = _cameraRig.AddComponent<UnityEngine.Camera>();
             _mainCamera.orthographic = _settings.useOrthographic;
             _mainCamera.orthographicSize = _settings.orthographicSize;
@@ -83,148 +49,188 @@ namespace Gameplay.Camera
             _mainCamera.nearClipPlane = 0.1f;
             _mainCamera.farClipPlane = 1000f;
 
-            // Add Cinemachine brain
             var brain = _cameraRig.AddComponent<CinemachineBrain>();
             brain.DefaultBlend.Time = 0.3f;
             brain.DefaultBlend.Style = CinemachineBlendDefinition.Styles.EaseInOut;
 
-            GameLogger.Log("Camera rig created");
-        }
+            _cameraRig.transform.position = new Vector3(0, _settings.cameraHeight, 0);
+            _cameraRig.transform.rotation = Quaternion.Euler(90f, 0, 0);
 
-        /// <summary>
-        /// Setup main camera properties
-        /// </summary>
-        private void SetupMainCamera()
-        {
-            // Position camera at angle
-            float angleRad = _settings.cameraAngle * Mathf.Deg2Rad;
-            Vector3 offset = _settings.followOffset;
+            _virtualCameraObj = new GameObject("VirtualCamera");
+            _virtualCameraObj.transform.position = Vector3.zero;
+            _virtualCameraObj.transform.rotation = Quaternion.identity;
 
-            _cameraRig.transform.position = new Vector3(0, offset.y, offset.z);
-            _cameraRig.transform.rotation = Quaternion.Euler(_settings.cameraAngle, 0, 0);
-
-            GameLogger.Log($"Main camera setup: Angle={_settings.cameraAngle}, Ortho={_settings.useOrthographic}");
-        }
-
-        /// <summary>
-        /// Setup Cinemachine virtual camera
-        /// </summary>
-        private void SetupVirtualCamera()
-        {
-            var vcamObj = new GameObject("VirtualCamera");
-            vcamObj.transform.SetParent(_cameraRig.transform);
-
-            _virtualCamera = vcamObj.AddComponent<CinemachineCamera>();
+            _virtualCamera = _virtualCameraObj.AddComponent<CinemachineCamera>();
             _virtualCamera.Priority.Value = 10;
 
-            // Setup follow component
-            var follow = vcamObj.AddComponent<CinemachineFollow>();
-            follow.FollowOffset = _settings.followOffset;
-            // Set damping for smooth following
+            var follow = _virtualCameraObj.AddComponent<CinemachineFollow>();
+            follow.FollowOffset = new Vector3(0, _settings.cameraHeight, 0);
             follow.TrackerSettings.PositionDamping = new Vector3(_settings.followSmoothTime, _settings.followSmoothTime, _settings.followSmoothTime);
 
-            // Setup rotation component to maintain top-down angle
-            var rotation = vcamObj.AddComponent<CinemachineRotationComposer>();
-            rotation.Composition.ScreenPosition = new Vector2(0.5f, 0.5f);
+            _noise = _virtualCameraObj.AddComponent<CinemachineBasicMultiChannelPerlin>();
+            _noise.FrequencyGain = _settings.shakeFrequency;
+            _noise.AmplitudeGain = 0f;
 
-            // Initialize controllers with virtual camera
-            _followController.Initialize(_virtualCamera);
-            _boundsController.Initialize(_virtualCamera);
-            _zoomController.Initialize(_virtualCamera, _mainCamera);
-            _shakeController.Initialize(_virtualCamera);
-
-            GameLogger.Log("Virtual camera setup complete");
-        }
-
-        /// <summary>
-        /// Set the target for the camera to follow
-        /// </summary>
-        public void SetFollowTarget(Transform target)
-        {
-            if (!_isInitialized)
+            if (_settings.enableBounds)
             {
-                GameLogger.LogError("Cannot set follow target - camera not initialized");
-                return;
+                _confiner = _virtualCameraObj.AddComponent<CinemachineConfiner3D>();
             }
 
-            _followController.SetTarget(target);
-            GameLogger.Log($"Camera follow target set: {target?.name ?? "null"}");
+            _isInitialized = true;
+            GameLogger.Log("CameraController initialized");
         }
 
-        /// <summary>
-        /// Clear the current follow target
-        /// </summary>
+        public void AddFollowTarget(Transform target, float weight = 1f, float radius = 1f)
+        {
+            SetFollowTarget(target);
+        }
+
+        public void RemoveFollowTarget(Transform target)
+        {
+            ClearFollowTarget();
+        }
+
+        public void SetFollowTarget(Transform target)
+        {
+            if (!_isInitialized || _virtualCamera == null) return;
+
+            _virtualCamera.Follow = target;
+            _virtualCamera.LookAt = target;
+        }
+
         public void ClearFollowTarget()
         {
-            _followController.ClearTarget();
-            GameLogger.Log("Camera follow target cleared");
+            if (_virtualCamera == null) return;
+
+            _virtualCamera.Follow = null;
+            _virtualCamera.LookAt = null;
         }
 
-        /// <summary>
-        /// Set the arena bounds to constrain camera movement
-        /// </summary>
+        public void PositionForArena(Bounds arenaBounds)
+        {
+            if (!_isInitialized) return;
+
+            Vector3 arenaCenter = arenaBounds.center;
+            Vector3 arenaSize = arenaBounds.size;
+
+            float distance = Mathf.Max(arenaSize.x, arenaSize.z) * 0.35f + _settings.cameraDistance;
+            Vector3 cameraPos = arenaCenter + new Vector3(0, _settings.cameraHeight, -distance);
+
+            _cameraRig.transform.position = cameraPos;
+            _cameraRig.transform.LookAt(arenaCenter);
+        }
+
         public void SetArenaBounds(Bounds bounds)
         {
-            _boundsController.SetBounds(bounds);
-            GameLogger.Log($"Camera bounds set: {bounds}");
+            if (!_settings.enableBounds || _confiner == null) return;
+
+            if (_boundsCollider != null)
+            {
+                UnityEngine.Object.Destroy(_boundsCollider.gameObject);
+            }
+
+            var boundsObj = new GameObject("CameraBounds");
+            boundsObj.transform.position = bounds.center;
+
+            _boundsCollider = boundsObj.AddComponent<BoxCollider>();
+            _boundsCollider.size = bounds.size - Vector3.one * _settings.boundsPadding;
+            _boundsCollider.isTrigger = true;
+
+            _confiner.BoundingVolume = _boundsCollider;
         }
 
-        /// <summary>
-        /// Trigger a camera shake effect
-        /// </summary>
         public void Shake(float intensity, float duration)
         {
-            _shakeController.Shake(intensity, duration);
+            if (_noise == null) return;
+
+            intensity = Mathf.Clamp01(intensity);
+            _shakeIntensity = intensity * _settings.maxShakeIntensity;
+            _shakeDuration = duration;
+            _shakeTimer = 0f;
+            _noise.AmplitudeGain = _shakeIntensity;
         }
 
-        /// <summary>
-        /// Set camera zoom level
-        /// </summary>
         public void SetZoom(float zoomLevel, float duration = 0.3f)
         {
-            _zoomController.SetZoom(zoomLevel, duration);
+            if (_mainCamera == null) return;
+
+            zoomLevel = Mathf.Clamp(zoomLevel, _settings.minZoom, _settings.maxZoom);
+            float targetSize = _settings.orthographicSize / zoomLevel;
+
+            _zoomTween?.Kill();
+
+            if (duration > 0)
+            {
+                _zoomTween = DOTween.To(
+                    () => _mainCamera.orthographicSize,
+                    x => _mainCamera.orthographicSize = x,
+                    targetSize,
+                    duration
+                ).SetEase(Ease.OutCubic);
+            }
+            else
+            {
+                _mainCamera.orthographicSize = targetSize;
+            }
         }
 
-        /// <summary>
-        /// Enable or disable camera following
-        /// </summary>
         public void SetFollowEnabled(bool enabled)
         {
-            _followController.SetEnabled(enabled);
+            if (_virtualCamera != null)
+            {
+                _virtualCamera.enabled = enabled;
+            }
         }
 
-        /// <summary>
-        /// Update camera (called from GameplayState if needed)
-        /// </summary>
         public void Update(float deltaTime)
         {
             if (!_isInitialized) return;
 
-            _shakeController.Update(deltaTime);
-            _zoomController.Update(deltaTime);
+            if (_shakeTimer < _shakeDuration)
+            {
+                _shakeTimer += deltaTime;
+                float progress = _shakeTimer / _shakeDuration;
+                float currentIntensity = Mathf.Lerp(_shakeIntensity, 0f, progress);
+
+                if (_noise != null)
+                {
+                    _noise.AmplitudeGain = currentIntensity;
+                }
+            }
+            else if (_noise != null && _noise.AmplitudeGain > 0f)
+            {
+                _noise.AmplitudeGain = 0f;
+            }
         }
 
-        /// <summary>
-        /// Clean up resources
-        /// </summary>
         public void Dispose()
         {
+            _zoomTween?.Kill();
+
             if (_cameraRig != null)
             {
                 UnityEngine.Object.Destroy(_cameraRig);
-                _cameraRig = null;
             }
 
-            _followController?.Dispose();
-            _boundsController?.Dispose();
-            _zoomController?.Dispose();
-            _shakeController?.Dispose();
+            if (_virtualCameraObj != null)
+            {
+                UnityEngine.Object.Destroy(_virtualCameraObj);
+            }
 
+            if (_boundsCollider != null)
+            {
+                UnityEngine.Object.Destroy(_boundsCollider.gameObject);
+            }
+
+            _cameraRig = null;
+            _virtualCameraObj = null;
             _mainCamera = null;
             _virtualCamera = null;
+            _noise = null;
+            _confiner = null;
+            _boundsCollider = null;
+            _zoomTween = null;
             _isInitialized = false;
-
-            GameLogger.Log("CameraController disposed");
         }
     }
 }

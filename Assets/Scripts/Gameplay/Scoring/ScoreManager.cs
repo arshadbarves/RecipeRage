@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Gameplay.Cooking;
 using Core.Logging;
 using Unity.Netcode;
@@ -22,93 +23,92 @@ namespace Gameplay.Scoring
         [SerializeField] private OrderManager _orderManager;
 
         /// <summary>
-        /// Event triggered when the score changes.
+        /// Event triggered when a team's score changes.
+        /// arg1: Team ID, arg2: New Score
         /// </summary>
-        public event Action<int> OnScoreChanged;
+        public event Action<int, int> OnTeamScoreChanged;
 
         /// <summary>
-        /// Event triggered when a combo is achieved.
+        /// Event triggered when a combo is achieved by a team.
+        /// arg1: Team ID, arg2: Combo Count
         /// </summary>
-        public event Action<int> OnComboAchieved;
+        public event Action<int, int> OnTeamComboAchieved;
 
-        /// <summary>
-        /// The current score.
-        /// </summary>
-        private NetworkVariable<int> _score = new NetworkVariable<int>(0);
+        // Scores for Team 0 and Team 1
+        private NetworkList<int> _teamScores;
+        private NetworkList<int> _teamComboCounts;
 
-        /// <summary>
-        /// The current combo count.
-        /// </summary>
-        private NetworkVariable<int> _comboCount = new NetworkVariable<int>(0);
+        // Track last completion time per team locally (server only)
+        private Dictionary<int, float> _lastTeamOrderCompletionTime = new Dictionary<int, float>();
 
-        /// <summary>
-        /// The time of the last completed order.
-        /// </summary>
-        private float _lastOrderCompletionTime;
-
-        /// <summary>
-        /// Initialize the score manager.
-        /// </summary>
         private void Awake()
         {
-            // Find the order manager if not set
             if (_orderManager == null)
             {
                 _orderManager = FindFirstObjectByType<OrderManager>();
             }
+            // Initialize NetworkLists
+            _teamScores = new NetworkList<int>();
+            _teamComboCounts = new NetworkList<int>();
         }
 
-        /// <summary>
-        /// Set up network variables when the network object spawns.
-        /// </summary>
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
 
-            // Subscribe to network variable changes
-            _score.OnValueChanged += OnScoreValueChanged;
-            _comboCount.OnValueChanged += OnComboValueChanged;
+            if (IsServer)
+            {
+                // Ensure we have slots for 2 teams
+                if (_teamScores.Count < 2)
+                {
+                    _teamScores.Add(0);
+                    _teamScores.Add(0);
+                }
+                if (_teamComboCounts.Count < 2)
+                {
+                    _teamComboCounts.Add(0);
+                    _teamComboCounts.Add(0);
+                }
+            }
 
-            // Subscribe to order manager events
+            _teamScores.OnListChanged += OnTeamScoresChanged;
+            _teamComboCounts.OnListChanged += OnTeamComboChanged;
+
             if (_orderManager != null)
             {
                 _orderManager.OnOrderCompleted += HandleOrderCompleted;
             }
         }
 
-        /// <summary>
-        /// Clean up when the network object despawns.
-        /// </summary>
         public override void OnNetworkDespawn()
         {
             base.OnNetworkDespawn();
 
-            // Unsubscribe from network variable changes
-            _score.OnValueChanged -= OnScoreValueChanged;
-            _comboCount.OnValueChanged -= OnComboValueChanged;
+            _teamScores.OnListChanged -= OnTeamScoresChanged;
+            _teamComboCounts.OnListChanged -= OnTeamComboChanged;
 
-            // Unsubscribe from order manager events
             if (_orderManager != null)
             {
                 _orderManager.OnOrderCompleted -= HandleOrderCompleted;
             }
         }
 
-        /// <summary>
-        /// Handle order completed event.
-        /// </summary>
-        /// <param name="order">The order that was completed</param>
         private void HandleOrderCompleted(RecipeOrderState order)
         {
-            if (!IsServer)
+            if (!IsServer) return;
+
+            // Determine which team completed the order.
+            // Requirement modification: RecipeOrderState needs 'CompletedByTeamId'
+            // For now, if missing, default to 0 (Co-op)
+            int teamId = order.CompletedByTeamId;
+
+            if (teamId < 0 || teamId >= _teamScores.Count)
             {
-                return;
+                 GameLogger.LogWarning($"Invalid team ID {teamId} for scoring. Defaulting to 0.");
+                 teamId = 0;
             }
 
-            // Get base points from the order
             int basePoints = order.PointValue;
-
-            // Calculate time bonus (if order has remaining time)
             int timeBonus = 0;
             if (order.TimeLimit > 0)
             {
@@ -116,143 +116,68 @@ namespace Gameplay.Scoring
                 timeBonus = Mathf.RoundToInt(_timeBonus * timePercentage);
             }
 
-            // Check for combo
-            float timeSinceLastOrder = Time.time - _lastOrderCompletionTime;
-            bool isCombo = timeSinceLastOrder <= _comboTimeWindow;
+            // Check combo
+            if (!_lastTeamOrderCompletionTime.ContainsKey(teamId))
+            {
+                _lastTeamOrderCompletionTime[teamId] = -999f;
+            }
 
-            // Update combo count
+            float timeSinceLast = Time.time - _lastTeamOrderCompletionTime[teamId];
+            bool isCombo = timeSinceLast <= _comboTimeWindow;
+
             if (isCombo)
             {
-                _comboCount.Value++;
+                _teamComboCounts[teamId]++;
             }
             else
             {
-                _comboCount.Value = 1;
+                _teamComboCounts[teamId] = 1;
             }
 
-            // Calculate combo bonus
-            int comboBonus = (_comboCount.Value - 1) * _comboBonus;
-
-            // Calculate total points
+            int comboBonus = (_teamComboCounts[teamId] - 1) * _comboBonus;
             int totalPoints = basePoints + timeBonus + comboBonus;
 
-            // Add points to the score
-            _score.Value += totalPoints;
+            _teamScores[teamId] += totalPoints;
+            _lastTeamOrderCompletionTime[teamId] = Time.time;
 
-            // Update last order completion time
-            _lastOrderCompletionTime = Time.time;
-
-            // Log the score breakdown
-            GameLogger.Log($"Order completed: Base={basePoints}, Time={timeBonus}, Combo={comboBonus}, Total={totalPoints}");
+            GameLogger.Log($"Team {teamId} Score: {totalPoints} (Base:{basePoints}, Time:{timeBonus}, Combo:{comboBonus}). Total: {_teamScores[teamId]}");
         }
 
-        /// <summary>
-        /// Add points to the score.
-        /// </summary>
-        /// <param name="points">The points to add</param>
-        public void AddPoints(int points)
+        // --- Public API ---
+
+        public int GetScore(int teamId)
         {
-            if (!IsServer)
-            {
-                // Request points from the server
-                AddPointsServerRpc(points);
-                return;
-            }
-
-            _score.Value += points;
+            if (teamId >= 0 && teamId < _teamScores.Count)
+                return _teamScores[teamId];
+            return 0;
         }
 
-        /// <summary>
-        /// Get the current score.
-        /// </summary>
-        /// <returns>The current score</returns>
-        public int GetScore()
+        public void AddPoints(int teamId, int points)
         {
-            return _score.Value;
+             if (!IsServer) return;
+             if (teamId >= 0 && teamId < _teamScores.Count)
+                _teamScores[teamId] += points;
         }
 
-        /// <summary>
-        /// Get the current combo count.
-        /// </summary>
-        /// <returns>The current combo count</returns>
-        public int GetComboCount()
-        {
-            return _comboCount.Value;
-        }
-
-        /// <summary>
-        /// Reset the score.
-        /// </summary>
-        public void ResetScore()
-        {
-            if (!IsServer)
-            {
-                // Request reset from the server
-                ResetScoreServerRpc();
-                return;
-            }
-
-            _score.Value = 0;
-            _comboCount.Value = 0;
-        }
-
-        /// <summary>
-        /// Handle score value changed.
-        /// </summary>
-        /// <param name="previousValue">The previous value</param>
-        /// <param name="newValue">The new value</param>
-        private void OnScoreValueChanged(int previousValue, int newValue)
-        {
-            // Trigger event
-            OnScoreChanged?.Invoke(newValue);
-        }
-
-        /// <summary>
-        /// Handle combo value changed.
-        /// </summary>
-        /// <param name="previousValue">The previous value</param>
-        /// <param name="newValue">The new value</param>
-        private void OnComboValueChanged(int previousValue, int newValue)
-        {
-            // Only trigger event if combo increased
-            if (newValue > previousValue && newValue > 1)
-            {
-                OnComboAchieved?.Invoke(newValue);
-            }
-        }
-
-        /// <summary>
-        /// Request points from the server.
-        /// </summary>
-        /// <param name="points">The points to add</param>
-        [ServerRpc(RequireOwnership = false)]
-        private void AddPointsServerRpc(int points)
-        {
-            AddPoints(points);
-        }
-
-        /// <summary>
-        /// Request reset from the server.
-        /// </summary>
-        [ServerRpc(RequireOwnership = false)]
-        private void ResetScoreServerRpc()
-        {
-            ResetScore();
-        }
-
-        /// <summary>
-        /// Reset all scores for all players.
-        /// </summary>
         public void ResetScores()
         {
-            if (!IsServer)
-            {
-                GameLogger.LogWarning(" Only the server can reset all scores.");
-                return;
-            }
+            if (!IsServer) return;
+            for(int i=0; i<_teamScores.Count; i++) _teamScores[i] = 0;
+            for(int i=0; i<_teamComboCounts.Count; i++) _teamComboCounts[i] = 0;
+            _lastTeamOrderCompletionTime.Clear();
+        }
 
-            // Reset the main score
-            ResetScore();
+        // --- Events ---
+
+        private void OnTeamScoresChanged(NetworkListEvent<int> changeEvent)
+        {
+            OnTeamScoreChanged?.Invoke(changeEvent.Index, changeEvent.Value);
+        }
+
+        private void OnTeamComboChanged(NetworkListEvent<int> changeEvent)
+        {
+            if (changeEvent.Value > 1)
+                OnTeamComboAchieved?.Invoke(changeEvent.Index, changeEvent.Value);
         }
     }
 }

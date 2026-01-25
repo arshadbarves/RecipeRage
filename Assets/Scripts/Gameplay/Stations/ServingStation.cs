@@ -39,6 +39,13 @@ namespace Gameplay.Stations
         /// <summary>
         /// Initialize the serving station.
         /// </summary>
+        [SerializeField] private int _teamId;
+        
+        /// <summary>
+        /// Reference to the linked sink station for this team.
+        /// </summary>
+        private SinkStation _linkedSink;
+        
         protected override void Awake()
         {
             base.Awake();
@@ -59,15 +66,44 @@ namespace Gameplay.Stations
                 GameLogger.LogWarning("NetworkScoreManager not found. Scoring will not work.");
             }
 
-            // Create dish validator (using standard validation strategy)
+            // Create dish validator
             _validator = new StandardDishValidator();
 
             // Find round timer
             _roundTimer = FindFirstObjectByType<RoundTimer>();
         }
 
+        public override void OnNetworkSpawn()
+        {
+            base.OnNetworkSpawn();
+            // Find linked sink
+            FindLinkedSink();
+        }
+
+        private void FindLinkedSink()
+        {
+            var sinks = FindObjectsByType<SinkStation>(FindObjectsSortMode.None);
+            foreach (var sink in sinks)
+            {
+                if (sink.TeamId == _teamId)
+                {
+                    _linkedSink = sink;
+                    break;
+                }
+            }
+        }
+
         protected override void HandleInteraction(PlayerController player)
         {
+            // Block if dirty dishes exist
+            if (_linkedSink != null && _linkedSink.DirtyPlateCount > 0)
+            {
+                 // Optional: visual feedback "Wash Dishes!"
+                 GameLogger.Log("Cannot serve! Sink has dirty dishes.");
+                 ShowFailureVisual(); // Re-use failure visual or separate one
+                 return;
+            }
+
             // If the player is holding an ingredient
             if (player.IsHoldingObject())
             {

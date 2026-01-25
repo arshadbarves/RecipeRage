@@ -21,7 +21,7 @@ namespace Gameplay.Characters
     /// Main player controller - orchestrates all player subsystems.
     /// Follows Single Responsibility Principle by delegating to specialized controllers.
     /// </summary>
-    public class PlayerController : NetworkBehaviour, IPlayerController // Added interface
+    public class PlayerController : NetworkBehaviour, IPlayerController, IInteractable // Added interface
     {
         #region Inspector Settings
 
@@ -83,6 +83,19 @@ namespace Gameplay.Characters
         public CharacterAbility PrimaryAbility { get; private set; }
         public ModifiableStat InteractionSpeed { get; } = new ModifiableStat(1f);
         public ModifiableStat CarryingCapacity { get; } = new ModifiableStat(1f);
+
+        private NetworkVariable<int> _teamId = new NetworkVariable<int>(0);
+        public int TeamId => _teamId.Value;
+
+        public void SetTeam(int teamId)
+        {
+            if (!IsServer)
+            {
+                GameLogger.LogWarning("Only server can set team ID");
+                return;
+            }
+            _teamId.Value = teamId;
+        }
 
         #endregion
 
@@ -480,5 +493,43 @@ namespace Gameplay.Characters
         }
 
         #endregion
+        #region IInteractable Implementation
+
+        public void Interact(PlayerController player)
+        {
+            if (!IsServer) return;
+
+            // Slap Logic
+            if (player.TeamId != TeamId)
+            {
+                // Stun myself (victim)
+                Stun(2.0f);
+                
+                // Drop held object
+                if (IsHoldingObject())
+                {
+                    DropObject();
+                }
+
+                GameLogger.Log($"Player {player.OwnerClientId} slapped Player {OwnerClientId}!");
+            }
+        }
+
+        public string GetInteractionPrompt()
+        {
+            // Only show prompt to enemies
+            // Accessing NetworkManager.Singleton.LocalClientId to check team locally?
+            // Local check might be needed for UI prompt updates
+            return "Slap!";
+        }
+
+        public bool CanInteract(PlayerController player)
+        {
+            // Can be slapped if enemy
+            return player.TeamId != TeamId;
+        }
+
+        #endregion
+
     }
 }
