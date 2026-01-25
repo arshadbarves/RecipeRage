@@ -147,9 +147,9 @@ namespace Gameplay.UI.Components.Tabs
             slot.Add(nameLabel);
 
             // Create ability label
-            if (character.PrimaryAbilityType != AbilityType.None)
+            if (character.PrimaryAbility.AbilityType != AbilityType.None)
             {
-                var abilityLabel = new Label(character.PrimaryAbilityType.ToString());
+                var abilityLabel = new Label(character.PrimaryAbility.AbilityType.ToString());
                 abilityLabel.AddToClassList("character-ability-label");
                 slot.Add(abilityLabel);
             }
@@ -157,7 +157,7 @@ namespace Gameplay.UI.Components.Tabs
             // Add unlock cost if locked
             if (!isUnlocked)
             {
-                var costLabel = new Label($"{character.UnlockCost} 💰");
+                var costLabel = new Label($"{character.UnlockData.UnlockCost} 💰");
                 costLabel.AddToClassList("character-unlock-cost");
                 slot.Add(costLabel);
             }
@@ -172,7 +172,7 @@ namespace Gameplay.UI.Components.Tabs
             if (!isUnlocked)
             {
                 GameLogger.Log($"Locked character clicked: {character.DisplayName}");
-                _uiService?.ShowNotification($"{character.DisplayName} is locked! Cost: {character.UnlockCost} coins", NotificationType.Info, 3f);
+                _uiService?.ShowNotification($"{character.DisplayName} is locked! Cost: {character.UnlockData.UnlockCost} coins", NotificationType.Info, 3f);
                 return;
             }
 

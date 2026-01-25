@@ -1,6 +1,5 @@
 using System;
 using Core.Logging;
-using Newtonsoft.Json;
 using UnityEngine;
 
 namespace Gameplay.Characters
@@ -10,59 +9,20 @@ namespace Gameplay.Characters
     /// </summary>
     public abstract class CharacterAbility
     {
-        /// <summary>
-        /// The character class that owns this ability.
-        /// </summary>
         protected CharacterClass CharacterClass { get; private set; }
-        
-        /// <summary>
-        /// The player controller that owns this ability.
-        /// </summary>
         protected PlayerController PlayerController { get; private set; }
-        
-        /// <summary>
-        /// The ability type.
-        /// </summary>
-        public AbilityType AbilityType { get; protected set; }
-        
-        /// <summary>
-        /// The ability cooldown in seconds.
-        /// </summary>
-        public float Cooldown { get; protected set; }
-        
-        /// <summary>
-        /// The ability duration in seconds (0 for instant).
-        /// </summary>
-        public float Duration { get; protected set; }
-        
-        /// <summary>
-        /// The ability icon.
-        /// </summary>
-        public Sprite Icon { get; protected set; }
-        
-        /// <summary>
-        /// The ability description.
-        /// </summary>
-        public string Description { get; protected set; }
-        
-        /// <summary>
-        /// The current cooldown timer.
-        /// </summary>
+        protected CharacterAbilityData AbilityData { get; private set; }
+
+        public AbilityType AbilityType => AbilityData?.AbilityType ?? AbilityType.None;
+        public float Cooldown => AbilityData?.Cooldown ?? 30f;
+        public float Duration => AbilityData?.Duration ?? 0f;
+        public Sprite Icon => AbilityData?.Icon;
+        public string Description => AbilityData?.Description ?? string.Empty;
+
         public float CooldownTimer { get; protected set; }
-        
-        /// <summary>
-        /// The current duration timer.
-        /// </summary>
         public float DurationTimer { get; protected set; }
-        
-        /// <summary>
-        /// Whether the ability is on cooldown.
-        /// </summary>
+
         public bool IsOnCooldown => CooldownTimer > 0f;
-        
-        /// <summary>
-        /// Whether the ability is active.
-        /// </summary>
         public bool IsActive => DurationTimer > 0f;
         
         /// <summary>
@@ -85,22 +45,12 @@ namespace Gameplay.Characters
         /// </summary>
         public event Action<CharacterAbility> OnAbilityCooldownEnded;
         
-        /// <summary>
-        /// Initialize the ability.
-        /// </summary>
-        /// <param name="characterClass">The character class that owns this ability</param>
-        /// <param name="playerController">The player controller that owns this ability</param>
         public virtual void Initialize(CharacterClass characterClass, PlayerController playerController)
         {
             CharacterClass = characterClass;
             PlayerController = playerController;
-            
-            AbilityType = characterClass.PrimaryAbilityType;
-            Cooldown = characterClass.PrimaryAbilityCooldown;
-            Duration = characterClass.PrimaryAbilityDuration;
-            Icon = characterClass.PrimaryAbilityIcon;
-            Description = characterClass.PrimaryAbilityDescription;
-            
+            AbilityData = characterClass.PrimaryAbility;
+
             CooldownTimer = 0f;
             DurationTimer = 0f;
         }
@@ -250,86 +200,34 @@ namespace Gameplay.Characters
         }
     }
     
-    /// <summary>
-    /// No ability.
-    /// </summary>
     public class NoneAbility : CharacterAbility
     {
-        public override void Initialize(CharacterClass characterClass, PlayerController playerController)
-        {
-            base.Initialize(characterClass, playerController);
-            AbilityType = AbilityType.None;
-        }
-        
         public override bool Activate()
         {
-            // No effect
             return false;
         }
     }
     
-    /// <summary>
-    /// Speed boost ability.
-    /// </summary>
     public class SpeedBoostAbility : CharacterAbility
     {
-        private float _speedMultiplier = 1.5f;
         private float _originalSpeed;
-        
-        public override void Initialize(CharacterClass characterClass, PlayerController playerController)
-        {
-            base.Initialize(characterClass, playerController);
-            
-            // Parse parameters
-            if (!string.IsNullOrEmpty(characterClass.PrimaryAbilityParameters))
-            {
-                try
-                {
-                    SpeedBoostParameters parameters = JsonConvert.DeserializeObject<SpeedBoostParameters>(characterClass.PrimaryAbilityParameters);
-                    if (parameters != null)
-                    {
-                        _speedMultiplier = parameters.SpeedMultiplier;
-                    }
-                }
-                catch (Exception e)
-                {
-                    GameLogger.LogError($"Failed to parse parameters: {e.Message}");
-                }
-            }
-        }
-        
+
         public override bool Activate()
         {
-            if (!base.Activate())
-            {
-                return false;
-            }
-            
-            // Store original speed
+            if (!base.Activate()) return false;
+
             _originalSpeed = PlayerController.MovementSpeed;
-            
-            // Apply speed boost
-            PlayerController.MovementSpeed *= _speedMultiplier;
-            
+            PlayerController.MovementSpeed *= AbilityData.SpeedMultiplier;
+
             return true;
         }
-        
+
         public override void Deactivate()
         {
-            if (!IsActive)
-            {
-                return;
-            }
-            
-            // Restore original speed
+            if (!IsActive) return;
+
             PlayerController.MovementSpeed = _originalSpeed;
-            
             base.Deactivate();
-        }
-        
-        private class SpeedBoostParameters
-        {
-            public float SpeedMultiplier { get; set; } = 1.5f;
         }
     }
     
@@ -392,63 +290,22 @@ namespace Gameplay.Characters
     
     public class PushOtherPlayersAbility : CharacterAbility
     {
-        private float _pushForce = 5f;
-        private float _pushRadius = 3f;
-        
-        public override void Initialize(CharacterClass characterClass, PlayerController playerController)
-        {
-            base.Initialize(characterClass, playerController);
-            if (!string.IsNullOrEmpty(characterClass.PrimaryAbilityParameters))
-            {
-                try
-                {
-                    PushParameters parameters = JsonConvert.DeserializeObject<PushParameters>(characterClass.PrimaryAbilityParameters);
-                    if (parameters != null)
-                    {
-                        _pushForce = parameters.PushForce;
-                        _pushRadius = parameters.PushRadius;
-                    }
-                }
-                catch (Exception e) { GameLogger.LogError($"Failed to parse push parameters: {e.Message}"); }
-            }
-        }
-        
         public override bool Activate()
         {
             if (!base.Activate()) return false;
-            // TODO: Implement push other players logic
+            // TODO: Implement push other players logic using AbilityData.PushForce and AbilityData.Range
             return true;
         }
-        
-        private class PushParameters { public float PushForce { get; set; } = 5f; public float PushRadius { get; set; } = 3f; }
     }
     
     public class StealIngredientAbility : CharacterAbility
     {
-        private float _stealRadius = 2f;
-        
-        public override void Initialize(CharacterClass characterClass, PlayerController playerController)
-        {
-            base.Initialize(characterClass, playerController);
-            if (!string.IsNullOrEmpty(characterClass.PrimaryAbilityParameters))
-            {
-                try
-                {
-                    StealParameters parameters = JsonConvert.DeserializeObject<StealParameters>(characterClass.PrimaryAbilityParameters);
-                    if (parameters != null) _stealRadius = parameters.StealRadius;
-                }
-                catch (Exception e) { GameLogger.LogError($"Failed to parse steal parameters: {e.Message}"); }
-            }
-        }
-        
         public override bool Activate()
         {
             if (!base.Activate()) return false;
-            // TODO: Implement steal ingredient logic
+            // TODO: Implement steal ingredient logic using AbilityData.Range
             return true;
         }
-        
-        private class StealParameters { public float StealRadius { get; set; } = 2f; }
     }
     
     public class PreventBurningAbility : CharacterAbility
@@ -480,41 +337,18 @@ namespace Gameplay.Characters
     
     public class IngredientMagnetAbility : CharacterAbility
     {
-        private float _magnetRadius = 5f;
-        private float _magnetForce = 10f;
-        
-        public override void Initialize(CharacterClass characterClass, PlayerController playerController)
-        {
-            base.Initialize(characterClass, playerController);
-            if (!string.IsNullOrEmpty(characterClass.PrimaryAbilityParameters))
-            {
-                try
-                {
-                    MagnetParameters parameters = JsonConvert.DeserializeObject<MagnetParameters>(characterClass.PrimaryAbilityParameters);
-                    if (parameters != null)
-                    {
-                        _magnetRadius = parameters.MagnetRadius;
-                        _magnetForce = parameters.MagnetForce;
-                    }
-                }
-                catch (Exception e) { GameLogger.LogError($"Failed to parse magnet parameters: {e.Message}"); }
-            }
-        }
-        
         public override bool Activate()
         {
             if (!base.Activate()) return false;
-            // TODO: Implement ingredient magnet logic
+            // TODO: Implement ingredient magnet logic using AbilityData.Range and AbilityData.PushForce
             return true;
         }
-        
+
         public override void Deactivate()
         {
             if (!IsActive) return;
             // TODO: Implement disable magnet logic
             base.Deactivate();
         }
-        
-        private class MagnetParameters { public float MagnetRadius { get; set; } = 5f; public float MagnetForce { get; set; } = 10f; }
     }
 }

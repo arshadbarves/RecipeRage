@@ -20,6 +20,7 @@ namespace Gameplay.App.State.States
         private readonly SessionManager _sessionManager;
         private readonly IGameModeService _gameModeService;
         private ICameraController _cameraController;
+        private CameraShakeService _cameraShakeService;
 
         public GameplayState(IUIService uiService, SessionManager sessionManager, IEventBus eventBus, IGameModeService gameModeService)
         {
@@ -44,6 +45,9 @@ namespace Gameplay.App.State.States
 
             // Unload map scene
             _gameModeService?.UnloadCurrentMapAsync().Forget();
+
+            _cameraShakeService?.Dispose();
+            _cameraShakeService = null;
 
             _cameraController?.Dispose();
             _cameraController = null;
@@ -86,6 +90,9 @@ namespace Gameplay.App.State.States
                 var settings = Resources.Load<CameraSettings>("Data/CameraSettings/CameraSettings") ?? CameraSettings.CreateDefault();
                 _cameraController = new CameraController(settings);
                 _cameraController.Initialize();
+
+                _cameraShakeService = new CameraShakeService(_eventBus);
+                _cameraShakeService.SetCameraController(_cameraController);
 
                 GameLogger.Log("Camera system initialized - will follow player when spawned");
             }

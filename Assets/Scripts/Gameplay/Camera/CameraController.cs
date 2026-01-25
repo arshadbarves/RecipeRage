@@ -1,4 +1,3 @@
-using System;
 using Core.Logging;
 using DG.Tweening;
 using Unity.Cinemachine;
@@ -16,7 +15,6 @@ namespace Gameplay.Camera
         private CinemachineCamera _virtualCamera;
         private CinemachineBasicMultiChannelPerlin _noise;
         private CinemachineConfiner3D _confiner;
-        private BoxCollider _boundsCollider;
 
         private float _shakeTimer;
         private float _shakeDuration;
@@ -43,28 +41,23 @@ namespace Gameplay.Camera
             _cameraRig = new GameObject("GameplayCamera") { tag = "MainCamera" };
 
             _mainCamera = _cameraRig.AddComponent<UnityEngine.Camera>();
-            _mainCamera.orthographic = _settings.useOrthographic;
-            _mainCamera.orthographicSize = _settings.orthographicSize;
+            _mainCamera.orthographic = false;
             _mainCamera.fieldOfView = _settings.fieldOfView;
             _mainCamera.nearClipPlane = 0.1f;
             _mainCamera.farClipPlane = 1000f;
 
             var brain = _cameraRig.AddComponent<CinemachineBrain>();
-            brain.DefaultBlend.Time = 0.3f;
+            brain.DefaultBlend.Time = 0.5f;
             brain.DefaultBlend.Style = CinemachineBlendDefinition.Styles.EaseInOut;
 
-            _cameraRig.transform.position = new Vector3(0, _settings.cameraHeight, 0);
-            _cameraRig.transform.rotation = Quaternion.Euler(90f, 0, 0);
-
             _virtualCameraObj = new GameObject("VirtualCamera");
-            _virtualCameraObj.transform.position = Vector3.zero;
-            _virtualCameraObj.transform.rotation = Quaternion.identity;
+            _virtualCameraObj.transform.rotation = Quaternion.Euler(_settings.cameraAngle, 0, 0);
 
             _virtualCamera = _virtualCameraObj.AddComponent<CinemachineCamera>();
             _virtualCamera.Priority.Value = 10;
 
             var follow = _virtualCameraObj.AddComponent<CinemachineFollow>();
-            follow.FollowOffset = new Vector3(0, _settings.cameraHeight, 0);
+            follow.FollowOffset = new Vector3(_settings.cameraSideOffset, _settings.cameraHeight, -_settings.cameraDistance);
             follow.TrackerSettings.PositionDamping = new Vector3(_settings.followSmoothTime, _settings.followSmoothTime, _settings.followSmoothTime);
 
             _noise = _virtualCameraObj.AddComponent<CinemachineBasicMultiChannelPerlin>();
@@ -78,16 +71,6 @@ namespace Gameplay.Camera
 
             _isInitialized = true;
             GameLogger.Log("CameraController initialized");
-        }
-
-        public void AddFollowTarget(Transform target, float weight = 1f, float radius = 1f)
-        {
-            SetFollowTarget(target);
-        }
-
-        public void RemoveFollowTarget(Transform target)
-        {
-            ClearFollowTarget();
         }
 
         public void SetFollowTarget(Transform target)
@@ -106,37 +89,27 @@ namespace Gameplay.Camera
             _virtualCamera.LookAt = null;
         }
 
-        public void PositionForArena(Bounds arenaBounds)
+        public void SetArenaBounds(Bounds bounds)
         {
-            if (!_isInitialized) return;
-
-            Vector3 arenaCenter = arenaBounds.center;
-            Vector3 arenaSize = arenaBounds.size;
-
-            float distance = Mathf.Max(arenaSize.x, arenaSize.z) * 0.35f + _settings.cameraDistance;
-            Vector3 cameraPos = arenaCenter + new Vector3(0, _settings.cameraHeight, -distance);
-
-            _cameraRig.transform.position = cameraPos;
-            _cameraRig.transform.LookAt(arenaCenter);
         }
 
-        public void SetArenaBounds(Bounds bounds)
+        public void AutoDetectBounds()
         {
             if (!_settings.enableBounds || _confiner == null) return;
 
-            if (_boundsCollider != null)
+            var marker = UnityEngine.Object.FindFirstObjectByType<CameraBoundsMarker>();
+            if (marker != null)
             {
-                UnityEngine.Object.Destroy(_boundsCollider.gameObject);
+                var boundsCollider = marker.GetBoundsCollider();
+                if (boundsCollider != null)
+                {
+                    _confiner.BoundingVolume = boundsCollider;
+                    GameLogger.Log($"Camera bounds auto-detected from CameraBoundsMarker: {marker.gameObject.name}");
+                    return;
+                }
             }
 
-            var boundsObj = new GameObject("CameraBounds");
-            boundsObj.transform.position = bounds.center;
-
-            _boundsCollider = boundsObj.AddComponent<BoxCollider>();
-            _boundsCollider.size = bounds.size - Vector3.one * _settings.boundsPadding;
-            _boundsCollider.isTrigger = true;
-
-            _confiner.BoundingVolume = _boundsCollider;
+            GameLogger.LogWarning("CameraBoundsMarker not found. Add CameraBoundsMarker component to a BoxCollider in your map scene.");
         }
 
         public void Shake(float intensity, float duration)
@@ -148,38 +121,6 @@ namespace Gameplay.Camera
             _shakeDuration = duration;
             _shakeTimer = 0f;
             _noise.AmplitudeGain = _shakeIntensity;
-        }
-
-        public void SetZoom(float zoomLevel, float duration = 0.3f)
-        {
-            if (_mainCamera == null) return;
-
-            zoomLevel = Mathf.Clamp(zoomLevel, _settings.minZoom, _settings.maxZoom);
-            float targetSize = _settings.orthographicSize / zoomLevel;
-
-            _zoomTween?.Kill();
-
-            if (duration > 0)
-            {
-                _zoomTween = DOTween.To(
-                    () => _mainCamera.orthographicSize,
-                    x => _mainCamera.orthographicSize = x,
-                    targetSize,
-                    duration
-                ).SetEase(Ease.OutCubic);
-            }
-            else
-            {
-                _mainCamera.orthographicSize = targetSize;
-            }
-        }
-
-        public void SetFollowEnabled(bool enabled)
-        {
-            if (_virtualCamera != null)
-            {
-                _virtualCamera.enabled = enabled;
-            }
         }
 
         public void Update(float deltaTime)
@@ -217,18 +158,12 @@ namespace Gameplay.Camera
                 UnityEngine.Object.Destroy(_virtualCameraObj);
             }
 
-            if (_boundsCollider != null)
-            {
-                UnityEngine.Object.Destroy(_boundsCollider.gameObject);
-            }
-
             _cameraRig = null;
             _virtualCameraObj = null;
             _mainCamera = null;
             _virtualCamera = null;
             _noise = null;
             _confiner = null;
-            _boundsCollider = null;
             _zoomTween = null;
             _isInitialized = false;
         }

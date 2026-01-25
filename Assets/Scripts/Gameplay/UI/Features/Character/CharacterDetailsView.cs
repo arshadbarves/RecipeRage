@@ -135,11 +135,11 @@ namespace Gameplay.UI.Features.Character
 
             _characterStats.Clear();
 
-            AddStatRow("Speed", _currentCharacter.MovementSpeedModifier);
-            AddStatRow("Skill", _currentCharacter.InteractionSpeedModifier);
-            AddStatRow("Capacity", _currentCharacter.CarryingCapacityModifier);
+            AddStatRow("Speed", _currentCharacter.Stats.MovementSpeedModifier);
+            AddStatRow("Skill", _currentCharacter.Stats.InteractionSpeedModifier);
+            AddStatRow("Capacity", _currentCharacter.Stats.CarryingCapacityModifier);
 
-            if (_currentCharacter.PrimaryAbilityType != AbilityType.None)
+            if (_currentCharacter.PrimaryAbility.AbilityType != AbilityType.None)
             {
                 var abilitySection = new VisualElement();
                 abilitySection.style.marginTop = 15;
@@ -152,20 +152,20 @@ namespace Gameplay.UI.Features.Character
                 abilityTitle.style.unityFontStyleAndWeight = FontStyle.Bold;
                 abilitySection.Add(abilityTitle);
 
-                var abilityName = new Label(_currentCharacter.PrimaryAbilityType.ToString());
+                var abilityName = new Label(_currentCharacter.PrimaryAbility.AbilityType.ToString());
                 abilityName.style.fontSize = 14;
                 abilityName.style.unityFontStyleAndWeight = FontStyle.Bold;
                 abilitySection.Add(abilityName);
 
-                if (!string.IsNullOrEmpty(_currentCharacter.PrimaryAbilityDescription))
+                if (!string.IsNullOrEmpty(_currentCharacter.PrimaryAbility.Description))
                 {
-                    var abilityDesc = new Label(_currentCharacter.PrimaryAbilityDescription);
+                    var abilityDesc = new Label(_currentCharacter.PrimaryAbility.Description);
                     abilityDesc.style.fontSize = 12;
                     abilityDesc.style.whiteSpace = WhiteSpace.Normal;
                     abilitySection.Add(abilityDesc);
                 }
 
-                var cooldownLabel = new Label($"Cooldown: {_currentCharacter.PrimaryAbilityCooldown}s");
+                var cooldownLabel = new Label($"Cooldown: {_currentCharacter.PrimaryAbility.Cooldown}s");
                 cooldownLabel.style.fontSize = 11;
                 abilitySection.Add(cooldownLabel);
 

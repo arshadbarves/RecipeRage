@@ -217,10 +217,10 @@ namespace Gameplay.Characters
             {
                 SetupInput();
                 // Publish spawn event for systems (Camera, UI, etc.)
-                _eventBus?.Publish(new LocalPlayerSpawnedEvent 
-                { 
-                    PlayerTransform = transform, 
-                    PlayerObject = gameObject 
+                _eventBus?.Publish(new LocalPlayerSpawnedEvent
+                {
+                    PlayerTransform = transform,
+                    PlayerObject = gameObject
                 });
             }
 
@@ -393,10 +393,10 @@ namespace Gameplay.Characters
 
             if (CharacterClass != null && _movementController != null)
             {
-                _movementController.MovementSpeed = _baseMovementSpeed * CharacterClass.MovementSpeedModifier;
-                InteractionSpeed.BaseValue = CharacterClass.InteractionSpeedModifier;
-                CarryingCapacity.BaseValue = CharacterClass.CarryingCapacityModifier;
-                PrimaryAbility = CharacterAbility.CreateAbility(CharacterClass.PrimaryAbilityType, CharacterClass, this);
+                _movementController.MovementSpeed = _baseMovementSpeed * CharacterClass.Stats.MovementSpeedModifier;
+                InteractionSpeed.BaseValue = CharacterClass.Stats.InteractionSpeedModifier;
+                CarryingCapacity.BaseValue = CharacterClass.Stats.CarryingCapacityModifier;
+                PrimaryAbility = CharacterAbility.CreateAbility(CharacterClass.PrimaryAbility.AbilityType, CharacterClass, this);
             }
         }
 
@@ -504,7 +504,7 @@ namespace Gameplay.Characters
             {
                 // Stun myself (victim)
                 Stun(2.0f);
-                
+
                 // Drop held object
                 if (IsHoldingObject())
                 {

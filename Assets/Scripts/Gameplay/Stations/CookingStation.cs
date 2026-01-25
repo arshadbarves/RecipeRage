@@ -1,6 +1,9 @@
+using Core.Shared.Events;
 using Gameplay.Cooking;
+using Gameplay.Shared.Events;
 using Unity.Netcode;
 using UnityEngine;
+using VContainer;
 
 namespace Gameplay.Stations
 {
@@ -16,15 +19,10 @@ namespace Gameplay.Stations
         [SerializeField] private AudioClip _boilingSound;
         [SerializeField] private AudioClip _burningSound;
 
-        /// <summary>
-        /// Whether the ingredient is burning.
-        /// </summary>
         private bool _isBurning;
-
-        /// <summary>
-        /// The burning timer.
-        /// </summary>
         private float _burningTimer;
+
+        [Inject] private IEventBus _eventBus;
 
         /// <summary>
         /// Initialize the cooking station.
@@ -83,6 +81,9 @@ namespace Gameplay.Stations
                     {
                         PlayBurningSoundClientRpc();
                     }
+
+                    // Trigger camera shake
+                    TriggerBurningShakeClientRpc();
 
                     // Burn the ingredient
                     if (_currentIngredient != null)
@@ -270,6 +271,12 @@ namespace Gameplay.Stations
                 _audioSource.Stop();
                 _audioSource.loop = false;
             }
+        }
+
+        [ClientRpc]
+        private void TriggerBurningShakeClientRpc()
+        {
+            _eventBus?.Publish(new CameraShakeEvent(0.7f, 0.5f));
         }
     }
 }

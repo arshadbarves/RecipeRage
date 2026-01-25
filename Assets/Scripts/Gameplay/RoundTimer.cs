@@ -1,7 +1,10 @@
 using System;
 using Core.Logging;
+using Core.Shared.Events;
+using Gameplay.Shared.Events;
 using Unity.Netcode;
 using UnityEngine;
+using VContainer;
 
 namespace Gameplay
 {
@@ -11,20 +14,11 @@ namespace Gameplay
     /// </summary>
     public class RoundTimer : NetworkBehaviour
     {
-        /// <summary>
-        /// The time remaining in the round.
-        /// </summary>
         private NetworkVariable<float> _timeRemaining = new NetworkVariable<float>(0f);
-
-        /// <summary>
-        /// Whether the timer is running.
-        /// </summary>
         private NetworkVariable<bool> _isRunning = new NetworkVariable<bool>(false);
-
-        /// <summary>
-        /// The duration of the round.
-        /// </summary>
         private float _duration;
+
+        [Inject] private IEventBus _eventBus;
 
         /// <summary>
         /// Event triggered when the timer updates.
@@ -87,6 +81,7 @@ namespace Gameplay
                 _isRunning.Value = false;
 
                 TimerExpiredClientRpc();
+                TriggerGameOverShakeClientRpc();
             }
         }
 
@@ -202,6 +197,12 @@ namespace Gameplay
         {
             OnTimerExpired?.Invoke();
             GameLogger.Log("Timer expired");
+        }
+
+        [ClientRpc]
+        private void TriggerGameOverShakeClientRpc()
+        {
+            _eventBus?.Publish(new CameraShakeEvent(1.0f, 0.8f));
         }
     }
 }

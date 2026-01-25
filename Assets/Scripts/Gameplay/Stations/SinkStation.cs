@@ -1,9 +1,12 @@
 using System;
+using Core.Logging;
+using Core.Shared.Events;
 using Gameplay.Characters;
 using Gameplay.Cooking;
-using Core.Logging;
+using Gameplay.Shared.Events;
 using Unity.Netcode;
 using UnityEngine;
+using VContainer;
 
 namespace Gameplay.Stations
 {
@@ -23,10 +26,11 @@ namespace Gameplay.Stations
         [SerializeField] private AudioClip _washSound;
         [SerializeField] private AudioClip _cleanSound;
 
-        // Network Variables
         private NetworkVariable<int> _dirtyPlateCount = new NetworkVariable<int>(0);
         private NetworkVariable<bool> _isWashing = new NetworkVariable<bool>(false);
         private NetworkVariable<float> _washProgress = new NetworkVariable<float>(0f);
+
+        [Inject] private IEventBus _eventBus;
 
         private float _currentWashTimer;
         private GameObject _progressBar;
@@ -131,6 +135,14 @@ namespace Gameplay.Stations
         {
             _dirtyPlateCount.Value += count;
             GameLogger.Log($"Sink (Team {_teamId}) received {count} dirty dishes. Total: {_dirtyPlateCount.Value}");
+
+            TriggerTrashAttackShakeClientRpc();
+        }
+
+        [ClientRpc]
+        private void TriggerTrashAttackShakeClientRpc()
+        {
+            _eventBus?.Publish(new CameraShakeEvent(0.8f, 0.5f));
         }
 
         private void StartWashing()

@@ -43,4 +43,23 @@ namespace Gameplay.Shared.Events
         public string PlayerId { get; set; }
         public Transform PlayerTransform { get; set; }
     }
+
+    // ============================================
+    // CAMERA EVENTS
+    // ============================================
+
+    /// <summary>
+    /// Event fired to trigger camera shake effect.
+    /// </summary>
+    public class CameraShakeEvent
+    {
+        public float Intensity { get; }
+        public float Duration { get; }
+
+        public CameraShakeEvent(float intensity, float duration)
+        {
+            Intensity = intensity;
+            Duration = duration;
+        }
+    }
 }

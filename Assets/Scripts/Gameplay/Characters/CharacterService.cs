@@ -38,7 +38,7 @@ namespace Gameplay.Characters
                 {
                     _characters[character.Id] = character;
 
-                    if (character.UnlockedByDefault)
+                    if (character.UnlockData.UnlockedByDefault)
                     {
                         _unlockedCharacters.Add(character.Id);
                     }

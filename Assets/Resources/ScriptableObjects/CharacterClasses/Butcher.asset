@@ -16,16 +16,13 @@ MonoBehaviour:
   _displayName: Butcher
   _description: A strong chef who can instantly chop ingredients.
   _icon: {fileID: 0}
-  _characterPrefab: {fileID: 0}
-  _movementSpeedModifier: 0.9
-  _interactionSpeedModifier: 1.2
-  _carryingCapacityModifier: 1
-  _primaryAbilityType: 5
-  _primaryAbilityCooldown: 25
-  _primaryAbilityDuration: 0
-  _primaryAbilityIcon: {fileID: 0}
-  _primaryAbilityDescription: Instantly chop any ingredient you're holding.
-  _primaryAbilityParameters: 
-  _unlockedByDefault: 0
-  _unlockCost: 1000
-  _unlockLevel: 5
+  _stats: {fileID: 0}
+  _primaryAbility: {fileID: 0}
+  _unlockData: {fileID: 0}
+  _skins:
+  - id: 
+    name: 
+    prefab: {fileID: 0}
+    rarity: 0
+    isDefault: 0
+    priceOverride: 0

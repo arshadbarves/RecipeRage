@@ -1,10 +1,13 @@
 using System.Collections.Generic;
+using Core.Logging;
+using Core.Shared.Events;
 using Gameplay.Characters;
 using Gameplay.Cooking;
 using Gameplay.Scoring;
-using Core.Logging;
+using Gameplay.Shared.Events;
 using Unity.Netcode;
 using UnityEngine;
+using VContainer;
 
 namespace Gameplay.Stations
 {
@@ -21,13 +24,9 @@ namespace Gameplay.Stations
         [SerializeField] private AudioClip _successSound;
         [SerializeField] private AudioClip _failureSound;
 
-        /// <summary>
-        /// Network score manager for tracking scores.
-        /// </summary>
         private NetworkScoreManager _scoreManager;
 
-        /// <summary>
-        /// Dish validator for validating completed dishes.
+        [Inject] private IEventBus _eventBus;
         /// </summary>
         private IDishValidator _validator;
 
@@ -122,11 +121,13 @@ namespace Gameplay.Stations
                     if (orderCompleted)
                     {
                         ShowSuccessVisual();
+                        TriggerSuccessShakeClientRpc();
                         GameLogger.Log($"Order completed! Player {player.OwnerClientId} earned points");
                     }
                     else
                     {
                         ShowFailureVisual();
+                        TriggerFailureShakeClientRpc();
                         GameLogger.Log("Order failed - no matching order or invalid dish");
                     }
 
@@ -317,6 +318,18 @@ namespace Gameplay.Stations
                 // Hide after a delay
                 Invoke(nameof(HideFailureVisual), 1.0f);
             }
+        }
+
+        [ClientRpc]
+        private void TriggerSuccessShakeClientRpc()
+        {
+            _eventBus?.Publish(new CameraShakeEvent(0.3f, 0.3f));
+        }
+
+        [ClientRpc]
+        private void TriggerFailureShakeClientRpc()
+        {
+            _eventBus?.Publish(new CameraShakeEvent(0.5f, 0.25f));
         }
 
         /// <summary>
