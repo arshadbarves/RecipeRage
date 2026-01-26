@@ -170,10 +170,26 @@ namespace Gameplay.GameModes
                 return false;
             }
 
+            if (!UnityEngine.Application.CanStreamedLevelBeLoaded(sceneName))
+            {
+                GameLogger.LogWarning($"Map scene '{sceneName}' is not in build settings - skipping additive load");
+                _currentLoadedSceneName = null;
+                return true;
+            }
+
             // Unload current map if one is loaded
             if (!string.IsNullOrEmpty(_currentLoadedSceneName))
             {
                 await UnloadCurrentMapAsync();
+            }
+
+            Scene alreadyLoadedScene = SceneManager.GetSceneByName(sceneName);
+            if (alreadyLoadedScene.isLoaded)
+            {
+                SceneManager.SetActiveScene(alreadyLoadedScene);
+                _currentLoadedSceneName = sceneName;
+                GameLogger.Log($"Map already loaded: {sceneName}");
+                return true;
             }
 
             try
