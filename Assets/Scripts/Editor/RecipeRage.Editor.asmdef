@@ -2,8 +2,9 @@
     "name": "RecipeRage.Editor",
     "rootNamespace": "RecipeRage.Editor",
     "references": [
-        "GUID:6546d7765b4165b40850b3667f981c26",
-        "GUID:343deaaf83e0cee4ca978e7df0b80d21"
+        "RecipeRage.Gameplay",
+        "RecipeRage.Core",
+        "VContainer"
     ],
     "includePlatforms": [
         "Editor"

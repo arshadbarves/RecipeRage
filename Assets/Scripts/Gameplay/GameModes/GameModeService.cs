@@ -62,7 +62,7 @@ namespace Gameplay.GameModes
         private void LoadGameModes()
         {
             // Load from Resources
-            GameMode[] modes = Resources.LoadAll<GameMode>("GameModes");
+            GameMode[] modes = Resources.LoadAll<GameMode>("ScriptableObjects/GameModes");
 
             foreach (var mode in modes)
             {
@@ -75,14 +75,18 @@ namespace Gameplay.GameModes
             // Set default
             if (_gameModes.ContainsKey("classic"))
             {
-                _selectedGameMode = _gameModes["classic"];
+                var classic = _gameModes["classic"];
+                _selectedGameMode = IsUnlocked(classic) ? classic : null;
             }
             else if (_gameModes.Count > 0)
             {
                 foreach (var mode in _gameModes.Values)
                 {
-                    _selectedGameMode = mode;
-                    break;
+                    if (IsUnlocked(mode))
+                    {
+                        _selectedGameMode = mode;
+                        break;
+                    }
                 }
             }
 
@@ -91,9 +95,15 @@ namespace Gameplay.GameModes
 
         public GameMode[] GetAvailableGameModes()
         {
-            var modes = new GameMode[_gameModes.Count];
-            _gameModes.Values.CopyTo(modes, 0);
-            return modes;
+            var unlocked = new List<GameMode>();
+            foreach (var mode in _gameModes.Values)
+            {
+                if (IsUnlocked(mode))
+                {
+                    unlocked.Add(mode);
+                }
+            }
+            return unlocked.ToArray();
         }
 
         public GameMode GetGameMode(string id)
@@ -110,6 +120,11 @@ namespace Gameplay.GameModes
         public bool SelectGameMode(GameMode mode)
         {
             if (mode == null) return false;
+            if (!IsUnlocked(mode))
+            {
+                GameLogger.LogWarning($"Game mode locked: {mode.DisplayName}");
+                return false;
+            }
             if (_selectedGameMode == mode) return true;
 
             _selectedGameMode = mode;
@@ -117,6 +132,11 @@ namespace Gameplay.GameModes
 
             GameLogger.Log($"Selected: {mode.DisplayName}");
             return true;
+        }
+
+        private bool IsUnlocked(GameMode mode)
+        {
+            return mode != null && mode.UnlockedByDefault;
         }
 
         /// <summary>

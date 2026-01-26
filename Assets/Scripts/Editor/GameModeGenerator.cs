@@ -307,10 +307,10 @@ namespace RecipeRage.Editor
             }
 
             // Create folder structure
-            string basePath = "Assets/Resources/GameModes";
+            string basePath = "Assets/Resources/ScriptableObjects/GameModes";
             if (!AssetDatabase.IsValidFolder(basePath))
             {
-                Directory.CreateDirectory(Application.dataPath + "/Resources/GameModes");
+                Directory.CreateDirectory(Application.dataPath + "/Resources/ScriptableObjects/GameModes");
                 AssetDatabase.Refresh();
             }
 

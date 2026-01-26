@@ -13,7 +13,6 @@ namespace RecipeRage.Editor
     {
         private bool createCharacters = true;
         private bool createGameModes = true;
-        private bool createMaps = true;
 
         private Vector2 scrollPosition;
 
@@ -30,14 +29,13 @@ namespace RecipeRage.Editor
             EditorGUILayout.LabelField("Initial Content Setup", EditorStyles.boldLabel);
             EditorGUILayout.Space();
 
-            EditorGUILayout.HelpBox("This will generate default characters, game modes, and maps for your game.", MessageType.Info);
+            EditorGUILayout.HelpBox("This will generate default characters and game modes for your game.", MessageType.Info);
             EditorGUILayout.Space();
 
             // Options
             EditorGUILayout.LabelField("Generate:", EditorStyles.boldLabel);
             createCharacters = EditorGUILayout.Toggle("Default Characters (4)", createCharacters);
             createGameModes = EditorGUILayout.Toggle("Default Game Modes (3)", createGameModes);
-            createMaps = EditorGUILayout.Toggle("Default Maps (2)", createMaps);
 
             EditorGUILayout.Space();
 
@@ -57,14 +55,6 @@ namespace RecipeRage.Editor
                 EditorGUILayout.LabelField("• Classic - Traditional 2v2", EditorStyles.miniLabel);
                 EditorGUILayout.LabelField("• Team Battle - 3v3 competitive", EditorStyles.miniLabel);
                 EditorGUILayout.LabelField("• Free For All - Solo competition", EditorStyles.miniLabel);
-                EditorGUILayout.Space();
-            }
-
-            if (createMaps)
-            {
-                EditorGUILayout.LabelField("Maps to be created:", EditorStyles.miniLabel);
-                EditorGUILayout.LabelField("• Tutorial Kitchen - Easy starter map", EditorStyles.miniLabel);
-                EditorGUILayout.LabelField("• Kitchen Arena - Competitive map", EditorStyles.miniLabel);
                 EditorGUILayout.Space();
             }
 
@@ -93,11 +83,6 @@ namespace RecipeRage.Editor
             }
             EditorGUILayout.EndHorizontal();
 
-            if (GUILayout.Button("Generate Maps Only"))
-            {
-                GenerateDefaultMaps();
-            }
-
             EditorGUILayout.EndScrollView();
         }
 
@@ -115,11 +100,6 @@ namespace RecipeRage.Editor
                 generated += GenerateDefaultGameModes();
             }
 
-            if (createMaps)
-            {
-                generated += GenerateDefaultMaps();
-            }
-
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
@@ -134,17 +114,18 @@ namespace RecipeRage.Editor
             EnsureDirectory(basePath);
 
             int count = 0;
+            // Only Chef Balanced is unlocked by default - others must be purchased
             count += CreateCharacter("Chef Speedy", 1, "Lightning-fast movement specialist", 1.5f, 0.8f, 0.7f,
-                AbilityType.SpeedBoost, "Burst of speed for quick deliveries", 20f, 5f, true, basePath);
+                AbilityType.SpeedBoost, "Burst of speed for quick deliveries", 20f, 5f, false, 1500, basePath);
 
             count += CreateCharacter("Chef Strong", 2, "Heavy-duty carrier with high capacity", 0.7f, 0.9f, 1.8f,
-                AbilityType.DoubleIngredients, "Carry double ingredients temporarily", 30f, 10f, true, basePath);
+                AbilityType.DoubleIngredients, "Carry double ingredients temporarily", 30f, 10f, false, 2000, basePath);
 
             count += CreateCharacter("Chef Swift", 3, "Master of quick interactions", 0.9f, 1.6f, 0.8f,
-                AbilityType.InstantChop, "Instantly chop ingredients", 25f, 0f, true, basePath);
+                AbilityType.InstantChop, "Instantly chop ingredients", 25f, 0f, false, 1800, basePath);
 
             count += CreateCharacter("Chef Balanced", 4, "Well-rounded all-purpose chef", 1.0f, 1.0f, 1.0f,
-                AbilityType.PreventBurning, "Prevent dishes from burning", 35f, 15f, true, basePath);
+                AbilityType.PreventBurning, "Prevent dishes from burning", 35f, 15f, true, 0, basePath);
 
             Debug.Log($"Generated {count} default characters");
             return count;
@@ -152,18 +133,25 @@ namespace RecipeRage.Editor
 
         private int CreateCharacter(string name, int id, string description, float moveSpeed, float interactSpeed,
             float capacity, AbilityType abilityType, string abilityDesc, float cooldown, float duration,
-            bool unlocked, string basePath)
+            bool unlocked, int unlockCost, string basePath)
         {
-            // Create Stats
-            CharacterStats stats = ScriptableObject.CreateInstance<CharacterStats>();
-            stats.name = $"{name.Replace(" ", "")}Stats";
-            string statsPath = $"{basePath}/{stats.name}.asset";
+            // Create character folder
+            string characterFolderName = name.Replace(" ", "");
+            string characterPath = $"{basePath}/{characterFolderName}";
+            EnsureDirectory(characterPath);
 
-            if (AssetDatabase.LoadAssetAtPath<CharacterStats>(statsPath) != null)
+            // Check if character already exists
+            string characterAssetPath = $"{characterPath}/{characterFolderName}.asset";
+            if (AssetDatabase.LoadAssetAtPath<CharacterClass>(characterAssetPath) != null)
             {
-                Debug.LogWarning($"Stats already exists: {statsPath}");
+                Debug.LogWarning($"Character already exists: {characterAssetPath}");
                 return 0;
             }
+
+            // Create Stats
+            CharacterStats stats = ScriptableObject.CreateInstance<CharacterStats>();
+            stats.name = $"{characterFolderName}Stats";
+            string statsPath = $"{characterPath}/{stats.name}.asset";
 
             AssetDatabase.CreateAsset(stats, statsPath);
             SerializedObject statsObj = new SerializedObject(stats);
@@ -174,8 +162,8 @@ namespace RecipeRage.Editor
 
             // Create Ability
             CharacterAbilityData abilityData = ScriptableObject.CreateInstance<CharacterAbilityData>();
-            abilityData.name = $"{name.Replace(" ", "")}Ability";
-            string abilityPath = $"{basePath}/{abilityData.name}.asset";
+            abilityData.name = $"{characterFolderName}Ability";
+            string abilityPath = $"{characterPath}/{abilityData.name}.asset";
 
             AssetDatabase.CreateAsset(abilityData, abilityPath);
             SerializedObject abilityObj = new SerializedObject(abilityData);
@@ -191,22 +179,21 @@ namespace RecipeRage.Editor
 
             // Create Unlock
             CharacterUnlockData unlockData = ScriptableObject.CreateInstance<CharacterUnlockData>();
-            unlockData.name = $"{name.Replace(" ", "")}Unlock";
-            string unlockPath = $"{basePath}/{unlockData.name}.asset";
+            unlockData.name = $"{characterFolderName}Unlock";
+            string unlockPath = $"{characterPath}/{unlockData.name}.asset";
 
             AssetDatabase.CreateAsset(unlockData, unlockPath);
             SerializedObject unlockObj = new SerializedObject(unlockData);
             unlockObj.FindProperty("_unlockedByDefault").boolValue = unlocked;
-            unlockObj.FindProperty("_unlockCost").intValue = unlocked ? 0 : 1000;
+            unlockObj.FindProperty("_unlockCost").intValue = unlockCost;
             unlockObj.FindProperty("_unlockLevel").intValue = 1;
             unlockObj.ApplyModifiedProperties();
 
             // Create Character
             CharacterClass character = ScriptableObject.CreateInstance<CharacterClass>();
-            character.name = name.Replace(" ", "");
-            string characterPath = $"{basePath}/{character.name}.asset";
+            character.name = characterFolderName;
 
-            AssetDatabase.CreateAsset(character, characterPath);
+            AssetDatabase.CreateAsset(character, characterAssetPath);
             SerializedObject characterObj = new SerializedObject(character);
             characterObj.FindProperty("_id").intValue = id;
             characterObj.FindProperty("_displayName").stringValue = name;
@@ -226,7 +213,7 @@ namespace RecipeRage.Editor
 
         private int GenerateDefaultGameModes()
         {
-            string basePath = "Assets/Resources/GameModes";
+            string basePath = "Assets/Resources/ScriptableObjects/GameModes";
             EnsureDirectory(basePath);
 
             int count = 0;
@@ -287,64 +274,6 @@ namespace RecipeRage.Editor
         }
 
         #endregion
-
-        #region Map Generation
-
-        private int GenerateDefaultMaps()
-        {
-            string basePath = "Assets/Resources/ScriptableObjects/Maps";
-            EnsureDirectory(basePath);
-
-            int count = 0;
-            count += CreateMap("map_tutorial", "Tutorial Kitchen", "Learn the basics of cooking in this simple kitchen",
-                120, 1, 2, Gameplay.Maps.MapDifficulty.Easy, 10, 0, 50, true, 1, "Scenes/Maps/Tutorial", basePath);
-
-            count += CreateMap("map_arena", "Kitchen Arena", "A competitive cooking arena where chefs battle!",
-                180, 2, 4, Gameplay.Maps.MapDifficulty.Medium, 30, -10, 100, true, 1, "Scenes/Maps/KitchenArena", basePath);
-
-            Debug.Log($"Generated {count} default maps");
-            return count;
-        }
-
-        private int CreateMap(string mapId, string mapName, string description, int duration, int minPlayers,
-            int maxPlayers, Gameplay.Maps.MapDifficulty difficulty, int trophyWin, int trophyLoss, int coinWin,
-            bool unlocked, int unlockLevel, string sceneAddress, string basePath)
-        {
-            Gameplay.Maps.MapData mapData = ScriptableObject.CreateInstance<Gameplay.Maps.MapData>();
-            mapData.name = mapName.Replace(" ", "");
-            string path = $"{basePath}/{mapData.name}.asset";
-
-            if (AssetDatabase.LoadAssetAtPath<Gameplay.Maps.MapData>(path) != null)
-            {
-                Debug.LogWarning($"Map already exists: {path}");
-                return 0;
-            }
-
-            AssetDatabase.CreateAsset(mapData, path);
-            SerializedObject mapObj = new SerializedObject(mapData);
-
-            mapObj.FindProperty("_mapId").stringValue = mapId;
-            mapObj.FindProperty("_mapName").stringValue = mapName;
-            mapObj.FindProperty("_description").stringValue = description;
-            mapObj.FindProperty("_matchDurationSeconds").intValue = duration;
-            mapObj.FindProperty("_minPlayers").intValue = minPlayers;
-            mapObj.FindProperty("_maxPlayers").intValue = maxPlayers;
-            mapObj.FindProperty("_difficulty").enumValueIndex = (int)difficulty;
-            mapObj.FindProperty("_trophyRewardWin").intValue = trophyWin;
-            mapObj.FindProperty("_trophyRewardLoss").intValue = trophyLoss;
-            mapObj.FindProperty("_coinRewardWin").intValue = coinWin;
-            mapObj.FindProperty("_unlockedByDefault").boolValue = unlocked;
-            mapObj.FindProperty("_unlockLevel").intValue = unlockLevel;
-            mapObj.FindProperty("_sceneAddress").stringValue = sceneAddress;
-
-            mapObj.ApplyModifiedProperties();
-
-            Debug.Log($"Created map: {mapName}");
-            return 1;
-        }
-
-        #endregion
-
         #region Utilities
 
         private void EnsureDirectory(string path)

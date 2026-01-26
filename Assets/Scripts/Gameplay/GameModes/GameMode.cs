@@ -70,6 +70,16 @@ namespace Gameplay.GameModes
         [Tooltip("Custom game mode parameters")]
         [SerializeField] private string _customParameters;
 
+        [Header("Unlock Settings")]
+        [Tooltip("Whether unlocked by default")]
+        [SerializeField] private bool _unlockedByDefault = false;
+
+        [Tooltip("Trophy cost to unlock")]
+        [SerializeField] private int _unlockTrophyCost = 0;
+
+        [Tooltip("Player level required to unlock")]
+        [SerializeField] private int _unlockLevel = 1;
+
         /// <summary>
         /// Unique identifier for the game mode.
         /// </summary>
@@ -164,6 +174,21 @@ namespace Gameplay.GameModes
         /// Custom game mode parameters.
         /// </summary>
         public string CustomParameters => _customParameters;
+
+        /// <summary>
+        /// Whether the game mode is unlocked by default.
+        /// </summary>
+        public bool UnlockedByDefault => _unlockedByDefault;
+
+        /// <summary>
+        /// Trophy cost required to unlock the game mode.
+        /// </summary>
+        public int UnlockTrophyCost => _unlockTrophyCost;
+
+        /// <summary>
+        /// Player level required to unlock the game mode.
+        /// </summary>
+        public int UnlockLevel => _unlockLevel;
 
         /// <summary>
         /// Get the total maximum players for this game mode.

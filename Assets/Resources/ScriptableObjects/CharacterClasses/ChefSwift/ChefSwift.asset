@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f4f6dd0a1a234aa89ce5c0588bfd373, type: 3}
+  m_Name: ChefSwift
+  m_EditorClassIdentifier: RecipeRage.Gameplay::Gameplay.Characters.CharacterClass
+  _id: 3
+  _displayName: Chef Swift
+  _description: Master of quick interactions
+  _icon: {fileID: 0}
+  _stats: {fileID: 11400000, guid: 62e4bb68644ae4c2c93ac1eb67d7b70b, type: 2}
+  _primaryAbility: {fileID: 11400000, guid: 330508f0dd9b44a7cb8847a2be2e9e37, type: 2}
+  _unlockData: {fileID: 11400000, guid: d5fcd52edc73a4255b3e5fadff9f5c8d, type: 2}
+  _skins: []

@@ -10,27 +10,27 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 24f9293ae08004d33be44552f6254252, type: 3}
-  m_Name: ClassicMode
+  m_Name: FreeForAll
   m_EditorClassIdentifier: RecipeRage.Gameplay::Gameplay.GameModes.GameMode
-  _id: classic
-  _displayName: Classic Mode
-  _description: Traditional 2v2 cooking competition
+  _id: free_for_all
+  _displayName: Free For All
+  _description: No teams - only one winner!
   _icon: {fileID: 0}
-  _subtitle: Traditional Battle
-  _category: 0
-  _teamCount: 2
-  _playersPerTeam: 2
+  _subtitle: Every Chef For Themselves
+  _category: 1
+  _teamCount: 4
+  _playersPerTeam: 1
   _friendlyFire: 0
-  _gameTime: 300
-  _targetScore: 1000
+  _gameTime: 240
+  _targetScore: 800
   _hasTimeLimit: 1
   _hasScoreLimit: 1
-  _mapSceneName: KitchenArena
-  _experienceReward: 100
-  _winBonusCoins: 25
+  _mapSceneName: FFAKitchen
+  _experienceReward: 120
+  _winBonusCoins: 30
   _powerUpsEnabled: 1
   _specialAbilitiesEnabled: 1
   _customParameters: 
-  _unlockedByDefault: 1
-  _unlockTrophyCost: 0
+  _unlockedByDefault: 0
+  _unlockTrophyCost: 10
   _unlockLevel: 1
