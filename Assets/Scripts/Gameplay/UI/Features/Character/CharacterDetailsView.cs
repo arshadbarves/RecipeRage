@@ -6,17 +6,15 @@ using Core.UI;
 using Core.UI.Core;
 using Core.UI.Interfaces;
 using Core.Session;
-using Gameplay.UI.Features.MainMenu;
+using Gameplay.Economy;
+using Gameplay.Persistence;
+using Gameplay.Characters.Visuals; // Added
 using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;
 
 namespace Gameplay.UI.Features.Character
 {
-    /// <summary>
-    /// Character details view - shows character info and available skins
-    /// Matches the style of SkinsTabComponent
-    /// </summary>
     [UIScreen(UIScreenCategory.Screen, "Screens/CharacterDetailsViewTemplate")]
     public class CharacterDetailsView : BaseUIScreen
     {
@@ -25,9 +23,12 @@ namespace Gameplay.UI.Features.Character
 
         private ICharacterService _characterService;
         private ISkinsService _skinsService;
+        private PlayerDataService _playerDataService;
+        private EconomyService _economyService;
+        private CharacterPreviewManager _previewManager; // New Dependency
 
-        // Current character
         private CharacterClass _currentCharacter;
+        private string _selectedSkinId;
 
         // UI Elements
         private Button _backButton;
@@ -35,37 +36,36 @@ namespace Gameplay.UI.Features.Character
         private Label _characterDescriptionLabel;
         private VisualElement _characterPreview;
         private VisualElement _characterStats;
-        private Button _selectButton;
         private VisualElement _skinsGrid;
-        private string _selectedSkinId;
+        
+        // Actions
+        private Button _selectButton;
+        private Button _upgradeButton;
+        private Button _unlockCharacterButton;
+        private Label _currentLevelLabel;
+        private Label _upgradeCostLabel;
+        private Label _unlockCostLabel;
 
         protected override void OnInitialize()
         {
-            // Query elements
             QueryElements();
-
-            // Setup callbacks
             SetupCallbacks();
-
             TransitionType = UITransitionType.SlideRight;
-
             GameLogger.Log("Initialized");
         }
 
         private void ResolveServices()
         {
-            if (_characterService != null && _skinsService != null) return;
+            if (_characterService != null && _skinsService != null && _playerDataService != null && _economyService != null && _previewManager != null) return;
 
             var sessionContainer = _sessionManager?.SessionContainer;
             if (sessionContainer != null)
             {
                 _characterService = sessionContainer.Resolve<ICharacterService>();
                 _skinsService = sessionContainer.Resolve<ISkinsService>();
-            }
-
-            if (_skinsService == null)
-            {
-                GameLogger.LogError("SkinsService is null!");
+                _playerDataService = sessionContainer.Resolve<PlayerDataService>();
+                _economyService = sessionContainer.Resolve<EconomyService>();
+                _previewManager = sessionContainer.Resolve<CharacterPreviewManager>();
             }
         }
 
@@ -76,21 +76,24 @@ namespace Gameplay.UI.Features.Character
             _characterDescriptionLabel = GetElement<Label>("character-description");
             _characterPreview = GetElement<VisualElement>("character-preview-model");
             _characterStats = GetElement<VisualElement>("character-stats");
-            _selectButton = GetElement<Button>("select-button");
+            
             _skinsGrid = GetElement<VisualElement>("skins-grid");
+
+            _selectButton = GetElement<Button>("select-button");
+            _upgradeButton = GetElement<Button>("upgrade-button");
+            _unlockCharacterButton = GetElement<Button>("unlock-character-button");
+            
+            _currentLevelLabel = GetElement<Label>("current-level-label");
+            _upgradeCostLabel = GetElement<Label>("upgrade-cost-label");
+            _unlockCostLabel = GetElement<Label>("unlock-cost-label");
         }
 
         private void SetupCallbacks()
         {
-            if (_backButton != null)
-            {
-                _backButton.clicked += OnBackClicked;
-            }
-
-            if (_selectButton != null)
-            {
-                _selectButton.clicked += OnSelectClicked;
-            }
+            if (_backButton != null) _backButton.clicked += OnBackClicked;
+            if (_selectButton != null) _selectButton.clicked += OnSelectClicked;
+            if (_upgradeButton != null) _upgradeButton.clicked += OnUpgradeClicked;
+            if (_unlockCharacterButton != null) _unlockCharacterButton.clicked += OnUnlockCharacterClicked;
         }
 
         public void ShowForCharacter(CharacterClass character)
@@ -101,92 +104,123 @@ namespace Gameplay.UI.Features.Character
             var equippedSkin = _skinsService?.GetEquippedSkin(character.Id);
             _selectedSkinId = equippedSkin?.id;
 
-            UpdateCharacterDisplay();
-            PopulateSkins();
+            UpdateView();
             Show(animate: true, addToHistory: true);
         }
 
-        private void UpdateCharacterDisplay()
+        private void UpdateView()
         {
             if (_currentCharacter == null) return;
 
-            if (_characterNameLabel != null)
-            {
-                _characterNameLabel.text = _currentCharacter.DisplayName.ToUpper();
-            }
+            // Info
+            if (_characterNameLabel != null) _characterNameLabel.text = _currentCharacter.DisplayName.ToUpper();
+            if (_characterDescriptionLabel != null) _characterDescriptionLabel.text = _currentCharacter.Description;
+            
+            // 3D Preview logic
+            Show3DPreview();
 
-            if (_characterDescriptionLabel != null)
-            {
-                _characterDescriptionLabel.text = _currentCharacter.Description;
-            }
+            // Logic
+            bool isUnlocked = _characterService.IsUnlocked(_currentCharacter.Id);
+            int currentLevel = _playerDataService?.GetCharacterLevel(_currentCharacter.Id.ToString()) ?? 1;
 
-            if (_characterPreview != null && _currentCharacter.Icon != null)
-            {
-                _characterPreview.style.backgroundImage = new StyleBackground(_currentCharacter.Icon);
-            }
+            if (_currentLevelLabel != null) _currentLevelLabel.text = currentLevel.ToString();
 
-            UpdateCharacterStats();
+            // Stats
+            UpdateCharacterStats(currentLevel);
+
+            // Actions State
+            UpdateActionButtons(isUnlocked, currentLevel);
             UpdateSelectButton();
+
+            // Skins
+            PopulateSkins(isUnlocked);
         }
 
-        private void UpdateCharacterStats()
+        private void Show3DPreview()
+        {
+            if (_previewManager == null) return;
+            
+            // Determine which prefab to show (Skin vs Default)
+            GameObject prefabToShow = null;
+            if (!string.IsNullOrEmpty(_selectedSkinId))
+            {
+                var skin = _skinsService.GetSkin(_selectedSkinId);
+                if (skin != null) prefabToShow = skin.prefab;
+            }
+            
+            // Fallback to default skin if no specific skin selected or found
+            if (prefabToShow == null)
+            {
+                 var defaultSkin = _currentCharacter.Skins.Find(s => s.isDefault);
+                 if (defaultSkin != null) prefabToShow = defaultSkin.prefab;
+            }
+
+            if (prefabToShow != null)
+            {
+                _previewManager.ShowPreview(prefabToShow);
+                // Ensure UI element is transparent/placeholder effectively
+                if (_characterPreview != null) _characterPreview.style.backgroundImage = null; 
+            }
+        }
+
+        private void UpdateActionButtons(bool isUnlocked, int level)
+        {
+            if (_unlockCharacterButton != null) _unlockCharacterButton.style.display = isUnlocked ? DisplayStyle.None : DisplayStyle.Flex;
+            if (_upgradeButton != null) _upgradeButton.style.display = isUnlocked ? DisplayStyle.Flex : DisplayStyle.None;
+            if (_selectButton != null) _selectButton.style.display = isUnlocked ? DisplayStyle.Flex : DisplayStyle.None;
+
+            if (!isUnlocked)
+            {
+                if (_unlockCostLabel != null) _unlockCostLabel.text = $"{_currentCharacter.UnlockData.UnlockCost} 💰";
+            }
+            else
+            {
+                int upgradeCost = level * 100;
+                if (_upgradeCostLabel != null) _upgradeCostLabel.text = $"{upgradeCost} 💰";
+            }
+        }
+
+        private void UpdateCharacterStats(int level)
         {
             if (_characterStats == null || _currentCharacter == null) return;
 
             _characterStats.Clear();
 
-            AddStatRow("Speed", _currentCharacter.Stats.MovementSpeedModifier);
-            AddStatRow("Skill", _currentCharacter.Stats.InteractionSpeedModifier);
-            AddStatRow("Capacity", _currentCharacter.Stats.CarryingCapacityModifier);
+            float levelMultiplier = 1f + (level - 1) * 0.1f;
+
+            AddStatRow("Speed", _currentCharacter.Stats.MovementSpeedModifier * levelMultiplier);
+            AddStatRow("Skill", _currentCharacter.Stats.InteractionSpeedModifier * levelMultiplier);
+            AddStatRow("Capacity", _currentCharacter.Stats.CarryingCapacityModifier * levelMultiplier);
 
             if (_currentCharacter.PrimaryAbility.AbilityType != AbilityType.None)
             {
                 var abilitySection = new VisualElement();
                 abilitySection.style.marginTop = 15;
-                abilitySection.style.paddingTop = 15;
-                abilitySection.style.borderTopWidth = 2;
-                abilitySection.style.borderTopColor = new Color(40f/255f, 30f/255f, 25f/255f);
-
+                
                 var abilityTitle = new Label("SPECIAL ABILITY");
-                abilityTitle.style.fontSize = 16;
-                abilityTitle.style.unityFontStyleAndWeight = FontStyle.Bold;
+                abilityTitle.AddToClassList("stat-name"); 
+                abilityTitle.style.fontSize = 14; 
                 abilitySection.Add(abilityTitle);
-
+                
                 var abilityName = new Label(_currentCharacter.PrimaryAbility.AbilityType.ToString());
-                abilityName.style.fontSize = 14;
-                abilityName.style.unityFontStyleAndWeight = FontStyle.Bold;
+                abilityName.AddToClassList("stat-value");
                 abilitySection.Add(abilityName);
-
-                if (!string.IsNullOrEmpty(_currentCharacter.PrimaryAbility.Description))
-                {
-                    var abilityDesc = new Label(_currentCharacter.PrimaryAbility.Description);
-                    abilityDesc.style.fontSize = 12;
-                    abilityDesc.style.whiteSpace = WhiteSpace.Normal;
-                    abilitySection.Add(abilityDesc);
-                }
-
-                var cooldownLabel = new Label($"Cooldown: {_currentCharacter.PrimaryAbility.Cooldown}s");
-                cooldownLabel.style.fontSize = 11;
-                abilitySection.Add(cooldownLabel);
-
+                
                 _characterStats.Add(abilitySection);
             }
         }
 
-        private void AddStatRow(string statName, float value)
+         private void AddStatRow(string statName, float value)
         {
             var statRow = new VisualElement();
-            statRow.style.flexDirection = FlexDirection.Row;
-            statRow.style.justifyContent = Justify.SpaceBetween;
-            statRow.style.marginBottom = 8;
+            statRow.AddToClassList("stat-row");
 
             var nameLabel = new Label(statName);
-            nameLabel.style.fontSize = 14;
+            nameLabel.AddToClassList("stat-name");
             statRow.Add(nameLabel);
 
             var valueLabel = new Label($"{value:F1}x");
-            valueLabel.style.fontSize = 14;
-            valueLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
+            valueLabel.AddToClassList("stat-value");
             statRow.Add(valueLabel);
 
             _characterStats.Add(statRow);
@@ -195,26 +229,72 @@ namespace Gameplay.UI.Features.Character
         private void UpdateSelectButton()
         {
             if (_selectButton == null || _currentCharacter == null || _characterService == null) return;
-
             bool isCurrentlySelected = _characterService.SelectedCharacter?.Id == _currentCharacter.Id;
+            
+            _selectButton.text = isCurrentlySelected ? "SELECTED" : "SELECT";
+            _selectButton.SetEnabled(!isCurrentlySelected);
+        }
+        
+        // --- Actions ---
 
-            if (isCurrentlySelected)
+        private void OnUpgradeClicked()
+        {
+             if (_playerDataService == null || _economyService == null) return;
+             
+             int currentLevel = _playerDataService.GetCharacterLevel(_currentCharacter.Id.ToString());
+             int cost = currentLevel * 100;
+             string currencyId = EconomyKeys.CurrencyCoins;
+
+             if (_economyService.Purchase($"Upgrade_{_currentCharacter.Id}_{currentLevel}", cost, currencyId))
+             {
+                 if (_playerDataService.UpgradeCharacter(_currentCharacter.Id.ToString(), cost)) 
+                 {
+                     UIService?.ShowNotification($"Upgraded to Level {currentLevel + 1}!", NotificationType.Success, 2f);
+                     UpdateView();
+                 }
+             }
+        }
+
+        private void OnUnlockCharacterClicked()
+        {
+            if (_playerDataService == null || _economyService == null) return;
+            
+            int cost = _currentCharacter.UnlockData.UnlockCost;
+             string currencyId = EconomyKeys.CurrencyCoins; 
+
+            if (_economyService.Purchase($"Unlock_{_currentCharacter.Id}", cost, currencyId))
             {
-                _selectButton.text = "SELECTED";
-                _selectButton.AddToClassList("selected");
-            }
-            else
-            {
-                _selectButton.text = "SELECT";
-                _selectButton.RemoveFromClassList("selected");
+                 _playerDataService.UnlockCharacter(_currentCharacter.Id.ToString());
+                UIService?.ShowNotification($"Character Unlocked!", NotificationType.Success, 2f);
+                UpdateView();
             }
         }
 
-        private void PopulateSkins()
+         private void OnSelectClicked()
+        {
+            if (_currentCharacter == null) return;
+
+            if (_characterService.SelectCharacter(_currentCharacter.Id))
+            {
+                GameLogger.Log($"Character selected: {_currentCharacter.DisplayName}");
+                UIService?.ShowNotification($"Selected {_currentCharacter.DisplayName}", NotificationType.Success, 2f);
+                UpdateSelectButton();
+                OnBackClicked(); // Return to lobby on select
+            }
+        }
+
+        // --- Skins Logic ---
+        
+        private void PopulateSkins(bool isCharacterUnlocked)
         {
             if (_skinsGrid == null || _skinsService == null || _currentCharacter == null) return;
-
             _skinsGrid.Clear();
+            
+            if (!isCharacterUnlocked)
+            {
+                _skinsGrid.Add(new Label("Unlock character to view skins") { style = { color = Color.gray } });
+                return;
+            }
 
             var characterSkins = _skinsService.GetSkinsForCharacter(_currentCharacter.Id);
 
@@ -223,163 +303,85 @@ namespace Gameplay.UI.Features.Character
                 VisualElement skinItem = CreateSkinItem(skin);
                 _skinsGrid.Add(skinItem);
             }
-
-            GameLogger.Log($"Populated {characterSkins.Count} skins for {_currentCharacter.DisplayName}");
         }
-
+        
         private VisualElement CreateSkinItem(SkinItem skin)
         {
             bool isUnlocked = _skinsService.IsSkinUnlocked(skin.id);
-            bool isEquipped = _skinsService.GetEquippedSkin(_currentCharacter.Id)?.id == skin.id;
-
             Button skinItem = new Button(() => OnSkinSelected(skin));
-            skinItem.AddToClassList("skin-item");
+            skinItem.AddToClassList("grid-slot");
+            skinItem.style.width = 120; 
+            skinItem.style.height = 150;
 
-            if (skin.id == _selectedSkinId)
-            {
-                skinItem.AddToClassList("selected");
-            }
-
-            if (!isUnlocked)
-            {
-                skinItem.AddToClassList("skin-locked");
-            }
-
+            if (skin.id == _selectedSkinId) skinItem.AddToClassList("selected");
+            
+            // Image
             VisualElement image = new VisualElement();
-            image.AddToClassList("skin-item-image");
+            image.AddToClassList("slot-icon");
+            if (skin.icon != null) image.style.backgroundImage = new StyleBackground(skin.icon);
             skinItem.Add(image);
+            
+            if (!isUnlocked) {
+                 VisualElement overlay = new VisualElement();
+                 overlay.AddToClassList("locked-overlay");
+                 skinItem.Add(overlay);
 
-            if (!isUnlocked)
-            {
-                VisualElement lockIcon = new VisualElement();
-                lockIcon.AddToClassList("lock-icon");
-                image.Add(lockIcon);
-
-                Label costLabel = new Label($"{skin.Price} 💰");
-                costLabel.style.position = Position.Absolute;
-                costLabel.style.bottom = 5;
-                costLabel.style.width = new Length(100, LengthUnit.Percent);
-                costLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
-                costLabel.style.color = new Color(1f, 0.8f, 0.2f);
-                costLabel.style.fontSize = 12;
-                costLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
-                image.Add(costLabel);
+                 Label costLabel = new Label($"{skin.Price} 💰");
+                 costLabel.style.color = Color.yellow;
+                 costLabel.style.fontSize = 14;
+                 overlay.Add(costLabel);
             }
-
-            Label nameLabel = new Label(skin.name.ToUpper());
-            nameLabel.AddToClassList("skin-item-name");
-            skinItem.Add(nameLabel);
-
-            // Add rarity badge
-            Label rarityLabel = new Label(skin.rarity.ToString().ToUpper());
-            rarityLabel.AddToClassList("skin-rarity-badge");
-            rarityLabel.AddToClassList($"rarity-{skin.rarity.ToString().ToLower()}");
-            rarityLabel.style.fontSize = 10;
-            rarityLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
-            rarityLabel.style.marginTop = 2;
-            rarityLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
-
-            // Set rarity color
-            Color rarityColor = skin.rarity switch
-            {
-                SkinRarity.Common => new Color(0.7f, 0.7f, 0.7f),
-                SkinRarity.Rare => new Color(0.3f, 0.6f, 1f),
-                SkinRarity.Epic => new Color(0.8f, 0.3f, 1f),
-                SkinRarity.Legendary => new Color(1f, 0.7f, 0.2f),
-                _ => Color.white
-            };
-            rarityLabel.style.color = rarityColor;
-            skinItem.Add(rarityLabel);
-
-            if (isEquipped)
-            {
-                Label equippedLabel = new Label("EQUIPPED");
-                equippedLabel.style.fontSize = 10;
-                equippedLabel.style.color = new Color(0.4f, 0.8f, 0.4f);
-                equippedLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
-                equippedLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
-                skinItem.Add(equippedLabel);
-            }
-
+            
+            skinItem.Add(new Label(skin.name.ToUpper()) { style = { fontSize = 12, color = Color.white } });
             return skinItem;
         }
 
         private void OnSkinSelected(SkinItem skin)
         {
-            bool isUnlocked = _skinsService.IsSkinUnlocked(skin.id);
+             // Preview Update
+            _selectedSkinId = skin.id;
+            Show3DPreview(); // Update preview immediately on click
+            
+            if (_economyService == null) return;
 
-            if (!isUnlocked)
-            {
-                GameLogger.Log($"Skin is locked: {skin.name}");
-                UIService?.ShowNotification($"{skin.name} is locked! Cost: {skin.Price} coins", NotificationType.Info, 3f);
-                return;
-            }
-
-            bool success = _skinsService.EquipSkin(_currentCharacter.Id, skin.id);
-
-            if (success)
-            {
-                _selectedSkinId = skin.id;
-                UIService?.ShowNotification($"Equipped {skin.name}", NotificationType.Success, 2f);
-                PopulateSkins();
-                GameLogger.Log($"Skin equipped: {skin.name}");
-            }
-            else
-            {
-                UIService?.ShowNotification("Failed to equip skin", NotificationType.Error, 2f);
-            }
+             bool isUnlocked = _skinsService.IsSkinUnlocked(skin.id);
+             if (!isUnlocked)
+             {
+                 if (_economyService.Purchase(skin.id, skin.Price, EconomyKeys.CurrencyCoins))
+                 {
+                      if (_skinsService.UnlockSkin(skin.id))
+                      {
+                          UIService?.ShowNotification($"Unlocked {skin.name}!", NotificationType.Success, 2f);
+                          if (_skinsService.EquipSkin(_currentCharacter.Id, skin.id)) _selectedSkinId = skin.id;
+                          PopulateSkins(true);
+                      }
+                 }
+             }
+             else
+             {
+                 if (_skinsService.EquipSkin(_currentCharacter.Id, skin.id))
+                 {
+                     _selectedSkinId = skin.id;
+                      UIService?.ShowNotification($"Equipped {skin.name}", NotificationType.Success, 1f);
+                     PopulateSkins(true);
+                 }
+             }
         }
 
         private void OnBackClicked()
         {
+            _previewManager?.ClearPreview(); // Clear 3D model
             UIService.GoBack();
-        }
-
-        private void OnSelectClicked()
-        {
-            if (_currentCharacter == null)
-            {
-                GameLogger.LogWarning("No character to select");
-                return;
-            }
-
-            bool success = _characterService.SelectCharacter(_currentCharacter.Id);
-
-            if (success)
-            {
-                GameLogger.Log($"Character selected: {_currentCharacter.DisplayName}");
-                UIService?.ShowNotification($"Selected {_currentCharacter.DisplayName}", NotificationType.Success, 2f);
-                UpdateSelectButton();
-                OnBackClicked();
-            }
-            else
-            {
-                GameLogger.LogError($"Failed to select character: {_currentCharacter.DisplayName}");
-                UIService?.ShowNotification("Failed to select character", NotificationType.Error, 2f);
-            }
-        }
-
-        protected override void OnShow()
-        {
-            if (_currentCharacter != null)
-            {
-                UpdateCharacterDisplay();
-                PopulateSkins();
-            }
         }
 
         protected override void OnDispose()
         {
-            if (_backButton != null)
-            {
-                _backButton.clicked -= OnBackClicked;
-            }
-
-            if (_selectButton != null)
-            {
-                _selectButton.clicked -= OnSelectClicked;
-            }
+            if (_backButton != null) _backButton.clicked -= OnBackClicked;
+            if (_selectButton != null) _selectButton.clicked -= OnSelectClicked;
+            if (_upgradeButton != null) _upgradeButton.clicked -= OnUpgradeClicked;
+            if (_unlockCharacterButton != null) _unlockCharacterButton.clicked -= OnUnlockCharacterClicked;
+            
+            _previewManager?.ClearPreview();
         }
-
     }
 }

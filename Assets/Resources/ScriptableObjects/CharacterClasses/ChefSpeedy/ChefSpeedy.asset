@@ -19,4 +19,25 @@ MonoBehaviour:
   _stats: {fileID: 11400000, guid: f3b1b5644b61c4ac2a89417c71a60044, type: 2}
   _primaryAbility: {fileID: 11400000, guid: 6e3f23ccf76124d5cb9e144122ff11c0, type: 2}
   _unlockData: {fileID: 11400000, guid: cf659d1b61999495ab5f75c9b5713489, type: 2}
-  _skins: []
+  _skins:
+  - id: character_1_default
+    name: Chef Speedy Default
+    prefab: {fileID: 4128379274495610546, guid: 288949793caba4f1288c97431ed56d51,
+      type: 3}
+    rarity: 0
+    isDefault: 1
+    priceOverride: -1
+  - id: character_1_rare
+    name: Chef Speedy Rare
+    prefab: {fileID: 1091883797188386122, guid: a2a7dd69c33694b84a039ad46498fffb,
+      type: 3}
+    rarity: 1
+    isDefault: 0
+    priceOverride: -1
+  - id: character_1_epic
+    name: Chef Speedy Epic
+    prefab: {fileID: 1305220380840076402, guid: 8741f64ef11204f0cb82fbf01cabc2e0,
+      type: 3}
+    rarity: 2
+    isDefault: 0
+    priceOverride: -1

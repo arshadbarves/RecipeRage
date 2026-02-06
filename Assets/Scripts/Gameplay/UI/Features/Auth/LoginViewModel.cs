@@ -18,7 +18,9 @@ namespace Gameplay.UI.Features.Auth
         public BindableProperty<string> StatusText { get; } = new BindableProperty<string>("Ready to connect");
 
         [Inject]
-        public LoginViewModel(IAuthService authService, ILocalizationManager localization)
+        public LoginViewModel(
+            IAuthService authService,
+            ILocalizationManager localization)
         {
             _authService = authService;
             _localization = localization;
@@ -33,39 +35,45 @@ namespace Gameplay.UI.Features.Auth
         public void Reset()
         {
             IsLoading.Value = false;
-            StatusText.Value = _localization.GetText("login_status_ready");
+            StatusText.Value = _localization.GetText("login_status_ready") ?? "Ready to connect";
         }
 
+        /// <summary>
+        /// Initiates EOS Device Login for guest play
+        /// Connects to Epic Online Services using device credentials
+        /// </summary>
         public void LoginAsGuest()
         {
-            HandleLoginAsync(AuthType.DeviceID).Forget();
+            HandleEosGuestLoginAsync().Forget();
         }
 
-        private async UniTaskVoid HandleLoginAsync(AuthType type)
+        private async UniTaskVoid HandleEosGuestLoginAsync()
         {
             if (IsLoading.Value) return;
 
             IsLoading.Value = true;
-            StatusText.Value = _localization.GetText("login_status_connecting");
+            StatusText.Value = _localization.GetText("login_status_connecting") ?? "Connecting to EOS...";
 
             try
             {
-                bool success = await _authService.LoginAsync(type);
+                // Use EOS Device Login for guest authentication
+                bool success = await _authService.LoginAsync(AuthType.DeviceID);
+
                 if (success)
                 {
-                    StatusText.Value = _localization.GetText("login_status_connected");
-                    // Success event is handled by LoginState observing AuthService or EventBus
+                    StatusText.Value = _localization.GetText("login_status_connected") ?? "Connected!";
+                    // Success event handled by LoginState via EventBus
                 }
                 else
                 {
-                    StatusText.Value = _localization.GetText("login_status_failed");
+                    StatusText.Value = _localization.GetText("login_status_failed") ?? "Connection failed";
                     IsLoading.Value = false;
                 }
             }
             catch (Exception ex)
             {
-                GameLogger.LogError($"[LoginViewModel] Login Error: {ex.Message}");
-                StatusText.Value = _localization.GetText("login_status_error");
+                GameLogger.LogError($"[LoginViewModel] EOS Guest Login Error: {ex.Message}");
+                StatusText.Value = _localization.GetText("login_status_error") ?? "Error occurred";
                 IsLoading.Value = false;
             }
         }

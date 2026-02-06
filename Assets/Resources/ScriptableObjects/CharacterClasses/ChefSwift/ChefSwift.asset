@@ -19,4 +19,25 @@ MonoBehaviour:
   _stats: {fileID: 11400000, guid: 62e4bb68644ae4c2c93ac1eb67d7b70b, type: 2}
   _primaryAbility: {fileID: 11400000, guid: 330508f0dd9b44a7cb8847a2be2e9e37, type: 2}
   _unlockData: {fileID: 11400000, guid: d5fcd52edc73a4255b3e5fadff9f5c8d, type: 2}
-  _skins: []
+  _skins:
+  - id: character_3_default
+    name: Chef Swift Default
+    prefab: {fileID: 8457454768265922345, guid: e63abe39d295c437db254ac9ddfe59f9,
+      type: 3}
+    rarity: 0
+    isDefault: 1
+    priceOverride: -1
+  - id: character_3_rare
+    name: Chef Swift Rare
+    prefab: {fileID: 5964362030875315519, guid: c67568623e8a74c46b9190c4c784aadc,
+      type: 3}
+    rarity: 1
+    isDefault: 0
+    priceOverride: -1
+  - id: character_3_epic
+    name: Chef Swift Epic
+    prefab: {fileID: 4268386046306772996, guid: 0511e3909994d49f688822edf4772bac,
+      type: 3}
+    rarity: 2
+    isDefault: 0
+    priceOverride: -1

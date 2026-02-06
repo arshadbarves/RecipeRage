@@ -2,7 +2,6 @@ using System;
 using Core.Animation;
 using Core.Audio;
 using Core.Auth;
-using Core.Auth;
 using Core.Localization;
 using Core.Logging;
 using Core.Networking;
@@ -84,6 +83,18 @@ namespace Gameplay.Bootstrap
             }
             builder.Register<UIService>(Lifetime.Singleton).As<IUIService>().As<IStartable>().As<IDisposable>();
 
+            // 3D Preview Manager
+            var previewManager = GameObject.FindObjectOfType<Gameplay.Characters.Visuals.CharacterPreviewManager>();
+            if (previewManager == null)
+            {
+                GameLogger.Log("Creating CharacterPreviewManager dynamically...");
+                var go = new GameObject("CharacterPreviewManager");
+                previewManager = go.AddComponent<Gameplay.Characters.Visuals.CharacterPreviewManager>();
+                // DontDestroyOnLoad might not be needed if it's child of LifetimeScope, 
+                // but let's keep it clean in the hierarchy
+            }
+            builder.RegisterInstance(previewManager);
+
             // Register UI Screens (Transient - instantiated by UIService)
             // System
             builder.Register<SplashView>(Lifetime.Transient);
@@ -97,6 +108,7 @@ namespace Gameplay.Bootstrap
             builder.Register<MainMenuView>(Lifetime.Transient);
             builder.Register<ProfileView>(Lifetime.Transient);
             builder.Register<CharacterDetailsView>(Lifetime.Transient);
+            builder.Register<CharacterSelectionView>(Lifetime.Transient);
             builder.Register<MapSelectionView>(Lifetime.Transient);
             builder.Register<MatchmakingView>(Lifetime.Transient);
             builder.Register<SettingsView>(Lifetime.Transient);
@@ -155,6 +167,14 @@ namespace Gameplay.Bootstrap
 
             // Networking Core (Low level)
             builder.Register<PlayerNetworkManager>(Lifetime.Singleton).As<IPlayerNetworkManager>();
+
+            // 8. Gameplay Services
+            builder.Register<Gameplay.Characters.CharacterService>(Lifetime.Singleton).As<Gameplay.Characters.ICharacterService>().As<IDisposable>();
+            builder.Register<Gameplay.Skins.SkinsService>(Lifetime.Singleton).As<Gameplay.Skins.ISkinsService>().As<IDisposable>();
+            builder.Register<Gameplay.Persistence.PlayerDataService>(Lifetime.Singleton); // Added PlayerDataService
+            
+            // Economy Service
+            builder.Register<Gameplay.Economy.EconomyService>(Lifetime.Singleton).AsSelf(); // Ensure EconomyService is registered if not already
 
             // 9. Bootstrapper (EntryPoint)
             builder.Register<GameBootstrapper>(Lifetime.Singleton).As<IStartable>();

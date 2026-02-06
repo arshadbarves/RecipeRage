@@ -7,6 +7,14 @@ namespace Gameplay.Persistence.Data
     [Serializable]
     public class PlayerStatsData : ISerializationCallbackReceiver
     {
+        // Account Linking Fields (AC3)
+        [Header("Account Information")]
+        public string EosProductUserId = ""; // Set when linked to EOS
+        public string LinkedAccountType = ""; // "DeviceID", "Epic", "Steam", etc.
+        public DateTime AccountCreatedAt = DateTime.UtcNow;
+        public DateTime LastLinkedAt = DateTime.MinValue;
+        public int AccountLinkingVersion = 1; // For migration tracking
+
         // Player info
         public string PlayerName = "";
         public int UsernameChangeCount = 0;
@@ -107,5 +115,77 @@ namespace Gameplay.Persistence.Data
         public void RecordIngredientBurned() => TotalIngredientsBurned++;
         public void RecordDishServed() => TotalDishesServed++;
         public void RecordCombo(int combo) { if (combo > HighestCombo) HighestCombo = combo; }
+
+        #region Account Linking Support (AC3)
+
+        /// <summary>
+        /// Links this guest account to a permanent EOS account.
+        /// Call this after successful account linking via EOS Connect.
+        /// </summary>
+        public void LinkToEosAccount(string eosProductUserId, string accountType)
+        {
+            if (string.IsNullOrEmpty(eosProductUserId))
+            {
+                Debug.LogError("[PlayerStatsData] Cannot link - EOS ProductUserId is null/empty");
+                return;
+            }
+
+            EosProductUserId = eosProductUserId;
+            LinkedAccountType = accountType;
+            LastLinkedAt = DateTime.UtcNow;
+            AccountLinkingVersion++;
+
+            Debug.Log($"[PlayerStatsData] Account linked to {accountType} - EOS PUID: {eosProductUserId}");
+        }
+
+        /// <summary>
+        /// Checks if this account has been linked to a permanent account.
+        /// </summary>
+        public bool IsLinkedToPermanentAccount => !string.IsNullOrEmpty(EosProductUserId);
+
+        /// <summary>
+        /// Prepares data for account migration.
+        /// Returns a snapshot of data that can be transferred to a linked account.
+        /// </summary>
+        public PlayerStatsData CreateMigrationSnapshot()
+        {
+            return new PlayerStatsData
+            {
+                // Preserve progression
+                Level = this.Level,
+                Experience = this.Experience,
+                ExperienceToNextLevel = this.ExperienceToNextLevel,
+
+                // Preserve stats
+                GamesPlayed = this.GamesPlayed,
+                GamesWon = this.GamesWon,
+                GamesLost = this.GamesLost,
+                TotalPlayTime = this.TotalPlayTime,
+                TotalScore = this.TotalScore,
+                TotalOrdersCompleted = this.TotalOrdersCompleted,
+                TotalOrdersFailed = this.TotalOrdersFailed,
+                TotalIngredientsCut = this.TotalIngredientsCut,
+                TotalIngredientsBurned = this.TotalIngredientsBurned,
+                TotalDishesServed = this.TotalDishesServed,
+                HighestCombo = this.HighestCombo,
+
+                // Preserve character usage
+                CharacterUsage = new Dictionary<string, int>(this.CharacterUsage),
+                FavoriteCharacter = this.FavoriteCharacter,
+
+                // Preserve game mode usage
+                GameModeUsage = new Dictionary<string, int>(this.GameModeUsage),
+                FavoriteGameMode = this.FavoriteGameMode,
+
+                // Account linking info
+                EosProductUserId = this.EosProductUserId,
+                LinkedAccountType = this.LinkedAccountType,
+                AccountCreatedAt = this.AccountCreatedAt,
+                LastLinkedAt = DateTime.UtcNow,
+                AccountLinkingVersion = this.AccountLinkingVersion + 1
+            };
+        }
+
+        #endregion
     }
 }

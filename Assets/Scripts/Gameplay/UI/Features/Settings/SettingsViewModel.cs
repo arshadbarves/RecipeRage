@@ -6,6 +6,7 @@ using Core.UI.Core;
 using Core.Localization;
 using UnityEngine;
 using VContainer;
+using static Core.Auth.AuthenticationService;
 
 namespace Gameplay.UI.Features.Settings
 {
@@ -44,17 +45,19 @@ namespace Gameplay.UI.Features.Settings
 
         private void CheckGuestStatus()
         {
-             // If signed in via DeviceID (and presumably not linked to anything else yet), treat as Guest
-             // Note: Currently we only support DeviceID, so this check is a bit redundant but future-proofs it.
-             // We can check LastLoginMethod from settings.
+             // Check if user is signed in via DeviceID (Guest account)
+             // A null/empty LastLoginMethod indicates a new user who hasn't logged in yet,
+             // which is different from an active guest session
              var settings = _saveService.GetSettings();
-             if (settings != null)
+             if (settings != null && _authService.IsSignedIn)
              {
-                 IsGuest.Value = settings.LastLoginMethod == "DeviceID" || string.IsNullOrEmpty(settings.LastLoginMethod);
+                 // Only consider it a guest session if explicitly logged in via DeviceID
+                 IsGuest.Value = settings.LastLoginMethod == LOGIN_METHOD_DEVICE_ID;
              }
              else
              {
-                 IsGuest.Value = true;
+                 // Not signed in or no settings - not a guest
+                 IsGuest.Value = false;
              }
         }
 

@@ -1,0 +1,307 @@
+@import url("../../Themes/DesignSystem.uss");
+
+/* Professional Character Screen Aesthetic (Matching Loading View) */
+
+.character-root {
+    width: 100%;
+    height: 100%;
+    /* Maintain transparency for 3D background */
+    background-color: rgba(0,0,0,0.85); 
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- HEADER --- */
+.character-header {
+    width: 100%;
+    height: 120px;
+    flex-direction: row;
+    align-items: center;
+    padding-left: 60px;
+    padding-right: 60px;
+    /* Clean top bar, no heavy border */
+    background-color: rgba(0, 0, 0, 0.4); 
+}
+
+.character-title {
+    font-size: var(--font-size-hero-lg);
+    color: var(--text-white);
+    -unity-font-definition: var(--font-anton-sdf);
+    letter-spacing: 2px;
+    margin-left: 30px;
+    text-shadow: 2px 2px 0px rgba(0,0,0,0.5);
+    text-transform: uppercase;
+}
+
+/* Back Button - Clean, minimal, red accent */
+.back-button {
+    width: 60px;
+    height: 60px;
+    background-color: var(--theme-red); /* Consistent Red */
+    border-radius: var(--radius-sm);    /* Sharper corners */
+    justify-content: center;
+    align-items: center;
+    border-width: 0;
+    transition-duration: 0.15s;
+}
+
+.back-button:hover {
+    scale: 1.05;
+    background-color: #ff5e6c;
+}
+
+.back-button:active {
+    scale: 0.95;
+    background-color: #d63031;
+}
+
+.icon-back {
+    width: 28px;
+    height: 28px;
+    -unity-background-image-tint-color: white;
+}
+
+.back-btn-margin {
+    margin-bottom: 0; /* Handled by header layout */
+    margin-right: 20px;
+}
+
+/* --- SELECTION VIEW --- */
+.character-content-area {
+    flex-grow: 1;
+    padding: 40px;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Clean Grid Slots */
+.character-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.grid-slot {
+    width: 180px;
+    height: 240px;
+    margin: 15px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-width: 1px;
+    border-color: rgba(255,255,255,0.1);
+    border-radius: var(--radius-sm); /* Sharper */
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+    transition-duration: 0.15s;
+}
+
+.grid-slot:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: var(--theme-red);
+    scale: 1.02;
+}
+
+.grid-slot.selected {
+    background-color: rgba(231, 76, 60, 0.15); /* Red tint */
+    border-color: var(--theme-red);
+    border-width: 2px;
+}
+
+.slot-icon {
+    width: 120px;
+    height: 120px;
+    -unity-background-scale-mode: scale-to-fit;
+    margin-top: 10px;
+}
+
+.slot-name {
+    font-size: var(--font-size-body-md);
+    color: var(--text-white);
+    -unity-font-definition: var(--font-anton-sdf);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    -unity-text-align: middle-center;
+}
+
+.slot-status {
+    font-size: var(--font-size-caption-xs);
+    color: var(--text-gray);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    -unity-font-definition: var(--font-anton-sdf);
+}
+
+
+/* --- DETAILS VIEW --- */
+.details-root {
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.panel-left {
+    width: 350px;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Use solid dark panels for pro feel */
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center vertically */
+    border-right-width: 1px;
+    border-right-color: rgba(255,255,255,0.05);
+}
+
+.panel-right {
+    width: 350px;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 40px;
+    border-left-width: 1px;
+    border-left-color: rgba(255,255,255,0.05);
+}
+
+.panel-center {
+    flex-grow: 1;
+    /* 3D Model Area */
+}
+
+/* Typography matching Loading Screen */
+.character-name-large {
+    font-size: 64px; /* Big & Bold */
+    color: var(--text-white);
+    -unity-font-definition: var(--font-anton-sdf);
+    margin-bottom: 5px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 4px 4px 0px rgba(0,0,0,0.3);
+}
+
+.character-desc {
+    font-size: 16px;
+    color: var(--text-gray);
+    white-space: normal;
+    margin-bottom: 30px;
+    line-height: 22px;
+}
+
+/* Stats */
+.stats-container {
+    background-color: transparent;
+    border-top-width: 1px;
+    border-top-color: rgba(255,255,255,0.1);
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(255,255,255,0.1);
+    padding-top: 20px;
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-row {
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    align-items: center;
+}
+
+.stat-name {
+    color: var(--text-gray);
+    font-size: 14px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    -unity-font-definition: var(--font-anton-sdf);
+}
+
+.stat-value {
+    color: var(--theme-red); /* Accent color */
+    font-size: 20px;
+    -unity-font-definition: var(--font-anton-sdf);
+}
+
+
+/* Actions / Level */
+.action-area-margin {
+    margin-top: auto; /* Push to bottom */
+}
+
+.level-label {
+    color: var(--text-gray);
+    font-size: 18px;
+    text-transform: uppercase;
+    -unity-font-definition: var(--font-anton-sdf);
+}
+
+.level-value {
+    color: var(--text-white);
+    font-size: 42px;
+    -unity-font-definition: var(--font-anton-sdf);
+}
+
+/* Modern Buttons (Rectangular, sharp) */
+.action-button {
+    height: 56px;
+    border-radius: 4px; /* Slight roundness */
+    justify-content: center;
+    align-items: center;
+    border-width: 0;
+    margin-top: 15px;
+    transition-duration: 0.15s;
+    background-color: var(--theme-red);
+}
+
+.action-button:hover {
+    background-color: #ff4757;
+    scale: 1.02;
+}
+
+.action-button:active {
+    background-color: #c0392b;
+    scale: 0.98;
+}
+
+/* Button Variants */
+.btn-upgrade {
+    background-color: #27ae60; /* Professional Green */
+}
+.btn-upgrade:hover { background-color: #2ecc71; }
+
+.btn-unlock {
+    background-color: #f39c12; /* Warning Orange */
+}
+.btn-unlock:hover { background-color: #f1c40f; }
+
+.btn-select {
+    background-color: var(--theme-red);
+}
+
+.btn-label-lg {
+    font-size: 20px;
+    color: white;
+    -unity-font-definition: var(--font-anton-sdf);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.btn-label-sm {
+    font-size: 12px;
+    color: rgba(255,255,255,0.7);
+    -unity-font-definition: var(--font-anton-sdf);
+    margin-top: 2px;
+}
+
+/* Skins Panel matches Left Panel */
+.skins-title {
+    font-size: 32px;
+    color: var(--text-white);
+    -unity-font-definition: var(--font-anton-sdf);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(255,255,255,0.1);
+    padding-bottom: 10px;
+}
+
+.skins-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}

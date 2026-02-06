@@ -19,4 +19,25 @@ MonoBehaviour:
   _stats: {fileID: 11400000, guid: 395771bbb890f426fae947711c3eec2a, type: 2}
   _primaryAbility: {fileID: 11400000, guid: f4a7d9d29f7214771afe61b5724ab1a1, type: 2}
   _unlockData: {fileID: 11400000, guid: ea54b34d1e93b47b8b1b55e8c767f00a, type: 2}
-  _skins: []
+  _skins:
+  - id: character_2_default
+    name: Chef Strong Default
+    prefab: {fileID: 3445176297575698941, guid: 8848129b26bfe487c8e32795c6c87cbb,
+      type: 3}
+    rarity: 0
+    isDefault: 1
+    priceOverride: -1
+  - id: character_2_rare
+    name: Chef Strong Rare
+    prefab: {fileID: 1388632803108656149, guid: d1a61cd22e95548e19262dac9747e3fa,
+      type: 3}
+    rarity: 1
+    isDefault: 0
+    priceOverride: -1
+  - id: character_2_epic
+    name: Chef Strong Epic
+    prefab: {fileID: 2361031921588991281, guid: 214f3e4fed447433c8fde19893d7f91f,
+      type: 3}
+    rarity: 2
+    isDefault: 0
+    priceOverride: -1

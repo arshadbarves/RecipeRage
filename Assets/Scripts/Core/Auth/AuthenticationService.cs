@@ -17,6 +17,11 @@ namespace Core.Auth
     public class AuthenticationService : IAuthService, IDisposable
     {
         private const int TIMEOUT_SECONDS = 15;
+
+        /// <summary>
+        /// Constant for DeviceID login method. Use this instead of nameof() to avoid breaking changes.
+        /// </summary>
+        public const string LOGIN_METHOD_DEVICE_ID = "DeviceID";
         
         private readonly IEventBus _eventBus;
         private readonly ISaveService _saveService;
@@ -116,7 +121,7 @@ namespace Core.Auth
             // Save persistence
             if (type == AuthType.DeviceID)
             {
-                _saveService.UpdateSettings(s => s.LastLoginMethod = "DeviceID");
+                _saveService.UpdateSettings(s => s.LastLoginMethod = LOGIN_METHOD_DEVICE_ID);
             }
 
             GameLogger.LogInfo("Unified login successful (EOS primary ready).");
@@ -158,7 +163,10 @@ namespace Core.Auth
             if (!deviceIdReady) return false;
 
             var tcs = new UniTaskCompletionSource<bool>();
-            string displayName = $"Guest_{SystemInfo.deviceUniqueIdentifier.Substring(0, 8)}";
+
+            // Safe device ID extraction with null/empty check
+            string deviceId = SystemInfo.deviceUniqueIdentifier ?? "unknown";
+            string displayName = $"Guest_{(deviceId.Length >= 8 ? deviceId.Substring(0, 8) : deviceId)}";
 
             EOSManager.Instance.StartConnectLoginWithOptions(
                 ExternalCredentialType.DeviceidAccessToken,
@@ -216,23 +224,45 @@ namespace Core.Auth
             var connectInterface = EOSManager.Instance.GetEOSConnectInterface();
             if (connectInterface == null) return false;
 
-            var createOptions = new CreateDeviceIdOptions() { DeviceModel = SystemInfo.deviceModel };
+            // Retry logic with exponential backoff
+            const int MAX_RETRIES = 3;
+            int attempt = 0;
 
-            var tcs = new UniTaskCompletionSource<bool>();
-            connectInterface.CreateDeviceId(ref createOptions, null, (ref CreateDeviceIdCallbackInfo info) =>
+            while (attempt < MAX_RETRIES)
             {
-                if (info.ResultCode == Result.Success || info.ResultCode == Result.DuplicateNotAllowed)
-                {
-                    tcs.TrySetResult(true);
-                }
-                else
-                {
-                    GameLogger.LogError($"Failed to create EOS Device ID: {info.ResultCode}");
-                    tcs.TrySetResult(false);
-                }
-            });
+                var createOptions = new CreateDeviceIdOptions() { DeviceModel = SystemInfo.deviceModel };
+                var tcs = new UniTaskCompletionSource<bool>();
 
-            return await tcs.Task.Timeout(TimeSpan.FromSeconds(TIMEOUT_SECONDS));
+                connectInterface.CreateDeviceId(ref createOptions, null, (ref CreateDeviceIdCallbackInfo info) =>
+                {
+                    if (info.ResultCode == Result.Success || info.ResultCode == Result.DuplicateNotAllowed)
+                    {
+                        tcs.TrySetResult(true);
+                    }
+                    else
+                    {
+                        tcs.TrySetResult(false);
+                    }
+                });
+
+                bool success = await tcs.Task.Timeout(TimeSpan.FromSeconds(TIMEOUT_SECONDS));
+
+                if (success)
+                {
+                    return true;
+                }
+
+                attempt++;
+                if (attempt < MAX_RETRIES)
+                {
+                    int delayMs = (int)Math.Pow(2, attempt) * 500; // 1s, 2s, 4s
+                    GameLogger.LogWarning($"[AuthenticationService] Device ID creation attempt {attempt} failed, retrying in {delayMs}ms...");
+                    await UniTask.Delay(delayMs);
+                }
+            }
+
+            GameLogger.LogError($"[AuthenticationService] Failed to create EOS Device ID after {MAX_RETRIES} attempts");
+            return false;
         }
 
         private void OnUgsSignedIn() => GameLogger.Log($"UGS signed in - PlayerId: {PlayerId}");

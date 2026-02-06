@@ -19,4 +19,24 @@ MonoBehaviour:
   _stats: {fileID: 11400000, guid: bffa6eae07b5e4b0885eb4bdf22f2ca0, type: 2}
   _primaryAbility: {fileID: 11400000, guid: 57a9ad4a09d204914bb3bb868e8e9323, type: 2}
   _unlockData: {fileID: 11400000, guid: a3000d7062acc40738af3fa00a8b83a4, type: 2}
-  _skins: []
+  _skins:
+  - id: character_4_default
+    name: Chef Balanced Default
+    prefab: {fileID: 6179092738089528608, guid: 80682d57a448f4e709a2955c1df74f24,
+      type: 3}
+    rarity: 0
+    isDefault: 1
+    priceOverride: -1
+  - id: character_4_rare
+    name: Chef Balanced Rare
+    prefab: {fileID: 102499027673686272, guid: ef60d951860e84632bcd8b6dd7f901c8, type: 3}
+    rarity: 1
+    isDefault: 0
+    priceOverride: -1
+  - id: character_4_epic
+    name: Chef Balanced Epic
+    prefab: {fileID: 1273943032548735226, guid: 521010b4aa020463d9e921b5ec560936,
+      type: 3}
+    rarity: 2
+    isDefault: 0
+    priceOverride: -1

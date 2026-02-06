@@ -183,6 +183,10 @@
     background-image: url("project://database/Assets/UI/Icons/gear.png?fileID=2800000&guid=85b5e490e73aa43bcb8c8e970b3965fc&type=3#gear");
 }
 
+.skins-icon {
+    background-image: url("project://database/Assets/UI/Icons/shirt.png?fileID=2800000&guid=96a42119584e04e74879b9cb1fa80fef&type=3#shirt");
+}
+
 .character-model {
     width: 300px;
     height: 100%;

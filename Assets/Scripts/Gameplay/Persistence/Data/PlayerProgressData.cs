@@ -7,6 +7,11 @@ namespace Gameplay.Persistence.Data
     [Serializable]
     public class PlayerProgressData : ISerializationCallbackReceiver
     {
+        // Account Linking Fields (AC3)
+        [Header("Account Information")]
+        public string EosProductUserId = ""; // Linked EOS account
+        public int DataVersion = 1; // For migration tracking
+
         // Unlocked content
         public List<string> UnlockedCharacters = new List<string>();
         public List<string> UnlockedMaps = new List<string>();
@@ -21,6 +26,9 @@ namespace Gameplay.Persistence.Data
         public List<string> CompletedAchievements = new List<string>();
         public Dictionary<string, int> AchievementProgress = new Dictionary<string, int>();
 
+        // Character Progress
+        public Dictionary<string, int> CharacterLevels = new Dictionary<string, int>();
+
         // Tutorial
         public bool TutorialCompleted = false;
 
@@ -31,6 +39,8 @@ namespace Gameplay.Persistence.Data
         [SerializeField] private List<float> _bestTimeValues = new List<float>();
         [SerializeField] private List<string> _achievementProgressKeys = new List<string>();
         [SerializeField] private List<int> _achievementProgressValues = new List<int>();
+        [SerializeField] private List<string> _charLevelKeys = new List<string>();
+        [SerializeField] private List<int> _charLevelValues = new List<int>();
 
         public void OnBeforeSerialize()
         {
@@ -42,6 +52,9 @@ namespace Gameplay.Persistence.Data
 
             _achievementProgressKeys.Clear(); _achievementProgressValues.Clear();
             foreach (var kvp in AchievementProgress) { _achievementProgressKeys.Add(kvp.Key); _achievementProgressValues.Add(kvp.Value); }
+
+            _charLevelKeys.Clear(); _charLevelValues.Clear();
+            foreach (var kvp in CharacterLevels) { _charLevelKeys.Add(kvp.Key); _charLevelValues.Add(kvp.Value); }
         }
 
         public void OnAfterDeserialize()
@@ -57,6 +70,10 @@ namespace Gameplay.Persistence.Data
             AchievementProgress = new Dictionary<string, int>();
             for (int i = 0; i < Math.Min(_achievementProgressKeys.Count, _achievementProgressValues.Count); i++)
                 AchievementProgress[_achievementProgressKeys[i]] = _achievementProgressValues[i];
+
+            CharacterLevels = new Dictionary<string, int>();
+            for (int i = 0; i < Math.Min(_charLevelKeys.Count, _charLevelValues.Count); i++)
+                CharacterLevels[_charLevelKeys[i]] = _charLevelValues[i];
         }
 
         // Helper Methods
@@ -86,5 +103,54 @@ namespace Gameplay.Persistence.Data
             }
             return false;
         }
+
+        #region Account Linking Support (AC3)
+
+        /// <summary>
+        /// Links this progress data to a permanent EOS account.
+        /// </summary>
+        public void LinkToEosAccount(string eosProductUserId)
+        {
+            if (string.IsNullOrEmpty(eosProductUserId))
+            {
+                Debug.LogError("[PlayerProgressData] Cannot link - EOS ProductUserId is null/empty");
+                return;
+            }
+
+            EosProductUserId = eosProductUserId;
+            DataVersion++;
+
+            Debug.Log($"[PlayerProgressData] Progress linked to EOS PUID: {eosProductUserId}");
+        }
+
+        /// <summary>
+        /// Creates a migration snapshot for account transfer.
+        /// All progression data is preserved during migration.
+        /// </summary>
+        public PlayerProgressData CreateMigrationSnapshot()
+        {
+            var snapshot = new PlayerProgressData
+            {
+                // Account linking
+                EosProductUserId = this.EosProductUserId,
+                DataVersion = this.DataVersion + 1,
+
+                // Copy all progression
+                UnlockedCharacters = new List<string>(this.UnlockedCharacters),
+                UnlockedMaps = new List<string>(this.UnlockedMaps),
+                UnlockedCosmetics = new List<string>(this.UnlockedCosmetics),
+                HighestLevel = this.HighestLevel,
+                GameModeHighScores = new Dictionary<string, int>(this.GameModeHighScores),
+                GameModeBestTimes = new Dictionary<string, float>(this.GameModeBestTimes),
+                CompletedAchievements = new List<string>(this.CompletedAchievements),
+                AchievementProgress = new Dictionary<string, int>(this.AchievementProgress),
+                CharacterLevels = new Dictionary<string, int>(this.CharacterLevels),
+                TutorialCompleted = this.TutorialCompleted
+            };
+
+            return snapshot;
+        }
+
+        #endregion
     }
 }

@@ -15,6 +15,9 @@ namespace Gameplay.Skins.Data
         [Tooltip("Display name of the skin")]
         public string name;
 
+        [Tooltip("Icon for UI display")]
+        public Sprite icon;
+
         [Tooltip("Character prefab for rendering (replaces CharacterClass.CharacterPrefab)")]
         public GameObject prefab;
 

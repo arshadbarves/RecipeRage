@@ -43,7 +43,7 @@ story_location: /Users/arshadbarves/MyProject/RecipeRage/_bmad-output/implementa
 development_status:
   # EPIC 1: Account & Onboarding
   epic-1: in-progress
-  1-1-guest-play-without-account-creation: review
+  1-1-guest-play-without-account-creation: done
   1-2-link-guest-account-to-permanent-account: backlog
   1-3-facebook-authentication: backlog
   1-4-epic-online-services-authentication: backlog

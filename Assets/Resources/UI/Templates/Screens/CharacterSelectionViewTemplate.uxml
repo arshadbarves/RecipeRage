@@ -1,0 +1,16 @@
+<UXML xmlns="UnityEngine.UIElements" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="../../Styles/Screens/CharacterScreen.uss" />
+    <VisualElement name="root" class="character-root">
+        <VisualElement name="header" class="character-header">
+            <Button name="back-button" class="back-button">
+                <VisualElement class="icon-back" style="background-image: url('../../Icons/arrow-left.png');" />
+            </Button>
+            <Label text="CHARACTERS" class="character-title" />
+        </VisualElement>
+        <VisualElement name="content" class="character-content-area">
+            <ScrollView name="character-scroll" style="width: 100%; height: 100%;">
+                <VisualElement name="character-grid" class="character-grid" />
+            </ScrollView>
+        </VisualElement>
+    </VisualElement>
+</UXML>

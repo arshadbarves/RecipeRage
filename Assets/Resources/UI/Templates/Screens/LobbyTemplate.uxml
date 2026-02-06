@@ -44,6 +44,9 @@
             <Button name="quests-btn" class="side-icon-btn">
                 <VisualElement class="icon quests-icon"/>
             </Button>
+            <Button name="skins-btn" class="side-icon-btn">
+                <VisualElement class="icon skins-icon"/>
+            </Button>
             <Button name="settings-btn" class="side-icon-btn">
                 <VisualElement class="icon settings-icon"/>
             </Button>

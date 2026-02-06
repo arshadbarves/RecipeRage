@@ -8,9 +8,13 @@ using Core.UI.Interfaces;
 using Gameplay.GameModes;
 using Gameplay.UI.Data;
 using Gameplay.UI.Features.Settings;
+using Gameplay.UI.Features.Character;
+using Gameplay.Characters;
+using Gameplay.Skins; // Added
 using Gameplay.UI.Extensions;
 using Gameplay.UI.Localization;
 using VContainer;
+using UnityEngine; // For GameObject
 
 namespace Gameplay.UI.Components.Tabs
 {
@@ -19,6 +23,9 @@ namespace Gameplay.UI.Components.Tabs
         [Inject] private IUIService _uiService;
         [Inject] private IAnimationService _animationService;
         [Inject] private Core.Localization.ILocalizationManager _localizationManager;
+        [Inject] private ICharacterService _characterService;
+        [Inject] private ISkinsService _skinsService; // Added
+        [Inject] private Gameplay.Characters.Visuals.CharacterPreviewManager _previewManager;
 
 
         private VisualElement _root;
@@ -30,6 +37,7 @@ namespace Gameplay.UI.Components.Tabs
         private Label _mapNameLabel;
         private Label _regionInfo;
         private Button _settingsButton;
+        private Button _skinsButton;
 
         // Squad slots
         private Button[] _squadSlots = new Button[4];
@@ -52,6 +60,7 @@ namespace Gameplay.UI.Components.Tabs
             BindViewModel();
             SetupLocalPlayer();
             BindLocalization();
+            SubscribeEvents(); // Added
         }
 
         public void RefreshLocalization()
@@ -91,6 +100,7 @@ namespace Gameplay.UI.Components.Tabs
             _mapNameLabel = _root.Q<Label>("map-name");
             _regionInfo = _root.Q<Label>("region-info");
             _settingsButton = _root.Q<Button>("settings-btn");
+            _skinsButton = _root.Q<Button>("skins-btn");
 
             // Query squad slots
             for (int i = 0; i < 4; i++)
@@ -108,6 +118,7 @@ namespace Gameplay.UI.Components.Tabs
             if (_playButton != null) _playButton.clicked += OnPlayClicked;
             if (_mapSelector != null) _mapSelector.clicked += OnMapClicked;
             if (_settingsButton != null) _settingsButton.clicked += OnSettingsClicked;
+            if (_skinsButton != null) _skinsButton.clicked += OnSkinsClicked;
 
             // Setup empty squad slots to open friends
             for (int i = 1; i < 4; i++) // Skip slot 0 (player)
@@ -134,7 +145,57 @@ namespace Gameplay.UI.Components.Tabs
             {
                 _squadSlots[0].RemoveFromClassList("empty");
                 _squadSlots[0].AddToClassList("filled");
+                UpdateLocalPlayerModel();
             }
+        }
+
+        private void SubscribeEvents()
+        {
+            if (_characterService != null) _characterService.OnCharacterSelected += OnCharacterSelected;
+            if (_skinsService != null) _skinsService.OnSkinEquipped += OnSkinEquipped;
+        }
+
+        private void UnsubscribeEvents()
+        {
+            if (_characterService != null) _characterService.OnCharacterSelected -= OnCharacterSelected;
+            if (_skinsService != null) _skinsService.OnSkinEquipped -= OnSkinEquipped;
+        }
+
+        private void OnCharacterSelected(Gameplay.Characters.CharacterClass character) => UpdateLocalPlayerModel();
+        private void OnSkinEquipped(int charId, string skinId) => UpdateLocalPlayerModel();
+
+        private void UpdateLocalPlayerModel()
+        {
+             if (_characterService == null || _previewManager == null) return;
+             
+             var selectedCharacter = _characterService.SelectedCharacter;
+             if (selectedCharacter == null) 
+             {
+                 _previewManager.ClearLobbyCharacter(0);
+                 return;
+             }
+
+             GameObject prefabToSpawn = null;
+             
+             // Check equipped skin
+             if (_skinsService != null)
+             {
+                 var equippedSkin = _skinsService.GetEquippedSkin(selectedCharacter.Id);
+                 if (equippedSkin != null) prefabToSpawn = equippedSkin.prefab;
+             }
+             
+             // Fallback to default skin
+             if (prefabToSpawn == null)
+             {
+                 // Assuming accessing Skins list directly if needed, or SkinsService should handle default logic
+                 var defaultSkin = selectedCharacter.Skins.Find(s => s.isDefault);
+                 if (defaultSkin != null) prefabToSpawn = defaultSkin.prefab;
+             }
+
+             if (prefabToSpawn != null)
+             {
+                 _previewManager.ShowLobbyCharacter(0, prefabToSpawn);
+             }
         }
 
         private void OnPlayClicked()
@@ -163,6 +224,12 @@ namespace Gameplay.UI.Components.Tabs
             _uiService?.Show<SettingsView>(false);
         }
 
+        private void OnSkinsClicked()
+        {
+            if (_uiService == null) return;
+            _uiService.Show<CharacterSelectionView>();
+        }
+
         public void Update(float deltaTime) { }
 
         public void PlayIntroAnimations(IUIAnimator animator) { }
@@ -172,8 +239,15 @@ namespace Gameplay.UI.Components.Tabs
             if (_playButton != null) _playButton.clicked -= OnPlayClicked;
             if (_mapSelector != null) _mapSelector.clicked -= OnMapClicked;
             if (_settingsButton != null) _settingsButton.clicked -= OnSettingsClicked;
+            if (_skinsButton != null) _skinsButton.clicked -= OnSkinsClicked;
+            
+            UnsubscribeEvents();
             _localizationManager?.UnregisterAll(this);
             _buttonsInitialized = false;
+            
+            // Should we clear the lobby character on dispose? 
+            // Yes, if we leave the main menu (which calls Dispose on MainMenuState -> MainMenuView -> LobbyTabComponent)
+            _previewManager?.ClearLobbyCharacter();
         }
 
         private void RefreshRegionInfo()

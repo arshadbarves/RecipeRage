@@ -1,25 +1,58 @@
-<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" editor-extension-mode="False">
-    <Style src="project://database/Assets/Resources/UI/Styles/Screens/CharacterDetails.uss?fileID=7433441132597879392&amp;guid=a377e5a78a41b4608b6a4e451aaa0964&amp;type=3#CharacterDetails" />
-    <Style src="project://database/Assets/Resources/UI/Styles/Screens/Skins.uss?fileID=7433441132597879392&amp;guid=8c10812b05e234486a139274877d4a9e&amp;type=3#Skins" />
-    <Style src="project://database/Assets/Resources/UI/Styles/Core/DesignSystem.uss?fileID=7433441132597879392&amp;guid=74282f7acd0164afea4d8dc9dc05a968&amp;type=3#DesignSystem" />
-    <VisualElement name="character-details-root" class="character-details-root">
-        <VisualElement name="character-details-header" class="character-details-header">
-            <Button name="back-button" text="← BACK" class="back-button" />
-            <Label name="character-name" text="CHEF" class="character-details-title" />
-        </VisualElement>
-        <VisualElement name="character-details-content" class="character-details-content">
-            <VisualElement name="character-info-panel" class="character-info-panel">
-                <VisualElement name="character-preview-model" class="character-preview-model" />
-                <Label name="character-description" text="A balanced chef with the ability to instantly cook ingredients." class="character-description-text" />
-                <VisualElement name="character-stats" class="character-stats-container" />
-                <Button name="select-button" text="SELECT" class="select-character-button" />
+<UXML xmlns="UnityEngine.UIElements" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="../../Styles/Screens/CharacterScreen.uss" />
+    <VisualElement name="root" class="character-root details-root">
+        
+        <!-- Left Panel: Stats & Info -->
+        <VisualElement name="left-panel" class="panel-left">
+            <VisualElement>
+                <Button name="back-button" class="back-button back-btn-margin">
+                    <VisualElement class="icon-back" style="background-image: url('../../Icons/arrow-left.png');" />
+                </Button>
+                
+                <Label name="character-name" text="STRYKER" class="character-title character-name-large" />
+                <Label name="character-description" text="A tactical specialist..." class="character-desc" />
+                
+                <!-- Stats Container -->
+                <VisualElement name="character-stats" class="stats-container">
+                    <!-- Stats populated by code -->
+                </VisualElement>
             </VisualElement>
-            <VisualElement name="skins-panel" class="skins-panel">
-                <Label text="SKINS" class="skins-panel-title" />
-                <ScrollView name="skins-scroll" class="skins-scroll">
-                    <VisualElement name="skins-grid" class="skins-grid" />
-                </ScrollView>
+
+            <!-- Upgrade / Unlock Section -->
+            <VisualElement name="action-area" class="action-area-margin">
+                <VisualElement name="level-info" style="flex-direction: row; justify-content: space-between; margin-bottom: 15px; align-items: center;">
+                    <Label text="LEVEL" class="level-label" />
+                    <Label name="current-level-label" text="1" class="level-value" />
+                </VisualElement>
+                
+                <!-- Upgrade Button -->
+                <Button name="upgrade-button" class="action-button btn-upgrade">
+                    <Label text="UPGRADE" class="btn-label-lg" />
+                    <Label name="upgrade-cost-label" text="100 💰" class="btn-label-sm" />
+                </Button>
+
+                <!-- Unlock Button (Initially Hidden) -->
+                <Button name="unlock-character-button" class="action-button btn-unlock" style="display: none;">
+                    <Label text="UNLOCK" class="btn-label-lg" style="color: black;" />
+                    <Label name="unlock-cost-label" text="5000 💰" class="btn-label-sm" style="color: black;" />
+                </Button>
+                
+                <Button name="select-button" text="SELECT" class="action-button btn-select" style="margin-top: 10px;" />
             </VisualElement>
         </VisualElement>
+        
+        <!-- Center: Character Model -->
+        <VisualElement name="center-panel" class="panel-center">
+            <VisualElement name="character-preview-model" style="width: 100%; height: 90%; -unity-background-scale-mode: scale-to-fit;" />
+        </VisualElement>
+
+        <!-- Right Panel: Skins -->
+        <VisualElement name="right-panel" class="panel-right">
+             <Label text="SKINS" class="character-title skins-title" />
+             <ScrollView name="skins-scroll" style="width: 100%; height: 100%;">
+                <VisualElement name="skins-grid" class="skins-grid" />
+             </ScrollView>
+        </VisualElement>
+
     </VisualElement>
 </UXML>

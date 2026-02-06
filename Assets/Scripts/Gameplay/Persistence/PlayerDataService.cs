@@ -63,6 +63,31 @@ namespace Gameplay.Persistence
             OnProgressChanged?.Invoke(_progress);
         }
 
+        public int GetCharacterLevel(string characterId)
+        {
+            if (_progress.CharacterLevels.TryGetValue(characterId, out int level))
+            {
+                return level;
+            }
+            return 1; // Default level 1
+        }
+
+        public bool UpgradeCharacter(string characterId, int cost)
+        {
+            // Note: Caller is responsible for deducting currency via EconomyService
+            if (!_progress.CharacterLevels.ContainsKey(characterId))
+            {
+                _progress.CharacterLevels[characterId] = 1;
+            }
+
+            _progress.CharacterLevels[characterId]++;
+            SaveProgress();
+            OnProgressChanged?.Invoke(_progress);
+            
+            GameLogger.Log($"Upgraded character {characterId} to level {_progress.CharacterLevels[characterId]}");
+            return true;
+        }
+
         public void SetHighScore(string gameModeId, int score)
         {
             if (_progress.UpdateHighScore(gameModeId, score))

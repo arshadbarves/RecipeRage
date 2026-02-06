@@ -9,12 +9,14 @@ using Core.RemoteConfig;
 using Core.RemoteConfig.Interfaces;
 using Core.Shared.Events;
 using Core.UI.Interfaces;
+using static Core.Auth.AuthenticationService;
 
 namespace Gameplay.App.State.States
 {
     /// <summary>
     /// Initial state of the game. Handles the startup sequence using professional Task-Based Architecture.
     /// Steps: Splash -> Loading (Tasks) -> Main Menu / Login
+    /// Supports EOS Device Login for guest play (auto-login if previous DeviceID session exists).
     /// </summary>
     public class BootstrapState : BaseState
     {
@@ -132,13 +134,23 @@ namespace Gameplay.App.State.States
 
             bool isAuthenticated = _authService.IsSignedIn;
 
+            Exception autoLoginError = null;
             if (!isAuthenticated)
             {
                 string lastLogin = _saveService.GetSettings().LastLoginMethod;
-                if (!string.IsNullOrEmpty(lastLogin) && lastLogin == nameof(AuthType.DeviceID))
+                if (!string.IsNullOrEmpty(lastLogin) && lastLogin == LOGIN_METHOD_DEVICE_ID)
                 {
-                    GameLogger.Log("[Bootstrap] Attempting auto-login with DeviceID");
-                    isAuthenticated = await _authService.LoginAsync(AuthType.DeviceID);
+                    GameLogger.Log("[Bootstrap] Attempting auto-login with DeviceID (Guest)");
+                    try
+                    {
+                        isAuthenticated = await _authService.LoginAsync(AuthType.DeviceID);
+                    }
+                    catch (Exception ex)
+                    {
+                        GameLogger.LogError($"[Bootstrap] Auto-login failed: {ex.Message}");
+                        autoLoginError = ex;
+                        isAuthenticated = false;
+                    }
                 }
                 else
                 {
@@ -149,6 +161,14 @@ namespace Gameplay.App.State.States
             if (!isAuthenticated)
             {
                 _uiService.Hide<LoadingView>();
+
+                // If auto-login failed due to error (not just "no session"), could show error popup here
+                if (autoLoginError != null)
+                {
+                    GameLogger.LogWarning("[Bootstrap] Auto-login error detected - user will need to manually login");
+                    // TODO: Show error notification to user about connection issue
+                }
+
                 _stateManager.ChangeState<LoginState>();
                 return;
             }
