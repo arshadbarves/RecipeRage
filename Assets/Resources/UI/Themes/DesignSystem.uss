@@ -8,22 +8,22 @@
    ============================================ */
 :root {
     /* Primary Colors - Brawl Stars Style */
-    --color-card-bg: rgb(245, 240, 235);
+    --color-card-bg: rgb(30, 32, 37);
     --color-card-border: var(--color-black);
     --color-background-primary: rgb(100, 150, 255);
     --color-background-secondary: rgb(80, 180, 230);
 
     /* Accent Colors */
-    --color-accent-red: rgb(255, 100, 100);
+    --color-accent-red: rgb(255, 108, 149);
     --color-accent-green: rgb(100, 230, 150);
-    --color-accent-yellow: rgb(255, 200, 60);
+    --color-accent-yellow: rgb(255, 209, 108);
     --color-accent-blue: rgb(100, 201, 255);
     --color-accent-purple: rgb(150, 100, 230);
     --color-accent-orange: rgb(255, 180, 70);
     --color-accent-pink: rgb(255, 150, 200);
 
     /* Text Colors */
-    --color-text-primary: var(--color-black);
+    --color-text-primary: rgb(15, 17, 21);
     --color-text-secondary: rgb(245, 240, 235);
     --color-text-light: rgb(255, 255, 255);
     --color-text-muted: rgb(120, 110, 105);

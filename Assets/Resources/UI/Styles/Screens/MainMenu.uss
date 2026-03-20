@@ -19,7 +19,7 @@
 .wallet-pill {
     flex-direction: row;
     align-items: center;
-    background-color: rgba(0, 0, 0, 0.45);
+    background-color: var(--color-card-bg);
     border-width: 2.5px;
     border-color: var(--glass-border);
     border-radius: var(--radius-md);
@@ -83,7 +83,7 @@
 .main-tabs .unity-tab-view__header-container {
     flex-direction: row;
     align-items: center;
-    background-color: rgba(0, 0, 0, 0.45);
+    background-color: rgba(26, 28, 32, 0.45);
     border-width: 2.5px;
     border-color: var(--glass-border);
     border-radius: var(--radius-lg);
