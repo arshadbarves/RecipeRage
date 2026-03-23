@@ -24,6 +24,13 @@ namespace Gameplay.UI
 
         private VisualElement _leftJoystick;
         private VisualElement _rightJoystick;
+        private EventCallback<ClickEvent> _closeClick;
+        private EventCallback<ClickEvent> _resetClick;
+        private EventCallback<ClickEvent> _saveClick;
+        private EventCallback<ChangeEvent<float>> _sizeChanged;
+        private EventCallback<ChangeEvent<float>> _opacityChanged;
+        private EventCallback<ChangeEvent<float>> _deadZoneChanged;
+        private EventCallback<ChangeEvent<bool>> _fixedToggleChanged;
 
         public float JoystickSize { get; set; } = 1.0f;
         public float JoystickOpacity { get; set; } = 0.7f;
@@ -69,20 +76,32 @@ namespace Gameplay.UI
 
         private void SetupEventHandlers()
         {
-            _closeButton?.RegisterCallback<ClickEvent>(_ => HandleCloseClicked());
-            _resetButton?.RegisterCallback<ClickEvent>(_ => HandleResetClicked());
-            _saveButton?.RegisterCallback<ClickEvent>(_ => HandleSaveClicked());
-            _joystickSizeSlider?.RegisterValueChangedCallback(evt => HandleSizeChanged(evt.newValue));
-            _joystickOpacitySlider?.RegisterValueChangedCallback(evt => HandleOpacityChanged(evt.newValue));
-            _deadZoneSlider?.RegisterValueChangedCallback(evt => HandleDeadZoneChanged(evt.newValue));
-            _fixedJoystickToggle?.RegisterValueChangedCallback(evt => HandleFixedToggleChanged(evt.newValue));
+            _closeClick = _ => HandleCloseClicked();
+            _resetClick = _ => HandleResetClicked();
+            _saveClick = _ => HandleSaveClicked();
+            _sizeChanged = evt => HandleSizeChanged(evt.newValue);
+            _opacityChanged = evt => HandleOpacityChanged(evt.newValue);
+            _deadZoneChanged = evt => HandleDeadZoneChanged(evt.newValue);
+            _fixedToggleChanged = evt => HandleFixedToggleChanged(evt.newValue);
+
+            _closeButton?.RegisterCallback(_closeClick);
+            _resetButton?.RegisterCallback(_resetClick);
+            _saveButton?.RegisterCallback(_saveClick);
+            _joystickSizeSlider?.RegisterValueChangedCallback(_sizeChanged);
+            _joystickOpacitySlider?.RegisterValueChangedCallback(_opacityChanged);
+            _deadZoneSlider?.RegisterValueChangedCallback(_deadZoneChanged);
+            _fixedJoystickToggle?.RegisterValueChangedCallback(_fixedToggleChanged);
         }
 
         private void UnregisterEventHandlers()
         {
-            _closeButton?.UnregisterCallback<ClickEvent>(_ => HandleCloseClicked());
-            _resetButton?.UnregisterCallback<ClickEvent>(_ => HandleResetClicked());
-            _saveButton?.UnregisterCallback<ClickEvent>(_ => HandleSaveClicked());
+            if (_closeClick != null) _closeButton?.UnregisterCallback(_closeClick);
+            if (_resetClick != null) _resetButton?.UnregisterCallback(_resetClick);
+            if (_saveClick != null) _saveButton?.UnregisterCallback(_saveClick);
+            if (_sizeChanged != null) _joystickSizeSlider?.UnregisterValueChangedCallback(_sizeChanged);
+            if (_opacityChanged != null) _joystickOpacitySlider?.UnregisterValueChangedCallback(_opacityChanged);
+            if (_deadZoneChanged != null) _deadZoneSlider?.UnregisterValueChangedCallback(_deadZoneChanged);
+            if (_fixedToggleChanged != null) _fixedJoystickToggle?.UnregisterValueChangedCallback(_fixedToggleChanged);
         }
 
         public JoystickEditorUI ConfigureSettings(float size, float opacity, float deadZone, bool fixedPosition)

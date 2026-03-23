@@ -12,7 +12,7 @@ namespace Gameplay.UI.Features.User
 {
     public class UsernameViewModel : BaseViewModel
     {
-        private readonly SessionManager _sessionManager;
+        private readonly ISessionContext _sessionContext;
         private readonly IUIService _uiService;
 
         public BindableProperty<string> Username { get; } = new BindableProperty<string>("");
@@ -28,13 +28,13 @@ namespace Gameplay.UI.Features.User
         private bool _isFirstTime = false;
         private Action<string> _onConfirmCallback;
 
-        private EconomyService EconomyService => _sessionManager?.SessionContainer?.Resolve<EconomyService>();
-        private PlayerDataService PlayerDataService => _sessionManager?.SessionContainer?.Resolve<PlayerDataService>();
+        private EconomyService EconomyService => _sessionContext?.EconomyService;
+        private PlayerDataService PlayerDataService => _sessionContext?.PlayerDataService;
 
         [Inject]
-        public UsernameViewModel(SessionManager sessionManager, IUIService uiService)
+        public UsernameViewModel(ISessionContext sessionContext, IUIService uiService)
         {
-            _sessionManager = sessionManager;
+            _sessionContext = sessionContext;
             _uiService = uiService;
         }
 

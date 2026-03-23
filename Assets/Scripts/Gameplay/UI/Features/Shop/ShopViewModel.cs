@@ -9,16 +9,16 @@ namespace Gameplay.UI.Features.Shop
 {
     public class ShopViewModel : BaseViewModel
     {
-        private readonly SessionManager _sessionManager;
-        private EconomyService EconomyService => _sessionManager.SessionContainer?.Resolve<EconomyService>();
+        private readonly ISessionContext _sessionContext;
+        private EconomyService EconomyService => _sessionContext.EconomyService;
 
         public BindableProperty<string> CoinsText { get; } = new BindableProperty<string>("0");
         public BindableProperty<string> GemsText { get; } = new BindableProperty<string>("0");
 
         [Inject]
-        public ShopViewModel(SessionManager sessionManager)
+        public ShopViewModel(ISessionContext sessionContext)
         {
-            _sessionManager = sessionManager;
+            _sessionContext = sessionContext;
         }
 
         public override void Initialize()

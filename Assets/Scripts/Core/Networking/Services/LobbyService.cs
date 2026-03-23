@@ -86,6 +86,18 @@ namespace Core.Networking.Services
             GameLogger.Log("Initialized");
         }
 
+        public void Dispose()
+        {
+            UnsubscribeFromLobbyNotifications();
+            if (_teamManager is TeamManager concreteTeamManager)
+            {
+                concreteTeamManager.Clear();
+            }
+            CurrentPartyLobby = null;
+            CurrentMatchLobby = null;
+            _isInitialized = false;
+        }
+
         #endregion
 
         #region Party Lobby Methods
@@ -661,7 +673,7 @@ namespace Core.Networking.Services
                             lobbyInfo.MapName = value;
                             break;
                         case "TeamSize":
-                            lobbyInfo.TeamSize = int.TryParse(value, out var teamSize) ? teamSize : 4;
+                            lobbyInfo.TeamSize = int.TryParse(value, out var teamSize) ? teamSize : 2;
                             break;
                         case "Status":
                             lobbyInfo.Status = value;
@@ -762,9 +774,43 @@ namespace Core.Networking.Services
         /// </summary>
         private void UpdateLobbyAttribute(string lobbyId, string key, string value)
         {
-            var config = new LobbyConfig();
-            config.CustomAttributes[key] = value;
-            SetLobbyAttributes(lobbyId, config);
+            UpdateLobbyAttributeValue(lobbyId, key, value);
+        }
+
+        private void UpdateLobbyAttributeValue(string lobbyId, string key, string value)
+        {
+            var localUserId = EOSManager.Instance.GetProductUserId();
+            var modOptions = new UpdateLobbyModificationOptions
+            {
+                LobbyId = lobbyId,
+                LocalUserId = localUserId
+            };
+
+            var lobbyInterface = EOSManager.Instance.GetEOSLobbyInterface();
+            Result result = lobbyInterface.UpdateLobbyModification(ref modOptions, out LobbyModification modification);
+
+            if (result != Result.Success || modification == null)
+            {
+                GameLogger.LogError($"Failed to create lobby modification for attribute update: {result}");
+                return;
+            }
+
+            AddLobbyAttribute(modification, key, value);
+
+            var updateOptions = new UpdateLobbyOptions
+            {
+                LobbyModificationHandle = modification
+            };
+
+            lobbyInterface.UpdateLobby(ref updateOptions, null, (ref UpdateLobbyCallbackInfo data) =>
+            {
+                if (data.ResultCode != Result.Success)
+                {
+                    GameLogger.LogError($"Failed to update lobby attribute {key}: {data.ResultCode}");
+                }
+
+                modification.Release();
+            });
         }
 
         /// <summary>
@@ -789,6 +835,32 @@ namespace Core.Networking.Services
             _lobbyInviteAcceptedNotification = lobbyInterface.AddNotifyLobbyInviteAccepted(ref inviteOptions, null, OnLobbyInviteAccepted);
 
             GameLogger.Log("Subscribed to lobby notifications");
+        }
+
+        private void UnsubscribeFromLobbyNotifications()
+        {
+            if (EOSManager.Instance == null) return;
+
+            var lobbyInterface = EOSManager.Instance.GetEOSLobbyInterface();
+            if (lobbyInterface == null) return;
+
+            if (_lobbyUpdateNotification != 0)
+            {
+                lobbyInterface.RemoveNotifyLobbyUpdateReceived(_lobbyUpdateNotification);
+                _lobbyUpdateNotification = 0;
+            }
+
+            if (_lobbyMemberUpdateNotification != 0)
+            {
+                lobbyInterface.RemoveNotifyLobbyMemberUpdateReceived(_lobbyMemberUpdateNotification);
+                _lobbyMemberUpdateNotification = 0;
+            }
+
+            if (_lobbyInviteAcceptedNotification != 0)
+            {
+                lobbyInterface.RemoveNotifyLobbyInviteAccepted(_lobbyInviteAcceptedNotification);
+                _lobbyInviteAcceptedNotification = 0;
+            }
         }
 
         /// <summary>

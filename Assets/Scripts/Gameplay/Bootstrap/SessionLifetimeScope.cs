@@ -5,9 +5,6 @@ using Core.Networking.Services;
 using Core.Networking.Interfaces;
 using Core.UI;
 using Core.UI.Interfaces;
-using Gameplay.Characters;
-using Gameplay.Economy;
-using Gameplay.Persistence;
 using PlayEveryWare.EpicOnlineServices;
 using PlayEveryWare.EpicOnlineServices.Samples;
 
@@ -29,19 +26,10 @@ namespace Gameplay.Bootstrap
             builder.Register(r => r.Resolve<INetworkingServices>().PlayerManager, Lifetime.Singleton).As<IPlayerManager>();
             builder.Register(r => r.Resolve<INetworkingServices>().MatchmakingService, Lifetime.Singleton).As<IMatchmakingService>();
             builder.Register(r => r.Resolve<INetworkingServices>().TeamManager, Lifetime.Singleton).As<ITeamManager>();
+            builder.Register(r => r.Resolve<INetworkingServices>().GameStarter, Lifetime.Singleton).As<IGameStarter>();
 
             // EOS Lobby Manager (Wrapper for EOS SDK)
             builder.Register(resolver => EOSManager.Instance.GetOrCreateManager<EOSLobbyManager>(), Lifetime.Scoped); // todo: need to use this
-
-            // UI Stack Manager
-            builder.Register<UIScreenStackManager>(Lifetime.Singleton).As<IUIScreenStackManager>();
-
-            // 2. Economy & Player Data (Game Layer Services)
-            builder.Register<EconomyService>(Lifetime.Singleton);
-            builder.Register<PlayerDataService>(Lifetime.Singleton);
-
-            // 3. Gameplay Services
-            builder.Register<CharacterService>(Lifetime.Singleton).As<ICharacterService>().As<System.IDisposable>();
         }
     }
 }

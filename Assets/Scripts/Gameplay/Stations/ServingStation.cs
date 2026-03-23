@@ -3,11 +3,13 @@ using Core.Logging;
 using Core.Shared.Events;
 using Gameplay.Characters;
 using Gameplay.Cooking;
+using Gameplay.Match;
 using Gameplay.Scoring;
 using Gameplay.Shared.Events;
 using Unity.Netcode;
 using UnityEngine;
 using VContainer;
+using VContainer.Unity;
 
 namespace Gameplay.Stations
 {
@@ -27,18 +29,14 @@ namespace Gameplay.Stations
         private NetworkScoreManager _scoreManager;
 
         [Inject] private IEventBus _eventBus;
-        /// </summary>
+        [Inject] private IOrderService _orderService;
         private IDishValidator _validator;
-
-        /// <summary>
-        /// Round timer for time bonus calculation.
-        /// </summary>
-        private RoundTimer _roundTimer;
 
         /// <summary>
         /// Initialize the serving station.
         /// </summary>
         [SerializeField] private int _teamId;
+        public int TeamId => _teamId;
         
         /// <summary>
         /// Reference to the linked sink station for this team.
@@ -48,6 +46,12 @@ namespace Gameplay.Stations
         protected override void Awake()
         {
             base.Awake();
+
+            LifetimeScope scope = LifetimeScope.Find<LifetimeScope>();
+            if (scope != null)
+            {
+                scope.Container.Inject(this);
+            }
 
             // Set station name
             _stationName = "Serving Station";
@@ -67,9 +71,7 @@ namespace Gameplay.Stations
 
             // Create dish validator
             _validator = new StandardDishValidator();
-
-            // Find round timer
-            _roundTimer = FindFirstObjectByType<RoundTimer>();
+            _orderService ??= new OrderService();
         }
 
         public override void OnNetworkSpawn()
@@ -107,147 +109,98 @@ namespace Gameplay.Stations
             if (player.IsHoldingObject())
             {
                 GameObject heldObject = player.GetHeldObject();
-                IngredientItem ingredientItem = heldObject.GetComponent<IngredientItem>();
+                PlateItem plate = heldObject.GetComponent<PlateItem>();
 
-                if (ingredientItem != null)
+                if (plate == null || plate.IngredientCount <= 0)
                 {
-                    // Take the ingredient (it is being served)
-                    player.DropObject();
-
-                    // Process the serving logic
-                    bool orderCompleted = ProcessServing(ingredientItem, player.OwnerClientId);
-
-                    // Show visual feedback
-                    if (orderCompleted)
-                    {
-                        ShowSuccessVisual();
-                        TriggerSuccessShakeClientRpc();
-                        GameLogger.Log($"Order completed! Player {player.OwnerClientId} earned points");
-                    }
-                    else
-                    {
-                        ShowFailureVisual();
-                        TriggerFailureShakeClientRpc();
-                        GameLogger.Log("Order failed - no matching order or invalid dish");
-                    }
-
-                    // Despawn the served item
-                    if (ingredientItem.NetworkObject != null && ingredientItem.NetworkObject.IsSpawned)
-                    {
-                        ingredientItem.NetworkObject.Despawn();
-                    }
+                    ShowFailureVisual();
+                    TriggerFailureShakeClientRpc();
+                    GameLogger.Log("Order failed - only assembled plates can be served");
+                    return;
                 }
-            }
-        }
 
-        /// <summary>
-        /// Process the serving of an item.
-        /// </summary>
-        private bool ProcessServing(IngredientItem ingredientItem, ulong playerId)
-        {
-            // Try to get plate component (for assembled dishes)
-            PlateItem plate = ingredientItem.GetComponent<PlateItem>();
-            int scoreAwarded = 0;
+                player.DropObject();
 
-            if (plate != null && plate.IngredientCount > 0)
-            {
-                // This is an assembled dish on a plate
-                return ProcessPlate(plate, playerId, out scoreAwarded);
-            }
-            else
-            {
-                // This is a single ingredient (simplified serving)
-                return ProcessSingleIngredient(ingredientItem, playerId, out scoreAwarded);
+                bool orderCompleted = ProcessPlate(plate, player.OwnerClientId, player.TeamId, out _);
+
+                if (orderCompleted)
+                {
+                    ShowSuccessVisual();
+                    TriggerSuccessShakeClientRpc();
+                    GameLogger.Log($"Order completed! Player {player.OwnerClientId} earned points");
+                }
+                else
+                {
+                    ShowFailureVisual();
+                    TriggerFailureShakeClientRpc();
+                    GameLogger.Log("Order failed - no matching order or invalid dish");
+                }
+
+                if (plate.NetworkObject != null && plate.NetworkObject.IsSpawned)
+                {
+                    plate.NetworkObject.Despawn();
+                }
             }
         }
 
         /// <summary>
         /// Process a plate with assembled ingredients.
         /// </summary>
-        private bool ProcessPlate(PlateItem plate, ulong playerId, out int scoreAwarded)
+        private bool ProcessPlate(PlateItem plate, ulong playerId, int teamId, out int scoreAwarded)
         {
             scoreAwarded = 0;
 
-            // Get the recipe for this plate
-            Recipe recipe = _orderManager?.GetRecipeById(plate.RecipeId);
-            if (recipe == null)
+            if (_orderManager == null || _validator == null || _orderService == null)
             {
-                GameLogger.LogWarning($"Recipe not found for plate (RecipeId: {plate.RecipeId})");
                 return false;
             }
 
-            // Get ingredients on the plate
-            List<IngredientItem> ingredients = plate.GetIngredients();
-
-            // Validate the dish
-            if (_validator != null && _validator.ValidateDish(ingredients, recipe))
-            {
-                // Calculate score with time bonus
-                float timeRemaining = _roundTimer != null ? _roundTimer.TimeRemaining : 0f;
-                scoreAwarded = _validator.CalculateScore(ingredients, recipe, timeRemaining);
-
-                // Get dish quality for bonus scoring
-                DishQuality quality = _validator.GetDishQuality(ingredients, recipe);
-
-                // Add score via NetworkScoreManager
-                if (_scoreManager != null)
-                {
-                    ScoreReason reason = quality == DishQuality.Perfect
-                        ? ScoreReason.PerfectDish
-                        : ScoreReason.DishCompleted;
-
-                    _scoreManager.AddScoreServerRpc(playerId, scoreAwarded, reason);
-                }
-
-                // Complete the order
-                if (_orderManager != null)
-                {
-                    _orderManager.CompleteOrder(plate.RecipeId);
-                }
-
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Process a single ingredient (simplified serving).
-        /// </summary>
-        private bool ProcessSingleIngredient(IngredientItem ingredientItem, ulong playerId, out int scoreAwarded)
-        {
-            scoreAwarded = 0;
-
-            // Get all active orders
-            IReadOnlyList<RecipeOrderState> activeOrders = _orderManager?.GetActiveOrders();
+            IReadOnlyList<RecipeOrderState> activeOrders = _orderManager.GetActiveOrders();
             if (activeOrders == null || activeOrders.Count == 0)
             {
                 return false;
             }
 
-            // Try to match with any order (simplified logic)
-            foreach (RecipeOrderState order in activeOrders)
+            List<IngredientItem> ingredients = plate.GetIngredients();
+            if (ingredients.Count == 0)
             {
-                Recipe recipe = _orderManager.GetRecipeById(order.RecipeId);
-                if (recipe != null)
-                {
-                    // Award base points for any ingredient served
-                    scoreAwarded = recipe.PointValue / 2; // Half points for incomplete dish
-
-                    // Add score
-                    if (_scoreManager != null)
-                    {
-                        _scoreManager.AddScoreServerRpc(playerId, scoreAwarded, ScoreReason.DishCompleted);
-                    }
-
-                    // Complete the order
-                    _orderManager.CompleteOrder(order.OrderId);
-
-                    return true;
-                }
+                return false;
             }
 
-            return false;
+            bool matchedOrder = _orderService.TryGetBestActiveOrder(
+                activeOrders,
+                order =>
+                {
+                    Recipe candidateRecipe = _orderManager.GetRecipeById(order.RecipeId);
+                    return candidateRecipe != null && _validator.ValidateDish(ingredients, candidateRecipe);
+                },
+                out RecipeOrderState orderToComplete);
+
+            if (!matchedOrder)
+            {
+                return false;
+            }
+
+            Recipe recipe = _orderManager.GetRecipeById(orderToComplete.RecipeId);
+            if (recipe == null)
+            {
+                return false;
+            }
+
+            float timeRemaining = _orderService.GetRemainingTime(orderToComplete, Time.time);
+            scoreAwarded = _validator.CalculateScore(ingredients, recipe, timeRemaining);
+            DishQuality quality = _validator.GetDishQuality(ingredients, recipe);
+
+            if (_scoreManager != null)
+            {
+                ScoreReason reason = quality == DishQuality.Perfect
+                    ? ScoreReason.PerfectDish
+                    : ScoreReason.DishCompleted;
+
+                _scoreManager.AddScoreServerRpc(playerId, scoreAwarded, reason);
+            }
+
+            return _orderManager.CompleteOrder(orderToComplete.OrderId, teamId, scoreAwarded);
         }
 
         /// <summary>

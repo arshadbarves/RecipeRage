@@ -50,24 +50,34 @@ namespace Gameplay.App.State.States
             _eventBus = eventBus;
         }
 
-        public override async void Enter()
+        public override void Enter()
         {
             base.Enter();
+            EnterAsync().Forget();
+        }
+
+        private async UniTask EnterAsync()
+        {
             GameLogger.Log("Entering game initialization setup");
 
             try
             {
                 // 1. Show Splash
                 await ShowSplashViewAsync();
+                if (!IsStateActive) return;
 
                 // 2. Start Loading Sequence
-                _uiService.Show<LoadingView>();
+                _uiService.ShowOverlay<LoadingView>();
                 await InitializeGameSequence();
+            }
+            catch (OperationCanceledException)
+            {
+                GameLogger.Log("[BootstrapState] Enter cancelled");
             }
             catch (Exception ex)
             {
                 GameLogger.LogException(ex);
-                _uiService.Hide<LoadingView>();
+                _uiService.HideOverlay<LoadingView>();
                 _stateManager.ChangeState<LoginState>();
             }
         }
@@ -83,17 +93,20 @@ namespace Gameplay.App.State.States
             // NTP Sync
             try
             {
-                var cts = new System.Threading.CancellationTokenSource();
+                using var cts = new System.Threading.CancellationTokenSource();
                 cts.CancelAfter(TimeSpan.FromSeconds(5.0f));
                 await _ntpTimeService.SyncTime().AttachExternalCancellation(cts.Token).SuppressCancellationThrow();
             }
             catch { /* Ignore NTP errors */ }
+            if (!IsStateActive) return;
 
             loadingScreen?.UpdateProgress(0.2f, "Loading Configuration...");
             await _remoteConfigService.Initialize();
+            if (!IsStateActive) return;
             
             loadingScreen?.UpdateProgress(0.25f, "Preparing Identity...");
             await _authService.InitializeAsync();
+            if (!IsStateActive) return;
 
             // --- STEP 1.5: System Checks (Pre-Login) ---
             // These checks must pass before we allow any login (auto or manual).
@@ -101,16 +114,18 @@ namespace Gameplay.App.State.States
             // 1. Refresh Remote Config
             loadingScreen?.UpdateProgress(0.25f, "Syncing Configuration...");
             await _remoteConfigService.RefreshConfig();
+            if (!IsStateActive) return;
 
             // 2. Force Update Check
             loadingScreen?.UpdateProgress(0.3f, "Checking for Updates...");
             var forceUpdateChecker = new ForceUpdateChecker(_remoteConfigService, _eventBus);
             bool isUpdateRequired = await forceUpdateChecker.CheckForUpdateAsync();
+            if (!IsStateActive) return;
 
             if (isUpdateRequired)
             {
                 GameLogger.LogInfo("[Bootstrap] Force update required. Halting boot sequence.");
-                _uiService.Hide<LoadingView>();
+                _uiService.HideOverlay<LoadingView>();
 
                 // TODO: Show Force Upgrade Popup, Move the Logic to show from the Core itself liek using Interface or something.
                 // The ForceUpdateChecker publishes an event that should show the Update Popup.
@@ -128,6 +143,7 @@ namespace Gameplay.App.State.States
                 // If maintenance is strict, we might need a return value, but usually it pops a screen.
                 await _maintenanceService.CheckMaintenanceStatusAsync();
             }
+            if (!IsStateActive) return;
 
             // --- STEP 2: Authentication (40% - 70%) ---
             loadingScreen?.UpdateProgress(0.4f, "Authenticating...");
@@ -157,10 +173,11 @@ namespace Gameplay.App.State.States
                     GameLogger.Log("[Bootstrap] No last login found, skipping auto-login");
                 }
             }
+            if (!IsStateActive) return;
 
             if (!isAuthenticated)
             {
-                _uiService.Hide<LoadingView>();
+                _uiService.HideOverlay<LoadingView>();
 
                 // If auto-login failed due to error (not just "no session"), could show error popup here
                 if (autoLoginError != null)
@@ -182,10 +199,10 @@ namespace Gameplay.App.State.States
 
         private async UniTask ShowSplashViewAsync()
         {
-            _uiService.Show<SplashView>();
-            await UniTask.Delay(TimeSpan.FromSeconds(SplashDuration));
-            _uiService.Hide<SplashView>();
-            await UniTask.Delay(500);
+            _uiService.ShowSystem<SplashView>();
+            await UniTask.Delay(TimeSpan.FromSeconds(SplashDuration), cancellationToken: StateCancellationToken);
+            _uiService.HideSystem<SplashView>();
+            await UniTask.Delay(500, cancellationToken: StateCancellationToken);
         }
     }
 }

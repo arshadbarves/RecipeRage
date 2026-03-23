@@ -10,11 +10,12 @@ using UnityEngine.UIElements;
 namespace Gameplay.UI.Features.System
 {
     /// <summary>
-    /// Persistent notification view for toasts and messages
+    /// Toast host for queued notifications and transient system messages
     /// </summary>
-    [UIScreen(UIScreenCategory.Persistent, "Popups/NotificationTemplate")]
+    [UIScreen(UIScreenCategory.Toast, "Popups/NotificationTemplate")]
     public class NotificationView : BaseUIScreen, INotificationScreen
     {
+        private VisualElement _hostRoot;
         private VisualElement _notificationContainer;
         private VisualTreeAsset _toastTemplate;
         private readonly Queue<NotificationRequest> _queue = new();
@@ -22,8 +23,14 @@ namespace Gameplay.UI.Features.System
 
         protected override void OnInitialize()
         {
+            _hostRoot = GetElement<VisualElement>("screen-container");
             _notificationContainer = GetElement<VisualElement>("notification-container");
             _toastTemplate = Resources.Load<VisualTreeAsset>("UI/Templates/Components/NotificationToast");
+
+            if (Container != null) Container.pickingMode = PickingMode.Ignore;
+            if (TemplateContainer != null) TemplateContainer.pickingMode = PickingMode.Ignore;
+            if (_hostRoot != null) _hostRoot.pickingMode = PickingMode.Ignore;
+            if (_notificationContainer != null) _notificationContainer.pickingMode = PickingMode.Ignore;
         }
 
         public async UniTask Show(string message, NotificationType type, float duration)
@@ -47,6 +54,11 @@ namespace Gameplay.UI.Features.System
                 await ShowNotification(request);
             }
             _isShowing = false;
+
+            if (IsVisible)
+            {
+                Hide(false);
+            }
         }
 
         private async UniTask ShowNotification(NotificationRequest request)
@@ -54,14 +66,29 @@ namespace Gameplay.UI.Features.System
             if (_notificationContainer == null || _toastTemplate == null) return;
 
             var toast = _toastTemplate.CloneTree();
-            var root = toast.Q<VisualElement>("toast-root");
-            var titleLabel = toast.Q<Label>("toast-title");
-            var messageLabel = toast.Q<Label>("toast-message");
+            var root = toast.Q<VisualElement>("notification-toast");
+            var messageLabel = toast.Q<Label>("notification-message");
+            var closeButton = toast.Q<Button>("close-button");
 
-            if (titleLabel != null) titleLabel.text = request.Title ?? "";
-            if (messageLabel != null) messageLabel.text = request.Message;
+            if (root == null || messageLabel == null)
+            {
+                return;
+            }
 
-            root.AddToClassList(request.Type.ToString().ToLower());
+            if (messageLabel != null)
+            {
+                messageLabel.text = string.IsNullOrWhiteSpace(request.Title)
+                    ? request.Message
+                    : $"{request.Title}\n{request.Message}";
+            }
+
+            if (closeButton != null)
+            {
+                closeButton.style.display = DisplayStyle.None;
+            }
+
+            root.pickingMode = PickingMode.Ignore;
+            root.AddToClassList(request.Type.ToString().ToLowerInvariant());
             _notificationContainer.Add(root);
 
             // Simple animation

@@ -1,56 +1,71 @@
+using System;
 using Cysharp.Threading.Tasks;
 using Gameplay.UI.Features.MainMenu;
 using Gameplay.UI.Features.User;
 using Gameplay.UI.Features.Loading;
-using Gameplay.Persistence;
 using Core.Logging;
 using Core.UI.Interfaces;
 using Core.Session;
 using UnityEngine.SceneManagement;
-using VContainer;
-
 namespace Gameplay.App.State.States
 {
     public class MainMenuState : BaseState
     {
         private readonly IUIService _uiService;
-        private readonly SessionManager _sessionManager;
+        private readonly ISessionContext _sessionContext;
 
-        public MainMenuState(IUIService uiService, SessionManager sessionManager)
+        public MainMenuState(IUIService uiService, ISessionContext sessionContext)
         {
             _uiService = uiService;
-            _sessionManager = sessionManager;
+            _sessionContext = sessionContext;
         }
 
-        public override async void Enter()
+        public override void Enter()
         {
             base.Enter();
-
-            // Load MainMenu scene if needed
-            if (SceneManager.GetActiveScene().name != GameConstants.Scenes.MainMenu)
-            {
-                await SceneManager.LoadSceneAsync(GameConstants.Scenes.MainMenu).ToUniTask();
-            }
-
-            // Update loading to 100% and hide it
-            var loadingScreen = _uiService.GetScreen<LoadingView>();
-            loadingScreen?.UpdateProgress(1.0f, "Welcome!");
-
-            // Show MainMenu UI
-            _uiService?.Show<MainMenuView>(false, true);
-
-            await UniTask.Delay(1500);
-            _uiService?.Hide<LoadingView>();
-
-            // Check for first-time username
-            CheckAndShowUsernamePopupAsync();
+            EnterAsync().Forget();
         }
 
-        private async void CheckAndShowUsernamePopupAsync()
+        private async UniTask EnterAsync()
         {
-            if (_sessionManager?.IsSessionActive != true || _uiService == null) return;
+            try
+            {
+                // Load MainMenu scene if needed
+                if (SceneManager.GetActiveScene().name != GameConstants.Scenes.MainMenu)
+                {
+                    await SceneManager.LoadSceneAsync(GameConstants.Scenes.MainMenu).ToUniTask();
+                }
+                if (!IsStateActive) return;
 
-            var playerDataService = _sessionManager.SessionContainer?.Resolve<PlayerDataService>();
+                // Update loading to 100% and hide it
+                var loadingScreen = _uiService.GetScreen<LoadingView>();
+                loadingScreen?.UpdateProgress(1.0f, "Welcome!");
+
+                // Show MainMenu UI
+                _uiService?.SetRootScreen<MainMenuView>(false);
+
+                await UniTask.Delay(1500, cancellationToken: StateCancellationToken);
+                if (!IsStateActive) return;
+                _uiService?.HideOverlay<LoadingView>();
+
+                // Check for first-time username
+                await CheckAndShowUsernamePopupAsync();
+            }
+            catch (OperationCanceledException)
+            {
+                GameLogger.Log("[MainMenuState] Enter cancelled");
+            }
+            catch (Exception ex)
+            {
+                GameLogger.LogException(ex);
+            }
+        }
+
+        private async UniTask CheckAndShowUsernamePopupAsync()
+        {
+            if (!_sessionContext.IsSessionActive || _uiService == null) return;
+
+            var playerDataService = _sessionContext.PlayerDataService;
             if (playerDataService == null) return;
 
             var stats = playerDataService.GetStats();
@@ -59,7 +74,8 @@ namespace Gameplay.App.State.States
             {
                 GameLogger.Log("First time user - showing mandatory username popup");
 
-                await UniTask.Delay(500);
+                await UniTask.Delay(500, cancellationToken: StateCancellationToken);
+                if (!IsStateActive) return;
 
                 var usernamePopup = _uiService.GetScreen<UsernamePopup>();
                 if (usernamePopup != null)

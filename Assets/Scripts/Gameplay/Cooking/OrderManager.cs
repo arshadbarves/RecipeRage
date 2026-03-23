@@ -125,16 +125,19 @@ namespace Gameplay.Cooking
             }
 
             Recipe recipe = _availableRecipes[Random.Range(0, _availableRecipes.Count)];
+            float timeLimit = recipe.BaseTimeLimit * GetDifficultyMultiplier(recipe.Difficulty);
 
             var orderState = new RecipeOrderState
             {
                 RecipeId = recipe.Id,
                 OrderId = _nextOrderId++,
                 CreationTime = Time.time,
-                TimeLimit = recipe.BaseTimeLimit * GetDifficultyMultiplier(recipe.Difficulty),
+                TimeLimit = timeLimit,
+                RemainingTime = timeLimit,
                 IsCompleted = false,
                 IsExpired = false,
-                PointValue = recipe.PointValue
+                PointValue = recipe.PointValue,
+                CompletedByTeamId = -1
             };
 
             _activeOrders.Add(orderState);
@@ -156,7 +159,9 @@ namespace Gameplay.Cooking
                     continue;
                 }
 
-                if (Time.time - order.CreationTime >= order.TimeLimit)
+                order.RemainingTime = Mathf.Max(0f, order.TimeLimit - (Time.time - order.CreationTime));
+
+                if (order.RemainingTime <= 0f)
                 {
                     order.IsExpired = true;
                     _activeOrders[i] = order;
@@ -173,6 +178,14 @@ namespace Gameplay.Cooking
         /// <returns> True if the order was completed successfully, false otherwise. </returns>
         public bool CompleteOrder(int orderId)
         {
+            return CompleteOrder(orderId, -1);
+        }
+
+        /// <summary>
+        /// Complete an order and capture authoritative completion metadata.
+        /// </summary>
+        public bool CompleteOrder(int orderId, int completedByTeamId, int awardedPoints = -1)
+        {
             if (!IsServer)
             {
                 GameLogger.LogWarning("Only the server can complete orders.");
@@ -186,6 +199,12 @@ namespace Gameplay.Cooking
                 if (order.OrderId == orderId && !order.IsCompleted && !order.IsExpired)
                 {
                     order.IsCompleted = true;
+                    order.CompletedByTeamId = completedByTeamId;
+                    order.RemainingTime = Mathf.Max(0f, order.TimeLimit - (Time.time - order.CreationTime));
+                    if (awardedPoints >= 0)
+                    {
+                        order.PointValue = awardedPoints;
+                    }
                     _activeOrders[i] = order;
 
                     GameLogger.Log($"Order completed: ID {order.OrderId}");

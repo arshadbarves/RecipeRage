@@ -47,6 +47,7 @@ namespace Core.UI
             Container.name = $"screen-{ScreenType.Name.ToLower()}";
             Container.AddToClassList("ui-screen");
             Container.AddToClassList($"ui-screen--{ScreenType.Name.ToLower()}");
+            Container.pickingMode = PickingMode.Ignore;
 
             // Set initial state - FULL SCREEN COVERAGE
             Container.style.display = DisplayStyle.None;
@@ -73,6 +74,7 @@ namespace Core.UI
             try
             {
                 TemplateContainer = _template.Instantiate();
+                TemplateContainer.pickingMode = PickingMode.Ignore;
 
                 // Ensure template instance fills the container
                 TemplateContainer.style.width = Length.Percent(100);

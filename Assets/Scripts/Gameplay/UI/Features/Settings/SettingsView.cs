@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System;
 using Core.UI;
 using Core.UI.Interfaces;
 using Gameplay.UI.Extensions;
@@ -8,7 +9,6 @@ using UnityEngine.UIElements;
 using VContainer;
 using Core.Auth;
 using Core.Session;
-using Gameplay.Persistence;
 
 using Core.UI.Core;
 
@@ -18,7 +18,7 @@ namespace Gameplay.UI.Features.Settings
     public class SettingsView : BaseUIScreen
     {
         [Inject] private SettingsViewModel _viewModel;
-        [Inject] private SessionManager _sessionManager;
+        [Inject] private ISessionContext _sessionContext;
         [Inject] private IAuthService _authService;
 
         private Slider _musicVolumeSlider;
@@ -35,6 +35,15 @@ namespace Gameplay.UI.Features.Settings
         private Label _accountUidLabel;
 
         private VisualElement _guestWarningBlock;
+        private Action<float> _musicVolumeBinding;
+        private Action<float> _sfxVolumeBinding;
+        private Action<bool> _vibrationBinding;
+        private Action<bool> _notificationsBinding;
+        private Action<bool> _muteBinding;
+        private Action<int> _graphicsBinding;
+        private Action<string> _languageBinding;
+        private Action<bool> _guestBinding;
+        private bool _isViewModelBound;
 
         [Inject] private Core.Localization.ILocalizationManager _localizationManager;
 
@@ -45,10 +54,12 @@ namespace Gameplay.UI.Features.Settings
             SetupValueChangeCallbacks();
             SetupButtons();
             BindLocalization();
+            BindViewModel();
         }
 
         protected override void OnDispose()
         {
+            UnbindViewModel();
             _localizationManager?.UnregisterAll(this);
         }
 
@@ -199,16 +210,15 @@ namespace Gameplay.UI.Features.Settings
         protected override void OnShow()
         {
             _viewModel.Initialize();
-            BindViewModel();
             UpdateAccountInfo();
             UpdateVersionInfo();
         }
 
         private void UpdateAccountInfo()
         {
-            if (_sessionManager?.IsSessionActive != true) return;
+            if (!_sessionContext.IsSessionActive) return;
 
-            var playerDataService = _sessionManager.SessionContainer?.Resolve<PlayerDataService>();
+            var playerDataService = _sessionContext.PlayerDataService;
             if (playerDataService != null)
             {
                 var stats = playerDataService.GetStats();
@@ -264,51 +274,78 @@ namespace Gameplay.UI.Features.Settings
 
         private void BindViewModel()
         {
-            _viewModel.MusicVolume.Bind(val =>
+            if (_viewModel == null || _isViewModelBound) return;
+
+            _musicVolumeBinding = val =>
             {
                 if (_musicVolumeSlider != null) _musicVolumeSlider.value = val;
                 UpdateVolumeLabel(_musicVolumeLabel, val);
                 AudioListener.volume = val;
-            });
+            };
 
-            _viewModel.SFXVolume.Bind(val =>
+            _sfxVolumeBinding = val =>
             {
                 if (_sfxVolumeSlider != null) _sfxVolumeSlider.value = val;
                 UpdateVolumeLabel(_sfxVolumeLabel, val);
-            });
+            };
 
-            _viewModel.VibrationEnabled.Bind(val =>
+            _vibrationBinding = val =>
             {
                 if (_vibrationToggle != null) _vibrationToggle.value = val;
-            });
+            };
 
-            _viewModel.NotificationsEnabled.Bind(val =>
+            _notificationsBinding = val =>
             {
                 if (_notificationsToggle != null) _notificationsToggle.value = val;
-            });
+            };
 
-            _viewModel.IsMuted.Bind(val =>
+            _muteBinding = val =>
             {
                 if (_muteToggle != null) _muteToggle.value = val;
-            });
+            };
 
-            _viewModel.GraphicsQuality.Bind(val =>
+            _graphicsBinding = val =>
             {
-               if (_qualityDropdown != null) _qualityDropdown.index = val;
-            });
+                if (_qualityDropdown != null) _qualityDropdown.index = val;
+            };
 
-            _viewModel.Language.Bind(val =>
+            _languageBinding = val =>
             {
                 if (_languageDropdown != null) _languageDropdown.value = val;
-            });
+            };
 
-            _viewModel.IsGuest.Bind(isGuest =>
+            _guestBinding = isGuest =>
             {
                 if (_guestWarningBlock != null)
                 {
                     _guestWarningBlock.style.display = isGuest ? DisplayStyle.Flex : DisplayStyle.None;
                 }
-            });
+            };
+
+            _viewModel.MusicVolume.Bind(_musicVolumeBinding);
+            _viewModel.SFXVolume.Bind(_sfxVolumeBinding);
+            _viewModel.VibrationEnabled.Bind(_vibrationBinding);
+            _viewModel.NotificationsEnabled.Bind(_notificationsBinding);
+            _viewModel.IsMuted.Bind(_muteBinding);
+            _viewModel.GraphicsQuality.Bind(_graphicsBinding);
+            _viewModel.Language.Bind(_languageBinding);
+            _viewModel.IsGuest.Bind(_guestBinding);
+            _isViewModelBound = true;
+        }
+
+        private void UnbindViewModel()
+        {
+            if (_viewModel == null || !_isViewModelBound) return;
+
+            _viewModel.MusicVolume.Unbind(_musicVolumeBinding);
+            _viewModel.SFXVolume.Unbind(_sfxVolumeBinding);
+            _viewModel.VibrationEnabled.Unbind(_vibrationBinding);
+            _viewModel.NotificationsEnabled.Unbind(_notificationsBinding);
+            _viewModel.IsMuted.Unbind(_muteBinding);
+            _viewModel.GraphicsQuality.Unbind(_graphicsBinding);
+            _viewModel.Language.Unbind(_languageBinding);
+            _viewModel.IsGuest.Unbind(_guestBinding);
+            _isViewModelBound = false;
         }
 
         private void SetupValueChangeCallbacks()

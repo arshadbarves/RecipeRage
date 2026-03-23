@@ -1,14 +1,15 @@
+using System;
 using Gameplay.Camera;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using UnityEngine.SceneManagement;
 using Core.Logging;
-using Core.Networking;
 using Core.UI.Interfaces;
 using Core.Session;
 using Core.Shared.Events;
 using Gameplay.Shared.Events;
 using Gameplay.GameModes;
+using Gameplay.UI.Features.Gameplay;
 using VContainer;
 
 namespace Gameplay.App.State.States
@@ -17,15 +18,15 @@ namespace Gameplay.App.State.States
     {
         private readonly IEventBus _eventBus;
         private readonly IUIService _uiService;
-        private readonly SessionManager _sessionManager;
+        private readonly ISessionContext _sessionContext;
         private readonly IGameModeService _gameModeService;
         private ICameraController _cameraController;
         private CameraShakeService _cameraShakeService;
 
-        public GameplayState(IUIService uiService, SessionManager sessionManager, IEventBus eventBus, IGameModeService gameModeService)
+        public GameplayState(IUIService uiService, ISessionContext sessionContext, IEventBus eventBus, IGameModeService gameModeService)
         {
             _uiService = uiService;
-            _sessionManager = sessionManager;
+            _sessionContext = sessionContext;
             _eventBus = eventBus;
             _gameModeService = gameModeService;
         }
@@ -42,6 +43,7 @@ namespace Gameplay.App.State.States
             base.Exit();
 
             UnsubscribeFromEvents();
+            _uiService?.HideHud<GameplayHudView>(false);
 
             // Unload map scene
             _gameModeService?.UnloadCurrentMapAsync().Forget();
@@ -102,46 +104,58 @@ namespace Gameplay.App.State.States
             }
         }
 
-        private async UniTaskVoid InitializeGameplayAsync()
+        private async UniTask InitializeGameplayAsync()
         {
-            // Load base Game scene if not already loaded
-            if (SceneManager.GetActiveScene().name != GameConstants.Scenes.Game)
+            try
             {
-                await SceneManager.LoadSceneAsync(GameConstants.Scenes.Game).ToUniTask();
-            }
-
-            // Initialize camera system AFTER scene loads
-            InitializeCameraSystem();
-
-            await UniTask.Yield();
-
-            // Load map scene additively based on selected game mode
-            if (!string.IsNullOrEmpty(_gameModeService?.SelectedGameMode?.MapSceneName))
-            {
-                GameLogger.Log($"Loading map scene: {_gameModeService.SelectedGameMode.MapSceneName}");
-                bool mapLoaded = await _gameModeService.LoadMapAsync(_gameModeService.SelectedGameMode.MapSceneName);
-
-                if (!mapLoaded)
+                // Load base Game scene if not already loaded
+                if (SceneManager.GetActiveScene().name != GameConstants.Scenes.Game)
                 {
-                    GameLogger.LogError($"Failed to load map: {_gameModeService.SelectedGameMode.MapSceneName}");
+                    await SceneManager.LoadSceneAsync(GameConstants.Scenes.Game).ToUniTask();
                 }
+                if (!IsStateActive) return;
+
+                // Initialize camera system AFTER scene loads
+                InitializeCameraSystem();
+
+                await UniTask.Yield(cancellationToken: StateCancellationToken);
+                if (!IsStateActive) return;
+
+                // Load map scene additively based on selected game mode
+                if (!string.IsNullOrEmpty(_gameModeService?.SelectedGameMode?.MapSceneName))
+                {
+                    GameLogger.Log($"Loading map scene: {_gameModeService.SelectedGameMode.MapSceneName}");
+                    bool mapLoaded = await _gameModeService.LoadMapAsync(_gameModeService.SelectedGameMode.MapSceneName);
+                    if (!IsStateActive) return;
+
+                    if (!mapLoaded)
+                    {
+                        GameLogger.LogError($"Failed to load map: {_gameModeService.SelectedGameMode.MapSceneName}");
+                    }
+                }
+                else
+                {
+                    GameLogger.LogWarning("No map scene specified in game mode");
+                }
+
+                await UniTask.Yield(cancellationToken: StateCancellationToken);
+                if (!IsStateActive) return;
+
+                // Start game via networking services
+                _sessionContext.GameStarter?.StartGame();
+
+                _uiService?.HideAllModals(false);
+                _uiService?.HideAllPopups(false);
+                _uiService?.ShowHud<GameplayHudView>(false);
             }
-            else
+            catch (OperationCanceledException)
             {
-                GameLogger.LogWarning("No map scene specified in game mode");
+                GameLogger.Log("[GameplayState] Initialization cancelled");
             }
-
-            await UniTask.Yield();
-
-            // Start game via networking services
-            var sessionContainer2 = _sessionManager?.SessionContainer;
-            if (sessionContainer2 != null)
+            catch (Exception ex)
             {
-                var networkingServices = sessionContainer2.Resolve<INetworkingServices>();
-                networkingServices?.GameStarter?.StartGame();
+                GameLogger.LogException(ex);
             }
-
-            _uiService?.HideAllScreens(true);
         }
 
         public override void Update()

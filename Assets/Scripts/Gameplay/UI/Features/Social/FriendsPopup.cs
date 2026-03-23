@@ -4,9 +4,7 @@ using Core.Networking.Interfaces;
 using Core.UI;
 using Core.UI.Core;
 using Core.UI.Interfaces;
-using Core.Networking;
 using Core.Session;
-// Added
 using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;
@@ -19,8 +17,7 @@ namespace Gameplay.UI.Features.Social
     [UIScreen(UIScreenCategory.Popup, "Popups/FriendsPopupTemplate")]
     public class FriendsPopup : BaseUIScreen
     {
-        [Inject]
-        private SessionManager _sessionManager;
+        [Inject] private ISessionContext _sessionContext;
 
         private Button _closeButton;
         private Button _refreshButton;
@@ -40,17 +37,8 @@ namespace Gameplay.UI.Features.Social
 
         protected override void OnInitialize()
         {
-            var sessionContainer = _sessionManager?.SessionContainer;
-            if (sessionContainer != null)
-            {
-                var networking = sessionContainer.Resolve<INetworkingServices>();
-                _friendsService = networking?.FriendsService;
-                _lobbyManager = networking?.LobbyManager;
-            }
-
             CacheUIElements();
             SetupButtons();
-            SubscribeToEvents();
 
             GameLogger.Log("Initialized");
         }
@@ -88,11 +76,33 @@ namespace Gameplay.UI.Features.Social
             }
         }
 
+        private void UnsubscribeFromEvents()
+        {
+            if (_friendsService != null)
+            {
+                _friendsService.OnFriendsListUpdated -= OnFriendsListUpdated;
+                _friendsService.OnFriendRequestReceived -= OnFriendRequestReceived;
+            }
+        }
+
         protected override void OnShow()
         {
+            ResolveServices();
+            SubscribeToEvents();
             UpdateMyCode();
             LoadFriendRequests();
             LoadFriends();
+        }
+
+        protected override void OnHide()
+        {
+            UnsubscribeFromEvents();
+        }
+
+        private void ResolveServices()
+        {
+            _friendsService = _sessionContext?.FriendsService;
+            _lobbyManager = _sessionContext?.LobbyManager;
         }
 
         private void UpdateMyCode()
@@ -222,11 +232,7 @@ namespace Gameplay.UI.Features.Social
 
         protected override void OnDispose()
         {
-            if (_friendsService != null)
-            {
-                _friendsService.OnFriendsListUpdated -= OnFriendsListUpdated;
-                _friendsService.OnFriendRequestReceived -= OnFriendRequestReceived;
-            }
+            UnsubscribeFromEvents();
         }
     }
 }

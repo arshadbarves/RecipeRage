@@ -1,148 +1,307 @@
-using Gameplay.Characters;
 using Core.Logging;
 using Core.Networking.Models;
+using Gameplay.Characters;
+using Gameplay.Cooking;
+using Gameplay.Stations;
 using Unity.Netcode;
 using UnityEngine;
 
 namespace Gameplay.Networking.Bot
 {
     /// <summary>
-    /// Controls bot behavior - simple AI for bot players
-    /// Attach this to the bot prefab (same prefab as PlayerController)
+    /// Server-authoritative task-driven bot controller.
     /// </summary>
     [RequireComponent(typeof(PlayerController))]
     public class BotController : NetworkBehaviour
     {
         [Header("Bot Settings")]
-        [SerializeField] private float _actionInterval = 2f; // Time between actions
-        [SerializeField] private float _moveRadius = 10f; // How far bot can move
-        [SerializeField] private bool _enableAI = true; // Toggle AI on/off
+        [SerializeField] private float _replanInterval = 0.4f;
+        [SerializeField] private float _interactionDistance = 1.15f;
+        [SerializeField] private float _moveSpeed = 3.5f;
+        [SerializeField] private float _stuckTimeout = 2.5f;
+        [SerializeField] private bool _enableAI = true;
 
         private BotPlayer _botData;
         private PlayerController _playerController;
-        private float _nextActionTime;
-        private Vector3 _targetPosition;
+        private readonly BotTaskPlanner _planner = new BotTaskPlanner();
+        private readonly BotKitchenSnapshot _snapshot = new BotKitchenSnapshot();
+        private readonly BotClaimRegistry _claimRegistry = BotClaimRegistry.Shared;
+
+        private BotTaskPlan _currentPlan;
+        private float _nextReplanTime;
+        private float _lastInteractionTime;
+        private Vector3 _lastPosition;
+        private float _stuckTimer;
         private bool _isInitialized;
 
-        /// <summary>
-        /// Initialize bot with data
-        /// </summary>
         public void Initialize(BotPlayer botData)
         {
             _botData = botData;
-            _isInitialized = true;
-
-            GameLogger.Log($"[BotController] Initialized bot: {botData.BotName}");
+            _isInitialized = botData != null;
+            GameLogger.Log($"[BotController] Initialized bot: {_botData?.BotName ?? "Unknown"}");
         }
 
         private void Awake()
         {
             _playerController = GetComponent<PlayerController>();
+            _lastPosition = transform.position;
         }
 
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
 
-            // Only server runs bot AI
             if (!IsServer)
             {
                 enabled = false;
                 return;
             }
 
-            // Set initial target
-            _targetPosition = GetRandomPosition();
-            _nextActionTime = Time.time + _actionInterval;
+            _nextReplanTime = Time.time;
+            _lastInteractionTime = Time.time;
+        }
 
-            GameLogger.Log($"[BotController] Bot spawned on server: {gameObject.name}");
+        public override void OnNetworkDespawn()
+        {
+            base.OnNetworkDespawn();
+            ReleaseClaims();
+        }
+
+        public override void OnDestroy()
+        {
+            base.OnDestroy();
+            ReleaseClaims();
         }
 
         private void Update()
         {
-            if (!IsServer || !_enableAI || !_isInitialized)
+            if (!IsServer || !_enableAI || !_isInitialized || _playerController == null)
             {
                 return;
             }
 
-            // Simple AI: Move to random positions periodically
-            if (Time.time >= _nextActionTime)
+            if (CheckForStuck())
             {
-                PerformAction();
-                _nextActionTime = Time.time + _actionInterval;
+                RecoverFromFailure();
             }
 
-            // Move towards target
-            MoveTowardsTarget();
-        }
-
-        /// <summary>
-        /// Perform a bot action
-        /// </summary>
-        private void PerformAction()
-        {
-            // Choose random action
-            int action = Random.Range(0, 3);
-
-            switch (action)
+            if (_currentPlan == null || Time.time >= _nextReplanTime)
             {
-                case 0:
-                    // Move to new position
-                    _targetPosition = GetRandomPosition();
-                    GameLogger.Log($"[BotController] {_botData?.BotName ?? "Bot"} moving to {_targetPosition}");
-                    break;
-
-                case 1:
-                    // Try to interact (placeholder - implement when interaction system is ready)
-                    // _playerController.TryInteract();
-                    break;
-
-                case 2:
-                    // Idle for a moment
-                    _targetPosition = transform.position;
-                    break;
+                Replan();
             }
+
+            ExecuteCurrentPlan();
         }
 
-        /// <summary>
-        /// Move towards target position
-        /// </summary>
-        private void MoveTowardsTarget()
-        {
-            Vector3 direction = (_targetPosition - transform.position).normalized;
-            direction.y = 0; // Keep on ground
-
-            // Simple movement (you can improve this with proper movement controller)
-            if (Vector3.Distance(transform.position, _targetPosition) > 0.5f)
-            {
-                transform.position += direction * 3f * Time.deltaTime;
-                transform.rotation = Quaternion.LookRotation(direction);
-            }
-        }
-
-        /// <summary>
-        /// Get random position within move radius
-        /// </summary>
-        private Vector3 GetRandomPosition()
-        {
-            Vector2 randomCircle = Random.insideUnitCircle * _moveRadius;
-            return new Vector3(randomCircle.x, 0f, randomCircle.y);
-        }
-
-        /// <summary>
-        /// Get bot data
-        /// </summary>
         public BotPlayer GetBotData()
         {
             return _botData;
         }
 
-        /// <summary>
-        /// Check if this is a bot
-        /// </summary>
         public bool IsBot()
         {
             return _isInitialized && _botData != null;
+        }
+
+        private void Replan()
+        {
+            var planningSnapshot = _snapshot.Capture(_playerController, _botData.BotId, _claimRegistry);
+            if (ClaimedOrderNeedsRelease(planningSnapshot))
+            {
+                ReleaseClaims();
+                planningSnapshot = _snapshot.Capture(_playerController, _botData.BotId, _claimRegistry);
+            }
+
+            _currentPlan = _planner.Plan(planningSnapshot);
+            _nextReplanTime = Time.time + _replanInterval;
+
+            switch (_currentPlan.Type)
+            {
+                case BotTaskType.ClaimOrder:
+                    HandleOrderClaim();
+                    break;
+                case BotTaskType.Recover:
+                    RecoverFromFailure();
+                    break;
+            }
+        }
+
+        private static bool ClaimedOrderNeedsRelease(BotPlanningSnapshot snapshot)
+        {
+            if (snapshot == null || !snapshot.ClaimedOrderId.HasValue)
+            {
+                return false;
+            }
+
+            foreach (BotOrderDescriptor order in snapshot.Orders)
+            {
+                if (order.OrderId != snapshot.ClaimedOrderId.Value)
+                {
+                    continue;
+                }
+
+                return order.IsExpired || order.IsCompleted || order.HasInvalidAssembly;
+            }
+
+            return true;
+        }
+
+        private void ExecuteCurrentPlan()
+        {
+            if (_currentPlan == null)
+            {
+                return;
+            }
+
+            switch (_currentPlan.Type)
+            {
+                case BotTaskType.Idle:
+                    return;
+                case BotTaskType.FetchIngredient:
+                case BotTaskType.ProcessIngredient:
+                case BotTaskType.AcquirePlate:
+                case BotTaskType.AssembleDish:
+                case BotTaskType.ServeDish:
+                case BotTaskType.WashDishes:
+                    MoveAndInteractWithTarget();
+                    return;
+            }
+        }
+
+        private void MoveAndInteractWithTarget()
+        {
+            Component target = _snapshot.ResolveStation(_currentPlan.TargetStationId);
+            if (target == null)
+            {
+                _currentPlan = null;
+                _nextReplanTime = Time.time;
+                return;
+            }
+
+            Vector3 targetPosition = target.transform.position;
+            float distance = Vector3.Distance(transform.position, targetPosition);
+            if (distance > _interactionDistance)
+            {
+                MoveTowards(targetPosition);
+                return;
+            }
+
+            if (Time.time - _lastInteractionTime < 0.15f)
+            {
+                return;
+            }
+
+            if (target is StationBase station)
+            {
+                station.Interact(_playerController);
+                _lastInteractionTime = Time.time;
+                _nextReplanTime = Time.time;
+            }
+        }
+
+        private void MoveTowards(Vector3 targetPosition)
+        {
+            Vector3 direction = targetPosition - transform.position;
+            direction.y = 0f;
+            if (direction.sqrMagnitude <= 0.0001f)
+            {
+                return;
+            }
+
+            Vector3 step = direction.normalized * _moveSpeed * Time.deltaTime;
+            if (step.sqrMagnitude > direction.sqrMagnitude)
+            {
+                step = direction;
+            }
+
+            transform.position += step;
+            transform.rotation = Quaternion.LookRotation(direction.normalized);
+        }
+
+        private bool CheckForStuck()
+        {
+            if (_currentPlan == null || string.IsNullOrWhiteSpace(_currentPlan.TargetStationId))
+            {
+                _lastPosition = transform.position;
+                _stuckTimer = 0f;
+                return false;
+            }
+
+            Component target = _snapshot.ResolveStation(_currentPlan.TargetStationId);
+            if (target == null)
+            {
+                return true;
+            }
+
+            float movedDistance = Vector3.Distance(transform.position, _lastPosition);
+            float targetDistance = Vector3.Distance(transform.position, target.transform.position);
+            if (movedDistance < 0.02f && targetDistance > _interactionDistance + 0.25f)
+            {
+                _stuckTimer += Time.deltaTime;
+            }
+            else
+            {
+                _stuckTimer = 0f;
+            }
+
+            _lastPosition = transform.position;
+            return _stuckTimer >= _stuckTimeout;
+        }
+
+        private void HandleOrderClaim()
+        {
+            if (_botData == null || !_currentPlan.OrderId.HasValue)
+            {
+                _currentPlan = null;
+                return;
+            }
+
+            if (!_claimRegistry.TryClaimOrder(_currentPlan.OrderId.Value, _botData.BotId))
+            {
+                _currentPlan = null;
+                return;
+            }
+
+            CounterStation counter = _snapshot.FindNearestAvailableCounter(transform.position, _botData.BotId, _claimRegistry);
+            if (counter != null)
+            {
+                _claimRegistry.AssignCounter(_currentPlan.OrderId.Value, counter.NetworkObject != null && counter.NetworkObject.IsSpawned
+                    ? counter.NetworkObject.NetworkObjectId.ToString()
+                    : counter.GetInstanceID().ToString());
+            }
+
+            _currentPlan = null;
+            _nextReplanTime = Time.time;
+        }
+
+        private void RecoverFromFailure()
+        {
+            ReleaseClaims();
+
+            if (_playerController != null && _playerController.IsHoldingObject())
+            {
+                GameObject heldObject = _playerController.GetHeldObject();
+                IngredientItem heldIngredient = heldObject != null ? heldObject.GetComponent<IngredientItem>() : null;
+
+                _playerController.DropObject();
+
+                if (heldIngredient != null && heldIngredient.IsBurned && heldIngredient.NetworkObject != null && heldIngredient.NetworkObject.IsSpawned)
+                {
+                    heldIngredient.NetworkObject.Despawn(true);
+                }
+            }
+
+            _currentPlan = null;
+            _nextReplanTime = Time.time + 0.1f;
+            _stuckTimer = 0f;
+        }
+
+        private void ReleaseClaims()
+        {
+            if (_botData != null)
+            {
+                _claimRegistry.ReleaseOrderForBot(_botData.BotId);
+            }
         }
     }
 }

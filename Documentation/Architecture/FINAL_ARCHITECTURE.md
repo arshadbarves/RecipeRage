@@ -1,5 +1,7 @@
 # Final Architecture: Proper State-Based Matchmaking
 
+Historical reference only. This file predates the March 2026 documentation cleanup. Use current code, `Documentation/Architecture/PROJECT_MEMORY.md`, and `Documentation/Architecture/CURRENT_CODEBASE_AUDIT.md` before using this document.
+
 ## Overview
 
 We now have a **clean, state-based architecture** where matchmaking is handled by a dedicated game state.

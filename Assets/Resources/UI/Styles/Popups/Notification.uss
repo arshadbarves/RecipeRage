@@ -1,6 +1,6 @@
 @import url("../../Themes/DesignSystem.uss");
 
-.notification-overlay {
+.notification-host {
     position: absolute;
     top: 0;
     left: 0;
@@ -13,77 +13,9 @@
     padding-top: var(--spacing-lg);
 }
 
-.notification-content {
-    flex-direction: row;
-    align-items: center;
-    background-color: var(--color-card-bg);
-    border-radius: var(--radius-md);
-    border-width: var(--border-width-normal);
-    border-color: var(--color-card-border);
-    padding: var(--spacing-md) var(--spacing-lg);
-    min-width: 300px;
-    max-width: 500px;
-
-}
-
-.notification-icon {
-    width: 32px;
-    height: 32px;
-    background-color: var(--color-info);
-    border-radius: var(--radius-round);
-    border-width: var(--border-width-thin);
-    border-color: var(--color-card-border);
-    margin-right: var(--spacing-md);
-    flex-shrink: 0;
-}
-
-.notification-text {
-    flex-grow: 1;
+.notification-container {
     flex-direction: column;
-}
-
-.notification-title {
-    font-size: var(--font-size-lg);
-    color: var(--color-text-primary);
-    margin-bottom: var(--spacing-xs);
-    -unity-font-style: bold;
-}
-
-.notification-message {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-primary);
-    white-space: normal;
-}
-
-/* Type-specific styles */
-.notification-success .notification-content {
-    background-color: rgb(240, 255, 245);
-}
-
-.notification-success .notification-icon {
-    background-color: var(--color-success);
-}
-
-.notification-error .notification-content {
-    background-color: rgb(255, 240, 240);
-}
-
-.notification-error .notification-icon {
-    background-color: var(--color-danger);
-}
-
-.notification-info .notification-content {
-    background-color: rgb(240, 248, 255);
-}
-
-.notification-info .notification-icon {
-    background-color: var(--color-info);
-}
-
-.notification-warning .notification-content {
-    background-color: rgb(255, 250, 240);
-}
-
-.notification-warning .notification-icon {
-    background-color: var(--color-warning);
+    align-items: center;
+    width: auto;
+    max-width: 500px;
 }

@@ -165,7 +165,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb0a4c7ee12de4b25ba36acc15136baf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _teamCategory: 0
+  _teamCategory: 1
   _isAvailable: 1
   _spawnRadius: 0.5
   _showGizmos: 1
@@ -743,6 +743,8 @@ GameObject:
   - component: {fileID: 226056024}
   - component: {fileID: 226056023}
   - component: {fileID: 226056022}
+  - component: {fileID: 226056025}
+  - component: {fileID: 226056026}
   m_Layer: 0
   m_Name: NetworkManagers
   m_TagString: Untagged
@@ -830,6 +832,47 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
+--- !u!114 &226056025
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 226056017}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 326523ef500fc49bb8aa14e29d16d2e5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _minTimeBetweenOrders: 5
+  _maxTimeBetweenOrders: 12
+  _maxActiveOrders: 3
+  _difficultyScalingFactor: 0.8
+  _orderTimeLimit: 120
+  _baseOrderPoints: 100
+  _timeBonus: 50
+  _perfectBonus: 25
+  _availableRecipes:
+  - {fileID: 11400000, guid: 6a3b0d6ca40d4a6598d5a40d11110006, type: 2}
+  - {fileID: 11400000, guid: 6a3b0d6ca40d4a6598d5a40d11110007, type: 2}
+--- !u!114 &226056026
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 226056017}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00d630a13d9884747998eb554f43b51e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _baseOrderPoints: 100
+  _timeBonus: 50
+  _perfectBonus: 25
+  _comboBonus: 10
+  _comboTimeWindow: 30
+  _orderManager: {fileID: 226056025}
 --- !u!1001 &241556986
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1205,7 +1248,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb0a4c7ee12de4b25ba36acc15136baf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _teamCategory: 0
+  _teamCategory: 2
   _isAvailable: 1
   _spawnRadius: 0.5
   _showGizmos: 1
@@ -1330,12 +1373,12 @@ GameObject:
   - component: {fileID: 441981046}
   - component: {fileID: 441981045}
   m_Layer: 0
-  m_Name: GameplayUIManager
+  m_Name: MatchRuntimeSceneBinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &441981045
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1345,19 +1388,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 441981044}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eb45d09966cfc4a3191e497e9f3e5052, type: 3}
+  m_Script: {fileID: 11500000, guid: 9c3b7a4d2e1f4a0b8c6d5e7f9a1b2c3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _localPlayer: {fileID: 0}
   _orderManager: {fileID: 0}
-  _interactionPromptPanel: {fileID: 0}
-  _interactionPromptText: {fileID: 0}
-  _orderListPanel: {fileID: 0}
-  _orderItemPrefab: {fileID: 0}
-  _orderListContent: {fileID: 0}
-  _scoreText: {fileID: 0}
-  _timerText: {fileID: 0}
-  _timerFill: {fileID: 0}
+  _scoreManager: {fileID: 0}
+  _gamePhaseSync: {fileID: 0}
+  _roundTimer: {fileID: 226056023}
+  _networkScoreManager: {fileID: 226056024}
+  _mobileControlsManager: {fileID: 0}
+  _spawnManager: {fileID: 1353760303}
+  _resolveMissingReferencesOnSceneLoad: 1
 --- !u!4 &441981046
 Transform:
   m_ObjectHideFlags: 0
@@ -1898,7 +1939,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb0a4c7ee12de4b25ba36acc15136baf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _teamCategory: 0
+  _teamCategory: 2
   _isAvailable: 1
   _spawnRadius: 0.5
   _showGizmos: 1
@@ -2205,7 +2246,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb0a4c7ee12de4b25ba36acc15136baf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _teamCategory: 0
+  _teamCategory: 1
   _isAvailable: 1
   _spawnRadius: 0.5
   _showGizmos: 1
@@ -2973,7 +3014,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb0a4c7ee12de4b25ba36acc15136baf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _teamCategory: 0
+  _teamCategory: 1
   _isAvailable: 1
   _spawnRadius: 0.5
   _showGizmos: 1
@@ -3893,7 +3934,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb0a4c7ee12de4b25ba36acc15136baf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _teamCategory: 0
+  _teamCategory: 2
   _isAvailable: 1
   _spawnRadius: 0.5
   _showGizmos: 1
@@ -3942,7 +3983,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb0a4c7ee12de4b25ba36acc15136baf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _teamCategory: 0
+  _teamCategory: 1
   _isAvailable: 1
   _spawnRadius: 0.5
   _showGizmos: 1
@@ -4324,7 +4365,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb0a4c7ee12de4b25ba36acc15136baf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _teamCategory: 0
+  _teamCategory: 2
   _isAvailable: 1
   _spawnRadius: 0.5
   _showGizmos: 1

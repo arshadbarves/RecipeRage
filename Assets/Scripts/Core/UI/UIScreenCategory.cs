@@ -1,9 +1,9 @@
 namespace Core.UI
 {
     /// <summary>
-    /// Defines UI screen categories for stack-based management
-    /// Each category has its own stack, allowing proper layering and history
-    /// AAA-grade approach: Categories prevent priority conflicts and enable clean state management
+    /// Defines app-shell UI layers and navigation categories.
+    /// Categories now describe explicit placement in the UI shell rather than
+    /// implicitly driving all routing behavior.
     /// </summary>
     public enum UIScreenCategory
     {
@@ -19,8 +19,7 @@ namespace Core.UI
         /// <summary>
         /// Full-screen overlays (Loading, Login)
         /// - Blocks interaction with screens below
-        /// - Can stack (e.g., loading over login)
-        /// - Limited history tracking
+        /// - Can stack
         /// Priority Range: 900-999
         /// </summary>
         Overlay = 1,
@@ -29,36 +28,37 @@ namespace Core.UI
         /// Modal dialogs (Confirmation, Error dialogs)
         /// - Blocks interaction with screens below
         /// - Multiple modals can stack
-        /// - Full history tracking for back navigation
         /// Priority Range: 800-899
         /// </summary>
         Modal = 2,
 
         /// <summary>
         /// Popup windows (Friends list, Username entry)
-        /// - Allows interaction with screens below (optional)
         /// - Multiple popups can coexist
-        /// - Full history tracking
         /// Priority Range: 700-799
         /// </summary>
         Popup = 3,
 
         /// <summary>
-        /// Main navigation screens (MainMenu, Lobby, Game)
-        /// - Only one active at a time per category
-        /// - Full history tracking for back navigation
-        /// - Can have overlays/modals/popups on top
+        /// Full-screen app screens (MainMenu, Matchmaking, nested feature screens)
+        /// - Supports explicit root replacement and screen pushing
         /// Priority Range: 200-699
         /// </summary>
         Screen = 4,
 
         /// <summary>
-        /// Persistent UI (HUD, Background)
-        /// - Always visible unless explicitly hidden
+        /// Gameplay HUD and always-on game-layer UI
         /// - No history tracking
-        /// - Lowest priority
-        /// Priority Range: 0-199
+        /// Priority Range: 100-199
         /// </summary>
-        Persistent = 5
+        HUD = 5,
+
+        /// <summary>
+        /// Toasts and transient system notices
+        /// - No history tracking
+        /// - Always rendered on the top-most shell layer
+        /// Priority Range: 1100+
+        /// </summary>
+        Toast = 6
     }
 }

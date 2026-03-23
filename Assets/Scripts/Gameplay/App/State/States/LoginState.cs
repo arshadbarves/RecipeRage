@@ -30,7 +30,7 @@ namespace Gameplay.App.State.States
             base.Enter();
             GameLogger.Log("[LoginState] Entered - Subscribing to events");
 
-            _uiService.Show<LoginView>();
+            _uiService.ShowOverlay<LoginView>();
             _eventBus.Subscribe<LoginSuccessEvent>(OnLoginSuccess);
         }
 
@@ -39,7 +39,7 @@ namespace Gameplay.App.State.States
             base.Exit();
             GameLogger.Log("[LoginState] Exiting - Unsubscribing");
 
-            _uiService.Hide<LoginView>();
+            _uiService.HideOverlay<LoginView>();
             _eventBus.Unsubscribe<LoginSuccessEvent>(OnLoginSuccess);
         }
 

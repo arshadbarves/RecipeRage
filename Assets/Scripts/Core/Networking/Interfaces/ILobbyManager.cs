@@ -8,7 +8,7 @@ namespace Core.Networking.Interfaces
     /// Interface for lobby management operations
     /// Handles both Party Lobbies (persistent) and Match Lobbies (temporary)
     /// </summary>
-    public interface ILobbyManager
+    public interface ILobbyManager : IDisposable
     {
         #region Events
 

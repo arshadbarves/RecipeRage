@@ -1,11 +1,13 @@
+using System;
 using Core.Networking;
 using UnityEngine;
-using VContainer;
 using Cysharp.Threading.Tasks;
 using Core.Networking.Common;
 using Core.RemoteConfig;
 using Core.UI.Interfaces;
 using Core.Session;
+using Core.Networking.Interfaces;
+using Gameplay.Match;
 using Gameplay.UI.Features.MainMenu;
 using Gameplay.UI.Features.Matchmaking;
 
@@ -18,11 +20,12 @@ namespace Gameplay.App.State.States
     public class MatchmakingState : BaseState
     {
         private readonly IUIService _uiService;
-        private readonly SessionManager _sessionManager;
+        private readonly ISessionContext _sessionContext;
         private readonly IGameStateManager _stateManager;
         private readonly IMaintenanceService _maintenanceService;
+        private readonly IMatchService _matchService;
 
-        private INetworkingServices _networkingServices;
+        private IMatchmakingService _matchmakingService;
         private bool _isMatchmakingInProgress;
 
         // Timeout tracking
@@ -33,21 +36,23 @@ namespace Gameplay.App.State.States
 
         // Matchmaking parameters
         private string _gameModeId = "classic";
-        private int _teamSize = 4;
+        private int _teamSize = 2;
 
         /// <summary>
         /// Constructor with dependencies
         /// </summary>
         public MatchmakingState(
             IUIService uiService,
-            SessionManager sessionManager,
+            ISessionContext sessionContext,
             IGameStateManager stateManager,
-            IMaintenanceService maintenanceService)
+            IMaintenanceService maintenanceService,
+            IMatchService matchService)
         {
             _uiService = uiService;
-            _sessionManager = sessionManager;
+            _sessionContext = sessionContext;
             _stateManager = stateManager;
             _maintenanceService = maintenanceService;
+            _matchService = matchService;
         }
 
         public override void Enter()
@@ -58,33 +63,58 @@ namespace Gameplay.App.State.States
             CheckMaintenanceAndStartAsync().Forget();
         }
 
-        private async UniTaskVoid CheckMaintenanceAndStartAsync()
+        private async UniTask CheckMaintenanceAndStartAsync()
         {
-            if (_maintenanceService != null)
+            try
             {
-                bool isInMaintenance = await _maintenanceService.CheckMaintenanceStatusAsync();
-                if (isInMaintenance)
+                if (_maintenanceService != null)
                 {
-                    LogMessage("Matchmaking blocked - server is in maintenance mode");
-                    ReturnToMainMenu();
-                    return;
+                    bool isInMaintenance = await _maintenanceService.CheckMaintenanceStatusAsync();
+                    if (!IsStateActive) return;
+                    if (isInMaintenance)
+                    {
+                        LogMessage("Matchmaking blocked - server is in maintenance mode");
+                        ReturnToMainMenu();
+                        return;
+                    }
                 }
-            }
 
-            StartMatchmaking();
+                StartMatchmaking();
+            }
+            catch (OperationCanceledException)
+            {
+                LogMessage("Matchmaking startup cancelled");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to start matchmaking: {ex.Message}");
+                ReturnToMainMenu();
+            }
         }
 
         private void StartMatchmaking()
         {
-            var sessionContainer = _sessionManager?.SessionContainer;
-            if (sessionContainer != null)
+            _matchmakingService = _sessionContext.MatchmakingService;
+
+            var selectedGameMode = _sessionContext.GameModeService?.SelectedGameMode;
+            if (selectedGameMode != null)
             {
-                _networkingServices = sessionContainer.Resolve<INetworkingServices>();
+                if (_matchService != null && _matchService.TryGetQueue(selectedGameMode.Id, out MatchQueueDefinition queue))
+                {
+                    _gameModeId = queue.ModeId;
+                    _teamSize = Mathf.Max(1, queue.PlayersPerTeam);
+                    LogMessage($"Resolved queue '{queue.DisplayName}' ({queue.TeamCount} teams, {queue.DurationSeconds}s)");
+                }
+                else
+                {
+                    _gameModeId = selectedGameMode.Id;
+                    _teamSize = Mathf.Max(1, selectedGameMode.PlayersPerTeam);
+                }
             }
 
-            if (_networkingServices == null)
+            if (_matchmakingService == null)
             {
-                LogError("NetworkingServices not available");
+                LogError("MatchmakingService not available");
                 ReturnToMainMenu();
                 return;
             }
@@ -100,22 +130,18 @@ namespace Gameplay.App.State.States
             // Show matchmaking UI
             if (_uiService != null)
             {
-                // Hide main menu
-                _uiService.Hide<MainMenuView>(true);
-
-                // Show matchmaking screen
-                _uiService.Show<MatchmakingView>(true, false);
+                _uiService.SetRootScreen<MatchmakingView>(true);
                 LogMessage("Matchmaking screen shown");
             }
 
             // Subscribe to matchmaking events
-            _networkingServices.MatchmakingService.OnMatchFound += HandleMatchFound;
-            _networkingServices.MatchmakingService.OnMatchmakingFailed += HandleMatchmakingFailed;
-            _networkingServices.MatchmakingService.OnPlayersFound += HandlePlayersFound;
-            _networkingServices.MatchmakingService.OnMatchmakingCancelled += HandleMatchmakingCancelled;
+            _matchmakingService.OnMatchFound += HandleMatchFound;
+            _matchmakingService.OnMatchmakingFailed += HandleMatchmakingFailed;
+            _matchmakingService.OnPlayersFound += HandlePlayersFound;
+            _matchmakingService.OnMatchmakingCancelled += HandleMatchmakingCancelled;
 
             // Start matchmaking
-            _networkingServices.MatchmakingService.FindMatch(_gameModeId, _teamSize);
+            _matchmakingService.FindMatch(_gameModeId, _teamSize);
 
             LogMessage("Matchmaking started - searching for players...");
         }
@@ -128,18 +154,18 @@ namespace Gameplay.App.State.States
             _uiService?.Hide<MatchmakingView>(true);
 
             // Unsubscribe from events
-            if (_networkingServices != null)
+            if (_matchmakingService != null)
             {
-                _networkingServices.MatchmakingService.OnMatchFound -= HandleMatchFound;
-                _networkingServices.MatchmakingService.OnMatchmakingFailed -= HandleMatchmakingFailed;
-                _networkingServices.MatchmakingService.OnPlayersFound -= HandlePlayersFound;
-                _networkingServices.MatchmakingService.OnMatchmakingCancelled -= HandleMatchmakingCancelled;
+                _matchmakingService.OnMatchFound -= HandleMatchFound;
+                _matchmakingService.OnMatchmakingFailed -= HandleMatchmakingFailed;
+                _matchmakingService.OnPlayersFound -= HandlePlayersFound;
+                _matchmakingService.OnMatchmakingCancelled -= HandleMatchmakingCancelled;
             }
 
             // Cancel matchmaking if still in progress
-            if (_isMatchmakingInProgress && _networkingServices != null)
+            if (_isMatchmakingInProgress && _matchmakingService != null)
             {
-                _networkingServices.MatchmakingService.CancelMatchmaking();
+                _matchmakingService.CancelMatchmaking();
             }
 
             _isMatchmakingInProgress = false;
@@ -147,7 +173,7 @@ namespace Gameplay.App.State.States
 
         public override void Update()
         {
-            if (!_isMatchmakingInProgress || _networkingServices == null)
+            if (!_isMatchmakingInProgress || _matchmakingService == null)
                 return;
 
             // Update search time
@@ -160,7 +186,7 @@ namespace Gameplay.App.State.States
                 _hasFilledWithBots = true;
 
                 // Tell service to fill with bots
-                _networkingServices.MatchmakingService.FillMatchWithBots();
+                _matchmakingService.FillMatchWithBots();
             }
         }
 
@@ -219,19 +245,11 @@ namespace Gameplay.App.State.States
 
         private void CleanupLobby()
         {
-            // Access NetworkingServices via Session
-            var sessionContainer = _sessionManager?.SessionContainer;
-            if (sessionContainer != null)
+            var lobbyManager = _sessionContext.LobbyManager;
+            if (lobbyManager != null && lobbyManager.IsInMatchLobby)
             {
-                var networking = sessionContainer.Resolve<INetworkingServices>();
-                var lobbyManager = networking?.LobbyManager;
-
-                // Leave match lobby if we're in one
-                if (lobbyManager != null && lobbyManager.IsInMatchLobby)
-                {
-                    LogMessage("Leaving match lobby due to matchmaking failure/cancellation");
-                    lobbyManager.LeaveMatchLobby();
-                }
+                LogMessage("Leaving match lobby due to matchmaking failure/cancellation");
+                lobbyManager.LeaveMatchLobby();
             }
         }
 

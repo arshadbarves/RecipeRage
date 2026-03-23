@@ -15,8 +15,5 @@ namespace Gameplay.GameModes
         // Map loading (merged from MapLoader)
         UniTask<bool> LoadMapAsync(string sceneName);
         UniTask UnloadCurrentMapAsync();
-        
-        // Game mode logic factory
-        IGameModeLogic CreateGameModeLogic();
     }
 }

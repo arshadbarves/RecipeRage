@@ -127,8 +127,8 @@ namespace Editor
             // Get player data from session if active
             if (SessionManager?.IsSessionActive == true)
             {
-                var playerDataService = SessionManager.SessionContainer?.Resolve<PlayerDataService>();
-                var economyService = SessionManager.SessionContainer?.Resolve<EconomyService>();
+                var playerDataService = GameScope?.Container?.Resolve<PlayerDataService>();
+                var economyService = GameScope?.Container?.Resolve<EconomyService>();
 
                 if (playerDataService != null)
                 {

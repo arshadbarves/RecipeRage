@@ -3,11 +3,9 @@ using VContainer;
 using Core.UI;
 using Core.UI.Interfaces;
 using Core.UI.Core;
-using Gameplay.Scoring;
-using UnityEngine;
-using Unity.Netcode;
 using Core.Logging;
-using UnityEngine.SceneManagement;
+using Core.Session;
+using Gameplay.Shared;
 
 namespace Gameplay.UI.Features.GameOver
 {
@@ -15,6 +13,8 @@ namespace Gameplay.UI.Features.GameOver
     public class GameOverScreen : BaseUIScreen
     {
         [Inject] private IUIService _uiService;
+        [Inject] private ISessionContext _sessionContext;
+        [Inject] private IMatchContext _matchContext;
         
         private Label _winnerLabel;
         private Label _scoreTeam0;
@@ -42,7 +42,8 @@ namespace Gameplay.UI.Features.GameOver
 
         private void UpdateScores()
         {
-             var scoreManager = Object.FindFirstObjectByType<ScoreManager>();
+             _matchContext.Refresh();
+             var scoreManager = _matchContext.ScoreManager;
              if (scoreManager != null)
              {
                  int score0 = scoreManager.GetScore(0);
@@ -66,14 +67,7 @@ namespace Gameplay.UI.Features.GameOver
         private void OnLobbyButtonClicked()
         {
             GameLogger.Log("Returning to Lobby...");
-            
-            if (NetworkManager.Singleton != null)
-            {
-                NetworkManager.Singleton.Shutdown();
-            }
-            
-            // Should probably use a proper SceneLoader service, but direct load for now
-            SceneManager.LoadScene("Lobby");
+            _sessionContext?.GameStarter?.EndGame();
         }
     }
 }

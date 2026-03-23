@@ -1,5 +1,7 @@
 # Map System Guide for Level Designers
 
+Historical caution: this guide predates the March 2026 cleanup. Any mention of `GameplayLifetimeScope` is obsolete because that dormant scope no longer exists in the repo.
+
 ## Overview
 
 RecipeRage uses an **additive scene loading system** for maps. This means:

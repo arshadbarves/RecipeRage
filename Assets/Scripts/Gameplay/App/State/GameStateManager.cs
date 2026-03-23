@@ -8,7 +8,7 @@ namespace Gameplay.App.State
     public class GameStateManager : IGameStateManager, IDisposable, ITickable
     {
         private readonly StateMachine _stateMachine;
-        private IObjectResolver _container;
+        private readonly IStateFactory _stateFactory;
 
         public event Action<IState, IState> OnStateChanged;
 
@@ -16,10 +16,10 @@ namespace Gameplay.App.State
         public IState PreviousState => _stateMachine.PreviousState;
 
         [Inject]
-        public GameStateManager(IObjectResolver container)
+        public GameStateManager(IStateFactory stateFactory)
         {
             _stateMachine = new StateMachine();
-            _container = container;
+            _stateFactory = stateFactory;
             _stateMachine.OnStateChanged += (prev, curr) => OnStateChanged?.Invoke(prev, curr);
         }
 
@@ -37,13 +37,7 @@ namespace Gameplay.App.State
 
         public void ChangeState<T>() where T : IState
         {
-            ChangeState(_container.Resolve<T>());
-        }
-
-        public void SetContainerResolver(IObjectResolver container)
-        {
-            _container = container;
-            GameLogger.Log("GameStateManager container updated.");
+            ChangeState(_stateFactory.Create<T>());
         }
 
         public void Update(float deltaTime)

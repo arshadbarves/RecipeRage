@@ -7,13 +7,13 @@ namespace Gameplay.UI.Features.Character
 {
     public class CharacterViewModel : BaseViewModel
     {
-        private readonly SessionManager _sessionManager;
-        private ICharacterService CharacterService => _sessionManager.SessionContainer?.Resolve<ICharacterService>();
+        private readonly ISessionContext _sessionContext;
+        private ICharacterService CharacterService => _sessionContext.CharacterService;
 
         [Inject]
-        public CharacterViewModel(SessionManager sessionManager)
+        public CharacterViewModel(ISessionContext sessionContext)
         {
-            _sessionManager = sessionManager;
+            _sessionContext = sessionContext;
         }
     }
 }

@@ -4,7 +4,7 @@ using Cysharp.Threading.Tasks;
 using Core.Logging;
 using Core.RemoteConfig.Interfaces;
 using Core.RemoteConfig.Models;
-using Gameplay.GameModes.Logic;
+using Gameplay.Match;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using VContainer;
@@ -16,6 +16,7 @@ namespace Gameplay.GameModes
         private readonly Dictionary<string, GameMode> _gameModes = new Dictionary<string, GameMode>();
         private GameMode _selectedGameMode;
         private readonly IRemoteConfigService _remoteConfigService;
+        private readonly IMatchService _matchService;
         private string _currentLoadedSceneName;
 
         public event Action<GameMode> OnGameModeChanged;
@@ -23,9 +24,10 @@ namespace Gameplay.GameModes
         public GameMode SelectedGameMode => _selectedGameMode;
 
         [Inject]
-        public GameModeService(IRemoteConfigService remoteConfigService)
+        public GameModeService(IRemoteConfigService remoteConfigService, IMatchService matchService)
         {
             _remoteConfigService = remoteConfigService;
+            _matchService = matchService;
             LoadGameSettings();
             LoadGameModes();
             SubscribeToConfigUpdates();
@@ -68,14 +70,20 @@ namespace Gameplay.GameModes
             {
                 if (mode != null && !string.IsNullOrEmpty(mode.Id))
                 {
+                    if (_matchService != null &&
+                        (!_matchService.TryGetQueue(mode.Id, out MatchQueueDefinition queue) || !queue.IsEnabled))
+                    {
+                        continue;
+                    }
+
                     _gameModes[mode.Id] = mode;
                 }
             }
 
             // Set default
-            if (_gameModes.ContainsKey("classic"))
+            if (_gameModes.ContainsKey(MatchQueueDefinition.ClassicModeId))
             {
-                var classic = _gameModes["classic"];
+                var classic = _gameModes[MatchQueueDefinition.ClassicModeId];
                 _selectedGameMode = IsUnlocked(classic) ? classic : null;
             }
             else if (_gameModes.Count > 0)
@@ -136,27 +144,17 @@ namespace Gameplay.GameModes
 
         private bool IsUnlocked(GameMode mode)
         {
-            return mode != null && mode.UnlockedByDefault;
-        }
-
-        /// <summary>
-        /// Create game mode logic implementation based on selected game mode
-        /// </summary>
-        public IGameModeLogic CreateGameModeLogic()
-        {
-            if (_selectedGameMode == null)
+            if (mode == null)
             {
-                GameLogger.LogError("No game mode selected");
-                return null;
+                return false;
             }
 
-            if (_selectedGameMode.Id == "kitchen_wars")
+            if (_matchService != null)
             {
-                return new CompetitiveGameModeLogic();
+                return _matchService.TryGetQueue(mode.Id, out MatchQueueDefinition queue) && queue.IsEnabled;
             }
 
-            // Default to Classic
-            return new ClassicGameModeLogic();
+            return mode.UnlockedByDefault;
         }
 
         /// <summary>

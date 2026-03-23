@@ -40,7 +40,7 @@ namespace Core.Networking.Common
         /// <summary>
         /// Team size (for team-based modes)
         /// </summary>
-        public int TeamSize { get; set; } = 4;
+        public int TeamSize { get; set; } = 2;
 
         /// <summary>
         /// Whether to allow invites

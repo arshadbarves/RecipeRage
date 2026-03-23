@@ -218,7 +218,7 @@ namespace Gameplay.Characters
 
             // Register with PlayerNetworkManager
             var sessionContainer = _sessionManager?.SessionContainer;
-            if (sessionContainer != null)
+            if (sessionContainer != null && NetworkObject != null && NetworkObject.IsPlayerObject)
             {
                 var playerNetworkManager = sessionContainer.Resolve<IPlayerNetworkManager>();
                 playerNetworkManager?.RegisterPlayer(OwnerClientId, this);
@@ -249,7 +249,7 @@ namespace Gameplay.Characters
             }
 
             var sessionContainer = _sessionManager?.SessionContainer;
-            if (sessionContainer != null)
+            if (sessionContainer != null && NetworkObject != null && NetworkObject.IsPlayerObject)
             {
                 var playerNetworkManager = sessionContainer.Resolve<IPlayerNetworkManager>();
                 playerNetworkManager?.UnregisterPlayer(OwnerClientId);

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Gameplay.App.State.States;
+using Gameplay.Shared;
 using Gameplay.Spawning;
 using Unity.Netcode;
 using UnityEngine;
@@ -11,6 +12,8 @@ using Core.Logging;
 using Core.Networking.Models;
 using Core.Shared.Enums;
 using Core.UI.Interfaces;
+using Gameplay.Cooking;
+using Gameplay.Stations;
 using PlayEveryWare.EpicOnlineServices;
 using PlayEveryWare.EpicOnlineServices.Samples.Network;
 
@@ -23,34 +26,48 @@ namespace Gameplay.App.Networking
     /// </summary>
     public class GameStarter : IGameStarter
     {
-        private readonly INetworkingServices _networkingServices;
+        private readonly ILobbyManager _lobbyManager;
+        private readonly IMatchmakingService _matchmakingService;
+        private readonly IBotSpawnerRegistry _botSpawnerRegistry;
+        private readonly IMatchContext _matchContext;
         private readonly IUIService _uiService;
         private readonly IGameStateManager _stateManager;
 
         private bool _isGameActive;
         private SpawnManager _spawnManager;
-        private GameObject _playerPrefab; // Store player prefab for bot spawning
+        private GameObject _playerPrefab;
+        private GameObject _originalPlayerPrefab;
+        private bool _didDisableAutomaticPlayerSpawning;
         private LatencyMonitor _latencyMonitor;
+        private int _nextHumanTeamId;
 
         /// <summary>
         /// Constructor with dependencies
         /// </summary>
         public GameStarter(
-            INetworkingServices networkingServices,
+            ILobbyManager lobbyManager,
+            IMatchmakingService matchmakingService,
+            IBotSpawnerRegistry botSpawnerRegistry,
+            IMatchContext matchContext,
             IUIService uiService,
             IGameStateManager stateManager)
         {
-            _networkingServices = networkingServices;
+            _lobbyManager = lobbyManager;
+            _matchmakingService = matchmakingService;
+            _botSpawnerRegistry = botSpawnerRegistry;
+            _matchContext = matchContext;
             _uiService = uiService;
             _stateManager = stateManager;
         }
+
+        private NetworkManager NetcodeManager => _matchContext?.NetworkManager;
 
         /// <summary>
         /// Start the game from match lobby
         /// </summary>
         public void StartGame()
         {
-            var matchLobby = _networkingServices.LobbyManager.CurrentMatchLobby;
+            var matchLobby = _lobbyManager.CurrentMatchLobby;
 
             if (matchLobby == null)
             {
@@ -58,7 +75,7 @@ namespace Gameplay.App.Networking
                 return;
             }
 
-            if (NetworkManager.Singleton == null)
+            if (NetcodeManager == null)
             {
                 GameLogger.LogError("NetworkManager not found in scene!");
                 return;
@@ -88,28 +105,21 @@ namespace Gameplay.App.Networking
             GameLogger.Log("Starting as host...");
 
             // Get SpawnManager
-            _spawnManager = Object.FindFirstObjectByType<SpawnManager>();
+            _spawnManager = _matchContext?.SpawnManager;
 
             // Store player prefab before disabling automatic spawning (needed for bots)
-            if (NetworkManager.Singleton.NetworkConfig != null)
-            {
-                _playerPrefab = NetworkManager.Singleton.NetworkConfig.PlayerPrefab;
-
-                // Disable automatic spawning by clearing player prefab
-                NetworkManager.Singleton.NetworkConfig.PlayerPrefab = null;
-
-                GameLogger.Log("Disabled automatic player spawning - using manual spawning");
-            }
+            OverrideAutomaticPlayerSpawning();
 
             // Subscribe to connection approval for manual spawning
-            NetworkManager.Singleton.ConnectionApprovalCallback = ApprovalCheck;
+            NetcodeManager.ConnectionApprovalCallback = ApprovalCheck;
 
             // Start Unity Netcode as host
-            bool success = NetworkManager.Singleton.StartHost();
+            bool success = NetcodeManager.StartHost();
 
             if (success)
             {
                 GameLogger.Log("Successfully started as host");
+                EnsureKitchenSupportStations();
 
                 // Spawn the host player (client ID 0)
                 // ConnectionApprovalCallback is NOT called for the host, so we spawn manually
@@ -153,18 +163,24 @@ namespace Gameplay.App.Networking
         /// </summary>
         private void SpawnPlayerForClient(ulong clientId)
         {
-            if (!NetworkManager.Singleton.IsServer)
+            if (NetcodeManager?.IsServer != true)
                 return;
 
             GameLogger.Log($"Spawning player for client {clientId}");
+            int assignedTeamId = ReserveNextHumanTeam();
+            TeamCategory teamCategory = ToTeamCategory(assignedTeamId);
 
             // Use SpawnManager if available
             if (_spawnManager != null)
             {
-                bool spawned = _spawnManager.SpawnPlayer(clientId, TeamCategory.Neutral);
+                bool spawned = _spawnManager.SpawnPlayer(
+                    clientId,
+                    teamCategory,
+                    assignedTeamId,
+                    ignoreSpawnCooldown: true);
                 if (spawned)
                 {
-                    GameLogger.Log($"Player {clientId} spawned via SpawnManager");
+                    GameLogger.Log($"Player {clientId} spawned via SpawnManager on team {assignedTeamId}");
                 }
                 else
                 {
@@ -182,7 +198,7 @@ namespace Gameplay.App.Networking
         /// </summary>
         private void SpawnBotsIfNeeded()
         {
-            List<BotPlayer> bots = _networkingServices.MatchmakingService.GetActiveBots();
+            List<BotPlayer> bots = _matchmakingService.GetActiveBots();
             if (bots.Count == 0)
             {
                 GameLogger.Log("No bots to spawn");
@@ -200,17 +216,12 @@ namespace Gameplay.App.Networking
 
             // Create and initialize BotSpawner
             // Uses Gameplay implementation
-            var botSpawner = new Gameplay.Networking.Bot.BotSpawner(_playerPrefab);
+            var botSpawner = new Gameplay.Networking.Bot.BotSpawner(_playerPrefab, NetcodeManager, _spawnManager);
 
-            // Set in networking services (cast to container)
-            // Note: INetworkingServices exposes IBotSpawner, NetworkingServiceContainer implements it
-            if (_networkingServices is NetworkingServiceContainer container)
-            {
-                container.BotSpawner = botSpawner;
-            }
+            _botSpawnerRegistry.BotSpawner = botSpawner;
 
             // Spawn bots immediately (using SpawnManager if available)
-            botSpawner.SpawnBots(bots, TeamCategory.Neutral);
+            botSpawner.SpawnBots(bots);
 
             GameLogger.Log($"Spawned {bots.Count} bots - players won't know who's a bot!");
         }
@@ -229,7 +240,7 @@ namespace Gameplay.App.Networking
 
             // Create pure C# monitor - works for both host and client
             // It will hook into CustomMessagingManager internally
-            _latencyMonitor = new LatencyMonitor();
+            _latencyMonitor = new LatencyMonitor(NetcodeManager);
 
             GameLogger.Log("LatencyMonitor initialized (Pure C#)");
         }
@@ -244,10 +255,10 @@ namespace Gameplay.App.Networking
             GameLogger.Log($"Starting as client, connecting to host: {hostUserId}");
 
             // Get SpawnManager (clients need it too for reference)
-            _spawnManager = Object.FindFirstObjectByType<SpawnManager>();
+            _spawnManager = _matchContext?.SpawnManager;
 
             // Get EOSTransport component
-            var transport = NetworkManager.Singleton.GetComponent<EOSTransport>();
+            var transport = NetcodeManager?.GetComponent<EOSTransport>();
 
             if (transport == null)
             {
@@ -260,7 +271,7 @@ namespace Gameplay.App.Networking
             transport.ServerUserIdToConnectTo = hostUserId;
 
             // Start Unity Netcode as client
-            bool success = NetworkManager.Singleton.StartClient();
+            bool success = NetcodeManager.StartClient();
 
             if (success)
             {
@@ -292,12 +303,14 @@ namespace Gameplay.App.Networking
                 _latencyMonitor = null;
             }
 
-            if (NetworkManager.Singleton != null)
+            if (NetcodeManager != null)
             {
                 // Shutdown Unity Netcode
-                NetworkManager.Singleton.Shutdown();
+                _matchContext.ShutdownNetworkSession();
                 GameLogger.Log("NetworkManager shutdown");
             }
+
+            RestoreAutomaticPlayerSpawning();
 
             // Leave match lobby and return to party
             ReturnToLobby();
@@ -311,7 +324,7 @@ namespace Gameplay.App.Networking
             GameLogger.Log("Returning to lobby...");
 
             // Leave match lobby
-            _networkingServices.LobbyManager.LeaveMatchLobby();
+            _lobbyManager.LeaveMatchLobby();
 
             // Return to main menu
             if (_stateManager != null)
@@ -346,14 +359,122 @@ namespace Gameplay.App.Networking
             // No need to transition again
         }
 
+        private void EnsureKitchenSupportStations()
+        {
+            if (NetcodeManager?.IsServer != true)
+            {
+                return;
+            }
+
+            EnsureIngredientCrates();
+            EnsurePlateDispenser();
+        }
+
+        private void EnsureIngredientCrates()
+        {
+            if (Object.FindObjectsByType<IngredientCrate>(FindObjectsSortMode.None).Length > 0)
+            {
+                return;
+            }
+
+            GameObject cratePrefab = Resources.Load<GameObject>("Prefabs/Gameplay/Stations/IngredientCrate");
+            Ingredient tomato = Resources.Load<Ingredient>("ScriptableObjects/Cooking/Ingredients/Tomato");
+            Ingredient steak = Resources.Load<Ingredient>("ScriptableObjects/Cooking/Ingredients/Steak");
+            if (cratePrefab == null || tomato == null || steak == null)
+            {
+                GameLogger.LogWarning("Could not create runtime ingredient crates because required resources are missing.");
+                return;
+            }
+
+            Transform stationsParent = GameObject.Find("Stations")?.transform;
+            Vector3 anchor = GetKitchenAnchor();
+            SpawnIngredientCrate(cratePrefab, tomato, anchor + new Vector3(0f, 0f, -2f), stationsParent);
+            SpawnIngredientCrate(cratePrefab, steak, anchor + new Vector3(0f, 0f, -4f), stationsParent);
+        }
+
+        private void EnsurePlateDispenser()
+        {
+            if (Object.FindObjectsByType<PlateDispenser>(FindObjectsSortMode.None).Length > 0)
+            {
+                return;
+            }
+
+            GameObject dispenserPrefab = Resources.Load<GameObject>("Prefabs/Gameplay/Stations/PlateDispenser");
+            if (dispenserPrefab == null)
+            {
+                GameLogger.LogWarning("Could not create runtime plate dispenser because the resource is missing.");
+                return;
+            }
+
+            Transform stationsParent = GameObject.Find("Stations")?.transform;
+            Vector3 anchor = GetKitchenAnchor();
+            GameObject dispenserObject = Object.Instantiate(dispenserPrefab, anchor + new Vector3(0f, 0f, 2f), Quaternion.identity);
+            if (stationsParent != null)
+            {
+                dispenserObject.transform.SetParent(stationsParent);
+            }
+
+            NetworkObject networkObject = dispenserObject.GetComponent<NetworkObject>();
+            if (networkObject != null)
+            {
+                networkObject.Spawn(true);
+            }
+        }
+
+        private static void SpawnIngredientCrate(
+            GameObject cratePrefab,
+            Ingredient ingredient,
+            Vector3 position,
+            Transform parent)
+        {
+            GameObject crateObject = Object.Instantiate(cratePrefab, position, Quaternion.identity);
+            if (parent != null)
+            {
+                crateObject.transform.SetParent(parent);
+            }
+
+            IngredientCrate crate = crateObject.GetComponent<IngredientCrate>();
+            crate?.ConfigureIngredient(ingredient);
+
+            NetworkObject networkObject = crateObject.GetComponent<NetworkObject>();
+            if (networkObject != null)
+            {
+                networkObject.Spawn(true);
+            }
+        }
+
+        private static Vector3 GetKitchenAnchor()
+        {
+            ServingStation servingStation = Object.FindFirstObjectByType<ServingStation>();
+            if (servingStation != null)
+            {
+                return servingStation.transform.position;
+            }
+
+            CounterStation counter = Object.FindFirstObjectByType<CounterStation>();
+            return counter != null ? counter.transform.position : Vector3.zero;
+        }
+
+        private int ReserveNextHumanTeam()
+        {
+            int assignedTeamId = _nextHumanTeamId;
+            _nextHumanTeamId = (_nextHumanTeamId + 1) % 2;
+            return assignedTeamId;
+        }
+
+        private static TeamCategory ToTeamCategory(int teamId)
+        {
+            return teamId == 1 ? TeamCategory.TeamB : TeamCategory.TeamA;
+        }
+
         /// <summary>
         /// Subscribe to network events for disconnect handling
         /// </summary>
         private void SubscribeToNetworkEvents()
         {
-            if (NetworkManager.Singleton != null)
+            if (NetcodeManager != null)
             {
-                NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
+                NetcodeManager.OnClientDisconnectCallback += OnClientDisconnected;
             }
         }
 
@@ -362,10 +483,10 @@ namespace Gameplay.App.Networking
         /// </summary>
         private void UnsubscribeFromNetworkEvents()
         {
-            if (NetworkManager.Singleton != null)
+            if (NetcodeManager != null)
             {
-                NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnected;
-                NetworkManager.Singleton.ConnectionApprovalCallback = null;
+                NetcodeManager.OnClientDisconnectCallback -= OnClientDisconnected;
+                NetcodeManager.ConnectionApprovalCallback = null;
             }
         }
 
@@ -378,7 +499,7 @@ namespace Gameplay.App.Networking
                 return;
 
             // Release spawn point if using SpawnManager
-            if (_spawnManager != null && NetworkManager.Singleton.IsServer)
+            if (_spawnManager != null && NetcodeManager?.IsServer == true)
             {
                 _spawnManager.ReleaseSpawnPoint(clientId);
             }
@@ -407,12 +528,41 @@ namespace Gameplay.App.Networking
         private void OnGameStartFailed(string reason)
         {
             GameLogger.LogError($"Game start failed: {reason}");
+            RestoreAutomaticPlayerSpawning();
 
             // Show error message
             _uiService?.ShowNotification("Game Start Failed", reason, NotificationType.Error, 4f);
 
             // Return to lobby
             ReturnToLobby();
+        }
+
+        private void OverrideAutomaticPlayerSpawning()
+        {
+            if (NetcodeManager?.NetworkConfig == null)
+            {
+                return;
+            }
+
+            _originalPlayerPrefab = NetcodeManager.NetworkConfig.PlayerPrefab;
+            _playerPrefab = _originalPlayerPrefab;
+            NetcodeManager.NetworkConfig.PlayerPrefab = null;
+            _didDisableAutomaticPlayerSpawning = true;
+
+            GameLogger.Log("Disabled automatic player spawning - using manual spawning");
+        }
+
+        private void RestoreAutomaticPlayerSpawning()
+        {
+            if (!_didDisableAutomaticPlayerSpawning || NetcodeManager?.NetworkConfig == null)
+            {
+                return;
+            }
+
+            NetcodeManager.NetworkConfig.PlayerPrefab = _originalPlayerPrefab;
+            _didDisableAutomaticPlayerSpawning = false;
+
+            GameLogger.Log("Restored automatic player spawning configuration");
         }
     }
 }

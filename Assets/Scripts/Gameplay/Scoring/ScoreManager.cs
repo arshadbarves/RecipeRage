@@ -108,13 +108,7 @@ namespace Gameplay.Scoring
                  teamId = 0;
             }
 
-            int basePoints = order.PointValue;
-            int timeBonus = 0;
-            if (order.TimeLimit > 0)
-            {
-                float timePercentage = order.RemainingTime / order.TimeLimit;
-                timeBonus = Mathf.RoundToInt(_timeBonus * timePercentage);
-            }
+            int basePoints = Mathf.Max(0, order.PointValue);
 
             // Check combo
             if (!_lastTeamOrderCompletionTime.ContainsKey(teamId))
@@ -135,12 +129,12 @@ namespace Gameplay.Scoring
             }
 
             int comboBonus = (_teamComboCounts[teamId] - 1) * _comboBonus;
-            int totalPoints = basePoints + timeBonus + comboBonus;
+            int totalPoints = basePoints + comboBonus;
 
             _teamScores[teamId] += totalPoints;
             _lastTeamOrderCompletionTime[teamId] = Time.time;
 
-            GameLogger.Log($"Team {teamId} Score: {totalPoints} (Base:{basePoints}, Time:{timeBonus}, Combo:{comboBonus}). Total: {_teamScores[teamId]}");
+            GameLogger.Log($"Team {teamId} Score: {totalPoints} (Base:{basePoints}, Combo:{comboBonus}). Total: {_teamScores[teamId]}");
         }
 
         // --- Public API ---
@@ -150,6 +144,17 @@ namespace Gameplay.Scoring
             if (teamId >= 0 && teamId < _teamScores.Count)
                 return _teamScores[teamId];
             return 0;
+        }
+
+        public IReadOnlyList<int> GetTeamScores()
+        {
+            List<int> scores = new List<int>(_teamScores.Count);
+            for (int i = 0; i < _teamScores.Count; i++)
+            {
+                scores.Add(_teamScores[i]);
+            }
+
+            return scores;
         }
 
         public void AddPoints(int teamId, int points)

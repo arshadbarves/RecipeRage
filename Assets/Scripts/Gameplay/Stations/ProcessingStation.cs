@@ -52,6 +52,9 @@ namespace Gameplay.Stations
         /// </summary>
         protected GameObject _progressBar;
 
+        public bool IsProcessing => _isProcessing;
+        public IngredientItem CurrentIngredient => _currentIngredient;
+
         /// <summary>
         /// The network variable for processing state.
         /// </summary>

@@ -5,7 +5,7 @@ namespace Core.Auth
     public enum AuthType
     {
         DeviceID,
-        // Future: Google, Facebook
+        // Additional external-provider flows remain planned, not implemented.
     }
 
     public interface IAuthService

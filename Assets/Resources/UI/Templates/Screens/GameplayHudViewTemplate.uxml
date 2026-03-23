@@ -1,0 +1,41 @@
+<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Resources/UI/Styles/Screens/GameplayHud.uss?fileID=7433441132597879392&amp;guid=4df0a83779954f4095a800f6d97fdb24&amp;type=3#GameplayHud"/>
+    <VisualElement name="screen-container" class="gameplay-hud-root">
+        <VisualElement class="gameplay-top-bar">
+            <VisualElement class="gameplay-stat-card">
+                <Label text="PHASE" class="gameplay-label"/>
+                <Label name="gameplay-phase" text="WAITING" class="gameplay-value"/>
+            </VisualElement>
+            <VisualElement class="gameplay-stat-card gameplay-timer-card">
+                <Label text="TIME" class="gameplay-label"/>
+                <Label name="gameplay-timer" text="05:00" class="gameplay-value"/>
+                <VisualElement class="gameplay-timer-track">
+                    <VisualElement name="gameplay-timer-fill" class="gameplay-timer-fill"/>
+                </VisualElement>
+            </VisualElement>
+            <VisualElement class="gameplay-stat-card">
+                <Label text="SCORE" class="gameplay-label"/>
+                <Label name="gameplay-score" text="Score: 0" class="gameplay-value"/>
+            </VisualElement>
+        </VisualElement>
+
+        <VisualElement name="interaction-prompt" class="interaction-prompt" style="display: none;">
+            <Label text="INTERACT" class="gameplay-label"/>
+            <Label name="interaction-text" text="" class="interaction-value"/>
+        </VisualElement>
+
+        <VisualElement class="gameplay-right-panel">
+            <Label text="ORDERS" class="gameplay-panel-title"/>
+            <ScrollView name="orders-list" class="gameplay-orders-list"/>
+        </VisualElement>
+
+        <VisualElement name="mobile-controls" class="mobile-controls" style="display: none;">
+            <VisualElement class="mobile-actions">
+                <Button name="mobile-jump" text="JUMP" class="mobile-action-button"/>
+                <Button name="mobile-attack" text="ATTACK" class="mobile-action-button"/>
+                <Button name="mobile-special" text="SPECIAL" class="mobile-action-button"/>
+                <Button name="mobile-interact" text="INTERACT" class="mobile-action-button"/>
+            </VisualElement>
+        </VisualElement>
+    </VisualElement>
+</UXML>

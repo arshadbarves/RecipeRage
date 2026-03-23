@@ -2,7 +2,6 @@ using Gameplay.Persistence;
 using Core.UI;
 using Core.UI.Core;
 using Core.UI.Interfaces;
-using Core.Networking;
 using Core.Session;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -16,7 +15,7 @@ namespace Gameplay.UI.Features.Profile
     [UIScreen(UIScreenCategory.Screen, "Screens/ProfileViewTemplate")]
     public class ProfileView : BaseUIScreen
     {
-        [Inject] private SessionManager _sessionManager;
+        [Inject] private ISessionContext _sessionContext;
 
         private Label _playerNameLabel;
         private Label _playerLevelLabel;
@@ -47,9 +46,9 @@ namespace Gameplay.UI.Features.Profile
 
         private void UpdatePlayerInfo()
         {
-            if (_sessionManager?.IsSessionActive != true) return;
+            if (!_sessionContext.IsSessionActive) return;
 
-            var playerDataService = _sessionManager.SessionContainer?.Resolve<PlayerDataService>();
+            var playerDataService = _sessionContext.PlayerDataService;
             if (playerDataService == null) return;
 
             var stats = playerDataService.GetStats();
@@ -66,36 +65,24 @@ namespace Gameplay.UI.Features.Profile
         {
             if (_friendCodeLabel == null) return;
 
-            var sessionContainer = _sessionManager?.SessionContainer;
-            if (sessionContainer != null)
+            var friendsService = _sessionContext.FriendsService;
+            if (friendsService != null)
             {
-                var networking = sessionContainer.Resolve<INetworkingServices>();
-                var friendsService = networking?.FriendsService;
-
-                if (friendsService != null && friendsService.IsInitialized)
-                {
-                    _friendCodeLabel.text = friendsService.MyFriendCode;
-                }
-                else
-                {
-                    _friendCodeLabel.text = "Loading...";
-                }
+                _friendCodeLabel.text = friendsService.IsInitialized ? friendsService.MyFriendCode : "Loading...";
+            }
+            else
+            {
+                _friendCodeLabel.text = "Loading...";
             }
         }
 
         private void OnCopyCodeClicked()
         {
-            var sessionContainer = _sessionManager?.SessionContainer;
-            if (sessionContainer != null)
+            var friendsService = _sessionContext.FriendsService;
+            if (friendsService != null && friendsService.IsInitialized)
             {
-                var networking = sessionContainer.Resolve<INetworkingServices>();
-                var friendsService = networking?.FriendsService;
-
-                if (friendsService != null && friendsService.IsInitialized)
-                {
-                    GUIUtility.systemCopyBuffer = friendsService.MyFriendCode;
-                    UIService?.ShowNotification("Friend Code copied to clipboard!", NotificationType.Success);
-                }
+                GUIUtility.systemCopyBuffer = friendsService.MyFriendCode;
+                UIService?.ShowNotification("Friend Code copied to clipboard!", NotificationType.Success);
             }
         }
 

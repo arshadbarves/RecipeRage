@@ -83,6 +83,11 @@ namespace Gameplay.UI
         {
             // Trigger interact action
         }
+
+        public void TriggerJump() => OnJumpPressed();
+        public void TriggerAttack() => OnAttackPressed();
+        public void TriggerSpecial() => OnSpecialPressed();
+        public void TriggerInteract() => OnInteractPressed();
         
         public void ShowControls()
         {

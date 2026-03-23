@@ -15,7 +15,7 @@ namespace Gameplay.UI.Features.Matchmaking
 {
     public class MatchmakingViewModel : BaseViewModel
     {
-        private readonly SessionManager _sessionManager;
+        private readonly ISessionContext _sessionContext;
         private readonly ILocalizationManager _localization;
         private CancellationTokenSource _cts;
         private float _rawSearchTime;
@@ -27,12 +27,12 @@ namespace Gameplay.UI.Features.Matchmaking
         public BindableProperty<string> GameModeText { get; } = new BindableProperty<string>("FREE FOR ALL");
         public BindableProperty<string> MapNameText { get; } = new BindableProperty<string>("Loading...");
 
-        private IMatchmakingService MatchmakingService => _sessionManager.SessionContainer?.Resolve<IMatchmakingService>();
+        private IMatchmakingService MatchmakingService => _sessionContext.MatchmakingService;
 
         [Inject]
-        public MatchmakingViewModel(SessionManager sessionManager, ILocalizationManager localization)
+        public MatchmakingViewModel(ISessionContext sessionContext, ILocalizationManager localization)
         {
-            _sessionManager = sessionManager;
+            _sessionContext = sessionContext;
             _localization = localization;
         }
 
@@ -59,7 +59,7 @@ namespace Gameplay.UI.Features.Matchmaking
 
         private void UpdateGameModeInfo()
         {
-            var gameModeService = _sessionManager.SessionContainer?.Resolve<IGameModeService>();
+            var gameModeService = _sessionContext.GameModeService;
             if (gameModeService?.SelectedGameMode != null)
             {
                 MapNameText.Value = gameModeService.SelectedGameMode.DisplayName;

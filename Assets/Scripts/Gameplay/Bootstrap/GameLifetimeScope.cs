@@ -18,22 +18,26 @@ using Core.UI;
 using Core.UI.Interfaces;
 using Gameplay.UI.Features.Auth;
 using Gameplay.UI.Features.Character;
+using Gameplay.UI.Features.Gameplay;
 using Gameplay.UI.Features.Loading;
 using Gameplay.UI.Features.Lobby;
 using Gameplay.UI.Features.MainMenu;
 using Gameplay.UI.Features.Maps;
 using Gameplay.UI.Features.Matchmaking;
+using Gameplay.UI.Components.Tabs;
 using Gameplay.UI.Features.Profile;
 using Gameplay.UI.Features.Settings;
 using Gameplay.UI.Features.Shop;
 using Gameplay.UI.Features.Social;
 using Gameplay.UI.Features.System;
 using Gameplay.UI.Features.User;
-using Gameplay.UI.Features.GameOver;
 using Gameplay.App.State;
 using Gameplay.App.State.States;
+using Gameplay.Match;
+using Gameplay.Shared;
 using Gameplay.UI;
 using Gameplay.UI.Features.GameOver;
+using Unity.Netcode;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
@@ -50,6 +54,16 @@ namespace Gameplay.Bootstrap
 
         private void RegisterCoreSystems(IContainerBuilder builder)
         {
+            var networkManager = GetComponent<NetworkManager>();
+            if (networkManager != null)
+            {
+                builder.RegisterInstance(networkManager);
+            }
+            else
+            {
+                GameLogger.LogError("NetworkManager not found on GameLifetimeScope root.");
+            }
+
             // 1. Core Utilities
             // Logging
             builder.Register<LoggingService>(Lifetime.Singleton)
@@ -69,6 +83,7 @@ namespace Gameplay.Bootstrap
             builder.Register<DOTweenUIAnimator>(Lifetime.Singleton).As<IUIAnimator>();
             builder.Register<DOTweenTransformAnimator>(Lifetime.Singleton).As<ITransformAnimator>();
             builder.Register<AnimationService>(Lifetime.Singleton).As<IAnimationService>();
+            builder.Register<UIScreenStackManager>(Lifetime.Singleton).As<IUIScreenStackManager>();
 
             // UIService
             // Find UIDocument in the scene
@@ -81,7 +96,7 @@ namespace Gameplay.Bootstrap
             {
                 GameLogger.LogError("UIDocument not found in scene! UI will not work.");
             }
-            builder.Register<UIService>(Lifetime.Singleton).As<IUIService>().As<IStartable>().As<IDisposable>();
+            builder.Register<UIService>(Lifetime.Singleton).As<IUIService>().As<IStartable>().As<ITickable>().As<IDisposable>();
 
             // 3D Preview Manager
             var previewManager = GameObject.FindObjectOfType<Gameplay.Characters.Visuals.CharacterPreviewManager>();
@@ -90,7 +105,7 @@ namespace Gameplay.Bootstrap
                 GameLogger.Log("Creating CharacterPreviewManager dynamically...");
                 var go = new GameObject("CharacterPreviewManager");
                 previewManager = go.AddComponent<Gameplay.Characters.Visuals.CharacterPreviewManager>();
-                // DontDestroyOnLoad might not be needed if it's child of LifetimeScope, 
+                // DontDestroyOnLoad might not be needed if it's child of LifetimeScope,
                 // but let's keep it clean in the hierarchy
             }
             builder.RegisterInstance(previewManager);
@@ -112,6 +127,7 @@ namespace Gameplay.Bootstrap
             builder.Register<MapSelectionView>(Lifetime.Transient);
             builder.Register<MatchmakingView>(Lifetime.Transient);
             builder.Register<SettingsView>(Lifetime.Transient);
+            builder.Register<GameplayHudView>(Lifetime.Transient);
             builder.Register<GameOverScreen>(Lifetime.Transient);
 
             // Popups & Components
@@ -120,6 +136,7 @@ namespace Gameplay.Bootstrap
             builder.Register<FriendsPopup>(Lifetime.Transient);
             builder.Register<NoInternetPopup>(Lifetime.Transient);
             builder.Register<JoystickEditorUI>(Lifetime.Transient);
+            builder.Register<CharacterTabComponent>(Lifetime.Transient);
 
             // 3. Persistence
             builder.Register<EncryptionService>(Lifetime.Singleton)
@@ -127,6 +144,10 @@ namespace Gameplay.Bootstrap
                 .WithParameter("RecipeRage");
             builder.Register<StorageProviderFactory>(Lifetime.Singleton);
             builder.Register<SaveService>(Lifetime.Singleton).As<ISaveService>();
+
+            builder.Register<ConfigService>(Lifetime.Singleton).As<IConfigService>();
+            builder.Register<MatchService>(Lifetime.Singleton).As<IMatchService>();
+            builder.Register<OrderService>(Lifetime.Singleton).As<IOrderService>();
 
             // Game Modes (Global)
             builder.Register<Gameplay.GameModes.GameModeService>(Lifetime.Singleton).As<Gameplay.GameModes.IGameModeService>().As<IDisposable>();
@@ -140,12 +161,18 @@ namespace Gameplay.Bootstrap
 
             // 6. Session & Connectivity
             builder.Register<SessionManager>(Lifetime.Singleton).AsSelf().As<IInitializable>().As<IDisposable>();
+            builder.Register<SessionContext>(Lifetime.Singleton).As<ISessionContext>();
+            builder.Register(resolver => new MatchContext(networkManager, resolver.Resolve<IEventBus>()), Lifetime.Singleton)
+                .As<IMatchContext>()
+                .As<IMatchRuntimeRegistry>()
+                .As<IDisposable>();
 
             builder.Register<ConnectivityService>(Lifetime.Singleton).As<IConnectivityService>().As<IStartable>().As<IDisposable>();
 
             builder.Register<MaintenanceService>(Lifetime.Singleton).As<IMaintenanceService>();
 
             // 6. State Management
+            builder.Register<GameStateFactory>(Lifetime.Singleton).As<IStateFactory>();
             builder.Register<GameStateManager>(Lifetime.Singleton).As<IGameStateManager>().As<IDisposable>().As<ITickable>();
 
             // Register Games States
@@ -167,12 +194,14 @@ namespace Gameplay.Bootstrap
 
             // Networking Core (Low level)
             builder.Register<PlayerNetworkManager>(Lifetime.Singleton).As<IPlayerNetworkManager>();
+            builder.Register<NetworkObjectPool>(Lifetime.Singleton).As<INetworkObjectPool>();
+            builder.Register<NetworkGameManager>(Lifetime.Singleton).As<INetworkGameManager>();
 
             // 8. Gameplay Services
             builder.Register<Gameplay.Characters.CharacterService>(Lifetime.Singleton).As<Gameplay.Characters.ICharacterService>().As<IDisposable>();
             builder.Register<Gameplay.Skins.SkinsService>(Lifetime.Singleton).As<Gameplay.Skins.ISkinsService>().As<IDisposable>();
             builder.Register<Gameplay.Persistence.PlayerDataService>(Lifetime.Singleton); // Added PlayerDataService
-            
+
             // Economy Service
             builder.Register<Gameplay.Economy.EconomyService>(Lifetime.Singleton).AsSelf(); // Ensure EconomyService is registered if not already
 
@@ -203,6 +232,7 @@ namespace Gameplay.Bootstrap
             builder.Register<SettingsViewModel>(Lifetime.Transient);
             builder.Register<ShopViewModel>(Lifetime.Transient);
             builder.Register<UsernameViewModel>(Lifetime.Transient);
+            builder.Register<GameplayHudViewModel>(Lifetime.Transient);
 
             // Audio System
             // AudioPoolManager needs a parent transform, we use this scope's transform

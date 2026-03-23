@@ -1,9 +1,9 @@
 using Core.Logging;
 using Core.Networking.Services;
-using Core.Session;
 using Unity.Netcode;
 using UnityEngine;
 using VContainer;
+using VContainer.Unity;
 
 namespace Gameplay.Cooking
 {
@@ -17,9 +17,9 @@ namespace Gameplay.Cooking
         [SerializeField] private GameObject _ingredientPrefab;
 
         [Inject]
-        private SessionManager _sessionManager;
-
         private INetworkObjectPool _objectPool;
+
+        [Inject]
         private INetworkGameManager _networkGameManager;
 
         /// <summary>
@@ -27,20 +27,14 @@ namespace Gameplay.Cooking
         /// </summary>
         private void Awake()
         {
-            // Services will be resolved from SessionManager when needed
-        }
-
-        private void EnsureServices()
-        {
-            if (_objectPool == null || _networkGameManager == null)
+            LifetimeScope scope = LifetimeScope.Find<LifetimeScope>();
+            if (scope != null)
             {
-                var sessionContainer = _sessionManager?.SessionContainer;
-                if (sessionContainer != null)
-                {
-                    _objectPool = sessionContainer.Resolve<INetworkObjectPool>();
-                    _networkGameManager = sessionContainer.Resolve<INetworkGameManager>();
-                }
+                scope.Container.Inject(this);
+                return;
             }
+
+            GameLogger.LogError("[IngredientNetworkSpawner] LifetimeScope not found. Ingredient spawner dependencies were not injected.");
         }
 
         /// <summary>
@@ -63,23 +57,38 @@ namespace Gameplay.Cooking
                 return null;
             }
 
-            EnsureServices();
-
             // Get ingredient from pool or create new
+            GameObject ingredientPrefab = ingredientData.Prefab != null ? ingredientData.Prefab : _ingredientPrefab;
+            if (ingredientPrefab == null)
+            {
+                GameLogger.LogError($"[IngredientNetworkSpawner] No ingredient prefab configured for '{ingredientData.DisplayName}'");
+                return null;
+            }
+
+            if (_objectPool == null && _networkGameManager == null)
+            {
+                GameLogger.LogError("[IngredientNetworkSpawner] Missing injected INetworkObjectPool and INetworkGameManager. Check GameLifetimeScope registrations.");
+                return null;
+            }
+
             NetworkObject ingredientObject;
             if (_objectPool != null)
             {
-                ingredientObject = _objectPool.Get(_ingredientPrefab, position, Quaternion.identity);
+                ingredientObject = _objectPool.Get(ingredientPrefab, position, Quaternion.identity);
+            }
+            else if (_networkGameManager != null)
+            {
+                ingredientObject = _networkGameManager.SpawnNetworkObject(ingredientPrefab, position, Quaternion.identity);
             }
             else
             {
-                // Fallback to direct spawning if pool not available
-                ingredientObject = _networkGameManager?.SpawnNetworkObject(_ingredientPrefab, position, Quaternion.identity);
+                GameLogger.LogError("[IngredientNetworkSpawner] INetworkObjectPool is null and no INetworkGameManager fallback is available.");
+                return null;
             }
 
             if (ingredientObject == null)
             {
-                GameLogger.LogError("Failed to spawn ingredient");
+                GameLogger.LogError($"[IngredientNetworkSpawner] Failed to spawn ingredient '{ingredientData.DisplayName}' from prefab '{ingredientPrefab.name}'");
                 return null;
             }
 
@@ -111,16 +120,18 @@ namespace Gameplay.Cooking
                 return;
             }
 
-            EnsureServices();
-
             // Return to pool or despawn
             if (_objectPool != null)
             {
                 _objectPool.Return(ingredientObject);
             }
+            else if (_networkGameManager != null)
+            {
+                _networkGameManager.DespawnNetworkObject(ingredientObject);
+            }
             else
             {
-                _networkGameManager?.DespawnNetworkObject(ingredientObject);
+                GameLogger.LogError("[IngredientNetworkSpawner] Missing injected despawn services. Check GameLifetimeScope registrations.");
             }
         }
 

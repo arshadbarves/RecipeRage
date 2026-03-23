@@ -1,5 +1,7 @@
 # Firebase Remote Config Setup Guide
 
+This folder now contains sample Remote Config payloads and setup notes only. The old local dashboard scaffold, committed `node_modules`, and committed service account material have been removed from source control.
+
 ## Overview
 This folder contains example JSON files for all 7 configuration domains in RecipeRage. Use these to set up Firebase Remote Config parameters.
 

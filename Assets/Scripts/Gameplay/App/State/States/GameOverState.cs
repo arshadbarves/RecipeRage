@@ -2,27 +2,32 @@ using Gameplay.Scoring;
 using Core.UI.Interfaces;
 using UnityEngine;
 using Gameplay.UI.Features.GameOver;
+using Gameplay.UI.Features.Gameplay;
+using Gameplay.Shared;
 
 namespace Gameplay.App.State.States
 {
     public class GameOverState : BaseState
     {
         private readonly IUIService _uiService;
+        private readonly IMatchContext _matchContext;
 
-        public GameOverState(IUIService uiService)
+        public GameOverState(IUIService uiService, IMatchContext matchContext)
         {
             _uiService = uiService;
+            _matchContext = matchContext;
         }
 
         public override void Enter()
         {
             base.Enter();
 
-            // Show the game over UI
-            _uiService?.Show<GameOverScreen>(true, false);
+            _uiService?.HideHud<GameplayHudView>(false);
+            _uiService?.SetRootScreen<GameOverScreen>(true);
 
             // Get the final scores
-            ScoreManager scoreManager = Object.FindFirstObjectByType<ScoreManager>();
+            _matchContext.Refresh();
+            ScoreManager scoreManager = _matchContext.ScoreManager;
             if (scoreManager != null)
             {
                 int scoreTeam0 = scoreManager.GetScore(0);

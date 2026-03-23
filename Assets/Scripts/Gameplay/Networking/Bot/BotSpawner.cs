@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Core.Networking.Interfaces;
+using Gameplay.Characters;
 using Gameplay.Spawning;
 using Core.Logging;
 using Core.Networking.Models;
@@ -17,15 +18,18 @@ namespace Gameplay.Networking.Bot
     {
         private readonly List<NetworkObject> _spawnedBots = new List<NetworkObject>();
         private readonly GameObject _botPrefab;
-        private SpawnManager _spawnManager;
+        private readonly NetworkManager _networkManager;
+        private readonly SpawnManager _spawnManager;
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="botPrefab">The bot prefab to spawn (should have NetworkObject component)</param>
-        public BotSpawner(GameObject botPrefab)
+        public BotSpawner(GameObject botPrefab, NetworkManager networkManager, SpawnManager spawnManager)
         {
             _botPrefab = botPrefab;
+            _networkManager = networkManager;
+            _spawnManager = spawnManager;
         }
 
         /// <summary>
@@ -35,7 +39,7 @@ namespace Gameplay.Networking.Bot
         /// <param name="team">Team category for spawn point selection</param>
         public void SpawnBots(List<BotPlayer> botPlayers, TeamCategory team = TeamCategory.Neutral)
         {
-            if (!NetworkManager.Singleton.IsServer)
+            if (_networkManager == null || !_networkManager.IsServer)
             {
                 GameLogger.LogWarning("[BotSpawner] Only server can spawn bots");
                 return;
@@ -47,14 +51,11 @@ namespace Gameplay.Networking.Bot
                 return;
             }
 
-            // Try to get SpawnManager
-            _spawnManager = Object.FindFirstObjectByType<SpawnManager>();
-
             GameLogger.Log($"[BotSpawner] Spawning {botPlayers.Count} bots (Team: {team})");
 
             foreach (var botPlayer in botPlayers)
             {
-                SpawnBot(botPlayer, team);
+                SpawnBot(botPlayer, ResolveTeam(botPlayer, team));
             }
         }
 
@@ -72,23 +73,11 @@ namespace Gameplay.Networking.Bot
             if (_spawnManager != null)
             {
                 // Let SpawnManager handle the spawning
-                bool spawned = _spawnManager.SpawnBot(botPlayer, team);
-                if (spawned)
+                if (_spawnManager.TrySpawnBot(botPlayer, team, out NetworkObject spawnedNetworkObject))
                 {
-                    // Track the spawned bot (SpawnManager already spawned it)
-                    // Find the bot that was just spawned
-                    var botObjects = Object.FindObjectsOfType<BotController>();
-                    foreach (var spawnedBotController in botObjects)
+                    if (spawnedNetworkObject != null && !_spawnedBots.Contains(spawnedNetworkObject))
                     {
-                        if (spawnedBotController.GetBotData() == botPlayer)
-                        {
-                            var spawnedNetworkObject = spawnedBotController.GetComponent<NetworkObject>();
-                            if (spawnedNetworkObject != null && !_spawnedBots.Contains(spawnedNetworkObject))
-                            {
-                                _spawnedBots.Add(spawnedNetworkObject);
-                                break;
-                            }
-                        }
+                        _spawnedBots.Add(spawnedNetworkObject);
                     }
                 }
                 return;
@@ -114,13 +103,18 @@ namespace Gameplay.Networking.Bot
 
             // Get BotController component
             var botController = botObject.GetComponent<BotController>();
-            if (botController != null)
+            if (botController == null)
             {
-                botController.Initialize(botPlayer);
+                GameLogger.LogError("[BotSpawner] Bot prefab is missing BotController. Despawning inert bot instance.");
+                Object.Destroy(botObject);
+                return;
             }
+
+            botController.Initialize(botPlayer);
 
             // Spawn as network object (not as player object)
             networkObject.Spawn();
+            ApplyTeamAssignment(networkObject, botPlayer.TeamId);
 
             _spawnedBots.Add(networkObject);
 
@@ -149,7 +143,7 @@ namespace Gameplay.Networking.Bot
         public void DespawnAllBots()
         {
             // Check if NetworkManager exists and is server
-            if (NetworkManager.Singleton == null || !NetworkManager.Singleton.IsServer)
+            if (_networkManager == null || !_networkManager.IsServer)
             {
                 _spawnedBots.Clear();
                 return;
@@ -175,6 +169,30 @@ namespace Gameplay.Networking.Bot
         public int GetSpawnedBotCount()
         {
             return _spawnedBots.Count;
+        }
+
+        private static TeamCategory ResolveTeam(BotPlayer botPlayer, TeamCategory fallback)
+        {
+            if (botPlayer == null)
+            {
+                return fallback;
+            }
+
+            return botPlayer.TeamId == 1 ? TeamCategory.TeamB : TeamCategory.TeamA;
+        }
+
+        private static void ApplyTeamAssignment(NetworkObject networkObject, int teamId)
+        {
+            if (networkObject == null)
+            {
+                return;
+            }
+
+            var playerController = networkObject.GetComponent<PlayerController>();
+            if (playerController != null)
+            {
+                playerController.SetTeam(teamId);
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System;
 using Core.UI.Core;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -34,6 +35,13 @@ namespace Gameplay.UI.Features.Matchmaking
         // Pulse Animation State
         private float _pulseTimer = 0f;
         private const float PULSE_DURATION = 2f;
+        private Action<string> _statusBinding;
+        private Action<string> _playerCountBinding;
+        private Action<string> _timerBinding;
+        private Action<bool> _matchFoundBinding;
+        private Action<string> _gameModeBinding;
+        private Action<string> _mapNameBinding;
+        private bool _isViewModelBound;
 
         protected override void OnInitialize()
         {
@@ -55,37 +63,23 @@ namespace Gameplay.UI.Features.Matchmaking
             if (_cancelButton != null) _cancelButton.clicked += OnCancelClicked;
 
             CreateSlots();
+            BindViewModel();
         }
 
         protected override void OnShow()
         {
             _viewModel?.OnShow();
-
-            // Bind ViewModel properties
-            if (_viewModel != null)
-            {
-                _viewModel.StatusText.Bind(UpdateStatus);
-                _viewModel.PlayerCountText.Bind(UpdatePlayerCount);
-                _viewModel.SearchTimeText.Bind(OnTimerUpdate);
-                _viewModel.IsMatchFound.Bind(OnMatchFoundChanged);
-                _viewModel.GameModeText.Bind(UpdateGameMode);
-                _viewModel.MapNameText.Bind(UpdateMapName);
-            }
-
-            // Start Update Loop for animations will remain handled by the system calling Update()
         }
 
         protected override void OnHide()
         {
             _viewModel?.OnHide();
+        }
 
-            // Unbind - in this simple setup we might just rely on OnShow re-binding
-            // or we can unbind if BindableProperty supports it.
-            // Given the BindableProperty implementation usually involves subscription,
-            // we should technically unsubscribe, but let's assume OnShow re-binds/overwrites or we leave it.
-            // Actually, best practice is to handle subscriptions carefully.
-            // For now, mirroring previous logic which didn't explicitly unbind in OnHide either,
-            // but ViewModel.OnHide handles its internal event unsubscription.
+        protected override void OnDispose()
+        {
+            if (_cancelButton != null) _cancelButton.clicked -= OnCancelClicked;
+            UnbindViewModel();
         }
 
         private void UpdateStaticLocalization()
@@ -200,6 +194,39 @@ namespace Gameplay.UI.Features.Matchmaking
 
             // Activate first slot (User)
             UpdateSlotsVisual(1);
+        }
+
+        private void BindViewModel()
+        {
+            if (_viewModel == null || _isViewModelBound) return;
+
+            _statusBinding = UpdateStatus;
+            _playerCountBinding = UpdatePlayerCount;
+            _timerBinding = OnTimerUpdate;
+            _matchFoundBinding = OnMatchFoundChanged;
+            _gameModeBinding = UpdateGameMode;
+            _mapNameBinding = UpdateMapName;
+
+            _viewModel.StatusText.Bind(_statusBinding);
+            _viewModel.PlayerCountText.Bind(_playerCountBinding);
+            _viewModel.SearchTimeText.Bind(_timerBinding);
+            _viewModel.IsMatchFound.Bind(_matchFoundBinding);
+            _viewModel.GameModeText.Bind(_gameModeBinding);
+            _viewModel.MapNameText.Bind(_mapNameBinding);
+            _isViewModelBound = true;
+        }
+
+        private void UnbindViewModel()
+        {
+            if (_viewModel == null || !_isViewModelBound) return;
+
+            _viewModel.StatusText.Unbind(_statusBinding);
+            _viewModel.PlayerCountText.Unbind(_playerCountBinding);
+            _viewModel.SearchTimeText.Unbind(_timerBinding);
+            _viewModel.IsMatchFound.Unbind(_matchFoundBinding);
+            _viewModel.GameModeText.Unbind(_gameModeBinding);
+            _viewModel.MapNameText.Unbind(_mapNameBinding);
+            _isViewModelBound = false;
         }
 
         private void UpdateSlotsVisual(int currentPlayers)

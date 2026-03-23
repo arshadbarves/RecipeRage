@@ -32,6 +32,8 @@ namespace Gameplay.Stations
         /// </summary>
         private IngredientNetworkSpawner _ingredientNetworkSpawner;
 
+        public Ingredient ProvidedIngredient => _ingredientToProvide;
+
         /// <summary>
         /// Initialize the ingredient crate.
         /// </summary>
@@ -48,6 +50,12 @@ namespace Gameplay.Stations
             {
                 GameLogger.LogWarning("IngredientNetworkSpawner not found in scene. Ingredient spawning may not work properly.");
             }
+        }
+
+        public void ConfigureIngredient(Ingredient ingredient)
+        {
+            _ingredientToProvide = ingredient;
+            _stationName = $"{_ingredientToProvide?.DisplayName ?? "Ingredient"} Crate";
         }
 
         /// <summary>

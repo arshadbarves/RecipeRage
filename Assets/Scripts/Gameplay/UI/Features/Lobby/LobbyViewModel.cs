@@ -16,11 +16,11 @@ namespace Gameplay.UI.Features.Lobby
 {
     public class LobbyViewModel : BaseViewModel
     {
-        private readonly SessionManager _sessionManager;
+        private readonly ISessionContext _sessionContext;
         private readonly IGameStateManager _stateManager;
         private CancellationTokenSource _cts;
 
-        private IGameModeService GameModeService => _sessionManager.SessionContainer?.Resolve<IGameModeService>();
+        private IGameModeService GameModeService => _sessionContext.GameModeService;
 
         public BindableProperty<bool> IsMatchmaking { get; } = new BindableProperty<bool>(false);
         public BindableProperty<int> PlayerCount { get; } = new BindableProperty<int>(1);
@@ -31,9 +31,9 @@ namespace Gameplay.UI.Features.Lobby
         public BindableProperty<string> RotationTimer { get; } = new BindableProperty<string>("");
 
         [Inject]
-        public LobbyViewModel(SessionManager sessionManager, IGameStateManager stateManager)
+        public LobbyViewModel(ISessionContext sessionContext, IGameStateManager stateManager)
         {
-            _sessionManager = sessionManager;
+            _sessionContext = sessionContext;
             _stateManager = stateManager;
         }
 

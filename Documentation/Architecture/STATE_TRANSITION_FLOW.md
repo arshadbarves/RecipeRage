@@ -1,5 +1,7 @@
 # State Transition Flow with Bot Filling
 
+Historical reference only. Use current code plus `PROJECT_MEMORY.md` and `CURRENT_CODEBASE_AUDIT.md` for the live state-flow model.
+
 ## Complete Flow Diagram
 
 ```

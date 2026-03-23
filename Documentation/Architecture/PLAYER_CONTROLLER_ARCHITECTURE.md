@@ -1,5 +1,7 @@
 # Player Controller Architecture Diagram
 
+Historical reference only. This diagram is useful for old controller design context, but it is not the primary source of truth for the current project.
+
 ## 🏗️ System Overview
 
 ```

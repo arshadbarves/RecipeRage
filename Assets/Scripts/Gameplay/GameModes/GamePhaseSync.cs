@@ -5,7 +5,7 @@ namespace Gameplay.GameModes
 {
     /// <summary>
     /// Minimal NetworkBehaviour for syncing game phase across network.
-    /// Controlled by GameModeController (pure C# class).
+    /// Updated by the active gameplay runtime when server-side phase changes occur.
     /// </summary>
     public class GamePhaseSync : NetworkBehaviour
     {

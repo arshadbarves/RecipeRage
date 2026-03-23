@@ -14,6 +14,7 @@ namespace Core.Networking
     public class LatencyMonitor : IDisposable
     {
         private const float PING_INTERVAL = 2.0f; // Check every 2 seconds
+        private readonly NetworkManager _networkManager;
         
         private float _lastPingTime;
         private float _lastPingSentTime; // The exact time the packet was sent
@@ -28,15 +29,16 @@ namespace Core.Networking
 
         public float CurrentRtt => _currentRtt;
 
-        public LatencyMonitor()
+        public LatencyMonitor(NetworkManager networkManager)
         {
+            _networkManager = networkManager;
             RegisterHandlers();
-            _isRunning = true;
+            _isRunning = _networkManager != null;
         }
 
         public void Update()
         {
-            if (!_isRunning || NetworkManager.Singleton == null || !NetworkManager.Singleton.IsClient) return;
+            if (!_isRunning || _networkManager == null || !_networkManager.IsClient) return;
 
             if (Time.time - _lastPingTime >= PING_INTERVAL)
             {
@@ -47,19 +49,19 @@ namespace Core.Networking
 
         private void RegisterHandlers()
         {
-            if (NetworkManager.Singleton == null) return;
+            if (_networkManager == null) return;
             
             // Register handlers
-            NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler(PING_MESSAGE_NAME, HandlePingServer);
-            NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler(PONG_MESSAGE_NAME, HandlePongClient);
+            _networkManager.CustomMessagingManager.RegisterNamedMessageHandler(PING_MESSAGE_NAME, HandlePingServer);
+            _networkManager.CustomMessagingManager.RegisterNamedMessageHandler(PONG_MESSAGE_NAME, HandlePongClient);
         }
 
         private void UnregisterHandlers()
         {
-            if (NetworkManager.Singleton?.CustomMessagingManager != null)
+            if (_networkManager?.CustomMessagingManager != null)
             {
-                NetworkManager.Singleton.CustomMessagingManager.UnregisterNamedMessageHandler(PING_MESSAGE_NAME);
-                NetworkManager.Singleton.CustomMessagingManager.UnregisterNamedMessageHandler(PONG_MESSAGE_NAME);
+                _networkManager.CustomMessagingManager.UnregisterNamedMessageHandler(PING_MESSAGE_NAME);
+                _networkManager.CustomMessagingManager.UnregisterNamedMessageHandler(PONG_MESSAGE_NAME);
             }
         }
 
@@ -69,7 +71,7 @@ namespace Core.Networking
 
         private void SendPing()
         {
-            if (!NetworkManager.Singleton.IsClient) return;
+            if (_networkManager == null || !_networkManager.IsClient) return;
 
             var writer = new FastBufferWriter(8, Allocator.Temp);
             using (writer)
@@ -77,7 +79,7 @@ namespace Core.Networking
                 writer.WriteValueSafe(Time.time); // Use float time
                 
                 // If I am active client, send to server
-                NetworkManager.Singleton.CustomMessagingManager.SendNamedMessage(
+                _networkManager.CustomMessagingManager.SendNamedMessage(
                     PING_MESSAGE_NAME, 
                     NetworkManager.ServerClientId, 
                     writer);
@@ -110,6 +112,11 @@ namespace Core.Networking
 
         private void HandlePingServer(ulong senderId, FastBufferReader reader)
         {
+            if (_networkManager == null)
+            {
+                return;
+            }
+
             // Read the time sent by client
             float clientTime;
             reader.ReadValueSafe(out clientTime);
@@ -119,7 +126,7 @@ namespace Core.Networking
             using (writer)
             {
                 writer.WriteValueSafe(clientTime);
-                NetworkManager.Singleton.CustomMessagingManager.SendNamedMessage(
+                _networkManager.CustomMessagingManager.SendNamedMessage(
                     PONG_MESSAGE_NAME, 
                     senderId, 
                     writer);

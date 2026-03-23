@@ -3,6 +3,7 @@ using Core.Networking;
 using Core.Networking.Interfaces;
 using Core.Networking.Services;
 using Gameplay.App.State;
+using Gameplay.Shared;
 using Core.Auth;
 using Core.Logging;
 using Core.UI.Interfaces;
@@ -13,7 +14,7 @@ using Cysharp.Threading.Tasks;
 
 namespace Gameplay.App.Networking
 {
-    public class NetworkingServiceContainer : INetworkingServices
+    public class NetworkingServiceContainer : INetworkingServices, IBotSpawnerRegistry
     {
         #region Properties
 
@@ -35,6 +36,7 @@ namespace Gameplay.App.Networking
         private readonly IUIService _uiService;
         private readonly IGameStateManager _stateManager;
         private readonly IAuthService _authService;
+        private readonly IMatchContext _matchContext;
 
         #endregion
 
@@ -44,11 +46,12 @@ namespace Gameplay.App.Networking
         /// Constructor
         /// </summary>
         [Inject]
-        public NetworkingServiceContainer(IUIService uiService, IGameStateManager stateManager, IAuthService authService)
+        public NetworkingServiceContainer(IUIService uiService, IGameStateManager stateManager, IAuthService authService, IMatchContext matchContext)
         {
             _uiService = uiService;
             _stateManager = stateManager;
             _authService = authService;
+            _matchContext = matchContext;
             Initialize();
         }
 
@@ -92,7 +95,7 @@ namespace Gameplay.App.Networking
 
             // 5. Game Starter (depends on all services)
             // Uses concrete GameStarter from App.Networking
-            GameStarter = new GameStarter(this, _uiService, _stateManager);
+            GameStarter = new GameStarter(LobbyManager, MatchmakingService, this, _matchContext, _uiService, _stateManager);
 
             // 6. Bot Spawner (needs bot prefab - will be set later)
             // BotSpawner will be initialized when bot prefab is available
@@ -208,6 +211,11 @@ namespace Gameplay.App.Networking
 
             // Despawn bots if any
             BotSpawner?.DespawnAllBots();
+
+            if (LobbyManager is IDisposable disposableLobbyManager)
+            {
+                disposableLobbyManager.Dispose();
+            }
 
             // Clear references
             FriendsService = null;

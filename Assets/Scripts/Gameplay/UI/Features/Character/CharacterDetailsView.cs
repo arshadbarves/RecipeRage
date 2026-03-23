@@ -18,8 +18,7 @@ namespace Gameplay.UI.Features.Character
     [UIScreen(UIScreenCategory.Screen, "Screens/CharacterDetailsViewTemplate")]
     public class CharacterDetailsView : BaseUIScreen
     {
-        [Inject]
-        private SessionManager _sessionManager;
+        [Inject] private ISessionContext _sessionContext;
 
         private ICharacterService _characterService;
         private ISkinsService _skinsService;
@@ -58,15 +57,11 @@ namespace Gameplay.UI.Features.Character
         {
             if (_characterService != null && _skinsService != null && _playerDataService != null && _economyService != null && _previewManager != null) return;
 
-            var sessionContainer = _sessionManager?.SessionContainer;
-            if (sessionContainer != null)
-            {
-                _characterService = sessionContainer.Resolve<ICharacterService>();
-                _skinsService = sessionContainer.Resolve<ISkinsService>();
-                _playerDataService = sessionContainer.Resolve<PlayerDataService>();
-                _economyService = sessionContainer.Resolve<EconomyService>();
-                _previewManager = sessionContainer.Resolve<CharacterPreviewManager>();
-            }
+            _characterService = _sessionContext?.CharacterService;
+            _skinsService = _sessionContext?.SkinsService;
+            _playerDataService = _sessionContext?.PlayerDataService;
+            _economyService = _sessionContext?.EconomyService;
+            _previewManager = _sessionContext?.Resolve<CharacterPreviewManager>();
         }
 
         private void QueryElements()

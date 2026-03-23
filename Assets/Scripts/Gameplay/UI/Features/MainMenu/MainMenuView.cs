@@ -20,6 +20,7 @@ namespace Gameplay.UI.Features.MainMenu
         [Inject] private IObjectResolver _container;
         [Inject] private IEventBus _eventBus;
         [Inject] private SessionManager _sessionManager;
+        [Inject] private ISessionContext _sessionContext;
         [Inject] private Core.Localization.ILocalizationManager _localizationManager;
 
         private LobbyTabComponent _lobbyTab;
@@ -107,9 +108,9 @@ namespace Gameplay.UI.Features.MainMenu
 
         private void SubscribeToCurrencyUpdates()
         {
-            if (_sessionManager?.IsSessionActive != true) return;
+            if (!_sessionContext.IsSessionActive) return;
 
-            _economyService = _sessionManager.SessionContainer?.Resolve<EconomyService>();
+            _economyService = _sessionContext.EconomyService;
             if (_economyService == null) return;
 
             // Subscribe to balance changes
@@ -135,7 +136,7 @@ namespace Gameplay.UI.Features.MainMenu
 
         private void InitializeSessionComponents()
         {
-            if (_sessionManager?.IsSessionActive == false) return;
+            if (!_sessionContext.IsSessionActive) return;
             if (_lobbyTab != null) return;
             InitializeAllTabs();
         }
@@ -144,7 +145,7 @@ namespace Gameplay.UI.Features.MainMenu
 
         private void InitializeAllTabs()
         {
-            if (_sessionManager?.IsSessionActive == false || _viewModel == null) return;
+            if (!_sessionContext.IsSessionActive || _viewModel == null) return;
 
             _viewModel.Initialize();
             var sessionContainer = _sessionManager.SessionContainer;
@@ -168,9 +169,9 @@ namespace Gameplay.UI.Features.MainMenu
 
         private void UpdatePlayerInfo()
         {
-            if (_sessionManager?.IsSessionActive != true) return;
+            if (!_sessionContext.IsSessionActive) return;
 
-            var playerDataService = _sessionManager.SessionContainer?.Resolve<PlayerDataService>();
+            var playerDataService = _sessionContext.PlayerDataService;
             if (playerDataService == null) return;
 
             var stats = playerDataService.GetStats();

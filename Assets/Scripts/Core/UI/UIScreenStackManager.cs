@@ -7,9 +7,8 @@ using Core.UI.Interfaces;
 namespace Core.UI
 {
     /// <summary>
-    /// AAA-grade stack-based UI management system
-    /// TYPE-BASED: Uses Type instead of UIScreenType enum
-    /// Each category has its own stack, preventing priority conflicts
+    /// Shared stack manager used by the app-shell router.
+    /// TYPE-BASED: Uses screen Type instead of enum screen ids.
     /// </summary>
     public class UIScreenStackManager : IUIScreenStackManager
     {
@@ -74,19 +73,29 @@ namespace Core.UI
                 BlocksLowerCategories = false
             };
 
-            // Screen: Only one at a time, full history
+            // Screen: router decides between root replacement and push semantics,
+            // but history is still tracked here.
             _categoryConfigs[UIScreenCategory.Screen] = new CategoryConfig
             {
-                AllowStacking = false,
+                AllowStacking = true,
                 AllowMultiple = false,
                 TrackHistory = true,
                 BlocksLowerCategories = false
             };
 
-            // Persistent: Multiple allowed, no history
-            _categoryConfigs[UIScreenCategory.Persistent] = new CategoryConfig
+            // HUD: Only one active HUD at a time, no history.
+            _categoryConfigs[UIScreenCategory.HUD] = new CategoryConfig
             {
                 AllowStacking = false,
+                AllowMultiple = false,
+                TrackHistory = false,
+                BlocksLowerCategories = false
+            };
+
+            // Toasts: mounted independently, no history or blocking.
+            _categoryConfigs[UIScreenCategory.Toast] = new CategoryConfig
+            {
+                AllowStacking = true,
                 AllowMultiple = true,
                 TrackHistory = false,
                 BlocksLowerCategories = false

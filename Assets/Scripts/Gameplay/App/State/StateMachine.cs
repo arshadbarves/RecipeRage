@@ -47,7 +47,8 @@ namespace Gameplay.App.State
                 return;
             }
 
-            if (CurrentState == newState)
+            if (CurrentState == newState ||
+                (CurrentState != null && newState != null && CurrentState.GetType() == newState.GetType()))
             {
                 GameLogger.LogWarning($"[StateMachine] Already in state: {newState.GetType().Name}");
                 return;

@@ -19,6 +19,10 @@ namespace Gameplay.Stations
         /// </summary>
         private ItemBase _heldItem;
 
+        public ItemBase HeldItem => _heldItem;
+        public PlateItem HeldPlate => _heldItem as PlateItem;
+        public bool IsEmpty => _heldItem == null;
+
         protected override void Awake()
         {
             base.Awake();
