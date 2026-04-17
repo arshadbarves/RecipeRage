@@ -15,10 +15,14 @@ namespace Gameplay.Shared
             OrderManager orderManager,
             ScoreManager scoreManager,
             GamePhaseSync gamePhaseSync,
+            MatchResultSync matchResultSync,
             RoundTimer roundTimer,
             NetworkScoreManager networkScoreManager,
             MobileControlsManager mobileControlsManager,
-            SpawnManager spawnManager);
+            SpawnManager spawnManager,
+            IngredientNetworkSpawner ingredientNetworkSpawner,
+            IBotKitchenRuntime botKitchenRuntime,
+            IKitchenSupportRuntime kitchenSupportRuntime);
 
         void ClearSceneRuntime();
     }

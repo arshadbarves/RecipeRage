@@ -1,0 +1,40 @@
+{
+  "name": "caveman",
+  "version": "0.1.0",
+  "description": "Ultra-compressed communication mode that cuts filler while preserving technical accuracy.",
+  "author": {
+    "name": "Julius Brussee",
+    "url": "https://github.com/JuliusBrussee"
+  },
+  "homepage": "https://github.com/JuliusBrussee/caveman",
+  "repository": "https://github.com/JuliusBrussee/caveman",
+  "license": "MIT",
+  "keywords": [
+    "productivity",
+    "communication",
+    "brevity",
+    "writing"
+  ],
+  "skills": "./skills/",
+  "hooks": "./hooks.json",
+  "interface": {
+    "displayName": "Caveman",
+    "shortDescription": "Brief, low-filler responses with technical accuracy intact.",
+    "longDescription": "A compact writing mode for Codex that trims filler, keeps the substance, and supports multiple terseness levels.",
+    "developerName": "Julius Brussee",
+    "category": "Productivity",
+    "capabilities": [
+      "Write"
+    ],
+    "websiteURL": "https://github.com/JuliusBrussee/caveman",
+    "privacyPolicyURL": "https://github.com/JuliusBrussee/caveman/blob/main/README.md",
+    "termsOfServiceURL": "https://github.com/JuliusBrussee/caveman/blob/main/LICENSE",
+    "defaultPrompt": [
+      "Use caveman mode. Keep answer short and technically exact."
+    ],
+    "brandColor": "#6B7280",
+    "composerIcon": "./assets/caveman-small.svg",
+    "logo": "./assets/caveman.svg",
+    "screenshots": []
+  }
+}

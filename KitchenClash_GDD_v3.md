@@ -102,12 +102,13 @@ Current truth: authentication is still centered on the implemented EOS-backed lo
 3. Main menu exposes game mode, character, shop, and social UI.
 4. Matchmaking searches or creates a lobby and fills with bots after timeout.
 5. Gameplay loads `Game.unity`, optionally loads the selected map additively, starts the network session, then exposes runtime objects to HUD and app code through `MatchContext`.
-6. Kitchen systems handle stations, ingredients, orders, scoring, and bots.
+6. `MatchEndController` starts the round from the selected game mode, writes the final synchronized `MatchResultSync` snapshot, and drives `Playing` / `GameOver` phase changes.
+7. Kitchen systems handle stations, ingredients, orders, scoring, and bots.
 
 ### Partial
 
-- `GameOverState` is now reached from timer expiry through `GameplayHudViewModel`
-- non-timer end conditions still need explicit runtime verification
+- `GameOverState` is now gated by both `GamePhaseSync` and `MatchResultSync`, and covers both timer expiry and score-limit endings in code
+- runtime verification is still required before this can be treated as fully implemented
 
 ## Documentation Policy
 

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Gameplay.Characters;
 using Gameplay.Cooking;
+using Gameplay.Shared;
 using Gameplay.Stations;
 using UnityEngine;
 
@@ -9,13 +10,19 @@ namespace Gameplay.Networking.Bot
 {
     public sealed class BotKitchenSnapshot
     {
+        private readonly IMatchContext _matchContext;
         private readonly Dictionary<string, Component> _stationsById = new Dictionary<string, Component>();
         private readonly StandardDishValidator _dishValidator = new StandardDishValidator();
         private OrderManager _orderManager;
 
+        public BotKitchenSnapshot(IMatchContext matchContext)
+        {
+            _matchContext = matchContext;
+        }
+
         public BotPlanningSnapshot Capture(PlayerController player, string botId, BotClaimRegistry claimRegistry)
         {
-            _orderManager = Object.FindFirstObjectByType<OrderManager>();
+            _orderManager = _matchContext?.OrderManager;
             RefreshStations();
 
             int? claimedOrderId = claimRegistry.GetClaimedOrderId(botId);
@@ -28,7 +35,7 @@ namespace Gameplay.Networking.Bot
                 ClaimedCounterId = claimedCounterId,
                 HeldItem = BuildHeldItemState(player),
                 Stations = BuildStationDescriptors(player != null ? player.transform.position : Vector3.zero),
-                Orders = BuildOrderDescriptors(claimRegistry),
+                Orders = BuildOrderDescriptors(botId, claimRegistry),
                 OwnSinkDirty = FindOwnDirtySink(player) > 0
             };
 
@@ -55,7 +62,7 @@ namespace Gameplay.Networking.Bot
         {
             if (_orderManager == null)
             {
-                _orderManager = Object.FindFirstObjectByType<OrderManager>();
+                _orderManager = _matchContext?.OrderManager;
             }
 
             if (_orderManager == null)
@@ -78,7 +85,7 @@ namespace Gameplay.Networking.Bot
         {
             if (_orderManager == null)
             {
-                _orderManager = Object.FindFirstObjectByType<OrderManager>();
+                _orderManager = _matchContext?.OrderManager;
             }
 
             return _orderManager != null ? _orderManager.GetRecipeById(recipeId) : null;
@@ -163,7 +170,7 @@ namespace Gameplay.Networking.Bot
             return descriptors;
         }
 
-        private List<BotOrderDescriptor> BuildOrderDescriptors(BotClaimRegistry claimRegistry)
+        private List<BotOrderDescriptor> BuildOrderDescriptors(string botId, BotClaimRegistry claimRegistry)
         {
             var descriptors = new List<BotOrderDescriptor>();
 
@@ -192,6 +199,7 @@ namespace Gameplay.Networking.Bot
                     RemainingTime = order.RemainingTime,
                     IsCompleted = order.IsCompleted,
                     IsExpired = order.IsExpired,
+                    IsClaimedByAnotherBot = claimRegistry.IsOrderClaimedByAnotherBot(order.OrderId, botId),
                     ClaimedCounterId = counterId,
                     CounterHasPlate = plate != null,
                     CounterReadyToServe = readyToServe,
@@ -278,20 +286,18 @@ namespace Gameplay.Networking.Bot
         {
             _stationsById.Clear();
 
-            RegisterStations(Object.FindObjectsByType<IngredientCrate>(FindObjectsSortMode.None));
-            RegisterStations(Object.FindObjectsByType<CuttingStation>(FindObjectsSortMode.None));
-            RegisterStations(Object.FindObjectsByType<CookingStation>(FindObjectsSortMode.None));
-            RegisterStations(Object.FindObjectsByType<CounterStation>(FindObjectsSortMode.None));
-            RegisterStations(Object.FindObjectsByType<ServingStation>(FindObjectsSortMode.None));
-            RegisterStations(Object.FindObjectsByType<SinkStation>(FindObjectsSortMode.None));
-            RegisterStations(Object.FindObjectsByType<PlateDispenser>(FindObjectsSortMode.None));
-        }
-
-        private void RegisterStations<T>(IEnumerable<T> stations) where T : Component
-        {
-            foreach (T station in stations)
+            IReadOnlyList<Component> stations = _matchContext?.BotKitchenRuntime?.Stations;
+            if (stations == null)
             {
-                _stationsById[GetStationId(station)] = station;
+                return;
+            }
+
+            foreach (Component station in stations)
+            {
+                if (station != null)
+                {
+                    _stationsById[GetStationId(station)] = station;
+                }
             }
         }
 

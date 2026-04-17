@@ -8,9 +8,11 @@ Use these files in this order:
 
 1. [PROJECT_MEMORY.md](/Users/arshadbarves/MyProject/Projects/RecipeRage/Documentation/Architecture/PROJECT_MEMORY.md)
 2. [CURRENT_CODEBASE_AUDIT.md](/Users/arshadbarves/MyProject/Projects/RecipeRage/Documentation/Architecture/CURRENT_CODEBASE_AUDIT.md)
-3. [gameplay-scene-setup.md](/Users/arshadbarves/MyProject/Projects/RecipeRage/Documentation/Guides/gameplay-scene-setup.md)
-4. [KitchenClash_GDD_v3.md](/Users/arshadbarves/MyProject/Projects/RecipeRage/KitchenClash_GDD_v3.md)
-5. [KitchenClash_GDD_v3_aspirational.docx](/Users/arshadbarves/MyProject/Projects/RecipeRage/Documentation/KitchenClash_GDD_v3_aspirational.docx) for phase-development targets only
+3. [GDD_ALIGNMENT_MATRIX.md](/Users/arshadbarves/MyProject/Projects/RecipeRage/Documentation/Architecture/GDD_ALIGNMENT_MATRIX.md)
+4. [PHASE_ROADMAP.md](/Users/arshadbarves/MyProject/Projects/RecipeRage/Documentation/Architecture/PHASE_ROADMAP.md)
+5. [gameplay-scene-setup.md](/Users/arshadbarves/MyProject/Projects/RecipeRage/Documentation/Guides/gameplay-scene-setup.md)
+6. [KitchenClash_GDD_v3.md](/Users/arshadbarves/MyProject/Projects/RecipeRage/KitchenClash_GDD_v3.md)
+7. [KitchenClash_GDD_v3_aspirational.docx](/Users/arshadbarves/MyProject/Projects/RecipeRage/Documentation/KitchenClash_GDD_v3_aspirational.docx) for phase-development targets only
 
 ## Active Documentation
 
@@ -18,6 +20,8 @@ Use these files in this order:
 
 - `Documentation/Architecture/PROJECT_MEMORY.md`
 - `Documentation/Architecture/CURRENT_CODEBASE_AUDIT.md`
+- `Documentation/Architecture/GDD_ALIGNMENT_MATRIX.md`
+- `Documentation/Architecture/PHASE_ROADMAP.md`
 
 ### Guides
 
@@ -37,6 +41,7 @@ When the two GDD tracks disagree:
 ### Alignment Tracking
 
 - `Documentation/Architecture/GDD_ALIGNMENT_MATRIX.md`
+- `Documentation/Architecture/PHASE_ROADMAP.md`
 
 ## Historical References
 

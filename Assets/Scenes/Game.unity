@@ -745,6 +745,8 @@ GameObject:
   - component: {fileID: 226056022}
   - component: {fileID: 226056025}
   - component: {fileID: 226056026}
+  - component: {fileID: 226056027}
+  - component: {fileID: 226056028}
   m_Layer: 0
   m_Name: NetworkManagers
   m_TagString: Untagged
@@ -873,6 +875,35 @@ MonoBehaviour:
   _comboBonus: 10
   _comboTimeWindow: 30
   _orderManager: {fileID: 226056025}
+--- !u!114 &226056027
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 226056017}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f3d46d4b3c44e7ab2b8a9a23f5d6c71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _roundTimer: {fileID: 0}
+  _scoreManager: {fileID: 0}
+  _gamePhaseSync: {fileID: 0}
+  _matchResultSync: {fileID: 0}
+--- !u!114 &226056028
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 226056017}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c6d4f6e7b6a4f6a9d8c7b5a4e3d2c1b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!1001 &241556986
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1394,6 +1425,7 @@ MonoBehaviour:
   _orderManager: {fileID: 0}
   _scoreManager: {fileID: 0}
   _gamePhaseSync: {fileID: 0}
+  _matchResultSync: {fileID: 226056028}
   _roundTimer: {fileID: 226056023}
   _networkScoreManager: {fileID: 226056024}
   _mobileControlsManager: {fileID: 0}

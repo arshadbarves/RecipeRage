@@ -85,6 +85,7 @@ namespace Gameplay.Networking.Bot
         public float RemainingTime { get; set; }
         public bool IsExpired { get; set; }
         public bool IsCompleted { get; set; }
+        public bool IsClaimedByAnotherBot { get; set; }
         public string ClaimedCounterId { get; set; }
         public bool CounterHasPlate { get; set; }
         public bool CounterReadyToServe { get; set; }

@@ -93,11 +93,7 @@ namespace Gameplay
         [ServerRpc(RequireOwnership = false)]
         public void StartTimerServerRpc(float duration, ServerRpcParams rpcParams = default)
         {
-            _duration = duration;
-            _timeRemaining.Value = duration;
-            _isRunning.Value = true;
-
-            GameLogger.Log($"Started timer for {duration} seconds");
+            StartTimer(duration);
         }
 
         /// <summary>
@@ -107,9 +103,7 @@ namespace Gameplay
         [ServerRpc(RequireOwnership = false)]
         public void PauseTimerServerRpc(ServerRpcParams rpcParams = default)
         {
-            _isRunning.Value = false;
-
-            GameLogger.Log("Paused timer");
+            PauseTimer();
         }
 
         /// <summary>
@@ -119,11 +113,7 @@ namespace Gameplay
         [ServerRpc(RequireOwnership = false)]
         public void ResumeTimerServerRpc(ServerRpcParams rpcParams = default)
         {
-            if (_timeRemaining.Value > 0)
-            {
-                _isRunning.Value = true;
-                GameLogger.Log("Resumed timer");
-            }
+            ResumeTimer();
         }
 
         /// <summary>
@@ -133,9 +123,57 @@ namespace Gameplay
         [ServerRpc(RequireOwnership = false)]
         public void StopTimerServerRpc(ServerRpcParams rpcParams = default)
         {
+            StopTimer();
+        }
+
+        public void StartTimer(float duration)
+        {
+            if (!CanMutateTimer())
+            {
+                return;
+            }
+
+            _duration = duration;
+            _timeRemaining.Value = Mathf.Max(0f, duration);
+            _isRunning.Value = duration > 0f;
+
+            GameLogger.Log($"Started timer for {duration} seconds");
+        }
+
+        public void PauseTimer()
+        {
+            if (!CanMutateTimer())
+            {
+                return;
+            }
+
+            _isRunning.Value = false;
+            GameLogger.Log("Paused timer");
+        }
+
+        public void ResumeTimer()
+        {
+            if (!CanMutateTimer())
+            {
+                return;
+            }
+
+            if (_timeRemaining.Value > 0)
+            {
+                _isRunning.Value = true;
+                GameLogger.Log("Resumed timer");
+            }
+        }
+
+        public void StopTimer()
+        {
+            if (!CanMutateTimer())
+            {
+                return;
+            }
+
             _timeRemaining.Value = 0;
             _isRunning.Value = false;
-
             GameLogger.Log("Stopped timer");
         }
 
@@ -187,6 +225,17 @@ namespace Gameplay
             {
                 OnTimerExpired?.Invoke();
             }
+        }
+
+        private bool CanMutateTimer()
+        {
+            if (IsSpawned && !IsServer)
+            {
+                GameLogger.LogWarning("Only the server can mutate the round timer");
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>

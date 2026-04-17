@@ -4,6 +4,7 @@
     "references": [
         "RecipeRage.Core",
         "RecipeRage.Gameplay",
+        "Unity.Netcode.Runtime",
         "UniTask",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"

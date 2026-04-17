@@ -22,6 +22,7 @@ GDD rule:
 
 - `KitchenClash_GDD_v3.md` is the implementation-facing GDD.
 - `Documentation/KitchenClash_GDD_v3_aspirational.docx` is the phase-development target.
+- `Documentation/Architecture/PHASE_ROADMAP.md` is the practical roadmap that maps current code and GDD drift into execution phases.
 - If they disagree, implementation work follows current code plus `KitchenClash_GDD_v3.md`.
 
 ## Current Architecture Anchors
@@ -79,15 +80,23 @@ Gameplay-scene runtime objects are published into match context through:
 
 This binder resolves scene references and registers them into `IMatchRuntimeRegistry`, so gameplay systems do not need ad-hoc scene lookups everywhere.
 
+Current ownership rule:
+
+- host-only kitchen support bootstrap for runtime ingredient crates and the plate dispenser is owned by `MatchRuntimeSceneBinder` through `IKitchenSupportRuntime`
+- `GameStarter` may trigger that bootstrap through `IMatchContext`, but it should not discover scene anchors, resources, or station parents itself
+
 ### Gameplay runtime networking
 
 Current gameplay networking assumptions:
 
 - `IngredientNetworkSpawner` is a scene `MonoBehaviour` that receives `INetworkObjectPool` and `INetworkGameManager` from the root `GameLifetimeScope`.
 - It should not resolve those services from `SessionManager.SessionContainer`.
+- `IngredientCrate` should resolve `IngredientNetworkSpawner` through the match runtime bridge (`IMatchContext` / `MatchRuntimeSceneBinder`), not through `FindObjectOfType`.
+- `BotKitchenSnapshot` should consume bot-relevant station data from the match runtime bridge, not rebuild the kitchen graph with direct scene searches during replanning.
 - Ingredient assets provide their own prefab references.
 - `PlayerController` should only register with `PlayerNetworkManager` when `NetworkObject.IsPlayerObject` is true.
 - Bots are network objects, but they are not NGO player objects.
+- `SpawnManager` should rely on injected match runtime state, not `NetworkManager.Singleton`, for server-only spawn guards.
 - Generic lobby and matchmaking team-size fallbacks should align to the queue-driven 2v2 / 3v3 format, not legacy 4-player assumptions.
 
 ## Current State Flow
@@ -125,8 +134,12 @@ Important note:
   - loads the selected map scene additively
   - calls `_sessionContext.GameStarter?.StartGame()`
   - hides modal/popup UI and shows gameplay HUD
-- `GameplayHudViewModel` transitions to `GameOverState` when `RoundTimer` expires.
-- Non-timer end conditions still need explicit runtime verification to ensure they converge on the same game-over flow.
+- on host start, `GameStarter` uses `IMatchContext.KitchenSupportRuntime` to ensure required kitchen support stations exist, rather than performing app-layer scene discovery
+- `MatchEndController` is the gameplay-side owner for round start and match end.
+- `MatchEndController` starts `RoundTimer` from the selected game mode, clears `MatchResultSync`, writes the final synchronized result snapshot, and then sets `GamePhaseSync` to `GameOver` on timer expiry or score limit.
+- `GameplayHudViewModel` transitions to `GameOverState` only after both `GamePhaseSync` is `GameOver` and `MatchResultSync` has a final result.
+- `GameOverScreen` reads winner/draw from `MatchResultSync` and only uses `ScoreManager` for the displayed team scores.
+- Host disconnect remains a direct return-to-lobby path, not a normal game-over result.
 
 ## Documentation Set
 
@@ -140,6 +153,8 @@ Use these files for current RecipeRage implementation work:
   - `Documentation/Architecture/CURRENT_CODEBASE_AUDIT.md`
 - GDD alignment matrix:
   - `Documentation/Architecture/GDD_ALIGNMENT_MATRIX.md`
+- Phase roadmap:
+  - `Documentation/Architecture/PHASE_ROADMAP.md`
 - Scene/manual setup:
   - `Documentation/Guides/gameplay-scene-setup.md`
 - Current-state GDD:
@@ -151,6 +166,19 @@ Use these files for current RecipeRage implementation work:
   - `Documentation/Architecture/PLAYER_CONTROLLER_ARCHITECTURE.md`
   - `Documentation/Architecture/STATE_TRANSITION_FLOW.md`
   - `Documentation/Archive/2026-03-cleanup/`
+
+## Current Delivery Phase
+
+Current roadmap phase:
+
+- `Phase 2: Runtime Verification and Stabilization`
+
+This means:
+
+- the current gameplay/state-flow foundation is in place
+- the next immediate work is validating remaining `Partial` GDD items in Unity
+- the next engineering phase after that is singleton-heavy networking/auth architecture cleanup
+- larger roadmap items like `RouterService`, `Root/Menu/Match` scopes, and full external-provider auth remain later planned phases, not current implementation defaults
 
 ## Update Rules
 

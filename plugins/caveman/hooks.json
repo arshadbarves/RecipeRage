@@ -1,0 +1,10 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": "echo 'CAVEMAN PLUGIN ACTIVE. Use $caveman or say caveman mode for terse replies. Safety warnings and destructive confirmations still expand back to normal wording when clarity matters.'"
+      }
+    ]
+  }
+}

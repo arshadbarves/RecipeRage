@@ -1,11 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using Gameplay.Networking.Bot;
+using Gameplay.Shared;
 using Core.Logging;
 using Core.Networking.Models;
 using Core.Shared.Enums;
 using Unity.Netcode;
 using UnityEngine;
+using VContainer;
+using VContainer.Unity;
 
 namespace Gameplay.Spawning
 {
@@ -29,8 +32,20 @@ namespace Gameplay.Spawning
         private Dictionary<ulong, SpawnPoint> _playerSpawnPoints = new Dictionary<ulong, SpawnPoint>();
         private float _lastSpawnTime;
 
+        [Inject] private IMatchContext _matchContext;
+
         private void Awake()
         {
+            LifetimeScope scope = LifetimeScope.Find<LifetimeScope>();
+            if (scope != null)
+            {
+                scope.Container.Inject(this);
+            }
+            else
+            {
+                GameLogger.LogWarning("[SpawnManager] LifetimeScope not found. Match runtime injection will be unavailable.");
+            }
+
             InitializeSpawnPoints();
         }
 
@@ -39,7 +54,7 @@ namespace Gameplay.Spawning
         /// </summary>
         private void InitializeSpawnPoints()
         {
-            _allSpawnPoints = FindObjectsOfType<SpawnPoint>().ToList();
+            _allSpawnPoints = Object.FindObjectsByType<SpawnPoint>(FindObjectsSortMode.None).ToList();
 
             if (_allSpawnPoints.Count == 0)
             {
@@ -73,7 +88,7 @@ namespace Gameplay.Spawning
             int assignedTeamId = 0,
             bool ignoreSpawnCooldown = false)
         {
-            if (!NetworkManager.Singleton.IsServer)
+            if (_matchContext?.IsServer != true)
             {
                 GameLogger.LogWarning("[SpawnManager] Only server can spawn players");
                 return false;
@@ -144,7 +159,7 @@ namespace Gameplay.Spawning
         {
             spawnedNetworkObject = null;
 
-            if (!NetworkManager.Singleton.IsServer)
+            if (_matchContext?.IsServer != true)
             {
                 GameLogger.LogWarning("[SpawnManager] Only server can spawn bots");
                 return false;

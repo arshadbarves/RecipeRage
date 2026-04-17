@@ -1,8 +1,11 @@
 using Gameplay.Characters;
 using Gameplay.Cooking;
+using Gameplay.Shared;
 using Core.Logging;
 using Unity.Netcode;
 using UnityEngine;
+using VContainer;
+using VContainer.Unity;
 
 namespace Gameplay.Stations
 {
@@ -32,6 +35,8 @@ namespace Gameplay.Stations
         /// </summary>
         private IngredientNetworkSpawner _ingredientNetworkSpawner;
 
+        [Inject] private IMatchContext _matchContext;
+
         public Ingredient ProvidedIngredient => _ingredientToProvide;
 
         /// <summary>
@@ -41,15 +46,20 @@ namespace Gameplay.Stations
         {
             base.Awake();
 
+            LifetimeScope scope = LifetimeScope.Find<LifetimeScope>();
+            if (scope != null)
+            {
+                scope.Container.Inject(this);
+            }
+            else
+            {
+                GameLogger.LogWarning("[IngredientCrate] LifetimeScope not found. Ingredient spawner injection will be unavailable.");
+            }
+
             // Set station name
             _stationName = $"{_ingredientToProvide?.DisplayName ?? "Ingredient"} Crate";
 
-            // Find the network ingredient spawner service
-            _ingredientNetworkSpawner = FindObjectOfType<IngredientNetworkSpawner>();
-            if (_ingredientNetworkSpawner == null)
-            {
-                GameLogger.LogWarning("IngredientNetworkSpawner not found in scene. Ingredient spawning may not work properly.");
-            }
+            ResolveIngredientSpawner(logIfMissing: false);
         }
 
         public void ConfigureIngredient(Ingredient ingredient)
@@ -64,6 +74,7 @@ namespace Gameplay.Stations
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
+            ResolveIngredientSpawner();
 
             // Subscribe to network variable changes
             _isOnCooldown.OnValueChanged += OnCooldownChanged;
@@ -145,6 +156,11 @@ namespace Gameplay.Stations
             // Check if we have the network spawner service
             if (_ingredientNetworkSpawner == null)
             {
+                ResolveIngredientSpawner();
+            }
+
+            if (_ingredientNetworkSpawner == null)
+            {
                 GameLogger.LogError("IngredientNetworkSpawner service not available. Cannot spawn ingredient.");
                 return;
             }
@@ -204,6 +220,16 @@ namespace Gameplay.Stations
             if (_cooldownVisual != null)
             {
                 _cooldownVisual.SetActive(_isOnCooldown.Value);
+            }
+        }
+
+        private void ResolveIngredientSpawner(bool logIfMissing = true)
+        {
+            _ingredientNetworkSpawner ??= _matchContext?.IngredientNetworkSpawner;
+
+            if (logIfMissing && _ingredientNetworkSpawner == null)
+            {
+                GameLogger.LogWarning("[IngredientCrate] IngredientNetworkSpawner is not available from match context yet.");
             }
         }
     }

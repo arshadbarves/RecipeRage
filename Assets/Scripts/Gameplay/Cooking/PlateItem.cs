@@ -1,7 +1,10 @@
 using System.Collections.Generic;
 using Core.Logging;
+using Gameplay.Shared;
 using Unity.Netcode;
 using UnityEngine;
+using VContainer;
+using VContainer.Unity;
 
 namespace Gameplay.Cooking
 {
@@ -31,6 +34,8 @@ namespace Gameplay.Cooking
         /// </summary>
         private NetworkVariable<bool> _isComplete = new NetworkVariable<bool>(false);
 
+        [Inject] private IMatchContext _matchContext;
+
         /// <summary>
         /// Get the recipe ID.
         /// </summary>
@@ -51,6 +56,12 @@ namespace Gameplay.Cooking
         /// </summary>
         private void Awake()
         {
+            LifetimeScope scope = LifetimeScope.Find<LifetimeScope>();
+            if (scope != null)
+            {
+                scope.Container.Inject(this);
+            }
+
             _ingredientIds = new NetworkList<ulong>();
         }
 
@@ -119,7 +130,7 @@ namespace Gameplay.Cooking
             _ingredientIds.Add(ingredientNetworkId);
 
             // Get the ingredient NetworkObject
-            if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(ingredientNetworkId, out NetworkObject ingredientObject))
+            if (TryGetIngredientObject(ingredientNetworkId, out NetworkObject ingredientObject))
             {
                 // Parent to plate
                 if (_ingredientSlots != null && _ingredientIds.Count <= _ingredientSlots.Length)
@@ -164,7 +175,7 @@ namespace Gameplay.Cooking
             _ingredientIds.Remove(ingredientNetworkId);
 
             // Unparent ingredient
-            if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(ingredientNetworkId, out NetworkObject ingredientObject))
+            if (TryGetIngredientObject(ingredientNetworkId, out NetworkObject ingredientObject))
             {
                 ingredientObject.transform.SetParent(null);
             }
@@ -182,7 +193,7 @@ namespace Gameplay.Cooking
 
             foreach (ulong ingredientId in _ingredientIds)
             {
-                if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(ingredientId, out NetworkObject ingredientObject))
+                if (TryGetIngredientObject(ingredientId, out NetworkObject ingredientObject))
                 {
                     IngredientItem ingredient = ingredientObject.GetComponent<IngredientItem>();
                     if (ingredient != null)
@@ -223,7 +234,7 @@ namespace Gameplay.Cooking
             // Unparent all ingredients
             foreach (ulong ingredientId in _ingredientIds)
             {
-                if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(ingredientId, out NetworkObject ingredientObject))
+                if (TryGetIngredientObject(ingredientId, out NetworkObject ingredientObject))
                 {
                     ingredientObject.transform.SetParent(null);
                 }
@@ -232,6 +243,17 @@ namespace Gameplay.Cooking
             _ingredientIds.Clear();
             _isComplete.Value = false;
             _recipeId.Value = -1;
+        }
+
+        private bool TryGetIngredientObject(ulong ingredientNetworkId, out NetworkObject ingredientObject)
+        {
+            if (_matchContext != null)
+            {
+                return _matchContext.TryGetSpawnedObject(ingredientNetworkId, out ingredientObject);
+            }
+
+            ingredientObject = null;
+            return false;
         }
 
         /// <summary>

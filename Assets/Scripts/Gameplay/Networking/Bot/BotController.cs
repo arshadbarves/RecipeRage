@@ -2,9 +2,12 @@ using Core.Logging;
 using Core.Networking.Models;
 using Gameplay.Characters;
 using Gameplay.Cooking;
+using Gameplay.Shared;
 using Gameplay.Stations;
 using Unity.Netcode;
 using UnityEngine;
+using VContainer;
+using VContainer.Unity;
 
 namespace Gameplay.Networking.Bot
 {
@@ -24,8 +27,10 @@ namespace Gameplay.Networking.Bot
         private BotPlayer _botData;
         private PlayerController _playerController;
         private readonly BotTaskPlanner _planner = new BotTaskPlanner();
-        private readonly BotKitchenSnapshot _snapshot = new BotKitchenSnapshot();
+        private BotKitchenSnapshot _snapshot;
         private readonly BotClaimRegistry _claimRegistry = BotClaimRegistry.Shared;
+
+        [Inject] private IMatchContext _matchContext;
 
         private BotTaskPlan _currentPlan;
         private float _nextReplanTime;
@@ -43,7 +48,18 @@ namespace Gameplay.Networking.Bot
 
         private void Awake()
         {
+            LifetimeScope scope = LifetimeScope.Find<LifetimeScope>();
+            if (scope != null)
+            {
+                scope.Container.Inject(this);
+            }
+            else
+            {
+                GameLogger.LogWarning("[BotController] LifetimeScope not found. Bot runtime injection will be unavailable.");
+            }
+
             _playerController = GetComponent<PlayerController>();
+            _snapshot = new BotKitchenSnapshot(_matchContext);
             _lastPosition = transform.position;
         }
 
@@ -80,6 +96,12 @@ namespace Gameplay.Networking.Bot
                 return;
             }
 
+            EnsureSnapshot();
+            if (_snapshot == null)
+            {
+                return;
+            }
+
             if (CheckForStuck())
             {
                 RecoverFromFailure();
@@ -105,6 +127,13 @@ namespace Gameplay.Networking.Bot
 
         private void Replan()
         {
+            if (_snapshot == null || _botData == null)
+            {
+                _currentPlan = BotTaskPlan.Idle();
+                _nextReplanTime = Time.time + _replanInterval;
+                return;
+            }
+
             var planningSnapshot = _snapshot.Capture(_playerController, _botData.BotId, _claimRegistry);
             if (ClaimedOrderNeedsRelease(planningSnapshot))
             {
@@ -301,6 +330,14 @@ namespace Gameplay.Networking.Bot
             if (_botData != null)
             {
                 _claimRegistry.ReleaseOrderForBot(_botData.BotId);
+            }
+        }
+
+        private void EnsureSnapshot()
+        {
+            if (_snapshot == null && _matchContext != null)
+            {
+                _snapshot = new BotKitchenSnapshot(_matchContext);
             }
         }
     }

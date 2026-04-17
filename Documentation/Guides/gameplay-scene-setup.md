@@ -28,6 +28,8 @@ This object contains the gameplay runtime network components used during the mat
 | --- | --- | --- | --- |
 | `NetworkObject` | Default component settings | Keep on object | Must be assigned manually |
 | `IngredientNetworkSpawner` | `_ingredientPrefab` | `None` | Intentionally left empty |
+| `MatchEndController` | no required serialized setup here | leave component on object | Must be assigned manually |
+| `MatchResultSync` | no required serialized setup here | leave component on object | Must be assigned manually |
 | `RoundTimer` | no required serialized setup here | leave as-is | Must be assigned manually |
 | `NetworkScoreManager` | no required serialized setup here | leave as-is | Must be assigned manually |
 | `OrderManager` | `_minTimeBetweenOrders` | `5` | Must be assigned manually |
@@ -52,6 +54,19 @@ This object contains the gameplay runtime network components used during the mat
 - The spawner is expected to use the prefab stored on each `Ingredient` asset.
 - Do not assign a fallback ingredient prefab in the scene unless the architecture is intentionally changed.
 
+### Match End Controller Notes
+
+- `MatchEndController` must exist on `NetworkManagers`.
+- `MatchResultSync` must also exist on `NetworkManagers`.
+- Its `_roundTimer`, `_scoreManager`, `_gamePhaseSync`, and `_matchResultSync` fields may stay empty in the scene.
+- The controller resolves colocated or scene runtime references automatically and owns:
+  - starting the round
+  - clearing stale match results
+  - writing the synchronized final match result
+  - setting `GamePhaseSync` to `Playing`
+  - ending the match on timer expiry or score limit
+  - setting `GamePhaseSync` to `GameOver`
+
 ## MatchRuntimeSceneBinder Object
 
 Scene object: `MatchRuntimeSceneBinder`
@@ -65,10 +80,19 @@ This object publishes scene references into the app-level match context.
 | `_orderManager` | `None` | Auto-resolved at runtime |
 | `_scoreManager` | `None` | Auto-resolved at runtime |
 | `_gamePhaseSync` | `None` | Auto-resolved at runtime |
+| `_matchResultSync` | `NetworkManagers/MatchResultSync` | Must be assigned manually |
 | `_roundTimer` | `NetworkManagers/RoundTimer` | Must be assigned manually |
 | `_networkScoreManager` | `NetworkManagers/NetworkScoreManager` | Must be assigned manually |
 | `_mobileControlsManager` | `None` | Auto-resolved at runtime |
 | `_spawnManager` | `SpawnManager` | Must be assigned manually |
+| `_ingredientNetworkSpawner` | `None` | Auto-resolved at runtime |
+| `_stationsParent` | `None` | Auto-resolved at runtime |
+| `_servingStationAnchor` | `None` | Auto-resolved at runtime |
+| `_counterStationAnchor` | `None` | Auto-resolved at runtime |
+| `_ingredientCratePrefab` | `None` | Auto-resolved at runtime |
+| `_plateDispenserPrefab` | `None` | Auto-resolved at runtime |
+| `_tomatoIngredient` | `None` | Auto-resolved at runtime |
+| `_steakIngredient` | `None` | Auto-resolved at runtime |
 | `_resolveMissingReferencesOnSceneLoad` | `true` | Must be assigned manually |
 
 ### Runtime Resolution Behavior
@@ -79,8 +103,25 @@ When `_resolveMissingReferencesOnSceneLoad` is `true`, the binder may leave thes
 - `_scoreManager`
 - `_gamePhaseSync`
 - `_mobileControlsManager`
+- `_ingredientNetworkSpawner`
+- `_stationsParent`
+- `_servingStationAnchor`
+- `_counterStationAnchor`
+- `_ingredientCratePrefab`
+- `_plateDispenserPrefab`
+- `_tomatoIngredient`
+- `_steakIngredient`
 
-These are found via scene lookup at runtime.
+These are found via scene lookup or `Resources.Load(...)` at runtime.
+
+### Host Kitchen Support Bootstrap
+
+- `MatchRuntimeSceneBinder` is the scene-owned runtime responsible for creating missing support stations on the host:
+  - `IngredientCrate` for `Tomato`
+  - `IngredientCrate` for `Steak`
+  - `PlateDispenser`
+- `GameStarter` only triggers this through match context. It should not discover kitchen anchors or resources itself.
+- No manual scene assignment is required for the kitchen support fields as long as `_resolveMissingReferencesOnSceneLoad = true`.
 
 ## Spawn Points
 
@@ -143,6 +184,7 @@ Current ingredient assets verified in repo:
 These are code-driven and should not be “fixed” in the scene:
 
 - `IngredientNetworkSpawner` receives `INetworkObjectPool` and `INetworkGameManager` through `GameLifetimeScope`.
+- `IngredientCrate` resolves `IngredientNetworkSpawner` through `MatchRuntimeSceneBinder` / `IMatchContext`, not by doing its own scene search.
 - Those services are root/app scoped, not session scoped.
 - `PlayerController` registers with `PlayerNetworkManager` only when `NetworkObject.IsPlayerObject` is `true`.
 
@@ -150,8 +192,9 @@ These are code-driven and should not be “fixed” in the scene:
 
 - Open `Assets/Scenes/Game.unity`.
 - Select `NetworkManagers` and confirm `IngredientNetworkSpawner._ingredientPrefab` is `None`.
-- Confirm `NetworkManagers` still contains `OrderManager`, `ScoreManager`, `RoundTimer`, and `NetworkScoreManager`.
+- Confirm `NetworkManagers` still contains `MatchEndController`, `MatchResultSync`, `OrderManager`, `ScoreManager`, `RoundTimer`, and `NetworkScoreManager`.
 - Select `MatchRuntimeSceneBinder` and confirm:
+  - `_matchResultSync -> NetworkManagers/MatchResultSync`
   - `_roundTimer -> NetworkManagers/RoundTimer`
   - `_networkScoreManager -> NetworkManagers/NetworkScoreManager`
   - `_spawnManager -> SpawnManager`
@@ -162,3 +205,4 @@ These are code-driven and should not be “fixed” in the scene:
 - Open `Assets/DefaultNetworkPrefabs.asset` and confirm the three gameplay prefabs listed above are present.
 - Open `Tomato.asset` and `Steak.asset` and confirm both point to `Assets/Resources/Prefabs/Gameplay/Ingredient.prefab`.
 - Run the host flow in `Game.unity` and verify ingredient crates no longer fail to spawn ingredients.
+- Run the host flow in `Game.unity` and verify score-limit or timer expiry sets the match phase to `GameOver`, publishes a final result through `MatchResultSync`, and opens the game-over screen with the correct winner/draw text.

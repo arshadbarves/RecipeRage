@@ -22,7 +22,7 @@ For implementation decisions:
 | --- | --- | --- | --- | --- |
 | State-driven matchmaking | Implemented | `MatchmakingState` owns matchmaking startup, timeout, and gameplay transition | App State / Matchmaking | Keep current |
 | Queue-driven 2v2 / 3v3 match format | Partial | queue catalog and game mode assets support 2v2 / 3v3, and generic 4-player fallbacks were removed, but broader runtime verification is still needed | Matchmaking / Lobby | Runtime verification |
-| Game-over transition flow | Partial | `GameOverState` is now wired from timer expiry through `GameplayHudViewModel`, but non-timer end conditions still need verification | App State / HUD | Runtime verification |
+| Game-over transition flow | Partial | `MatchEndController` now owns round end through timer expiry or score limit, writes a synchronized `MatchResultSync` snapshot, and `GameplayHudViewModel` transitions only when both phase and final result are ready, but runtime verification is still pending | Gameplay Runtime / App State | Runtime verification |
 | UI Toolkit + view models | Implemented | current UI uses UI Toolkit screens and view models | UI | Keep current |
 | RouterService push/pop architecture | Planned | repo still uses `UIService` + `UIScreenStackManager` | UI Architecture | Major migration |
 | Root/Menu/Match scope split | Planned | repo uses `GameLifetimeScope` + `SessionLifetimeScope` | DI / Bootstrap | Major migration |
@@ -52,4 +52,4 @@ These scripts remain off-GDD relative to the zero-singleton target and should be
 
 - verify queue-selected team size drives lobby and matchmaking behavior end to end
 - keep auth/provider UI text honest about what is implemented now
-- verify non-timer end conditions also converge on `GameOverState`
+- verify timer expiry and score-limit endings both converge on `GameOverState` with the correct synchronized winner/draw result

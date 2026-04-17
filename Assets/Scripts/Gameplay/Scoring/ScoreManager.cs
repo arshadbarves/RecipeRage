@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
 using Gameplay.Cooking;
+using Gameplay.Shared;
 using Core.Logging;
 using Unity.Netcode;
 using UnityEngine;
+using VContainer;
+using VContainer.Unity;
 
 namespace Gameplay.Scoring
 {
@@ -34,6 +37,8 @@ namespace Gameplay.Scoring
         /// </summary>
         public event Action<int, int> OnTeamComboAchieved;
 
+        [Inject] private IMatchContext _matchContext;
+
         // Scores for Team 0 and Team 1
         private NetworkList<int> _teamScores;
         private NetworkList<int> _teamComboCounts;
@@ -43,10 +48,13 @@ namespace Gameplay.Scoring
 
         private void Awake()
         {
-            if (_orderManager == null)
+            LifetimeScope scope = LifetimeScope.Find<LifetimeScope>();
+            if (scope != null)
             {
-                _orderManager = FindFirstObjectByType<OrderManager>();
+                scope.Container.Inject(this);
             }
+
+            ResolveRuntimeDependencies();
             // Initialize NetworkLists
             _teamScores = new NetworkList<int>();
             _teamComboCounts = new NetworkList<int>();
@@ -55,6 +63,8 @@ namespace Gameplay.Scoring
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
+
+            ResolveRuntimeDependencies();
 
             if (IsServer)
             {
@@ -78,6 +88,12 @@ namespace Gameplay.Scoring
             {
                 _orderManager.OnOrderCompleted += HandleOrderCompleted;
             }
+        }
+
+        private void ResolveRuntimeDependencies()
+        {
+            _matchContext?.Refresh();
+            _orderManager ??= _matchContext?.OrderManager;
         }
 
         public override void OnNetworkDespawn()

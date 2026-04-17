@@ -23,10 +23,14 @@ namespace Gameplay.Shared
         private NetworkScoreManager _networkScoreManager;
         private RoundTimer _roundTimer;
         private GamePhaseSync _gamePhaseSync;
+        private MatchResultSync _matchResultSync;
         private OrderManager _orderManager;
         private ScoreManager _scoreManager;
         private MobileControlsManager _mobileControlsManager;
         private SpawnManager _spawnManager;
+        private IngredientNetworkSpawner _ingredientNetworkSpawner;
+        private IBotKitchenRuntime _botKitchenRuntime;
+        private IKitchenSupportRuntime _kitchenSupportRuntime;
         private PlayerController _localPlayer;
 
         public MatchContext(NetworkManager networkManager, IEventBus eventBus)
@@ -40,6 +44,7 @@ namespace Gameplay.Shared
 
         public NetworkManager NetworkManager => _networkManager;
         public ulong? LocalClientId => NetworkManager?.LocalClient != null ? NetworkManager.LocalClientId : null;
+        public int? LocalTeamId => _localPlayer != null ? _localPlayer.TeamId : null;
         public bool IsHost => NetworkManager?.IsHost == true;
         public bool IsServer => NetworkManager?.IsServer == true;
         public bool IsClient => NetworkManager?.IsClient == true;
@@ -48,10 +53,14 @@ namespace Gameplay.Shared
         public NetworkScoreManager NetworkScoreManager => _networkScoreManager;
         public RoundTimer RoundTimer => _roundTimer;
         public GamePhaseSync GamePhaseSync => _gamePhaseSync;
+        public MatchResultSync MatchResultSync => _matchResultSync;
         public OrderManager OrderManager => _orderManager;
         public ScoreManager ScoreManager => _scoreManager;
         public MobileControlsManager MobileControlsManager => _mobileControlsManager;
         public SpawnManager SpawnManager => _spawnManager;
+        public IngredientNetworkSpawner IngredientNetworkSpawner => _ingredientNetworkSpawner;
+        public IBotKitchenRuntime BotKitchenRuntime => _botKitchenRuntime;
+        public IKitchenSupportRuntime KitchenSupportRuntime => _kitchenSupportRuntime;
 
         public void Refresh()
         {
@@ -76,22 +85,42 @@ namespace Gameplay.Shared
             _localPlayer = null;
         }
 
+        public bool TryGetSpawnedObject(ulong networkObjectId, out NetworkObject networkObject)
+        {
+            networkObject = null;
+
+            if (NetworkManager?.SpawnManager?.SpawnedObjects == null)
+            {
+                return false;
+            }
+
+            return NetworkManager.SpawnManager.SpawnedObjects.TryGetValue(networkObjectId, out networkObject);
+        }
+
         public void RegisterSceneRuntime(
             OrderManager orderManager,
             ScoreManager scoreManager,
             GamePhaseSync gamePhaseSync,
+            MatchResultSync matchResultSync,
             RoundTimer roundTimer,
             NetworkScoreManager networkScoreManager,
             MobileControlsManager mobileControlsManager,
-            SpawnManager spawnManager)
+            SpawnManager spawnManager,
+            IngredientNetworkSpawner ingredientNetworkSpawner,
+            IBotKitchenRuntime botKitchenRuntime,
+            IKitchenSupportRuntime kitchenSupportRuntime)
         {
             if (orderManager != null) _orderManager = orderManager;
             if (scoreManager != null) _scoreManager = scoreManager;
             if (gamePhaseSync != null) _gamePhaseSync = gamePhaseSync;
+            if (matchResultSync != null) _matchResultSync = matchResultSync;
             if (roundTimer != null) _roundTimer = roundTimer;
             if (networkScoreManager != null) _networkScoreManager = networkScoreManager;
             if (mobileControlsManager != null) _mobileControlsManager = mobileControlsManager;
             if (spawnManager != null) _spawnManager = spawnManager;
+            if (ingredientNetworkSpawner != null) _ingredientNetworkSpawner = ingredientNetworkSpawner;
+            if (botKitchenRuntime != null) _botKitchenRuntime = botKitchenRuntime;
+            if (kitchenSupportRuntime != null) _kitchenSupportRuntime = kitchenSupportRuntime;
         }
 
         public void ClearSceneRuntime()
@@ -99,10 +128,14 @@ namespace Gameplay.Shared
             _networkScoreManager = null;
             _roundTimer = null;
             _gamePhaseSync = null;
+            _matchResultSync = null;
             _orderManager = null;
             _scoreManager = null;
             _mobileControlsManager = null;
             _spawnManager = null;
+            _ingredientNetworkSpawner = null;
+            _botKitchenRuntime = null;
+            _kitchenSupportRuntime = null;
         }
 
         public void Dispose()

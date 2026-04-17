@@ -158,22 +158,23 @@ graph TD
 
 These are the most important cleanup targets found during the audit.
 
-### 1. `GameOverState` is now wired from timer expiry, but broader end-of-match coverage still needs runtime verification
+### 1. `MatchEndController` now owns round end, but runtime verification is still required
 
-Relevant file:
+Relevant files:
 
+- `Assets/Scripts/Gameplay/GameModes/MatchEndController.cs`
 - `Assets/Scripts/Gameplay/App/State/States/GameOverState.cs`
 
 Audit result:
 
-- `GameplayHudViewModel` now calls `ChangeState<GameOverState>()` when `RoundTimer` expires
-- this makes the timer-based round-end path reachable in current code
-- non-timer end conditions still need explicit runtime verification to confirm they converge on the same screen flow
+- `MatchEndController` now starts the round, listens for timer expiry and team score changes, writes a synchronized `MatchResultSync` result snapshot, and sets `GamePhaseSync` to `GameOver`
+- `GameplayHudViewModel` now waits for both the synchronized phase and synchronized final result before transitioning to `GameOverState`
+- score-limit endings are implemented in code, but still need runtime verification in Unity
 
 Why it matters:
 
-- the project now has an active timer-expiry route into the game-over screen and state
-- the remaining risk is integration completeness, not total reachability
+- the project now has one gameplay-side owner for match completion instead of a HUD-driven timer shortcut
+- the remaining risk is runtime validation, not missing architecture
 
 ### 2. Game mode assets point to additive map scenes that are not in build settings
 
@@ -395,7 +396,7 @@ This index is grouped by folder. Every project-owned script under `Assets/Script
 - `States/MainMenuState.cs`: main menu scene load and username gate.
 - `States/MatchmakingState.cs`: matchmaking ownership, timeout, bot fill, return-to-menu paths.
 - `States/GameplayState.cs`: gameplay scene load, camera init, map load request, and game start.
-- `States/GameOverState.cs`: active game-over screen state reached from timer expiry via `GameplayHudViewModel`.
+- `States/GameOverState.cs`: active game-over screen state reached from synchronized `GamePhaseSync` changes.
 
 ### Gameplay / Bootstrap
 
@@ -680,7 +681,7 @@ The project is currently strongest in:
 The project is currently weakest in:
 
 - making round orchestration definitely active in the scene
-- verifying all gameplay end conditions converge on `GameOverState`
+- verifying timer-expiry and score-limit endings converge on `GameOverState` in live runtime
 - removing root/session duplication for session-owned services
 - aligning additive map loading with actual build scenes
 - keeping documentation like `README.md` synchronized with the real architecture

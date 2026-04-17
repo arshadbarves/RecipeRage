@@ -24,6 +24,7 @@ namespace Gameplay.UI.Features.Gameplay
         private NetworkScoreManager _networkScoreManager;
         private RoundTimer _roundTimer;
         private GamePhaseSync _gamePhaseSync;
+        private MatchResultSync _matchResultSync;
         private OrderManager _orderManager;
         private PlayerController _localPlayer;
         private MobileControlsManager _mobileControlsManager;
@@ -132,6 +133,12 @@ namespace Gameplay.UI.Features.Gameplay
                 didResolveDependency |= _gamePhaseSync != null;
             }
 
+            if (_matchResultSync == null)
+            {
+                _matchResultSync = _matchContext.MatchResultSync;
+                didResolveDependency |= _matchResultSync != null;
+            }
+
             if (_orderManager == null)
             {
                 _orderManager = _matchContext.OrderManager;
@@ -179,8 +186,10 @@ namespace Gameplay.UI.Features.Gameplay
 
             if (_gamePhaseSync != null)
             {
-                PhaseText.Value = _gamePhaseSync.CurrentPhase.ToString().ToUpperInvariant();
+                HandlePhaseChanged(_gamePhaseSync.CurrentPhase, _gamePhaseSync.CurrentPhase);
             }
+
+            TryTransitionToGameOver();
 
             _orders.Clear();
             if (_orderManager != null)
@@ -217,6 +226,12 @@ namespace Gameplay.UI.Features.Gameplay
                 _gamePhaseSync.OnPhaseChanged += HandlePhaseChanged;
             }
 
+            if (_matchResultSync != null)
+            {
+                _matchResultSync.OnResultChanged -= HandleMatchResultChanged;
+                _matchResultSync.OnResultChanged += HandleMatchResultChanged;
+            }
+
             if (_orderManager != null)
             {
                 _orderManager.OnOrderCreated -= HandleOrderCreated;
@@ -246,6 +261,11 @@ namespace Gameplay.UI.Features.Gameplay
                 _gamePhaseSync.OnPhaseChanged -= HandlePhaseChanged;
             }
 
+            if (_matchResultSync != null)
+            {
+                _matchResultSync.OnResultChanged -= HandleMatchResultChanged;
+            }
+
             if (_orderManager != null)
             {
                 _orderManager.OnOrderCreated -= HandleOrderCreated;
@@ -271,19 +291,38 @@ namespace Gameplay.UI.Features.Gameplay
             _localTimer = 0f;
             UpdateTimerUi(0f);
             PhaseText.Value = GamePhase.GameOver.ToString().ToUpperInvariant();
+        }
 
+        private void HandlePhaseChanged(GamePhase previousPhase, GamePhase newPhase)
+        {
+            PhaseText.Value = newPhase.ToString().ToUpperInvariant();
+            TryTransitionToGameOver();
+        }
+
+        private void HandleMatchResultChanged(MatchResultState previousResult, MatchResultState newResult)
+        {
+            TryTransitionToGameOver();
+        }
+
+        private void TryTransitionToGameOver()
+        {
             if (_hasTriggeredGameOver)
+            {
+                return;
+            }
+
+            if (_gamePhaseSync?.CurrentPhase != GamePhase.GameOver)
+            {
+                return;
+            }
+
+            if (_matchResultSync == null || !_matchResultSync.HasResult)
             {
                 return;
             }
 
             _hasTriggeredGameOver = true;
             _stateManager?.ChangeState<GameOverState>();
-        }
-
-        private void HandlePhaseChanged(GamePhase previousPhase, GamePhase newPhase)
-        {
-            PhaseText.Value = newPhase.ToString().ToUpperInvariant();
         }
 
         private void HandleOrderCreated(RecipeOrderState order)

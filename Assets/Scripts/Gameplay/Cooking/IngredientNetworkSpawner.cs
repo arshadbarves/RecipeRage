@@ -1,5 +1,6 @@
 using Core.Logging;
 using Core.Networking.Services;
+using Gameplay.Shared;
 using Unity.Netcode;
 using UnityEngine;
 using VContainer;
@@ -21,6 +22,9 @@ namespace Gameplay.Cooking
 
         [Inject]
         private INetworkGameManager _networkGameManager;
+
+        [Inject]
+        private IMatchContext _matchContext;
 
         /// <summary>
         /// Initialize the spawner.
@@ -151,7 +155,7 @@ namespace Gameplay.Cooking
             }
 
             // Find the station
-            if (!NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(stationNetworkId, out NetworkObject stationObject))
+            if (_matchContext == null || !_matchContext.TryGetSpawnedObject(stationNetworkId, out NetworkObject stationObject))
             {
                 GameLogger.LogError($"Station with ID {stationNetworkId} not found");
                 return null;

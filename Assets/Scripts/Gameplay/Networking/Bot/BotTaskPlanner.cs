@@ -14,6 +14,9 @@ namespace Gameplay.Networking.Bot
             }
 
             BotOrderDescriptor claimedOrder = GetClaimedOrder(snapshot);
+            BotOrderDescriptor supportOrder = GetSupportOrder(snapshot);
+            BotOrderDescriptor workOrder = claimedOrder ?? supportOrder;
+            string targetCounterId = GetTargetCounterId(snapshot, workOrder);
 
             if (snapshot.HeldItem.Type == BotHeldItemType.Plate)
             {
@@ -25,22 +28,22 @@ namespace Gameplay.Networking.Bot
                         return new BotTaskPlan
                         {
                             Type = BotTaskType.ServeDish,
-                            OrderId = claimedOrder.OrderId,
-                            RecipeId = claimedOrder.RecipeId,
+                            OrderId = workOrder?.OrderId,
+                            RecipeId = workOrder?.RecipeId,
                             TargetStationId = serving.StationId,
                             TargetStationType = BotStationType.ServingStation
                         };
                     }
                 }
 
-                if (!string.IsNullOrWhiteSpace(snapshot.ClaimedCounterId))
+                if (!string.IsNullOrWhiteSpace(targetCounterId))
                 {
                     return new BotTaskPlan
                     {
                         Type = BotTaskType.AssembleDish,
-                        OrderId = claimedOrder?.OrderId,
-                        RecipeId = claimedOrder?.RecipeId,
-                        TargetStationId = snapshot.ClaimedCounterId,
+                        OrderId = workOrder?.OrderId,
+                        RecipeId = workOrder?.RecipeId,
+                        TargetStationId = targetCounterId,
                         TargetStationType = BotStationType.CounterStation
                     };
                 }
@@ -61,7 +64,7 @@ namespace Gameplay.Networking.Bot
                     };
                 }
 
-                BotIngredientRequirement heldRequirement = claimedOrder?.MissingIngredients.FirstOrDefault(
+                BotIngredientRequirement heldRequirement = workOrder?.MissingIngredients.FirstOrDefault(
                     requirement => requirement.IngredientId == snapshot.HeldItem.IngredientId);
 
                 if (heldRequirement != null)
@@ -76,7 +79,7 @@ namespace Gameplay.Networking.Bot
                         {
                             return CreateStationPlan(
                                 BotTaskType.ProcessIngredient,
-                                claimedOrder,
+                                workOrder,
                                 snapshot.HeldItem.IngredientId,
                                 cuttingStation);
                         }
@@ -92,34 +95,34 @@ namespace Gameplay.Networking.Bot
                         {
                             return CreateStationPlan(
                                 BotTaskType.ProcessIngredient,
-                                claimedOrder,
+                                workOrder,
                                 snapshot.HeldItem.IngredientId,
                                 cookingStation);
                         }
                     }
 
-                    if (!string.IsNullOrWhiteSpace(snapshot.ClaimedCounterId))
+                    if (!string.IsNullOrWhiteSpace(targetCounterId))
                     {
                         BotStationDescriptor counter = snapshot.Stations.FirstOrDefault(
-                            station => station.StationId == snapshot.ClaimedCounterId);
+                            station => station.StationId == targetCounterId);
 
                         if (counter != null && counter.HasPlate)
                         {
                             return CreateStationPlan(
                                 BotTaskType.AssembleDish,
-                                claimedOrder,
+                                workOrder,
                                 snapshot.HeldItem.IngredientId,
                                 counter);
                         }
                     }
 
-                    if (!string.IsNullOrWhiteSpace(snapshot.ClaimedCounterId))
+                    if (!string.IsNullOrWhiteSpace(targetCounterId))
                     {
                         return new BotTaskPlan
                         {
                             Type = BotTaskType.Recover,
-                            OrderId = claimedOrder?.OrderId,
-                            RecipeId = claimedOrder?.RecipeId,
+                            OrderId = workOrder?.OrderId,
+                            RecipeId = workOrder?.RecipeId,
                             IngredientId = snapshot.HeldItem.IngredientId
                         };
                     }
@@ -143,24 +146,38 @@ namespace Gameplay.Networking.Bot
             if (claimedOrder == null || claimedOrder.IsExpired || claimedOrder.IsCompleted)
             {
                 BotOrderDescriptor nextOrder = snapshot.Orders
-                    .Where(order => !order.IsExpired && !order.IsCompleted && !order.HasInvalidAssembly)
+                    .Where(order => !order.IsExpired && !order.IsCompleted && !order.HasInvalidAssembly && !order.IsClaimedByAnotherBot)
                     .OrderBy(order => order.RemainingTime)
                     .FirstOrDefault();
 
                 if (nextOrder == null)
                 {
-                    return BotTaskPlan.Idle();
+                    claimedOrder = GetSupportOrder(snapshot);
+                    if (claimedOrder == null)
+                    {
+                        return BotTaskPlan.Idle();
+                    }
                 }
-
-                return new BotTaskPlan
+                else
                 {
-                    Type = BotTaskType.ClaimOrder,
-                    OrderId = nextOrder.OrderId,
-                    RecipeId = nextOrder.RecipeId
-                };
+                    return new BotTaskPlan
+                    {
+                        Type = BotTaskType.ClaimOrder,
+                        OrderId = nextOrder.OrderId,
+                        RecipeId = nextOrder.RecipeId
+                    };
+                }
             }
 
-            if (claimedOrder.HasInvalidAssembly)
+            workOrder = claimedOrder ?? supportOrder;
+            if (workOrder == null)
+            {
+                return BotTaskPlan.Idle();
+            }
+
+            targetCounterId = GetTargetCounterId(snapshot, workOrder);
+
+            if (claimedOrder != null && claimedOrder.HasInvalidAssembly)
             {
                 return new BotTaskPlan
                 {
@@ -170,30 +187,30 @@ namespace Gameplay.Networking.Bot
                 };
             }
 
-            if (claimedOrder.CounterReadyToServe && !string.IsNullOrWhiteSpace(claimedOrder.ClaimedCounterId))
+            if (workOrder.CounterReadyToServe && !string.IsNullOrWhiteSpace(workOrder.ClaimedCounterId))
             {
                 return new BotTaskPlan
                 {
                     Type = BotTaskType.AssembleDish,
-                    OrderId = claimedOrder.OrderId,
-                    RecipeId = claimedOrder.RecipeId,
-                    TargetStationId = claimedOrder.ClaimedCounterId,
+                    OrderId = workOrder.OrderId,
+                    RecipeId = workOrder.RecipeId,
+                    TargetStationId = workOrder.ClaimedCounterId,
                     TargetStationType = BotStationType.CounterStation
                 };
             }
 
-            BotIngredientRequirement nextMissing = claimedOrder.MissingIngredients.FirstOrDefault();
+            BotIngredientRequirement nextMissing = workOrder.MissingIngredients.FirstOrDefault();
             if (nextMissing == null)
             {
                 return BotTaskPlan.Idle();
             }
 
-            if (!claimedOrder.CounterHasPlate)
+            if (!workOrder.CounterHasPlate)
             {
                 BotStationDescriptor plateDispenser = GetNearestTeamStation(snapshot, BotStationType.PlateDispenser);
                 if (plateDispenser != null)
                 {
-                    return CreateStationPlan(BotTaskType.AcquirePlate, claimedOrder, null, plateDispenser);
+                    return CreateStationPlan(BotTaskType.AcquirePlate, workOrder, null, plateDispenser);
                 }
             }
 
@@ -202,7 +219,7 @@ namespace Gameplay.Networking.Bot
             {
                 return CreateStationPlan(
                     BotTaskType.ProcessIngredient,
-                    claimedOrder,
+                    workOrder,
                     nextMissing.IngredientId,
                     readyStation);
             }
@@ -212,7 +229,7 @@ namespace Gameplay.Networking.Bot
             {
                 return CreateStationPlan(
                     BotTaskType.FetchIngredient,
-                    claimedOrder,
+                    workOrder,
                     nextMissing.IngredientId,
                     ingredientCrate);
             }
@@ -220,8 +237,8 @@ namespace Gameplay.Networking.Bot
             return new BotTaskPlan
             {
                 Type = BotTaskType.Recover,
-                OrderId = claimedOrder.OrderId,
-                RecipeId = claimedOrder.RecipeId,
+                OrderId = workOrder.OrderId,
+                RecipeId = workOrder.RecipeId,
                 IngredientId = nextMissing.IngredientId
             };
         }
@@ -251,6 +268,29 @@ namespace Gameplay.Networking.Bot
             }
 
             return snapshot.Orders.FirstOrDefault(order => order.OrderId == snapshot.ClaimedOrderId.Value);
+        }
+
+        private static BotOrderDescriptor GetSupportOrder(BotPlanningSnapshot snapshot)
+        {
+            return snapshot.Orders
+                .Where(order =>
+                    order.IsClaimedByAnotherBot &&
+                    !order.IsExpired &&
+                    !order.IsCompleted &&
+                    !order.HasInvalidAssembly &&
+                    !string.IsNullOrWhiteSpace(order.ClaimedCounterId))
+                .OrderBy(order => order.RemainingTime)
+                .FirstOrDefault();
+        }
+
+        private static string GetTargetCounterId(BotPlanningSnapshot snapshot, BotOrderDescriptor claimedOrder)
+        {
+            if (!string.IsNullOrWhiteSpace(snapshot.ClaimedCounterId))
+            {
+                return snapshot.ClaimedCounterId;
+            }
+
+            return claimedOrder?.ClaimedCounterId;
         }
 
         private static BotStationDescriptor GetNearestIngredientCrate(BotPlanningSnapshot snapshot, int ingredientId)

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Gameplay.App.State.States;
+using Gameplay.Networking.Bot;
 using Gameplay.Shared;
 using Gameplay.Spawning;
 using Unity.Netcode;
@@ -12,8 +13,6 @@ using Core.Logging;
 using Core.Networking.Models;
 using Core.Shared.Enums;
 using Core.UI.Interfaces;
-using Gameplay.Cooking;
-using Gameplay.Stations;
 using PlayEveryWare.EpicOnlineServices;
 using PlayEveryWare.EpicOnlineServices.Samples.Network;
 
@@ -67,6 +66,8 @@ namespace Gameplay.App.Networking
         /// </summary>
         public void StartGame()
         {
+            ResetBotRuntimeState();
+
             var matchLobby = _lobbyManager.CurrentMatchLobby;
 
             if (matchLobby == null)
@@ -119,7 +120,14 @@ namespace Gameplay.App.Networking
             if (success)
             {
                 GameLogger.Log("Successfully started as host");
-                EnsureKitchenSupportStations();
+                if (_matchContext?.KitchenSupportRuntime != null)
+                {
+                    _matchContext.KitchenSupportRuntime.EnsureKitchenSupportStations();
+                }
+                else
+                {
+                    GameLogger.LogWarning("Kitchen support runtime not available. Skipping support station bootstrap.");
+                }
 
                 // Spawn the host player (client ID 0)
                 // ConnectionApprovalCallback is NOT called for the host, so we spawn manually
@@ -293,6 +301,7 @@ namespace Gameplay.App.Networking
             GameLogger.Log("Ending game...");
 
             _isGameActive = false;
+            ResetBotRuntimeState();
 
             // Unsubscribe from events
             UnsubscribeFromNetworkEvents();
@@ -357,102 +366,6 @@ namespace Gameplay.App.Networking
 
             // Note: We're already in GameplayState (transitioned from MatchmakingState)
             // No need to transition again
-        }
-
-        private void EnsureKitchenSupportStations()
-        {
-            if (NetcodeManager?.IsServer != true)
-            {
-                return;
-            }
-
-            EnsureIngredientCrates();
-            EnsurePlateDispenser();
-        }
-
-        private void EnsureIngredientCrates()
-        {
-            if (Object.FindObjectsByType<IngredientCrate>(FindObjectsSortMode.None).Length > 0)
-            {
-                return;
-            }
-
-            GameObject cratePrefab = Resources.Load<GameObject>("Prefabs/Gameplay/Stations/IngredientCrate");
-            Ingredient tomato = Resources.Load<Ingredient>("ScriptableObjects/Cooking/Ingredients/Tomato");
-            Ingredient steak = Resources.Load<Ingredient>("ScriptableObjects/Cooking/Ingredients/Steak");
-            if (cratePrefab == null || tomato == null || steak == null)
-            {
-                GameLogger.LogWarning("Could not create runtime ingredient crates because required resources are missing.");
-                return;
-            }
-
-            Transform stationsParent = GameObject.Find("Stations")?.transform;
-            Vector3 anchor = GetKitchenAnchor();
-            SpawnIngredientCrate(cratePrefab, tomato, anchor + new Vector3(0f, 0f, -2f), stationsParent);
-            SpawnIngredientCrate(cratePrefab, steak, anchor + new Vector3(0f, 0f, -4f), stationsParent);
-        }
-
-        private void EnsurePlateDispenser()
-        {
-            if (Object.FindObjectsByType<PlateDispenser>(FindObjectsSortMode.None).Length > 0)
-            {
-                return;
-            }
-
-            GameObject dispenserPrefab = Resources.Load<GameObject>("Prefabs/Gameplay/Stations/PlateDispenser");
-            if (dispenserPrefab == null)
-            {
-                GameLogger.LogWarning("Could not create runtime plate dispenser because the resource is missing.");
-                return;
-            }
-
-            Transform stationsParent = GameObject.Find("Stations")?.transform;
-            Vector3 anchor = GetKitchenAnchor();
-            GameObject dispenserObject = Object.Instantiate(dispenserPrefab, anchor + new Vector3(0f, 0f, 2f), Quaternion.identity);
-            if (stationsParent != null)
-            {
-                dispenserObject.transform.SetParent(stationsParent);
-            }
-
-            NetworkObject networkObject = dispenserObject.GetComponent<NetworkObject>();
-            if (networkObject != null)
-            {
-                networkObject.Spawn(true);
-            }
-        }
-
-        private static void SpawnIngredientCrate(
-            GameObject cratePrefab,
-            Ingredient ingredient,
-            Vector3 position,
-            Transform parent)
-        {
-            GameObject crateObject = Object.Instantiate(cratePrefab, position, Quaternion.identity);
-            if (parent != null)
-            {
-                crateObject.transform.SetParent(parent);
-            }
-
-            IngredientCrate crate = crateObject.GetComponent<IngredientCrate>();
-            crate?.ConfigureIngredient(ingredient);
-
-            NetworkObject networkObject = crateObject.GetComponent<NetworkObject>();
-            if (networkObject != null)
-            {
-                networkObject.Spawn(true);
-            }
-        }
-
-        private static Vector3 GetKitchenAnchor()
-        {
-            ServingStation servingStation = Object.FindFirstObjectByType<ServingStation>();
-            if (servingStation != null)
-            {
-                return servingStation.transform.position;
-            }
-
-            CounterStation counter = Object.FindFirstObjectByType<CounterStation>();
-            return counter != null ? counter.transform.position : Vector3.zero;
         }
 
         private int ReserveNextHumanTeam()
@@ -528,6 +441,7 @@ namespace Gameplay.App.Networking
         private void OnGameStartFailed(string reason)
         {
             GameLogger.LogError($"Game start failed: {reason}");
+            ResetBotRuntimeState();
             RestoreAutomaticPlayerSpawning();
 
             // Show error message
@@ -563,6 +477,11 @@ namespace Gameplay.App.Networking
             _didDisableAutomaticPlayerSpawning = false;
 
             GameLogger.Log("Restored automatic player spawning configuration");
+        }
+
+        private static void ResetBotRuntimeState()
+        {
+            BotClaimRegistry.Shared.Clear();
         }
     }
 }

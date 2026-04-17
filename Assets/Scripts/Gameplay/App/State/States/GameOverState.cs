@@ -3,6 +3,7 @@ using Core.UI.Interfaces;
 using UnityEngine;
 using Gameplay.UI.Features.GameOver;
 using Gameplay.UI.Features.Gameplay;
+using Gameplay.GameModes;
 using Gameplay.Shared;
 
 namespace Gameplay.App.State.States
@@ -24,6 +25,20 @@ namespace Gameplay.App.State.States
 
             _uiService?.HideHud<GameplayHudView>(false);
             _uiService?.SetRootScreen<GameOverScreen>(true);
+
+            MatchResultState result = _matchContext.MatchResultSync?.CurrentResult ?? MatchResultState.None;
+            if (!result.HasResult)
+            {
+                LogError("GameOverState entered without a synchronized final result.");
+            }
+            else if (result.IsDraw)
+            {
+                LogMessage($"Final result: Draw ({result.EndReason}) at {result.WinningScore} points");
+            }
+            else
+            {
+                LogMessage($"Final result: Team {result.WinningTeamId} won via {result.EndReason} with {result.WinningScore} points");
+            }
 
             // Get the final scores
             _matchContext.Refresh();

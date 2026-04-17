@@ -5,6 +5,7 @@ using Gameplay.Characters;
 using Gameplay.Cooking;
 using Gameplay.Match;
 using Gameplay.Scoring;
+using Gameplay.Shared;
 using Gameplay.Shared.Events;
 using Unity.Netcode;
 using UnityEngine;
@@ -29,6 +30,7 @@ namespace Gameplay.Stations
         private NetworkScoreManager _scoreManager;
 
         [Inject] private IEventBus _eventBus;
+        [Inject] private IMatchContext _matchContext;
         [Inject] private IOrderService _orderService;
         private IDishValidator _validator;
 
@@ -56,29 +58,36 @@ namespace Gameplay.Stations
             // Set station name
             _stationName = "Serving Station";
 
-            // Find the order manager if not set
-            if (_orderManager == null)
-            {
-                _orderManager = FindFirstObjectByType<OrderManager>();
-            }
-
-            // Find network score manager
-            _scoreManager = FindFirstObjectByType<NetworkScoreManager>();
-            if (_scoreManager == null)
-            {
-                GameLogger.LogWarning("NetworkScoreManager not found. Scoring will not work.");
-            }
-
             // Create dish validator
             _validator = new StandardDishValidator();
             _orderService ??= new OrderService();
+
+            ResolveRuntimeDependencies();
         }
 
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
+            ResolveRuntimeDependencies();
             // Find linked sink
             FindLinkedSink();
+        }
+
+        private void ResolveRuntimeDependencies()
+        {
+            _matchContext?.Refresh();
+            _orderManager ??= _matchContext?.OrderManager;
+            _scoreManager ??= _matchContext?.NetworkScoreManager;
+
+            if (_orderManager == null)
+            {
+                GameLogger.LogWarning("OrderManager not available for ServingStation.");
+            }
+
+            if (_scoreManager == null)
+            {
+                GameLogger.LogWarning("NetworkScoreManager not available for ServingStation. Scoring will not work.");
+            }
         }
 
         private void FindLinkedSink()

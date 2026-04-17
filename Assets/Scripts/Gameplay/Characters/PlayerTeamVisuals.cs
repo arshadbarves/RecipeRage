@@ -2,6 +2,9 @@ using Unity.Netcode;
 using UnityEngine;
 using Core.Logging;
 using Core.Networking.Interfaces; // For IPlayerNetworkManager if needed, or IPlayerController
+using Gameplay.Shared;
+using VContainer;
+using VContainer.Unity;
 
 namespace Gameplay.Characters
 {
@@ -23,7 +26,10 @@ namespace Gameplay.Characters
         [SerializeField] private GameObject _enemyHighlight;
 
         private int _cachedTeamId = -1;
+        private int _cachedLocalTeamId = -1;
         private bool _initialized = false;
+
+        [Inject] private IMatchContext _matchContext;
 
         private void Awake()
         {
@@ -31,34 +37,42 @@ namespace Gameplay.Characters
             {
                 _playerController = GetComponent<PlayerController>();
             }
+
+            LifetimeScope scope = LifetimeScope.Find<LifetimeScope>();
+            if (scope != null)
+            {
+                scope.Container.Inject(this);
+            }
         }
 
         private void Update()
         {
             if (!IsSpawned) return;
 
-            // wait for local player to exist
-            if (NetworkManager.Singleton == null || NetworkManager.Singleton.LocalClient == null || NetworkManager.Singleton.LocalClient.PlayerObject == null)
+            _matchContext?.Refresh();
+
+            PlayerController localPlayer = _matchContext?.LocalPlayer;
+            if (localPlayer == null)
             {
                 return;
             }
 
-            var localPlayer = NetworkManager.Singleton.LocalClient.PlayerObject.GetComponent<PlayerController>();
-            if (localPlayer == null) return;
+            int localTeamId = _matchContext?.LocalTeamId ?? localPlayer.TeamId;
 
             // Check if updates are needed
-            if (!_initialized || _cachedTeamId != _playerController.TeamId)
+            if (!_initialized || _cachedTeamId != _playerController.TeamId || _cachedLocalTeamId != localTeamId)
             {
-                UpdateVisuals(localPlayer);
+                UpdateVisuals(localPlayer, localTeamId);
             }
         }
 
-        private void UpdateVisuals(PlayerController localPlayer)
+        private void UpdateVisuals(PlayerController localPlayer, int localTeamId)
         {
             _cachedTeamId = _playerController.TeamId;
+            _cachedLocalTeamId = localTeamId;
             _initialized = true;
 
-            bool isAlly = (localPlayer.TeamId == _playerController.TeamId);
+            bool isAlly = localTeamId == _playerController.TeamId;
             bool isMe = (localPlayer == _playerController);
 
             if (_allyHighlight != null) _allyHighlight.SetActive(isAlly || isMe);

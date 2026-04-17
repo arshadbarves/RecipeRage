@@ -157,5 +157,81 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             Assert.AreEqual("crate-steak", plan.TargetStationId);
             Assert.AreEqual(2002, plan.IngredientId);
         }
+
+        [Test]
+        public void Plan_SkipsOrdersClaimedByAnotherBotWhenSelectingNewClaim()
+        {
+            BotTaskPlanner planner = new();
+            BotPlanningSnapshot snapshot = new()
+            {
+                Orders = new List<BotOrderDescriptor>
+                {
+                    new()
+                    {
+                        OrderId = 10,
+                        RecipeId = 3001,
+                        RemainingTime = 5f,
+                        IsClaimedByAnotherBot = true
+                    },
+                    new()
+                    {
+                        OrderId = 11,
+                        RecipeId = 3002,
+                        RemainingTime = 12f
+                    }
+                }
+            };
+
+            BotTaskPlan plan = planner.Plan(snapshot);
+
+            Assert.AreEqual(BotTaskType.ClaimOrder, plan.Type);
+            Assert.AreEqual(11, plan.OrderId);
+        }
+
+        [Test]
+        public void Plan_AssistsClaimedOrderWhenNoUnclaimedOrdersRemain()
+        {
+            BotTaskPlanner planner = new();
+            BotPlanningSnapshot snapshot = new()
+            {
+                Orders = new List<BotOrderDescriptor>
+                {
+                    new()
+                    {
+                        OrderId = 50,
+                        RecipeId = 4001,
+                        RemainingTime = 8f,
+                        IsClaimedByAnotherBot = true,
+                        ClaimedCounterId = "counter-1",
+                        CounterHasPlate = true,
+                        MissingIngredients = new List<BotIngredientRequirement>
+                        {
+                            new()
+                            {
+                                IngredientId = 2002,
+                                RequiresCooked = true
+                            }
+                        }
+                    }
+                },
+                Stations = new List<BotStationDescriptor>
+                {
+                    new()
+                    {
+                        StationId = "crate-steak",
+                        Type = BotStationType.IngredientCrate,
+                        IngredientId = 2002,
+                        Position = Vector3.zero
+                    }
+                }
+            };
+
+            BotTaskPlan plan = planner.Plan(snapshot);
+
+            Assert.AreEqual(BotTaskType.FetchIngredient, plan.Type);
+            Assert.AreEqual(50, plan.OrderId);
+            Assert.AreEqual("crate-steak", plan.TargetStationId);
+            Assert.AreEqual(2002, plan.IngredientId);
+        }
     }
 }
