@@ -309,7 +309,7 @@ namespace Core.Animation
             };
         }
 
-        private Vector2 GetSlideEndPosition(VisualElement element, SlideDirection direction)
+            private Vector2 GetSlideEndPosition(VisualElement element, SlideDirection direction)
         {
             float parentWidth = element.parent?.resolvedStyle.width ?? Screen.width;
             float parentHeight = element.parent?.resolvedStyle.height ?? Screen.height;
@@ -322,6 +322,130 @@ namespace Core.Animation
                 SlideDirection.Bottom => new Vector2(element.resolvedStyle.left, parentHeight),
                 _ => Vector2.zero
             };
+        }
+
+        public async UniTask BlurIn(VisualElement element, float startRadius, float duration, CancellationToken token = default)
+        {
+            if (element == null) return;
+
+            float currentBlur = startRadius;
+
+            void ApplyBlur(float radius)
+            {
+                var filter = new FilterFunction(FilterFunctionType.Blur);
+                filter.AddParameter(new FilterParameter { floatValue = radius });
+                element.style.filter = new StyleList<FilterFunction>(
+                    new System.Collections.Generic.List<FilterFunction> { filter });
+            }
+
+            // Set initial blur state immediately
+            ApplyBlur(currentBlur);
+
+            await DOTween.To(
+                    () => currentBlur,
+                    x => { currentBlur = x; ApplyBlur(x); },
+                    0f,
+                    duration)
+                .SetEase(Ease.OutQuad)
+                .SetTarget(element)
+                .ToUniTask()
+                .AttachExternalCancellation(token);
+        }
+
+        public async UniTask TrackingIn(Label element, float startSpacing, float endSpacing, float duration, CancellationToken token = default)
+        {
+            if (element == null) return;
+
+            float currentSpacing = startSpacing;
+            await DOTween.To(() => currentSpacing,
+                x => {
+                    currentSpacing = x;
+                    element.style.letterSpacing = new Length(x, LengthUnit.Pixel);
+                }, endSpacing, duration)
+                .SetEase(Ease.OutQuad)
+                .SetTarget(element)
+                .ToUniTask()
+                .AttachExternalCancellation(token);
+        }
+
+        public void SlideInfinite(VisualElement element, float startPercentX, float endPercentX, float duration)
+        {
+            if (element == null) return;
+
+            float currentX = startPercentX;
+            DOTween.To(() => currentX,
+                x => {
+                    currentX = x;
+                    element.style.translate = new Translate(new Length(x, LengthUnit.Percent), 0, 0);
+                }, endPercentX, duration)
+                .SetEase(Ease.InOutSine)
+                .SetLoops(-1, LoopType.Restart)
+                .SetTarget(element);
+        }
+
+        public void FloatYoyo(VisualElement element, float offsetY, float duration)
+        {
+            if (element == null) return;
+
+            float currentY = 0f;
+            DOTween.To(() => currentY, y =>
+            {
+                currentY = y;
+                element.style.translate = new Translate(0, y, 0);
+            }, offsetY, duration)
+                .SetEase(Ease.InOutSine)
+                .SetLoops(-1, LoopType.Yoyo)
+                .SetTarget(element);
+        }
+
+        public async UniTask CrossfadeLabel(Label label, string newText, float slidePx, float duration, CancellationToken token = default)
+        {
+            if (label == null) return;
+
+            float halfDuration = duration * 0.5f;
+            float opacity = 1f;
+            float posX = 0f;
+
+            Sequence seq = DOTween.Sequence();
+
+            // Phase 1: Fade out + slide right
+            seq.Append(DOTween.To(() => opacity, x =>
+            {
+                opacity = x;
+                label.style.opacity = x;
+            }, 0f, halfDuration).SetEase(Ease.InQuad));
+
+            seq.Join(DOTween.To(() => posX, x =>
+            {
+                posX = x;
+                label.style.translate = new Translate(x, 0, 0);
+            }, slidePx, halfDuration).SetEase(Ease.InQuad));
+
+            // Swap text and reset position
+            seq.AppendCallback(() =>
+            {
+                label.text = newText;
+                posX = -slidePx;
+                opacity = 0f;
+                label.style.translate = new Translate(-slidePx, 0, 0);
+                label.style.opacity = 0f;
+            });
+
+            // Phase 2: Fade in + slide to center
+            seq.Append(DOTween.To(() => opacity, x =>
+            {
+                opacity = x;
+                label.style.opacity = x;
+            }, 1f, halfDuration).SetEase(Ease.OutQuad));
+
+            seq.Join(DOTween.To(() => posX, x =>
+            {
+                posX = x;
+                label.style.translate = new Translate(x, 0, 0);
+            }, 0f, halfDuration).SetEase(Ease.OutQuad));
+
+            seq.SetTarget(label);
+            await seq.ToUniTask().AttachExternalCancellation(token);
         }
     }
 }

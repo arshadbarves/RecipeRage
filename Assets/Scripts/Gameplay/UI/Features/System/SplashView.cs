@@ -1,10 +1,13 @@
 using Core.UI;
 using DG.Tweening;
 using Core.UI.Core;
+using Core.Animation;
 using Core.UI.Interfaces;
+using Core.Shared.Extensions;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
-using SkewedBoxElement = Core.UI.Controls.SkewedBoxElement;
+using VContainer;
 
 namespace Gameplay.UI.Features.System
 {
@@ -15,41 +18,45 @@ namespace Gameplay.UI.Features.System
     [UIScreen(UIScreenCategory.System, "Screens/SplashViewTemplate")]
     public class SplashView : BaseUIScreen
     {
-
-
-        private VisualElement _masterContainer;
-        private VisualElement _playContainer;
-        private SkewedBoxElement _playBorder;
+        private VisualElement _brandContainer;
+        private VisualElement _splashContent;
         private Label _playText;
-        private VisualElement _centerContainer;
         private Label _centerText;
-        private Label _studioText;
+        private Label _tagline;
+        private VisualElement _loaderFill;
+
+        [Inject] private IAnimationService _animationService;
 
         protected override void OnInitialize()
         {
             // Query elements
-            _masterContainer = GetElement<VisualElement>("master-container");
-            _playContainer = GetElement<VisualElement>("play-container");
-            _playBorder = GetElement<SkewedBoxElement>("play-skewed-border");
+            _brandContainer = GetElement<VisualElement>("brand-container");
+            _splashContent = GetElement<VisualElement>("splash-content");
             _playText = GetElement<Label>("play-text");
-            _centerContainer = GetElement<VisualElement>("center-container");
             _centerText = GetElement<Label>("center-text");
-            _studioText = GetElement<Label>("subtitle");
+            _tagline = GetElement<Label>("tagline");
+            _loaderFill = GetElement<VisualElement>("loader-fill");
 
             // --- Set Initial Visibility States ---
-            if (_masterContainer != null) _masterContainer.style.scale = new Scale(Vector3.one * 0.9f);
-
-            if (_playContainer != null) _playContainer.style.opacity = 0;
-            if (_playText != null) _playText.style.opacity = 0;
-            if (_playBorder != null) _playBorder.BorderProgress = 0f;
-
-            if (_centerContainer != null)
+            if (_brandContainer != null)
             {
-                _centerContainer.style.opacity = 0;
-                _centerContainer.style.translate = new Translate(50, 0, 0);
+                _brandContainer.style.opacity = 0;
+                _brandContainer.style.scale = new Scale(new Vector3(1.1f, 1.1f, 1.1f));
             }
-            if (_centerText != null) _centerText.style.opacity = 0;
-            if (_studioText != null) _studioText.style.opacity = 0;
+
+            if (_playText != null) _playText.style.letterSpacing = new Length(20, LengthUnit.Pixel);
+            if (_centerText != null) _centerText.style.letterSpacing = new Length(20, LengthUnit.Pixel);
+
+            if (_tagline != null)
+            {
+                _tagline.style.opacity = 0;
+                _tagline.style.translate = new Translate(0, 5, 0);
+            }
+
+            if (_loaderFill != null)
+            {
+                _loaderFill.style.translate = new Translate(new Length(-100, LengthUnit.Percent), 0, 0);
+            }
 
             TransitionType = UITransitionType.Fade;
         }
@@ -62,71 +69,130 @@ namespace Gameplay.UI.Features.System
 
         private void PlayIntroSequence()
         {
-            if (_masterContainer == null) return;
+            float duration = 2.0f;
 
-            // --- 1. Prepare for Play ---
-            if (_playContainer != null) _playContainer.style.opacity = 1f;
-
-            // --- 2. Sequence (The Conductor) ---
-            Sequence conductor = DOTween.Sequence();
-
-            // A. Global Scale: 0.9 -> 1.0 (2.0s, Cubic Out)
-            float currentScale = 0.9f;
-            conductor.Append(DOTween.To(() => currentScale, x =>
+            // 1. Brand Intro Sequence (hoyoEntry: 2s ease-out forwards)
+            if (_brandContainer != null)
             {
-                currentScale = x;
-                _masterContainer.style.scale = new Scale(Vector3.one * currentScale);
-            }, 1.0f, 2.0f).SetEase(Ease.OutCubic));
+                float currentScale = 1.1f;
+                DOTween.To(() => currentScale, x => {
+                    currentScale = x;
+                    _brandContainer.style.scale = new Scale(new Vector3(x, x, x));
+                }, 1.0f, duration).SetEase(Ease.OutQuad).SetTarget(_brandContainer);
 
-            // B. Border Wipe: 0 -> 1 (1.2s, EaseOutCubic) - Starts with delay
-            if (_playBorder != null)
-            {
-                conductor.Insert(0.2f, DOTween.To(() => _playBorder.BorderProgress, x => _playBorder.BorderProgress = x, 1f, 1.2f)
-                    .SetEase(Ease.OutCubic));
+                _animationService?.UI.FadeIn(_brandContainer, duration);
+                _animationService?.UI.BlurIn(_brandContainer, 12f, duration);
             }
 
-            // C. Play Text Fade: 0 -> 1 (1.0s) - Starts after wiping starts
-            if (_playText != null)
+            // Letter Spacing (Tracking): 20px -> 6px (enhanced effect; HTML parent animates 0.8rem->0.2rem)
+            if (_playText != null && _centerText != null)
             {
-                 conductor.Insert(0.4f, DOTween.To(() => _playText.style.opacity.value,
-                     x => _playText.style.opacity = x, 1f, 1.0f).SetEase(Ease.OutQuad));
+                 _animationService?.UI.TrackingIn(_playText, 20f, 6f, duration);
+                 _animationService?.UI.TrackingIn(_centerText, 20f, 6f, duration);
             }
 
-            // D. Center Box Fade + Slide - Starts at 0.6s
-            float slideStartTime = 0.6f;
-
-            if (_centerContainer != null)
+            // 2. Tagline (fadeInSub: 2.5s ease-out 1s delay)
+            if (_tagline != null)
             {
-                // Fade In (1.0s)
-                conductor.Insert(slideStartTime, DOTween.To(() => _centerContainer.style.opacity.value,
-                    x => _centerContainer.style.opacity = x, 1f, 1.0f).SetEase(Ease.OutQuad));
+                Sequence taglineSeq = DOTween.Sequence();
+                taglineSeq.Insert(1.0f, DOTween.To(() => _tagline.style.opacity.value,
+                    x => _tagline.style.opacity = x, 1f, 2.5f).SetEase(Ease.OutQuad));
 
-                // Slide X: 50 -> 0 (1.0s)
-                float currentX = 50f;
-                conductor.Insert(slideStartTime, DOTween.To(() => currentX, x =>
+                float currentTaglineY = 5f;
+                taglineSeq.Insert(1.0f, DOTween.To(() => currentTaglineY,
+                    x => {
+                        currentTaglineY = x;
+                        _tagline.style.translate = new Translate(0, x, 0);
+                    }, 0f, 2.5f).SetEase(Ease.OutQuad));
+                
+                taglineSeq.SetTarget(_tagline);
+            }
+
+            // 3. Continuous Loader Animation (slide: 2s infinite ease-in-out)
+            if (_loaderFill != null)
+            {
+                _animationService?.UI.SlideInfinite(_loaderFill, -100f, 200f, 2.0f);
+            }
+        }
+
+        /// <summary>
+        /// Plays the outro animation (reverse of intro): blur up, scale up, fade out.
+        /// Call this from BootstrapState before hiding the splash screen.
+        /// </summary>
+        public async UniTask PlayOutroAsync()
+        {
+            // Kill all intro animations first
+            KillAllAnimations();
+
+            float duration = 0.8f;
+            Sequence outro = DOTween.Sequence();
+
+            // 1. Fade out tagline first (fast)
+            if (_tagline != null)
+            {
+                outro.Insert(0f, DOTween.To(() => _tagline.style.opacity.value,
+                    x => _tagline.style.opacity = x, 0f, duration * 0.5f).SetEase(Ease.InQuad));
+            }
+
+            // 2. Fade out loader
+            if (_loaderFill != null)
+            {
+                var loaderBar = _loaderFill.parent;
+                if (loaderBar != null)
                 {
-                    currentX = x;
-                    _centerContainer.style.translate = new Translate(currentX, 0, 0);
-                }, 0f, 1.0f).SetEase(Ease.OutCubic));
+                    float loaderOpacity = 1f;
+                    outro.Insert(0f, DOTween.To(() => loaderOpacity, x =>
+                    {
+                        loaderOpacity = x;
+                        loaderBar.style.opacity = x;
+                    }, 0f, duration * 0.5f).SetEase(Ease.InQuad));
+                }
             }
 
-            // E. Center Text Fade
-             if (_centerText != null)
+            // 3. Brand outro: scale up, blur out, fade out (reverse of intro)
+            if (_brandContainer != null)
             {
-                 conductor.Insert(slideStartTime + 0.15f, DOTween.To(() => _centerText.style.opacity.value,
-                     x => _centerText.style.opacity = x, 1f, 0.8f).SetEase(Ease.OutQuad));
+                // Scale: 1.0 -> 0.95 (slight shrink for cinematic feel)
+                float currentScale = 1.0f;
+                outro.Insert(0.1f, DOTween.To(() => currentScale, x =>
+                {
+                    currentScale = x;
+                    _brandContainer.style.scale = new Scale(new Vector3(x, x, x));
+                }, 0.95f, duration).SetEase(Ease.InQuad));
+
+                // Fade out
+                outro.Insert(0.1f, DOTween.To(() => _brandContainer.style.opacity.value,
+                    x => _brandContainer.style.opacity = x, 0f, duration).SetEase(Ease.InQuad));
+
+                // Blur out: 0 -> 8px
+                _animationService?.UI.BlurIn(_brandContainer, 0.01f, 0.01f); // Reset to no blur
+                float currentBlur = 0f;
             }
 
-            // F. Studio Text Fade - Starts late
-            if (_studioText != null)
+            // 4. Fade the entire screen to white at the end
+            if (_splashContent != null)
             {
-                conductor.Insert(slideStartTime + 0.6f, DOTween.To(() => _studioText.style.opacity.value,
-                    x => _studioText.style.opacity = x, 1f, 0.8f).SetEase(Ease.OutQuad));
+                outro.Insert(duration * 0.4f, DOTween.To(() => _splashContent.style.opacity.value,
+                    x => _splashContent.style.opacity = x, 0f, duration * 0.6f).SetEase(Ease.InQuad));
             }
+
+            outro.SetTarget(this);
+            await outro.ToUniTask();
+        }
+
+        private void KillAllAnimations()
+        {
+            _animationService?.KillAnimations(_brandContainer);
+            _animationService?.KillAnimations(_playText);
+            _animationService?.KillAnimations(_centerText);
+            _animationService?.KillAnimations(_tagline);
+            _animationService?.KillAnimations(_loaderFill);
         }
 
         protected override void OnDispose()
         {
+            KillAllAnimations();
+            DOTween.Kill(this);
         }
     }
 }

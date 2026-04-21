@@ -18,6 +18,15 @@ namespace Core.Animation
         UniTask PopupOut(VisualElement container, float duration, CancellationToken token = default);
         UniTask Pulse(VisualElement element, float duration, CancellationToken token = default);
         UniTask Shake(VisualElement element, float duration, float intensity, CancellationToken token = default);
+
+        // New Unity 6 / Advanced typography extensions & loaders
+        UniTask BlurIn(VisualElement element, float startRadius, float duration, CancellationToken token = default);
+        UniTask TrackingIn(Label element, float startSpacing, float endSpacing, float duration, CancellationToken token = default);
+        void SlideInfinite(VisualElement element, float startPercentX, float endPercentX, float duration);
+
+        // Ambient & content transition animations
+        void FloatYoyo(VisualElement element, float offsetY, float duration);
+        UniTask CrossfadeLabel(Label label, string newText, float slidePx, float duration, CancellationToken token = default);
     }
 
     public enum SlideDirection

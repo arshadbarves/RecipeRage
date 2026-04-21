@@ -200,9 +200,18 @@ namespace Gameplay.App.State.States
         private async UniTask ShowSplashViewAsync()
         {
             _uiService.ShowSystem<SplashView>();
+
+            // Wait for the splash intro + hold time
             await UniTask.Delay(TimeSpan.FromSeconds(SplashDuration), cancellationToken: StateCancellationToken);
+
+            // Play the outro animation before hiding
+            var splashView = _uiService.GetScreen<SplashView>();
+            if (splashView != null)
+            {
+                await splashView.PlayOutroAsync();
+            }
+
             _uiService.HideSystem<SplashView>();
-            await UniTask.Delay(500, cancellationToken: StateCancellationToken);
         }
     }
 }

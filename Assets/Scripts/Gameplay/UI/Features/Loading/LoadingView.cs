@@ -1,10 +1,10 @@
 using Core.UI;
 using DG.Tweening;
-
 using Core.UI.Core;
+using Core.Animation;
+using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;
-using SkewedBoxElement = Core.UI.Controls.SkewedBoxElement;
 using Gameplay.UI.Localization;
 using Core.Localization;
 
@@ -15,24 +15,22 @@ namespace Gameplay.UI.Features.Loading
     {
         [Inject] private LoadingViewModel _viewModel;
         [Inject] private ILocalizationManager _localizationManager;
+        [Inject] private IAnimationService _animationService;
 
-        private SkewedBoxElement _progressFill;
-        private Label _statusText;
+        private VisualElement _gameTitle;
+        private VisualElement _progressFill;
         private Label _percentageText;
         private Label _tipText;
-        private Label _tipTitle;
-        private Label _versionInfo;
 
         private Tween _progressTween;
+        private bool _isFirstTip = true;
 
         protected override void OnInitialize()
         {
-            _progressFill = GetElement<SkewedBoxElement>("progress-fill");
-            _statusText = GetElement<Label>("status-text");
+            _gameTitle = GetElement<VisualElement>("game-title");
+            _progressFill = GetElement<VisualElement>("progress-fill");
             _percentageText = GetElement<Label>("percentage");
             _tipText = GetElement<Label>("tip-text");
-            _tipTitle = GetElement<Label>("tip-title");
-            _versionInfo = GetElement<Label>("version-info");
 
             TransitionType = UITransitionType.Fade;
 
@@ -43,9 +41,6 @@ namespace Gameplay.UI.Features.Loading
         private void BindLocalization()
         {
             if (_localizationManager == null) return;
-            // The ViewModel properties (TipTitle, StatusText as defaults) are already localized 
-            // but don't react to language change unless we re-initialize or bind them to a key update.
-            // Since LoadingScreen might be active when language changes (in theory), we can bind them.
             _localizationManager.RegisterBinding(this, LocKeys.LoadingTipTitle, _ => _viewModel.Initialize());
         }
 
@@ -55,13 +50,38 @@ namespace Gameplay.UI.Features.Loading
 
             _viewModel.Initialize();
 
-            _viewModel.StatusText.Bind(text => { if (_statusText != null) _statusText.text = text; });
             _viewModel.ProgressText.Bind(text => { if (_percentageText != null) _percentageText.text = text; });
-            _viewModel.TipTitle.Bind(text => { if (_tipTitle != null) _tipTitle.text = text; });
-            _viewModel.TipText.Bind(text => { if (_tipText != null) _tipText.text = text; });
-            _viewModel.VersionText.Bind(text => { if (_versionInfo != null) _versionInfo.text = text; });
-
+            _viewModel.TipText.Bind(OnTipChanged);
             _viewModel.ProgressValue.Bind(AnimateProgress);
+        }
+
+        protected override void OnShow()
+        {
+            base.OnShow();
+
+            // slowFloat: infinite Y-axis bounce (4s round trip = 2s per direction)
+            _animationService?.UI.FloatYoyo(_gameTitle, -12f, 2.0f);
+        }
+
+        /// <summary>
+        /// Tip rotation handler. First call sets text directly; subsequent calls
+        /// use the reusable CrossfadeLabel animation from the animation system.
+        /// </summary>
+        private void OnTipChanged(string newTip)
+        {
+            if (_tipText == null) return;
+
+            // First tip: just set text directly, no animation
+            if (_isFirstTip)
+            {
+                _isFirstTip = false;
+                _tipText.text = newTip;
+                _tipText.style.opacity = 1f;
+                return;
+            }
+
+            // Use the reusable crossfade animation (slide 15px, 0.8s total)
+            _animationService?.UI.CrossfadeLabel(_tipText, newTip, 15f, 0.8f);
         }
 
         private void AnimateProgress(float progress)
@@ -76,7 +96,7 @@ namespace Gameplay.UI.Features.Loading
             {
                 currentWidth = x;
                 _progressFill.style.width = new Length(x, LengthUnit.Percent);
-            }, targetWidth, 0.3f).SetEase(Ease.OutQuad);
+            }, targetWidth, 0.3f).SetEase(Ease.OutQuad).SetTarget(_progressFill);
         }
 
         public void UpdateProgress(float progress, string message = null)
@@ -87,6 +107,8 @@ namespace Gameplay.UI.Features.Loading
         protected override void OnDispose()
         {
             _progressTween?.Kill();
+            _animationService?.KillAnimations(_gameTitle);
+            _animationService?.KillAnimations(_tipText);
             _viewModel?.Dispose();
             _localizationManager?.UnregisterAll(this);
         }
