@@ -4,7 +4,7 @@
     <Template name="ShopTemplate" src="project://database/Assets/Resources/UI/Templates/Screens/ShopTemplate.uxml?fileID=9197481963319205126&amp;guid=0824e79abae0447b990331c5e433d706&amp;type=3#ShopTemplate"/>
     <Style src="project://database/Assets/Resources/UI/Styles/Screens/MainMenu.uss?fileID=7433441132597879392&amp;guid=15bb364f81be046f5a66a2cf721fada9&amp;type=3#MainMenu"/>
     <VisualElement name="main-menu-root" class="main-menu-root">
-        <VisualElement name="shader-background" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; z-index: 0; background-color: white; -unity-material: url(&quot;project://database/Assets/Materials/UI/UI_TechGridBackground.mat?fileID=2100000&amp;guid=055c17f7b6df440a6ae73b85eb5c8a84&amp;type=2#UI_TechGridBackground&quot;);"/>
+        <VisualElement name="shader-background" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; z-index: 0; background-color: white;"/>
         <VisualElement name="currency-group" class="currency-group">
             <VisualElement name="wallet-pill-gems" class="wallet-pill">
                 <VisualElement class="wallet-icon gem-icon"/>
