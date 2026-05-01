@@ -3,6 +3,7 @@ using KitchenClash.Application.Services;
 using KitchenClash.Domain;
 using KitchenClash.Infrastructure.DI;
 using KitchenClash.Infrastructure.Gameplay;
+using KitchenClash.Presentation.ViewModels;
 using VContainer;
 using VContainer.Unity;
 
@@ -23,5 +24,8 @@ public class MenuLifetimeScope : LifetimeScope
 
         // Character service (uses ChefRegistry singleton from root)
         builder.Register<CharacterService>(Lifetime.Scoped).As<ICharacterService>();
+
+        // ViewModels
+        builder.Register<DailyStreakViewModel>(Lifetime.Transient);
     }
 }

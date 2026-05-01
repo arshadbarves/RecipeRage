@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace KitchenClash.Domain
@@ -11,5 +12,7 @@ namespace KitchenClash.Domain
         Task SaveAsync();
         bool CanClaim(DateTime utcNow);
         DailyStreakReward Claim(DateTime utcNow);
+        DailyStreakReward GetRewardPreview(int day);
+        List<DailyStreakReward> GetUpcomingRewards(int fromDay, int count);
     }
 }

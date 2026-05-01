@@ -23,11 +23,13 @@ namespace KitchenClash.Presentation.Screens
         [Inject] private SessionManager _sessionManager;
         [Inject] private ISessionContext _sessionContext;
         [Inject] private ILocalizationManager _localizationManager;
+        [Inject] private IDailyStreakService _dailyStreakService;
 
         private LobbyTabComponent _lobbyTab;
         private ShopTabComponent _shopTab;
         private CharacterTabComponent _characterTab;
         private EconomyService _economyService;
+        private bool _dailyStreakChecked;
 
         private Label _playerLevelLabel;
         private Label _playerNameLabel;
@@ -105,6 +107,25 @@ namespace KitchenClash.Presentation.Screens
             SubscribeToCurrencyUpdates();
             InitializeSessionComponents();
             _lobbyTab?.PlayIntroAnimations(null);
+            CheckDailyStreak();
+        }
+
+        private void CheckDailyStreak()
+        {
+            if (_dailyStreakChecked) return;
+            _dailyStreakChecked = true;
+
+            try
+            {
+                if (_dailyStreakService != null && _dailyStreakService.CanClaim(System.DateTime.UtcNow))
+                {
+                    UIService?.PushPopup<DailyStreakScreen>();
+                }
+            }
+            catch (System.Exception ex)
+            {
+                GameLogger.LogWarning($"[HomeScreen] Daily streak check failed: {ex.Message}");
+            }
         }
 
         private void SubscribeToCurrencyUpdates()

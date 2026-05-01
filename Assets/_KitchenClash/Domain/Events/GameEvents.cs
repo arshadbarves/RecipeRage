@@ -115,4 +115,9 @@ namespace KitchenClash.Domain
         public bool Won { get; set; }
         public int Score { get; set; }
     }
+
+    public sealed class DailyRewardClaimedEvent
+    {
+        public DailyStreakReward Reward { get; set; }
+    }
 }

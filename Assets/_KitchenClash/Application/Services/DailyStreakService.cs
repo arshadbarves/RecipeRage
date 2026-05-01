@@ -67,6 +67,23 @@ namespace KitchenClash.Application
             return GetRewardForDay(_currentDay);
         }
 
+        public DailyStreakReward GetRewardPreview(int day)
+        {
+            int clampedDay = ((day - 1) % CycleDays) + 1;
+            return GetRewardForDay(clampedDay);
+        }
+
+        public List<DailyStreakReward> GetUpcomingRewards(int fromDay, int count)
+        {
+            var rewards = new List<DailyStreakReward>(count);
+            for (int i = 0; i < count; i++)
+            {
+                int day = ((fromDay + i - 1) % CycleDays) + 1;
+                rewards.Add(GetRewardForDay(day));
+            }
+            return rewards;
+        }
+
         public async Task SaveAsync()
         {
             var data = $"{_currentDay}|{_lastClaimUtc:O}|{_missedDays}";
