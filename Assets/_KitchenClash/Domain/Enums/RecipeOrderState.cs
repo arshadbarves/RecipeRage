@@ -13,6 +13,10 @@ namespace KitchenClash.Domain
         public bool IsExpired;
         public int PointValue;
         public int CompletedByTeamId;
+        public int RecipeTier;
+        public float SpeedRatio;
+        public bool RhythmBonus;
+        public int ComboCount;
 
         public bool Equals(RecipeOrderState other)
         {

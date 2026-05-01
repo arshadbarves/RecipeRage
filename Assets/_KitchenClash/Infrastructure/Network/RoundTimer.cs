@@ -16,6 +16,7 @@ namespace KitchenClash.Infrastructure.Network
         private float _duration;
 
         [Inject] private IEventBus _eventBus;
+        [Inject] private IScoreService _scoreService;
 
         public event Action<float> OnTimeUpdated;
         public event Action OnTimerExpired;
@@ -47,6 +48,8 @@ namespace KitchenClash.Infrastructure.Network
             }
 
             _timeRemaining.Value -= Time.deltaTime;
+
+            _scoreService?.UpdateMatchTime(_timeRemaining.Value);
 
             if (_timeRemaining.Value <= 0)
             {

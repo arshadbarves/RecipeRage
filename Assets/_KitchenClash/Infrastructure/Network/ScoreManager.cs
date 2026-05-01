@@ -1,8 +1,7 @@
 using System;
-using KitchenClash.Application.Services;
 using System.Collections.Generic;
-using KitchenClash.Infrastructure.Network.Cooking;
 using KitchenClash.Domain;
+using KitchenClash.Infrastructure.Network.Cooking;
 using Unity.Netcode;
 using UnityEngine;
 using VContainer;
@@ -11,17 +10,10 @@ using VContainer.Unity;
 namespace KitchenClash.Infrastructure.Network
 {
     /// <summary>
-    /// Manages the scoring system for RecipeRage.
+    /// Network-authoritative score manager. Delegates scoring calculations to IScoreService.
     /// </summary>
     public class ScoreManager : NetworkBehaviour
     {
-        [Header("Score Settings")]
-        [SerializeField] private int _baseOrderPoints = 100;
-        [SerializeField] private int _timeBonus = 50;
-        [SerializeField] private int _perfectBonus = 25;
-        [SerializeField] private int _comboBonus = 10;
-        [SerializeField] private float _comboTimeWindow = 30f;
-
         [Header("References")]
         [SerializeField] private OrderManager _orderManager;
 
@@ -29,11 +21,10 @@ namespace KitchenClash.Infrastructure.Network
         public event Action<int, int> OnTeamComboAchieved;
 
         [Inject] private IMatchContext _matchContext;
+        [Inject] private IScoreService _scoreService;
 
         private NetworkList<int> _teamScores;
         private NetworkList<int> _teamComboCounts;
-
-        private Dictionary<int, float> _lastTeamOrderCompletionTime = new Dictionary<int, float>();
 
         private void Awake()
         {
@@ -71,6 +62,11 @@ namespace KitchenClash.Infrastructure.Network
             _teamScores.OnListChanged += OnTeamScoresChanged;
             _teamComboCounts.OnListChanged += OnTeamComboChanged;
 
+            if (_scoreService != null)
+            {
+                _scoreService.OnScoreChanged += HandleScoreChanged;
+            }
+
             if (_orderManager != null)
             {
                 _orderManager.OnOrderCompleted += HandleOrderCompleted;
@@ -90,6 +86,11 @@ namespace KitchenClash.Infrastructure.Network
             _teamScores.OnListChanged -= OnTeamScoresChanged;
             _teamComboCounts.OnListChanged -= OnTeamComboChanged;
 
+            if (_scoreService != null)
+            {
+                _scoreService.OnScoreChanged -= HandleScoreChanged;
+            }
+
             if (_orderManager != null)
             {
                 _orderManager.OnOrderCompleted -= HandleOrderCompleted;
@@ -101,39 +102,34 @@ namespace KitchenClash.Infrastructure.Network
             if (!IsServer) return;
 
             int teamId = order.CompletedByTeamId;
-
             if (teamId < 0 || teamId >= _teamScores.Count)
             {
-                 GameLogger.LogWarning($"Invalid team ID {teamId} for scoring. Defaulting to 0.");
-                 teamId = 0;
+                GameLogger.LogWarning($"Invalid team ID {teamId} for scoring. Defaulting to 0.");
+                teamId = 0;
             }
 
-            int basePoints = Mathf.Max(0, order.PointValue);
+            // Delegate scoring calculation to ScoreService
+            TeamId team = teamId == 0 ? TeamId.TeamA : TeamId.TeamB;
+            var scoreEvent = new ScoreEvent(
+                ScoreEventType.DishServed,
+                order.RecipeTier,
+                order.SpeedRatio,
+                order.RhythmBonus,
+                order.ComboCount
+            );
 
-            if (!_lastTeamOrderCompletionTime.ContainsKey(teamId))
-            {
-                _lastTeamOrderCompletionTime[teamId] = -999f;
-            }
+            _scoreService.AddScore(team, scoreEvent);
+        }
 
-            float timeSinceLast = Time.time - _lastTeamOrderCompletionTime[teamId];
-            bool isCombo = timeSinceLast <= _comboTimeWindow;
+        private void HandleScoreChanged(ScoreChangedEvent e)
+        {
+            if (!IsServer) return;
 
-            if (isCombo)
-            {
-                _teamComboCounts[teamId]++;
-            }
-            else
-            {
-                _teamComboCounts[teamId] = 1;
-            }
+            // Sync network state from ScoreService
+            _teamScores[0] = _scoreService.TeamAScore;
+            _teamScores[1] = _scoreService.TeamBScore;
 
-            int comboBonus = (_teamComboCounts[teamId] - 1) * _comboBonus;
-            int totalPoints = basePoints + comboBonus;
-
-            _teamScores[teamId] += totalPoints;
-            _lastTeamOrderCompletionTime[teamId] = Time.time;
-
-            GameLogger.Log($"Team {teamId} Score: {totalPoints} (Base:{basePoints}, Combo:{comboBonus}). Total: {_teamScores[teamId]}");
+            GameLogger.Log($"Score updated: TeamA={_scoreService.TeamAScore}, TeamB={_scoreService.TeamBScore}");
         }
 
         public int GetScore(int teamId)
@@ -166,7 +162,6 @@ namespace KitchenClash.Infrastructure.Network
             if (!IsServer) return;
             for(int i=0; i<_teamScores.Count; i++) _teamScores[i] = 0;
             for(int i=0; i<_teamComboCounts.Count; i++) _teamComboCounts[i] = 0;
-            _lastTeamOrderCompletionTime.Clear();
         }
 
         private void OnTeamScoresChanged(NetworkListEvent<int> changeEvent)

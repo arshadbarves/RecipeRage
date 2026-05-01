@@ -19,6 +19,10 @@ namespace KitchenClash.Infrastructure.Network
         public bool IsExpired;
         public int PointValue;
         public int CompletedByTeamId;
+        public int RecipeTier;
+        public float SpeedRatio;
+        public bool RhythmBonus;
+        public int ComboCount;
 
         public bool Equals(NetworkRecipeOrderState other)
         {
@@ -45,7 +49,11 @@ namespace KitchenClash.Infrastructure.Network
             IsCompleted = n.IsCompleted,
             IsExpired = n.IsExpired,
             PointValue = n.PointValue,
-            CompletedByTeamId = n.CompletedByTeamId
+            CompletedByTeamId = n.CompletedByTeamId,
+            RecipeTier = n.RecipeTier,
+            SpeedRatio = n.SpeedRatio,
+            RhythmBonus = n.RhythmBonus,
+            ComboCount = n.ComboCount
         };
 
         public static implicit operator NetworkRecipeOrderState(RecipeOrderState r) => new NetworkRecipeOrderState
@@ -58,7 +66,11 @@ namespace KitchenClash.Infrastructure.Network
             IsCompleted = r.IsCompleted,
             IsExpired = r.IsExpired,
             PointValue = r.PointValue,
-            CompletedByTeamId = r.CompletedByTeamId
+            CompletedByTeamId = r.CompletedByTeamId,
+            RecipeTier = r.RecipeTier,
+            SpeedRatio = r.SpeedRatio,
+            RhythmBonus = r.RhythmBonus,
+            ComboCount = r.ComboCount
         };
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
@@ -72,6 +84,10 @@ namespace KitchenClash.Infrastructure.Network
             serializer.SerializeValue(ref IsExpired);
             serializer.SerializeValue(ref PointValue);
             serializer.SerializeValue(ref CompletedByTeamId);
+            serializer.SerializeValue(ref RecipeTier);
+            serializer.SerializeValue(ref SpeedRatio);
+            serializer.SerializeValue(ref RhythmBonus);
+            serializer.SerializeValue(ref ComboCount);
         }
     }
 }

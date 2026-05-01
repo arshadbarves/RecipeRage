@@ -7,16 +7,27 @@ namespace KitchenClash.Application
     {
         private readonly IConfigService _cfg;
         private int _a, _b;
+        private bool _rushMode;
 
         public ScoreService(IConfigService cfg) => _cfg = cfg;
 
         public int TeamAScore => _a;
         public int TeamBScore => _b;
+        public bool IsRushMode => _rushMode;
         public event Action<ScoreChangedEvent> OnScoreChanged;
+
+        public void SetRushMode(bool active) => _rushMode = active;
+
+        public void UpdateMatchTime(float timeRemaining)
+        {
+            float threshold = _cfg.Get(ScoringConfig.RushModeThresholdSec, ScoringConfig.DefaultRushModeThresholdSec);
+            if (!_rushMode && timeRemaining <= threshold)
+                SetRushMode(true);
+        }
 
         public int CalculateEndOfMatchBonus(TeamId team)
         {
-            float pct = _cfg.Get("score_plate_pct", 0.10f);
+            float pct = _cfg.Get(ScoringConfig.ScorePlatePct, ScoringConfig.DefaultScorePlatePct);
             int total = team == TeamId.TeamA ? TeamAScore : TeamBScore;
             return (int)(total * pct);
         }
@@ -32,9 +43,9 @@ namespace KitchenClash.Application
         private int Calc(ScoreEvent e)
         {
             if (e.Type == ScoreEventType.BurnedServed)
-                return -_cfg.Get(ScoringConfig.ScoreBurnPenalty, ScoringConfig.DefaultScoreBurnPenalty);
+                return ApplyRush(-_cfg.Get(ScoringConfig.ScoreBurnPenalty, ScoringConfig.DefaultScoreBurnPenalty));
             if (e.Type == ScoreEventType.FirePenalty)
-                return -_cfg.Get(ScoringConfig.ScoreFirePenalty, ScoringConfig.DefaultScoreFirePenalty);
+                return ApplyRush(-_cfg.Get(ScoringConfig.ScoreFirePenalty, ScoringConfig.DefaultScoreFirePenalty));
 
             float mult = e.RecipeTier == 3
                 ? _cfg.Get(ScoringConfig.ScoreTier3Mult, ScoringConfig.DefaultScoreTier3Mult)
@@ -43,11 +54,26 @@ namespace KitchenClash.Application
                     : 1.0f;
 
             int baseScore = (int)(_cfg.Get(ScoringConfig.ScoreBase, ScoringConfig.DefaultScoreBase) * mult);
-            int speed = (int)(e.SpeedRatio * _cfg.Get(ScoringConfig.ScoreSpeedMax, ScoringConfig.DefaultScoreSpeedMax));
+
+            // GDD v3: +5 if delivered < 50% time, +3 if < 75% time, 0 otherwise
+            // SpeedRatio: fraction of time used (0 = instant, 1 = full time)
+            int speedHigh = _cfg.Get(ScoringConfig.ScoreSpeedHigh, ScoringConfig.DefaultScoreSpeedHigh);
+            int speedLow = _cfg.Get(ScoringConfig.ScoreSpeedLow, ScoringConfig.DefaultScoreSpeedLow);
+            int speed = e.SpeedRatio < 0.50f ? speedHigh
+                      : e.SpeedRatio < 0.75f ? speedLow
+                      : 0;
+
             int rhythm = e.RhythmBonus ? _cfg.Get(ScoringConfig.ScoreRhythm, ScoringConfig.DefaultScoreRhythm) : 0;
             int combo = e.ComboCount >= 3 ? _cfg.Get(ScoringConfig.ScoreCombo, ScoringConfig.DefaultScoreCombo) : 0;
 
-            return baseScore + speed + rhythm + combo;
+            return ApplyRush(baseScore + speed + rhythm + combo);
+        }
+
+        private int ApplyRush(int raw)
+        {
+            if (!_rushMode) return raw;
+            float mult = _cfg.Get(ScoringConfig.RushModeMultiplier, ScoringConfig.DefaultRushModeMultiplier);
+            return (int)(raw * mult);
         }
     }
 }
