@@ -6,5 +6,6 @@ namespace KitchenClash.Domain
         float Cooldown { get; }
         bool CanActivate(AbilityContext ctx);
         AbilityResult Activate(AbilityContext ctx);
+        void Deactivate();
     }
 }

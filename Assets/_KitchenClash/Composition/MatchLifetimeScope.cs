@@ -12,6 +12,9 @@ public class MatchLifetimeScope : LifetimeScope
         // Recipe catalog
         builder.Register<RecipeCatalog>(Lifetime.Scoped);
 
+        // Ability factory
+        builder.Register<AbilityFactory>(Lifetime.Scoped);
+
         // Match services
         builder.Register<ScoreService>(Lifetime.Scoped).As<IScoreService>();
         builder.Register<OrderService>(Lifetime.Scoped).As<IOrderService>();

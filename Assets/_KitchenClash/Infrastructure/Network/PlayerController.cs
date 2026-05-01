@@ -423,6 +423,18 @@ namespace KitchenClash.Infrastructure.Network
                     CharacterClass, this);
             }
 
+            // Register chef abilities with AbilityService (Phase 8)
+            if (selectedChef != null)
+            {
+                // AbilityService is resolved by MatchLifetimeScope; access via service locator pattern
+                var abilityService = FindAbilityService();
+                if (abilityService != null)
+                {
+                    abilityService.RegisterChefAbilities(selectedChef.Id);
+                    GameLogger.Log($"[AbilityService] Registered abilities for {selectedChef.DisplayName}");
+                }
+            }
+
             EnsureValidSkinForCharacter();
         }
 
@@ -795,5 +807,17 @@ namespace KitchenClash.Infrastructure.Network
         }
 
         #endregion
+
+        private IAbilityService FindAbilityService()
+        {
+            // Resolve from nearest VContainer scope
+            var scope = LifetimeScope.Find<LifetimeScope>(gameObject.scene);
+            if (scope != null)
+            {
+                try { return scope.Container.Resolve<IAbilityService>(); }
+                catch { /* Not registered in this scope */ }
+            }
+            return null;
+        }
     }
 }

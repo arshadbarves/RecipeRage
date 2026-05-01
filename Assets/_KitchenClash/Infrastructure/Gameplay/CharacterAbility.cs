@@ -24,6 +24,12 @@ namespace KitchenClash.Infrastructure.Gameplay
                 AbilityType.SpeedBoost => new SpeedBoostAbility(),
                 AbilityType.InstantCook => new InstantCookAbility(),
                 AbilityType.DoubleIngredients => new DoubleIngredientsAbility(),
+                AbilityType.Dash => new DashCharacterAbility(),
+                AbilityType.FlavorBoost => new FlavorBoostCharacterAbility(),
+                AbilityType.PerfectSlice => new PerfectSliceCharacterAbility(),
+                AbilityType.KitchenWisdom => new KitchenWisdomCharacterAbility(),
+                AbilityType.IngredientSwap => new IngredientSwapCharacterAbility(),
+                AbilityType.SpiceRush => new SpiceRushCharacterAbility(),
                 _ => new DefaultAbility()
             };
         }
@@ -65,4 +71,10 @@ namespace KitchenClash.Infrastructure.Gameplay
     public class SpeedBoostAbility : CharacterAbility { public SpeedBoostAbility() { Cooldown = 20f; Duration = 5f; } }
     public class InstantCookAbility : CharacterAbility { public InstantCookAbility() { Cooldown = 30f; Duration = 8f; } }
     public class DoubleIngredientsAbility : CharacterAbility { public DoubleIngredientsAbility() { Cooldown = 25f; Duration = 10f; } }
+    public class DashCharacterAbility : CharacterAbility { public DashCharacterAbility() { Cooldown = 10f; Duration = 0f; } }
+    public class FlavorBoostCharacterAbility : CharacterAbility { public FlavorBoostCharacterAbility() { Cooldown = 15f; Duration = 5f; } }
+    public class PerfectSliceCharacterAbility : CharacterAbility { public PerfectSliceCharacterAbility() { Cooldown = 20f; Duration = 0f; } }
+    public class KitchenWisdomCharacterAbility : CharacterAbility { public KitchenWisdomCharacterAbility() { Cooldown = 30f; Duration = 8f; } }
+    public class IngredientSwapCharacterAbility : CharacterAbility { public IngredientSwapCharacterAbility() { Cooldown = 25f; Duration = 0f; } }
+    public class SpiceRushCharacterAbility : CharacterAbility { public SpiceRushCharacterAbility() { Cooldown = 20f; Duration = 5f; } }
 }
