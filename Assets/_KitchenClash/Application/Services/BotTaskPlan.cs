@@ -1,3 +1,5 @@
+using KitchenClash.Domain;
+
 namespace KitchenClash.Application.Services
 {
     public sealed class BotTaskPlan
@@ -9,6 +11,8 @@ namespace KitchenClash.Application.Services
         public int? OrderId { get; set; }
         public float Priority { get; set; }
         public bool IsComplete { get; set; }
+        public IngredientType TargetIngredient { get; set; }
+        public float DelayBeforeAction { get; set; }
 
         public static BotTaskPlan Idle() => new BotTaskPlan { Type = BotTaskType.Idle };
     }

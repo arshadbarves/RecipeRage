@@ -22,10 +22,11 @@ namespace KitchenClash.Infrastructure.Network.Bot
         [SerializeField] private float _moveSpeed = 3.5f;
         [SerializeField] private float _stuckTimeout = 2.5f;
         [SerializeField] private bool _enableAI = true;
+        [SerializeField] private BotDifficulty _difficulty = BotDifficulty.Medium;
 
         private BotPlayer _botData;
         private PlayerController _playerController;
-        private readonly BotTaskPlanner _planner = new BotTaskPlanner();
+        private BotTaskPlanner _planner;
         private BotKitchenSnapshot _snapshot;
         private readonly BotClaimRegistry _claimRegistry = BotClaimRegistry.Shared;
 
@@ -34,15 +35,25 @@ namespace KitchenClash.Infrastructure.Network.Bot
         private BotTaskPlan _currentPlan;
         private float _nextReplanTime;
         private float _lastInteractionTime;
+        private float _actionDelayTimer;
         private Vector3 _lastPosition;
         private float _stuckTimer;
+        private float _wanderTimer;
+        private Vector3 _wanderTarget;
         private bool _isInitialized;
 
         public void Initialize(BotPlayer botData)
         {
             _botData = botData;
             _isInitialized = botData != null;
-            GameLogger.Log($"[BotController] Initialized bot: {_botData?.BotName ?? "Unknown"}");
+            GameLogger.Log($"[BotController] Initialized bot: {_botData?.BotName ?? "Unknown"} (Difficulty: {_difficulty})");
+        }
+
+        public void Initialize(BotPlayer botData, BotDifficulty difficulty)
+        {
+            _difficulty = difficulty;
+            _planner = new BotTaskPlanner(difficulty);
+            Initialize(botData);
         }
 
         private void Awake()
@@ -58,8 +69,10 @@ namespace KitchenClash.Infrastructure.Network.Bot
             }
 
             _playerController = GetComponent<PlayerController>();
+            _planner ??= new BotTaskPlanner(_difficulty);
             _snapshot = new BotKitchenSnapshot(_matchContext);
             _lastPosition = transform.position;
+            _wanderTarget = transform.position;
         }
 
         public override void OnNetworkSpawn()
@@ -142,6 +155,7 @@ namespace KitchenClash.Infrastructure.Network.Bot
 
             _currentPlan = _planner.Plan(planningSnapshot);
             _nextReplanTime = Time.time + _replanInterval;
+            _actionDelayTimer = _currentPlan.DelayBeforeAction;
 
             switch (_currentPlan.Type)
             {
@@ -181,9 +195,19 @@ namespace KitchenClash.Infrastructure.Network.Bot
                 return;
             }
 
+            // Apply reaction delay before acting
+            if (_actionDelayTimer > 0f)
+            {
+                _actionDelayTimer -= Time.deltaTime;
+                return;
+            }
+
             switch (_currentPlan.Type)
             {
                 case BotTaskType.Idle:
+                    return;
+                case BotTaskType.Wander:
+                    ExecuteWander();
                     return;
                 case BotTaskType.FetchIngredient:
                 case BotTaskType.ProcessIngredient:
@@ -191,8 +215,34 @@ namespace KitchenClash.Infrastructure.Network.Bot
                 case BotTaskType.AssembleDish:
                 case BotTaskType.ServeDish:
                 case BotTaskType.WashDishes:
+                case BotTaskType.BringToPrep:
+                case BotTaskType.BringToCooking:
+                case BotTaskType.DeliverToServing:
+                case BotTaskType.ExtinguishFire:
                     MoveAndInteractWithTarget();
                     return;
+            }
+        }
+
+        private void ExecuteWander()
+        {
+            _wanderTimer -= Time.deltaTime;
+            if (_wanderTimer <= 0f)
+            {
+                // Pick a random nearby point
+                Vector3 offset = new Vector3(
+                    UnityEngine.Random.Range(-3f, 3f),
+                    0f,
+                    UnityEngine.Random.Range(-3f, 3f)
+                );
+                _wanderTarget = transform.position + offset;
+                _wanderTimer = UnityEngine.Random.Range(2f, 4f);
+            }
+
+            float dist = Vector3.Distance(transform.position, _wanderTarget);
+            if (dist > 0.3f)
+            {
+                MoveTowards(_wanderTarget);
             }
         }
 
@@ -337,6 +387,11 @@ namespace KitchenClash.Infrastructure.Network.Bot
             if (_snapshot == null && _matchContext != null)
             {
                 _snapshot = new BotKitchenSnapshot(_matchContext);
+            }
+
+            if (_planner == null)
+            {
+                _planner = new BotTaskPlanner(_difficulty);
             }
         }
     }

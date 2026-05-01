@@ -10,6 +10,11 @@ namespace KitchenClash.Application.Services
         ServeDish,
         WashDishes,
         ClaimOrder,
-        Recover
+        Recover,
+        BringToPrep,
+        BringToCooking,
+        DeliverToServing,
+        ExtinguishFire,
+        Wander
     }
 }
