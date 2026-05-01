@@ -1,0 +1,20 @@
+{
+    "name": "KitchenClash.Presentation",
+    "rootNamespace": "KitchenClash.Presentation",
+    "references": [
+        "KitchenClash.Domain",
+        "KitchenClash.Application",
+        "VContainer",
+        "UniTask",
+        "DOTween.Modules"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
