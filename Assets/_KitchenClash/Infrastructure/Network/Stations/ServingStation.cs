@@ -58,7 +58,7 @@ namespace KitchenClash.Infrastructure.Network.Stations
 
             // Create dish validator
             _validator = new StandardDishValidator();
-            _orderService ??= new OrderService(null, new RecipeCatalog(null));
+            _orderService ??= new OrderService(null, new RecipeCatalog(null), null);
 
             ResolveRuntimeDependencies();
         }

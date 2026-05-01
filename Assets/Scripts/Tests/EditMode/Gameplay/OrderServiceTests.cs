@@ -20,7 +20,7 @@ namespace RecipeRage.Tests.EditMode.Gameplay
                 new RecipeOrderState { OrderId = 3, RecipeId = 200, CreationTime = 8f, TimeLimit = 30f, IsExpired = true }
             };
 
-            OrderService service = new(new StubConfigService(), new RecipeCatalog(new StubConfigService()));
+            OrderService service = new(new StubConfigService(), new RecipeCatalog(new StubConfigService()), new NullEventBus());
 
             bool found = service.TryGetBestActiveOrder(orders, order => order.RecipeId == 200, out RecipeOrderState result);
 
@@ -37,7 +37,7 @@ namespace RecipeRage.Tests.EditMode.Gameplay
                 TimeLimit = 20f
             };
 
-            OrderService service = new(new StubConfigService(), new RecipeCatalog(new StubConfigService()));
+            OrderService service = new(new StubConfigService(), new RecipeCatalog(new StubConfigService()), new NullEventBus());
 
             Assert.AreEqual(15f, service.GetRemainingTime(order, 15f));
             Assert.AreEqual(0f, service.GetRemainingTime(order, 35f));
@@ -47,6 +47,14 @@ namespace RecipeRage.Tests.EditMode.Gameplay
         {
             public T Get<T>(string key, T fallback) => fallback;
             public Task FetchAsync() => Task.CompletedTask;
+        }
+
+        private sealed class NullEventBus : IEventBus
+        {
+            public void Publish<T>(T evt) where T : class { }
+            public void Subscribe<T>(Action<T> handler) where T : class { }
+            public void Unsubscribe<T>(Action<T> handler) where T : class { }
+            public void ClearAllSubscriptions() { }
         }
     }
 }

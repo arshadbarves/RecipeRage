@@ -13,16 +13,19 @@ namespace KitchenClash.Infrastructure.States
     {
         private readonly IUIService _uiService;
         private readonly ISessionContext _sessionContext;
+        private readonly IEventBus _eventBus;
 
-        public MainMenuState(IUIService uiService, ISessionContext sessionContext)
+        public MainMenuState(IUIService uiService, ISessionContext sessionContext, IEventBus eventBus)
         {
             _uiService = uiService;
             _sessionContext = sessionContext;
+            _eventBus = eventBus;
         }
 
         public override void Enter()
         {
             base.Enter();
+            _eventBus?.Publish(new MusicEvent(MusicTrack.MainMenu));
             EnterAsync().Forget();
         }
 

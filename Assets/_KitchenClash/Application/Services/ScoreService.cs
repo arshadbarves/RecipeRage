@@ -6,17 +6,30 @@ namespace KitchenClash.Application
     public sealed class ScoreService : IScoreService
     {
         private readonly IConfigService _cfg;
+        private readonly IEventBus _eventBus;
         private int _a, _b;
         private bool _rushMode;
 
-        public ScoreService(IConfigService cfg) => _cfg = cfg;
+        public ScoreService(IConfigService cfg, IEventBus eventBus)
+        {
+            _cfg = cfg;
+            _eventBus = eventBus;
+        }
 
         public int TeamAScore => _a;
         public int TeamBScore => _b;
         public bool IsRushMode => _rushMode;
         public event Action<ScoreChangedEvent> OnScoreChanged;
 
-        public void SetRushMode(bool active) => _rushMode = active;
+        public void SetRushMode(bool active)
+        {
+            if (!_rushMode && active)
+            {
+                _eventBus?.Publish(new SFXEvent(SFXType.RushModeActivated));
+                _eventBus?.Publish(new MusicEvent(MusicTrack.Gameplay_Rush, 1.5f));
+            }
+            _rushMode = active;
+        }
 
         public void UpdateMatchTime(float timeRemaining)
         {
@@ -38,6 +51,7 @@ namespace KitchenClash.Application
             if (team == TeamId.TeamA) _a = Math.Max(0, _a + d);
             else _b = Math.Max(0, _b + d);
             OnScoreChanged?.Invoke(new ScoreChangedEvent(team, d, _a, _b));
+            _eventBus?.Publish(new SFXEvent(SFXType.ScorePoint));
         }
 
         private int Calc(ScoreEvent e)

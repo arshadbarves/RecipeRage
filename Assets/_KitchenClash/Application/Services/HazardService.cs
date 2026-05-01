@@ -7,6 +7,7 @@ namespace KitchenClash.Application
     public sealed class HazardService : IHazardService
     {
         private readonly IConfigService _cfg;
+        private readonly IEventBus _eventBus;
         private readonly Dictionary<string, float> _activeFires = new();
 
         public event Action<string> OnFireStarted;
@@ -15,12 +16,17 @@ namespace KitchenClash.Application
 
         private float _currentTime;
 
-        public HazardService(IConfigService cfg) => _cfg = cfg;
+        public HazardService(IConfigService cfg, IEventBus eventBus)
+        {
+            _cfg = cfg;
+            _eventBus = eventBus;
+        }
 
         public void RegisterFire(string stationId)
         {
             _activeFires[stationId] = _currentTime;
             OnFireStarted?.Invoke(stationId);
+            _eventBus?.Publish(new SFXEvent(SFXType.FireStart));
         }
 
         public bool TryExtinguish(string stationId, float currentTime)
@@ -38,6 +44,7 @@ namespace KitchenClash.Application
 
             _activeFires.Remove(stationId);
             OnFireExtinguished?.Invoke(stationId);
+            _eventBus?.Publish(new SFXEvent(SFXType.FireExtinguish));
             return true;
         }
 

@@ -11,18 +11,31 @@ namespace KitchenClash.Infrastructure.States
         private readonly IUIService _uiService;
         private readonly IMatchContext _matchContext;
         private readonly IEconomyService _economyService;
+        private readonly IEventBus _eventBus;
 
-        public GameOverState(IUIService uiService, IMatchContext matchContext, IEconomyService economyService)
+        public GameOverState(IUIService uiService, IMatchContext matchContext, IEconomyService economyService, IEventBus eventBus)
         {
             _uiService = uiService;
             _matchContext = matchContext;
             _economyService = economyService;
+            _eventBus = eventBus;
         }
 
         public override void Enter()
         {
             base.Enter();
             _matchContext.Refresh();
+
+            // Determine victory or defeat for music
+            bool won = false;
+            var resultSync = _matchContext.MatchResultSync;
+            if (resultSync != null && resultSync.CurrentResult.HasResult)
+            {
+                won = !resultSync.CurrentResult.IsDraw && resultSync.CurrentResult.WinningTeamId == 0;
+            }
+            _eventBus?.Publish(new MusicEvent(won ? MusicTrack.Victory : MusicTrack.Defeat));
+            _eventBus?.Publish(new SFXEvent(SFXType.MatchEnd));
+
             AwardMatchReward();
         }
 

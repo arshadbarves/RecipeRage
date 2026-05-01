@@ -31,6 +31,7 @@ namespace KitchenClash.Infrastructure.States
         public override void Enter()
         {
             base.Enter();
+            _eventBus?.Publish(new MusicEvent(MusicTrack.Gameplay_Normal));
             InitializeGameplayAsync().Forget();
         }
 

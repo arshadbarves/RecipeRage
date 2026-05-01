@@ -3,6 +3,7 @@ using KitchenClash.Application.Services;
 using KitchenClash.Application.State;
 using KitchenClash.Composition;
 using KitchenClash.Domain;
+using KitchenClash.Infrastructure.Audio;
 using KitchenClash.Infrastructure.DI;
 using KitchenClash.Infrastructure.EOS;
 using KitchenClash.Infrastructure.Localization;
@@ -19,6 +20,7 @@ using VContainer.Unity;
 public class RootLifetimeScope : LifetimeScope
 {
     [SerializeField] private UGSConfig _ugsConfig;
+    [SerializeField] private KitchenClash.Infrastructure.Audio.AudioSettings _audioSettings;
 
     protected override void Configure(IContainerBuilder builder)
     {
@@ -29,6 +31,23 @@ public class RootLifetimeScope : LifetimeScope
         builder.Register<EncryptionService>(Lifetime.Singleton).As<IEncryptionService>();
         builder.Register<NetworkConnectivityService>(Lifetime.Singleton).As<IConnectivityService>().As<ITickable>();
         builder.Register<NTPTimeService>(Lifetime.Singleton).As<INTPTimeService>().As<IInitializable>();
+
+        // ── Audio ──
+        if (_audioSettings != null)
+        {
+            builder.RegisterInstance(_audioSettings);
+        }
+        else
+        {
+            builder.RegisterInstance(ScriptableObject.CreateInstance<KitchenClash.Infrastructure.Audio.AudioSettings>());
+        }
+
+        builder.Register<AudioVolumeController>(Lifetime.Singleton).As<IAudioVolumeController>().As<IInitializable>();
+        builder.Register<AudioPoolManager>(Lifetime.Singleton).WithParameter<Transform>(transform);
+        builder.Register<MusicPlayer>(Lifetime.Singleton).As<IMusicPlayer>();
+        builder.Register<SFXPlayer>(Lifetime.Singleton).As<ISFXPlayer>();
+        builder.Register<AudioService>(Lifetime.Singleton).As<IAudioService>();
+        builder.Register<AudioEventListener>(Lifetime.Singleton);
 
         // ── Shared GDD registries ──
         builder.Register<ChefRegistry>(Lifetime.Singleton);

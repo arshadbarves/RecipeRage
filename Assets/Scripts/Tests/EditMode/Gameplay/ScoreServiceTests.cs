@@ -16,7 +16,7 @@ namespace RecipeRage.Tests.EditMode.Gameplay
         public void SetUp()
         {
             _cfg = new DictionaryConfigService();
-            _svc = new ScoreService(_cfg);
+            _svc = new ScoreService(_cfg, new NullEventBus());
         }
 
         // --- Task 1: Base score = 10 ---
@@ -260,6 +260,14 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             }
 
             public Task FetchAsync() => Task.CompletedTask;
+        }
+
+        private sealed class NullEventBus : IEventBus
+        {
+            public void Publish<T>(T evt) where T : class { }
+            public void Subscribe<T>(Action<T> handler) where T : class { }
+            public void Unsubscribe<T>(Action<T> handler) where T : class { }
+            public void ClearAllSubscriptions() { }
         }
     }
 }

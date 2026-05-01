@@ -10,13 +10,15 @@ namespace KitchenClash.Application
     {
         private readonly IConfigService _cfg;
         private readonly RecipeCatalog _catalog;
+        private readonly IEventBus _eventBus;
         private readonly List<OrderModel> _activeOrders = new();
         private readonly Random _random = new();
 
-        public OrderService(IConfigService cfg, RecipeCatalog catalog)
+        public OrderService(IConfigService cfg, RecipeCatalog catalog, IEventBus eventBus)
         {
             _cfg = cfg;
             _catalog = catalog;
+            _eventBus = eventBus;
         }
 
         public IReadOnlyList<OrderModel> ActiveOrders => _activeOrders;
@@ -81,6 +83,7 @@ namespace KitchenClash.Application
             };
 
             OnOrderCompleted?.Invoke(order);
+            _eventBus?.Publish(new SFXEvent(SFXType.OrderComplete));
             return result;
         }
 
@@ -92,6 +95,7 @@ namespace KitchenClash.Application
             order.IsExpired = true;
             _activeOrders.Remove(order);
             OnOrderExpired?.Invoke(order);
+            _eventBus?.Publish(new SFXEvent(SFXType.OrderExpired));
         }
 
         public bool TryGetBestActiveOrder<T>(IReadOnlyList<T> orders, Func<T, bool> predicate, out T bestOrder)

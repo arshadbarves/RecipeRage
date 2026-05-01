@@ -28,7 +28,8 @@ namespace RecipeRage.Tests.EditMode.Gameplay
                 new FakeGameStateManager(),
                 new FakeMaintenanceService(false),
                 matchmakingService,
-                new FakeConfigService());
+                new FakeConfigService(),
+                new FakeEventBus());
 
             state.Enter();
 
@@ -47,7 +48,8 @@ namespace RecipeRage.Tests.EditMode.Gameplay
                 new FakeGameStateManager(),
                 new FakeMaintenanceService(false),
                 matchmakingService,
-                new FakeConfigService());
+                new FakeConfigService(),
+                new FakeEventBus());
 
             state.Enter();
             Assert.IsTrue(matchmakingService.IsSearching);
@@ -222,6 +224,14 @@ namespace RecipeRage.Tests.EditMode.Gameplay
         {
             public T Get<T>(string key, T fallback) => fallback;
             public Task FetchAsync() => Task.CompletedTask;
+        }
+
+        private sealed class FakeEventBus : IEventBus
+        {
+            public void Publish<T>(T evt) where T : class { }
+            public void Subscribe<T>(Action<T> handler) where T : class { }
+            public void Unsubscribe<T>(Action<T> handler) where T : class { }
+            public void ClearAllSubscriptions() { }
         }
     }
 }

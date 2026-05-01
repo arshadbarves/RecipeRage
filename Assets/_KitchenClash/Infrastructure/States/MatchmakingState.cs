@@ -17,6 +17,7 @@ namespace KitchenClash.Infrastructure.States
         private readonly IMaintenanceService _maintenanceService;
         private readonly IMatchmakingService _matchmakingService;
         private readonly IConfigService _configService;
+        private readonly IEventBus _eventBus;
 
         private bool _isMatchmakingInProgress;
         private float _searchStartTime;
@@ -33,7 +34,8 @@ namespace KitchenClash.Infrastructure.States
             IGameStateManager stateManager,
             IMaintenanceService maintenanceService,
             IMatchmakingService matchmakingService,
-            IConfigService configService)
+            IConfigService configService,
+            IEventBus eventBus)
         {
             _uiService = uiService;
             _sessionContext = sessionContext;
@@ -41,6 +43,7 @@ namespace KitchenClash.Infrastructure.States
             _maintenanceService = maintenanceService;
             _matchmakingService = matchmakingService;
             _configService = configService;
+            _eventBus = eventBus;
         }
 
         /// <summary>
@@ -55,6 +58,8 @@ namespace KitchenClash.Infrastructure.States
         public override void Enter()
         {
             base.Enter();
+
+            _eventBus?.Publish(new MusicEvent(MusicTrack.Matchmaking));
 
             _searchTimeout = _configService != null
                 ? _configService.Get("matchmaking_timeout_sec", 30f)
