@@ -27,5 +27,6 @@ namespace KitchenClash.Domain
         public string currency;
         public string rarity;
         public string badge;
+        public string category;
     }
 }

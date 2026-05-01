@@ -19,6 +19,7 @@ public class MenuLifetimeScope : LifetimeScope
         builder.Register<EconomyService>(Lifetime.Scoped).As<IEconomyService>();
         builder.Register<DailyStreakService>(Lifetime.Scoped).As<IDailyStreakService>();
         builder.Register<MapRotationCalculator>(Lifetime.Scoped);
+        builder.Register<ShopCatalog>(Lifetime.Scoped);
 
         // Character service (uses ChefRegistry singleton from root)
         builder.Register<CharacterService>(Lifetime.Scoped).As<ICharacterService>();

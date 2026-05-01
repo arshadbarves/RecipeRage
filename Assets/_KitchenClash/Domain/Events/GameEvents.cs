@@ -101,4 +101,18 @@ namespace KitchenClash.Domain
     {
         public string Error { get; set; }
     }
+
+    public sealed class ItemPurchasedEvent
+    {
+        public string ItemId { get; set; }
+        public int Cost { get; set; }
+        public string CurrencyType { get; set; }
+    }
+
+    public sealed class MatchRewardEvent
+    {
+        public int CoinsAwarded { get; set; }
+        public bool Won { get; set; }
+        public int Score { get; set; }
+    }
 }

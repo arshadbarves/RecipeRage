@@ -15,6 +15,7 @@ namespace KitchenClash.Domain
         bool HasItem(string itemId);
         bool Purchase(string itemId, int cost, string currencyType);
         void Initialize();
+        void AwardMatchReward(bool won, int score);
         event Action<string, long> OnBalanceChanged;
     }
 }

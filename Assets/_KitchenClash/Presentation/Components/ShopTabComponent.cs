@@ -156,7 +156,7 @@ namespace KitchenClash.Presentation.Components
                 return new VisualElement();
             }
 
-            bool isOwned = PlayerPrefs.GetInt($"Owned_{itemData.id}", 0) == 1;
+            bool isOwned = _viewModel.IsOwned(itemData.id);
 
             TemplateContainer itemContainer = _shopItemTemplate.CloneTree();
             Button shopItemButton = itemContainer.Q<Button>("shop-item");
