@@ -23,6 +23,7 @@ namespace KitchenClash.Infrastructure.Network
 
         [Inject] private IMatchContext _matchContext;
         [Inject] private ISessionContext _sessionContext;
+        [Inject] private IHazardService _hazardService;
 
         private GameMode _selectedGameMode;
         private bool _roundStarted;
@@ -186,6 +187,9 @@ namespace KitchenClash.Infrastructure.Network
             }
 
             _matchEnded = true;
+
+            // Clear all active fires on match end
+            _hazardService?.ClearAll();
 
             if (_roundTimer != null)
             {

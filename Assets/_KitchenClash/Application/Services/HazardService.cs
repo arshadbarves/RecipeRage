@@ -50,5 +50,10 @@ namespace KitchenClash.Application
         /// Call each frame/tick to update internal time tracking.
         /// </summary>
         public void SetCurrentTime(float time) => _currentTime = time;
+
+        /// <summary>
+        /// Clears all active fires. Call on match end.
+        /// </summary>
+        public void ClearAll() => _activeFires.Clear();
     }
 }

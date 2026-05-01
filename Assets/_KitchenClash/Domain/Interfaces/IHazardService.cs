@@ -11,5 +11,7 @@ namespace KitchenClash.Domain
         event Action<string> OnFireStarted;
         event Action<string> OnFireExtinguished;
         event Action<string> OnFirePenalty;
+        void SetCurrentTime(float time);
+        void ClearAll();
     }
 }

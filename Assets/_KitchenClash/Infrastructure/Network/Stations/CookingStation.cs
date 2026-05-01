@@ -1,3 +1,4 @@
+using KitchenClash.Application;
 using KitchenClash.Domain;
 using KitchenClash.Infrastructure.Network.Cooking;
 using Unity.Netcode;
@@ -8,6 +9,8 @@ namespace KitchenClash.Infrastructure.Network.Stations
 {
     /// <summary>
     /// A station for cooking ingredients (formerly CookingPot).
+    /// Wired to HazardService for fire registration/extinguishing,
+    /// ScoreService for fire penalties, and AbilityService for chef passives.
     /// </summary>
     public class CookingStation : ProcessingStation
     {
@@ -22,6 +25,42 @@ namespace KitchenClash.Infrastructure.Network.Stations
         private float _burningTimer;
 
         [Inject] private IEventBus _eventBus;
+        [Inject] private IHazardService _hazardService;
+        [Inject] private IScoreService _scoreService;
+        [Inject] private IAbilityService _abilityService;
+
+        /// <summary>Unique station ID derived from NetworkObjectId.</summary>
+        private string StationId => NetworkObjectId.ToString();
+
+        /// <summary>
+        /// Effective burn time accounting for Yuki's SlowerBurnRate passive.
+        /// Server-only: checked each frame during burn countdown.
+        /// </summary>
+        private float EffectiveBurningTime
+        {
+            get
+            {
+                float baseTime = _burningTime;
+
+                // If a local player has SlowerBurnRate passive, extend burn timer
+                var localPlayer = FindLocalPlayer();
+                if (localPlayer != null)
+                {
+                    var chefDef = FindChefDefinition(localPlayer);
+                    if (chefDef != null && chefDef.PassiveAbility == AbilityType.SlowerBurnRate)
+                    {
+                        var passiveDef = _abilityService?.GetPassiveDefinition(chefDef.Id);
+                        if (passiveDef != null)
+                        {
+                            // value = 0.30 → burn timer 30% slower → multiply by 1.3
+                            baseTime *= (1f + passiveDef.Value);
+                        }
+                    }
+                }
+
+                return baseTime;
+            }
+        }
 
         /// <summary>
         /// Initialize the cooking station.
@@ -45,6 +84,74 @@ namespace KitchenClash.Infrastructure.Network.Stations
             }
         }
 
+        public override void OnNetworkSpawn()
+        {
+            base.OnNetworkSpawn();
+            SubscribeToHazardEvents();
+        }
+
+        public override void OnNetworkDespawn()
+        {
+            UnsubscribeFromHazardEvents();
+            base.OnNetworkDespawn();
+        }
+
+        /// <summary>
+        /// Subscribe to HazardService events for visual/audio feedback hooks.
+        /// Actual VFX/SFX implementation deferred to later phases.
+        /// </summary>
+        private void SubscribeToHazardEvents()
+        {
+            if (_hazardService == null) return;
+            _hazardService.OnFireStarted += HandleFireStarted;
+            _hazardService.OnFireExtinguished += HandleFireExtinguished;
+            _hazardService.OnFirePenalty += HandleFirePenalty;
+        }
+
+        private void UnsubscribeFromHazardEvents()
+        {
+            if (_hazardService == null) return;
+            _hazardService.OnFireStarted -= HandleFireStarted;
+            _hazardService.OnFireExtinguished -= HandleFireExtinguished;
+            _hazardService.OnFirePenalty -= HandleFirePenalty;
+        }
+
+        private void HandleFireStarted(string stationId)
+        {
+            if (stationId != StationId) return;
+            // Visual/audio hook: fire started on this station
+            // VFX/SFX wiring deferred to later phases
+        }
+
+        private void HandleFireExtinguished(string stationId)
+        {
+            if (stationId != StationId) return;
+            // Visual/audio hook: fire extinguished on this station
+            _isBurning = false;
+            HideFireEffectClientRpc();
+            StopSoundsClientRpc();
+        }
+
+        private void HandleFirePenalty(string stationId)
+        {
+            if (stationId != StationId) return;
+
+            // Apply -5 fire penalty via ScoreService
+            if (_scoreService != null)
+            {
+                // Determine which team owns the station area
+                // Fire penalty applies to the team whose station caught fire
+                var teamId = DetermineStationTeam();
+                var scoreEvent = new ScoreEvent(ScoreEventType.FirePenalty);
+                _scoreService.AddScore(teamId, scoreEvent);
+            }
+
+            // Visual/audio hook: penalty applied
+            _isBurning = false;
+            HideFireEffectClientRpc();
+            StopSoundsClientRpc();
+        }
+
         /// <summary>
         /// Update the cooking station.
         /// </summary>
@@ -58,16 +165,23 @@ namespace KitchenClash.Infrastructure.Network.Stations
                 return;
             }
 
+            // Keep HazardService time in sync
+            _hazardService?.SetCurrentTime(Time.time);
+
             // Check if the ingredient is cooked
             if (_processingProgress >= 1f)
             {
                 // Start burning timer
                 _burningTimer += Time.deltaTime;
 
-                // Check if the ingredient is burning
-                if (_burningTimer >= _burningTime && !_isBurning)
+                // Check if the ingredient is burning (use EffectiveBurningTime for passive)
+                if (_burningTimer >= EffectiveBurningTime && !_isBurning)
                 {
                     _isBurning = true;
+
+                    // Register fire with HazardService
+                    _hazardService?.SetCurrentTime(Time.time);
+                    _hazardService?.RegisterFire(StationId);
 
                     // Show fire effect
                     if (_fireEffect != null)
@@ -91,6 +205,51 @@ namespace KitchenClash.Infrastructure.Network.Stations
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Handle interaction — includes extinguish logic for burning stations.
+        /// </summary>
+        protected override void HandleInteraction(PlayerController player)
+        {
+            // If the station is burning, player interaction attempts to extinguish
+            if (_isBurning)
+            {
+                _hazardService?.SetCurrentTime(Time.time);
+                bool extinguished = _hazardService?.TryExtinguish(StationId, Time.time) ?? false;
+
+                if (extinguished)
+                {
+                    // Fire was extinguished in time — no penalty
+                    _isBurning = false;
+                    HideFireEffectClientRpc();
+                    StopSoundsClientRpc();
+                }
+                // If not extinguished (window expired), HandleFirePenalty handles cleanup via event
+
+                return;
+            }
+
+            // Normal processing interaction
+            base.HandleInteraction(player);
+        }
+
+        /// <summary>
+        /// Allow interaction when station is burning (for extinguish) or normal conditions.
+        /// </summary>
+        public override bool CanInteract(object playerObj)
+        {
+            if (_isBurning) return true;
+            return base.CanInteract(playerObj);
+        }
+
+        /// <summary>
+        /// Get the interaction prompt text.
+        /// </summary>
+        public override string GetInteractionPrompt()
+        {
+            if (_isBurning) return "Extinguish Fire!";
+            return base.GetInteractionPrompt();
         }
 
         /// <summary>
@@ -182,6 +341,62 @@ namespace KitchenClash.Infrastructure.Network.Stations
 
             base.CancelProcessing();
         }
+
+        /// <summary>
+        /// Determine which team this station belongs to.
+        /// Falls back to TeamA if no clear assignment.
+        /// </summary>
+        private TeamId DetermineStationTeam()
+        {
+            // Check parent hierarchy for a team marker or default to TeamA
+            // In most kitchen layouts, stations are shared — default to TeamA
+            // TODO: If stations become team-specific, read from a TeamId field
+            return TeamId.TeamA;
+        }
+
+        /// <summary>
+        /// Find the local player's PlayerController on the server.
+        /// Used for checking chef passives (SlowerBurnRate).
+        /// </summary>
+        private PlayerController FindLocalPlayer()
+        {
+            if (!IsServer) return null;
+
+            // On server, find the player who placed the ingredient
+            // For simplicity, check all connected players
+            foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
+            {
+                var pc = client.PlayerObject?.GetComponent<PlayerController>();
+                if (pc != null) return pc;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Get the ChefDefinition for a player via ICharacterService lookup.
+        /// </summary>
+        private ChefDefinition FindChefDefinition(PlayerController player)
+        {
+            if (player == null) return null;
+
+            // Try to resolve character service to get the selected chef
+            try
+            {
+                var scope = VContainer.Unity.LifetimeScope.Find<VContainer.Unity.LifetimeScope>();
+                if (scope != null)
+                {
+                    var charService = scope.Container.Resolve<ICharacterService>();
+                    return charService?.SelectedChef;
+                }
+            }
+            catch
+            {
+                // Silently fail — passive won't apply
+            }
+            return null;
+        }
+
+        #region Client RPCs
 
         /// <summary>
         /// Show the steam effect on all clients.
@@ -277,5 +492,7 @@ namespace KitchenClash.Infrastructure.Network.Stations
         {
             _eventBus?.Publish(new CameraShakeEvent(0.7f, 0.5f));
         }
+
+        #endregion
     }
 }
