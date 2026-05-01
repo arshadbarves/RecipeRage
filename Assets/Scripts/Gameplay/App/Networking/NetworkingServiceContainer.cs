@@ -7,7 +7,6 @@ using Gameplay.Shared;
 using Core.Auth;
 using Core.Logging;
 using Core.UI.Interfaces;
-using PlayEveryWare.EpicOnlineServices;
 using PlayEveryWare.EpicOnlineServices.Samples;
 using VContainer;
 using Cysharp.Threading.Tasks;
@@ -37,6 +36,11 @@ namespace Gameplay.App.Networking
         private readonly IGameStateManager _stateManager;
         private readonly IAuthService _authService;
         private readonly IMatchContext _matchContext;
+        private readonly ILobbyManager _lobbyManager;
+        private readonly IPlayerManager _playerManager;
+        private readonly IMatchmakingService _matchmakingService;
+        private readonly ITeamManager _teamManager;
+        private readonly EOSLobbyManager _eosLobbyManager;
 
         #endregion
 
@@ -46,12 +50,26 @@ namespace Gameplay.App.Networking
         /// Constructor
         /// </summary>
         [Inject]
-        public NetworkingServiceContainer(IUIService uiService, IGameStateManager stateManager, IAuthService authService, IMatchContext matchContext)
+        public NetworkingServiceContainer(
+            IUIService uiService,
+            IGameStateManager stateManager,
+            IAuthService authService,
+            IMatchContext matchContext,
+            ILobbyManager lobbyManager,
+            IPlayerManager playerManager,
+            IMatchmakingService matchmakingService,
+            ITeamManager teamManager,
+            EOSLobbyManager eosLobbyManager)
         {
             _uiService = uiService;
             _stateManager = stateManager;
             _authService = authService;
             _matchContext = matchContext;
+            _lobbyManager = lobbyManager;
+            _playerManager = playerManager;
+            _matchmakingService = matchmakingService;
+            _teamManager = teamManager;
+            _eosLobbyManager = eosLobbyManager;
             Initialize();
         }
 
@@ -66,10 +84,7 @@ namespace Gameplay.App.Networking
                 return;
             }
 
-            // Wait for EOS to be ready
-            var eosLobbyManager = EOSManager.Instance?.GetOrCreateManager<EOSLobbyManager>();
-
-            if (eosLobbyManager == null)
+            if (_eosLobbyManager == null)
             {
                 GameLogger.LogError("EOSLobbyManager not available");
                 return;
@@ -77,21 +92,10 @@ namespace Gameplay.App.Networking
 
             GameLogger.Log("Initializing services...");
 
-            // Create services in dependency order
-
-            // 1. Team Manager (no dependencies)
-            TeamManager = new TeamManager();
-
-            // 2. Lobby Manager (depends on TeamManager)
-            LobbyManager = new LobbyService(eosLobbyManager, TeamManager);
-            LobbyManager.Initialize();
-
-            // 3. Player Manager (depends on EOS)
-            PlayerManager = new PlayerManager(eosLobbyManager);
-
-            // 4. Matchmaking Service (depends on LobbyManager)
-            MatchmakingService = new MatchmakingService(LobbyManager, eosLobbyManager);
-            MatchmakingService.Initialize();
+            TeamManager = _teamManager;
+            LobbyManager = _lobbyManager;
+            PlayerManager = _playerManager;
+            MatchmakingService = _matchmakingService;
 
             // 5. Game Starter (depends on all services)
             // Uses concrete GameStarter from App.Networking
@@ -211,11 +215,6 @@ namespace Gameplay.App.Networking
 
             // Despawn bots if any
             BotSpawner?.DespawnAllBots();
-
-            if (LobbyManager is IDisposable disposableLobbyManager)
-            {
-                disposableLobbyManager.Dispose();
-            }
 
             // Clear references
             FriendsService = null;

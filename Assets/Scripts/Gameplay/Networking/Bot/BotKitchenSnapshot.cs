@@ -34,7 +34,7 @@ namespace Gameplay.Networking.Bot
                 ClaimedOrderId = claimedOrderId,
                 ClaimedCounterId = claimedCounterId,
                 HeldItem = BuildHeldItemState(player),
-                Stations = BuildStationDescriptors(player != null ? player.transform.position : Vector3.zero),
+                Stations = BuildStationDescriptors(player != null ? player.transform.position : Vector3.zero, botId, claimRegistry),
                 Orders = BuildOrderDescriptors(botId, claimRegistry),
                 OwnSinkDirty = FindOwnDirtySink(player) > 0
             };
@@ -91,7 +91,7 @@ namespace Gameplay.Networking.Bot
             return _orderManager != null ? _orderManager.GetRecipeById(recipeId) : null;
         }
 
-        private List<BotStationDescriptor> BuildStationDescriptors(Vector3 origin)
+        private List<BotStationDescriptor> BuildStationDescriptors(Vector3 origin, string botId, BotClaimRegistry claimRegistry)
         {
             var descriptors = new List<BotStationDescriptor>();
 
@@ -124,6 +124,7 @@ namespace Gameplay.Networking.Bot
                     Type = BotStationType.CounterStation,
                     Position = counter.transform.position - origin,
                     HasItem = !counter.IsEmpty,
+                    IsClaimedByAnotherBot = claimRegistry.IsCounterClaimedByAnotherBot(GetStationId(counter), botId),
                     HasPlate = counter.HeldPlate != null,
                     StockCount = counter.HeldPlate != null ? counter.HeldPlate.IngredientCount : 0
                 });

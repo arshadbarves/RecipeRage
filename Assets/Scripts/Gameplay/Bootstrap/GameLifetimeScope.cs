@@ -195,7 +195,7 @@ namespace Gameplay.Bootstrap
             // Networking Core (Low level)
             builder.Register<PlayerNetworkManager>(Lifetime.Singleton).As<IPlayerNetworkManager>();
             builder.Register<NetworkObjectPool>(Lifetime.Singleton).As<INetworkObjectPool>();
-            builder.Register<NetworkGameManager>(Lifetime.Singleton).As<INetworkGameManager>();
+            builder.Register<NetworkGameManager>(Lifetime.Singleton).As<INetworkGameManager>().As<IDisposable>();
 
             // 8. Gameplay Services
             builder.Register<Gameplay.Characters.CharacterService>(Lifetime.Singleton).As<Gameplay.Characters.ICharacterService>().As<IDisposable>();

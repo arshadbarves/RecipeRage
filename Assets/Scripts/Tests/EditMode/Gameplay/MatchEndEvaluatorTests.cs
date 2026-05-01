@@ -156,6 +156,41 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             Object.DestroyImmediate(resultSync.gameObject);
         }
 
+        [Test]
+        public void GameplayHudViewModel_TransitionsToGameOver_WhenResultArrivesBeforePhase()
+        {
+            FakeGameStateManager stateManager = new();
+            GameplayHudViewModel viewModel = new(new FakeMatchContext(), stateManager);
+            GamePhaseSync phaseSync = CreatePhaseSync(GamePhase.Playing);
+            MatchResultSync resultSync = CreateResultSync(MatchResultState.FromEvaluation(
+                MatchEndReason.ScoreLimitReached,
+                new MatchEndEvaluation(true, 0, false, 1000)));
+
+            SetPrivateField(viewModel, "_gamePhaseSync", phaseSync);
+            SetPrivateField(viewModel, "_matchResultSync", resultSync);
+
+            MethodInfo handlePhaseChanged = typeof(GameplayHudViewModel).GetMethod(
+                "HandlePhaseChanged",
+                BindingFlags.NonPublic | BindingFlags.Instance);
+            MethodInfo handleMatchResultChanged = typeof(GameplayHudViewModel).GetMethod(
+                "HandleMatchResultChanged",
+                BindingFlags.NonPublic | BindingFlags.Instance);
+
+            Assert.IsNotNull(handlePhaseChanged);
+            Assert.IsNotNull(handleMatchResultChanged);
+
+            handleMatchResultChanged.Invoke(viewModel, new object[] { MatchResultState.None, resultSync.CurrentResult });
+            Assert.AreEqual(0, stateManager.GameOverTransitions);
+
+            SetPhaseValue(phaseSync, GamePhase.GameOver);
+            handlePhaseChanged.Invoke(viewModel, new object[] { GamePhase.Playing, GamePhase.GameOver });
+
+            Assert.AreEqual(1, stateManager.GameOverTransitions);
+
+            Object.DestroyImmediate(phaseSync.gameObject);
+            Object.DestroyImmediate(resultSync.gameObject);
+        }
+
         [TestCase(0, false, "TEAM 1 WINS!")]
         [TestCase(1, false, "TEAM 2 WINS!")]
         [TestCase(-1, true, "DRAW!")]
@@ -171,6 +206,12 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             };
 
             Assert.AreEqual(expected, GameOverScreen.GetWinnerText(result));
+        }
+
+        [Test]
+        public void GameOverScreen_GetWinnerText_UsesNeutralFallback_WhenResultIsMissing()
+        {
+            Assert.AreEqual("MATCH COMPLETE", GameOverScreen.GetWinnerText(MatchResultState.None));
         }
 
         private sealed class FakeGameStateManager : IGameStateManager
@@ -252,9 +293,14 @@ namespace RecipeRage.Tests.EditMode.Gameplay
         {
             GameObject gameObject = new("GamePhaseSyncTest");
             GamePhaseSync phaseSync = gameObject.AddComponent<GamePhaseSync>();
+            SetPhaseValue(phaseSync, phase);
+            return phaseSync;
+        }
+
+        private static void SetPhaseValue(GamePhaseSync phaseSync, GamePhase phase)
+        {
             NetworkVariable<GamePhase> currentPhase = new(phase);
             SetPrivateField(phaseSync, "_currentPhase", currentPhase);
-            return phaseSync;
         }
 
         private static MatchResultSync CreateResultSync(MatchResultState result)

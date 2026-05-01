@@ -70,6 +70,7 @@ namespace Gameplay.Networking.Bot
         public bool HasItem { get; set; }
         public bool HasPlate { get; set; }
         public bool IsShared { get; set; }
+        public bool IsClaimedByAnotherBot { get; set; }
         public int StockCount { get; set; }
         public int StoredIngredientId { get; set; }
         public bool StoredIngredientIsCut { get; set; }

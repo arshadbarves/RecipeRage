@@ -11,15 +11,16 @@ namespace Core.Networking.Services
     /// </summary>
     public class NetworkObjectPool : INetworkObjectPool
     {
-
+        private readonly NetworkManager _networkManager;
         private readonly Dictionary<GameObject, Queue<NetworkObject>> _pools;
         private readonly HashSet<NetworkObject> _activeObjects;
 
         /// <summary>
         /// Initialize the network object pool.
         /// </summary>
-        public NetworkObjectPool()
+        public NetworkObjectPool(NetworkManager networkManager)
         {
+            _networkManager = networkManager;
             _pools = new Dictionary<GameObject, Queue<NetworkObject>>();
             _activeObjects = new HashSet<NetworkObject>();
         }
@@ -33,7 +34,7 @@ namespace Core.Networking.Services
         /// <returns>The network object</returns>
         public NetworkObject Get(GameObject prefab, Vector3 position, Quaternion rotation)
         {
-            if (!NetworkManager.Singleton.IsServer)
+            if (!IsServer())
             {
                 GameLogger.LogWarning("[NetworkObjectPool] Only the server can get objects from the pool");
                 return null;
@@ -91,7 +92,7 @@ namespace Core.Networking.Services
         /// <param name="networkObject">The network object to return</param>
         public void Return(NetworkObject networkObject)
         {
-            if (!NetworkManager.Singleton.IsServer)
+            if (!IsServer())
             {
                 GameLogger.LogWarning("[NetworkObjectPool] Only the server can return objects to the pool");
                 return;
@@ -144,7 +145,7 @@ namespace Core.Networking.Services
         /// <param name="count">The number of instances to create</param>
         public void Prewarm(GameObject prefab, int count)
         {
-            if (!NetworkManager.Singleton.IsServer)
+            if (!IsServer())
             {
                 GameLogger.LogWarning("[NetworkObjectPool] Only the server can prewarm the pool");
                 return;
@@ -182,7 +183,7 @@ namespace Core.Networking.Services
         /// </summary>
         public void Clear()
         {
-            if (!NetworkManager.Singleton.IsServer)
+            if (!IsServer())
             {
                 GameLogger.LogWarning("[NetworkObjectPool] Only the server can clear the pool");
                 return;
@@ -227,6 +228,11 @@ namespace Core.Networking.Services
             }
 
             return null;
+        }
+
+        private bool IsServer()
+        {
+            return _networkManager != null && _networkManager.IsServer;
         }
     }
 }

@@ -216,8 +216,18 @@ namespace Core.Networking.Services
         {
             GameLogger.Log("Creating match lobby and waiting for players");
 
-            // Create match lobby configuration
-            var config = new LobbyConfig
+            LobbyConfig config = BuildMatchLobbyConfig(gameModeId, teamSize);
+
+            // Subscribe to lobby created event
+            _lobbyManager.OnMatchLobbyCreated += OnMatchLobbyCreatedForMatchmaking;
+
+            // Create the match lobby
+            _lobbyManager.CreateMatchLobby(config);
+        }
+
+        private static LobbyConfig BuildMatchLobbyConfig(string gameModeId, int teamSize)
+        {
+            return new LobbyConfig
             {
                 Type = LobbyType.Match,
                 LobbyName = $"Match_{gameModeId}_{NTPTime.UtcNow.Ticks}",
@@ -236,12 +246,6 @@ namespace Core.Networking.Services
                     { "CreatedAt", NTPTime.UtcNow.ToString("o") }
                 }
             };
-
-            // Subscribe to lobby created event
-            _lobbyManager.OnMatchLobbyCreated += OnMatchLobbyCreatedForMatchmaking;
-
-            // Create the match lobby
-            _lobbyManager.CreateMatchLobby(config);
         }
 
         #endregion

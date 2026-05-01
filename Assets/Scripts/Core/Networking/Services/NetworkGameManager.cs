@@ -11,9 +11,9 @@ namespace Core.Networking.Services
     /// Manages network game lifecycle and object spawning.
     /// Follows Single Responsibility Principle - handles only network object management.
     /// </summary>
-    public class NetworkGameManager : INetworkGameManager
+    public class NetworkGameManager : INetworkGameManager, IDisposable
     {
-
+        private readonly NetworkManager _networkManager;
         private readonly IPlayerNetworkManager _playerNetworkManager;
         private readonly Dictionary<ulong, NetworkObject> _spawnedPlayers;
         private bool _isGameActive;
@@ -36,17 +36,18 @@ namespace Core.Networking.Services
         /// <summary>
         /// Initialize the network game manager.
         /// </summary>
-        public NetworkGameManager(IPlayerNetworkManager playerNetworkManager)
+        public NetworkGameManager(NetworkManager networkManager, IPlayerNetworkManager playerNetworkManager)
         {
+            _networkManager = networkManager;
             _playerNetworkManager = playerNetworkManager;
             _spawnedPlayers = new Dictionary<ulong, NetworkObject>();
             _isGameActive = false;
 
             // Subscribe to NetworkManager events
-            if (NetworkManager.Singleton != null)
+            if (_networkManager != null)
             {
-                NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
-                NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
+                _networkManager.OnClientConnectedCallback += OnClientConnected;
+                _networkManager.OnClientDisconnectCallback += OnClientDisconnected;
             }
         }
 
@@ -55,7 +56,7 @@ namespace Core.Networking.Services
         /// </summary>
         public void StartGame()
         {
-            if (!NetworkManager.Singleton.IsServer)
+            if (!IsServer())
             {
                 GameLogger.LogWarning("Only the server can start the game");
                 return;
@@ -70,7 +71,7 @@ namespace Core.Networking.Services
         /// </summary>
         public void EndGame()
         {
-            if (!NetworkManager.Singleton.IsServer)
+            if (!IsServer())
             {
                 GameLogger.LogWarning("Only the server can end the game");
                 return;
@@ -87,7 +88,7 @@ namespace Core.Networking.Services
         /// <param name="spawnPosition">The position to spawn the player at</param>
         public void SpawnPlayer(ulong clientId, Vector3 spawnPosition)
         {
-            if (!NetworkManager.Singleton.IsServer)
+            if (!IsServer())
             {
                 GameLogger.LogWarning("Only the server can spawn players");
                 return;
@@ -101,7 +102,14 @@ namespace Core.Networking.Services
             }
 
             // Get the player prefab from NetworkManager
-            NetworkObject playerPrefab = NetworkManager.Singleton.NetworkConfig.PlayerPrefab.GetComponent<NetworkObject>();
+            var playerPrefabSource = _networkManager?.NetworkConfig?.PlayerPrefab;
+            if (playerPrefabSource == null)
+            {
+                GameLogger.LogError("[NetworkGameManager] NetworkManager player prefab is not configured");
+                return;
+            }
+
+            NetworkObject playerPrefab = playerPrefabSource.GetComponent<NetworkObject>();
             if (playerPrefab == null)
             {
                 GameLogger.LogError("[NetworkGameManager] Player prefab does not have a NetworkObject component");
@@ -124,7 +132,7 @@ namespace Core.Networking.Services
         /// <param name="clientId">The client ID of the player to despawn</param>
         public void DespawnPlayer(ulong clientId)
         {
-            if (!NetworkManager.Singleton.IsServer)
+            if (!IsServer())
             {
                 GameLogger.LogWarning("Only the server can despawn players");
                 return;
@@ -158,7 +166,7 @@ namespace Core.Networking.Services
         /// <returns>The spawned NetworkObject</returns>
         public NetworkObject SpawnNetworkObject(GameObject prefab, Vector3 position, Quaternion rotation)
         {
-            if (!NetworkManager.Singleton.IsServer)
+            if (!IsServer())
             {
                 GameLogger.LogWarning("Only the server can spawn network objects");
                 return null;
@@ -189,7 +197,7 @@ namespace Core.Networking.Services
         /// <param name="networkObject">The network object to despawn</param>
         public void DespawnNetworkObject(NetworkObject networkObject)
         {
-            if (!NetworkManager.Singleton.IsServer)
+            if (!IsServer())
             {
                 GameLogger.LogWarning("Only the server can despawn network objects");
                 return;
@@ -222,9 +230,9 @@ namespace Core.Networking.Services
             GameLogger.Log($"[NetworkGameManager] Client {clientId} connected");
 
             // Register player when they spawn (using base IPlayerController interface)
-            if (NetworkManager.Singleton.SpawnManager.GetPlayerNetworkObject(clientId) != null)
+            NetworkObject playerObject = _networkManager?.SpawnManager?.GetPlayerNetworkObject(clientId);
+            if (playerObject != null)
             {
-                var playerObject = NetworkManager.Singleton.SpawnManager.GetPlayerNetworkObject(clientId);
                 var playerController = playerObject.GetComponent<IPlayerController>();
 
                 if (playerController != null)
@@ -263,12 +271,12 @@ namespace Core.Networking.Services
         private void CleanupPlayerObjects(ulong clientId)
         {
             // Null checks for shutdown scenarios
-            if (NetworkManager.Singleton == null || !NetworkManager.Singleton.IsServer)
+            if (!IsServer())
             {
                 return;
             }
 
-            if (NetworkManager.Singleton.SpawnManager == null || NetworkManager.Singleton.SpawnManager.SpawnedObjects == null)
+            if (_networkManager?.SpawnManager?.SpawnedObjects == null)
             {
                 GameLogger.LogWarning("[NetworkGameManager] SpawnManager or SpawnedObjects is null during cleanup");
                 return;
@@ -277,7 +285,7 @@ namespace Core.Networking.Services
             List<NetworkObject> objectsToCleanup = new List<NetworkObject>();
 
             // Find all objects owned by this client
-            foreach (var kvp in NetworkManager.Singleton.SpawnManager.SpawnedObjects)
+            foreach (var kvp in _networkManager.SpawnManager.SpawnedObjects)
             {
                 NetworkObject networkObject = kvp.Value;
 
@@ -312,11 +320,16 @@ namespace Core.Networking.Services
         /// </summary>
         public void Dispose()
         {
-            if (NetworkManager.Singleton != null)
+            if (_networkManager != null)
             {
-                NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
-                NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnected;
+                _networkManager.OnClientConnectedCallback -= OnClientConnected;
+                _networkManager.OnClientDisconnectCallback -= OnClientDisconnected;
             }
+        }
+
+        private bool IsServer()
+        {
+            return _networkManager != null && _networkManager.IsServer;
         }
     }
 }

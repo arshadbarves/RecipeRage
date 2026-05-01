@@ -60,6 +60,11 @@ This scope owns active-session services, including:
 - `ITeamManager`
 - `IGameStarter`
 
+Session networking ownership rule:
+
+- `SessionLifetimeScope` creates `TeamManager`, `LobbyService`, `PlayerManager`, and `MatchmakingService` directly through DI.
+- `NetworkingServiceContainer` composes and exposes those session services, but should not manually `new` them.
+
 Current ownership rule:
 
 - `CharacterService`
@@ -91,6 +96,7 @@ Current gameplay networking assumptions:
 
 - `IngredientNetworkSpawner` is a scene `MonoBehaviour` that receives `INetworkObjectPool` and `INetworkGameManager` from the root `GameLifetimeScope`.
 - It should not resolve those services from `SessionManager.SessionContainer`.
+- `NetworkObjectPool` and `NetworkGameManager` are root-owned services that should use the `NetworkManager` instance injected by `GameLifetimeScope`, not `NetworkManager.Singleton`.
 - `IngredientCrate` should resolve `IngredientNetworkSpawner` through the match runtime bridge (`IMatchContext` / `MatchRuntimeSceneBinder`), not through `FindObjectOfType`.
 - `BotKitchenSnapshot` should consume bot-relevant station data from the match runtime bridge, not rebuild the kitchen graph with direct scene searches during replanning.
 - Ingredient assets provide their own prefab references.

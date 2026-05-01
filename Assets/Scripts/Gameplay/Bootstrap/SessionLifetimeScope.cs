@@ -14,6 +14,29 @@ namespace Gameplay.Bootstrap
     {
         protected override void Configure(IContainerBuilder builder)
         {
+            builder.Register(resolver => EOSManager.Instance.GetOrCreateManager<EOSLobbyManager>(), Lifetime.Scoped);
+            builder.Register<TeamManager>(Lifetime.Singleton).As<ITeamManager>();
+            builder.Register<PlayerManager>(Lifetime.Singleton).As<IPlayerManager>();
+            builder.Register(resolver =>
+                {
+                    var service = new LobbyService(
+                        resolver.Resolve<EOSLobbyManager>(),
+                        resolver.Resolve<ITeamManager>());
+                    service.Initialize();
+                    return service;
+                }, Lifetime.Singleton)
+                .As<ILobbyManager>()
+                .As<System.IDisposable>();
+            builder.Register(resolver =>
+                {
+                    var service = new MatchmakingService(
+                        resolver.Resolve<ILobbyManager>(),
+                        resolver.Resolve<EOSLobbyManager>());
+                    service.Initialize();
+                    return service;
+                }, Lifetime.Singleton)
+                .As<IMatchmakingService>();
+
             // 1. Networking Service Container (The Main Controller)
             // Register this FIRST as other services depend on it
             builder.Register<Gameplay.App.Networking.NetworkingServiceContainer>(Lifetime.Singleton)
@@ -21,15 +44,8 @@ namespace Gameplay.Bootstrap
                 .As<System.IDisposable>();
 
             // 2. Delegate Interface Registrations to Container
-            // This ensures we use the EXACT SAME instances that NetworkingServiceContainer created
-            builder.Register(r => r.Resolve<INetworkingServices>().LobbyManager, Lifetime.Singleton).As<ILobbyManager>();
-            builder.Register(r => r.Resolve<INetworkingServices>().PlayerManager, Lifetime.Singleton).As<IPlayerManager>();
-            builder.Register(r => r.Resolve<INetworkingServices>().MatchmakingService, Lifetime.Singleton).As<IMatchmakingService>();
-            builder.Register(r => r.Resolve<INetworkingServices>().TeamManager, Lifetime.Singleton).As<ITeamManager>();
+            // Core session services are now created directly by DI; the container composes them.
             builder.Register(r => r.Resolve<INetworkingServices>().GameStarter, Lifetime.Singleton).As<IGameStarter>();
-
-            // EOS Lobby Manager (Wrapper for EOS SDK)
-            builder.Register(resolver => EOSManager.Instance.GetOrCreateManager<EOSLobbyManager>(), Lifetime.Scoped); // todo: need to use this
         }
     }
 }

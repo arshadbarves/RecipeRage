@@ -145,10 +145,12 @@ namespace Gameplay.Networking.Bot
 
             if (claimedOrder == null || claimedOrder.IsExpired || claimedOrder.IsCompleted)
             {
-                BotOrderDescriptor nextOrder = snapshot.Orders
-                    .Where(order => !order.IsExpired && !order.IsCompleted && !order.HasInvalidAssembly && !order.IsClaimedByAnotherBot)
-                    .OrderBy(order => order.RemainingTime)
-                    .FirstOrDefault();
+                BotOrderDescriptor nextOrder = HasAvailableCounter(snapshot)
+                    ? snapshot.Orders
+                        .Where(order => !order.IsExpired && !order.IsCompleted && !order.HasInvalidAssembly && !order.IsClaimedByAnotherBot)
+                        .OrderBy(order => order.RemainingTime)
+                        .FirstOrDefault()
+                    : null;
 
                 if (nextOrder == null)
                 {
@@ -323,6 +325,14 @@ namespace Gameplay.Networking.Bot
                 .Where(station => station.Type == type && (station.IsShared || station.TeamId == snapshot.TeamId))
                 .OrderBy(station => station.Position.sqrMagnitude)
                 .FirstOrDefault();
+        }
+
+        private static bool HasAvailableCounter(BotPlanningSnapshot snapshot)
+        {
+            return snapshot.Stations.Any(station =>
+                station.Type == BotStationType.CounterStation &&
+                !station.HasItem &&
+                !station.IsClaimedByAnotherBot);
         }
 
         private static BotStationDescriptor FindReadyIngredientStation(
