@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Core.Logging;
+using KitchenClash.Domain;
 using Unity.Netcode;
 using UnityEngine;
 using Random = UnityEngine.Random;

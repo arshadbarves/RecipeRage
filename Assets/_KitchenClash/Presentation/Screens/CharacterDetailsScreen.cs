@@ -1,14 +1,10 @@
-using Gameplay.Characters;
-using Core.Logging;
-using Gameplay.Skins;
-using Gameplay.Skins.Data;
-using Core.UI;
-using Core.UI.Core;
-using Core.UI.Interfaces;
-using Core.Session;
-using Gameplay.Economy;
-using Gameplay.Persistence;
-using Gameplay.Characters.Visuals; // Added
+using KitchenClash.Domain;
+using KitchenClash.Application.Services;
+using KitchenClash.Infrastructure.Persistence;
+using KitchenClash.Presentation;
+using KitchenClash.Presentation.Common;
+using KitchenClash.Infrastructure.EOS;
+using KitchenClash.Infrastructure.Network; // Added
 using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;

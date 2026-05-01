@@ -1,6 +1,6 @@
 using System;
 using KitchenClash.Presentation.Common;
-using Core.Logging;
+using KitchenClash.Domain;
 using UnityEngine;
 using UnityEngine.UIElements;
 

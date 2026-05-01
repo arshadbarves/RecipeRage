@@ -1,10 +1,7 @@
 using System.Collections.Generic;
-using Core.Networking.Interfaces;
-using Gameplay.Characters;
-using Gameplay.Spawning;
-using Core.Logging;
-using Core.Networking.Models;
-using Core.Shared.Enums;
+using KitchenClash.Domain;
+using KitchenClash.Infrastructure.Network.Spawning;
+using KitchenClash.Infrastructure.Network;
 using Unity.Netcode;
 using UnityEngine;
 

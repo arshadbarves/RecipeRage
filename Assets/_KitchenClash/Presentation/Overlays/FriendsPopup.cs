@@ -1,8 +1,7 @@
 using System;
 using KitchenClash.Presentation.Common;
-using Core.Logging;
-using Core.Networking.Interfaces;
-using Core.Session;
+using KitchenClash.Domain;
+using KitchenClash.Infrastructure.EOS;
 using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;

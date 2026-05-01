@@ -1,8 +1,7 @@
-using Gameplay.Characters;
-using Gameplay.UI.Components.Tabs;
-using Core.Logging;
-using Core.UI;
-using Core.UI.Core;
+using KitchenClash.Domain;
+using KitchenClash.Presentation.Components;
+using KitchenClash.Presentation;
+using KitchenClash.Presentation.Common;
 using UnityEngine.UIElements;
 using VContainer;
 

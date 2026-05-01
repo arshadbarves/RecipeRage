@@ -1,10 +1,9 @@
 using System;
-using Gameplay.Economy;
-using Gameplay.Persistence;
-using Core.Logging;
-using Core.Shared;
+using KitchenClash.Application.Services;
+using KitchenClash.Infrastructure.Persistence;
+using KitchenClash.Domain;
 using KitchenClash.Presentation.Common;
-using Core.Session;
+using KitchenClash.Infrastructure.EOS;
 using VContainer;
 
 namespace KitchenClash.Application.ViewModels

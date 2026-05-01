@@ -1,6 +1,6 @@
 using KitchenClash.Application.ViewModels;
-using Gameplay.UI.Data;
-using Core.Logging;
+using KitchenClash.Presentation.Common;
+using KitchenClash.Domain;
 using UnityEngine;
 using UnityEngine.UIElements;
 

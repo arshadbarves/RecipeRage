@@ -1,7 +1,7 @@
-using Core.UI;
+using KitchenClash.Presentation;
 
-using Core.UI.Core;
-using Core.UI.Interfaces;
+using KitchenClash.Presentation.Common;
+using KitchenClash.Domain;
 using UnityEngine.UIElements;
 using VContainer;
 

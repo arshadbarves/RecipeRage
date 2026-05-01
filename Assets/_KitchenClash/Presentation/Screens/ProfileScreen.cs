@@ -1,8 +1,8 @@
-using Gameplay.Persistence;
-using Core.UI;
-using Core.UI.Core;
-using Core.UI.Interfaces;
-using Core.Session;
+using KitchenClash.Infrastructure.Persistence;
+using KitchenClash.Presentation;
+using KitchenClash.Presentation.Common;
+using KitchenClash.Domain;
+using KitchenClash.Infrastructure.EOS;
 using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;

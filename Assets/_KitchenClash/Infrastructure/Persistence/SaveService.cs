@@ -1,10 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Core.Logging;
-using Core.Persistence.Factory;
-using Core.Persistence.Interfaces;
-using Core.Persistence.Models;
-using Core.Persistence.Providers;
+using KitchenClash.Domain;
+using KitchenClash.Infrastructure.Persistence;
 using Cysharp.Threading.Tasks;
 
 namespace KitchenClash.Infrastructure.Persistence

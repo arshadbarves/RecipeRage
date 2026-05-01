@@ -1,16 +1,15 @@
 using System.Collections.Generic;
 using System;
-using Core.UI;
-using Core.UI.Interfaces;
-using Gameplay.UI.Extensions;
-using Gameplay.UI.Localization;
+using KitchenClash.Presentation;
+using KitchenClash.Domain;
+using KitchenClash.Presentation.Extensions;
+using KitchenClash.Infrastructure.Localization;
 using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;
-using Core.Auth;
-using Core.Session;
+using KitchenClash.Infrastructure.EOS;
 
-using Core.UI.Core;
+using KitchenClash.Presentation.Common;
 
 namespace KitchenClash.Presentation.Screens
 {

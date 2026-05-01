@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Core.Logging;
+using KitchenClash.Domain;
 using UnityEngine;
 using VContainer.Unity;
 

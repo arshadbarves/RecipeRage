@@ -1,10 +1,9 @@
 using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using Core.Localization;
-using Core.Shared;
+using KitchenClash.Infrastructure.Localization;
+using KitchenClash.Domain;
 using KitchenClash.Presentation.Common;
-using Gameplay.UI.Localization;
 using UnityEngine;
 using VContainer;
 

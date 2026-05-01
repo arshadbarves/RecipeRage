@@ -1,5 +1,5 @@
-using Core.Persistence.Interfaces;
-using Core.Persistence.Providers;
+using KitchenClash.Domain;
+using KitchenClash.Infrastructure.Persistence;
 
 namespace KitchenClash.Infrastructure.Persistence
 {

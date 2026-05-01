@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Core.Logging;
-using Core.RemoteConfig.Interfaces;
-using Core.RemoteConfig.Models;
-using Core.Shared.Utilities;
+using KitchenClash.Domain;
 using Cysharp.Threading.Tasks;
 using Firebase.RemoteConfig;
 using UnityEngine;

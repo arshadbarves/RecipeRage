@@ -1,6 +1,5 @@
-using Core.Logging;
-using Core.Networking.Services;
-using Gameplay.Shared;
+using KitchenClash.Domain;
+using KitchenClash.Infrastructure.Network;
 using Unity.Netcode;
 using UnityEngine;
 using VContainer;

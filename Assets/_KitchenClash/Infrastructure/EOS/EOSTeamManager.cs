@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using Core.Networking.Common;
-using Core.Networking.Interfaces;
+using KitchenClash.Infrastructure.Network;
+using KitchenClash.Domain;
 using PlayEveryWare.EpicOnlineServices;
 using PlayEveryWare.EpicOnlineServices.Samples;
 

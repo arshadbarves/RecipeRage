@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System;
-using Core.UI.Core;
+using KitchenClash.Presentation.Common;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Core.Localization;
-using Core.UI;
+using KitchenClash.Infrastructure.Localization;
+using KitchenClash.Presentation;
 using VContainer;
 
 namespace KitchenClash.Presentation.Screens

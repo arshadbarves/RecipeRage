@@ -1,12 +1,10 @@
 using UnityEngine.UIElements;
 using VContainer;
-using Core.UI;
-using Core.UI.Interfaces;
-using Core.UI.Core;
-using Core.Logging;
-using Core.Session;
-using Gameplay.GameModes;
-using Gameplay.Shared;
+using KitchenClash.Presentation;
+using KitchenClash.Domain;
+using KitchenClash.Presentation.Common;
+using KitchenClash.Infrastructure.EOS;
+using KitchenClash.Application.Services;
 
 namespace KitchenClash.Presentation.Screens
 {

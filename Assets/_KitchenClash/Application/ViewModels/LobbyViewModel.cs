@@ -1,14 +1,12 @@
 using System;
 using System.Threading;
-using Core.Networking.Interfaces;
-using Gameplay.App.State;
-using Gameplay.App.State.States;
+using KitchenClash.Domain;
+using KitchenClash.Application.State;
+using KitchenClash.Application.State.States;
 using Cysharp.Threading.Tasks;
-using Gameplay.UI.Data;
-using Core.Shared;
 using KitchenClash.Presentation.Common;
-using Core.Session;
-using Gameplay.GameModes;
+using KitchenClash.Infrastructure.EOS;
+using KitchenClash.Application.Services;
 using UnityEngine;
 using VContainer;
 

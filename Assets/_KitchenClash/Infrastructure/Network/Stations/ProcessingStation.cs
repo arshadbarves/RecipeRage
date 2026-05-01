@@ -1,6 +1,6 @@
 using System;
-using Gameplay.Characters;
-using Gameplay.Cooking;
+using KitchenClash.Domain;
+using KitchenClash.Infrastructure.Network.Cooking;
 using Unity.Netcode;
 using UnityEngine;
 

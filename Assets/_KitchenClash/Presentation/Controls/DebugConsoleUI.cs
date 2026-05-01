@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
-using Core.Logging;
+using KitchenClash.Domain;
 using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;

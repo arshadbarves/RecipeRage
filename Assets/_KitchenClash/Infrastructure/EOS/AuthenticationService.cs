@@ -1,9 +1,8 @@
 using System;
 using System.Threading.Tasks;
-using Core.Logging;
-using Core.Persistence;
-using Core.Shared.Events;
-using Core.Networking;
+using KitchenClash.Domain;
+using KitchenClash.Infrastructure.Persistence;
+using KitchenClash.Infrastructure.Network;
 using Cysharp.Threading.Tasks;
 using Epic.OnlineServices;
 using Epic.OnlineServices.Connect;

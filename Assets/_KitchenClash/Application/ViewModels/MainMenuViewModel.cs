@@ -1,4 +1,4 @@
-using Core.Shared;
+using KitchenClash.Domain;
 using KitchenClash.Presentation.Common;
 using VContainer;
 

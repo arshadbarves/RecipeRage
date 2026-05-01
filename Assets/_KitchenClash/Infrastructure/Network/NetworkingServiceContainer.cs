@@ -1,12 +1,8 @@
 using System;
-using Core.Networking;
-using Core.Networking.Interfaces;
-using Core.Networking.Services;
-using Gameplay.App.State;
-using Gameplay.Shared;
-using Core.Auth;
-using Core.Logging;
-using Core.UI.Interfaces;
+using KitchenClash.Infrastructure.Network;
+using KitchenClash.Domain;
+using KitchenClash.Application.State;
+using KitchenClash.Infrastructure.EOS;
 using PlayEveryWare.EpicOnlineServices.Samples;
 using VContainer;
 using Cysharp.Threading.Tasks;

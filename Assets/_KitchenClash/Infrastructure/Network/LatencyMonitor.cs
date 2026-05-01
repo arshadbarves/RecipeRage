@@ -2,7 +2,7 @@ using Unity.Netcode;
 using UnityEngine;
 using Unity.Collections;
 using System;
-using Core.Logging;
+using KitchenClash.Domain;
 
 namespace KitchenClash.Infrastructure.Network
 {

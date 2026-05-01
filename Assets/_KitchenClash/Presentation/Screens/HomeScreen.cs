@@ -1,15 +1,14 @@
-using Gameplay.UI.Components.Tabs;
-using Gameplay.Persistence;
-using Gameplay.Economy;
+using KitchenClash.Presentation.Components;
+using KitchenClash.Infrastructure.Persistence;
+using KitchenClash.Application.Services;
 using UnityEngine.UIElements;
 using VContainer;
-using Core.UI;
-using Core.Shared.Events;
-using Core.UI.Core;
-using Core.UI.Interfaces;
-using Core.Session;
-using Gameplay.UI.Extensions;
-using Gameplay.UI.Localization;
+using KitchenClash.Presentation;
+using KitchenClash.Domain;
+using KitchenClash.Presentation.Common;
+using KitchenClash.Infrastructure.EOS;
+using KitchenClash.Presentation.Extensions;
+using KitchenClash.Infrastructure.Localization;
 
 namespace KitchenClash.Presentation.Screens
 {

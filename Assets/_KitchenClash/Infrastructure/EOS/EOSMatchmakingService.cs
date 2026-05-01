@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Core.Logging;
-using Core.Networking.Common;
-using Core.Networking.Interfaces;
-using Core.Networking.Models;
-using Core.RemoteConfig.Services;
+using KitchenClash.Domain;
+using KitchenClash.Infrastructure.Network;
+using KitchenClash.Infrastructure.Firebase;
 using Epic.OnlineServices;
 using Epic.OnlineServices.Lobby;
 using PlayEveryWare.EpicOnlineServices;

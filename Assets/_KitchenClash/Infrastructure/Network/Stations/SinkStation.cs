@@ -1,9 +1,6 @@
 using System;
-using Core.Logging;
-using Core.Shared.Events;
-using Gameplay.Characters;
-using Gameplay.Cooking;
-using Gameplay.Shared.Events;
+using KitchenClash.Domain;
+using KitchenClash.Infrastructure.Network.Cooking;
 using Unity.Netcode;
 using UnityEngine;
 using VContainer;

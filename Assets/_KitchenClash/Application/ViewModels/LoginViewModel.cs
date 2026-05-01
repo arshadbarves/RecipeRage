@@ -1,10 +1,9 @@
 using System;
 using VContainer;
 using Cysharp.Threading.Tasks;
-using Core.Auth;
-using Core.Localization;
-using Core.Logging;
-using Core.Shared;
+using KitchenClash.Infrastructure.EOS;
+using KitchenClash.Infrastructure.Localization;
+using KitchenClash.Domain;
 using KitchenClash.Presentation.Common;
 
 namespace KitchenClash.Application.ViewModels

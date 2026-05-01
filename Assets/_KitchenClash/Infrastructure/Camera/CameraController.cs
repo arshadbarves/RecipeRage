@@ -1,4 +1,4 @@
-using Core.Logging;
+using KitchenClash.Domain;
 using DG.Tweening;
 using Unity.Cinemachine;
 using UnityEngine;

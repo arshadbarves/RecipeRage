@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using KitchenClash.Presentation.Common;
 using KitchenClash.Presentation.Screens;
-using Gameplay.Characters;
-using Core.Logging;
+using KitchenClash.Domain;
 using UnityEngine.UIElements;
 using VContainer;
 

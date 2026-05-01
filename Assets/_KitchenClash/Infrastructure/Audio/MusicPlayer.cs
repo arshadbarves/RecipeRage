@@ -1,5 +1,5 @@
 using System.Collections;
-using Core.Shared.Utilities;
+using KitchenClash.Domain;
 using UnityEngine;
 
 namespace KitchenClash.Infrastructure.Audio

@@ -1,5 +1,5 @@
 using Unity.Netcode;
-using Core.Logging;
+using KitchenClash.Domain;
 
 namespace KitchenClash.Infrastructure.Network
 {

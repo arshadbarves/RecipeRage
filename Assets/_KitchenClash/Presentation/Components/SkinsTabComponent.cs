@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using Core.Logging;
-using Core.Session;
-using Gameplay.Skins;
-using Gameplay.Skins.Data;
+using KitchenClash.Domain;
+using KitchenClash.Infrastructure.EOS;
+using KitchenClash.Application.Services;
+using KitchenClash.Infrastructure.Persistence;
 using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;

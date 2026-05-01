@@ -1,22 +1,18 @@
 using System;
 using System.Linq;
-using Core.Input;
-using Gameplay.Camera;
+using KitchenClash.Infrastructure.Input;
+using KitchenClash.Infrastructure.Camera;
 using Unity.Netcode;
 using UnityEngine;
-using Core.Networking.Services;
-using Core.Networking.Interfaces;
-using Gameplay.Shared.Stats;
-using Core.Logging;
-using Core.Session;
-using Gameplay.Skins.Data;
+using KitchenClash.Infrastructure.Network;
+using KitchenClash.Domain;
+using KitchenClash.Infrastructure.EOS;
+using KitchenClash.Infrastructure.Persistence;
 using Unity.Collections;
 using VContainer;
 using VContainer.Unity;
 using Gameplay;
 
-using Gameplay.Shared.Events;
-using Core.Shared.Events;
 
 namespace KitchenClash.Infrastructure.Network
 {

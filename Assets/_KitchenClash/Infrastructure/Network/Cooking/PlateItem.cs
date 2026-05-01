@@ -1,6 +1,5 @@
 using System.Collections.Generic;
-using Core.Logging;
-using Gameplay.Shared;
+using KitchenClash.Domain;
 using Unity.Netcode;
 using UnityEngine;
 using VContainer;

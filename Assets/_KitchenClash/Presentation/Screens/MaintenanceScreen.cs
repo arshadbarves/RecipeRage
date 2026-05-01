@@ -1,13 +1,11 @@
 using System;
 using System.Globalization;
-using Core.UI;
+using KitchenClash.Presentation;
 using Cysharp.Threading.Tasks;
-using Core.Auth;
-using Core.Logging;
-using Core.RemoteConfig;
-using Core.Shared.Events;
-using Core.UI.Core;
-using Core.UI.Interfaces;
+using KitchenClash.Infrastructure.EOS;
+using KitchenClash.Domain;
+using KitchenClash.Infrastructure.Firebase;
+using KitchenClash.Presentation.Common;
 using UnityEngine.UIElements;
 using VContainer;
 

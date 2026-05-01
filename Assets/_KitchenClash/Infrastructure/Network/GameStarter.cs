@@ -1,18 +1,13 @@
 using System.Collections.Generic;
-using Gameplay.App.State.States;
-using Gameplay.Networking.Bot;
-using Gameplay.Shared;
-using Gameplay.Spawning;
+using KitchenClash.Application.State.States;
+using KitchenClash.Infrastructure.Network.Bot;
+using KitchenClash.Domain;
+using KitchenClash.Infrastructure.Network.Spawning;
 using Unity.Netcode;
 using UnityEngine;
-using Gameplay.App.State;
-using Core.Networking;
-using Core.Networking.Interfaces;
+using KitchenClash.Application.State;
+using KitchenClash.Infrastructure.Network;
 using Epic.OnlineServices;
-using Core.Logging;
-using Core.Networking.Models;
-using Core.Shared.Enums;
-using Core.UI.Interfaces;
 using PlayEveryWare.EpicOnlineServices;
 using PlayEveryWare.EpicOnlineServices.Samples.Network;
 

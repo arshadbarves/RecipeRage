@@ -1,4 +1,4 @@
-using Gameplay.Cooking;
+using KitchenClash.Infrastructure.Network.Cooking;
 using UnityEngine;
 
 namespace KitchenClash.Infrastructure.Network.Stations

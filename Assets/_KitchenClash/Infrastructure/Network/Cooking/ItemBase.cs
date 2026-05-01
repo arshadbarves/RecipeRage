@@ -1,5 +1,4 @@
-using Gameplay.Characters;
-using Core.Logging;
+using KitchenClash.Domain;
 using Unity.Netcode;
 using UnityEngine;
 

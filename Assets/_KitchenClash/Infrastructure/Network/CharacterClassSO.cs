@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Gameplay.Skins.Data;
+using KitchenClash.Infrastructure.Persistence;
 using UnityEngine;
 
 namespace KitchenClash.Infrastructure.Network

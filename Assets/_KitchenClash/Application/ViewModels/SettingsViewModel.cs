@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using Core.Auth;
-using Core.Persistence;
-using Core.Shared;
-using Core.Localization;
+using KitchenClash.Infrastructure.EOS;
+using KitchenClash.Infrastructure.Persistence;
+using KitchenClash.Domain;
+using KitchenClash.Infrastructure.Localization;
 using KitchenClash.Presentation.Common;
 using UnityEngine;
 using VContainer;

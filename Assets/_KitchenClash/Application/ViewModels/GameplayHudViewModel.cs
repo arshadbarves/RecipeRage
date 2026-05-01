@@ -1,17 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Core.Shared;
+using KitchenClash.Domain;
 using KitchenClash.Presentation.Common;
 using KitchenClash.Presentation.Controls;
-using Gameplay.Characters;
-using Gameplay.Cooking;
-using Gameplay.GameModes;
-using Gameplay.Scoring;
-using Gameplay.Shared;
+using KitchenClash.Infrastructure.Network.Cooking;
+using KitchenClash.Application.Services;
 using UnityEngine;
-using Gameplay.App.State;
-using Gameplay.App.State.States;
+using KitchenClash.Application.State;
+using KitchenClash.Application.State.States;
 
 namespace KitchenClash.Application.ViewModels
 {

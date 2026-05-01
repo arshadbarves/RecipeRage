@@ -1,7 +1,6 @@
 using System;
-using Core.Logging;
-using Core.Networking.Common;
-using Core.Networking.Interfaces;
+using KitchenClash.Domain;
+using KitchenClash.Infrastructure.Network;
 using Epic.OnlineServices;
 using Epic.OnlineServices.Lobby;
 using PlayEveryWare.EpicOnlineServices;

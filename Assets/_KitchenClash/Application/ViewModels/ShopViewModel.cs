@@ -1,8 +1,7 @@
-using Gameplay.UI.Data;
-using Gameplay.Economy;
-using Core.Shared;
 using KitchenClash.Presentation.Common;
-using Core.Session;
+using KitchenClash.Application.Services;
+using KitchenClash.Domain;
+using KitchenClash.Infrastructure.EOS;
 using VContainer;
 
 namespace KitchenClash.Application.ViewModels

@@ -1,4 +1,4 @@
-using Core.Shared.Enums;
+using KitchenClash.Domain;
 using UnityEngine;
 
 namespace KitchenClash.Infrastructure.Network.Spawning

@@ -1,6 +1,6 @@
-using Gameplay.Characters;
+using KitchenClash.Domain;
 using KitchenClash.Presentation.Common;
-using Core.Session;
+using KitchenClash.Infrastructure.EOS;
 using VContainer;
 
 namespace KitchenClash.Application.ViewModels

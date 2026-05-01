@@ -1,9 +1,8 @@
-using Core.UI;
+using KitchenClash.Presentation;
 using DG.Tweening;
-using Core.UI.Core;
-using Core.Animation;
-using Core.UI.Interfaces;
-using Core.Shared.Extensions;
+using KitchenClash.Presentation.Common;
+using KitchenClash.Infrastructure.Animation;
+using KitchenClash.Domain;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;

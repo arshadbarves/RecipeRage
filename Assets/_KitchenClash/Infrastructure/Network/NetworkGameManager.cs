@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Core.Logging;
-using Core.Networking.Interfaces;
+using KitchenClash.Domain;
 using Unity.Netcode;
 using UnityEngine;
 

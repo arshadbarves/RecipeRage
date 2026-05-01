@@ -1,10 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
-using Gameplay.Networking.Bot;
-using Gameplay.Shared;
-using Core.Logging;
-using Core.Networking.Models;
-using Core.Shared.Enums;
+using KitchenClash.Infrastructure.Network.Bot;
+using KitchenClash.Domain;
+using KitchenClash.Infrastructure.Network;
 using Unity.Netcode;
 using UnityEngine;
 using VContainer;

@@ -1,12 +1,11 @@
-using Core.UI;
+using KitchenClash.Presentation;
 using DG.Tweening;
-using Core.UI.Core;
-using Core.Animation;
+using KitchenClash.Presentation.Common;
+using KitchenClash.Infrastructure.Animation;
 using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;
-using Gameplay.UI.Localization;
-using Core.Localization;
+using KitchenClash.Infrastructure.Localization;
 
 namespace KitchenClash.Presentation.Screens
 {
