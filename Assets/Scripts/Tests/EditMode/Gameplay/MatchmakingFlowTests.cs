@@ -33,8 +33,8 @@ namespace RecipeRage.Tests.EditMode.Gameplay
 
             state.Enter();
 
-            // MatchmakingState uses default gameModeId="classic" and teamSize=2
-            Assert.AreEqual("classic", matchmakingService.LastGameModeId);
+            // MatchmakingState uses default gameModeId="quick_2v2" and teamSize=2
+            Assert.AreEqual("quick_2v2", matchmakingService.LastGameModeId);
             Assert.AreEqual(2, matchmakingService.LastTeamSize);
         }
 

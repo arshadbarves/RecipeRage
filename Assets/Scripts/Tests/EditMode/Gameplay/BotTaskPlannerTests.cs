@@ -7,18 +7,18 @@ namespace RecipeRage.Tests.EditMode.Gameplay
     public class BotTaskPlannerTests
     {
         [Test]
-        public void Plan_ReturnsIdleForEmptySnapshot()
+        public void Plan_ReturnsWanderForEmptySnapshot()
         {
             BotTaskPlanner planner = new();
             BotPlanningSnapshot snapshot = new();
 
             BotTaskPlan plan = planner.Plan(snapshot);
 
-            Assert.AreEqual(BotTaskType.Idle, plan.Type);
+            Assert.AreEqual(BotTaskType.Wander, plan.Type);
         }
 
         [Test]
-        public void Plan_ReturnsIdleWhenNoOrdersAvailable()
+        public void Plan_ReturnsWanderWhenNoOrdersAvailable()
         {
             BotTaskPlanner planner = new();
             BotPlanningSnapshot snapshot = new()
@@ -28,11 +28,11 @@ namespace RecipeRage.Tests.EditMode.Gameplay
 
             BotTaskPlan plan = planner.Plan(snapshot);
 
-            Assert.AreEqual(BotTaskType.Idle, plan.Type);
+            Assert.AreEqual(BotTaskType.Wander, plan.Type);
         }
 
         [Test]
-        public void Plan_ReturnsIdleWithExpiredOrders()
+        public void Plan_ReturnsWanderWithExpiredOrders()
         {
             BotTaskPlanner planner = new();
             BotPlanningSnapshot snapshot = new()
@@ -50,7 +50,7 @@ namespace RecipeRage.Tests.EditMode.Gameplay
 
             BotTaskPlan plan = planner.Plan(snapshot);
 
-            Assert.AreEqual(BotTaskType.Idle, plan.Type);
+            Assert.AreEqual(BotTaskType.Wander, plan.Type);
         }
 
         [Test]
