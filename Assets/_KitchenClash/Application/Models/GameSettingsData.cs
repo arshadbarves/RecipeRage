@@ -16,5 +16,6 @@ namespace KitchenClash.Application.Models
         public bool NotificationsEnabled = true;
         public string LanguageCode = "English";
         public string LastLoginMethod = "";
+        [Range(0.1f, 3f)] public float ControlsSensitivity = 1f;
     }
 }

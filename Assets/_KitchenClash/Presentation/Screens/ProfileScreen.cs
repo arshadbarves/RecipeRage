@@ -12,7 +12,7 @@ using VContainer;
 namespace KitchenClash.Presentation.Screens
 {
     /// <summary>
-    /// User profile view - shows player stats and friend code
+    /// User profile view - shows player stats, rank, and friend code
     /// </summary>
     [UIScreen(UIScreenCategory.Screen, "Screens/ProfileViewTemplate")]
     public class ProfileScreen : BaseUIScreen
@@ -22,6 +22,13 @@ namespace KitchenClash.Presentation.Screens
         private Label _playerNameLabel;
         private Label _playerLevelLabel;
         private Label _friendCodeLabel;
+        private Label _totalMatchesLabel;
+        private Label _winsLabel;
+        private Label _lossesLabel;
+        private Label _winRateLabel;
+        private Label _favoriteChefLabel;
+        private Label _xpLabel;
+        private Label _rankLabel;
         private Button _copyCodeButton;
         private Button _changeNameButton;
         private Button _backButton;
@@ -31,6 +38,13 @@ namespace KitchenClash.Presentation.Screens
             _playerNameLabel = GetElement<Label>("player-name");
             _playerLevelLabel = GetElement<Label>("player-level");
             _friendCodeLabel = GetElement<Label>("friend-code-value");
+            _totalMatchesLabel = GetElement<Label>("total-matches");
+            _winsLabel = GetElement<Label>("wins");
+            _lossesLabel = GetElement<Label>("losses");
+            _winRateLabel = GetElement<Label>("win-rate");
+            _favoriteChefLabel = GetElement<Label>("favorite-chef");
+            _xpLabel = GetElement<Label>("xp-progress");
+            _rankLabel = GetElement<Label>("rank-tier");
             _copyCodeButton = GetElement<Button>("copy-code-button");
             _changeNameButton = GetElement<Button>("change-name-button");
             _backButton = GetElement<Button>("back-button");
@@ -60,7 +74,31 @@ namespace KitchenClash.Presentation.Screens
                 _playerNameLabel.text = string.IsNullOrEmpty(stats?.PlayerName) ? "GUEST" : stats.PlayerName.ToUpper();
 
             if (_playerLevelLabel != null)
-                _playerLevelLabel.text = $"LEVEL {progress?.HighestLevel ?? 0}";
+                _playerLevelLabel.text = $"LEVEL {stats?.Level ?? 1}";
+
+            if (_xpLabel != null && stats != null)
+                _xpLabel.text = $"{stats.Experience} / {stats.ExperienceToNextLevel} XP";
+
+            if (_totalMatchesLabel != null && stats != null)
+                _totalMatchesLabel.text = $"{stats.GamesPlayed}";
+
+            if (_winsLabel != null && stats != null)
+                _winsLabel.text = $"{stats.GamesWon}";
+
+            if (_lossesLabel != null && stats != null)
+                _lossesLabel.text = $"{stats.GamesLost}";
+
+            if (_winRateLabel != null && stats != null)
+            {
+                float rate = stats.GamesPlayed > 0 ? (float)stats.GamesWon / stats.GamesPlayed * 100f : 0f;
+                _winRateLabel.text = $"{rate:F1}%";
+            }
+
+            if (_favoriteChefLabel != null && stats != null)
+                _favoriteChefLabel.text = string.IsNullOrEmpty(stats.FavoriteCharacter) ? "—" : stats.FavoriteCharacter;
+
+            if (_rankLabel != null)
+                _rankLabel.text = "Unranked"; // Ranked system not yet implemented
         }
 
         private void UpdateFriendCode()

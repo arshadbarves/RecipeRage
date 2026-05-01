@@ -25,6 +25,7 @@ namespace KitchenClash.Presentation.ViewModels
         public BindableProperty<bool> NotificationsEnabled { get; } = new BindableProperty<bool>(true);
         public BindableProperty<int> GraphicsQuality { get; } = new BindableProperty<int>(2);
         public BindableProperty<string> Language { get; } = new BindableProperty<string>("English");
+        public BindableProperty<float> ControlsSensitivity { get; } = new BindableProperty<float>(1f);
         public BindableProperty<bool> IsGuest { get; } = new BindableProperty<bool>(false);
 
         public IReadOnlyCollection<string> AvailableLanguages => _localizationManager.AvailableLanguages;
@@ -69,6 +70,7 @@ namespace KitchenClash.Presentation.ViewModels
                 NotificationsEnabled.Value = settings.NotificationsEnabled;
                 GraphicsQuality.Value = settings.GraphicsQuality;
                 Language.Value = settings.LanguageCode;
+                ControlsSensitivity.Value = settings.ControlsSensitivity;
 
                 AudioListener.pause = settings.IsMuted;
                 QualitySettings.SetQualityLevel(settings.GraphicsQuality);
@@ -91,6 +93,7 @@ namespace KitchenClash.Presentation.ViewModels
                 s.NotificationsEnabled = NotificationsEnabled.Value;
                 s.GraphicsQuality = GraphicsQuality.Value;
                 s.LanguageCode = Language.Value;
+                s.ControlsSensitivity = ControlsSensitivity.Value;
             });
 
             AudioListener.pause = IsMuted.Value;
@@ -118,6 +121,7 @@ namespace KitchenClash.Presentation.ViewModels
             NotificationsEnabled.Value = defaultSettings.NotificationsEnabled;
             GraphicsQuality.Value = defaultSettings.GraphicsQuality;
             Language.Value = defaultSettings.LanguageCode;
+            ControlsSensitivity.Value = defaultSettings.ControlsSensitivity;
 
             SaveSettings();
         }

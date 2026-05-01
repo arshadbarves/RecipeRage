@@ -25,6 +25,9 @@ public class MenuLifetimeScope : LifetimeScope
         // Character service (uses ChefRegistry singleton from root)
         builder.Register<CharacterService>(Lifetime.Scoped).As<ICharacterService>();
 
+        // Tutorial
+        builder.Register<TutorialService>(Lifetime.Scoped).As<ITutorialService>();
+
         // ViewModels
         builder.Register<DailyStreakViewModel>(Lifetime.Transient);
         builder.Register<MatchmakingViewModel>(Lifetime.Transient);
