@@ -2,6 +2,7 @@ using KitchenClash.Application;
 using KitchenClash.Application.Services;
 using KitchenClash.Domain;
 using KitchenClash.Infrastructure.DI;
+using KitchenClash.Infrastructure.Gameplay;
 using VContainer;
 using VContainer.Unity;
 
@@ -18,5 +19,8 @@ public class MenuLifetimeScope : LifetimeScope
         builder.Register<EconomyService>(Lifetime.Scoped).As<IEconomyService>();
         builder.Register<DailyStreakService>(Lifetime.Scoped).As<IDailyStreakService>();
         builder.Register<MapRotationCalculator>(Lifetime.Scoped);
+
+        // Character service (uses ChefRegistry singleton from root)
+        builder.Register<CharacterService>(Lifetime.Scoped).As<ICharacterService>();
     }
 }

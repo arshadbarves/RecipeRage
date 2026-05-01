@@ -385,19 +385,42 @@ namespace KitchenClash.Infrastructure.Network
                 return;
             }
 
-            CharacterClass = characterService.GetCharacter(_characterClassId);
-            if (CharacterClass == null)
+            // Apply GDD chef stats from the selected ChefDefinition
+            var selectedChef = characterService.SelectedChef;
+            if (selectedChef != null && _movementController != null)
             {
-                CharacterClass = characterService.SelectedCharacter;
-                _characterClassId = CharacterClass?.Id ?? 0;
+                var stats = selectedChef.Stats;
+                _movementController.MovementSpeed = _baseMovementSpeed * stats.MoveSpeed;
+                InteractionSpeed.BaseValue = stats.InteractRange;
+                CarryingCapacity.BaseValue = stats.CarryCapacity;
             }
 
-            if (CharacterClass != null && _movementController != null)
+            // Legacy SO-based character class (skins, ability prefab data)
+            CharacterClass = characterService.SelectedCharacter;
+            if (CharacterClass != null)
             {
-                _movementController.MovementSpeed = _baseMovementSpeed * CharacterClass.Stats.MovementSpeedModifier;
-                InteractionSpeed.BaseValue = CharacterClass.Stats.InteractionSpeedModifier;
-                CarryingCapacity.BaseValue = CharacterClass.Stats.CarryingCapacityModifier;
-                PrimaryAbility = CharacterAbility.CreateAbility(CharacterClass.PrimaryAbility.AbilityType, CharacterClass, this);
+                _characterClassId = CharacterClass.Id;
+            }
+            else
+            {
+                // Fallback: lookup SO by name match via Resources
+                var allClasses = Resources.LoadAll<CharacterClass>("ScriptableObjects/CharacterClasses");
+                foreach (var cc in allClasses)
+                {
+                    if (cc != null && cc.DisplayName == selectedChef?.DisplayName)
+                    {
+                        CharacterClass = cc;
+                        _characterClassId = cc.Id;
+                        break;
+                    }
+                }
+            }
+
+            if (CharacterClass != null)
+            {
+                PrimaryAbility = CharacterAbility.CreateAbility(
+                    CharacterClass.PrimaryAbility != null ? CharacterClass.PrimaryAbility.AbilityType : AbilityType.None,
+                    CharacterClass, this);
             }
 
             EnsureValidSkinForCharacter();

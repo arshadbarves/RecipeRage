@@ -30,6 +30,9 @@ public class RootLifetimeScope : LifetimeScope
         builder.Register<NetworkConnectivityService>(Lifetime.Singleton).As<IConnectivityService>().As<ITickable>();
         builder.Register<NTPTimeService>(Lifetime.Singleton).As<INTPTimeService>().As<IInitializable>();
 
+        // ── Chef registry (shared GDD data) ──
+        builder.Register<ChefRegistry>(Lifetime.Singleton);
+
         // ── UI ──
         builder.Register<UIService>(Lifetime.Singleton).As<IUIService>().As<IStartable>().As<ITickable>();
 

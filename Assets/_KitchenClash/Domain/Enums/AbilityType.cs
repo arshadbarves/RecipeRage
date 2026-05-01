@@ -32,7 +32,17 @@ namespace KitchenClash.Domain
         AllStationsInstant,
         DoubleSpeedBonus,
         PrePrepItems,
-        CookSpeedBuff
+        CookSpeedBuff,
+        FlavorBoost,
+        PerfectSlice,
+        KitchenWisdom,
+        IngredientSwap,
+        SpiceRush,
+        SlightSpeedBoost,
+        SlowerBurnRate,
+        FireResistance,
+        StealImmunity,
+        CarryTwo
     }
 
     public enum AbilityEffectType
