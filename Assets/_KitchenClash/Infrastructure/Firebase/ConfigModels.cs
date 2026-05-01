@@ -1,46 +1,10 @@
-using System;
-using KitchenClash.Domain;
+// Config models have moved to Application.Models.RemoteConfigs.
+// This file provides namespace aliases for backward compatibility within Infrastructure.
+using KitchenClash.Application.Models.RemoteConfigs;
 
 namespace KitchenClash.Infrastructure.Firebase
 {
-    /// <summary>
-    /// Stub config models for Firebase Remote Config deserialization.
-    /// TODO: Move to shared config location once schemas are finalized.
-    /// </summary>
-
-    [Serializable]
-    public class CharacterConfig : IConfigModel
-    {
-        public bool IsValid() => true;
-    }
-
-    [Serializable]
-    public class MapConfig : IConfigModel
-    {
-        public bool IsValid() => true;
-    }
-
-    [Serializable]
-    public class SkinsConfig : IConfigModel
-    {
-        public bool IsValid() => true;
-    }
-
-    [Serializable]
-    public class MaintenanceConfig : IConfigModel
-    {
-        public bool IsValid() => true;
-    }
-
-    [Serializable]
-    public class ForceUpdateConfig : IConfigModel
-    {
-        public bool IsValid() => true;
-    }
-
-    [Serializable]
-    public class ShopConfig : IConfigModel
-    {
-        public bool IsValid() => true;
-    }
+    // All config model classes (CharacterConfig, MapConfig, ShopConfig, etc.)
+    // are now defined in KitchenClash.Application.Models.RemoteConfigs.
+    // Infrastructure code should add: using KitchenClash.Application.Models.RemoteConfigs;
 }

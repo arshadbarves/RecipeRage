@@ -21,6 +21,7 @@ namespace KitchenClash.Infrastructure.States
         private readonly IMaintenanceService _maintenanceService;
         private readonly IGameStateManager _stateManager;
         private readonly Domain.IEventBus _eventBus;
+        private readonly ForceUpdateChecker _forceUpdateChecker;
 
         public BootstrapState(
             IUIService uiService,
@@ -40,6 +41,7 @@ namespace KitchenClash.Infrastructure.States
             _maintenanceService = maintenanceService;
             _stateManager = stateManager;
             _eventBus = eventBus;
+            _forceUpdateChecker = new ForceUpdateChecker(remoteConfigService, eventBus);
         }
 
         public override void Enter()
@@ -72,6 +74,7 @@ namespace KitchenClash.Infrastructure.States
 
         private async UniTask InitializeGameSequence()
         {
+            // 1. NTP time sync (best-effort, timeout 5s)
             try
             {
                 using var cts = new System.Threading.CancellationTokenSource();
@@ -81,28 +84,42 @@ namespace KitchenClash.Infrastructure.States
             catch { }
             if (!IsStateActive) return;
 
+            // 2. Initialize remote config
+            GameLogger.Log("[BootstrapState] Initializing remote config...");
             await _remoteConfigService.Initialize();
             if (!IsStateActive) return;
 
+            // 3. Fetch latest config values
             await _remoteConfigService.RefreshConfig();
             if (!IsStateActive) return;
 
-            var forceUpdateChecker = new ForceUpdateChecker(_remoteConfigService, _eventBus);
-            bool isUpdateRequired = await forceUpdateChecker.CheckForUpdateAsync();
+            // 4. Force update check
+            bool isUpdateRequired = await _forceUpdateChecker.CheckForUpdateAsync();
             if (!IsStateActive) return;
 
             if (isUpdateRequired)
             {
-                GameLogger.LogInfo("[Bootstrap] Force update required. Halting boot sequence.");
+                GameLogger.LogInfo("[BootstrapState] Force update required. Halting boot sequence.");
+                // ForceUpdateChecker already published ForceUpdateEvent
                 return;
             }
 
+            // 5. Maintenance check
             if (_maintenanceService != null)
             {
-                await _maintenanceService.CheckMaintenanceStatusAsync();
+                bool isInMaintenance = await _maintenanceService.CheckMaintenanceStatusAsync();
+                if (!IsStateActive) return;
+
+                if (isInMaintenance)
+                {
+                    GameLogger.LogInfo("[BootstrapState] Maintenance active. Transitioning to MaintenanceState.");
+                    _stateManager.ChangeState<MaintenanceState>();
+                    return;
+                }
             }
             if (!IsStateActive) return;
 
+            // 6. Auth check
             bool isAuthenticated = _authService.IsSignedIn;
 
             if (!isAuthenticated)

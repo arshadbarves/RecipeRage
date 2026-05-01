@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using KitchenClash.Domain;
+using KitchenClash.Application.Models.RemoteConfigs;
 
 namespace KitchenClash.Application.Services
 {
@@ -136,5 +137,27 @@ namespace KitchenClash.Application.Services
         }
 
         public int Count => _maps.Count;
+
+        /// <summary>
+        /// Applies remote config overrides to map hazard settings.
+        /// </summary>
+        public void ApplyRemoteConfig(MapConfig config)
+        {
+            if (config?.Overrides == null) return;
+
+            foreach (var ov in config.Overrides)
+            {
+                if (string.IsNullOrEmpty(ov.MapId)) continue;
+                if (!_maps.TryGetValue(ov.MapId, out var map)) continue;
+
+                if (ov.FireChanceMultiplier >= 0)
+                    map.Hazards.FireChanceMultiplier = ov.FireChanceMultiplier;
+
+                if (ov.HasSpecialHazards.HasValue)
+                    map.Hazards.HasSpecialHazards = ov.HasSpecialHazards.Value;
+
+                GameLogger.Log($"[MapRegistry] Applied remote overrides for {ov.MapId}");
+            }
+        }
     }
 }

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using KitchenClash.Domain;
+using KitchenClash.Application.Models.RemoteConfigs;
 
 namespace KitchenClash.Application.Services
 {
@@ -47,6 +48,37 @@ namespace KitchenClash.Application.Services
                     return economy != null && economy.HasItem($"chef_{chef.Id}");
                 default:
                     return false;
+            }
+        }
+
+        /// <summary>
+        /// Applies remote config overrides to chef stat blocks.
+        /// Call after remote config is fetched.
+        /// </summary>
+        public void ApplyRemoteConfig(CharacterConfig config)
+        {
+            if (config?.Overrides == null) return;
+
+            foreach (var ov in config.Overrides)
+            {
+                if (string.IsNullOrEmpty(ov.ChefId)) continue;
+                if (!System.Enum.TryParse<ChefId>(ov.ChefId, true, out var chefId)) continue;
+                if (!_chefs.TryGetValue(chefId, out var chef)) continue;
+
+                var stats = chef.Stats;
+                var newStats = new ChefStatBlock(
+                    ov.SpeedMultiplier >= 0 ? ov.SpeedMultiplier : stats.MoveSpeed,
+                    ov.CookingSpeedMultiplier >= 0 ? ov.CookingSpeedMultiplier : stats.CookSpeedMult,
+                    ov.FireResistance >= 0 ? ov.FireResistance : stats.BurnResistance,
+                    ov.CarryCapacity >= 0 ? ov.CarryCapacity : stats.CarryCapacity,
+                    ov.ScoreMultiplier >= 0 ? ov.ScoreMultiplier : stats.InteractRange
+                );
+
+                _chefs[chefId] = new ChefDefinition(
+                    chef.Id, chef.DisplayName, chef.Description, newStats,
+                    chef.Unlock, chef.PassiveAbility, chef.ActiveAbility);
+
+                GameLogger.Log($"[ChefRegistry] Applied remote overrides for {chefId}");
             }
         }
 

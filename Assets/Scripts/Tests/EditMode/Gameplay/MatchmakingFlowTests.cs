@@ -87,6 +87,7 @@ namespace RecipeRage.Tests.EditMode.Gameplay
 
             public bool IsInMaintenance => _isInMaintenance;
             public string MaintenanceMessage => "";
+            public DateTime? EstimatedEndTime => null;
             public Task<bool> CheckMaintenanceStatusAsync() => Task.FromResult(_isInMaintenance);
         }
 

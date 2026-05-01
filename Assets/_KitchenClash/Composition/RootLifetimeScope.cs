@@ -67,8 +67,13 @@ public class RootLifetimeScope : LifetimeScope
         builder.Register<PlayerDataService>(Lifetime.Singleton).As<IPlayerDataService>();
         builder.Register<LocalSaveService>(Lifetime.Singleton).As<ISaveService>();
 
-        // ── Remote Config (fallback until cloud provider is wired) ──
-        builder.Register<FallbackRemoteConfigService>(Lifetime.Singleton).As<IRemoteConfigService>();
+        // ── Remote Config (composite: Firebase-first with fallback) ──
+#if FIREBASE_REMOTE_CONFIG
+        builder.Register<KitchenClash.Infrastructure.Firebase.FirebaseConfigProvider>(Lifetime.Singleton).As<IConfigProvider>();
+        builder.Register<CompositeRemoteConfigService>(Lifetime.Singleton).As<IRemoteConfigService>();
+#else
+        builder.Register<CompositeRemoteConfigService>(Lifetime.Singleton).As<IRemoteConfigService>();
+#endif
 
         // ── Maintenance ──
         builder.Register<MaintenanceService>(Lifetime.Singleton).As<IMaintenanceService>();
@@ -94,6 +99,7 @@ public class RootLifetimeScope : LifetimeScope
         builder.Register<KitchenClash.Infrastructure.States.LoginState>(Lifetime.Transient);
         builder.Register<KitchenClash.Infrastructure.States.MainMenuState>(Lifetime.Transient);
         builder.Register<KitchenClash.Infrastructure.States.SessionLoadingState>(Lifetime.Transient);
+        builder.Register<KitchenClash.Infrastructure.States.MaintenanceState>(Lifetime.Transient);
         builder.Register<KitchenClash.Infrastructure.States.MatchmakingState>(Lifetime.Transient);
         builder.Register<KitchenClash.Infrastructure.States.GameplayState>(Lifetime.Transient);
         builder.Register<KitchenClash.Infrastructure.States.GameOverState>(Lifetime.Transient);

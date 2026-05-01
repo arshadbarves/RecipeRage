@@ -1,5 +1,6 @@
 #if FIREBASE_REMOTE_CONFIG
 using System;
+using KitchenClash.Application.Models.RemoteConfigs;
 using KitchenClash.Application.Services;
 using System.Collections.Generic;
 using KitchenClash.Domain;
