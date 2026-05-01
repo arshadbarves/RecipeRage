@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using KitchenClash.Domain;
 
 namespace KitchenClash.Application.Services
@@ -9,16 +7,27 @@ namespace KitchenClash.Application.Services
     {
         private readonly IRemoteConfigService _configService;
         private readonly INTPTimeService _ntpTimeService;
+        private readonly MapRegistry _mapRegistry;
 
-        public MapRotationCalculator(IRemoteConfigService configService, INTPTimeService ntpTimeService)
+        public MapRotationCalculator(IRemoteConfigService configService, INTPTimeService ntpTimeService, MapRegistry mapRegistry)
         {
             _configService = configService;
             _ntpTimeService = ntpTimeService;
+            _mapRegistry = mapRegistry;
         }
 
         public TimeSpan GetTimeUntilRotationChange()
         {
             return TimeSpan.Zero;
+        }
+
+        /// <summary>
+        /// Returns the full MapDefinition for the current map of the given queue.
+        /// </summary>
+        public MapDefinition GetCurrentMapDefinition(string queueId)
+        {
+            string mapId = GetCurrentMap(queueId);
+            return _mapRegistry.Get(mapId);
         }
 
         public string GetCurrentMap(string queueId)

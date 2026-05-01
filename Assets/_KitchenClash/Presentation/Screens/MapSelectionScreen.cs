@@ -25,6 +25,9 @@ namespace KitchenClash.Presentation.Screens
         [Inject]
         private IRemoteConfigService _remoteConfigService;
 
+        [Inject]
+        private MapRegistry _mapRegistry;
+
         private Action<GameMode> _onGameModeSelected;
 
         // UI Elements
@@ -242,17 +245,27 @@ namespace KitchenClash.Presentation.Screens
                 mapSubtitle.text = $"{mode.TeamCount} Teams";
             }
 
+            // Enrich description from MapRegistry if available
+            var mapDef = _mapRegistry?.Get(mode.Id);
+
             Label mapDescription = cardContainer.Q<Label>("map-description");
             if (mapDescription != null)
             {
-                if (!string.IsNullOrEmpty(mode.Description))
+                string desc = mapDef?.Description ?? mode.Description;
+                if (!string.IsNullOrEmpty(desc))
                 {
-                    mapDescription.text = mode.Description;
+                    mapDescription.text = desc;
                 }
                 else
                 {
                     mapDescription.AddToClassList("hidden");
                 }
+            }
+
+            Label mapStations = cardContainer.Q<Label>("map-stations");
+            if (mapStations != null && mapDef != null)
+            {
+                mapStations.text = $"🍳 {mapDef.StationCount} Stations";
             }
 
             Label mapPlayers = cardContainer.Q<Label>("map-players");

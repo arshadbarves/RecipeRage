@@ -14,7 +14,7 @@ namespace RecipeRage.Tests.EditMode.Gameplay
         private MatchService CreateService(DictionaryConfigService config = null)
         {
             config ??= new DictionaryConfigService();
-            var mapRotation = new MapRotationCalculator(new StubRemoteConfigService(), new StubNTPTimeService());
+            var mapRotation = new MapRotationCalculator(new StubRemoteConfigService(), new StubNTPTimeService(), new MapRegistry());
             return new MatchService(config, mapRotation);
         }
 
