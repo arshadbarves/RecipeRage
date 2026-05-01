@@ -30,6 +30,16 @@ namespace KitchenClash.Presentation.ViewModels
         public BindableProperty<string> GameModeText { get; } = new BindableProperty<string>("FREE FOR ALL");
         public BindableProperty<string> MapNameText { get; } = new BindableProperty<string>("Loading...");
 
+        /// <summary>
+        /// Display name of the current queue (e.g. "Quick Match 2v2", "Ranked").
+        /// </summary>
+        public string QueueName { get; private set; } = "";
+
+        /// <summary>
+        /// Elapsed seconds since matchmaking search started.
+        /// </summary>
+        public float TimeWaiting => _rawSearchTime;
+
         private IMatchmakingService MatchmakingService => _sessionContext.MatchmakingService;
 
         [Inject]
@@ -63,6 +73,7 @@ namespace KitchenClash.Presentation.ViewModels
             {
                 MapNameText.Value = gameModeService.SelectedGameMode.DisplayName;
                 GameModeText.Value = gameModeService.SelectedGameMode.Subtitle.ToUpper();
+                QueueName = gameModeService.SelectedGameMode.DisplayName;
             }
         }
 
@@ -141,7 +152,7 @@ namespace KitchenClash.Presentation.ViewModels
                 Debug.LogError("ViewModel: MatchmakingService is null!");
                 return;
             }
-            
+
             service.CancelMatchmaking();
         }
 

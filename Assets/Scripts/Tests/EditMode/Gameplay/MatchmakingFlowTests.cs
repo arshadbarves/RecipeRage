@@ -27,7 +27,8 @@ namespace RecipeRage.Tests.EditMode.Gameplay
                 new FakeSessionContext(matchmakingService, new FakeGameModeService()),
                 new FakeGameStateManager(),
                 new FakeMaintenanceService(false),
-                matchmakingService);
+                matchmakingService,
+                new FakeConfigService());
 
             state.Enter();
 
@@ -45,7 +46,8 @@ namespace RecipeRage.Tests.EditMode.Gameplay
                 new FakeSessionContext(matchmakingService, new FakeGameModeService()),
                 new FakeGameStateManager(),
                 new FakeMaintenanceService(false),
-                matchmakingService);
+                matchmakingService,
+                new FakeConfigService());
 
             state.Enter();
             Assert.IsTrue(matchmakingService.IsSearching);
@@ -214,6 +216,12 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             public UniTask ShowNotification(string message, NotificationType type = NotificationType.Info, float duration = 3f) => UniTask.CompletedTask;
             public UniTask ShowNotification(string title, string message, NotificationType type = NotificationType.Info, float duration = 3f) => UniTask.CompletedTask;
             public void Update(float deltaTime) { }
+        }
+
+        private sealed class FakeConfigService : IConfigService
+        {
+            public T Get<T>(string key, T fallback) => fallback;
+            public Task FetchAsync() => Task.CompletedTask;
         }
     }
 }

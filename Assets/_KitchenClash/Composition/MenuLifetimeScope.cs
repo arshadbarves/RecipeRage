@@ -27,5 +27,6 @@ public class MenuLifetimeScope : LifetimeScope
 
         // ViewModels
         builder.Register<DailyStreakViewModel>(Lifetime.Transient);
+        builder.Register<MatchmakingViewModel>(Lifetime.Transient);
     }
 }

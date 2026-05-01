@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using KitchenClash.Application.Services;
@@ -28,21 +29,62 @@ namespace KitchenClash.Application
 
         public string GetCurrentMap(string queueId) => _mapRotation.GetCurrentMap(queueId);
 
+        public bool CanJoinQueue(string queueId, int playerLevel)
+        {
+            if (!TryGetQueue(queueId, out var queue))
+                return false;
+
+            if (!queue.IsEnabled)
+                return false;
+
+            if (playerLevel < queue.MinLevelRequired)
+                return false;
+
+            if (!queue.IsEventActive())
+                return false;
+
+            return true;
+        }
+
         private void BuildQueues()
         {
-            int matchDuration = _cfg.Get("match_duration_sec", 180);
+            string currentSeasonId = _cfg.Get("ranked_season_id", "season_1");
 
             _queues = new List<MatchQueueDefinition>
             {
-                new("quick_2v2", "quick_2v2", "Quick Match 2v2", 2, 2, matchDuration, 0,
+                // quick_2v2: 2v2, 4 players, 120s match
+                new("quick_2v2", "quick_2v2", "Quick Match 2v2", 2, 2, 120, 0,
                     GameModeCategory.Trophies, "sushi_shuffle", false, true),
-                new("quick_3v3", "quick_3v3", "Quick Match 3v3", 2, 3, matchDuration, 0,
+
+                // quick_3v3: 3v3, 6 players, 180s match
+                new("quick_3v3", "quick_3v3", "Quick Match 3v3", 2, 3, 180, 0,
                     GameModeCategory.Trophies, "pirate_pot", false, true),
-                new("ranked", "ranked", "Ranked", 2, 2, _cfg.Get("ranked_duration_sec", 300), 0,
-                    GameModeCategory.Ranked, "burger_boulevard", true, _cfg.Get("enableRankedMode", true)),
-                new("event", "event", "Event Mode", 2, 2, matchDuration, 0,
-                    GameModeCategory.Trophies, "haunted_kitchen", false, _cfg.Get("enableEventMode", false)),
+
+                // ranked: 2v2, 4 players, 180s match, requires level 5+
+                new("ranked", "ranked", "Ranked", 2, 2, 180, 0,
+                    GameModeCategory.Ranked, "burger_boulevard", true,
+                    _cfg.Get("enableRankedMode", true),
+                    minLevelRequired: 5,
+                    seasonId: currentSeasonId),
+
+                // event: 2v2, 4 players, 180s, special rules
+                new("event", "event", "Event Mode", 2, 2, 180, 0,
+                    GameModeCategory.Special, "haunted_kitchen", false,
+                    _cfg.Get("enableEventMode", false),
+                    eventId: _cfg.Get("event_id", (string)null),
+                    eventStartUtc: ParseUtcDate(_cfg.Get("event_start_utc", (string)null)),
+                    eventEndUtc: ParseUtcDate(_cfg.Get("event_end_utc", (string)null)),
+                    eventDescription: _cfg.Get("event_description", "Special Event")),
             };
+        }
+
+        private static DateTime? ParseUtcDate(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+                return null;
+
+            return DateTime.TryParse(value, null, System.Globalization.DateTimeStyles.RoundtripKind,
+                out var dt) ? dt : null;
         }
     }
 }
