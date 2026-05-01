@@ -1,6 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using KitchenClash.Application;
+using KitchenClash.Application.Services;
 using KitchenClash.Domain;
 using NUnit.Framework;
 
@@ -8,14 +11,21 @@ namespace RecipeRage.Tests.EditMode.Gameplay
 {
     public class MatchServiceTests
     {
+        private MatchService CreateService(DictionaryConfigService config = null)
+        {
+            config ??= new DictionaryConfigService();
+            var mapRotation = new MapRotationCalculator(new StubRemoteConfigService(), new StubNTPTimeService());
+            return new MatchService(config, mapRotation);
+        }
+
         [Test]
         public void GetQueues_ReturnsKitchenClashLaunchQueuesByDefault()
         {
-            MatchService service = new(new DictionaryConfigService());
+            MatchService service = CreateService();
 
             IReadOnlyList<MatchQueueDefinition> queues = service.GetQueues();
 
-            Assert.AreEqual(3, queues.Count);
+            Assert.AreEqual(4, queues.Count);
             Assert.AreEqual("quick_2v2", queues[0].ModeId);
             Assert.AreEqual("quick_3v3", queues[1].ModeId);
             Assert.AreEqual("ranked", queues[2].ModeId);
@@ -24,9 +34,7 @@ namespace RecipeRage.Tests.EditMode.Gameplay
         [Test]
         public void TryGetQueue_FindsExistingQueue()
         {
-            DictionaryConfigService config = new();
-
-            MatchService service = new(config);
+            MatchService service = CreateService();
 
             Assert.IsTrue(service.TryGetQueue("quick_2v2", out MatchQueueDefinition queue));
             Assert.AreEqual("quick_2v2", queue.ModeId);
@@ -35,7 +43,7 @@ namespace RecipeRage.Tests.EditMode.Gameplay
         [Test]
         public void TryGetQueue_ReturnsFalseForUnknownQueue()
         {
-            MatchService service = new(new DictionaryConfigService());
+            MatchService service = CreateService();
 
             Assert.IsFalse(service.TryGetQueue("nonexistent", out _));
         }
@@ -53,13 +61,36 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             {
                 if (_values.TryGetValue(key, out object value))
                 {
-                    try { return (T)System.Convert.ChangeType(value, typeof(T)); }
+                    try { return (T)Convert.ChangeType(value, typeof(T)); }
                     catch { return fallback; }
                 }
                 return fallback;
             }
 
             public Task FetchAsync() => Task.CompletedTask;
+        }
+
+        private sealed class StubRemoteConfigService : IRemoteConfigService
+        {
+            public ConfigHealthStatus HealthStatus => ConfigHealthStatus.Healthy;
+            public DateTime LastUpdateTime => DateTime.UtcNow;
+            public event Action<IConfigModel> OnConfigUpdated;
+            public event Action<Type, IConfigModel> OnSpecificConfigUpdated;
+            public event Action<ConfigHealthStatus> OnHealthStatusChanged;
+            public UniTask<bool> Initialize() => UniTask.FromResult(true);
+            public T GetConfig<T>() where T : class, IConfigModel => default;
+            public bool TryGetConfig<T>(out T config) where T : class, IConfigModel { config = default; return false; }
+            public UniTask<bool> RefreshConfig() => UniTask.FromResult(true);
+            public UniTask<bool> RefreshConfig<T>() where T : class, IConfigModel => UniTask.FromResult(true);
+        }
+
+        private sealed class StubNTPTimeService : INTPTimeService
+        {
+            public bool IsSynced => true;
+            public DateTime LastSyncTime => DateTime.UtcNow;
+            public UniTask<bool> SyncTime() => UniTask.FromResult(true);
+            public DateTime GetServerTime() => DateTime.UtcNow;
+            public TimeSpan GetTimeOffset() => TimeSpan.Zero;
         }
     }
 }

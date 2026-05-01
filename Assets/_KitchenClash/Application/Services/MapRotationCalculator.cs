@@ -20,5 +20,18 @@ namespace KitchenClash.Application.Services
         {
             return TimeSpan.Zero;
         }
+
+        public string GetCurrentMap(string queueId)
+        {
+            // Default scene per queue; rotation logic can be expanded later
+            return queueId switch
+            {
+                "quick_2v2" => "sushi_shuffle",
+                "quick_3v3" => "pirate_pot",
+                "ranked" => "burger_boulevard",
+                "event" => "haunted_kitchen",
+                _ => "sushi_shuffle"
+            };
+        }
     }
 }

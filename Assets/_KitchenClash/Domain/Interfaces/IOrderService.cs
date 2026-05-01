@@ -7,7 +7,7 @@ namespace KitchenClash.Domain
     {
         IReadOnlyList<OrderModel> ActiveOrders { get; }
         OrderModel GenerateOrder(float matchTimeRemaining);
-        bool TryCompleteOrder(Guid orderId, float timeLeft, int combo, out int score);
+        CompleteResult CompleteOrder(Guid orderId, float timeLeft, int combo);
         void ExpireOrder(Guid orderId);
         bool TryGetBestActiveOrder<T>(IReadOnlyList<T> orders, Func<T, bool> predicate, out T bestOrder);
         float GetRemainingTime(RecipeOrderState order, float currentTime);

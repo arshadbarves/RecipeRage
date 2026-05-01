@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using KitchenClash.Domain;
 
 namespace KitchenClash.Application
@@ -15,7 +14,12 @@ namespace KitchenClash.Application
         public int TeamBScore => _b;
         public event Action<ScoreChangedEvent> OnScoreChanged;
 
-        public IReadOnlyList<int> GetAllScores() => new[] { _a, _b };
+        public int CalculateEndOfMatchBonus(TeamId team)
+        {
+            float pct = _cfg.Get("score_plate_pct", 0.10f);
+            int total = team == TeamId.TeamA ? TeamAScore : TeamBScore;
+            return (int)(total * pct);
+        }
 
         public void AddScore(TeamId team, ScoreEvent e)
         {

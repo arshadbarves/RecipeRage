@@ -6,7 +6,7 @@ using KitchenClash.Domain;
 
 namespace KitchenClash.Application
 {
-    public sealed class DailyStreakService
+    public sealed class DailyStreakService : IDailyStreakService
     {
         private readonly IConfigService _cfg;
         private readonly IPlayerDataService _playerData;

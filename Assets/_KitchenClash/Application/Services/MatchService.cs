@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using KitchenClash.Application.Services;
 using KitchenClash.Domain;
 
 namespace KitchenClash.Application
@@ -7,11 +8,13 @@ namespace KitchenClash.Application
     public sealed class MatchService : IMatchService
     {
         private readonly IConfigService _cfg;
+        private readonly MapRotationCalculator _mapRotation;
         private List<MatchQueueDefinition> _queues;
 
-        public MatchService(IConfigService cfg)
+        public MatchService(IConfigService cfg, MapRotationCalculator mapRotation)
         {
             _cfg = cfg;
+            _mapRotation = mapRotation;
             BuildQueues();
         }
 
@@ -22,6 +25,8 @@ namespace KitchenClash.Application
             queue = _queues.FirstOrDefault(q => q.ModeId == modeId);
             return queue != null;
         }
+
+        public string GetCurrentMap(string queueId) => _mapRotation.GetCurrentMap(queueId);
 
         private void BuildQueues()
         {
@@ -35,6 +40,8 @@ namespace KitchenClash.Application
                     GameModeCategory.Trophies, "pirate_pot", false, true),
                 new("ranked", "ranked", "Ranked", 2, 2, _cfg.Get("ranked_duration_sec", 300), 0,
                     GameModeCategory.Ranked, "burger_boulevard", true, _cfg.Get("enableRankedMode", true)),
+                new("event", "event", "Event Mode", 2, 2, matchDuration, 0,
+                    GameModeCategory.Trophies, "haunted_kitchen", false, _cfg.Get("enableEventMode", false)),
             };
         }
     }

@@ -4,13 +4,6 @@ using UnityEngine;
 
 namespace KitchenClash.Infrastructure.Network
 {
-    public enum MatchEndReason : byte
-    {
-        None = 0,
-        TimerExpired = 1,
-        ScoreLimitReached = 2
-    }
-
     public struct MatchResultState : INetworkSerializable, System.IEquatable<MatchResultState>
     {
         public static MatchResultState None => new()

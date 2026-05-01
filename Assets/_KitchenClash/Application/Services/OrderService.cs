@@ -32,19 +32,27 @@ namespace KitchenClash.Application
             return order;
         }
 
-        public bool TryCompleteOrder(Guid orderId, float timeLeft, int combo, out int score)
+        public CompleteResult CompleteOrder(Guid orderId, float timeLeft, int combo)
         {
-            score = 0;
             var order = _activeOrders.FirstOrDefault(o => o.Id == orderId);
-            if (order == null || order.IsCompleted || order.IsExpired) return false;
+            if (order == null || order.IsCompleted || order.IsExpired)
+                return new CompleteResult { Success = false, OrderId = orderId };
 
             order.IsCompleted = true;
             _activeOrders.Remove(order);
 
             float speedRatio = Math.Clamp(timeLeft / order.TimeLimit, 0f, 1f);
-            score = CalculateScore(order.Tier, speedRatio, combo);
+
+            var result = new CompleteResult
+            {
+                Success = true,
+                OrderId = orderId,
+                TimeBonus = speedRatio,
+                ComboMultiplier = combo
+            };
+
             OnOrderCompleted?.Invoke(order);
-            return true;
+            return result;
         }
 
         public void ExpireOrder(Guid orderId)
@@ -75,21 +83,6 @@ namespace KitchenClash.Application
         {
             float elapsed = currentTime - order.CreationTime;
             return Math.Max(0f, order.TimeLimit - elapsed);
-        }
-
-        private int CalculateScore(int tier, float speedRatio, int combo)
-        {
-            float mult = tier == 3
-                ? _cfg.Get(ScoringConfig.ScoreTier3Mult, ScoringConfig.DefaultScoreTier3Mult)
-                : tier == 2
-                    ? _cfg.Get(ScoringConfig.ScoreTier2Mult, ScoringConfig.DefaultScoreTier2Mult)
-                    : 1.0f;
-
-            int baseScore = (int)(_cfg.Get(ScoringConfig.ScoreBase, ScoringConfig.DefaultScoreBase) * mult);
-            int speed = (int)(speedRatio * _cfg.Get(ScoringConfig.ScoreSpeedMax, ScoringConfig.DefaultScoreSpeedMax));
-            int comboBonus = combo >= 3 ? _cfg.Get(ScoringConfig.ScoreCombo, ScoringConfig.DefaultScoreCombo) : 0;
-
-            return baseScore + speed + comboBonus;
         }
     }
 }

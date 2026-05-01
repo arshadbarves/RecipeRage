@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 namespace KitchenClash.Domain
 {
@@ -8,7 +7,7 @@ namespace KitchenClash.Domain
         int TeamAScore { get; }
         int TeamBScore { get; }
         void AddScore(TeamId team, ScoreEvent evt);
-        IReadOnlyList<int> GetAllScores();
+        int CalculateEndOfMatchBonus(TeamId team);
         event Action<ScoreChangedEvent> OnScoreChanged;
     }
 }

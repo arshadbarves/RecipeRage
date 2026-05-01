@@ -4,7 +4,7 @@ using KitchenClash.Domain;
 
 namespace KitchenClash.Application
 {
-    public sealed class EconomyService
+    public sealed class EconomyService : IEconomyService
     {
         private readonly IEventBus _eventBus;
         private int _coins;
