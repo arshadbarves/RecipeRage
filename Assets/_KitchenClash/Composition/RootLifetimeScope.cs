@@ -4,15 +4,22 @@ using KitchenClash.Application.State;
 using KitchenClash.Composition;
 using KitchenClash.Domain;
 using KitchenClash.Infrastructure.DI;
+using KitchenClash.Infrastructure.EOS;
+using KitchenClash.Infrastructure.Localization;
 using KitchenClash.Infrastructure.Logging;
 using KitchenClash.Infrastructure.Network;
 using KitchenClash.Infrastructure.Persistence;
+using KitchenClash.Infrastructure.Services;
 using KitchenClash.Presentation.Common;
+using KitchenClash.Presentation.ViewModels;
+using UnityEngine;
 using VContainer;
 using VContainer.Unity;
 
 public class RootLifetimeScope : LifetimeScope
 {
+    [SerializeField] private UGSConfig _ugsConfig;
+
     protected override void Configure(IContainerBuilder builder)
     {
         // ── Core singletons ──
@@ -26,23 +33,38 @@ public class RootLifetimeScope : LifetimeScope
         // ── UI ──
         builder.Register<UIService>(Lifetime.Singleton).As<IUIService>().As<IStartable>().As<ITickable>();
 
+        // ── Localization ──
+        builder.Register<LocalizationManager>(Lifetime.Singleton).As<ILocalizationManager>().As<IInitializable>();
+
         // ── State machine ──
         builder.Register<GameStateFactory>(Lifetime.Singleton).As<IStateFactory>();
         builder.Register<GameStateManager>(Lifetime.Singleton).As<IGameStateManager>().As<ITickable>();
 
         // ── Persistence ──
         builder.Register<PlayerDataService>(Lifetime.Singleton).As<IPlayerDataService>();
-        // SaveService requires StorageProviderFactory – register when persistence layer is ready
-        // builder.Register<SaveService>(Lifetime.Singleton).As<ISaveService>();
+        builder.Register<LocalSaveService>(Lifetime.Singleton).As<ISaveService>();
 
-        // ── Remote Config (Phase 3 – requires IConfigProvider / Firebase) ──
-        // builder.Register<RemoteConfigService>(Lifetime.Singleton).As<IRemoteConfigService>().As<IStartable>();
+        // ── Remote Config (fallback until cloud provider is wired) ──
+        builder.Register<FallbackRemoteConfigService>(Lifetime.Singleton).As<IRemoteConfigService>();
 
-        // ── Maintenance (Phase 3 – requires IRemoteConfigService) ──
-        // builder.Register<MaintenanceService>(Lifetime.Singleton).As<IMaintenanceService>();
+        // ── Maintenance ──
+        builder.Register<MaintenanceService>(Lifetime.Singleton).As<IMaintenanceService>();
 
-        // ── Auth (Phase 3 – requires EOS/UGS) ──
-        // builder.Register<AuthenticationService>(Lifetime.Singleton).As<IAuthService>();
+        // ── Auth ──
+        // UGSConfig ScriptableObject – use serialized field if assigned, otherwise create default
+        if (_ugsConfig != null)
+        {
+            builder.RegisterInstance(_ugsConfig);
+        }
+        else
+        {
+            builder.RegisterInstance(ScriptableObject.CreateInstance<UGSConfig>());
+        }
+
+        builder.Register<AuthenticationService>(Lifetime.Singleton).As<IAuthService>();
+
+        // ── ViewModels (transient, injected into screens) ──
+        builder.Register<LoginViewModel>(Lifetime.Transient);
 
         // ── Game states (transient, resolved by IStateFactory) ──
         builder.Register<KitchenClash.Infrastructure.States.BootstrapState>(Lifetime.Transient);

@@ -8,10 +8,13 @@ using Epic.OnlineServices.Connect;
 namespace KitchenClash.Infrastructure.EOS
 {
     /// <summary>
+    /// DEPRECATED: Use AuthenticationService (IAuthService) instead.
+    /// Kept temporarily for reference on social login stubs.
     /// GDD Section 3: Auth via EOS Connect. No Firebase Auth.
     /// Google/Facebook/Apple tokens link directly to EOS Connect.
     /// Guest = EOS Device ID.
     /// </summary>
+    [System.Obsolete("Use AuthenticationService which implements IAuthService. Social login stubs from this class should be migrated as AuthType cases.")]
     public sealed class EOSAuthService
     {
         private string _productUserId;
