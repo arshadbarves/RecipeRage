@@ -1,5 +1,5 @@
 using System.Threading;
-using KitchenClash.Infrastructure.Logging;
+using KitchenClash.Domain;
 
 namespace KitchenClash.Application.State
 {

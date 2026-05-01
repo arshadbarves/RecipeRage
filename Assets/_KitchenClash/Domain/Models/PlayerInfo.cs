@@ -11,6 +11,10 @@ namespace KitchenClash.Domain
         public TeamId Team { get; set; } = TeamId.TeamA;
         public bool IsReady { get; set; }
         public bool IsBot { get; set; }
+        /// <summary>Character class index. Cast to CharacterClass in Infrastructure.</summary>
+        public int CharacterClassId { get; set; }
+        /// <summary>EOS ProductUserId as string.</summary>
+        public string ProductUserId { get; set; }
         public Dictionary<string, string> CustomData { get; set; } = new();
     }
 }

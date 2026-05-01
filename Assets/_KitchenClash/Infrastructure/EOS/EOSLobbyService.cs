@@ -1,3 +1,5 @@
+using KitchenClash.Application.Models;
+using KitchenClash.Application;
 using System;
 using KitchenClash.Domain;
 using KitchenClash.Infrastructure.Network;
@@ -38,8 +40,8 @@ namespace KitchenClash.Infrastructure.EOS
         public LobbyState CurrentState { get; private set; } = LobbyState.Idle;
         public bool IsInParty => CurrentPartyLobby != null;
         public bool IsInMatchLobby => CurrentMatchLobby != null;
-        public bool IsPartyLeader => CurrentPartyLobby?.IsPartyLeader(EOSManager.Instance.GetProductUserId()) ?? false;
-        public bool IsMatchLobbyOwner => CurrentMatchLobby?.IsOwner(EOSManager.Instance.GetProductUserId()) ?? false;
+        public bool IsPartyLeader => CurrentPartyLobby?.IsPartyLeader(EOSManager.Instance.GetProductUserId()?.ToString()) ?? false;
+        public bool IsMatchLobbyOwner => CurrentMatchLobby?.IsOwner(EOSManager.Instance.GetProductUserId()?.ToString()) ?? false;
 
         #endregion
 
@@ -137,7 +139,7 @@ namespace KitchenClash.Infrastructure.EOS
         /// <summary>
         /// Invite a friend to the party
         /// </summary>
-        public void InviteToParty(ProductUserId friendId)
+        public void InviteToParty(string friendProductUserId)
         {
             if (!IsInParty)
             {
@@ -151,9 +153,10 @@ namespace KitchenClash.Infrastructure.EOS
                 return;
             }
 
-            GameLogger.Log($"Inviting friend to party: {friendId}");
+            GameLogger.Log($"Inviting friend to party: {friendProductUserId}");
 
             // Send invite via EOS
+            var friendId = ProductUserId.FromString(friendProductUserId);
             _eosLobbyManager.SendInvite(friendId);
         }
 
@@ -480,8 +483,8 @@ namespace KitchenClash.Infrastructure.EOS
                 GameModeId = config.GameModeId,
                 MapName = config.MapName,
                 TeamSize = config.TeamSize,
-                OwnerId = EOSManager.Instance.GetProductUserId(),
-                PartyLeaderId = EOSManager.Instance.GetProductUserId(),
+                OwnerId = EOSManager.Instance.GetProductUserId()?.ToString(),
+                PartyLeaderId = EOSManager.Instance.GetProductUserId()?.ToString(),
                 Status = "Active"
             };
 
@@ -610,7 +613,7 @@ namespace KitchenClash.Infrastructure.EOS
                 LobbyId = info.LobbyId,
                 MaxPlayers = (int)info.MaxMembers,
                 CurrentPlayers = (int)(info.MaxMembers - info.AvailableSlots),
-                OwnerId = GetLobbyOwner(lobbyDetails)
+                OwnerId = GetLobbyOwner(lobbyDetails)?.ToString()
             };
 
             var attrCountOptions = new LobbyDetailsGetAttributeCountOptions();

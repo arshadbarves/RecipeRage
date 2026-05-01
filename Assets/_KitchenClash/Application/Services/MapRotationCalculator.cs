@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using KitchenClash.Infrastructure.Logging;
-using KitchenClash.Domain.Interfaces;
+using KitchenClash.Domain;
 
 namespace KitchenClash.Application.Services
 {

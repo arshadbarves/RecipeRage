@@ -5,6 +5,7 @@ namespace KitchenClash.Domain
         Guest,
         Google,
         Facebook,
-        Apple
+        Apple,
+        DeviceID
     }
 }

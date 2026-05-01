@@ -1,4 +1,5 @@
-using KitchenClash.Application.ViewModels;
+using KitchenClash.Presentation.ViewModels;
+using KitchenClash.Presentation;
 using KitchenClash.Presentation.Common;
 using KitchenClash.Domain;
 using UnityEngine;

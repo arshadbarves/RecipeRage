@@ -1,4 +1,5 @@
 using System;
+using KitchenClash.Domain;
 
 namespace KitchenClash.Presentation.Common
 {

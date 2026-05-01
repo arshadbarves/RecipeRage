@@ -18,7 +18,8 @@
         "Unity.Services.Friends",
         "Unity.Cinemachine",
         "Unity.TextMeshPro",
-        "com.playeveryware.eos.samples.networking"
+        "com.playeveryware.eos.samples.networking",
+        "Unity.Collections"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

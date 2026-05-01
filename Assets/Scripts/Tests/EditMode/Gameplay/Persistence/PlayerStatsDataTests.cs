@@ -1,177 +1,125 @@
 using System;
-using System.Collections.Generic;
-using Gameplay.Persistence.Data;
+using KitchenClash.Application.Models;
 using NUnit.Framework;
 
 namespace RecipeRage.Tests.EditMode.Gameplay.Persistence
 {
     /// <summary>
-    /// Unit tests for PlayerStatsData account linking functionality (AC3)
+    /// Unit tests for PlayerStatsData
     /// </summary>
     public class PlayerStatsDataTests
     {
         [Test]
-        public void LinkToEosAccount_SetsEosProductUserId()
+        public void NewPlayerStatsData_HasDefaultValues()
         {
-            // Arrange
             var data = new PlayerStatsData();
-            string eosId = "test-eos-id-123";
 
-            // Act
-            data.LinkToEosAccount(eosId, "Epic");
-
-            // Assert
-            Assert.AreEqual(eosId, data.EosProductUserId);
+            Assert.AreEqual(1, data.Level);
+            Assert.AreEqual(0, data.Experience);
+            Assert.AreEqual(0, data.GamesPlayed);
+            Assert.AreEqual(0, data.GamesWon);
+            Assert.AreEqual(0, data.TotalScore);
         }
 
         [Test]
-        public void LinkToEosAccount_SetsLinkedAccountType()
+        public void AddExperience_IncreasesExperience()
         {
-            // Arrange
             var data = new PlayerStatsData();
 
-            // Act
-            data.LinkToEosAccount("eos-id", "Steam");
+            data.AddExperience(50);
 
-            // Assert
-            Assert.AreEqual("Steam", data.LinkedAccountType);
+            Assert.AreEqual(50, data.Experience);
         }
 
         [Test]
-        public void LinkToEosAccount_SetsLastLinkedAt()
+        public void AddExperience_LevelsUp_WhenThresholdReached()
         {
-            // Arrange
             var data = new PlayerStatsData();
-            var beforeLink = DateTime.UtcNow.AddSeconds(-1);
 
-            // Act
-            data.LinkToEosAccount("eos-id", "Epic");
-            var afterLink = DateTime.UtcNow.AddSeconds(1);
+            bool leveledUp = data.AddExperience(100);
 
-            // Assert
-            Assert.IsTrue(data.LastLinkedAt >= beforeLink && data.LastLinkedAt <= afterLink);
+            Assert.IsTrue(leveledUp);
+            Assert.AreEqual(2, data.Level);
+            Assert.AreEqual(0, data.Experience);
         }
 
         [Test]
-        public void LinkToEosAccount_IncrementsLinkingVersion()
+        public void AddExperience_DoesNotLevelUp_WhenBelowThreshold()
         {
-            // Arrange
             var data = new PlayerStatsData();
-            int initialVersion = data.AccountLinkingVersion;
 
-            // Act
-            data.LinkToEosAccount("eos-id", "Epic");
+            bool leveledUp = data.AddExperience(50);
 
-            // Assert
-            Assert.AreEqual(initialVersion + 1, data.AccountLinkingVersion);
+            Assert.IsFalse(leveledUp);
+            Assert.AreEqual(1, data.Level);
         }
 
         [Test]
-        public void LinkToEosAccount_WithNullId_DoesNotModifyData()
+        public void RecordGamePlayed_IncrementsGamesPlayed()
         {
-            // Arrange
             var data = new PlayerStatsData();
-            data.EosProductUserId = "existing-id";
 
-            // Act
-            data.LinkToEosAccount(null, "Epic");
+            data.RecordGamePlayed(true, "classic", "Chef1", 120f, 500);
 
-            // Assert
-            Assert.AreEqual("existing-id", data.EosProductUserId);
+            Assert.AreEqual(1, data.GamesPlayed);
+            Assert.AreEqual(1, data.GamesWon);
+            Assert.AreEqual(0, data.GamesLost);
+            Assert.AreEqual(500, data.TotalScore);
         }
 
         [Test]
-        public void IsLinkedToPermanentAccount_ReturnsFalse_WhenNotLinked()
+        public void RecordGamePlayed_TracksCharacterUsage()
         {
-            // Arrange
             var data = new PlayerStatsData();
 
-            // Assert
-            Assert.IsFalse(data.IsLinkedToPermanentAccount);
+            data.RecordGamePlayed(true, "classic", "Chef1", 60f, 100);
+            data.RecordGamePlayed(false, "classic", "Chef1", 60f, 50);
+            data.RecordGamePlayed(true, "classic", "Chef2", 60f, 200);
+
+            Assert.AreEqual(2, data.CharacterUsage["Chef1"]);
+            Assert.AreEqual(1, data.CharacterUsage["Chef2"]);
         }
 
         [Test]
-        public void IsLinkedToPermanentAccount_ReturnsTrue_WhenLinked()
+        public void RecordGamePlayed_TracksGameModeUsage()
         {
-            // Arrange
             var data = new PlayerStatsData();
-            data.LinkToEosAccount("eos-id", "Epic");
 
-            // Assert
-            Assert.IsTrue(data.IsLinkedToPermanentAccount);
+            data.RecordGamePlayed(true, "classic", "Chef1", 60f, 100);
+            data.RecordGamePlayed(true, "ranked", "Chef1", 60f, 200);
+
+            Assert.AreEqual(1, data.GameModeUsage["classic"]);
+            Assert.AreEqual(1, data.GameModeUsage["ranked"]);
         }
 
         [Test]
-        public void CreateMigrationSnapshot_PreservesProgression()
+        public void RecordGamePlayed_Loss_IncrementsGamesLost()
         {
-            // Arrange
-            var data = new PlayerStatsData
-            {
-                Level = 5,
-                Experience = 250,
-                GamesPlayed = 10,
-                GamesWon = 7,
-                TotalScore = 5000
-            };
+            var data = new PlayerStatsData();
 
-            // Act
-            var snapshot = data.CreateMigrationSnapshot();
+            data.RecordGamePlayed(false, "classic", "Chef1", 60f, 50);
 
-            // Assert
-            Assert.AreEqual(5, snapshot.Level);
-            Assert.AreEqual(250, snapshot.Experience);
-            Assert.AreEqual(10, snapshot.GamesPlayed);
-            Assert.AreEqual(7, snapshot.GamesWon);
-            Assert.AreEqual(5000, snapshot.TotalScore);
+            Assert.AreEqual(1, data.GamesPlayed);
+            Assert.AreEqual(0, data.GamesWon);
+            Assert.AreEqual(1, data.GamesLost);
         }
 
         [Test]
-        public void CreateMigrationSnapshot_PreservesCharacterUsage()
+        public void EosProductUserId_DefaultsToEmpty()
         {
-            // Arrange
             var data = new PlayerStatsData();
-            data.CharacterUsage["Chef1"] = 5;
-            data.CharacterUsage["Chef2"] = 3;
-            data.FavoriteCharacter = "Chef1";
 
-            // Act
-            var snapshot = data.CreateMigrationSnapshot();
-
-            // Assert
-            Assert.AreEqual(5, snapshot.CharacterUsage["Chef1"]);
-            Assert.AreEqual(3, snapshot.CharacterUsage["Chef2"]);
-            Assert.AreEqual("Chef1", snapshot.FavoriteCharacter);
+            Assert.AreEqual("", data.EosProductUserId);
         }
 
         [Test]
-        public void CreateMigrationSnapshot_IncrementsLinkingVersion()
+        public void EosProductUserId_CanBeSet()
         {
-            // Arrange
             var data = new PlayerStatsData();
-            data.LinkToEosAccount("eos-id", "Epic");
-            int versionBeforeSnapshot = data.AccountLinkingVersion;
 
-            // Act
-            var snapshot = data.CreateMigrationSnapshot();
+            data.EosProductUserId = "test-eos-id-123";
 
-            // Assert
-            Assert.AreEqual(versionBeforeSnapshot + 1, snapshot.AccountLinkingVersion);
-        }
-
-        [Test]
-        public void CreateMigrationSnapshot_SetsLastLinkedAt()
-        {
-            // Arrange
-            var data = new PlayerStatsData();
-            data.LinkToEosAccount("eos-id", "Epic");
-            var beforeSnapshot = DateTime.UtcNow.AddSeconds(-1);
-
-            // Act
-            var snapshot = data.CreateMigrationSnapshot();
-            var afterSnapshot = DateTime.UtcNow.AddSeconds(1);
-
-            // Assert
-            Assert.IsTrue(snapshot.LastLinkedAt >= beforeSnapshot && snapshot.LastLinkedAt <= afterSnapshot);
+            Assert.AreEqual("test-eos-id-123", data.EosProductUserId);
         }
     }
 }

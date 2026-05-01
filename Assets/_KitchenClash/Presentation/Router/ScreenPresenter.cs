@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using KitchenClash.Application;
 using KitchenClash.Domain;
+using KitchenClash.Presentation.ViewModels;
 
 namespace KitchenClash.Presentation
 {

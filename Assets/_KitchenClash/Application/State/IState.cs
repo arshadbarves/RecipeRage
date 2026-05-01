@@ -1,11 +1,11 @@
-using System.Threading.Tasks;
-
-namespace KitchenClash.Application
+namespace KitchenClash.Application.State
 {
     public interface IState
     {
-        Task EnterAsync();
-        Task ExitAsync();
-        void Tick();
+        string StateName { get; }
+        void Enter();
+        void Exit();
+        void Update();
+        void FixedUpdate();
     }
 }

@@ -2,11 +2,9 @@ namespace KitchenClash.Application.Services
 {
     public sealed class BotTaskPlanner
     {
-        // Simplified migration - full implementation references many Gameplay types
-        // that would need their own migration first
-        public object Plan(object snapshot)
+        public BotTaskPlan Plan(BotPlanningSnapshot snapshot)
         {
-            return null;
+            return new BotTaskPlan { Type = BotTaskType.Idle };
         }
     }
 }

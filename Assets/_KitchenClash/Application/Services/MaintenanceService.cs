@@ -1,7 +1,6 @@
 using System;
-using KitchenClash.Infrastructure.Logging;
-using KitchenClash.Domain.Interfaces;
-using Cysharp.Threading.Tasks;
+using System.Threading.Tasks;
+using KitchenClash.Domain;
 
 namespace KitchenClash.Application.Services
 {
@@ -10,13 +9,16 @@ namespace KitchenClash.Application.Services
         private readonly IEventBus _eventBus;
         private readonly IRemoteConfigService _remoteConfigService;
 
+        public bool IsInMaintenance { get; private set; }
+        public string MaintenanceMessage { get; private set; } = string.Empty;
+
         public MaintenanceService(IEventBus eventBus, IRemoteConfigService remoteConfigService)
         {
             _eventBus = eventBus ?? throw new ArgumentNullException(nameof(eventBus));
             _remoteConfigService = remoteConfigService;
         }
 
-        public async UniTask<bool> CheckMaintenanceStatusAsync()
+        public async Task<bool> CheckMaintenanceStatusAsync()
         {
             // Simplified - check remote config for maintenance flag
             GameLogger.LogInfo("Checking maintenance status...");
@@ -27,11 +29,5 @@ namespace KitchenClash.Application.Services
         {
             GameLogger.LogInfo($"Showing server down maintenance: {error}");
         }
-    }
-
-    public interface IMaintenanceService
-    {
-        UniTask<bool> CheckMaintenanceStatusAsync();
-        void ShowServerDownMaintenance(string error);
     }
 }

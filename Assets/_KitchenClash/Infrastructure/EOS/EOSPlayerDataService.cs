@@ -1,5 +1,6 @@
-using System.Threading.Tasks;
+using KitchenClash.Application;
 using KitchenClash.Domain;
+using Cysharp.Threading.Tasks;
 
 namespace KitchenClash.Infrastructure.EOS
 {
@@ -7,7 +8,7 @@ namespace KitchenClash.Infrastructure.EOS
     /// EOS Player Data Storage implementation.
     /// Stores trophies, streak, settings (5MB/player per GDD).
     /// </summary>
-    public sealed class EOSPlayerDataService : IPlayerDataService
+    public sealed class EOSPlayerDataService
     {
         // TODO: Implement with EOS Player Data Storage SDK calls
         private readonly IStorageProvider _fallbackStorage;
@@ -17,24 +18,24 @@ namespace KitchenClash.Infrastructure.EOS
             _fallbackStorage = fallbackStorage;
         }
 
-        public async Task SaveAsync(string key, string data)
+        public async UniTask SaveAsync(string key, string data)
         {
             // TODO: Save to EOS Player Data Storage
             // Fallback to local for now
             await _fallbackStorage.WriteAsync(key, data);
         }
 
-        public async Task<string> LoadAsync(string key)
+        public async UniTask<string> LoadAsync(string key)
         {
             // TODO: Load from EOS Player Data Storage
             return await _fallbackStorage.ReadAsync(key);
         }
 
-        public async Task DeleteAsync(string key)
+        public async UniTask DeleteAsync(string key)
         {
             // TODO: Delete from EOS Player Data Storage
             _fallbackStorage.Delete(key);
-            await Task.CompletedTask;
+            await UniTask.CompletedTask;
         }
     }
 }

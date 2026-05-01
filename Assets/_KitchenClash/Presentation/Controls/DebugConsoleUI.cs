@@ -340,7 +340,7 @@ namespace KitchenClash.Presentation.Controls
         {
             var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
             var fileName = $"GameLogs_{timestamp}.txt";
-            var filePath = Path.Combine(Application.persistentDataPath, fileName);
+            var filePath = Path.Combine(UnityEngine.Application.persistentDataPath, fileName);
 
             _loggingService.SaveLogsToFile(filePath);
 

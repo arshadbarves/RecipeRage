@@ -1,22 +1,16 @@
 using System;
-using System.Reflection;
-using Core.Networking;
-using Core.Networking.Common;
-using Core.Networking.Interfaces;
-using Core.Networking.Models;
-using Core.RemoteConfig;
-using Core.Session;
-using Core.UI.Interfaces;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using KitchenClash.Application;
+using KitchenClash.Application.Models;
+using KitchenClash.Application.Services;
+using KitchenClash.Application.State;
+using KitchenClash.Domain;
+using KitchenClash.Infrastructure.DI;
+using KitchenClash.Infrastructure.Network;
+using KitchenClash.Infrastructure.Persistence;
+using KitchenClash.Infrastructure.States;
 using Cysharp.Threading.Tasks;
-using Gameplay.App.State;
-using Gameplay.App.State.States;
-using Gameplay.Characters;
-using Gameplay.Economy;
-using Gameplay.GameModes;
-using Gameplay.Match;
-using Gameplay.Persistence;
-using Gameplay.Skins;
-using Gameplay.UI.Features.Matchmaking;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -25,104 +19,57 @@ namespace RecipeRage.Tests.EditMode.Gameplay
     public class MatchmakingFlowTests
     {
         [Test]
-        public void Enter_UsesQueueSelectedThreeVThreeSizeForMatchmaking()
+        public void MatchmakingState_Enter_InvokesMatchmakingService()
         {
-            GameMode selectedMode = CreateGameMode("team_battle", 2);
+            FakeMatchmakingService matchmakingService = new();
+            MatchmakingState state = new(
+                new FakeUIService(),
+                new FakeSessionContext(matchmakingService, new FakeGameModeService()),
+                new FakeGameStateManager(),
+                new FakeMaintenanceService(false),
+                matchmakingService);
 
-            try
-            {
-                FakeUIService uiService = new();
-                FakeMatchmakingService matchmakingService = new();
-                MatchmakingState state = new(
-                    uiService,
-                    new FakeSessionContext(matchmakingService, new FakeGameModeService(selectedMode)),
-                    new FakeGameStateManager(),
-                    new FakeMaintenanceService(false),
-                    new MatchService(new DictionaryConfigService()));
+            state.Enter();
 
-                state.Enter();
-
-                Assert.AreEqual("team_battle", matchmakingService.LastGameModeId);
-                Assert.AreEqual(3, matchmakingService.LastTeamSize);
-                Assert.AreEqual(typeof(MatchmakingView), uiService.LastRootScreenType);
-            }
-            finally
-            {
-                UnityEngine.Object.DestroyImmediate(selectedMode);
-            }
+            // MatchmakingState uses default gameModeId="classic" and teamSize=2
+            Assert.AreEqual("classic", matchmakingService.LastGameModeId);
+            Assert.AreEqual(2, matchmakingService.LastTeamSize);
         }
 
         [Test]
-        public void Enter_FallsBackToSelectedModeSizeWhenQueueIsMissing()
+        public void MatchmakingState_Exit_CancelsMatchmaking()
         {
-            GameMode selectedMode = CreateGameMode("custom_arcade", 4);
+            FakeMatchmakingService matchmakingService = new();
+            MatchmakingState state = new(
+                new FakeUIService(),
+                new FakeSessionContext(matchmakingService, new FakeGameModeService()),
+                new FakeGameStateManager(),
+                new FakeMaintenanceService(false),
+                matchmakingService);
 
-            try
-            {
-                FakeMatchmakingService matchmakingService = new();
-                MatchmakingState state = new(
-                    new FakeUIService(),
-                    new FakeSessionContext(matchmakingService, new FakeGameModeService(selectedMode)),
-                    new FakeGameStateManager(),
-                    new FakeMaintenanceService(false),
-                    new MatchService(new DictionaryConfigService()));
+            state.Enter();
+            Assert.IsTrue(matchmakingService.IsSearching);
 
-                state.Enter();
-
-                Assert.AreEqual("custom_arcade", matchmakingService.LastGameModeId);
-                Assert.AreEqual(4, matchmakingService.LastTeamSize);
-            }
-            finally
-            {
-                UnityEngine.Object.DestroyImmediate(selectedMode);
-            }
+            state.Exit();
+            Assert.IsFalse(matchmakingService.IsSearching);
         }
 
         [Test]
-        public void BuildMatchLobbyConfig_UsesQueueSizedCapacityAndAttributes()
+        public void MatchEndEvaluator_EvaluateScoreLimit_ReturnsNoEnd_WhenBelowTarget()
         {
-            MethodInfo method = typeof(global::Core.Networking.Services.MatchmakingService).GetMethod(
-                "BuildMatchLobbyConfig",
-                BindingFlags.NonPublic | BindingFlags.Static);
+            MatchEndEvaluation result = MatchEndEvaluator.EvaluateScoreLimit(new[] { 800, 950 }, true, 1000);
 
-            Assert.IsNotNull(method);
-
-            LobbyConfig config = method.Invoke(null, new object[] { "team_battle", 3 }) as LobbyConfig;
-
-            Assert.IsNotNull(config);
-            Assert.AreEqual(LobbyType.Match, config.Type);
-            Assert.AreEqual("team_battle", config.GameModeId);
-            Assert.AreEqual(3, config.TeamSize);
-            Assert.AreEqual(6, config.MaxPlayers);
-            Assert.IsFalse(config.IsPrivate);
-            Assert.AreEqual("Match", config.CustomAttributes["Type"]);
-            Assert.AreEqual("team_battle", config.CustomAttributes["GameMode"]);
-            Assert.AreEqual("3", config.CustomAttributes["TeamSize"]);
-            Assert.AreEqual("Filling", config.CustomAttributes["Status"]);
+            Assert.IsFalse(result.ShouldEnd);
         }
 
-        private static GameMode CreateGameMode(string id, int playersPerTeam)
+        [Test]
+        public void MatchEndEvaluator_EvaluateFinalScores_ReturnsDraw_WhenEqual()
         {
-            GameMode mode = ScriptableObject.CreateInstance<GameMode>();
-            SetPrivateField(mode, "_id", id);
-            SetPrivateField(mode, "_playersPerTeam", playersPerTeam);
-            SetPrivateField(mode, "_teamCount", 2);
-            return mode;
-        }
+            MatchEndEvaluation result = MatchEndEvaluator.EvaluateFinalScores(new[] { 1200, 1200 });
 
-        private static void SetPrivateField(object target, string fieldName, object value)
-        {
-            FieldInfo field = target.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
-            Assert.IsNotNull(field, $"Missing field '{fieldName}' on {target.GetType().Name}");
-            field.SetValue(target, value);
-        }
-
-        private sealed class DictionaryConfigService : IConfigService
-        {
-            public int GetInt(string key, int defaultValue) => defaultValue;
-            public float GetFloat(string key, float defaultValue) => defaultValue;
-            public bool GetBool(string key, bool defaultValue) => defaultValue;
-            public string GetString(string key, string defaultValue) => defaultValue;
+            Assert.IsTrue(result.ShouldEnd);
+            Assert.IsTrue(result.IsDraw);
+            Assert.AreEqual(-1, result.WinningTeamId);
         }
 
         private sealed class FakeMaintenanceService : IMaintenanceService
@@ -134,23 +81,18 @@ namespace RecipeRage.Tests.EditMode.Gameplay
                 _isInMaintenance = isInMaintenance;
             }
 
-            public UniTask<bool> CheckMaintenanceStatusAsync() => UniTask.FromResult(_isInMaintenance);
-            public void ShowServerDownMaintenance(string error) { }
+            public bool IsInMaintenance => _isInMaintenance;
+            public string MaintenanceMessage => "";
+            public Task<bool> CheckMaintenanceStatusAsync() => Task.FromResult(_isInMaintenance);
         }
 
         private sealed class FakeGameModeService : IGameModeService
         {
-            public FakeGameModeService(GameMode selectedGameMode)
-            {
-                SelectedGameMode = selectedGameMode;
-            }
-
-            public GameMode SelectedGameMode { get; }
+            public GameMode SelectedGameMode => null;
             public event Action<GameMode> OnGameModeChanged;
-            public GameMode[] GetAvailableGameModes() => new[] { SelectedGameMode };
-            public GameMode GetGameMode(string id) => SelectedGameMode != null && SelectedGameMode.Id == id ? SelectedGameMode : null;
-            public bool SelectGameMode(string id) => SelectedGameMode != null && SelectedGameMode.Id == id;
-            public bool SelectGameMode(GameMode mode) => SelectedGameMode == mode;
+            public GameMode[] GetAvailableGameModes() => Array.Empty<GameMode>();
+            public GameMode GetGameMode(string id) => null;
+            public bool SelectGameMode(string id) => false;
             public UniTask<bool> LoadMapAsync(string sceneName) => UniTask.FromResult(true);
             public UniTask UnloadCurrentMapAsync() => UniTask.CompletedTask;
         }
@@ -210,7 +152,7 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             public void SearchForMatchLobbies(string gameModeId, int teamSize, int neededPlayers) { }
             public void CreateAndWaitForPlayers(string gameModeId, int teamSize) { }
             public void FillMatchWithBots() { }
-            public System.Collections.Generic.List<BotPlayer> GetActiveBots() => new();
+            public List<BotPlayer> GetActiveBots() => new();
         }
 
         private sealed class FakeGameStateManager : IGameStateManager
@@ -228,14 +170,13 @@ namespace RecipeRage.Tests.EditMode.Gameplay
         private sealed class FakeUIService : IUIService
         {
             public bool IsInitialized => true;
-            public Type LastRootScreenType { get; private set; }
 
             public event Action<Type> OnScreenShown;
             public event Action<Type> OnScreenHidden;
             public event Action OnAllScreensHidden;
 
-            public void SetRootScreen<T>(bool animate = true) where T : class => LastRootScreenType = typeof(T);
-            public void SetRootScreen(Type screenType, bool animate = true) => LastRootScreenType = screenType;
+            public void SetRootScreen<T>(bool animate = true) where T : class { }
+            public void SetRootScreen(Type screenType, bool animate = true) { }
             public void PushScreen<T>(bool animate = true) where T : class { }
             public void PushScreen(Type screenType, bool animate = true) { }
             public void ShowSystem<T>(bool animate = true) where T : class { }

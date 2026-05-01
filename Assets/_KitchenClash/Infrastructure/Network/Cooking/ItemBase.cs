@@ -1,4 +1,5 @@
 using KitchenClash.Domain;
+using KitchenClash.Application.Services;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -39,8 +40,9 @@ namespace KitchenClash.Infrastructure.Network.Cooking
         /// Called when a player interacts with this item.
         /// Default behavior is to request Pickup or Drop.
         /// </summary>
-        public virtual void Interact(PlayerController player)
+        public virtual void Interact(object playerObj)
         {
+            var player = (PlayerController)playerObj;
             RequestPickupDropServerRpc(player.NetworkObject);
         }
 
@@ -79,8 +81,9 @@ namespace KitchenClash.Infrastructure.Network.Cooking
             return _isHeld.Value ? "Drop" : "Pick Up";
         }
 
-        public virtual bool CanInteract(PlayerController player)
+        public virtual bool CanInteract(object playerObj)
         {
+            var player = (PlayerController)playerObj;
             // If held, only the owner can interact (to drop)
             if (_isHeld.Value)
             {

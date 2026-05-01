@@ -12,6 +12,8 @@ namespace KitchenClash.Domain
         public string MapName { get; set; }
         public int TeamSize { get; set; } = 2;
         public bool AllowInvites { get; set; } = true;
+        public bool PresenceEnabled { get; set; }
+        public bool RTCEnabled { get; set; }
         public Dictionary<string, string> CustomAttributes { get; set; } = new();
     }
 }

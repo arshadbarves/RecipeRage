@@ -1,4 +1,5 @@
 using KitchenClash.Domain;
+using KitchenClash.Application.Services;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -47,8 +48,9 @@ namespace KitchenClash.Infrastructure.Network.Stations
         /// Handle interaction from a player.
         /// </summary>
         /// <param name="player">The player that is interacting</param>
-        public virtual void Interact(PlayerController player)
+        public virtual void Interact(object playerObj)
         {
+            var player = (PlayerController)playerObj;
             if (!IsServer)
             {
                 // Request interaction from the server
@@ -99,7 +101,7 @@ namespace KitchenClash.Infrastructure.Network.Stations
         /// <summary>
         /// Check if the station can be interacted with.
         /// </summary>
-        public virtual bool CanInteract(PlayerController player)
+        public virtual bool CanInteract(object playerObj)
         {
             return true;
         }

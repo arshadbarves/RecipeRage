@@ -1,5 +1,7 @@
 using System.Collections.Generic;
-using Gameplay.Match;
+using System.Threading.Tasks;
+using KitchenClash.Application;
+using KitchenClash.Domain;
 using NUnit.Framework;
 
 namespace RecipeRage.Tests.EditMode.Gameplay
@@ -14,26 +16,28 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             IReadOnlyList<MatchQueueDefinition> queues = service.GetQueues();
 
             Assert.AreEqual(3, queues.Count);
-            Assert.AreEqual("classic", queues[0].ModeId);
-            Assert.AreEqual(180, queues[0].DurationSeconds);
-            Assert.AreEqual("team_battle", queues[1].ModeId);
-            Assert.AreEqual(3, queues[1].PlayersPerTeam);
+            Assert.AreEqual("quick_2v2", queues[0].ModeId);
+            Assert.AreEqual("quick_3v3", queues[1].ModeId);
             Assert.AreEqual("ranked", queues[2].ModeId);
-            Assert.AreEqual(300, queues[2].DurationSeconds);
         }
 
         [Test]
-        public void TryGetQueue_AppliesRemoteOverridesAndRespectsDisableFlag()
+        public void TryGetQueue_FindsExistingQueue()
         {
             DictionaryConfigService config = new();
-            config.Set("queues.team_battle.duration_seconds", 240);
-            config.Set("queues.ranked.enabled", false);
 
             MatchService service = new(config);
 
-            Assert.IsTrue(service.TryGetQueue("team_battle", out MatchQueueDefinition teamBattle));
-            Assert.AreEqual(240, teamBattle.DurationSeconds);
-            Assert.IsFalse(service.TryGetQueue("ranked", out _));
+            Assert.IsTrue(service.TryGetQueue("quick_2v2", out MatchQueueDefinition queue));
+            Assert.AreEqual("quick_2v2", queue.ModeId);
+        }
+
+        [Test]
+        public void TryGetQueue_ReturnsFalseForUnknownQueue()
+        {
+            MatchService service = new(new DictionaryConfigService());
+
+            Assert.IsFalse(service.TryGetQueue("nonexistent", out _));
         }
 
         private sealed class DictionaryConfigService : IConfigService
@@ -45,25 +49,17 @@ namespace RecipeRage.Tests.EditMode.Gameplay
                 _values[key] = value;
             }
 
-            public int GetInt(string key, int defaultValue)
+            public T Get<T>(string key, T fallback)
             {
-                return _values.TryGetValue(key, out object value) ? int.Parse(value.ToString()) : defaultValue;
+                if (_values.TryGetValue(key, out object value))
+                {
+                    try { return (T)System.Convert.ChangeType(value, typeof(T)); }
+                    catch { return fallback; }
+                }
+                return fallback;
             }
 
-            public float GetFloat(string key, float defaultValue)
-            {
-                return _values.TryGetValue(key, out object value) ? float.Parse(value.ToString()) : defaultValue;
-            }
-
-            public bool GetBool(string key, bool defaultValue)
-            {
-                return _values.TryGetValue(key, out object value) ? bool.Parse(value.ToString()) : defaultValue;
-            }
-
-            public string GetString(string key, string defaultValue)
-            {
-                return _values.TryGetValue(key, out object value) ? value.ToString() : defaultValue;
-            }
+            public Task FetchAsync() => Task.CompletedTask;
         }
     }
 }

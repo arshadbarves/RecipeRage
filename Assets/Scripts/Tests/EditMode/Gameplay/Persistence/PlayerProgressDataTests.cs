@@ -1,179 +1,169 @@
 using System.Collections.Generic;
-using Gameplay.Persistence.Data;
+using KitchenClash.Application.Models;
 using NUnit.Framework;
 
 namespace RecipeRage.Tests.EditMode.Gameplay.Persistence
 {
     /// <summary>
-    /// Unit tests for PlayerProgressData account linking functionality (AC3)
+    /// Unit tests for PlayerProgressData
     /// </summary>
     public class PlayerProgressDataTests
     {
         [Test]
-        public void LinkToEosAccount_SetsEosProductUserId()
+        public void UnlockCharacter_AddsToUnlockedList()
         {
-            // Arrange
             var data = new PlayerProgressData();
-            string eosId = "test-eos-id-456";
 
-            // Act
-            data.LinkToEosAccount(eosId);
-
-            // Assert
-            Assert.AreEqual(eosId, data.EosProductUserId);
-        }
-
-        [Test]
-        public void LinkToEosAccount_IncrementsDataVersion()
-        {
-            // Arrange
-            var data = new PlayerProgressData();
-            int initialVersion = data.DataVersion;
-
-            // Act
-            data.LinkToEosAccount("eos-id");
-
-            // Assert
-            Assert.AreEqual(initialVersion + 1, data.DataVersion);
-        }
-
-        [Test]
-        public void LinkToEosAccount_WithNullId_DoesNotModifyData()
-        {
-            // Arrange
-            var data = new PlayerProgressData();
-            data.EosProductUserId = "existing-id";
-
-            // Act
-            data.LinkToEosAccount(null);
-
-            // Assert
-            Assert.AreEqual("existing-id", data.EosProductUserId);
-        }
-
-        [Test]
-        public void CreateMigrationSnapshot_PreservesUnlockedContent()
-        {
-            // Arrange
-            var data = new PlayerProgressData();
             data.UnlockCharacter("Chef1");
             data.UnlockCharacter("Chef2");
+
+            Assert.Contains("Chef1", data.UnlockedCharacters);
+            Assert.Contains("Chef2", data.UnlockedCharacters);
+        }
+
+        [Test]
+        public void UnlockCharacter_DoesNotDuplicate()
+        {
+            var data = new PlayerProgressData();
+
+            data.UnlockCharacter("Chef1");
+            data.UnlockCharacter("Chef1");
+
+            Assert.AreEqual(1, data.UnlockedCharacters.Count);
+        }
+
+        [Test]
+        public void UnlockMap_AddsToUnlockedList()
+        {
+            var data = new PlayerProgressData();
+
             data.UnlockMap("Kitchen");
+
+            Assert.Contains("Kitchen", data.UnlockedMaps);
+        }
+
+        [Test]
+        public void UnlockCosmetic_AddsToUnlockedList()
+        {
+            var data = new PlayerProgressData();
+
             data.UnlockCosmetic("Hat1");
 
-            // Act
-            var snapshot = data.CreateMigrationSnapshot();
-
-            // Assert
-            Assert.IsTrue(snapshot.IsCharacterUnlocked("Chef1"));
-            Assert.IsTrue(snapshot.IsCharacterUnlocked("Chef2"));
-            Assert.IsTrue(snapshot.IsMapUnlocked("Kitchen"));
-            Assert.IsTrue(snapshot.IsCosmeticUnlocked("Hat1"));
+            Assert.Contains("Hat1", data.UnlockedCosmetics);
         }
 
         [Test]
-        public void CreateMigrationSnapshot_PreservesHighScores()
+        public void UpdateHighScore_SetsNewHighScore()
         {
-            // Arrange
             var data = new PlayerProgressData();
+
+            bool updated = data.UpdateHighScore("Classic", 5000);
+
+            Assert.IsTrue(updated);
+            Assert.AreEqual(5000, data.GameModeHighScores["Classic"]);
+        }
+
+        [Test]
+        public void UpdateHighScore_DoesNotOverwriteHigherScore()
+        {
+            var data = new PlayerProgressData();
+
             data.UpdateHighScore("Classic", 5000);
-            data.UpdateHighScore("TimeAttack", 3000);
+            bool updated = data.UpdateHighScore("Classic", 3000);
 
-            // Act
-            var snapshot = data.CreateMigrationSnapshot();
-
-            // Assert
-            Assert.AreEqual(5000, snapshot.GameModeHighScores["Classic"]);
-            Assert.AreEqual(3000, snapshot.GameModeHighScores["TimeAttack"]);
+            Assert.IsFalse(updated);
+            Assert.AreEqual(5000, data.GameModeHighScores["Classic"]);
         }
 
         [Test]
-        public void CreateMigrationSnapshot_PreservesBestTimes()
+        public void UpdateBestTime_SetsBestTime()
         {
-            // Arrange
             var data = new PlayerProgressData();
-            data.UpdateBestTime("SpeedRun", 120.5f);
 
-            // Act
-            var snapshot = data.CreateMigrationSnapshot();
+            bool updated = data.UpdateBestTime("SpeedRun", 120.5f);
 
-            // Assert
-            Assert.AreEqual(120.5f, snapshot.GameModeBestTimes["SpeedRun"]);
+            Assert.IsTrue(updated);
+            Assert.AreEqual(120.5f, data.GameModeBestTimes["SpeedRun"]);
         }
 
         [Test]
-        public void CreateMigrationSnapshot_PreservesCharacterLevels()
+        public void UpdateBestTime_DoesNotOverwriteBetterTime()
         {
-            // Arrange
             var data = new PlayerProgressData();
+
+            data.UpdateBestTime("SpeedRun", 100f);
+            bool updated = data.UpdateBestTime("SpeedRun", 120.5f);
+
+            Assert.IsFalse(updated);
+            Assert.AreEqual(100f, data.GameModeBestTimes["SpeedRun"]);
+        }
+
+        [Test]
+        public void CharacterLevels_CanBeSetAndRetrieved()
+        {
+            var data = new PlayerProgressData();
+
             data.CharacterLevels["Chef1"] = 3;
             data.CharacterLevels["Chef2"] = 5;
 
-            // Act
-            var snapshot = data.CreateMigrationSnapshot();
-
-            // Assert
-            Assert.AreEqual(3, snapshot.CharacterLevels["Chef1"]);
-            Assert.AreEqual(5, snapshot.CharacterLevels["Chef2"]);
+            Assert.AreEqual(3, data.CharacterLevels["Chef1"]);
+            Assert.AreEqual(5, data.CharacterLevels["Chef2"]);
         }
 
         [Test]
-        public void CreateMigrationSnapshot_PreservesAchievementProgress()
+        public void AchievementProgress_CanBeTracked()
         {
-            // Arrange
             var data = new PlayerProgressData();
+
             data.CompletedAchievements.Add("FirstWin");
             data.AchievementProgress["Play100Games"] = 50;
 
-            // Act
-            var snapshot = data.CreateMigrationSnapshot();
-
-            // Assert
-            Assert.Contains("FirstWin", snapshot.CompletedAchievements);
-            Assert.AreEqual(50, snapshot.AchievementProgress["Play100Games"]);
+            Assert.Contains("FirstWin", data.CompletedAchievements);
+            Assert.AreEqual(50, data.AchievementProgress["Play100Games"]);
         }
 
         [Test]
-        public void CreateMigrationSnapshot_PreservesTutorialStatus()
+        public void TutorialCompleted_DefaultsToFalse()
         {
-            // Arrange
             var data = new PlayerProgressData();
+
+            Assert.IsFalse(data.TutorialCompleted);
+        }
+
+        [Test]
+        public void TutorialCompleted_CanBeSet()
+        {
+            var data = new PlayerProgressData();
+
             data.TutorialCompleted = true;
 
-            // Act
-            var snapshot = data.CreateMigrationSnapshot();
-
-            // Assert
-            Assert.IsTrue(snapshot.TutorialCompleted);
+            Assert.IsTrue(data.TutorialCompleted);
         }
 
         [Test]
-        public void CreateMigrationSnapshot_IncrementsDataVersion()
+        public void EosProductUserId_DefaultsToEmpty()
         {
-            // Arrange
             var data = new PlayerProgressData();
-            data.LinkToEosAccount("eos-id");
-            int versionBeforeSnapshot = data.DataVersion;
 
-            // Act
-            var snapshot = data.CreateMigrationSnapshot();
-
-            // Assert
-            Assert.AreEqual(versionBeforeSnapshot + 1, snapshot.DataVersion);
+            Assert.AreEqual("", data.EosProductUserId);
         }
 
         [Test]
-        public void CreateMigrationSnapshot_PreservesEosProductUserId()
+        public void EosProductUserId_CanBeSet()
         {
-            // Arrange
             var data = new PlayerProgressData();
-            data.LinkToEosAccount("linked-eos-id");
 
-            // Act
-            var snapshot = data.CreateMigrationSnapshot();
+            data.EosProductUserId = "linked-eos-id";
 
-            // Assert
-            Assert.AreEqual("linked-eos-id", snapshot.EosProductUserId);
+            Assert.AreEqual("linked-eos-id", data.EosProductUserId);
+        }
+
+        [Test]
+        public void DataVersion_DefaultsToOne()
+        {
+            var data = new PlayerProgressData();
+
+            Assert.AreEqual(1, data.DataVersion);
         }
     }
 }

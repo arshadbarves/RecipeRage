@@ -1,6 +1,9 @@
+using KitchenClash.Application.Models;
+using KitchenClash.Application;
 using System;
 using System.Collections.Generic;
 using KitchenClash.Domain;
+using KitchenClash.Infrastructure.EOS;
 using KitchenClash.Infrastructure.Persistence;
 using Cysharp.Threading.Tasks;
 
@@ -156,6 +159,39 @@ namespace KitchenClash.Infrastructure.Persistence
         }
 
         public void SaveData<T>(string key, T data) where T : class, new()
+        {
+            SaveInternal(key, data);
+        }
+
+        public void Save(string key, object data)
+        {
+            var config = GetStorageConfig(key);
+            string content = SerializeData(data, config.EncryptData);
+            _localProvider.Write(key, content);
+        }
+
+        public T Load<T>(string key, T defaultValue)
+        {
+            var config = GetStorageConfig(key);
+            var provider = GetProviderForStrategy(config.Strategy);
+            if (provider.Exists(key))
+            {
+                string content = provider.Read(key);
+                if (!string.IsNullOrEmpty(content))
+                {
+                    try
+                    {
+                        if (config.EncryptData && _encryption != null)
+                            content = _encryption.Decrypt(content);
+                        return UnityEngine.JsonUtility.FromJson<T>(content);
+                    }
+                    catch { }
+                }
+            }
+            return defaultValue;
+        }
+
+        private void SaveInternal(string key, object data)
         {
             var config = GetStorageConfig(key);
             string content = SerializeData(data, config.EncryptData);

@@ -1,3 +1,5 @@
+using KitchenClash.Application.Models;
+using KitchenClash.Application;
 using System.Collections.Generic;
 using KitchenClash.Infrastructure.Network;
 using KitchenClash.Domain;
@@ -78,7 +80,7 @@ namespace KitchenClash.Infrastructure.EOS
                 DisplayName = member.DisplayName,
                 IsHost = lobby.IsOwner(member.ProductId),
                 IsLocal = member.ProductId == EOSManager.Instance.GetProductUserId(),
-                ProductUserId = member.ProductId
+                ProductUserId = member.ProductId?.ToString()
             };
         }
 
@@ -87,7 +89,7 @@ namespace KitchenClash.Infrastructure.EOS
             playerInfo.DisplayName = member.DisplayName;
             playerInfo.IsHost = lobby.IsOwner(member.ProductId);
             playerInfo.IsLocal = member.ProductId == EOSManager.Instance.GetProductUserId();
-            playerInfo.ProductUserId = member.ProductId;
+            playerInfo.ProductUserId = member.ProductId?.ToString();
         }
 
         private void ExtractMemberAttributes(PlayerInfo playerInfo, LobbyMember member)
@@ -110,7 +112,7 @@ namespace KitchenClash.Infrastructure.EOS
                     case "CharacterClass":
                         if (int.TryParse(attribute.AsString, out int characterClass))
                         {
-                            playerInfo.CharacterClass = (CharacterClass)characterClass;
+                            playerInfo.CharacterClassId = characterClass;
                         }
                         break;
                 }

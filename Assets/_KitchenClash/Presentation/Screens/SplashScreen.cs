@@ -1,3 +1,4 @@
+using KitchenClash.Application;
 using KitchenClash.Presentation;
 using DG.Tweening;
 using KitchenClash.Presentation.Common;
@@ -76,14 +77,14 @@ namespace KitchenClash.Presentation.Screens
                     _brandContainer.style.scale = new Scale(new Vector3(x, x, x));
                 }, 1.0f, duration).SetEase(Ease.OutQuad).SetTarget(_brandContainer);
 
-                _animationService?.UI.FadeIn(_brandContainer, duration);
-                _animationService?.UI.BlurIn(_brandContainer, 12f, duration);
+                _animationService?.FadeIn(_brandContainer, duration);
+                _animationService?.BlurIn(_brandContainer, 12f, duration);
             }
 
             if (_playText != null && _centerText != null)
             {
-                 _animationService?.UI.TrackingIn(_playText, 20f, 6f, duration);
-                 _animationService?.UI.TrackingIn(_centerText, 20f, 6f, duration);
+                 _animationService?.TrackingIn(_playText, 20f, 6f, duration);
+                 _animationService?.TrackingIn(_centerText, 20f, 6f, duration);
             }
 
             if (_tagline != null)
@@ -104,7 +105,7 @@ namespace KitchenClash.Presentation.Screens
 
             if (_loaderFill != null)
             {
-                _animationService?.UI.SlideInfinite(_loaderFill, -100f, 200f, 2.0f);
+                _animationService?.SlideInfinite(_loaderFill, -100f, 200f, 2.0f);
             }
         }
 
@@ -147,7 +148,7 @@ namespace KitchenClash.Presentation.Screens
                 outro.Insert(0.1f, DOTween.To(() => _brandContainer.style.opacity.value,
                     x => _brandContainer.style.opacity = x, 0f, duration).SetEase(Ease.InQuad));
 
-                _animationService?.UI.BlurIn(_brandContainer, 0.01f, 0.01f);
+                _animationService?.BlurIn(_brandContainer, 0.01f, 0.01f);
                 float currentBlur = 0f;
             }
 

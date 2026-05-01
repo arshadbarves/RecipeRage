@@ -1,4 +1,5 @@
 using UnityEngine;
+using KitchenClash.Domain;
 
 namespace KitchenClash.Infrastructure.Network
 {

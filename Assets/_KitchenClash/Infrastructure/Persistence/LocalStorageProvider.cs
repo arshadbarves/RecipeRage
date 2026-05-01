@@ -1,6 +1,7 @@
+using KitchenClash.Application;
 using System.IO;
-using System.Threading.Tasks;
 using KitchenClash.Domain;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace KitchenClash.Infrastructure.Persistence
@@ -11,7 +12,7 @@ namespace KitchenClash.Infrastructure.Persistence
 
         public LocalStorageProvider()
         {
-            _basePath = Application.persistentDataPath;
+            _basePath = UnityEngine.Application.persistentDataPath;
         }
 
         public bool IsAvailable => true;
@@ -30,14 +31,14 @@ namespace KitchenClash.Infrastructure.Persistence
             File.WriteAllText(path, content);
         }
 
-        public async Task<string> ReadAsync(string key)
+        public async UniTask<string> ReadAsync(string key)
         {
             var path = GetPath(key);
             if (!File.Exists(path)) return null;
             return await File.ReadAllTextAsync(path);
         }
 
-        public async Task WriteAsync(string key, string content)
+        public async UniTask WriteAsync(string key, string content)
         {
             var path = GetPath(key);
             var dir = Path.GetDirectoryName(path);

@@ -2,12 +2,15 @@
     "name": "RecipeRage.Tests.EditMode",
     "rootNamespace": "RecipeRage.Tests",
     "references": [
-        "RecipeRage.Core",
-        "RecipeRage.Gameplay",
+        "KitchenClash.Domain",
+        "KitchenClash.Application",
+        "KitchenClash.Infrastructure",
+        "KitchenClash.Presentation",
         "Unity.Netcode.Runtime",
         "UniTask",
         "UnityEngine.TestRunner",
-        "UnityEditor.TestRunner"
+        "UnityEditor.TestRunner",
+        "VContainer"
     ],
     "includePlatforms": [
         "Editor"

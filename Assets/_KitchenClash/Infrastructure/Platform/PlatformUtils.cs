@@ -28,8 +28,8 @@ namespace KitchenClash.Infrastructure.Platform
 #endif
         }
 
-        public static bool IsMobile => Application.isMobilePlatform;
-        public static bool IsEditor => Application.isEditor;
+        public static bool IsMobile => UnityEngine.Application.isMobilePlatform;
+        public static bool IsEditor => UnityEngine.Application.isEditor;
         public static bool IsDevelopment => Debug.isDebugBuild;
     }
 }

@@ -1,30 +1,51 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
-namespace KitchenClash.Application
+namespace KitchenClash.Application.State
 {
     public sealed class StateMachine
     {
         private readonly Dictionary<Type, IState> _states = new();
         private IState _current;
+        private IState _previous;
 
         public IState Current => _current;
+        public IState CurrentState => _current;
+        public IState PreviousState => _previous;
+
+        public event Action<IState, IState> OnStateChanged;
 
         public void RegisterState<T>(T state) where T : IState
         {
             _states[typeof(T)] = state;
         }
 
-        public async Task TransitionToAsync<T>() where T : IState
+        public void Initialize(IState initialState)
         {
-            if (_current != null)
-                await _current.ExitAsync();
-
-            _current = _states[typeof(T)];
-            await _current.EnterAsync();
+            _previous = null;
+            _current = initialState;
+            _current?.Enter();
         }
 
-        public void Tick() => _current?.Tick();
+        public void ChangeState(IState newState)
+        {
+            var prev = _current;
+            _current?.Exit();
+            _previous = prev;
+            _current = newState;
+            _current?.Enter();
+            OnStateChanged?.Invoke(prev, _current);
+        }
+
+        public void TransitionTo<T>() where T : IState
+        {
+            if (_states.TryGetValue(typeof(T), out var state))
+            {
+                ChangeState(state);
+            }
+        }
+
+        public void Update() => _current?.Update();
+        public void FixedUpdate() => _current?.FixedUpdate();
     }
 }

@@ -12,5 +12,6 @@ namespace KitchenClash.Domain
         void LogException(Exception exception, string category = "General");
         LogEntry[] GetLogs();
         void ClearLogs();
+        void SaveLogsToFile(string filePath);
     }
 }

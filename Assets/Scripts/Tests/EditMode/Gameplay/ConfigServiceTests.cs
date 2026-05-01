@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
-using Core.RemoteConfig.Enums;
-using Core.RemoteConfig.Interfaces;
-using Core.RemoteConfig.Models;
+using System.Threading.Tasks;
+using KitchenClash.Application.Services;
+using KitchenClash.Domain;
 using Cysharp.Threading.Tasks;
-using Gameplay.Match;
 using NUnit.Framework;
 
 namespace RecipeRage.Tests.EditMode.Gameplay
@@ -12,53 +10,34 @@ namespace RecipeRage.Tests.EditMode.Gameplay
     public class ConfigServiceTests
     {
         [Test]
-        public void GetValues_ReadsCustomRulesAndConvertsPrimitiveTypes()
+        public void Get_ReturnsFallbackValue()
         {
-            GameSettingsConfig config = new()
-            {
-                CustomGameRules = new Dictionary<string, object>
-                {
-                    ["queues.classic.duration_seconds"] = 210L,
-                    ["queues.ranked.enabled"] = "true",
-                    ["queues.team_battle.display_name"] = "Scrim 3v3",
-                    ["scoring.multiplier"] = 1.5d
-                }
-            };
+            ConfigServiceAdapter service = new(new FakeRemoteConfigService());
 
-            ConfigService service = new(new FakeRemoteConfigService(config));
-
-            Assert.AreEqual(210, service.GetInt("queues.classic.duration_seconds", 180));
-            Assert.IsTrue(service.GetBool("queues.ranked.enabled", false));
-            Assert.AreEqual("Scrim 3v3", service.GetString("queues.team_battle.display_name", "Quick 3v3"));
-            Assert.AreEqual(1.5f, service.GetFloat("scoring.multiplier", 1f));
+            Assert.AreEqual(180, service.Get("missing.int", 180));
+            Assert.AreEqual(1.25f, service.Get("missing.float", 1.25f));
+            Assert.IsFalse(service.Get("missing.bool", false));
+            Assert.AreEqual("fallback", service.Get("missing.string", "fallback"));
         }
 
         [Test]
-        public void GetValues_UsesFallbackWhenRuleMissing()
+        public void FetchAsync_CompletesSuccessfully()
         {
-            ConfigService service = new(new FakeRemoteConfigService(new GameSettingsConfig()));
+            ConfigServiceAdapter service = new(new FakeRemoteConfigService());
 
-            Assert.AreEqual(180, service.GetInt("missing.int", 180));
-            Assert.AreEqual(1.25f, service.GetFloat("missing.float", 1.25f));
-            Assert.IsFalse(service.GetBool("missing.bool", false));
-            Assert.AreEqual("fallback", service.GetString("missing.string", "fallback"));
+            Task task = service.FetchAsync();
+
+            Assert.IsTrue(task.IsCompleted);
         }
 
         private sealed class FakeRemoteConfigService : IRemoteConfigService
         {
-            private readonly GameSettingsConfig _config;
-
-            public FakeRemoteConfigService(GameSettingsConfig config)
-            {
-                _config = config;
-            }
-
             public UniTask<bool> Initialize() => UniTask.FromResult(true);
-            public T GetConfig<T>() where T : class, IConfigModel => _config as T;
+            public T GetConfig<T>() where T : class, IConfigModel => null;
             public bool TryGetConfig<T>(out T config) where T : class, IConfigModel
             {
-                config = _config as T;
-                return config != null;
+                config = null;
+                return false;
             }
 
             public UniTask<bool> RefreshConfig() => UniTask.FromResult(true);

@@ -1,4 +1,5 @@
 using System;
+using KitchenClash.Application.Services;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -42,7 +43,7 @@ namespace KitchenClash.Infrastructure.Localization
         private void AutoDetectLanguage()
         {
             // Try to auto-detect system language
-            string systemLanguage = Application.systemLanguage.ToString();
+            string systemLanguage = UnityEngine.Application.systemLanguage.ToString();
 
             // Map Unity's SystemLanguage to our language names
             string detectedLanguage = systemLanguage switch

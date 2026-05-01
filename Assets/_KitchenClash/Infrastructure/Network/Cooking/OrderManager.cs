@@ -28,7 +28,7 @@ namespace KitchenClash.Infrastructure.Network.Cooking
         /// <summary>
         /// The list of active orders.
         /// </summary>
-        private NetworkList<RecipeOrderState> _activeOrders;
+        private NetworkList<NetworkRecipeOrderState> _activeOrders;
 
         /// <summary>
         /// The next order ID to assign.
@@ -50,7 +50,7 @@ namespace KitchenClash.Infrastructure.Network.Cooking
         /// </summary>
         private void Awake()
         {
-            _activeOrders = new NetworkList<RecipeOrderState>();
+            _activeOrders = new NetworkList<NetworkRecipeOrderState>();
         }
 
         /// <summary>
@@ -220,14 +220,14 @@ namespace KitchenClash.Infrastructure.Network.Cooking
         /// Handle changes to the active orders list.
         /// </summary>
         /// <param name="changeEvent"> The list change event. </param>
-        private void HandleActiveOrdersChanged(NetworkListEvent<RecipeOrderState> changeEvent)
+        private void HandleActiveOrdersChanged(NetworkListEvent<NetworkRecipeOrderState> changeEvent)
         {
-            if (changeEvent.Type == NetworkListEvent<RecipeOrderState>.EventType.Add)
+            if (changeEvent.Type == NetworkListEvent<NetworkRecipeOrderState>.EventType.Add)
             {
                 RecipeOrderState newOrder = _activeOrders[changeEvent.Index];
                 OnOrderCreated?.Invoke(newOrder);
             }
-            else if (changeEvent.Type == NetworkListEvent<RecipeOrderState>.EventType.Value)
+            else if (changeEvent.Type == NetworkListEvent<NetworkRecipeOrderState>.EventType.Value)
             {
                 RecipeOrderState updatedOrder = _activeOrders[changeEvent.Index];
 

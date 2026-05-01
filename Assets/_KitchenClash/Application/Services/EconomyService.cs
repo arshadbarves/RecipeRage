@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using KitchenClash.Domain;
 
 namespace KitchenClash.Application
@@ -7,6 +9,9 @@ namespace KitchenClash.Application
         private readonly IEventBus _eventBus;
         private int _coins;
         private int _gems;
+        private readonly HashSet<string> _ownedItems = new HashSet<string>();
+
+        public event Action<string, long> OnBalanceChanged;
 
         public EconomyService(IEventBus eventBus) => _eventBus = eventBus;
 
@@ -48,9 +53,52 @@ namespace KitchenClash.Application
             NotifyChanged();
         }
 
+        public int GetBalance(string currencyId)
+        {
+            if (currencyId == EconomyKeys.CurrencyGems) return _gems;
+            return _coins;
+        }
+
+        public void AddCurrency(string currencyId, int amount)
+        {
+            if (currencyId == EconomyKeys.CurrencyGems) AddGems(amount);
+            else AddCoins(amount);
+        }
+
         private void NotifyChanged()
         {
             _eventBus.Publish(new CurrencyChangedEvent { Coins = _coins, Gems = _gems });
+            OnBalanceChanged?.Invoke("coins", _coins);
+        }
+
+        /// <summary>
+        /// Check if the player owns a specific item.
+        /// </summary>
+        public bool HasItem(string itemId) => _ownedItems.Contains(itemId);
+
+        /// <summary>
+        /// Attempt to purchase an item using the specified currency.
+        /// </summary>
+        public bool Purchase(string itemId, int cost, string currencyType)
+        {
+            bool spent = currencyType == EconomyKeys.CurrencyGems
+                ? TrySpendGems(cost)
+                : TrySpendCoins(cost);
+
+            if (spent)
+            {
+                _ownedItems.Add(itemId);
+            }
+
+            return spent;
+        }
+
+        /// <summary>
+        /// Initialize the economy service (load persisted data, etc.).
+        /// </summary>
+        public void Initialize()
+        {
+            // TODO: Load persisted economy data
         }
     }
 }

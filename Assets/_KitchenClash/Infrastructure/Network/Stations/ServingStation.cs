@@ -1,7 +1,10 @@
 using System.Collections.Generic;
 using KitchenClash.Domain;
 using KitchenClash.Infrastructure.Network.Cooking;
+using KitchenClash.Infrastructure.Gameplay;
+using KitchenClash.Application;
 using KitchenClash.Application.Services;
+using KitchenClash.Infrastructure.Network;
 using Unity.Netcode;
 using UnityEngine;
 using VContainer;
@@ -55,7 +58,7 @@ namespace KitchenClash.Infrastructure.Network.Stations
 
             // Create dish validator
             _validator = new StandardDishValidator();
-            _orderService ??= new OrderService();
+            _orderService ??= new OrderService(null);
 
             ResolveRuntimeDependencies();
         }

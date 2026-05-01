@@ -1,9 +1,13 @@
+using KitchenClash.Application;
 using System.Collections.Generic;
+using KitchenClash.Application.Services;
+using KitchenClash.Infrastructure.DI;
 using System;
 using KitchenClash.Presentation;
 using KitchenClash.Domain;
 using KitchenClash.Presentation.Extensions;
 using KitchenClash.Infrastructure.Localization;
+using KitchenClash.Presentation.ViewModels;
 using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;
@@ -44,7 +48,7 @@ namespace KitchenClash.Presentation.Screens
         private Action<bool> _guestBinding;
         private bool _isViewModelBound;
 
-        [Inject] private Core.Localization.ILocalizationManager _localizationManager;
+        [Inject] private ILocalizationManager _localizationManager;
 
         protected override void OnInitialize()
         {
@@ -361,18 +365,18 @@ namespace KitchenClash.Presentation.Screens
 
         private void UpdateVersionInfo()
         {
-            if (_versionLabel != null) _versionLabel.text = $"v{Application.version}";
+            if (_versionLabel != null) _versionLabel.text = $"v{UnityEngine.Application.version}";
         }
 
         private void OnResetClicked() { _viewModel.ResetToDefaults(); UIService?.ShowNotification("Settings Reset to Defaults", NotificationType.Success); }
         private void OnClearDataClicked() { _viewModel.ClearData(); UIService?.ShowNotification("All Data Cleared", NotificationType.Warning); }
         private void OnBackClicked() { UIService?.GoBack(false); }
         private void OnEditJoystickClicked() { UIService?.ShowNotification("Joystick Editor Coming Soon", NotificationType.Info); }
-        private void OnHelpClicked() { Application.OpenURL("https://reciperage.game/help"); }
-        private void OnSupportClicked() { Application.OpenURL("https://reciperage.game/support"); }
-        private void OnPrivacyClicked() { Application.OpenURL("https://reciperage.game/privacy"); }
-        private void OnTermsClicked() { Application.OpenURL("https://reciperage.game/terms"); }
+        private void OnHelpClicked() { UnityEngine.Application.OpenURL("https://reciperage.game/help"); }
+        private void OnSupportClicked() { UnityEngine.Application.OpenURL("https://reciperage.game/support"); }
+        private void OnPrivacyClicked() { UnityEngine.Application.OpenURL("https://reciperage.game/privacy"); }
+        private void OnTermsClicked() { UnityEngine.Application.OpenURL("https://reciperage.game/terms"); }
         private void OnCreditsClicked() { UIService?.ShowNotification("Credits", NotificationType.Info); }
-        private void OnParentGuideClicked() { Application.OpenURL("https://reciperage.game/parents"); }
+        private void OnParentGuideClicked() { UnityEngine.Application.OpenURL("https://reciperage.game/parents"); }
     }
 }

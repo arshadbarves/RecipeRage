@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
-using Gameplay.Cooking;
-using Gameplay.Match;
+using System.Threading.Tasks;
+using KitchenClash.Application;
+using KitchenClash.Domain;
 using NUnit.Framework;
 
 namespace RecipeRage.Tests.EditMode.Gameplay
@@ -17,7 +19,7 @@ namespace RecipeRage.Tests.EditMode.Gameplay
                 new RecipeOrderState { OrderId = 3, RecipeId = 200, CreationTime = 8f, TimeLimit = 30f, IsExpired = true }
             };
 
-            OrderService service = new();
+            OrderService service = new(new StubConfigService());
 
             bool found = service.TryGetBestActiveOrder(orders, order => order.RecipeId == 200, out RecipeOrderState result);
 
@@ -34,10 +36,16 @@ namespace RecipeRage.Tests.EditMode.Gameplay
                 TimeLimit = 20f
             };
 
-            OrderService service = new();
+            OrderService service = new(new StubConfigService());
 
             Assert.AreEqual(15f, service.GetRemainingTime(order, 15f));
             Assert.AreEqual(0f, service.GetRemainingTime(order, 35f));
+        }
+
+        private sealed class StubConfigService : IConfigService
+        {
+            public T Get<T>(string key, T fallback) => fallback;
+            public Task FetchAsync() => Task.CompletedTask;
         }
     }
 }

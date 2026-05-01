@@ -100,8 +100,9 @@ namespace KitchenClash.Infrastructure.Network.Stations
             _restockTimer = 0f;
         }
 
-        public override bool CanInteract(PlayerController player)
+        public override bool CanInteract(object playerObj)
         {
+            var player = playerObj as PlayerController;
             if (player == null || player.IsHoldingObject())
             {
                 return false;

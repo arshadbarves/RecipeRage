@@ -1,6 +1,8 @@
 using KitchenClash.Presentation.Components;
 using KitchenClash.Infrastructure.Persistence;
 using KitchenClash.Application.Services;
+using KitchenClash.Application;
+using KitchenClash.Infrastructure.DI;
 using UnityEngine.UIElements;
 using VContainer;
 using KitchenClash.Presentation;
@@ -8,7 +10,7 @@ using KitchenClash.Domain;
 using KitchenClash.Presentation.Common;
 using KitchenClash.Infrastructure.EOS;
 using KitchenClash.Presentation.Extensions;
-using KitchenClash.Infrastructure.Localization;
+using KitchenClash.Presentation.ViewModels;
 
 namespace KitchenClash.Presentation.Screens
 {
@@ -20,7 +22,7 @@ namespace KitchenClash.Presentation.Screens
         [Inject] private IEventBus _eventBus;
         [Inject] private SessionManager _sessionManager;
         [Inject] private ISessionContext _sessionContext;
-        [Inject] private Core.Localization.ILocalizationManager _localizationManager;
+        [Inject] private ILocalizationManager _localizationManager;
 
         private LobbyTabComponent _lobbyTab;
         private ShopTabComponent _shopTab;

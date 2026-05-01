@@ -1,3 +1,4 @@
+#if FIREBASE_ANALYTICS
 using System.Collections.Generic;
 using KitchenClash.Domain;
 using Firebase.Analytics;
@@ -41,3 +42,26 @@ namespace KitchenClash.Infrastructure.Firebase
         }
     }
 }
+#else
+using System.Collections.Generic;
+using KitchenClash.Domain;
+
+namespace KitchenClash.Infrastructure.Firebase
+{
+    /// <summary>
+    /// Stub Firebase Analytics service when Firebase is not available.
+    /// </summary>
+    public sealed class FirebaseAnalyticsService : IAnalyticsService
+    {
+        public void LogEvent(string eventName, Dictionary<string, object> parameters = null)
+        {
+            GameLogger.Log($"[Analytics] {eventName}");
+        }
+
+        public void SetUserProperty(string name, string value)
+        {
+            GameLogger.Log($"[Analytics] SetUserProperty: {name}={value}");
+        }
+    }
+}
+#endif

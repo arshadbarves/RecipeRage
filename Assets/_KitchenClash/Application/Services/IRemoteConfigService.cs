@@ -1,6 +1,5 @@
 using System;
-using KitchenClash.Domain.Enums;
-using KitchenClash.Domain.Interfaces;
+using KitchenClash.Domain;
 using Cysharp.Threading.Tasks;
 
 namespace KitchenClash.Application.Services

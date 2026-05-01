@@ -1,5 +1,7 @@
 using System;
-using KitchenClash.Application.ViewModels;
+using KitchenClash.Domain;
+using KitchenClash.Presentation.ViewModels;
+using KitchenClash.Presentation;
 using KitchenClash.Presentation.Common;
 using DG.Tweening;
 using UnityEngine;

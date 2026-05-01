@@ -1,3 +1,5 @@
+using KitchenClash.Application.Models;
+using KitchenClash.Application;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -269,7 +271,7 @@ namespace KitchenClash.Presentation.Screens
 
         private void OnGameModeClicked(GameMode mode)
         {
-            if (_gameModeService.SelectGameMode(mode))
+            if (_gameModeService.SelectGameMode(mode.Id))
             {
                 _onGameModeSelected?.Invoke(mode);
                 UIService?.ShowNotification($"Mode changed to {mode.DisplayName}", NotificationType.Success, 2f);

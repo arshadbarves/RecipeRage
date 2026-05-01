@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using KitchenClash.Domain;
 
@@ -48,6 +49,13 @@ namespace KitchenClash.Infrastructure.Logging
 
         public LogEntry[] GetLogs() => _logs.ToArray();
         public void ClearLogs() => _logs.Clear();
+
+        public void SaveLogsToFile(string filePath)
+        {
+            var lines = _logs.Select(l => $"[{l.Timestamp}] [{l.Level}] [{l.Category}] {l.Message}");
+            File.WriteAllLines(filePath, lines);
+        }
+
         public void Dispose() => _logs.Clear();
     }
 }

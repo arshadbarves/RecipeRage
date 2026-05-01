@@ -1,10 +1,10 @@
+using KitchenClash.Application;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using KitchenClash.Infrastructure.EOS;
 using KitchenClash.Domain;
-using Epic.OnlineServices;
 using UGSFriends = Unity.Services.Friends;
 using UGSModels = Unity.Services.Friends.Models;
 using UGSNotifications = Unity.Services.Friends.Notifications;
@@ -262,16 +262,14 @@ namespace KitchenClash.Infrastructure.EOS
 
         #region Public Methods - Recent Players
 
-        public async void AddRecentPlayer(ProductUserId productUserId, string displayName)
+        public async void AddRecentPlayer(string productUserId, string displayName)
         {
-            if (!IsInitialized || productUserId == null || !productUserId.IsValid())
+            if (!IsInitialized || string.IsNullOrEmpty(productUserId))
                 return;
 
             try
             {
-                var playerIdStr = productUserId.ToString();
-
-                if (playerIdStr == _authManager.EosProductUserId)
+                if (productUserId == _authManager.EosProductUserId)
                     return;
 
                 GameLogger.Log($"Adding recent player: {displayName}");
@@ -280,7 +278,7 @@ namespace KitchenClash.Infrastructure.EOS
 
                 _recentPlayers.Insert(0, new FriendInfo
                 {
-                    FriendCode = playerIdStr,
+                    FriendCode = productUserId,
                     ProductUserId = productUserId,
                     DisplayName = displayName,
                     LastSeen = DateTime.UtcNow,
@@ -320,7 +318,7 @@ namespace KitchenClash.Infrastructure.EOS
                 return;
             }
 
-            if (friend.ProductUserId == null || !friend.ProductUserId.IsValid())
+            if (string.IsNullOrEmpty(friend.ProductUserId))
             {
                 GameLogger.LogError($"Invalid ProductUserId for friend: {friendCode}");
                 return;

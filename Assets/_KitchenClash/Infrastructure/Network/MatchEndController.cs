@@ -1,6 +1,8 @@
+using KitchenClash.Application.Models;
 using KitchenClash.Domain;
 using KitchenClash.Infrastructure.EOS;
 using KitchenClash.Application.Services;
+using KitchenClash.Infrastructure.DI;
 using Unity.Netcode;
 using UnityEngine;
 using VContainer;
@@ -22,7 +24,7 @@ namespace KitchenClash.Infrastructure.Network
         [Inject] private IMatchContext _matchContext;
         [Inject] private ISessionContext _sessionContext;
 
-        private Gameplay.GameModes.GameMode _selectedGameMode;
+        private GameMode _selectedGameMode;
         private bool _roundStarted;
         private bool _matchEnded;
 
@@ -119,7 +121,7 @@ namespace KitchenClash.Infrastructure.Network
 
             if (_gamePhaseSync != null)
             {
-                _gamePhaseSync.SetPhase(Gameplay.GameModes.GamePhase.Playing);
+                _gamePhaseSync.SetPhase(GamePhase.Playing);
             }
             else
             {
@@ -152,7 +154,7 @@ namespace KitchenClash.Infrastructure.Network
                 return;
             }
 
-            Gameplay.GameModes.MatchEndEvaluation evaluation = Gameplay.GameModes.MatchEndEvaluator.EvaluateScoreLimit(
+            MatchEndEvaluation evaluation = MatchEndEvaluator.EvaluateScoreLimit(
                 _scoreManager.GetTeamScores(),
                 _selectedGameMode.HasScoreLimit,
                 _selectedGameMode.TargetScore);
@@ -162,7 +164,7 @@ namespace KitchenClash.Infrastructure.Network
                 return;
             }
 
-            EndMatch(Gameplay.GameModes.MatchEndReason.ScoreLimitReached, evaluation);
+            EndMatch(MatchEndReason.ScoreLimitReached, evaluation);
         }
 
         private void HandleTimerExpired()
@@ -172,11 +174,11 @@ namespace KitchenClash.Infrastructure.Network
                 return;
             }
 
-            Gameplay.GameModes.MatchEndEvaluation evaluation = Gameplay.GameModes.MatchEndEvaluator.EvaluateFinalScores(_scoreManager?.GetTeamScores());
-            EndMatch(Gameplay.GameModes.MatchEndReason.TimerExpired, evaluation);
+            MatchEndEvaluation evaluation = MatchEndEvaluator.EvaluateFinalScores(_scoreManager?.GetTeamScores());
+            EndMatch(MatchEndReason.TimerExpired, evaluation);
         }
 
-        private void EndMatch(Gameplay.GameModes.MatchEndReason reason, Gameplay.GameModes.MatchEndEvaluation evaluation)
+        private void EndMatch(MatchEndReason reason, MatchEndEvaluation evaluation)
         {
             if (_matchEnded)
             {
@@ -192,7 +194,7 @@ namespace KitchenClash.Infrastructure.Network
 
             if (_matchResultSync != null)
             {
-                _matchResultSync.SetResult(Gameplay.GameModes.MatchResultState.FromEvaluation(reason, evaluation));
+                _matchResultSync.SetResult(MatchResultState.FromEvaluation(reason, evaluation));
             }
             else
             {
@@ -201,7 +203,7 @@ namespace KitchenClash.Infrastructure.Network
 
             if (_gamePhaseSync != null)
             {
-                _gamePhaseSync.SetPhase(Gameplay.GameModes.GamePhase.GameOver);
+                _gamePhaseSync.SetPhase(GamePhase.GameOver);
             }
 
             if (evaluation.IsDraw)

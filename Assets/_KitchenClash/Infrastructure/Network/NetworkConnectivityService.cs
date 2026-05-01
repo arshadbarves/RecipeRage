@@ -14,14 +14,16 @@ namespace KitchenClash.Infrastructure.Network
         private bool _prev = true;
         public bool IsOnline { get; private set; } = true;
         public event Action<bool> OnConnectivityChanged;
+        public event Action<bool> OnConnectionStatusChanged;
 
         void ITickable.Tick()
         {
-            bool now = Application.internetReachability != NetworkReachability.NotReachable;
+            bool now = UnityEngine.Application.internetReachability != NetworkReachability.NotReachable;
             if (now == _prev) return;
             _prev = now;
             IsOnline = now;
             OnConnectivityChanged?.Invoke(now);
+            OnConnectionStatusChanged?.Invoke(now);
         }
     }
 }

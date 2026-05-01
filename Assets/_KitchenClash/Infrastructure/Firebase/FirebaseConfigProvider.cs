@@ -1,6 +1,10 @@
+#if FIREBASE_REMOTE_CONFIG
 using System;
+using KitchenClash.Application.Services;
 using System.Collections.Generic;
 using KitchenClash.Domain;
+using KitchenClash.Infrastructure.Configuration;
+using KitchenClash.Infrastructure.Platform;
 using Cysharp.Threading.Tasks;
 using Firebase.RemoteConfig;
 using UnityEngine;
@@ -122,3 +126,4 @@ namespace KitchenClash.Infrastructure.Firebase
         }
     }
 }
+#endif

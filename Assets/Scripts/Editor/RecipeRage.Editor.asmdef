@@ -2,8 +2,11 @@
     "name": "RecipeRage.Editor",
     "rootNamespace": "RecipeRage.Editor",
     "references": [
-        "RecipeRage.Gameplay",
-        "RecipeRage.Core",
+        "KitchenClash.Domain",
+        "KitchenClash.Application",
+        "KitchenClash.Infrastructure",
+        "KitchenClash.Presentation",
+        "KitchenClash.Composition",
         "VContainer"
     ],
     "includePlatforms": [

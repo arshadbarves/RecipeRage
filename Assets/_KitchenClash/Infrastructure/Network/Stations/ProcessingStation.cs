@@ -203,8 +203,9 @@ namespace KitchenClash.Infrastructure.Network.Stations
         /// <summary>
         /// Check if the station can be interacted with.
         /// </summary>
-        public override bool CanInteract(PlayerController player)
+        public override bool CanInteract(object playerObj)
         {
+            var player = (PlayerController)playerObj;
             // Can't interact while processing
             if (_isProcessing)
             {

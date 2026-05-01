@@ -1,7 +1,7 @@
 using System;
 using System.Net;
 using System.Net.Sockets;
-using KitchenClash.Infrastructure.Logging;
+using KitchenClash.Domain;
 using KitchenClash.Application.Services;
 using Cysharp.Threading.Tasks;
 using UnityEngine;

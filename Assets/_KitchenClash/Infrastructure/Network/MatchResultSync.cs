@@ -56,7 +56,7 @@ namespace KitchenClash.Infrastructure.Network
             return System.HashCode.Combine(HasResult, WinningTeamId, WinningScore, IsDraw, (int)EndReason);
         }
 
-        public static MatchResultState FromEvaluation(MatchEndReason reason, Gameplay.GameModes.MatchEndEvaluation evaluation)
+        public static MatchResultState FromEvaluation(MatchEndReason reason, Domain.MatchEndEvaluation evaluation)
         {
             return new MatchResultState
             {

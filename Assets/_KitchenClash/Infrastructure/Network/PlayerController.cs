@@ -1,4 +1,9 @@
+using KitchenClash.Application.Models;
+using KitchenClash.Application;
 using System;
+using KitchenClash.Infrastructure.Gameplay;
+using KitchenClash.Infrastructure.DI;
+using KitchenClash.Application.Services;
 using System.Linq;
 using KitchenClash.Infrastructure.Input;
 using KitchenClash.Infrastructure.Camera;
@@ -11,8 +16,6 @@ using KitchenClash.Infrastructure.Persistence;
 using Unity.Collections;
 using VContainer;
 using VContainer.Unity;
-using Gameplay;
-
 
 namespace KitchenClash.Infrastructure.Network
 {
@@ -214,8 +217,8 @@ namespace KitchenClash.Infrastructure.Network
                 SetupInput();
                 _eventBus?.Publish(new LocalPlayerSpawnedEvent
                 {
-                    PlayerTransform = transform,
-                    PlayerObject = gameObject
+                    PlayerTransform = (object)transform,
+                    PlayerObject = (object)gameObject
                 });
             }
 
@@ -739,8 +742,9 @@ namespace KitchenClash.Infrastructure.Network
 
         #region IInteractable Implementation
 
-        public void Interact(PlayerController player)
+        public void Interact(object playerObj)
         {
+            var player = (PlayerController)playerObj;
             if (!IsServer) return;
 
             if (player.TeamId != TeamId)
@@ -761,8 +765,9 @@ namespace KitchenClash.Infrastructure.Network
             return "Slap!";
         }
 
-        public bool CanInteract(PlayerController player)
+        public bool CanInteract(object playerObj)
         {
+            var player = (PlayerController)playerObj;
             return player.TeamId != TeamId;
         }
 

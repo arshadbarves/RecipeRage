@@ -1,16 +1,13 @@
 using System.Reflection;
-using Gameplay;
-using Gameplay.App.State;
-using Gameplay.App.State.States;
-using Gameplay.Characters;
-using Gameplay.Cooking;
-using Gameplay.GameModes;
-using Gameplay.Scoring;
-using Gameplay.Shared;
-using Gameplay.Spawning;
-using Gameplay.UI;
-using Gameplay.UI.Features.GameOver;
-using Gameplay.UI.Features.Gameplay;
+using KitchenClash.Application.Services;
+using KitchenClash.Application.State;
+using KitchenClash.Domain;
+using KitchenClash.Infrastructure.Network;
+using KitchenClash.Infrastructure.Network.Cooking;
+using KitchenClash.Infrastructure.Network.Spawning;
+using KitchenClash.Infrastructure.States;
+using KitchenClash.Presentation.Screens;
+using KitchenClash.Presentation.ViewModels;
 using NUnit.Framework;
 using Unity.Netcode;
 using UnityEngine;
@@ -194,7 +191,7 @@ namespace RecipeRage.Tests.EditMode.Gameplay
         [TestCase(0, false, "TEAM 1 WINS!")]
         [TestCase(1, false, "TEAM 2 WINS!")]
         [TestCase(-1, true, "DRAW!")]
-        public void GameOverScreen_GetWinnerText_MapsResultToExpectedLabel(int winningTeamId, bool isDraw, string expected)
+        public void ResultsScreen_GetWinnerText_MapsResultToExpectedLabel(int winningTeamId, bool isDraw, string expected)
         {
             MatchResultState result = new MatchResultState
             {
@@ -205,13 +202,13 @@ namespace RecipeRage.Tests.EditMode.Gameplay
                 EndReason = MatchEndReason.TimerExpired
             };
 
-            Assert.AreEqual(expected, GameOverScreen.GetWinnerText(result));
+            Assert.AreEqual(expected, ResultsScreen.GetWinnerText(result));
         }
 
         [Test]
-        public void GameOverScreen_GetWinnerText_UsesNeutralFallback_WhenResultIsMissing()
+        public void ResultsScreen_GetWinnerText_UsesNeutralFallback_WhenResultIsMissing()
         {
-            Assert.AreEqual("MATCH COMPLETE", GameOverScreen.GetWinnerText(MatchResultState.None));
+            Assert.AreEqual("MATCH COMPLETE", ResultsScreen.GetWinnerText(MatchResultState.None));
         }
 
         private sealed class FakeGameStateManager : IGameStateManager
@@ -250,7 +247,7 @@ namespace RecipeRage.Tests.EditMode.Gameplay
         {
             public NetworkManager NetworkManager => null;
             public ulong? LocalClientId => null;
-            public int? LocalTeamId => null;
+            public int LocalTeamId => -1;
             public PlayerController LocalPlayer => null;
             public NetworkScoreManager NetworkScoreManager => null;
             public RoundTimer RoundTimer => null;
@@ -258,10 +255,8 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             public MatchResultSync MatchResultSync => null;
             public OrderManager OrderManager => null;
             public ScoreManager ScoreManager => null;
-            public MobileControlsManager MobileControlsManager => null;
             public SpawnManager SpawnManager => null;
             public IngredientNetworkSpawner IngredientNetworkSpawner => null;
-            public IBotKitchenRuntime BotKitchenRuntime => null;
             public IKitchenSupportRuntime KitchenSupportRuntime => null;
             public bool IsHost => false;
             public bool IsServer => false;

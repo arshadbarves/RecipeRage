@@ -1,5 +1,7 @@
+using KitchenClash.Application;
 using System.Collections.Generic;
-using KitchenClash.Application.State.States;
+using KitchenClash.Application.Services;
+using KitchenClash.Infrastructure.States;
 using KitchenClash.Infrastructure.Network.Bot;
 using KitchenClash.Domain;
 using KitchenClash.Infrastructure.Network.Spawning;
@@ -70,7 +72,7 @@ namespace KitchenClash.Infrastructure.Network
             }
 
             var localUserId = EOSManager.Instance.GetProductUserId();
-            bool isHost = matchLobby.IsOwner(localUserId);
+            bool isHost = matchLobby.IsOwner(localUserId?.ToString());
 
             GameLogger.Log($"Starting game - IsHost: {isHost}, Lobby: {matchLobby.LobbyId}");
 
@@ -184,7 +186,7 @@ namespace KitchenClash.Infrastructure.Network
                 return;
             }
 
-            var botSpawner = new Gameplay.Networking.Bot.BotSpawner(_playerPrefab, NetcodeManager, _spawnManager);
+            var botSpawner = new Bot.BotSpawner(_playerPrefab, NetcodeManager, _spawnManager);
 
             _botSpawnerRegistry.BotSpawner = botSpawner;
 
@@ -206,9 +208,9 @@ namespace KitchenClash.Infrastructure.Network
             GameLogger.Log("LatencyMonitor initialized (Pure C#)");
         }
 
-        private void StartAsClient(ProductUserId hostUserId)
+        private void StartAsClient(string hostUserIdStr)
         {
-            GameLogger.Log($"Starting as client, connecting to host: {hostUserId}");
+            GameLogger.Log($"Starting as client, connecting to host: {hostUserIdStr}");
 
             _spawnManager = _matchContext?.SpawnManager;
 
@@ -221,7 +223,7 @@ namespace KitchenClash.Infrastructure.Network
                 return;
             }
 
-            transport.ServerUserIdToConnectTo = hostUserId;
+            transport.ServerUserIdToConnectTo = ProductUserId.FromString(hostUserIdStr);
 
             bool success = NetcodeManager.StartClient();
 

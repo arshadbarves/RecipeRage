@@ -109,8 +109,9 @@ namespace KitchenClash.Infrastructure.Network.Stations
             // For now, let's say interacting starts it.
         }
 
-        public override bool CanInteract(PlayerController player)
+        public override bool CanInteract(object playerObj)
         {
+             var player = (PlayerController)playerObj;
              // Can interact if there are dirty dishes and we aren't already washing
              // And if player belongs to this team
              return _dirtyPlateCount.Value > 0 && !_isWashing.Value && player.TeamId == _teamId;

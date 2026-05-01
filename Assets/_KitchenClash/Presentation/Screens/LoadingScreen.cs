@@ -1,11 +1,14 @@
+using KitchenClash.Application;
 using KitchenClash.Presentation;
+using KitchenClash.Domain;
 using DG.Tweening;
 using KitchenClash.Presentation.Common;
 using KitchenClash.Infrastructure.Animation;
 using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;
-using KitchenClash.Infrastructure.Localization;
+using KitchenClash.Application.Services;
+using KitchenClash.Presentation.ViewModels;
 
 namespace KitchenClash.Presentation.Screens
 {
@@ -57,7 +60,7 @@ namespace KitchenClash.Presentation.Screens
         protected override void OnShow()
         {
             base.OnShow();
-            _animationService?.UI.FloatYoyo(_gameTitle, -12f, 2.0f);
+            _animationService?.FloatYoyo(_gameTitle, -12f, 2.0f);
         }
 
         private void OnTipChanged(string newTip)
@@ -72,7 +75,7 @@ namespace KitchenClash.Presentation.Screens
                 return;
             }
 
-            _animationService?.UI.CrossfadeLabel(_tipText, newTip, 15f, 0.8f);
+            _animationService?.CrossfadeLabel(_tipText, newTip, 15f, 0.8f);
         }
 
         private void AnimateProgress(float progress)

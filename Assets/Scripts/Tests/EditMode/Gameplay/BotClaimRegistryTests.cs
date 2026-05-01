@@ -1,4 +1,4 @@
-using Gameplay.Networking.Bot;
+using KitchenClash.Application.Services;
 using NUnit.Framework;
 
 namespace RecipeRage.Tests.EditMode.Gameplay

@@ -12,15 +12,13 @@ namespace KitchenClash.Infrastructure.EOS
     /// Google/Facebook/Apple tokens link directly to EOS Connect.
     /// Guest = EOS Device ID.
     /// </summary>
-    public sealed class EOSAuthService : IAuthService
+    public sealed class EOSAuthService
     {
-        private readonly EOSManager _eos;
         private string _productUserId;
         private bool _isGuest;
 
         public EOSAuthService()
         {
-            _eos = EOSManager.Instance;
         }
 
         public string ProductUserId => _productUserId;
@@ -31,9 +29,12 @@ namespace KitchenClash.Infrastructure.EOS
         {
             try
             {
-                var options = new CreateDeviceIdOptions { DeviceModel = "Unity" };
-                // Create device ID then login
-                var connectInterface = _eos.GetEOSConnectInterface();
+                // TODO: EOS SDK version compatibility - connect interface access may differ across EOS SDK versions.
+                ConnectInterface connectInterface = EOSManager.Instance.GetEOSConnectInterface();
+                if (connectInterface == null)
+                {
+                    return AuthResult.Failed("EOS Connect interface not available");
+                }
 
                 var loginOptions = new LoginOptions
                 {

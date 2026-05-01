@@ -8,7 +8,7 @@ namespace KitchenClash.Application.Services
         string ProviderName { get; }
         bool IsAvailable();
         UniTask<bool> Initialize();
-        UniTask<T> FetchConfig<T>(string key) where T : Domain.Interfaces.IConfigModel;
-        UniTask<Dictionary<string, Domain.Interfaces.IConfigModel>> FetchAllConfigs();
+        UniTask<T> FetchConfig<T>(string key) where T : KitchenClash.Domain.IConfigModel;
+        UniTask<Dictionary<string, KitchenClash.Domain.IConfigModel>> FetchAllConfigs();
     }
 }

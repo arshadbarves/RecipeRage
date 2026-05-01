@@ -1,5 +1,7 @@
+using KitchenClash.Application;
 using System.Collections;
 using KitchenClash.Domain;
+using KitchenClash.Infrastructure.Network;
 using UnityEngine;
 
 namespace KitchenClash.Infrastructure.Audio
@@ -23,7 +25,7 @@ namespace KitchenClash.Infrastructure.Audio
         private void CreateMusicSource()
         {
             GameObject musicObj = new GameObject("MusicSource");
-            if (Application.isPlaying)
+            if (UnityEngine.Application.isPlaying)
             {
                 Object.DontDestroyOnLoad(musicObj);
             }

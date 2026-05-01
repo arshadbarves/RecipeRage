@@ -1,3 +1,5 @@
+using KitchenClash.Application.Models;
+using KitchenClash.Application;
 using System;
 using KitchenClash.Domain;
 using KitchenClash.Infrastructure.Network;
@@ -67,7 +69,7 @@ namespace KitchenClash.Infrastructure.EOS
             GameLogger.Log($"Setting player team: {teamId}");
         }
 
-        public void SetPlayerCharacterClass(CharacterClass characterClass)
+        public void SetPlayerCharacterClass(int characterClassId)
         {
             if (_currentLobby == null)
             {
@@ -82,11 +84,11 @@ namespace KitchenClash.Infrastructure.EOS
                 return;
             }
 
-            AddMemberAttribute("CharacterClass", ((int)characterClass).ToString());
-            GameLogger.Log($"Setting player character class: {characterClass}");
+            AddMemberAttribute("CharacterClass", characterClassId.ToString());
+            GameLogger.Log($"Setting player character class: {characterClassId}");
         }
 
-        public void InviteFriend(ProductUserId friendId)
+        public void InviteFriend(string friendProductUserId)
         {
             if (_currentLobby == null)
             {
@@ -94,17 +96,18 @@ namespace KitchenClash.Infrastructure.EOS
                 return;
             }
 
-            if (!friendId.IsValid())
+            if (string.IsNullOrEmpty(friendProductUserId))
             {
                 GameLogger.LogError("Invalid friend ProductUserId");
                 return;
             }
 
+            var friendId = ProductUserId.FromString(friendProductUserId);
             _eosLobbyManager.SendInvite(friendId);
-            GameLogger.Log($"Sent invite to friend: {friendId}");
+            GameLogger.Log($"Sent invite to friend: {friendProductUserId}");
         }
 
-        public void KickPlayer(ProductUserId playerId)
+        public void KickPlayer(string playerProductUserId)
         {
             if (_currentLobby == null || !_currentLobby.IsOwner(EOSManager.Instance.GetProductUserId()))
             {
@@ -112,17 +115,18 @@ namespace KitchenClash.Infrastructure.EOS
                 return;
             }
 
-            if (!playerId.IsValid())
+            if (string.IsNullOrEmpty(playerProductUserId))
             {
                 GameLogger.LogError("Invalid player ProductUserId");
                 return;
             }
 
+            var playerId = ProductUserId.FromString(playerProductUserId);
             _eosLobbyManager.KickMember(playerId, (result) =>
             {
                 if (result == Result.Success)
                 {
-                    GameLogger.Log($"Kicked player: {playerId}");
+                    GameLogger.Log($"Kicked player: {playerProductUserId}");
                 }
                 else
                 {

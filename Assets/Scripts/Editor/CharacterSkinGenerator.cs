@@ -1,7 +1,20 @@
 using System;
+using KitchenClash.Composition;
+using KitchenClash.Presentation.Controls;
+using KitchenClash.Presentation.Common;
+using KitchenClash.Infrastructure.EOS;
+using KitchenClash.Infrastructure.Persistence;
+using KitchenClash.Infrastructure.DI;
+using KitchenClash.Infrastructure.Network.Bot;
+using KitchenClash.Infrastructure.Network.Spawning;
+using KitchenClash.Infrastructure.Network.Cooking;
+using KitchenClash.Infrastructure.Network;
+using KitchenClash.Application.State;
+using KitchenClash.Application.Services;
 using System.IO;
-using Gameplay.Characters;
-using Gameplay.Skins.Data;
+using KitchenClash.Domain;
+using KitchenClash.Application.Models;
+using KitchenClash.Infrastructure.Gameplay;
 using UnityEditor;
 using UnityEngine;
 

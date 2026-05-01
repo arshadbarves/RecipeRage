@@ -1,5 +1,6 @@
 using System;
-using KitchenClash.Domain.Interfaces;
+using System.Threading.Tasks;
+using KitchenClash.Domain;
 
 namespace KitchenClash.Application.Services
 {
@@ -12,24 +13,14 @@ namespace KitchenClash.Application.Services
             _remoteConfigService = remoteConfigService;
         }
 
-        public int GetInt(string key, int defaultValue)
+        public T Get<T>(string key, T fallback)
         {
-            return defaultValue; // TODO: implement via remote config custom rules
+            return fallback; // TODO: implement via remote config
         }
 
-        public float GetFloat(string key, float defaultValue)
+        public Task FetchAsync()
         {
-            return defaultValue;
-        }
-
-        public bool GetBool(string key, bool defaultValue)
-        {
-            return defaultValue;
-        }
-
-        public string GetString(string key, string defaultValue)
-        {
-            return defaultValue;
+            return Task.CompletedTask; // TODO: delegate to remote config
         }
     }
 }

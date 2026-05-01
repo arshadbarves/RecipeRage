@@ -6,7 +6,9 @@
         "KitchenClash.Application",
         "VContainer",
         "UniTask",
-        "DOTween.Modules"
+        "DOTween.Modules",
+        "KitchenClash.Infrastructure",
+        "Unity.Netcode.Runtime"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

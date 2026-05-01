@@ -1,5 +1,5 @@
 using System;
-using KitchenClash.Infrastructure.Localization;
+using KitchenClash.Application.Services;
 using UnityEngine.UIElements;
 
 namespace KitchenClash.Presentation.Extensions

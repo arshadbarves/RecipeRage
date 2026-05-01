@@ -57,6 +57,26 @@ namespace KitchenClash.Application
             OnOrderExpired?.Invoke(order);
         }
 
+        public bool TryGetBestActiveOrder<T>(IReadOnlyList<T> orders, Func<T, bool> predicate, out T bestOrder)
+        {
+            bestOrder = default;
+            foreach (var order in orders)
+            {
+                if (predicate(order))
+                {
+                    bestOrder = order;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public float GetRemainingTime(RecipeOrderState order, float currentTime)
+        {
+            float elapsed = currentTime - order.CreationTime;
+            return Math.Max(0f, order.TimeLimit - elapsed);
+        }
+
         private int CalculateScore(int tier, float speedRatio, int combo)
         {
             float mult = tier == 3

@@ -2,6 +2,7 @@ namespace KitchenClash.Domain
 {
     public interface IConfigModel
     {
-        bool Validate();
+        bool IsValid();
+        bool Validate() => IsValid();
     }
 }

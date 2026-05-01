@@ -74,4 +74,31 @@ namespace KitchenClash.Domain
     {
         public ScreenId Screen { get; set; }
     }
+
+    public sealed class CameraShakeEvent
+    {
+        public float Intensity { get; set; }
+        public float Duration { get; set; }
+
+        public CameraShakeEvent(float intensity, float duration)
+        {
+            Intensity = intensity;
+            Duration = duration;
+        }
+    }
+
+    public sealed class LocalPlayerSpawnedEvent
+    {
+        /// <summary>Player transform (object to avoid Unity ref in Domain). Cast to Transform.</summary>
+        public object PlayerTransform { get; set; }
+        /// <summary>Player game object (object to avoid Unity ref in Domain). Cast to GameObject.</summary>
+        public object PlayerObject { get; set; }
+    }
+
+    public sealed class LocalPlayerDespawnedEvent { }
+
+    public sealed class MaintenanceCheckFailedEvent
+    {
+        public string Error { get; set; }
+    }
 }

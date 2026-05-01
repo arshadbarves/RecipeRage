@@ -1,7 +1,10 @@
+using KitchenClash.Application.Models;
+using KitchenClash.Application;
+using KitchenClash.Presentation;
 using KitchenClash.Presentation.Common;
 using KitchenClash.Presentation.Overlays;
 using KitchenClash.Presentation.Screens;
-using KitchenClash.Application.ViewModels;
+using KitchenClash.Presentation.ViewModels;
 using KitchenClash.Infrastructure.Animation;
 using KitchenClash.Infrastructure.Network;
 using KitchenClash.Infrastructure.Localization;

@@ -2,7 +2,12 @@
     "name": "KitchenClash.Application",
     "rootNamespace": "KitchenClash.Application",
     "references": [
-        "KitchenClash.Domain"
+        "KitchenClash.Domain",
+        "UniTask",
+        "VContainer",
+        "com.Epic.OnlineServices",
+        "com.playeveryware.eos",
+        "com.playeveryware.eos.samples"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -12,5 +17,5 @@
     "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [],
-    "noEngineReferences": true
+    "noEngineReferences": false
 }

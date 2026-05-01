@@ -4,7 +4,9 @@ using KitchenClash.Presentation;
 using KitchenClash.Domain;
 using KitchenClash.Presentation.Common;
 using KitchenClash.Infrastructure.EOS;
+using KitchenClash.Infrastructure.Network;
 using KitchenClash.Application.Services;
+using KitchenClash.Infrastructure.DI;
 
 namespace KitchenClash.Presentation.Screens
 {

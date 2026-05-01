@@ -1,4 +1,6 @@
+using KitchenClash.Application;
 using System;
+using KitchenClash.Application.Services;
 using KitchenClash.Infrastructure.Network;
 using KitchenClash.Domain;
 using KitchenClash.Application.State;
@@ -121,7 +123,7 @@ namespace KitchenClash.Infrastructure.Network
 
                 if (ugsConfig.enableFriendsSystem)
                 {
-                    FriendsService = new FriendsService(LobbyManager, _authService);
+                    FriendsService = new EOSFriendsService(LobbyManager, _authService);
                     FriendsService.Initialize();
                     GameLogger.Log("Unity Friends Service initialized");
                 }

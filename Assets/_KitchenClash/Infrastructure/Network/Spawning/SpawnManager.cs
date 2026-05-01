@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using KitchenClash.Application.Services;
 using System.Linq;
 using KitchenClash.Infrastructure.Network.Bot;
 using KitchenClash.Domain;
@@ -233,7 +234,7 @@ namespace KitchenClash.Infrastructure.Network.Spawning
                 return;
             }
 
-            var playerController = networkObject.GetComponent<Gameplay.Characters.PlayerController>();
+            var playerController = networkObject.GetComponent<PlayerController>();
             if (playerController != null)
             {
                 playerController.SetTeam(teamId);
