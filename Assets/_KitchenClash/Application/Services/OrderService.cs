@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using KitchenClash.Application.Services;
 using KitchenClash.Domain;
 
 namespace KitchenClash.Application
@@ -8,10 +9,15 @@ namespace KitchenClash.Application
     public sealed class OrderService : IOrderService
     {
         private readonly IConfigService _cfg;
+        private readonly RecipeCatalog _catalog;
         private readonly List<OrderModel> _activeOrders = new();
         private readonly Random _random = new();
 
-        public OrderService(IConfigService cfg) => _cfg = cfg;
+        public OrderService(IConfigService cfg, RecipeCatalog catalog)
+        {
+            _cfg = cfg;
+            _catalog = catalog;
+        }
 
         public IReadOnlyList<OrderModel> ActiveOrders => _activeOrders;
 
@@ -21,12 +27,34 @@ namespace KitchenClash.Application
 
         public OrderModel GenerateOrder(float matchTimeRemaining)
         {
-            int recipeId = _random.Next(1, 10);
-            int tier = recipeId <= 3 ? 1 : recipeId <= 6 ? 2 : 3;
-            float baseTime = _cfg.Get("order_base_time", 30f);
-            float timeLimit = baseTime + (tier * 10f);
+            var allRecipes = _catalog.GetAll();
+            if (allRecipes.Count == 0)
+                return null;
 
-            var order = new OrderModel(Guid.NewGuid(), recipeId, tier, timeLimit, matchTimeRemaining);
+            // Pick a tier weighted by match time remaining:
+            // Early match → more tier 1-2, late match → more tier 2-3
+            int maxTier = matchTimeRemaining > 120f ? 2 : 3;
+            int minTier = matchTimeRemaining > 180f ? 1 : (matchTimeRemaining > 60f ? 1 : 2);
+
+            var candidates = allRecipes
+                .Where(r => r.Tier >= minTier && r.Tier <= maxTier)
+                .ToList();
+
+            if (candidates.Count == 0)
+                candidates = allRecipes.ToList();
+
+            var recipe = candidates[_random.Next(candidates.Count)];
+
+            var order = new OrderModel(
+                Guid.NewGuid(),
+                recipe.RecipeId,
+                recipe.Tier,
+                recipe.RequiredIngredients,
+                recipe.BaseTimeLimitSec,
+                matchTimeRemaining
+            );
+            order.PointValue = recipe.BasePoints;
+
             _activeOrders.Add(order);
             OnOrderGenerated?.Invoke(order);
             return order;
@@ -48,7 +76,8 @@ namespace KitchenClash.Application
                 Success = true,
                 OrderId = orderId,
                 TimeBonus = speedRatio,
-                ComboMultiplier = combo
+                ComboMultiplier = combo,
+                Score = order.PointValue
             };
 
             OnOrderCompleted?.Invoke(order);

@@ -9,6 +9,9 @@ public class MatchLifetimeScope : LifetimeScope
 {
     protected override void Configure(IContainerBuilder builder)
     {
+        // Recipe catalog
+        builder.Register<RecipeCatalog>(Lifetime.Scoped);
+
         // Match services
         builder.Register<ScoreService>(Lifetime.Scoped).As<IScoreService>();
         builder.Register<OrderService>(Lifetime.Scoped).As<IOrderService>();
