@@ -1,0 +1,63 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="../Styles/theme.uss" />
+    <Style src="../Styles/screens.uss" />
+
+    <ui:VisualElement name="season-pass-root" class="screen-root season-pass-root">
+
+        <!-- Header -->
+        <ui:VisualElement class="season-pass-header">
+            <ui:Button name="back-button" text="‹" class="back-btn" />
+            <ui:Label name="season-title" text="SEASON PASS" class="screen-title" />
+            <ui:VisualElement class="season-timer">
+                <ui:Label name="lbl-season-timer" text="14d 6h left" class="season-timer__label" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Progress Bar -->
+        <ui:VisualElement class="season-progress">
+            <ui:Label name="lbl-season-level" text="Tier 12 / 50" class="season-progress__level" />
+            <ui:VisualElement class="season-progress__bar">
+                <ui:VisualElement name="progress-fill" class="season-progress__fill" style="width: 24%;" />
+            </ui:VisualElement>
+            <ui:Label name="lbl-season-xp" text="1,200 / 5,000 XP" class="season-progress__xp" />
+        </ui:VisualElement>
+
+        <!-- Reward Track (horizontal scroll) -->
+        <ui:ScrollView mode="Horizontal" name="reward-track-scroll" class="reward-track-scroll">
+            <ui:VisualElement name="reward-track" class="reward-track">
+                <!-- Tier items populated dynamically -->
+                <ui:VisualElement class="reward-tier reward-tier--claimed">
+                    <ui:Label text="1" class="reward-tier__number" />
+                    <ui:VisualElement class="reward-tier__icon" />
+                    <ui:Label text="100 Coins" class="reward-tier__label" />
+                </ui:VisualElement>
+                <ui:VisualElement class="reward-tier reward-tier--claimed">
+                    <ui:Label text="2" class="reward-tier__number" />
+                    <ui:VisualElement class="reward-tier__icon" />
+                    <ui:Label text="Spatula Skin" class="reward-tier__label" />
+                </ui:VisualElement>
+                <ui:VisualElement class="reward-tier reward-tier--current">
+                    <ui:Label text="3" class="reward-tier__number" />
+                    <ui:VisualElement class="reward-tier__icon" />
+                    <ui:Label text="50 Gems" class="reward-tier__label" />
+                </ui:VisualElement>
+                <ui:VisualElement class="reward-tier">
+                    <ui:Label text="4" class="reward-tier__number" />
+                    <ui:VisualElement class="reward-tier__icon" />
+                    <ui:Label text="Chef Hat" class="reward-tier__label" />
+                </ui:VisualElement>
+                <ui:VisualElement class="reward-tier">
+                    <ui:Label text="5" class="reward-tier__number" />
+                    <ui:VisualElement class="reward-tier__icon" />
+                    <ui:Label text="500 Coins" class="reward-tier__label" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:ScrollView>
+
+        <!-- Buy Button -->
+        <ui:Button name="buy-pass-button" class="season-buy-btn">
+            <ui:Label text="UPGRADE TO PREMIUM" class="season-buy-btn__label" />
+        </ui:Button>
+
+    </ui:VisualElement>
+</ui:UXML>

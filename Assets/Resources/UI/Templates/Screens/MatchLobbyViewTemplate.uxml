@@ -1,0 +1,31 @@
+<UXML xmlns="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <VisualElement name="match-lobby-root" class="screen-root">
+        <Label text="MATCH LOBBY" class="screen-title" />
+        <Label name="lbl-lobby-timer" text="Starting in 0:30" class="lobby-timer" />
+        <VisualElement class="lobby-teams">
+            <VisualElement class="lobby-team">
+                <Label text="TEAM A" class="lobby-team-title" />
+                <VisualElement name="team-a-slot-1" class="lobby-player-slot">
+                    <Label text="Waiting..." class="lobby-player-slot-name" />
+                </VisualElement>
+                <VisualElement name="team-a-slot-2" class="lobby-player-slot">
+                    <Label text="Waiting..." class="lobby-player-slot-name" />
+                </VisualElement>
+            </VisualElement>
+            <Label text="VS" class="lobby-vs" />
+            <VisualElement class="lobby-team">
+                <Label text="TEAM B" class="lobby-team-title" />
+                <VisualElement name="team-b-slot-1" class="lobby-player-slot">
+                    <Label text="Waiting..." class="lobby-player-slot-name" />
+                </VisualElement>
+                <VisualElement name="team-b-slot-2" class="lobby-player-slot">
+                    <Label text="Waiting..." class="lobby-player-slot-name" />
+                </VisualElement>
+            </VisualElement>
+        </VisualElement>
+        <VisualElement name="map-preview" class="lobby-map-preview">
+            <Label name="lbl-map-name" text="Sushi Shuffle" class="lobby-map-preview-name" />
+        </VisualElement>
+        <Button name="btn-ready" text="READY" class="lobby-ready-btn" />
+    </VisualElement>
+</UXML>

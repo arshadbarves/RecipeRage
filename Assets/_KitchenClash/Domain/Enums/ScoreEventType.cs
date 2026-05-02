@@ -4,6 +4,11 @@ namespace KitchenClash.Domain
     {
         DishServed,
         BurnedServed,
-        FirePenalty
+        FirePenalty,
+        SpeedBonus,
+        RhythmBonus,
+        ComboBonus,
+        PlatePerfect,
+        RushMultiplier
     }
 }

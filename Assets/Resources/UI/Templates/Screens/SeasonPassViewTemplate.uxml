@@ -1,0 +1,20 @@
+<UXML xmlns="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <VisualElement name="season-pass-root" class="screen-root">
+        <VisualElement class="season-pass-header">
+            <Button name="back-button" text="‹" class="back-btn" />
+            <Label name="season-title" text="SEASON PASS" class="screen-title" />
+            <Label name="lbl-season-timer" text="14d 6h left" class="season-timer-label" />
+        </VisualElement>
+        <VisualElement class="season-progress">
+            <Label name="lbl-season-level" text="Tier 12 / 50" class="season-progress-level" />
+            <VisualElement class="season-progress-bar">
+                <VisualElement name="progress-fill" class="season-progress-fill" style="width: 24%;" />
+            </VisualElement>
+            <Label name="lbl-season-xp" text="1,200 / 5,000 XP" class="season-progress-xp" />
+        </VisualElement>
+        <ScrollView mode="Horizontal" name="reward-track-scroll" class="reward-track-scroll">
+            <VisualElement name="reward-track" class="reward-track" />
+        </ScrollView>
+        <Button name="buy-pass-button" text="UPGRADE TO PREMIUM" class="season-buy-btn" />
+    </VisualElement>
+</UXML>

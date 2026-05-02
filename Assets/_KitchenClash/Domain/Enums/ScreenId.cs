@@ -22,6 +22,7 @@ namespace KitchenClash.Domain
         NoInternet,
         UsernamePopup,
         JoystickEditor,
-        Notification
+        Notification,
+        SeasonPass
     }
 }

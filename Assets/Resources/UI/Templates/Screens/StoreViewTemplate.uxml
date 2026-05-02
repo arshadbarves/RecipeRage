@@ -1,0 +1,11 @@
+<UXML xmlns="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <VisualElement name="store-root" class="screen-root">
+        <VisualElement class="store-header">
+            <Button name="back-button" text="‹ Back" class="back-btn" />
+            <Label name="store-title" text="STORE" class="screen-title" />
+        </VisualElement>
+        <ScrollView class="store-scroll">
+            <VisualElement name="store-items-grid" class="store-items-grid" />
+        </ScrollView>
+    </VisualElement>
+</UXML>

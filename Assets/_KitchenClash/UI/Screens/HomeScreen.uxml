@@ -4,6 +4,13 @@
 
     <ui:VisualElement name="home-root" class="home-root">
 
+        <!-- Compatibility elements for presenter queries (hidden) -->
+        <ui:Label name="gold-amount" text="0" style="display: none;" />
+        <ui:Label name="player-nick" text="" style="display: none;" />
+        <ui:VisualElement name="main-tabs" style="display: none;" />
+        <ui:VisualElement name="lobby-root" style="display: none;" />
+        <ui:VisualElement name="shop-root" style="display: none;" />
+
         <!-- ── Top Bar ── -->
         <ui:VisualElement class="top-bar">
             <ui:Button name="btn-settings" class="top-bar__btn">
@@ -19,7 +26,7 @@
                 </ui:Button>
                 <ui:VisualElement class="gem-badge">
                     <ui:Label text="💎" />
-                    <ui:Label name="lbl-gems" text="250" class="gem-badge__label" />
+                    <ui:Label name="gems-amount" text="250" class="gem-badge__label" />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
@@ -27,8 +34,8 @@
         <!-- ── Chef Display + Party Panel ── -->
         <ui:VisualElement class="chef-section">
             <ui:VisualElement class="chef-card">
-                <ui:Label name="lbl-chef-name" text="Chef Rosa" class="chef-card__name" />
-                <ui:Label name="lbl-trophies" text="★ 850 trophies" class="chef-card__trophies" />
+                <ui:Label name="player-name-main" text="Chef Rosa" class="chef-card__name" />
+                <ui:Label name="player-sub-main" text="★ 850 trophies" class="chef-card__trophies" />
                 <ui:VisualElement name="chef-model-area" class="chef-card__model-area" />
             </ui:VisualElement>
             <ui:VisualElement class="party-panel">

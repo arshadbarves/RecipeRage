@@ -1,0 +1,13 @@
+<UXML xmlns="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <VisualElement name="daily-streak-root" class="popup-root">
+        <VisualElement class="popup-backdrop" />
+        <VisualElement class="popup-card">
+            <Button name="close-button" text="✕" class="popup-close-btn" />
+            <Label name="streak-day" text="Day 1" class="streak-day-label" />
+            <Label name="reward-description" text="" class="reward-desc-label" />
+            <Label name="reward-amount" text="" class="reward-amount-label" />
+            <VisualElement name="upcoming-rewards" class="upcoming-rewards-container" />
+            <Button name="claim-button" text="CLAIM" class="claim-btn" />
+        </VisualElement>
+    </VisualElement>
+</UXML>
