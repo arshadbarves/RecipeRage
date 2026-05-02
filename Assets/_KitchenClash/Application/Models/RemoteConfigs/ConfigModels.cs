@@ -27,7 +27,6 @@ namespace KitchenClash.Application.Models.RemoteConfigs
         public float FireResistance = -1f;
         public int CarryCapacity = -1;
         public float ScoreMultiplier = -1f;
-        public float InteractRange = -1f;
     }
 
     [Serializable]

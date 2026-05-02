@@ -1,5 +1,15 @@
 {
   "dependencies": {
+    "com.coplaydev.coplay": {
+      "version": "https://github.com/CoplayDev/coplay-unity-plugin.git#beta",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.inputsystem": "1.1.1",
+        "com.unity.cloud.gltfast": "6.12.1"
+      },
+      "hash": "8fc764ffc1d3ccb7a0a9e9797c1ad239fce9edb2"
+    },
     "com.cysharp.unitask": {
       "version": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask",
       "depth": 0,

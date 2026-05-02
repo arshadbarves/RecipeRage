@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.coplaydev.coplay": "https://github.com/CoplayDev/coplay-unity-plugin.git#beta",
     "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask",
     "com.playeveryware.eos": "https://github.com/EOS-Contrib/eos_plugin_for_unity_upm.git",
     "com.unity.addressables": "2.9.0",

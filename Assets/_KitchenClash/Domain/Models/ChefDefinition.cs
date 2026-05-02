@@ -1,7 +1,7 @@
 namespace KitchenClash.Domain
 {
     /// <summary>
-    /// Immutable GDD chef definition: identity, stats, unlock gate, 4 ability slots.
+    /// Immutable GDD v3 chef definition: identity, stats, unlock gate, abilities (passive/active/super/gadget).
     /// </summary>
     public sealed class ChefDefinition
     {

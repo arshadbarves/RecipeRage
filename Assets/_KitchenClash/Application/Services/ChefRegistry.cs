@@ -44,7 +44,12 @@ namespace KitchenClash.Application.Services
                 case UnlockType.Level:
                     return playerLevel >= chef.Unlock.Value;
                 case UnlockType.Shop:
-                    // Shop chefs are unlocked once purchased; economy tracks ownership.
+                    return economy != null && economy.HasItem($"chef_{chef.Id}");
+                case UnlockType.Wins:
+                case UnlockType.Trophies:
+                case UnlockType.Matches:
+                case UnlockType.BattlePass:
+                    // Progression-based unlocks are tracked by economy/progression service.
                     return economy != null && economy.HasItem($"chef_{chef.Id}");
                 default:
                     return false;
@@ -71,7 +76,8 @@ namespace KitchenClash.Application.Services
                     ov.CookingSpeedMultiplier >= 0 ? ov.CookingSpeedMultiplier : stats.CookSpeedMult,
                     ov.FireResistance >= 0 ? ov.FireResistance : stats.BurnResistance,
                     ov.CarryCapacity >= 0 ? ov.CarryCapacity : stats.CarryCapacity,
-                    ov.InteractRange >= 0 ? ov.InteractRange : stats.InteractRange
+                    stats.InteractRange,
+                    ov.ScoreMultiplier >= 0 ? ov.ScoreMultiplier : stats.ScoreMultiplier
                 );
 
                 _chefs[chefId] = new ChefDefinition(
@@ -85,7 +91,7 @@ namespace KitchenClash.Application.Services
 
         private static IEnumerable<ChefDefinition> BuildAll()
         {
-            // 1. Rosa — balanced, Italian grandmother. Starter.
+            // 1. Rosa — balanced, Italian grandmother. Free starter.
             yield return new ChefDefinition(
                 ChefId.Rosa,
                 "Rosa",
@@ -97,61 +103,61 @@ namespace KitchenClash.Application.Services
                 AbilityType.KitchenRush,
                 AbilityType.StickyMat);
 
-            // 2. Marco — speed-focused, young culinary student. Level 5 (GDD: 5 wins).
+            // 2. Marco — long range tosser, young culinary student. 5 wins.
             yield return new ChefDefinition(
                 ChefId.Marco,
                 "Marco",
                 "Young culinary student who compensates with raw speed and hustle.",
                 new ChefStatBlock(1.3f, 1.0f, 0.0f, 1, 1.0f),
-                UnlockRequirement.AtLevel(5),
+                UnlockRequirement.ForWins(5),
                 AbilityType.LongToss,
                 AbilityType.FlavorBurst,
                 AbilityType.GrandService,
                 AbilityType.RecipeShortcut);
 
-            // 3. Yuki — precision chef, Japanese sushi master. Level 10 (GDD: 200 trophies).
+            // 3. Yuki — precision chef, Japanese sushi master. 200 trophies.
             yield return new ChefDefinition(
                 ChefId.Yuki,
                 "Yuki",
                 "Japanese sushi master. Precision over speed — nothing burns on her watch.",
                 new ChefStatBlock(1.0f, 1.0f, 0.3f, 1, 1.1f),
-                UnlockRequirement.AtLevel(10),
+                UnlockRequirement.ForTrophies(200),
                 AbilityType.ZenFocus,
                 AbilityType.CalmStep,
                 AbilityType.PerfectPlating,
                 AbilityType.FireproofGloves);
 
-            // 4. Grandpa — tank/support, retired head chef. Shop 500 coins (GDD: 20 matches).
+            // 4. Grandpa — tank/support, retired head chef. 20 matches.
             yield return new ChefDefinition(
                 ChefId.Grandpa,
                 "Grandpa",
                 "Retired head chef. Tough as nails, knows every trick in the book.",
                 new ChefStatBlock(0.9f, 1.0f, 0.7f, 1, 1.0f),
-                UnlockRequirement.ForCoins(500),
+                UnlockRequirement.ForMatches(20),
                 AbilityType.SecretRecipe,
                 AbilityType.StumbleCharge,
                 AbilityType.FamilyFeast,
                 AbilityType.VintageSpice);
 
-            // 5. Bella — conductor/support, competitive pastry chef. Level 15 (GDD: S1 BP T30).
+            // 5. Bella — conductor/support, competitive pastry chef. S1 Battle Pass T30.
             yield return new ChefDefinition(
                 ChefId.Bella,
                 "Bella",
-                "Competitive pastry chef who orchestrates the kitchen like a symphony.",
+                "Competitive pastry chef who orchestrates her team to perfection.",
                 new ChefStatBlock(1.0f, 1.0f, 0.0f, 1, 1.2f),
-                UnlockRequirement.AtLevel(15),
+                UnlockRequirement.ForBattlePass("S1", 30),
                 AbilityType.Conductor,
                 AbilityType.PrepRelay,
                 AbilityType.Symphony,
                 AbilityType.MiseEnPlace);
 
-            // 6. Raj — multi-tasker, street food vendor. Shop 1000 coins (GDD: 500 trophies S1).
+            // 6. Raj — speed cook, street food vendor. 500 trophies S1.
             yield return new ChefDefinition(
                 ChefId.Raj,
                 "Raj",
-                "Street food vendor who juggles multiple orders with ease.",
-                new ChefStatBlock(1.0f, 1.0f, 0.0f, 2, 1.0f),
-                UnlockRequirement.ForCoins(1000),
+                "Street food vendor who juggles multiple orders with blazing cook speed.",
+                new ChefStatBlock(1.0f, 1.2f, 0.0f, 2, 1.0f),
+                UnlockRequirement.ForTrophies(500),
                 AbilityType.HotHands,
                 AbilityType.SpiceBlast,
                 AbilityType.CurryOverdrive,

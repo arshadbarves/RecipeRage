@@ -67,27 +67,27 @@ namespace RecipeRage.Tests.EditMode.Gameplay
         // --- Task 3: Speed bonus ---
 
         [Test]
-        public void SpeedBonus_Plus3_WhenSpeedRatio30Percent()
+        public void SpeedBonus_Plus5_WhenUnder50Percent()
         {
             var e = new ScoreEvent(ScoreEventType.DishServed, recipeTier: 1, speedRatio: 0.3f);
             _svc.AddScore(TeamId.TeamA, e);
-            Assert.AreEqual(13, _svc.TeamAScore); // 10 + floor((1-0.3)*5)=3
+            Assert.AreEqual(15, _svc.TeamAScore); // 10 + 5
         }
 
         [Test]
-        public void SpeedBonus_Plus2_WhenSpeedRatio60Percent()
+        public void SpeedBonus_Plus3_WhenUnder75Percent()
         {
             var e = new ScoreEvent(ScoreEventType.DishServed, recipeTier: 1, speedRatio: 0.6f);
             _svc.AddScore(TeamId.TeamA, e);
-            Assert.AreEqual(12, _svc.TeamAScore); // 10 + floor((1-0.6)*5)=2
+            Assert.AreEqual(13, _svc.TeamAScore); // 10 + 3
         }
 
         [Test]
-        public void SpeedBonus_Plus1_WhenSpeedRatio80Percent()
+        public void SpeedBonus_Zero_WhenOver75Percent()
         {
             var e = new ScoreEvent(ScoreEventType.DishServed, recipeTier: 1, speedRatio: 0.8f);
             _svc.AddScore(TeamId.TeamA, e);
-            Assert.AreEqual(11, _svc.TeamAScore);
+            Assert.AreEqual(10, _svc.TeamAScore);
         }
 
         // --- Task 3: Rhythm bonus ---
@@ -226,9 +226,9 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             var e = new ScoreEvent(ScoreEventType.DishServed, recipeTier: 2, speedRatio: 0.3f,
                 rhythmBonus: true, comboCount: 4);
             _svc.AddScore(TeamId.TeamA, e);
-            // base: 10*1.5=15, speed: +3, rhythm: +1, combo: +2 = 21
-            // rush: 21*1.5 = 31 (truncated)
-            Assert.AreEqual(31, _svc.TeamAScore);
+            // base: 10*1.5=15, speed: +5, rhythm: +1, combo: +2 = 23
+            // rush: 23*1.5 = 34 (truncated)
+            Assert.AreEqual(34, _svc.TeamAScore);
         }
 
         [Test]

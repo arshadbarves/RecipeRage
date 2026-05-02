@@ -3,10 +3,11 @@ using KitchenClash.Application.Services;
 using KitchenClash.Application.State;
 using KitchenClash.Composition;
 using KitchenClash.Domain;
+using KitchenClash.Infrastructure.Ads;
+using KitchenClash.Infrastructure.Analytics;
 using KitchenClash.Infrastructure.Audio;
 using KitchenClash.Infrastructure.DI;
 using KitchenClash.Infrastructure.EOS;
-using KitchenClash.Infrastructure.Analytics;
 using KitchenClash.Infrastructure.Localization;
 using KitchenClash.Infrastructure.Logging;
 using KitchenClash.Infrastructure.Network;
@@ -54,12 +55,6 @@ public class RootLifetimeScope : LifetimeScope
         builder.Register<ChefRegistry>(Lifetime.Singleton);
         builder.Register<MapRegistry>(Lifetime.Singleton);
 
-        // ── Ads ──
-        builder.Register<AdService>(Lifetime.Singleton).As<IAdService>();
-
-        // ── Analytics ──
-        builder.Register<StubAnalyticsService>(Lifetime.Singleton).As<IAnalyticsService>();
-
         // ── UI ──
         builder.Register<UIService>(Lifetime.Singleton).As<IUIService>().As<IStartable>().As<ITickable>();
 
@@ -84,6 +79,12 @@ public class RootLifetimeScope : LifetimeScope
 
         // ── Maintenance ──
         builder.Register<MaintenanceService>(Lifetime.Singleton).As<IMaintenanceService>();
+
+        // ── Analytics ──
+        builder.Register<FirebaseAnalyticsService>(Lifetime.Singleton).As<IAnalyticsService>();
+
+        // ── Ads ──
+        builder.Register<StubAdsService>(Lifetime.Singleton).As<IAdsService>();
 
         // ── Auth ──
         // UGSConfig ScriptableObject – use serialized field if assigned, otherwise create default

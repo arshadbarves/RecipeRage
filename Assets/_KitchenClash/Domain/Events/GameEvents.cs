@@ -120,4 +120,20 @@ namespace KitchenClash.Domain
     {
         public DailyStreakReward Reward { get; set; }
     }
+
+    public sealed class CrateRewardEvent
+    {
+        public string CrateType { get; set; }
+        public int Amount { get; set; }
+    }
+
+    public sealed class ChefTrialEvent
+    {
+        public int DurationHours { get; set; }
+    }
+
+    public sealed class BattlePassXpTokenEvent
+    {
+        public int Amount { get; set; }
+    }
 }

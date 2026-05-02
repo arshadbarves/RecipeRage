@@ -36,7 +36,8 @@ namespace KitchenClash.Application.Services
                 Tier = 1,
                 RequiredIngredients = new[] { IngredientType.Lettuce, IngredientType.Tomato },
                 BaseTimeLimitSec = baseTime + 10f,
-                KitchenTheme = "bistro"
+                KitchenTheme = "bistro",
+                BasePoints = 50
             });
 
             Add(new RecipeDefinition
@@ -46,7 +47,8 @@ namespace KitchenClash.Application.Services
                 Tier = 1,
                 RequiredIngredients = new[] { IngredientType.Bread, IngredientType.Butter },
                 BaseTimeLimitSec = baseTime + 10f,
-                KitchenTheme = "bistro"
+                KitchenTheme = "bistro",
+                BasePoints = 50
             });
 
             Add(new RecipeDefinition
@@ -56,7 +58,8 @@ namespace KitchenClash.Application.Services
                 Tier = 1,
                 RequiredIngredients = new[] { IngredientType.Egg, IngredientType.Butter },
                 BaseTimeLimitSec = baseTime + 10f,
-                KitchenTheme = "bistro"
+                KitchenTheme = "bistro",
+                BasePoints = 50
             });
 
             // ── Tier 2 — medium, 3-4 ingredients ──
@@ -67,7 +70,8 @@ namespace KitchenClash.Application.Services
                 Tier = 2,
                 RequiredIngredients = new[] { IngredientType.Rice, IngredientType.Fish, IngredientType.Seaweed },
                 BaseTimeLimitSec = baseTime + 20f,
-                KitchenTheme = "japanese"
+                KitchenTheme = "japanese",
+                BasePoints = 100
             });
 
             Add(new RecipeDefinition
@@ -77,7 +81,8 @@ namespace KitchenClash.Application.Services
                 Tier = 2,
                 RequiredIngredients = new[] { IngredientType.Bread, IngredientType.Beef, IngredientType.Lettuce, IngredientType.Tomato },
                 BaseTimeLimitSec = baseTime + 20f,
-                KitchenTheme = "american"
+                KitchenTheme = "american",
+                BasePoints = 100
             });
 
             Add(new RecipeDefinition
@@ -87,7 +92,8 @@ namespace KitchenClash.Application.Services
                 Tier = 2,
                 RequiredIngredients = new[] { IngredientType.Pasta, IngredientType.Sauce, IngredientType.Cheese },
                 BaseTimeLimitSec = baseTime + 20f,
-                KitchenTheme = "italian"
+                KitchenTheme = "italian",
+                BasePoints = 100
             });
 
             // ── Tier 3 — complex, 4-5 ingredients ──
@@ -98,7 +104,8 @@ namespace KitchenClash.Application.Services
                 Tier = 3,
                 RequiredIngredients = new[] { IngredientType.Dough, IngredientType.Sauce, IngredientType.Cheese, IngredientType.Tomato, IngredientType.Vegetables },
                 BaseTimeLimitSec = baseTime + 30f,
-                KitchenTheme = "italian"
+                KitchenTheme = "italian",
+                BasePoints = 150
             });
 
             Add(new RecipeDefinition
@@ -108,7 +115,8 @@ namespace KitchenClash.Application.Services
                 Tier = 3,
                 RequiredIngredients = new[] { IngredientType.Noodles, IngredientType.Broth, IngredientType.Egg, IngredientType.Vegetables },
                 BaseTimeLimitSec = baseTime + 30f,
-                KitchenTheme = "japanese"
+                KitchenTheme = "japanese",
+                BasePoints = 150
             });
 
             Add(new RecipeDefinition
@@ -118,7 +126,8 @@ namespace KitchenClash.Application.Services
                 Tier = 3,
                 RequiredIngredients = new[] { IngredientType.Dough, IngredientType.Egg, IngredientType.Cream, IngredientType.Frosting, IngredientType.Butter },
                 BaseTimeLimitSec = baseTime + 30f,
-                KitchenTheme = "bakery"
+                KitchenTheme = "bakery",
+                BasePoints = 150
             });
         }
 

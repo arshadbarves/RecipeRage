@@ -10,16 +10,20 @@ namespace KitchenClash.Application
     {
         private readonly IConfigService _cfg;
         private readonly IPlayerDataService _playerData;
+        private readonly IEconomyService _economy;
+        private readonly IEventBus _eventBus;
         private const string StorageKey = "daily_streak_v1";
 
         private int _currentDay;
         private DateTime _lastClaimUtc;
         private int _missedDays;
 
-        public DailyStreakService(IConfigService cfg, IPlayerDataService playerData)
+        public DailyStreakService(IConfigService cfg, IPlayerDataService playerData, IEconomyService economy, IEventBus eventBus)
         {
             _cfg = cfg;
             _playerData = playerData;
+            _economy = economy;
+            _eventBus = eventBus;
         }
 
         public int CurrentDay => _currentDay;
@@ -64,31 +68,36 @@ namespace KitchenClash.Application
             _currentDay = (_currentDay % CycleDays) + 1;
             _lastClaimUtc = utcNow;
 
-            return GetRewardForDay(_currentDay);
+            var reward = GetRewardForDay(_currentDay);
+            RedeemReward(reward);
+            return reward;
         }
 
-        /// <summary>
-        /// Claims the daily reward and applies it to the economy.
-        /// Returns null if not claimable.
-        /// </summary>
-        public DailyStreakReward ClaimAndApply(DateTime utcNow, IEconomyService economy)
+        private void RedeemReward(DailyStreakReward reward)
         {
-            var reward = Claim(utcNow);
-            if (reward == null) return null;
-
             switch (reward.RewardType)
             {
                 case "coins":
-                    economy.AddCoins(reward.Amount);
+                    _economy.AddCoins(reward.Amount);
                     break;
                 case "gems":
-                    economy.AddGems(reward.Amount);
+                    _economy.AddGems(reward.Amount);
                     break;
-                // crate types, bp tokens, chef trials — require specific systems
-                // For now these are tracked as "pending" rewards via the reward object
+                case "crate_common":
+                case "crate_rare":
+                case "crate_epic":
+                case "crate_legendary":
+                case "crate_hypercharge":
+                    _eventBus.Publish(new CrateRewardEvent { CrateType = reward.RewardType, Amount = reward.Amount });
+                    break;
+                case "chef_trial":
+                    _eventBus.Publish(new ChefTrialEvent { DurationHours = 24 });
+                    break;
+                case "bp_xp_token":
+                    _eventBus.Publish(new BattlePassXpTokenEvent { Amount = reward.Amount });
+                    break;
             }
-
-            return reward;
+            _eventBus.Publish(new DailyRewardClaimedEvent { Reward = reward });
         }
 
         public DailyStreakReward GetRewardPreview(int day)

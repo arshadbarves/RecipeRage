@@ -63,9 +63,12 @@ namespace KitchenClash.Presentation.ViewModels
                 // If character purchase, unlock via CharacterService
                 if (catalogItem.category == ShopCatalog.CategoryCharacters && CharacterService != null)
                 {
-                    // Map item id to character unlock (e.g. "char_grandpa" → character id)
-                    string charId = catalogItem.id.Replace("char_", "");
-                    CharacterService.Unlock(charId.GetHashCode());
+                    // Map item id to character unlock (e.g. "chef_Grandpa" → ChefId enum)
+                    string chefName = catalogItem.id.Replace("chef_", "");
+                    if (System.Enum.TryParse<ChefId>(chefName, false, out var chefId))
+                        CharacterService.TryPurchaseChef(chefId);
+                    else
+                        CharacterService.Unlock(chefName.GetHashCode());
                 }
 
                 UpdateCurrency();

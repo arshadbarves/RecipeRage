@@ -38,7 +38,7 @@ namespace KitchenClash.Application.Services
                 "quick_2v2" => "sushi_shuffle",
                 "quick_3v3" => "pirate_pot",
                 "ranked" => "burger_boulevard",
-                "event" => "haunted_kitchen",
+                "event" => "clash_kitchen",
                 _ => "sushi_shuffle"
             };
         }

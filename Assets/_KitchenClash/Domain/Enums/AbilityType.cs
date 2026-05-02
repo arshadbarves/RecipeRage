@@ -44,36 +44,36 @@ namespace KitchenClash.Domain
         StealImmunity,
         CarryTwo,
 
-        // ── GDD v3 Sec 10.1: Per-chef abilities ──
-        // Rosa
+        // GDD v3 — Passives
         QuickHands,
-        SprintDash,
-        KitchenRush,
-        StickyMat,
-        // Marco
         LongToss,
-        FlavorBurst,
-        GrandService,
-        RecipeShortcut,
-        // Yuki
         ZenFocus,
-        CalmStep,
-        PerfectPlating,
-        FireproofGloves,
-        // Grandpa
         SecretRecipe,
-        StumbleCharge,
-        FamilyFeast,
-        VintageSpice,
-        // Bella
         Conductor,
-        PrepRelay,
-        Symphony,
-        MiseEnPlace,
-        // Raj
         HotHands,
+
+        // GDD v3 — Actives
+        SprintDash,
+        FlavorBurst,
+        CalmStep,
+        StumbleCharge,
+        PrepRelay,
         SpiceBlast,
+
+        // GDD v3 — Supers
+        KitchenRush,
+        GrandService,
+        PerfectPlating,
+        FamilyFeast,
+        Symphony,
         CurryOverdrive,
+
+        // GDD v3 — Gadgets
+        StickyMat,
+        RecipeShortcut,
+        FireproofGloves,
+        VintageSpice,
+        MiseEnPlace,
         PressureCooker
     }
 
@@ -98,6 +98,11 @@ namespace KitchenClash.Domain
         AllStationsInstant,
         DoubleSpeedBonus,
         PrePrepItems,
-        CookSpeedBuff
+        CookSpeedBuff,
+        FlavorBoost,
+        PerfectSlice,
+        KitchenWisdom,
+        IngredientSwap,
+        SpiceRush
     }
 }
