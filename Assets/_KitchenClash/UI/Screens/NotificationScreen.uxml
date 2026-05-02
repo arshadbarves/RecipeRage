@@ -1,0 +1,25 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="../Styles/theme.uss" />
+    <Style src="../Styles/screens.uss" />
+
+    <ui:VisualElement name="notification-root" class="screen-root notification-root">
+        <ui:Label text="NOTIFICATIONS" class="screen-title" />
+
+        <ui:ScrollView name="notification-scroll" class="notification-scroll">
+            <ui:VisualElement name="notification-list" class="notification-list">
+                <!-- Notification item template -->
+                <ui:VisualElement class="notification-item">
+                    <ui:VisualElement class="notification-item__icon" />
+                    <ui:VisualElement class="notification-item__content">
+                        <ui:Label text="Season 3 is Live!" class="notification-item__title" />
+                        <ui:Label text="New maps, chefs, and rewards await!" class="notification-item__message" />
+                        <ui:Label text="2h ago" class="notification-item__timestamp" />
+                    </ui:VisualElement>
+                    <ui:Button text="✕" class="notification-item__dismiss" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:ScrollView>
+
+        <ui:Button name="btn-back" text="Back" class="btn-back" />
+    </ui:VisualElement>
+</ui:UXML>

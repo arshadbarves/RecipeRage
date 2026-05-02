@@ -1,0 +1,43 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="../Styles/theme.uss" />
+    <Style src="../Styles/screens.uss" />
+
+    <ui:VisualElement name="hud-root" class="screen-root hud-root" picking-mode="Ignore">
+
+        <!-- Top Bar: Timer + Scores -->
+        <ui:VisualElement class="hud-top-bar">
+            <ui:VisualElement class="hud-score hud-score--team-a">
+                <ui:Label text="Team A" class="hud-score__team" />
+                <ui:Label name="lbl-score-a" text="0" class="hud-score__value" />
+            </ui:VisualElement>
+            <ui:VisualElement class="hud-timer">
+                <ui:Label name="lbl-match-timer" text="2:00" class="hud-timer__value" />
+            </ui:VisualElement>
+            <ui:VisualElement class="hud-score hud-score--team-b">
+                <ui:Label text="Team B" class="hud-score__team" />
+                <ui:Label name="lbl-score-b" text="0" class="hud-score__value" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Center: Order List -->
+        <ui:VisualElement class="hud-center" picking-mode="Ignore">
+            <ui:VisualElement name="order-list" class="hud-order-list">
+                <ui:Label text="Orders" class="hud-order-list__title" />
+                <ui:VisualElement name="order-items" class="hud-order-list__items" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Bottom: Joystick Areas -->
+        <ui:VisualElement class="hud-bottom" picking-mode="Ignore">
+            <ui:VisualElement name="joystick-move" class="hud-joystick hud-joystick--left" />
+            <ui:VisualElement name="joystick-aim" class="hud-joystick hud-joystick--right" />
+        </ui:VisualElement>
+
+        <!-- Right: Ability Buttons -->
+        <ui:VisualElement class="hud-abilities">
+            <ui:Button name="btn-ability" text="Q" class="hud-ability-btn" />
+            <ui:Button name="btn-super" text="W" class="hud-ability-btn hud-ability-btn--super" />
+            <ui:Button name="btn-gadget" text="E" class="hud-ability-btn hud-ability-btn--gadget" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,0 +1,59 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="../Styles/theme.uss" />
+    <Style src="../Styles/screens.uss" />
+
+    <ui:VisualElement name="char-details-root" class="screen-root char-details-root">
+        <ui:Label name="lbl-chef-name" text="CHEF ROSA" class="screen-title" />
+
+        <!-- Model Area -->
+        <ui:VisualElement name="chef-model-area" class="char-details-model" />
+
+        <!-- Stat Bars -->
+        <ui:VisualElement class="char-details-stats">
+            <ui:VisualElement class="char-stat-row">
+                <ui:Label text="Speed" class="char-stat-row__label" />
+                <ui:ProgressBar name="stat-speed" value="70" low-value="0" high-value="100" class="char-stat-row__bar" />
+            </ui:VisualElement>
+            <ui:VisualElement class="char-stat-row">
+                <ui:Label text="Cooking" class="char-stat-row__label" />
+                <ui:ProgressBar name="stat-cooking" value="85" low-value="0" high-value="100" class="char-stat-row__bar" />
+            </ui:VisualElement>
+            <ui:VisualElement class="char-stat-row">
+                <ui:Label text="Stamina" class="char-stat-row__label" />
+                <ui:ProgressBar name="stat-stamina" value="60" low-value="0" high-value="100" class="char-stat-row__bar" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Ability Descriptions -->
+        <ui:ScrollView class="char-details-abilities">
+            <ui:VisualElement class="ability-card">
+                <ui:Label text="Passive" class="ability-card__type" />
+                <ui:Label name="lbl-passive-name" text="Spice Master" class="ability-card__name" />
+                <ui:Label name="lbl-passive-desc" text="Gains bonus points for spicy dishes." class="ability-card__desc" />
+            </ui:VisualElement>
+            <ui:VisualElement class="ability-card">
+                <ui:Label text="Active" class="ability-card__type" />
+                <ui:Label name="lbl-active-name" text="Flame Dash" class="ability-card__name" />
+                <ui:Label name="lbl-active-desc" text="Dash forward leaving a fire trail." class="ability-card__desc" />
+            </ui:VisualElement>
+            <ui:VisualElement class="ability-card">
+                <ui:Label text="Super" class="ability-card__type" />
+                <ui:Label name="lbl-super-name" text="Inferno Burst" class="ability-card__name" />
+                <ui:Label name="lbl-super-desc" text="AoE fire blast that stuns nearby opponents." class="ability-card__desc" />
+            </ui:VisualElement>
+            <ui:VisualElement class="ability-card">
+                <ui:Label text="Gadget" class="ability-card__type" />
+                <ui:Label name="lbl-gadget-name" text="Pepper Bomb" class="ability-card__name" />
+                <ui:Label name="lbl-gadget-desc" text="Throwable that blinds enemies briefly." class="ability-card__desc" />
+            </ui:VisualElement>
+        </ui:ScrollView>
+
+        <!-- Action Buttons -->
+        <ui:VisualElement class="char-details-actions">
+            <ui:Button name="btn-unlock" text="Unlock (500 💎)" class="char-details-unlock-btn" />
+            <ui:Button name="btn-select" text="Select" class="char-details-select-btn" />
+        </ui:VisualElement>
+
+        <ui:Button name="btn-back" text="Back" class="btn-back" />
+    </ui:VisualElement>
+</ui:UXML>

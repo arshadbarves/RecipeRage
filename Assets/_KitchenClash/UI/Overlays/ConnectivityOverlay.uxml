@@ -1,0 +1,14 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="../Styles/theme.uss" />
+    <Style src="../Styles/screens.uss" />
+
+    <ui:VisualElement name="connectivity-overlay-root" class="overlay-root connectivity-overlay">
+        <ui:VisualElement class="overlay-backdrop" />
+        <ui:VisualElement class="connectivity-card">
+            <ui:Label text="📡" class="connectivity-icon" />
+            <ui:Label text="No Connection" class="connectivity-title" />
+            <ui:Label name="lbl-message" text="Attempting to reconnect..." class="connectivity-message" />
+            <ui:Label name="lbl-countdown" text="Retrying in 5s" class="connectivity-countdown" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

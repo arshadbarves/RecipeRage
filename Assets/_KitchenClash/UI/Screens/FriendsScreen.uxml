@@ -1,0 +1,35 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="../Styles/theme.uss" />
+    <Style src="../Styles/screens.uss" />
+
+    <ui:VisualElement name="friends-root" class="screen-root friends-root">
+        <ui:Label text="FRIENDS" class="screen-title" />
+
+        <!-- Search Bar -->
+        <ui:VisualElement class="friends-search">
+            <ui:TextField name="txt-search" text="" class="friends-search__input" />
+            <ui:Button name="btn-invite" text="+ Invite" class="friends-invite-btn" />
+        </ui:VisualElement>
+
+        <!-- Friend List -->
+        <ui:ScrollView name="friends-scroll" class="friends-scroll">
+            <ui:VisualElement name="friends-list" class="friends-list">
+                <!-- Friend items populated at runtime, template: -->
+                <ui:VisualElement class="friend-item">
+                    <ui:VisualElement class="friend-item__status friend-item__status--online" />
+                    <ui:VisualElement class="friend-item__avatar" />
+                    <ui:Label text="CookingKing" class="friend-item__name" />
+                    <ui:Label text="Online" class="friend-item__status-text" />
+                </ui:VisualElement>
+                <ui:VisualElement class="friend-item">
+                    <ui:VisualElement class="friend-item__status friend-item__status--offline" />
+                    <ui:VisualElement class="friend-item__avatar" />
+                    <ui:Label text="SushiSam" class="friend-item__name" />
+                    <ui:Label text="Offline" class="friend-item__status-text" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:ScrollView>
+
+        <ui:Button name="btn-back" text="Back" class="btn-back" />
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,0 +1,46 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="../Styles/theme.uss" />
+    <Style src="../Styles/screens.uss" />
+
+    <ui:VisualElement name="match-lobby-root" class="screen-root match-lobby-root">
+        <ui:Label text="MATCH LOBBY" class="screen-title" />
+
+        <!-- Timer -->
+        <ui:Label name="lbl-lobby-timer" text="Starting in 0:30" class="lobby-timer" />
+
+        <!-- Teams -->
+        <ui:VisualElement class="lobby-teams">
+            <!-- Team A -->
+            <ui:VisualElement class="lobby-team">
+                <ui:Label text="TEAM A" class="lobby-team__title" />
+                <ui:VisualElement name="team-a-slot-1" class="lobby-player-slot">
+                    <ui:Label text="Waiting..." class="lobby-player-slot__name" />
+                </ui:VisualElement>
+                <ui:VisualElement name="team-a-slot-2" class="lobby-player-slot">
+                    <ui:Label text="Waiting..." class="lobby-player-slot__name" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <!-- VS -->
+            <ui:Label text="VS" class="lobby-vs" />
+
+            <!-- Team B -->
+            <ui:VisualElement class="lobby-team">
+                <ui:Label text="TEAM B" class="lobby-team__title" />
+                <ui:VisualElement name="team-b-slot-1" class="lobby-player-slot">
+                    <ui:Label text="Waiting..." class="lobby-player-slot__name" />
+                </ui:VisualElement>
+                <ui:VisualElement name="team-b-slot-2" class="lobby-player-slot">
+                    <ui:Label text="Waiting..." class="lobby-player-slot__name" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Map Preview -->
+        <ui:VisualElement name="map-preview" class="lobby-map-preview">
+            <ui:Label name="lbl-map-name" text="Sushi Shuffle" class="lobby-map-preview__name" />
+        </ui:VisualElement>
+
+        <ui:Button name="btn-ready" text="READY" class="lobby-ready-btn" />
+    </ui:VisualElement>
+</ui:UXML>

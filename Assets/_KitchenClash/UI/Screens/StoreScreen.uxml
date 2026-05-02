@@ -1,0 +1,36 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="../Styles/theme.uss" />
+    <Style src="../Styles/screens.uss" />
+
+    <ui:VisualElement name="store-root" class="screen-root store-root">
+        <!-- Currency Bar -->
+        <ui:VisualElement class="currency-bar">
+            <ui:Label text="Store" class="screen-title" />
+            <ui:VisualElement class="currency-bar__right">
+                <ui:VisualElement class="currency-badge">
+                    <ui:Label text="💎" />
+                    <ui:Label name="lbl-gems" text="250" class="currency-badge__value" />
+                </ui:VisualElement>
+                <ui:VisualElement class="currency-badge">
+                    <ui:Label text="🪙" />
+                    <ui:Label name="lbl-coins" text="1200" class="currency-badge__value" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Tabs -->
+        <ui:VisualElement class="store-tabs">
+            <ui:Button name="btn-tab-characters" text="Characters" class="store-tab store-tab--active" />
+            <ui:Button name="btn-tab-skins" text="Skins" class="store-tab" />
+            <ui:Button name="btn-tab-boosters" text="Boosters" class="store-tab" />
+            <ui:Button name="btn-tab-gems" text="Gems" class="store-tab" />
+        </ui:VisualElement>
+
+        <!-- Item Grid -->
+        <ui:ScrollView name="store-scroll" class="store-scroll">
+            <ui:VisualElement name="store-item-grid" class="store-item-grid" />
+        </ui:ScrollView>
+
+        <ui:Button name="btn-back" text="Back" class="btn-back" />
+    </ui:VisualElement>
+</ui:UXML>

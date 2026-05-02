@@ -1,0 +1,13 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="../Styles/theme.uss" />
+    <Style src="../Styles/screens.uss" />
+
+    <ui:VisualElement name="no-internet-root" class="screen-root no-internet-root">
+        <ui:VisualElement class="no-internet-center">
+            <ui:Label text="📡" class="no-internet-icon" />
+            <ui:Label text="No Internet Connection" class="no-internet-title" />
+            <ui:Label name="lbl-message" text="Please check your connection and try again." class="no-internet-message" />
+            <ui:Button name="btn-retry" text="Retry" class="no-internet-retry-btn" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

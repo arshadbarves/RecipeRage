@@ -1,0 +1,16 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="../Styles/theme.uss" />
+    <Style src="../Styles/screens.uss" />
+
+    <ui:VisualElement name="username-popup-root" class="screen-root username-popup-root">
+        <ui:VisualElement class="username-popup">
+            <ui:Label text="Choose Your Name" class="username-popup__title" />
+            <ui:TextField name="txt-username" max-length="16" text="" class="username-popup__input" />
+            <ui:Label name="lbl-char-limit" text="0 / 16 characters" class="username-popup__char-limit" />
+            <ui:VisualElement class="username-popup__buttons">
+                <ui:Button name="btn-ok" text="OK" class="username-popup__btn-ok" />
+                <ui:Button name="btn-cancel" text="Cancel" class="username-popup__btn-cancel" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

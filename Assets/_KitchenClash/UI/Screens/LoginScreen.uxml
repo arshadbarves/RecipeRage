@@ -1,0 +1,20 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="../Styles/theme.uss" />
+    <Style src="../Styles/screens.uss" />
+
+    <ui:VisualElement name="login-root" class="screen-root login-root">
+        <ui:VisualElement class="login-center">
+            <ui:VisualElement name="login-logo" class="login-logo" />
+            <ui:Label text="KITCHEN CLASH" class="login-title" />
+        </ui:VisualElement>
+
+        <ui:VisualElement class="login-buttons">
+            <ui:Button name="btn-guest" text="Play as Guest" class="login-btn login-btn--guest" />
+            <ui:Button name="btn-google" text="Sign in with Google" class="login-btn login-btn--google" />
+            <ui:Button name="btn-facebook" text="Sign in with Facebook" class="login-btn login-btn--facebook" />
+            <ui:Button name="btn-apple" text="Sign in with Apple" class="login-btn login-btn--apple" />
+        </ui:VisualElement>
+
+        <ui:Label name="lbl-terms" text="By playing, you agree to our Terms of Service and Privacy Policy." class="login-terms" />
+    </ui:VisualElement>
+</ui:UXML>

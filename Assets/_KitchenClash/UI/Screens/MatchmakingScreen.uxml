@@ -1,0 +1,14 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="../Styles/theme.uss" />
+    <Style src="../Styles/screens.uss" />
+
+    <ui:VisualElement name="matchmaking-root" class="screen-root matchmaking-root">
+        <ui:VisualElement class="matchmaking-center">
+            <ui:VisualElement name="matchmaking-spinner" class="matchmaking-spinner" />
+            <ui:Label text="Searching for match..." class="matchmaking-title" />
+            <ui:Label name="lbl-search-timer" text="0:00" class="matchmaking-timer" />
+            <ui:Label name="lbl-player-count" text="Players in queue: 42" class="matchmaking-player-count" />
+        </ui:VisualElement>
+        <ui:Button name="btn-cancel" text="Cancel" class="matchmaking-cancel-btn" />
+    </ui:VisualElement>
+</ui:UXML>

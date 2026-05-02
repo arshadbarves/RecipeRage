@@ -1,0 +1,40 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="../Styles/theme.uss" />
+    <Style src="../Styles/screens.uss" />
+
+    <ui:VisualElement name="daily-streak-root" class="screen-root daily-streak-root">
+        <ui:Label text="DAILY STREAK" class="screen-title" />
+
+        <!-- Streak Counter -->
+        <ui:VisualElement class="streak-counter">
+            <ui:Label text="🔥" class="streak-counter__icon" />
+            <ui:Label name="lbl-streak-count" text="5" class="streak-counter__value" />
+            <ui:Label text="Day Streak" class="streak-counter__label" />
+        </ui:VisualElement>
+
+        <!-- Calendar Grid (7 columns) -->
+        <ui:VisualElement class="streak-header">
+            <ui:Label text="Mon" class="streak-header__day" />
+            <ui:Label text="Tue" class="streak-header__day" />
+            <ui:Label text="Wed" class="streak-header__day" />
+            <ui:Label text="Thu" class="streak-header__day" />
+            <ui:Label text="Fri" class="streak-header__day" />
+            <ui:Label text="Sat" class="streak-header__day" />
+            <ui:Label text="Sun" class="streak-header__day" />
+        </ui:VisualElement>
+
+        <ui:VisualElement name="streak-calendar" class="streak-calendar">
+            <!-- Day cells populated at runtime -->
+            <ui:VisualElement class="streak-day streak-day--claimed"><ui:Label text="1" /></ui:VisualElement>
+            <ui:VisualElement class="streak-day streak-day--claimed"><ui:Label text="2" /></ui:VisualElement>
+            <ui:VisualElement class="streak-day streak-day--claimed"><ui:Label text="3" /></ui:VisualElement>
+            <ui:VisualElement class="streak-day streak-day--claimed"><ui:Label text="4" /></ui:VisualElement>
+            <ui:VisualElement class="streak-day streak-day--claimed"><ui:Label text="5" /></ui:VisualElement>
+            <ui:VisualElement class="streak-day streak-day--today"><ui:Label text="6" /></ui:VisualElement>
+            <ui:VisualElement class="streak-day"><ui:Label text="7" /></ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:Button name="btn-claim" text="Claim Today's Reward" class="streak-claim-btn" />
+        <ui:Button name="btn-back" text="Back" class="btn-back" />
+    </ui:VisualElement>
+</ui:UXML>

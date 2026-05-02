@@ -1,0 +1,50 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="../Styles/theme.uss" />
+    <Style src="../Styles/screens.uss" />
+
+    <ui:VisualElement name="results-root" class="screen-root results-root">
+        <ui:Label text="MATCH RESULTS" class="screen-title" />
+
+        <!-- Team Scores -->
+        <ui:VisualElement class="results-scores">
+            <ui:VisualElement class="results-team">
+                <ui:Label text="Team A" class="results-team__name" />
+                <ui:Label name="lbl-score-a" text="12" class="results-team__score" />
+            </ui:VisualElement>
+            <ui:Label text="—" class="results-divider" />
+            <ui:VisualElement class="results-team">
+                <ui:Label text="Team B" class="results-team__name" />
+                <ui:Label name="lbl-score-b" text="8" class="results-team__score" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- MVP Card -->
+        <ui:VisualElement name="mvp-card" class="results-mvp">
+            <ui:Label text="⭐ MVP" class="results-mvp__title" />
+            <ui:VisualElement name="mvp-icon" class="results-mvp__icon" />
+            <ui:Label name="lbl-mvp-name" text="Player1" class="results-mvp__name" />
+            <ui:Label name="lbl-mvp-stat" text="8 dishes served" class="results-mvp__stat" />
+        </ui:VisualElement>
+
+        <!-- Reward Summary -->
+        <ui:VisualElement class="results-rewards">
+            <ui:Label text="Rewards" class="results-rewards__title" />
+            <ui:VisualElement class="results-reward-row">
+                <ui:Label text="🏆 Trophies" class="results-reward-row__label" />
+                <ui:Label name="lbl-trophies" text="+12" class="results-reward-row__value" />
+            </ui:VisualElement>
+            <ui:VisualElement class="results-reward-row">
+                <ui:Label text="🪙 Coins" class="results-reward-row__label" />
+                <ui:Label name="lbl-coins" text="+50" class="results-reward-row__value" />
+            </ui:VisualElement>
+            <ui:VisualElement class="results-reward-row">
+                <ui:Label text="⭐ XP" class="results-reward-row__label" />
+                <ui:Label name="lbl-xp" text="+120" class="results-reward-row__value" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Buttons -->
+        <ui:Button name="btn-ad-gems" text="📺 Watch Ad +3 💎" class="results-ad-btn" />
+        <ui:Button name="btn-continue" text="Continue" class="results-continue-btn" />
+    </ui:VisualElement>
+</ui:UXML>

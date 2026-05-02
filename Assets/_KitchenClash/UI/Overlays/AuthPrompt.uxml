@@ -1,0 +1,18 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="../Styles/theme.uss" />
+    <Style src="../Styles/screens.uss" />
+
+    <ui:VisualElement name="auth-prompt-root" class="overlay-root auth-prompt">
+        <ui:VisualElement class="overlay-backdrop" />
+        <ui:VisualElement class="auth-prompt-card">
+            <ui:Label text="Link Your Account" class="auth-prompt__title" />
+            <ui:Label text="Save your progress by linking an account." class="auth-prompt__subtitle" />
+            <ui:VisualElement class="auth-prompt__buttons">
+                <ui:Button name="btn-google" text="Google" class="auth-prompt__btn auth-prompt__btn--google" />
+                <ui:Button name="btn-facebook" text="Facebook" class="auth-prompt__btn auth-prompt__btn--facebook" />
+                <ui:Button name="btn-apple" text="Apple" class="auth-prompt__btn auth-prompt__btn--apple" />
+                <ui:Button name="btn-stay-guest" text="Stay as Guest" class="auth-prompt__btn auth-prompt__btn--guest" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

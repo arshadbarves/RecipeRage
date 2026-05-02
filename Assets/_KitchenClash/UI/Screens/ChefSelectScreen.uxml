@@ -1,0 +1,67 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="../Styles/theme.uss" />
+    <Style src="../Styles/screens.uss" />
+
+    <ui:VisualElement name="chef-select-root" class="screen-root chef-select-root">
+        <ui:Label text="SELECT YOUR CHEF" class="screen-title" />
+
+        <ui:VisualElement name="chef-grid" class="chef-grid">
+            <!-- Chef Card 1 -->
+            <ui:VisualElement class="chef-card">
+                <ui:VisualElement name="chef-icon-1" class="chef-card__icon" />
+                <ui:Label name="lbl-chef-name-1" text="Chef Rosa" class="chef-card__name" />
+                <ui:Button name="btn-select-1" text="Select" class="chef-card__select-btn" />
+                <ui:VisualElement name="locked-overlay-1" class="chef-card__locked-overlay">
+                    <ui:Label text="🔒" class="chef-card__lock-icon" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <!-- Chef Card 2 -->
+            <ui:VisualElement class="chef-card">
+                <ui:VisualElement name="chef-icon-2" class="chef-card__icon" />
+                <ui:Label name="lbl-chef-name-2" text="Chef Marco" class="chef-card__name" />
+                <ui:Button name="btn-select-2" text="Select" class="chef-card__select-btn" />
+                <ui:VisualElement name="locked-overlay-2" class="chef-card__locked-overlay">
+                    <ui:Label text="🔒" class="chef-card__lock-icon" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <!-- Chef Card 3 -->
+            <ui:VisualElement class="chef-card">
+                <ui:VisualElement name="chef-icon-3" class="chef-card__icon" />
+                <ui:Label name="lbl-chef-name-3" text="Chef Yuki" class="chef-card__name" />
+                <ui:Button name="btn-select-3" text="Select" class="chef-card__select-btn" />
+                <ui:VisualElement name="locked-overlay-3" class="chef-card__locked-overlay">
+                    <ui:Label text="🔒" class="chef-card__lock-icon" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <!-- Chef Card 4 -->
+            <ui:VisualElement class="chef-card">
+                <ui:VisualElement name="chef-icon-4" class="chef-card__icon" />
+                <ui:Label name="lbl-chef-name-4" text="Chef Amara" class="chef-card__name" />
+                <ui:Button name="btn-select-4" text="Select" class="chef-card__select-btn" />
+                <ui:VisualElement name="locked-overlay-4" class="chef-card__locked-overlay">
+                    <ui:Label text="🔒" class="chef-card__lock-icon" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <!-- Chef Card 5 -->
+            <ui:VisualElement class="chef-card">
+                <ui:VisualElement name="chef-icon-5" class="chef-card__icon" />
+                <ui:Label name="lbl-chef-name-5" text="Chef Bjorn" class="chef-card__name" />
+                <ui:Button name="btn-select-5" text="Select" class="chef-card__select-btn" />
+                <ui:VisualElement name="locked-overlay-5" class="chef-card__locked-overlay">
+                    <ui:Label text="🔒" class="chef-card__lock-icon" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <!-- Chef Card 6 -->
+            <ui:VisualElement class="chef-card">
+                <ui:VisualElement name="chef-icon-6" class="chef-card__icon" />
+                <ui:Label name="lbl-chef-name-6" text="Chef Priya" class="chef-card__name" />
+                <ui:Button name="btn-select-6" text="Select" class="chef-card__select-btn" />
+                <ui:VisualElement name="locked-overlay-6" class="chef-card__locked-overlay">
+                    <ui:Label text="🔒" class="chef-card__lock-icon" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:Button name="btn-back" text="Back" class="btn-back" />
+    </ui:VisualElement>
+</ui:UXML>

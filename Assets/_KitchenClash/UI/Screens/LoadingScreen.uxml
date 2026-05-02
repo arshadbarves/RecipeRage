@@ -1,0 +1,12 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="../Styles/theme.uss" />
+    <Style src="../Styles/screens.uss" />
+
+    <ui:VisualElement name="loading-root" class="screen-root loading-root">
+        <ui:VisualElement class="loading-center">
+            <ui:VisualElement name="loading-spinner" class="loading-spinner" />
+            <ui:ProgressBar name="loading-progress" title="" low-value="0" high-value="100" class="loading-progress" />
+        </ui:VisualElement>
+        <ui:Label name="lbl-tip" text="Tip: Combine ingredients faster to earn bonus points!" class="loading-tip" />
+    </ui:VisualElement>
+</ui:UXML>

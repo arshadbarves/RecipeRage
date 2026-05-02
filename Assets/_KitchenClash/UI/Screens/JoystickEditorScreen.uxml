@@ -1,0 +1,31 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="../Styles/theme.uss" />
+    <Style src="../Styles/screens.uss" />
+
+    <ui:VisualElement name="joystick-editor-root" class="screen-root joystick-editor-root">
+        <ui:Label text="JOYSTICK LAYOUT" class="screen-title" />
+
+        <!-- Preview Area with draggable joystick positions -->
+        <ui:VisualElement name="joystick-preview" class="joystick-editor-preview">
+            <ui:VisualElement name="joystick-move-handle" class="joystick-editor-handle joystick-editor-handle--move">
+                <ui:Label text="Move" class="joystick-editor-handle__label" />
+            </ui:VisualElement>
+            <ui:VisualElement name="joystick-aim-handle" class="joystick-editor-handle joystick-editor-handle--aim">
+                <ui:Label text="Aim" class="joystick-editor-handle__label" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Size Slider -->
+        <ui:VisualElement class="joystick-editor-controls">
+            <ui:Label text="Joystick Size" class="joystick-editor-controls__label" />
+            <ui:Slider name="slider-joystick-size" low-value="50" high-value="150" value="100" class="joystick-editor-controls__slider" />
+        </ui:VisualElement>
+
+        <ui:VisualElement class="joystick-editor-buttons">
+            <ui:Button name="btn-reset" text="Reset to Default" class="joystick-editor-reset-btn" />
+            <ui:Button name="btn-save" text="Save" class="joystick-editor-save-btn" />
+        </ui:VisualElement>
+
+        <ui:Button name="btn-back" text="Back" class="btn-back" />
+    </ui:VisualElement>
+</ui:UXML>

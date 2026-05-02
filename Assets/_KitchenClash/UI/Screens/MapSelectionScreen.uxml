@@ -1,0 +1,37 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="../Styles/theme.uss" />
+    <Style src="../Styles/screens.uss" />
+
+    <ui:VisualElement name="map-selection-root" class="screen-root map-selection-root">
+        <ui:Label text="SELECT MAP" class="screen-title" />
+
+        <ui:ScrollView mode="Horizontal" name="map-scroll" class="map-scroll">
+            <ui:VisualElement class="map-card">
+                <ui:VisualElement name="map-preview-1" class="map-card__preview" />
+                <ui:Label text="Sushi Shuffle" class="map-card__name" />
+                <ui:Label text="2v2 • Quick Match" class="map-card__mode" />
+                <ui:Label text="⭐⭐" class="map-card__difficulty" />
+            </ui:VisualElement>
+            <ui:VisualElement class="map-card">
+                <ui:VisualElement name="map-preview-2" class="map-card__preview" />
+                <ui:Label text="Pizza Palace" class="map-card__name" />
+                <ui:Label text="3v3 • Ranked" class="map-card__mode" />
+                <ui:Label text="⭐⭐⭐" class="map-card__difficulty" />
+            </ui:VisualElement>
+            <ui:VisualElement class="map-card">
+                <ui:VisualElement name="map-preview-3" class="map-card__preview" />
+                <ui:Label text="Burger Brawl" class="map-card__name" />
+                <ui:Label text="2v2 • Casual" class="map-card__mode" />
+                <ui:Label text="⭐" class="map-card__difficulty" />
+            </ui:VisualElement>
+            <ui:VisualElement class="map-card">
+                <ui:VisualElement name="map-preview-4" class="map-card__preview" />
+                <ui:Label text="Taco Tornado" class="map-card__name" />
+                <ui:Label text="3v3 • Quick Match" class="map-card__mode" />
+                <ui:Label text="⭐⭐⭐⭐" class="map-card__difficulty" />
+            </ui:VisualElement>
+        </ui:ScrollView>
+
+        <ui:Button name="btn-back" text="Back" class="btn-back" />
+    </ui:VisualElement>
+</ui:UXML>

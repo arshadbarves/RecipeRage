@@ -1,0 +1,45 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="../Styles/theme.uss" />
+    <Style src="../Styles/screens.uss" />
+
+    <ui:VisualElement name="settings-root" class="screen-root settings-root">
+        <ui:Label text="SETTINGS" class="screen-title" />
+
+        <ui:ScrollView class="settings-scroll">
+            <!-- Audio -->
+            <ui:Label text="Audio" class="settings-section-title" />
+            <ui:VisualElement class="settings-row">
+                <ui:Label text="Master Volume" class="settings-row__label" />
+                <ui:Slider name="slider-master" low-value="0" high-value="100" value="80" class="settings-row__slider" />
+            </ui:VisualElement>
+            <ui:VisualElement class="settings-row">
+                <ui:Label text="Music Volume" class="settings-row__label" />
+                <ui:Slider name="slider-music" low-value="0" high-value="100" value="70" class="settings-row__slider" />
+            </ui:VisualElement>
+            <ui:VisualElement class="settings-row">
+                <ui:Label text="SFX Volume" class="settings-row__label" />
+                <ui:Slider name="slider-sfx" low-value="0" high-value="100" value="80" class="settings-row__slider" />
+            </ui:VisualElement>
+
+            <!-- General -->
+            <ui:Label text="General" class="settings-section-title" />
+            <ui:VisualElement class="settings-row">
+                <ui:Label text="Language" class="settings-row__label" />
+                <ui:DropdownField name="dropdown-language" choices="English,Spanish,French,Japanese" index="0" class="settings-row__dropdown" />
+            </ui:VisualElement>
+            <ui:VisualElement class="settings-row">
+                <ui:Label text="Graphics Quality" class="settings-row__label" />
+                <ui:DropdownField name="dropdown-quality" choices="Low,Medium,High,Ultra" index="2" class="settings-row__dropdown" />
+            </ui:VisualElement>
+
+            <!-- Controls -->
+            <ui:Label text="Controls" class="settings-section-title" />
+            <ui:VisualElement class="settings-row">
+                <ui:Label text="Sensitivity" class="settings-row__label" />
+                <ui:Slider name="slider-sensitivity" low-value="1" high-value="10" value="5" class="settings-row__slider" />
+            </ui:VisualElement>
+        </ui:ScrollView>
+
+        <ui:Button name="btn-back" text="Back" class="btn-back" />
+    </ui:VisualElement>
+</ui:UXML>

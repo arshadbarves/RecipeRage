@@ -1,0 +1,16 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="../Styles/theme.uss" />
+    <Style src="../Styles/screens.uss" />
+
+    <ui:VisualElement name="splash-root" class="screen-root splash-root">
+        <ui:VisualElement class="splash-center">
+            <ui:VisualElement name="logo-container" class="splash-logo" />
+            <ui:Label name="lbl-title" text="KITCHEN CLASH" class="splash-title" />
+        </ui:VisualElement>
+        <ui:VisualElement class="splash-bottom">
+            <ui:ProgressBar name="loading-bar" title="" low-value="0" high-value="100" class="splash-progress" />
+            <ui:Label name="lbl-loading-status" text="Loading..." class="splash-status" />
+            <ui:Label name="lbl-version" text="v1.0.0" class="splash-version" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,0 +1,51 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="../Styles/theme.uss" />
+    <Style src="../Styles/screens.uss" />
+
+    <ui:VisualElement name="profile-root" class="screen-root profile-root">
+        <ui:Label text="PROFILE" class="screen-title" />
+
+        <!-- Avatar + Name -->
+        <ui:VisualElement class="profile-header">
+            <ui:VisualElement name="profile-avatar" class="profile-avatar" />
+            <ui:Label name="lbl-player-name" text="ChefMaster99" class="profile-name" />
+            <ui:Label name="lbl-rank" text="Gold III" class="profile-rank" />
+        </ui:VisualElement>
+
+        <!-- Level / XP Bar -->
+        <ui:VisualElement class="profile-level">
+            <ui:Label name="lbl-level" text="Level 24" class="profile-level__label" />
+            <ui:ProgressBar name="xp-bar" title="" low-value="0" high-value="100" value="65" class="profile-xp-bar" />
+            <ui:Label name="lbl-xp" text="650 / 1000 XP" class="profile-level__xp" />
+        </ui:VisualElement>
+
+        <!-- Stats Grid -->
+        <ui:VisualElement class="profile-stats">
+            <ui:VisualElement class="profile-stat">
+                <ui:Label name="lbl-matches" text="342" class="profile-stat__value" />
+                <ui:Label text="Matches" class="profile-stat__label" />
+            </ui:VisualElement>
+            <ui:VisualElement class="profile-stat">
+                <ui:Label name="lbl-wins" text="198" class="profile-stat__value" />
+                <ui:Label text="Wins" class="profile-stat__label" />
+            </ui:VisualElement>
+            <ui:VisualElement class="profile-stat">
+                <ui:Label name="lbl-losses" text="144" class="profile-stat__value" />
+                <ui:Label text="Losses" class="profile-stat__label" />
+            </ui:VisualElement>
+            <ui:VisualElement class="profile-stat">
+                <ui:Label name="lbl-winrate" text="57.9%" class="profile-stat__value" />
+                <ui:Label text="Win Rate" class="profile-stat__label" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Favorite Chef -->
+        <ui:VisualElement class="profile-fav-chef">
+            <ui:Label text="Favorite Chef" class="profile-fav-chef__title" />
+            <ui:VisualElement name="fav-chef-icon" class="profile-fav-chef__icon" />
+            <ui:Label name="lbl-fav-chef" text="Chef Rosa" class="profile-fav-chef__name" />
+        </ui:VisualElement>
+
+        <ui:Button name="btn-back" text="Back" class="btn-back" />
+    </ui:VisualElement>
+</ui:UXML>

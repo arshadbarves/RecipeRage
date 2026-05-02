@@ -1,0 +1,20 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="../Styles/theme.uss" />
+    <Style src="../Styles/screens.uss" />
+
+    <ui:VisualElement name="daily-streak-popup-root" class="overlay-root daily-streak-popup">
+        <ui:VisualElement class="overlay-backdrop" />
+        <ui:VisualElement class="streak-popup-card">
+            <ui:Label text="🔥 Daily Streak!" class="streak-popup__title" />
+            <ui:VisualElement class="streak-popup__reward">
+                <ui:Label name="lbl-reward-icon" text="🎁" class="streak-popup__reward-icon" />
+                <ui:Label name="lbl-reward-text" text="50 Coins + 5 Gems" class="streak-popup__reward-text" />
+            </ui:VisualElement>
+            <ui:VisualElement class="streak-popup__streak-display">
+                <ui:Label text="Current Streak:" class="streak-popup__streak-label" />
+                <ui:Label name="lbl-streak" text="5 Days" class="streak-popup__streak-value" />
+            </ui:VisualElement>
+            <ui:Button name="btn-claim" text="Claim!" class="streak-popup__claim-btn" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
