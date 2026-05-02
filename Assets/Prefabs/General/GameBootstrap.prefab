@@ -123,6 +123,8 @@ MonoBehaviour:
     TypeName: 
   autoRun: 1
   autoInjectGameObjects: []
+  _ugsConfig: {fileID: 0}
+  _audioSettings: {fileID: 0}
 --- !u!1 &282745282915237301
 GameObject:
   m_ObjectHideFlags: 0
