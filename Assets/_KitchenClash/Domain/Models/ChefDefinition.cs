@@ -1,7 +1,7 @@
 namespace KitchenClash.Domain
 {
     /// <summary>
-    /// Immutable GDD chef definition: identity, stats, unlock gate, abilities.
+    /// Immutable GDD chef definition: identity, stats, unlock gate, 4 ability slots.
     /// </summary>
     public sealed class ChefDefinition
     {
@@ -12,6 +12,8 @@ namespace KitchenClash.Domain
         public UnlockRequirement Unlock { get; }
         public AbilityType PassiveAbility { get; }
         public AbilityType ActiveAbility { get; }
+        public AbilityType SuperAbility { get; }
+        public AbilityType GadgetAbility { get; }
 
         public ChefDefinition(
             ChefId id,
@@ -20,7 +22,9 @@ namespace KitchenClash.Domain
             ChefStatBlock stats,
             UnlockRequirement unlock,
             AbilityType passiveAbility,
-            AbilityType activeAbility)
+            AbilityType activeAbility,
+            AbilityType superAbility = AbilityType.None,
+            AbilityType gadgetAbility = AbilityType.None)
         {
             Id = id;
             DisplayName = displayName;
@@ -29,6 +33,8 @@ namespace KitchenClash.Domain
             Unlock = unlock;
             PassiveAbility = passiveAbility;
             ActiveAbility = activeAbility;
+            SuperAbility = superAbility;
+            GadgetAbility = gadgetAbility;
         }
     }
 }

@@ -42,7 +42,39 @@ namespace KitchenClash.Domain
         SlowerBurnRate,
         FireResistance,
         StealImmunity,
-        CarryTwo
+        CarryTwo,
+
+        // ── GDD v3 Sec 10.1: Per-chef abilities ──
+        // Rosa
+        QuickHands,
+        SprintDash,
+        KitchenRush,
+        StickyMat,
+        // Marco
+        LongToss,
+        FlavorBurst,
+        GrandService,
+        RecipeShortcut,
+        // Yuki
+        ZenFocus,
+        CalmStep,
+        PerfectPlating,
+        FireproofGloves,
+        // Grandpa
+        SecretRecipe,
+        StumbleCharge,
+        FamilyFeast,
+        VintageSpice,
+        // Bella
+        Conductor,
+        PrepRelay,
+        Symphony,
+        MiseEnPlace,
+        // Raj
+        HotHands,
+        SpiceBlast,
+        CurryOverdrive,
+        PressureCooker
     }
 
     public enum AbilityEffectType

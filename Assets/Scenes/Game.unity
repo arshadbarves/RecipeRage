@@ -3933,7 +3933,7 @@ GameObject:
   - component: {fileID: 1748119376}
   - component: {fileID: 1748119375}
   m_Layer: 0
-  m_Name: MatchLifetimeScope
+  m_Name: MatchScope
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

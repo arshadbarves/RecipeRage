@@ -60,12 +60,12 @@ namespace KitchenClash.Application.Services
                 // ── Characters (coins) ──
                 new ShopItem
                 {
-                    id = "char_grandpa", name = "Grandpa", description = "A seasoned chef with decades of experience.",
+                    id = "chef_Grandpa", name = "Grandpa", description = "A seasoned chef with decades of experience.",
                     price = 500, currency = EconomyKeys.CurrencyCoins, rarity = "rare", badge = "", category = CategoryCharacters
                 },
                 new ShopItem
                 {
-                    id = "char_raj", name = "Raj", description = "A spice master from Mumbai.",
+                    id = "chef_Raj", name = "Raj", description = "A spice master from Mumbai.",
                     price = 1000, currency = EconomyKeys.CurrencyCoins, rarity = "epic", badge = "", category = CategoryCharacters
                 },
 

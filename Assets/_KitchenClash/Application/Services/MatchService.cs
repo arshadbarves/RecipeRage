@@ -69,7 +69,7 @@ namespace KitchenClash.Application
 
                 // event: 2v2, 4 players, 180s, special rules
                 new("event", "event", "Event Mode", 2, 2, 180, 0,
-                    GameModeCategory.Special, "haunted_kitchen", false,
+                    GameModeCategory.Special, "clash_kitchen", false,
                     _cfg.Get("enableEventMode", false),
                     eventId: _cfg.Get("event_id", (string)null),
                     eventStartUtc: ParseUtcDate(_cfg.Get("event_start_utc", (string)null)),

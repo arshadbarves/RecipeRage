@@ -19,6 +19,7 @@ public class MenuLifetimeScope : LifetimeScope
         builder.Register<MatchService>(Lifetime.Scoped).As<IMatchService>();
         builder.Register<EconomyService>(Lifetime.Scoped).As<IEconomyService>();
         builder.Register<DailyStreakService>(Lifetime.Scoped).As<IDailyStreakService>();
+        builder.Register<TrophyService>(Lifetime.Scoped).As<ITrophyService>();
         builder.Register<MapRotationCalculator>(Lifetime.Scoped);
         builder.Register<ShopCatalog>(Lifetime.Scoped);
 

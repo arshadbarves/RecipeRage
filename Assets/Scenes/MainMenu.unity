@@ -435,7 +435,7 @@ GameObject:
   - component: {fileID: 874768954}
   - component: {fileID: 874768953}
   m_Layer: 0
-  m_Name: MenuLifetimeScope
+  m_Name: MenuScope
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

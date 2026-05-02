@@ -55,7 +55,7 @@ namespace KitchenClash.Application
                 recipe.BaseTimeLimitSec,
                 matchTimeRemaining
             );
-            order.PointValue = recipe.BasePoints;
+            order.PointValue = 0; // Actual scoring is config-driven via ScoreService
 
             _activeOrders.Add(order);
             OnOrderGenerated?.Invoke(order);

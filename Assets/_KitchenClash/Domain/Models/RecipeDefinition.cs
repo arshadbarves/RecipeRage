@@ -12,6 +12,5 @@ namespace KitchenClash.Domain
         public IngredientType[] RequiredIngredients { get; set; }
         public float BaseTimeLimitSec { get; set; }
         public string KitchenTheme { get; set; }
-        public int BasePoints { get; set; }
     }
 }

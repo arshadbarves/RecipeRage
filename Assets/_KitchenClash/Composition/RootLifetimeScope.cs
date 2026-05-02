@@ -6,6 +6,7 @@ using KitchenClash.Domain;
 using KitchenClash.Infrastructure.Audio;
 using KitchenClash.Infrastructure.DI;
 using KitchenClash.Infrastructure.EOS;
+using KitchenClash.Infrastructure.Analytics;
 using KitchenClash.Infrastructure.Localization;
 using KitchenClash.Infrastructure.Logging;
 using KitchenClash.Infrastructure.Network;
@@ -52,6 +53,12 @@ public class RootLifetimeScope : LifetimeScope
         // ── Shared GDD registries ──
         builder.Register<ChefRegistry>(Lifetime.Singleton);
         builder.Register<MapRegistry>(Lifetime.Singleton);
+
+        // ── Ads ──
+        builder.Register<AdService>(Lifetime.Singleton).As<IAdService>();
+
+        // ── Analytics ──
+        builder.Register<StubAnalyticsService>(Lifetime.Singleton).As<IAnalyticsService>();
 
         // ── UI ──
         builder.Register<UIService>(Lifetime.Singleton).As<IUIService>().As<IStartable>().As<ITickable>();

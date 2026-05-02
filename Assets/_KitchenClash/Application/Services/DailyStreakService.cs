@@ -67,6 +67,30 @@ namespace KitchenClash.Application
             return GetRewardForDay(_currentDay);
         }
 
+        /// <summary>
+        /// Claims the daily reward and applies it to the economy.
+        /// Returns null if not claimable.
+        /// </summary>
+        public DailyStreakReward ClaimAndApply(DateTime utcNow, IEconomyService economy)
+        {
+            var reward = Claim(utcNow);
+            if (reward == null) return null;
+
+            switch (reward.RewardType)
+            {
+                case "coins":
+                    economy.AddCoins(reward.Amount);
+                    break;
+                case "gems":
+                    economy.AddGems(reward.Amount);
+                    break;
+                // crate types, bp tokens, chef trials — require specific systems
+                // For now these are tracked as "pending" rewards via the reward object
+            }
+
+            return reward;
+        }
+
         public DailyStreakReward GetRewardPreview(int day)
         {
             int clampedDay = ((day - 1) % CycleDays) + 1;

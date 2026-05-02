@@ -69,13 +69,9 @@ namespace KitchenClash.Application
 
             int baseScore = (int)(_cfg.Get(ScoringConfig.ScoreBase, ScoringConfig.DefaultScoreBase) * mult);
 
-            // GDD v3: +5 if delivered < 50% time, +3 if < 75% time, 0 otherwise
-            // SpeedRatio: fraction of time used (0 = instant, 1 = full time)
-            int speedHigh = _cfg.Get(ScoringConfig.ScoreSpeedHigh, ScoringConfig.DefaultScoreSpeedHigh);
-            int speedLow = _cfg.Get(ScoringConfig.ScoreSpeedLow, ScoringConfig.DefaultScoreSpeedLow);
-            int speed = e.SpeedRatio < 0.50f ? speedHigh
-                      : e.SpeedRatio < 0.75f ? speedLow
-                      : 0;
+            // GDD Sec 7: speed bonus = floor((1 - ratio) * max), ratio=0 instant, ratio=1 full time
+            int speedMax = _cfg.Get(ScoringConfig.ScoreSpeedMax, ScoringConfig.DefaultScoreSpeedMax);
+            int speed = (int)Math.Floor((1.0 - e.SpeedRatio) * speedMax + 0.001);
 
             int rhythm = e.RhythmBonus ? _cfg.Get(ScoringConfig.ScoreRhythm, ScoringConfig.DefaultScoreRhythm) : 0;
             int combo = e.ComboCount >= 3 ? _cfg.Get(ScoringConfig.ScoreCombo, ScoringConfig.DefaultScoreCombo) : 0;
