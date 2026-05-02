@@ -17,6 +17,30 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Game.unity
     guid: c1ff53bd56b2345fa831c4ddee15dd92
+  - enabled: 1
+    path: Assets/Scenes/Maps/rookie_kitchen.unity
+    guid: cd9ac5f590cbb496fbcf603de331e39a
+  - enabled: 1
+    path: Assets/Scenes/Maps/sushi_shuffle.unity
+    guid: db1c3ca1b4a584920834f2f5abc8f510
+  - enabled: 1
+    path: Assets/Scenes/Maps/burger_boulevard.unity
+    guid: 23164521df90b4c96a64bdff3912fca3
+  - enabled: 1
+    path: Assets/Scenes/Maps/pirate_pot.unity
+    guid: 05b817221bbf0475ea20fffaec25ddf2
+  - enabled: 1
+    path: Assets/Scenes/Maps/taco_truck.unity
+    guid: 65cfe35c1dd17452d9c793a6e7b55855
+  - enabled: 1
+    path: Assets/Scenes/Maps/space_station.unity
+    guid: 6c01c3fbb6b6148588962cec492ae480
+  - enabled: 1
+    path: Assets/Scenes/Maps/volcano_kitchen.unity
+    guid: 2691d096248a44b88939ed340b3a456f
+  - enabled: 1
+    path: Assets/Scenes/Maps/clash_kitchen.unity
+    guid: 43c13eaceedb440f48744f491dff7b11
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: acadb39dda0c644fd8624425e21e877f,
       type: 2}

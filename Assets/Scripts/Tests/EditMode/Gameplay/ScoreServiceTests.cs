@@ -67,27 +67,30 @@ namespace RecipeRage.Tests.EditMode.Gameplay
         // --- Task 3: Speed bonus ---
 
         [Test]
-        public void SpeedBonus_Plus5_WhenUnder50Percent()
+        public void SpeedBonus_Continuous_HighSpeed()
         {
+            // speedRatio=0.3 → (1-0.3)*5 = 3.5 → 3
             var e = new ScoreEvent(ScoreEventType.DishServed, recipeTier: 1, speedRatio: 0.3f);
-            _svc.AddScore(TeamId.TeamA, e);
-            Assert.AreEqual(15, _svc.TeamAScore); // 10 + 5
-        }
-
-        [Test]
-        public void SpeedBonus_Plus3_WhenUnder75Percent()
-        {
-            var e = new ScoreEvent(ScoreEventType.DishServed, recipeTier: 1, speedRatio: 0.6f);
             _svc.AddScore(TeamId.TeamA, e);
             Assert.AreEqual(13, _svc.TeamAScore); // 10 + 3
         }
 
         [Test]
-        public void SpeedBonus_Zero_WhenOver75Percent()
+        public void SpeedBonus_Continuous_MediumSpeed()
         {
+            // speedRatio=0.6 → (1-0.6)*5 = 2.0 → 2
+            var e = new ScoreEvent(ScoreEventType.DishServed, recipeTier: 1, speedRatio: 0.6f);
+            _svc.AddScore(TeamId.TeamA, e);
+            Assert.AreEqual(12, _svc.TeamAScore); // 10 + 2
+        }
+
+        [Test]
+        public void SpeedBonus_Small_WhenSlowDelivery()
+        {
+            // speedRatio=0.8 → (1-0.8)*5 = 1.0 → 1
             var e = new ScoreEvent(ScoreEventType.DishServed, recipeTier: 1, speedRatio: 0.8f);
             _svc.AddScore(TeamId.TeamA, e);
-            Assert.AreEqual(10, _svc.TeamAScore);
+            Assert.AreEqual(11, _svc.TeamAScore); // 10 + 1
         }
 
         // --- Task 3: Rhythm bonus ---
@@ -226,9 +229,9 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             var e = new ScoreEvent(ScoreEventType.DishServed, recipeTier: 2, speedRatio: 0.3f,
                 rhythmBonus: true, comboCount: 4);
             _svc.AddScore(TeamId.TeamA, e);
-            // base: 10*1.5=15, speed: +5, rhythm: +1, combo: +2 = 23
-            // rush: 23*1.5 = 34 (truncated)
-            Assert.AreEqual(34, _svc.TeamAScore);
+            // base: 10*1.5=15, speed: (1-0.3)*5=3, rhythm: +1, combo: +2 = 21
+            // rush: 21*1.5 = 31 (truncated)
+            Assert.AreEqual(31, _svc.TeamAScore);
         }
 
         [Test]

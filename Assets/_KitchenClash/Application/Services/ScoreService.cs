@@ -71,7 +71,7 @@ namespace KitchenClash.Application
 
             // GDD v3: speed = floor(ratio * max) where ratio is inverted (1 = instant, 0 = full time)
             int speedMax = _cfg.Get(ScoringConfig.ScoreSpeedMax, ScoringConfig.DefaultScoreSpeedMax);
-            int speed = (int)((1f - e.SpeedRatio) * speedMax);
+            int speed = (int)Math.Round((1f - e.SpeedRatio) * speedMax, MidpointRounding.AwayFromZero);
 
             int rhythm = e.RhythmBonus ? _cfg.Get(ScoringConfig.ScoreRhythm, ScoringConfig.DefaultScoreRhythm) : 0;
             int combo = e.ComboCount >= 3 ? _cfg.Get(ScoringConfig.ScoreCombo, ScoringConfig.DefaultScoreCombo) : 0;
