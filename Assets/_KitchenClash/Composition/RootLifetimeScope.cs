@@ -6,6 +6,7 @@ using KitchenClash.Domain;
 using KitchenClash.Infrastructure.Ads;
 using KitchenClash.Infrastructure.Analytics;
 using KitchenClash.Infrastructure.Audio;
+using KitchenClash.Infrastructure.IAP;
 using KitchenClash.Infrastructure.DI;
 using KitchenClash.Infrastructure.EOS;
 using KitchenClash.Infrastructure.Localization;
@@ -13,6 +14,7 @@ using KitchenClash.Infrastructure.Logging;
 using KitchenClash.Infrastructure.Network;
 using KitchenClash.Infrastructure.Persistence;
 using KitchenClash.Infrastructure.Services;
+using KitchenClash.Presentation;
 using KitchenClash.Presentation.Common;
 using KitchenClash.Presentation.ViewModels;
 using UnityEngine;
@@ -58,6 +60,9 @@ public class RootLifetimeScope : LifetimeScope
         // ── UI ──
         builder.Register<UIService>(Lifetime.Singleton).As<IUIService>().As<IStartable>().As<ITickable>();
 
+        // ── Router (lazy-init: root + factory set after UIDocument is available) ──
+        builder.Register<RouterService>(Lifetime.Singleton).As<IRouterService>();
+
         // ── Localization ──
         builder.Register<LocalizationManager>(Lifetime.Singleton).As<ILocalizationManager>().As<IInitializable>();
 
@@ -85,6 +90,9 @@ public class RootLifetimeScope : LifetimeScope
 
         // ── Ads ──
         builder.Register<StubAdsService>(Lifetime.Singleton).As<IAdsService>();
+
+        // ── IAP ──
+        builder.Register<StubIAPService>(Lifetime.Singleton).As<IIAPService>();
 
         // ── Auth ──
         // UGSConfig ScriptableObject – use serialized field if assigned, otherwise create default

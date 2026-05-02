@@ -1,0 +1,236 @@
+/* ── Home Screen Styles ── */
+
+.home-root {
+    flex-grow: 1;
+    background-color: var(--color-bg-dark);
+}
+
+/* ── Top Bar ── */
+.top-bar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background-color: var(--color-bg-medium);
+    height: 56px;
+}
+
+.top-bar__title {
+    color: var(--color-primary);
+    font-size: var(--font-size-header);
+    -unity-font-style: bold;
+}
+
+.top-bar__btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.1);
+    align-items: center;
+    justify-content: center;
+}
+
+.top-bar__right {
+    flex-direction: row;
+    align-items: center;
+}
+
+.gem-badge {
+    flex-direction: row;
+    align-items: center;
+    background-color: rgba(255, 215, 0, 0.15);
+    border-radius: 16px;
+    padding: 4px 12px;
+    margin-left: var(--spacing-sm);
+}
+
+.gem-badge__label {
+    color: var(--color-primary);
+    font-size: var(--font-size-body);
+    -unity-font-style: bold;
+}
+
+/* ── Chef Display ── */
+.chef-section {
+    flex-direction: row;
+    flex-grow: 1;
+    padding: var(--spacing-md);
+}
+
+.chef-card {
+    flex-grow: 1;
+    background-color: var(--color-bg-medium);
+    border-radius: 16px;
+    padding: var(--spacing-md);
+    align-items: center;
+}
+
+.chef-card__name {
+    color: var(--color-text-primary);
+    font-size: var(--font-size-header);
+    -unity-font-style: bold;
+}
+
+.chef-card__trophies {
+    color: var(--color-primary);
+    font-size: var(--font-size-body);
+    margin-top: 4px;
+}
+
+.chef-card__model-area {
+    flex-grow: 1;
+    width: 100%;
+    min-height: 200px;
+}
+
+.party-panel {
+    width: 120px;
+    margin-left: var(--spacing-md);
+    justify-content: center;
+    align-items: center;
+}
+
+.party-slot {
+    width: 48px;
+    height: 48px;
+    border-radius: 24px;
+    border-width: 2px;
+    border-color: rgba(255, 255, 255, 0.3);
+    margin-bottom: var(--spacing-sm);
+    align-items: center;
+    justify-content: center;
+}
+
+.party-slot__label {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-header);
+}
+
+/* ── Map Carousel ── */
+.map-carousel {
+    flex-direction: row;
+    align-items: center;
+    padding: 0 var(--spacing-md);
+    height: 64px;
+}
+
+.carousel-arrow {
+    width: 32px;
+    height: 32px;
+    border-radius: 16px;
+    background-color: rgba(255, 255, 255, 0.1);
+    align-items: center;
+    justify-content: center;
+}
+
+.carousel-arrow__label {
+    color: var(--color-text-primary);
+    font-size: var(--font-size-body);
+}
+
+.map-info {
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-bg-medium);
+    border-radius: 12px;
+    margin: 0 var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+}
+
+.map-info__name {
+    color: var(--color-text-primary);
+    font-size: var(--font-size-body);
+    -unity-font-style: bold;
+}
+
+.map-info__mode {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-small);
+}
+
+.map-info__timer {
+    color: var(--color-secondary);
+    font-size: var(--font-size-small);
+}
+
+.dot-indicators {
+    flex-direction: row;
+    justify-content: center;
+    padding: var(--spacing-sm) 0;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.3);
+    margin: 0 4px;
+}
+
+.dot--active {
+    background-color: var(--color-primary);
+}
+
+/* ── Play Button ── */
+.play-button {
+    height: 80px;
+    margin: var(--spacing-md) var(--spacing-xl);
+    background-color: var(--color-primary);
+    border-radius: 16px;
+    align-items: center;
+    justify-content: center;
+}
+
+.play-button__label {
+    color: var(--color-bg-dark);
+    font-size: var(--font-size-title);
+    -unity-font-style: bold;
+    letter-spacing: 4px;
+}
+
+/* ── Action Buttons Row ── */
+.action-row {
+    flex-direction: row;
+    justify-content: space-around;
+    padding: 0 var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.action-btn {
+    padding: var(--spacing-sm) var(--spacing-md);
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    align-items: center;
+}
+
+.action-btn__label {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-small);
+}
+
+/* ── Bottom Nav Bar ── */
+.nav-bar {
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    background-color: var(--color-bg-medium);
+    height: 64px;
+    padding: 0 var(--spacing-sm);
+}
+
+.nav-btn {
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.nav-btn__label {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-small);
+}
+
+.nav-btn--active .nav-btn__label {
+    color: var(--color-primary);
+}

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using KitchenClash.Application.Config;
 using KitchenClash.Application.Services;
 using KitchenClash.Domain;
 
@@ -49,26 +50,30 @@ namespace KitchenClash.Application
         private void BuildQueues()
         {
             string currentSeasonId = _cfg.Get("ranked_season_id", "season_1");
+            int normalDuration = _cfg.Get(RemoteConfigKeys.MatchDurationSec,
+                RemoteConfigKeys.Defaults.MatchDurationSec);
+            int rankedDuration = _cfg.Get(RemoteConfigKeys.MatchDurationRankedSec,
+                RemoteConfigKeys.Defaults.MatchDurationRankedSec);
 
             _queues = new List<MatchQueueDefinition>
             {
-                // quick_2v2: 2v2, 4 players, 120s match
-                new("quick_2v2", "quick_2v2", "Quick Match 2v2", 2, 2, 120, 0,
+                // quick_2v2: 2v2, 4 players
+                new("quick_2v2", "quick_2v2", "Quick Match 2v2", 2, 2, normalDuration, 0,
                     GameModeCategory.Trophies, "sushi_shuffle", false, true),
 
-                // quick_3v3: 3v3, 6 players, 180s match
-                new("quick_3v3", "quick_3v3", "Quick Match 3v3", 2, 3, 180, 0,
+                // quick_3v3: 3v3, 6 players
+                new("quick_3v3", "quick_3v3", "Quick Match 3v3", 2, 3, normalDuration, 0,
                     GameModeCategory.Trophies, "pirate_pot", false, true),
 
-                // ranked: 2v2, 4 players, 180s match, requires level 5+
-                new("ranked", "ranked", "Ranked", 2, 2, 180, 0,
+                // ranked: 2v2, 4 players, uses ranked duration, requires level 5+
+                new("ranked", "ranked", "Ranked", 2, 2, rankedDuration, 0,
                     GameModeCategory.Ranked, "burger_boulevard", true,
                     _cfg.Get("enableRankedMode", true),
                     minLevelRequired: 5,
                     seasonId: currentSeasonId),
 
-                // event: 2v2, 4 players, 180s, special rules
-                new("event", "event", "Event Mode", 2, 2, 180, 0,
+                // event: 2v2, 4 players, special rules
+                new("event", "event", "Event Mode", 2, 2, normalDuration, 0,
                     GameModeCategory.Special, "clash_kitchen", false,
                     _cfg.Get("enableEventMode", false),
                     eventId: _cfg.Get("event_id", (string)null),

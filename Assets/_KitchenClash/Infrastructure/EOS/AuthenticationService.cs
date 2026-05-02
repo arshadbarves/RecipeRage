@@ -27,6 +27,12 @@ namespace KitchenClash.Infrastructure.EOS
         private readonly ISaveService _saveService;
         private readonly UGSConfig _ugsConfig;
 
+        // ── GDD v3 properties ──
+        public string ProductUserId => EosProductUserId;
+        public bool IsGuest { get; private set; }
+        public event Action<AuthResult> OnAuthChanged;
+
+        // ── Legacy properties ──
         public bool IsInitialized { get; private set; }
         public bool IsSignedIn => IsLoggedIn(); // EOS State
         public bool IsUgsSignedIn => (UnityServices.State == ServicesInitializationState.Initialized) && 
@@ -43,6 +49,81 @@ namespace KitchenClash.Infrastructure.EOS
             _saveService = saveService;
             _ugsConfig = ugsConfig;
         }
+
+        // ══════════════════════════════════════════════
+        // GDD v3 methods
+        // ══════════════════════════════════════════════
+
+        public async Task<AuthResult> LoginAsGuestAsync()
+        {
+            try
+            {
+                await InitializeAsync();
+                bool success = await LoginWithEosDeviceIdAsync();
+                if (!success)
+                {
+                    var fail = AuthResult.Failed("EOS Device ID login failed");
+                    OnAuthChanged?.Invoke(fail);
+                    return fail;
+                }
+
+                // Best-effort UGS
+                await LoginToUgsWithEosAsync();
+
+                IsGuest = true;
+                _saveService.UpdateSettings(s => s.LastLoginMethod = LOGIN_METHOD_DEVICE_ID);
+
+                var result = new AuthResult(true, ProductUserId, isGuest: true);
+                OnAuthChanged?.Invoke(result);
+                _eventBus?.Publish(new LoginSuccessEvent { UserId = EosProductUserId, DisplayName = "User" });
+                return result;
+            }
+            catch (Exception ex)
+            {
+                var fail = AuthResult.Failed(ex.Message);
+                OnAuthChanged?.Invoke(fail);
+                return fail;
+            }
+        }
+
+        public async Task<AuthResult> LoginWithGoogleAsync()
+        {
+#if UNITY_ANDROID
+            // TODO: GoogleSignIn.DefaultInstance.SignIn() -> idToken
+            // Then EOS Connect.Login(ExternalCredentialType.GoogleIdToken, token)
+#endif
+            return await Task.FromResult(AuthResult.Failed("Google login not yet implemented"));
+        }
+
+        public async Task<AuthResult> LoginWithFacebookAsync()
+        {
+#if UNITY_ANDROID || UNITY_IOS
+            // TODO: Facebook SDK -> access token
+            // Then EOS Connect.Login(ExternalCredentialType.FacebookAccessToken, token)
+#endif
+            return await Task.FromResult(AuthResult.Failed("Facebook login not yet implemented"));
+        }
+
+        public async Task<AuthResult> LoginWithAppleAsync()
+        {
+#if UNITY_IOS
+            // TODO: Apple Sign-In -> idToken
+            // Then EOS Connect.Login(ExternalCredentialType.AppleIdToken, token)
+#endif
+            return await Task.FromResult(AuthResult.Failed("Apple login not yet implemented"));
+        }
+
+        public async Task LinkToGoogleAsync()
+        {
+#if UNITY_ANDROID
+            // TODO: EOS Connect.LinkAccount(DeviceId PUID -> Google PUID)
+#endif
+            await Task.CompletedTask;
+        }
+
+        // ══════════════════════════════════════════════
+        // Legacy methods (kept for backward compat)
+        // ══════════════════════════════════════════════
 
         public async UniTask<bool> InitializeAsync()
         {
@@ -95,7 +176,9 @@ namespace KitchenClash.Infrastructure.EOS
             switch (type)
             {
                 case AuthType.DeviceID:
+                case AuthType.Guest:
                     eosSuccess = await LoginWithEosDeviceIdAsync();
+                    IsGuest = true;
                     break;
                 default:
                     GameLogger.LogError($"Unsupported AuthType: {type}");
@@ -119,12 +202,14 @@ namespace KitchenClash.Infrastructure.EOS
             }
 
             // Save persistence
-            if (type == AuthType.DeviceID)
+            if (type == AuthType.DeviceID || type == AuthType.Guest)
             {
                 _saveService.UpdateSettings(s => s.LastLoginMethod = LOGIN_METHOD_DEVICE_ID);
             }
 
             GameLogger.LogInfo("Unified login successful (EOS primary ready).");
+            var authResult = new AuthResult(true, EosProductUserId, isGuest: IsGuest);
+            OnAuthChanged?.Invoke(authResult);
             _eventBus?.Publish(new LoginSuccessEvent { UserId = EosProductUserId, DisplayName = "User" });
             return true;
         }
@@ -135,6 +220,7 @@ namespace KitchenClash.Infrastructure.EOS
             
             // 1. Clear persistence
             _saveService.UpdateSettings(s => s.LastLoginMethod = "");
+            IsGuest = false;
 
             // 2. UGS Logout
             if (UnityServices.State == ServicesInitializationState.Initialized && 
@@ -153,9 +239,15 @@ namespace KitchenClash.Infrastructure.EOS
                 }
             }
 
+            var result = AuthResult.Failed("Logged out");
+            OnAuthChanged?.Invoke(result);
             _eventBus?.Publish(new LogoutEvent { UserId = EosProductUserId ?? "unknown" });
             await UniTask.Yield();
         }
+
+        // ══════════════════════════════════════════════
+        // Internal EOS helpers
+        // ══════════════════════════════════════════════
 
         private async UniTask<bool> LoginWithEosDeviceIdAsync()
         {

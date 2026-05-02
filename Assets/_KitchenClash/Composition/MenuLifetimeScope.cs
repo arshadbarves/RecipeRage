@@ -30,6 +30,7 @@ public class MenuLifetimeScope : LifetimeScope
         builder.Register<TutorialService>(Lifetime.Scoped).As<ITutorialService>();
 
         // ViewModels
+        builder.Register<HomeScreenViewModel>(Lifetime.Transient);
         builder.Register<DailyStreakViewModel>(Lifetime.Transient);
         builder.Register<MatchmakingViewModel>(Lifetime.Transient);
     }

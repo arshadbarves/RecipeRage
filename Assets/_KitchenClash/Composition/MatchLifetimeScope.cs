@@ -32,5 +32,27 @@ public class MatchLifetimeScope : LifetimeScope
         builder.Register<BotManager>(Lifetime.Scoped);
         builder.Register<BotClaimRegistry>(Lifetime.Scoped);
         builder.Register<BotTaskPlanner>(Lifetime.Scoped);
+
+        // Connectivity: notify match lifecycle for state machine
+        builder.Register<MatchConnectivityBridge>(Lifetime.Scoped)
+            .As<IStartable>()
+            .As<System.IDisposable>();
     }
+}
+
+/// <summary>
+/// Bridges match lifecycle to connectivity state machine.
+/// Calls NotifyMatchStarted on start, NotifyMatchEnded on dispose.
+/// </summary>
+internal sealed class MatchConnectivityBridge : IStartable, System.IDisposable
+{
+    private readonly IConnectivityService _connectivity;
+
+    public MatchConnectivityBridge(IConnectivityService connectivity)
+    {
+        _connectivity = connectivity;
+    }
+
+    void IStartable.Start() => _connectivity.NotifyMatchStarted();
+    void System.IDisposable.Dispose() => _connectivity.NotifyMatchEnded();
 }

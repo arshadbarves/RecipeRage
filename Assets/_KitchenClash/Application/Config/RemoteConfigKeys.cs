@@ -18,6 +18,7 @@ namespace KitchenClash.Application.Config
 
         // ── Gameplay ──
         public const string MatchDurationSec = "match_duration_sec";        // 180
+        public const string MatchDurationRankedSec = "match_duration_ranked_sec"; // 300
         public const string RushStartSec = "rush_start_sec";                // 60
         public const string RushOrderMult = "rush_order_mult";              // 1.5
         public const string ChopTapsLettuce = "chop_taps_lettuce";          // 3
@@ -73,6 +74,7 @@ namespace KitchenClash.Application.Config
             public const float ScorePlatePct = 0.10f;
 
             public const int MatchDurationSec = 180;
+            public const int MatchDurationRankedSec = 300;
             public const int RushStartSec = 60;
             public const float RushOrderMult = 1.5f;
             public const int ChopTapsLettuce = 3;
