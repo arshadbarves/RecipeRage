@@ -1,12 +1,53 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
     <Style src="../Styles/theme.uss" />
     <Style src="../Styles/screens.uss" />
+    <Style src="../Styles/components.uss" />
 
-    <ui:VisualElement name="loading-root" class="screen-root loading-root">
-        <ui:VisualElement class="loading-center">
-            <ui:VisualElement name="loading-spinner" class="loading-spinner" />
-            <ui:ProgressBar name="loading-progress" title="" low-value="0" high-value="100" class="loading-progress" />
+    <!--
+        LoadingScreen — Hot Kitchen Design System v2.0
+        bg-deep base, centered spinner + progress bar + tip label.
+        Named elements: loading-spinner, loading-progress, lbl-tip
+    -->
+    <ui:VisualElement name="loading-root" class="screen-root layout-screen">
+
+        <!-- Full-screen centered content -->
+        <ui:VisualElement class="layout-center" style="
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        ">
+
+            <!-- Spinner ring — DOTween rotates this at runtime -->
+            <ui:VisualElement name="loading-spinner" class="spinner" style="
+                margin-bottom: 32px;
+            " />
+
+            <!-- Progress bar track -->
+            <ui:VisualElement name="loading-progress" class="progress-bar" style="
+                width: 240px;
+                margin-left: 0;
+                margin-right: 0;
+                margin-bottom: 24px;
+            ">
+                <ui:VisualElement class="progress-bar__fill" style="width: 0%;" />
+            </ui:VisualElement>
+
+            <!-- Tip label -->
+            <ui:Label name="lbl-tip"
+                text="Tip: Combine ingredients faster to earn bonus points!"
+                style="
+                    color: #A0A0C0;
+                    font-size: 14px;
+                    -unity-font-style: italic;
+                    -unity-text-align: middle-center;
+                    white-space: normal;
+                    padding-left: 32px;
+                    padding-right: 32px;
+                    max-width: 340px;
+                "
+            />
+
         </ui:VisualElement>
-        <ui:Label name="lbl-tip" text="Tip: Combine ingredients faster to earn bonus points!" class="loading-tip" />
+
     </ui:VisualElement>
 </ui:UXML>

@@ -1,31 +1,77 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
     <Style src="../Styles/theme.uss" />
     <Style src="../Styles/screens.uss" />
+    <Style src="../Styles/components.uss" />
 
-    <ui:VisualElement name="joystick-editor-root" class="screen-root joystick-editor-root">
-        <ui:Label text="JOYSTICK LAYOUT" class="screen-title" />
+    <ui:VisualElement name="joystick-editor-root" class="screen-root bg-deep">
 
-        <!-- Preview Area with draggable joystick positions -->
-        <ui:VisualElement name="joystick-preview" class="joystick-editor-preview">
-            <ui:VisualElement name="joystick-move-handle" class="joystick-editor-handle joystick-editor-handle--move">
-                <ui:Label text="Move" class="joystick-editor-handle__label" />
+        <!-- ── TOP BAR ── -->
+        <ui:VisualElement class="top-bar"
+            style="flex-direction: row; align-items: center;">
+            <ui:Button name="btn-back" text="‹" class="btn-ghost"
+                style="width: 40px; height: 40px; font-size: 22px; padding: 0; margin-right: 8px;" />
+            <ui:Label text="JOYSTICK EDITOR" class="screen-title text-bold" style="flex-grow: 1;" />
+            <ui:Button name="btn-reset" text="Reset" class="btn-ghost"
+                style="padding: 6px 14px;" />
+        </ui:VisualElement>
+
+        <!-- ── PREVIEW AREA ── -->
+        <ui:VisualElement name="joystick-preview-area" class="card"
+            style="flex-grow: 1; min-height: 300px; position: relative; overflow: hidden; margin-bottom: 16px;">
+
+            <!-- Hint label -->
+            <ui:Label text="Drag joysticks to reposition"
+                class="text-muted"
+                style="position: absolute; top: 50%; left: 0; right: 0;
+                       -unity-text-align: middle-center; font-size: 13px;" />
+
+            <!-- Left joystick handle (bottom-left) -->
+            <ui:VisualElement name="joystick-l-handle"
+                style="position: absolute; bottom: 16px; left: 16px;
+                       width: 120px; height: 120px; border-radius: 60px;
+                       background-color: rgba(255,255,255,0.1);
+                       border-width: 3px; border-color: rgba(255,255,255,0.3);">
+                <ui:Label text="L" class="text-bold text-muted"
+                    style="font-size: 18px; position: absolute;
+                           top: 50%; left: 0; right: 0;
+                           -unity-text-align: middle-center;" />
             </ui:VisualElement>
-            <ui:VisualElement name="joystick-aim-handle" class="joystick-editor-handle joystick-editor-handle--aim">
-                <ui:Label text="Aim" class="joystick-editor-handle__label" />
+
+            <!-- Right joystick handle (bottom-right) -->
+            <ui:VisualElement name="joystick-r-handle"
+                style="position: absolute; bottom: 16px; right: 16px;
+                       width: 120px; height: 120px; border-radius: 60px;
+                       background-color: rgba(255,255,255,0.1);
+                       border-width: 3px; border-color: rgba(255,255,255,0.3);">
+                <ui:Label text="R" class="text-bold text-muted"
+                    style="font-size: 18px; position: absolute;
+                           top: 50%; left: 0; right: 0;
+                           -unity-text-align: middle-center;" />
             </ui:VisualElement>
+
         </ui:VisualElement>
 
-        <!-- Size Slider -->
-        <ui:VisualElement class="joystick-editor-controls">
-            <ui:Label text="Joystick Size" class="joystick-editor-controls__label" />
-            <ui:Slider name="slider-joystick-size" low-value="50" high-value="150" value="100" class="joystick-editor-controls__slider" />
+        <!-- ── SIZE SLIDER ROW ── -->
+        <ui:VisualElement class="layout-row--spaced"
+            style="align-items: center; margin-bottom: 14px; padding: 0 4px;">
+            <ui:Label text="Joystick Size" class="text-bold" style="color: white; min-width: 120px;" />
+            <ui:Slider name="slider-joystick-size"
+                low-value="80" high-value="160" value="120"
+                style="flex-grow: 1;" />
         </ui:VisualElement>
 
-        <ui:VisualElement class="joystick-editor-buttons">
-            <ui:Button name="btn-reset" text="Reset to Default" class="joystick-editor-reset-btn" />
-            <ui:Button name="btn-save" text="Save" class="joystick-editor-save-btn" />
+        <!-- ── OPACITY SLIDER ROW ── -->
+        <ui:VisualElement class="layout-row--spaced"
+            style="align-items: center; margin-bottom: 20px; padding: 0 4px;">
+            <ui:Label text="Opacity" class="text-bold" style="color: white; min-width: 120px;" />
+            <ui:Slider name="slider-opacity"
+                low-value="0" high-value="1" value="0.75"
+                style="flex-grow: 1;" />
         </ui:VisualElement>
 
-        <ui:Button name="btn-back" text="Back" class="btn-back" />
+        <!-- ── SAVE LAYOUT BUTTON ── -->
+        <ui:Button name="btn-save-layout" text="SAVE LAYOUT" class="btn-primary"
+            style="height: 60px; font-size: 18px;" />
+
     </ui:VisualElement>
 </ui:UXML>

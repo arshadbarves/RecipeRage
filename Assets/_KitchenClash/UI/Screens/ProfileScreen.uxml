@@ -1,51 +1,135 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
     <Style src="../Styles/theme.uss" />
     <Style src="../Styles/screens.uss" />
+    <Style src="../Styles/components.uss" />
 
-    <ui:VisualElement name="profile-root" class="screen-root profile-root">
-        <ui:Label text="PROFILE" class="screen-title" />
+    <ui:VisualElement name="profile-root" class="screen-root layout-screen">
 
-        <!-- Avatar + Name -->
-        <ui:VisualElement class="profile-header">
-            <ui:VisualElement name="profile-avatar" class="profile-avatar" />
-            <ui:Label name="lbl-player-name" text="ChefMaster99" class="profile-name" />
-            <ui:Label name="lbl-rank" text="Gold III" class="profile-rank" />
+        <!-- Top Bar -->
+        <ui:VisualElement class="top-bar">
+            <ui:VisualElement class="top-bar__left">
+                <ui:Button name="btn-back" class="btn-icon">
+                    <ui:Label text="←" class="btn-icon__label" />
+                </ui:Button>
+            </ui:VisualElement>
+            <ui:Label text="PROFILE" class="top-bar__title" />
+            <ui:VisualElement class="top-bar__right" style="width: 48px;" />
         </ui:VisualElement>
 
-        <!-- Level / XP Bar -->
-        <ui:VisualElement class="profile-level">
-            <ui:Label name="lbl-level" text="Level 24" class="profile-level__label" />
-            <ui:ProgressBar name="xp-bar" title="" low-value="0" high-value="100" value="65" class="profile-xp-bar" />
-            <ui:Label name="lbl-xp" text="650 / 1000 XP" class="profile-level__xp" />
-        </ui:VisualElement>
+        <!-- Scrollable Content -->
+        <ui:ScrollView class="layout-content" mode="Vertical">
 
-        <!-- Stats Grid -->
-        <ui:VisualElement class="profile-stats">
-            <ui:VisualElement class="profile-stat">
-                <ui:Label name="lbl-matches" text="342" class="profile-stat__value" />
-                <ui:Label text="Matches" class="profile-stat__label" />
-            </ui:VisualElement>
-            <ui:VisualElement class="profile-stat">
-                <ui:Label name="lbl-wins" text="198" class="profile-stat__value" />
-                <ui:Label text="Wins" class="profile-stat__label" />
-            </ui:VisualElement>
-            <ui:VisualElement class="profile-stat">
-                <ui:Label name="lbl-losses" text="144" class="profile-stat__value" />
-                <ui:Label text="Losses" class="profile-stat__label" />
-            </ui:VisualElement>
-            <ui:VisualElement class="profile-stat">
-                <ui:Label name="lbl-winrate" text="57.9%" class="profile-stat__value" />
-                <ui:Label text="Win Rate" class="profile-stat__label" />
-            </ui:VisualElement>
-        </ui:VisualElement>
+            <!-- ── Avatar Area ───────────────────────────────────── -->
+            <ui:VisualElement style="align-items: center; padding-top: 24px; padding-bottom: 16px;">
+                <!-- Avatar circle 96×96 -->
+                <ui:VisualElement name="avatar-portrait"
+                    style="width: 96px; height: 96px;
+                           border-radius: 999px;
+                           background-color: var(--bg-surface);
+                           border-width: var(--border-ink-w);
+                           border-color: var(--border-ink);
+                           margin-bottom: 12px;" />
 
-        <!-- Favorite Chef -->
-        <ui:VisualElement class="profile-fav-chef">
-            <ui:Label text="Favorite Chef" class="profile-fav-chef__title" />
-            <ui:VisualElement name="fav-chef-icon" class="profile-fav-chef__icon" />
-            <ui:Label name="lbl-fav-chef" text="Chef Rosa" class="profile-fav-chef__name" />
-        </ui:VisualElement>
+                <ui:Label name="lbl-player-name" text="ChefMaster99"
+                    style="color: var(--txt-primary); font-size: var(--fs-22);
+                           -unity-font-style: bold; -unity-text-align: middle-center;" />
 
-        <ui:Button name="btn-back" text="Back" class="btn-back" />
+                <ui:Label name="lbl-player-level" text="Level 12"
+                    style="color: var(--clr-fire-light); font-size: var(--fs-14);
+                           -unity-text-align: middle-center; margin-top: 4px;" />
+            </ui:VisualElement>
+
+            <!-- ── XP Bar ─────────────────────────────────────────── -->
+            <ui:VisualElement class="xp-bar"
+                              style="margin-left: 16px; margin-right: 16px; margin-bottom: 8px;">
+                <ui:VisualElement class="xp-bar__header">
+                    <ui:Label text="XP" class="xp-bar__label" />
+                    <ui:Label name="lbl-xp" text="650 / 1000 XP" class="xp-bar__value" />
+                </ui:VisualElement>
+                <ui:VisualElement class="bar-track">
+                    <ui:VisualElement name="xp-fill" class="bar-fill bar-fill--xp"
+                                      style="width: 65%;" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:VisualElement class="divider" />
+
+            <!-- ── Stats Grid ─────────────────────────────────────── -->
+            <ui:VisualElement class="layout-grid">
+
+                <ui:VisualElement class="card"
+                    style="width: 44%; margin: 6px; align-items: center; padding: 16px 8px;">
+                    <ui:Label name="lbl-matches" text="342"
+                        style="color: var(--clr-cyan); font-size: var(--fs-28);
+                               -unity-font-style: bold; -unity-text-align: middle-center;" />
+                    <ui:Label text="Matches"
+                        style="color: var(--txt-secondary); font-size: var(--fs-12);
+                               -unity-text-align: middle-center; margin-top: 4px;" />
+                </ui:VisualElement>
+
+                <ui:VisualElement class="card"
+                    style="width: 44%; margin: 6px; align-items: center; padding: 16px 8px;">
+                    <ui:Label name="lbl-wins" text="198"
+                        style="color: var(--clr-teal); font-size: var(--fs-28);
+                               -unity-font-style: bold; -unity-text-align: middle-center;" />
+                    <ui:Label text="Wins"
+                        style="color: var(--txt-secondary); font-size: var(--fs-12);
+                               -unity-text-align: middle-center; margin-top: 4px;" />
+                </ui:VisualElement>
+
+                <ui:VisualElement class="card"
+                    style="width: 44%; margin: 6px; align-items: center; padding: 16px 8px;">
+                    <ui:Label name="lbl-losses" text="144"
+                        style="color: var(--clr-danger); font-size: var(--fs-28);
+                               -unity-font-style: bold; -unity-text-align: middle-center;" />
+                    <ui:Label text="Losses"
+                        style="color: var(--txt-secondary); font-size: var(--fs-12);
+                               -unity-text-align: middle-center; margin-top: 4px;" />
+                </ui:VisualElement>
+
+                <ui:VisualElement class="card"
+                    style="width: 44%; margin: 6px; align-items: center; padding: 16px 8px;">
+                    <ui:Label name="lbl-winrate" text="57.9%"
+                        style="color: var(--clr-gold); font-size: var(--fs-28);
+                               -unity-font-style: bold; -unity-text-align: middle-center;" />
+                    <ui:Label text="Win Rate"
+                        style="color: var(--txt-secondary); font-size: var(--fs-12);
+                               -unity-text-align: middle-center; margin-top: 4px;" />
+                </ui:VisualElement>
+
+            </ui:VisualElement>
+
+            <ui:VisualElement class="divider" />
+
+            <!-- ── Stat Rows ──────────────────────────────────────── -->
+            <ui:VisualElement style="padding: 0 16px;">
+
+                <!-- Favorite Chef -->
+                <ui:VisualElement class="stat-row">
+                    <ui:Label text="Favorite Chef" class="stat-row__label" />
+                    <ui:Label name="lbl-fav-chef" text="Chef Rosa"
+                              class="stat-row__value" />
+                </ui:VisualElement>
+
+                <!-- Rank -->
+                <ui:VisualElement class="stat-row">
+                    <ui:Label text="Rank" class="stat-row__label" />
+                    <ui:Label name="lbl-rank" text="Gold III"
+                              class="stat-row__value stat-row__value--ranked" />
+                </ui:VisualElement>
+
+                <!-- Trophies -->
+                <ui:VisualElement class="stat-row">
+                    <ui:Label text="Trophies" class="stat-row__label" />
+                    <ui:Label name="lbl-trophies" text="🏆  4820"
+                              class="stat-row__value stat-row__value--gold" />
+                </ui:VisualElement>
+
+            </ui:VisualElement>
+
+            <!-- bottom breathing room -->
+            <ui:VisualElement style="height: 24px;" />
+
+        </ui:ScrollView>
     </ui:VisualElement>
 </ui:UXML>

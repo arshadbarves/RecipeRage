@@ -1,37 +1,180 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
     <Style src="../Styles/theme.uss" />
     <Style src="../Styles/screens.uss" />
+    <Style src="../Styles/components.uss" />
 
-    <ui:VisualElement name="map-selection-root" class="screen-root map-selection-root">
-        <ui:Label text="SELECT MAP" class="screen-title" />
+    <ui:VisualElement name="map-selection-root" class="screen-root layout-screen">
 
-        <ui:ScrollView mode="Horizontal" name="map-scroll" class="map-scroll">
-            <ui:VisualElement class="map-card">
-                <ui:VisualElement name="map-preview-1" class="map-card__preview" />
-                <ui:Label text="Sushi Shuffle" class="map-card__name" />
-                <ui:Label text="2v2 • Quick Match" class="map-card__mode" />
-                <ui:Label text="⭐⭐" class="map-card__difficulty" />
+        <!-- ── Top Bar ──────────────────────────────────────────────── -->
+        <ui:VisualElement class="top-bar">
+            <ui:VisualElement class="top-bar__left">
+                <ui:Button name="btn-back" class="btn-icon">
+                    <ui:Label text="‹" class="btn-icon__label" />
+                </ui:Button>
             </ui:VisualElement>
-            <ui:VisualElement class="map-card">
-                <ui:VisualElement name="map-preview-2" class="map-card__preview" />
-                <ui:Label text="Pizza Palace" class="map-card__name" />
-                <ui:Label text="3v3 • Ranked" class="map-card__mode" />
-                <ui:Label text="⭐⭐⭐" class="map-card__difficulty" />
-            </ui:VisualElement>
-            <ui:VisualElement class="map-card">
-                <ui:VisualElement name="map-preview-3" class="map-card__preview" />
-                <ui:Label text="Burger Brawl" class="map-card__name" />
-                <ui:Label text="2v2 • Casual" class="map-card__mode" />
-                <ui:Label text="⭐" class="map-card__difficulty" />
-            </ui:VisualElement>
-            <ui:VisualElement class="map-card">
-                <ui:VisualElement name="map-preview-4" class="map-card__preview" />
-                <ui:Label text="Taco Tornado" class="map-card__name" />
-                <ui:Label text="3v3 • Quick Match" class="map-card__mode" />
-                <ui:Label text="⭐⭐⭐⭐" class="map-card__difficulty" />
-            </ui:VisualElement>
-        </ui:ScrollView>
+            <ui:Label text="SELECT MAP" class="top-bar__title" />
+            <ui:VisualElement class="top-bar__right" style="width: 48px;" />
+        </ui:VisualElement>
 
-        <ui:Button name="btn-back" text="Back" class="btn-back" />
+        <!-- ── Mode Tabs ────────────────────────────────────────────── -->
+        <ui:VisualElement class="layout-row"
+            style="padding: 8px 16px; background-color: var(--bg-deepest);
+                   border-bottom-width: 2px; border-color: var(--border-panel); gap: 8px;">
+            <ui:Button name="tab-all" class="btn-primary"
+                style="flex-grow: 1; height: 44px; border-radius: 999px;">
+                <ui:Label text="All" class="btn-primary__label"
+                    style="font-size: 14px;" />
+            </ui:Button>
+            <ui:Button name="tab-quick" class="btn-ghost" style="flex-grow: 1;">
+                <ui:Label text="Quick" class="btn-ghost__label" />
+            </ui:Button>
+            <ui:Button name="tab-ranked" class="btn-ghost" style="flex-grow: 1;">
+                <ui:Label text="Ranked" class="btn-ghost__label" />
+            </ui:Button>
+        </ui:VisualElement>
+
+        <!-- ── Scrollable Body ──────────────────────────────────────── -->
+        <ui:VisualElement class="layout-content">
+
+            <!-- ── Horizontal Map Scroll ────────────────────────────── -->
+            <ui:ScrollView name="map-scroll" mode="Horizontal"
+                style="margin: 16px -16px 0 -16px; padding: 0 16px;">
+                <ui:VisualElement class="layout-row" style="padding: 4px 0 12px 0; gap: 0;">
+
+                    <!-- Map 0: Rookie Kitchen -->
+                    <ui:VisualElement class="map-card map-card--selected">
+                        <ui:VisualElement class="map-card__thumb" />
+                        <ui:VisualElement class="map-card__body">
+                            <ui:Label text="Rookie Kitchen" class="map-card__name" />
+                            <ui:Label text="Quick Match" class="map-card__mode" />
+                            <ui:VisualElement class="map-card__diff">
+                                <ui:VisualElement class="home-dot home-dot--active" />
+                                <ui:VisualElement class="home-dot" />
+                                <ui:VisualElement class="home-dot" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+
+                    <!-- Map 1: Sushi Shuffle -->
+                    <ui:VisualElement class="map-card">
+                        <ui:VisualElement class="map-card__thumb" />
+                        <ui:VisualElement class="map-card__body">
+                            <ui:Label text="Sushi Shuffle" class="map-card__name" />
+                            <ui:Label text="Quick Match" class="map-card__mode" />
+                            <ui:VisualElement class="map-card__diff">
+                                <ui:VisualElement class="home-dot home-dot--active" />
+                                <ui:VisualElement class="home-dot home-dot--active" />
+                                <ui:VisualElement class="home-dot" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+
+                    <!-- Map 2: Burger Boulevard -->
+                    <ui:VisualElement class="map-card">
+                        <ui:VisualElement class="map-card__thumb" />
+                        <ui:VisualElement class="map-card__body">
+                            <ui:Label text="Burger Boulevard" class="map-card__name" />
+                            <ui:Label text="Quick Match" class="map-card__mode" />
+                            <ui:VisualElement class="map-card__diff">
+                                <ui:VisualElement class="home-dot home-dot--active" />
+                                <ui:VisualElement class="home-dot home-dot--active" />
+                                <ui:VisualElement class="home-dot" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+
+                    <!-- Map 3: Pirate Pot -->
+                    <ui:VisualElement class="map-card">
+                        <ui:VisualElement class="map-card__thumb" />
+                        <ui:VisualElement class="map-card__body">
+                            <ui:Label text="Pirate Pot" class="map-card__name" />
+                            <ui:Label text="Ranked" class="map-card__mode" />
+                            <ui:VisualElement class="map-card__diff">
+                                <ui:VisualElement class="home-dot home-dot--active" />
+                                <ui:VisualElement class="home-dot home-dot--active" />
+                                <ui:VisualElement class="home-dot home-dot--active" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+
+                    <!-- Map 4: Taco Truck -->
+                    <ui:VisualElement class="map-card">
+                        <ui:VisualElement class="map-card__thumb" />
+                        <ui:VisualElement class="map-card__body">
+                            <ui:Label text="Taco Truck" class="map-card__name" />
+                            <ui:Label text="Quick Match" class="map-card__mode" />
+                            <ui:VisualElement class="map-card__diff">
+                                <ui:VisualElement class="home-dot home-dot--active" />
+                                <ui:VisualElement class="home-dot home-dot--active" />
+                                <ui:VisualElement class="home-dot" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+
+                    <!-- Map 5: Space Station -->
+                    <ui:VisualElement class="map-card">
+                        <ui:VisualElement class="map-card__thumb" />
+                        <ui:VisualElement class="map-card__body">
+                            <ui:Label text="Space Station" class="map-card__name" />
+                            <ui:Label text="Ranked" class="map-card__mode" />
+                            <ui:VisualElement class="map-card__diff">
+                                <ui:VisualElement class="home-dot home-dot--active" />
+                                <ui:VisualElement class="home-dot home-dot--active" />
+                                <ui:VisualElement class="home-dot home-dot--active" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+
+                    <!-- Map 6: Volcano Kitchen -->
+                    <ui:VisualElement class="map-card">
+                        <ui:VisualElement class="map-card__thumb" />
+                        <ui:VisualElement class="map-card__body">
+                            <ui:Label text="Volcano Kitchen" class="map-card__name" />
+                            <ui:Label text="Ranked" class="map-card__mode" />
+                            <ui:VisualElement class="map-card__diff">
+                                <ui:VisualElement class="home-dot home-dot--active" />
+                                <ui:VisualElement class="home-dot home-dot--active" />
+                                <ui:VisualElement class="home-dot home-dot--active" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+
+                    <!-- Map 7: Clash Kitchen -->
+                    <ui:VisualElement class="map-card">
+                        <ui:VisualElement class="map-card__thumb" />
+                        <ui:VisualElement class="map-card__body">
+                            <ui:Label text="Clash Kitchen" class="map-card__name" />
+                            <ui:Label text="Ranked" class="map-card__mode" />
+                            <ui:VisualElement class="map-card__diff">
+                                <ui:VisualElement class="home-dot home-dot--active" />
+                                <ui:VisualElement class="home-dot home-dot--active" />
+                                <ui:VisualElement class="home-dot home-dot--active" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+
+                </ui:VisualElement>
+            </ui:ScrollView>
+
+            <!-- ── Selected Map Details Card ────────────────────────── -->
+            <ui:VisualElement class="card layout-row layout-row--spaced"
+                style="margin: 12px 0 16px 0; align-items: center;">
+                <ui:VisualElement style="flex-grow: 1;">
+                    <ui:Label name="lbl-selected-map" text="Rookie Kitchen"
+                        style="font-size: 20px; -unity-font-style: bold;
+                               color: var(--txt-primary);" />
+                    <ui:Label name="lbl-selected-mode" text="Quick Match"
+                        style="color: var(--txt-secondary); font-size: 13px;
+                               margin-top: 4px;" />
+                </ui:VisualElement>
+                <ui:Button name="btn-confirm-map" class="btn-primary"
+                    style="width: 140px;">
+                    <ui:Label text="CONFIRM MAP" class="btn-primary__label"
+                        style="font-size: 14px; letter-spacing: 1px;" />
+                </ui:Button>
+            </ui:VisualElement>
+
+        </ui:VisualElement>
+
     </ui:VisualElement>
 </ui:UXML>

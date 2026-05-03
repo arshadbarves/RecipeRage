@@ -1,20 +1,95 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
     <Style src="../Styles/theme.uss" />
     <Style src="../Styles/screens.uss" />
+    <Style src="../Styles/components.uss" />
 
-    <ui:VisualElement name="daily-streak-popup-root" class="overlay-root daily-streak-popup">
-        <ui:VisualElement class="overlay-backdrop" />
-        <ui:VisualElement class="streak-popup-card">
-            <ui:Label text="🔥 Daily Streak!" class="streak-popup__title" />
-            <ui:VisualElement class="streak-popup__reward">
-                <ui:Label name="lbl-reward-icon" text="🎁" class="streak-popup__reward-icon" />
-                <ui:Label name="lbl-reward-text" text="50 Coins + 5 Gems" class="streak-popup__reward-text" />
+    <!-- Full-screen modal backdrop -->
+    <ui:VisualElement name="daily-streak-popup-root" class="modal-backdrop">
+
+        <!-- Slide-up bottom sheet -->
+        <ui:VisualElement class="overlay-sheet"
+            style="left: 0; bottom: 0; right: 0; position: absolute;
+                   background-color: var(--bg-panel);
+                   border-radius: var(--r-xl) var(--r-xl) 0 0;
+                   border-width: 2px 2px 0 2px;
+                   border-color: rgba(255,255,255,0.1);
+                   padding: var(--sp-24); padding-bottom: var(--sp-40);
+                   align-items: stretch;">
+
+            <!-- Drag handle pill -->
+            <ui:VisualElement
+                style="width: 40px; height: 8px;
+                       border-radius: var(--r-full);
+                       background-color: var(--bg-surface);
+                       align-self: center; margin-bottom: var(--sp-16);" />
+
+            <!-- Title -->
+            <ui:Label text="🔥 DAILY REWARD"
+                style="font-size: var(--fs-22); -unity-font-style: bold;
+                       color: var(--clr-gold); -unity-text-align: middle-center;
+                       margin-bottom: var(--sp-8);" />
+
+            <!-- Day label -->
+            <ui:Label name="lbl-streak-day" text="Day 4"
+                style="font-size: var(--fs-16); color: var(--clr-fire-light);
+                       -unity-text-align: middle-center;
+                       margin-bottom: var(--sp-16);" />
+
+            <!-- Gold reward card -->
+            <ui:VisualElement class="card card--gold"
+                style="align-items: center; padding: 20px;
+                       margin-bottom: var(--sp-20);">
+
+                <ui:Label name="reward-icon" text="🎁"
+                    style="font-size: 48px; -unity-text-align: middle-center;
+                           margin-bottom: var(--sp-8);" />
+
+                <ui:Label name="lbl-reward-description" text="Daily Login Bonus"
+                    style="font-size: var(--fs-16); -unity-font-style: bold;
+                           color: var(--txt-primary); -unity-text-align: middle-center;
+                           margin-bottom: var(--sp-6);" />
+
+                <ui:Label name="lbl-reward-amount" text="+50 💎"
+                    style="font-size: var(--fs-22); -unity-font-style: bold;
+                           color: var(--clr-gold); -unity-text-align: middle-center;" />
+
             </ui:VisualElement>
-            <ui:VisualElement class="streak-popup__streak-display">
-                <ui:Label text="Current Streak:" class="streak-popup__streak-label" />
-                <ui:Label name="lbl-streak" text="5 Days" class="streak-popup__streak-value" />
+
+            <!-- Upcoming rewards row (3 streak-day cells) -->
+            <ui:VisualElement name="upcoming-rewards"
+                style="flex-direction: row; justify-content: center;
+                       margin-bottom: var(--sp-20);">
+
+                <ui:VisualElement class="streak-day streak-day--past">
+                    <ui:Label text="5" class="streak-day__num" />
+                    <ui:Label text="⭐" class="streak-day__icon" />
+                </ui:VisualElement>
+
+                <ui:VisualElement class="streak-day streak-day--future">
+                    <ui:Label text="6" class="streak-day__num" />
+                    <ui:Label text="🎁" class="streak-day__icon" />
+                </ui:VisualElement>
+
+                <ui:VisualElement class="streak-day streak-day--future">
+                    <ui:Label text="7" class="streak-day__num" />
+                    <ui:Label text="💎" class="streak-day__icon" />
+                </ui:VisualElement>
+
             </ui:VisualElement>
-            <ui:Button name="btn-claim" text="Claim!" class="streak-popup__claim-btn" />
+
+            <!-- Claim primary CTA -->
+            <ui:Button name="claim-button" class="btn-primary"
+                style="height: 64px; margin-bottom: var(--sp-12);">
+                <ui:Label text="CLAIM  🎁" class="btn-primary__label"
+                    style="-unity-text-align: middle-center;" />
+            </ui:Button>
+
+            <!-- Later ghost button -->
+            <ui:Button name="close-button" class="btn-ghost">
+                <ui:Label text="Later" class="btn-ghost__label"
+                    style="-unity-text-align: middle-center;" />
+            </ui:Button>
+
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

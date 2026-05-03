@@ -1,25 +1,59 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
     <Style src="../Styles/theme.uss" />
     <Style src="../Styles/screens.uss" />
+    <Style src="../Styles/components.uss" />
 
-    <ui:VisualElement name="notification-root" class="screen-root notification-root">
-        <ui:Label text="NOTIFICATIONS" class="screen-title" />
+    <ui:VisualElement name="notification-root" class="screen-root layout-screen">
 
-        <ui:ScrollView name="notification-scroll" class="notification-scroll">
-            <ui:VisualElement name="notification-list" class="notification-list">
-                <!-- Notification item template -->
-                <ui:VisualElement class="notification-item">
-                    <ui:VisualElement class="notification-item__icon" />
-                    <ui:VisualElement class="notification-item__content">
-                        <ui:Label text="Season 3 is Live!" class="notification-item__title" />
-                        <ui:Label text="New maps, chefs, and rewards await!" class="notification-item__message" />
-                        <ui:Label text="2h ago" class="notification-item__timestamp" />
-                    </ui:VisualElement>
-                    <ui:Button text="✕" class="notification-item__dismiss" />
+        <!-- Top Bar -->
+        <ui:VisualElement class="top-bar">
+            <ui:VisualElement class="top-bar__left">
+                <ui:Button name="btn-back" class="btn-icon">
+                    <ui:Label text="←" class="btn-icon__label" />
+                </ui:Button>
+            </ui:VisualElement>
+            <ui:Label text="NOTIFICATIONS" class="top-bar__title" />
+            <ui:VisualElement class="top-bar__right">
+                <ui:Button name="btn-dismiss-all" class="btn-ghost">
+                    <ui:Label text="Clear All" class="btn-ghost__label" />
+                </ui:Button>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Scrollable Content -->
+        <ui:VisualElement class="layout-content" style="flex-grow: 1;">
+
+            <!-- Runtime-populated notification list -->
+            <ui:ScrollView name="list-notifications" mode="Vertical"
+                           style="flex-grow: 1; padding-top: 8px;">
+                <!-- .notif-item rows injected at runtime -->
+            </ui:ScrollView>
+
+            <!-- Empty state — shown by presenter when list is empty -->
+            <ui:Label name="lbl-empty" text="No notifications yet"
+                style="display: none;
+                       color: var(--txt-muted);
+                       font-size: var(--fs-14);
+                       -unity-text-align: middle-center;
+                       flex-grow: 1;
+                       -unity-font-style: italic;
+                       margin-top: 48px;" />
+
+        </ui:VisualElement>
+
+        <!-- ── Notification Item Template (hidden — cloned at runtime) -->
+        <ui:VisualElement name="notif-template" style="display: none;">
+            <ui:VisualElement class="notif-item">
+                <ui:VisualElement class="notif-item__icon-wrap">
+                    <ui:Label text="🔔" class="notif-item__icon" />
+                </ui:VisualElement>
+                <ui:VisualElement class="notif-item__content">
+                    <ui:Label class="notif-item__title" text="Notification" />
+                    <ui:Label class="notif-item__msg"  text="Message text" />
+                    <ui:Label class="notif-item__time" text="2m ago" />
                 </ui:VisualElement>
             </ui:VisualElement>
-        </ui:ScrollView>
+        </ui:VisualElement>
 
-        <ui:Button name="btn-back" text="Back" class="btn-back" />
     </ui:VisualElement>
 </ui:UXML>

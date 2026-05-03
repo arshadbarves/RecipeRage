@@ -1,63 +1,146 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
     <Style src="../Styles/theme.uss" />
     <Style src="../Styles/screens.uss" />
+    <Style src="../Styles/components.uss" />
 
-    <ui:VisualElement name="season-pass-root" class="screen-root season-pass-root">
+    <ui:VisualElement name="season-pass-root" class="screen-root layout-screen">
 
-        <!-- Header -->
-        <ui:VisualElement class="season-pass-header">
-            <ui:Button name="back-button" text="‹" class="back-btn" />
-            <ui:Label name="season-title" text="SEASON PASS" class="screen-title" />
-            <ui:VisualElement class="season-timer">
-                <ui:Label name="lbl-season-timer" text="14d 6h left" class="season-timer__label" />
+        <!-- ── Top Bar ──────────────────────────────────────────────── -->
+        <ui:VisualElement class="top-bar">
+            <ui:VisualElement class="top-bar__left">
+                <ui:Button name="btn-back" class="btn-icon">
+                    <ui:Label text="‹" class="btn-icon__label" />
+                </ui:Button>
+            </ui:VisualElement>
+
+            <ui:Label text="SEASON PASS" class="top-bar__title" />
+
+            <ui:VisualElement class="top-bar__right">
+                <ui:VisualElement class="tag tag--ranked">
+                    <ui:Label text="S1" class="tag__label" />
+                </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
 
-        <!-- Progress Bar -->
-        <ui:VisualElement class="season-progress">
-            <ui:Label name="lbl-season-level" text="Tier 12 / 50" class="season-progress__level" />
-            <ui:VisualElement class="season-progress__bar">
-                <ui:VisualElement name="progress-fill" class="season-progress__fill" style="width: 24%;" />
-            </ui:VisualElement>
-            <ui:Label name="lbl-season-xp" text="1,200 / 5,000 XP" class="season-progress__xp" />
-        </ui:VisualElement>
+        <!-- ── Scrollable Body ──────────────────────────────────────── -->
+        <ui:ScrollView class="layout-content">
 
-        <!-- Reward Track (horizontal scroll) -->
-        <ui:ScrollView mode="Horizontal" name="reward-track-scroll" class="reward-track-scroll">
-            <ui:VisualElement name="reward-track" class="reward-track">
-                <!-- Tier items populated dynamically -->
-                <ui:VisualElement class="reward-tier reward-tier--claimed">
-                    <ui:Label text="1" class="reward-tier__number" />
-                    <ui:VisualElement class="reward-tier__icon" />
-                    <ui:Label text="100 Coins" class="reward-tier__label" />
+            <!-- ── Progress Card ────────────────────────────────────── -->
+            <ui:VisualElement class="card" style="margin: 16px 0;">
+                <!-- Tier Label + XP -->
+                <ui:VisualElement class="layout-row layout-row--spaced"
+                    style="margin-bottom: 8px;">
+                    <ui:Label name="lbl-tier-progress" text="TIER 12 / 50"
+                        style="color: var(--txt-primary); font-size: 18px;
+                               -unity-font-style: bold; letter-spacing: 2px;" />
+                    <ui:Label text="1,200 / 5,000 XP"
+                        style="color: var(--txt-secondary); font-size: 12px;" />
                 </ui:VisualElement>
-                <ui:VisualElement class="reward-tier reward-tier--claimed">
-                    <ui:Label text="2" class="reward-tier__number" />
-                    <ui:VisualElement class="reward-tier__icon" />
-                    <ui:Label text="Spatula Skin" class="reward-tier__label" />
+
+                <!-- Progress Bar -->
+                <ui:VisualElement class="bar-track">
+                    <ui:VisualElement name="pass-fill" class="bar-fill bar-fill--gold"
+                        style="width: 24%;" />
                 </ui:VisualElement>
-                <ui:VisualElement class="reward-tier reward-tier--current">
-                    <ui:Label text="3" class="reward-tier__number" />
-                    <ui:VisualElement class="reward-tier__icon" />
-                    <ui:Label text="50 Gems" class="reward-tier__label" />
-                </ui:VisualElement>
-                <ui:VisualElement class="reward-tier">
-                    <ui:Label text="4" class="reward-tier__number" />
-                    <ui:VisualElement class="reward-tier__icon" />
-                    <ui:Label text="Chef Hat" class="reward-tier__label" />
-                </ui:VisualElement>
-                <ui:VisualElement class="reward-tier">
-                    <ui:Label text="5" class="reward-tier__number" />
-                    <ui:VisualElement class="reward-tier__icon" />
-                    <ui:Label text="500 Coins" class="reward-tier__label" />
+
+                <!-- Free vs Premium Column Headers -->
+                <ui:VisualElement class="layout-row layout-row--spaced"
+                    style="margin-top: 16px;">
+                    <ui:Label text="FREE"
+                        style="color: var(--txt-muted); font-size: 13px;
+                               -unity-font-style: bold; letter-spacing: 2px; flex-grow: 1;
+                               -unity-text-align: middle-center;" />
+                    <ui:Label text="PREMIUM 👑"
+                        style="color: var(--clr-gold); font-size: 14px;
+                               -unity-font-style: bold; letter-spacing: 2px; flex-grow: 1;
+                               -unity-text-align: middle-center;" />
                 </ui:VisualElement>
             </ui:VisualElement>
+
+            <!-- ── Reward Track (horizontal scroll) ─────────────────── -->
+            <ui:ScrollView name="reward-track" mode="Horizontal"
+                style="margin-bottom: 20px;">
+                <ui:VisualElement class="layout-row" style="padding: 8px 0; gap: 8px;">
+
+                    <!-- Tier 1 -->
+                    <ui:VisualElement class="tier-item">
+                        <ui:VisualElement class="tier-item__badge tier-item__badge--unlocked">
+                            <ui:Label text="🪙" class="tier-item__icon" />
+                        </ui:VisualElement>
+                        <ui:Label text="1" class="tier-item__num" />
+                    </ui:VisualElement>
+
+                    <!-- Tier 2 -->
+                    <ui:VisualElement class="tier-item">
+                        <ui:VisualElement class="tier-item__badge tier-item__badge--unlocked">
+                            <ui:Label text="🎨" class="tier-item__icon" />
+                        </ui:VisualElement>
+                        <ui:Label text="2" class="tier-item__num" />
+                    </ui:VisualElement>
+
+                    <!-- Tier 3 -->
+                    <ui:VisualElement class="tier-item">
+                        <ui:VisualElement class="tier-item__badge tier-item__badge--premium">
+                            <ui:Label text="💎" class="tier-item__icon" />
+                        </ui:VisualElement>
+                        <ui:Label text="3" class="tier-item__num" />
+                    </ui:VisualElement>
+
+                    <!-- Tier 4 -->
+                    <ui:VisualElement class="tier-item">
+                        <ui:VisualElement class="tier-item__badge">
+                            <ui:Label text="👨‍🍳" class="tier-item__icon" />
+                        </ui:VisualElement>
+                        <ui:Label text="4" class="tier-item__num" />
+                    </ui:VisualElement>
+
+                    <!-- Tier 5 -->
+                    <ui:VisualElement class="tier-item">
+                        <ui:VisualElement class="tier-item__badge">
+                            <ui:Label text="🪙" class="tier-item__icon" />
+                        </ui:VisualElement>
+                        <ui:Label text="5" class="tier-item__num" />
+                    </ui:VisualElement>
+
+                    <!-- Tier 6 -->
+                    <ui:VisualElement class="tier-item">
+                        <ui:VisualElement class="tier-item__badge tier-item__badge--premium">
+                            <ui:Label text="🔥" class="tier-item__icon" />
+                        </ui:VisualElement>
+                        <ui:Label text="6" class="tier-item__num" />
+                    </ui:VisualElement>
+
+                    <!-- Tier 7 -->
+                    <ui:VisualElement class="tier-item">
+                        <ui:VisualElement class="tier-item__badge">
+                            <ui:Label text="⚡" class="tier-item__icon" />
+                        </ui:VisualElement>
+                        <ui:Label text="7" class="tier-item__num" />
+                    </ui:VisualElement>
+
+                    <!-- Tier 8 -->
+                    <ui:VisualElement class="tier-item">
+                        <ui:VisualElement class="tier-item__badge tier-item__badge--premium">
+                            <ui:Label text="👑" class="tier-item__icon" />
+                        </ui:VisualElement>
+                        <ui:Label text="8" class="tier-item__num" />
+                    </ui:VisualElement>
+
+                </ui:VisualElement>
+            </ui:ScrollView>
+
+            <!-- Spacer for the fixed button -->
+            <ui:VisualElement style="height: 80px;" />
+
         </ui:ScrollView>
 
-        <!-- Buy Button -->
-        <ui:Button name="buy-pass-button" class="season-buy-btn">
-            <ui:Label text="UPGRADE TO PREMIUM" class="season-buy-btn__label" />
-        </ui:Button>
+        <!-- ── Buy Pass CTA ──────────────────────────────────────────── -->
+        <ui:VisualElement style="padding: 12px 16px; background-color: var(--bg-deepest);
+                                  border-top-width: 2px; border-color: var(--border-panel);">
+            <ui:Button name="buy-pass-button" class="btn-gold">
+                <ui:Label text="GET PREMIUM PASS  💎 800" class="btn-gold__label" />
+            </ui:Button>
+        </ui:VisualElement>
 
     </ui:VisualElement>
 </ui:UXML>

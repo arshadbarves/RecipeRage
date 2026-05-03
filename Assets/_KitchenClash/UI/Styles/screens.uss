@@ -1,50 +1,241 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   KITCHEN CLASH — Screen Transitions & Shared Layouts  v2.0
+   All transitions here; no hover states (mobile).
+   DOTween handles complex animations; USS handles state-driven tweens.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── Base Screen ─────────────────────────────────────────────────────── */
+
 .screen {
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
     opacity: 1;
     translate: 0 0;
     transition-property: opacity, translate;
-    transition-duration: 0.25s, 0.25s;
-    transition-timing-function: ease, cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 0.28s, 0.28s;
+    transition-timing-function: ease, cubic-bezier(0.0, 0.0, 0.2, 1);
 }
 
-.screen--enter-right {
-    opacity: 0;
-    translate: 100% 0;
-}
+/* Slide from right (navigate forward) */
+.screen--enter-right  { opacity: 0; translate:  80% 0; }
+/* Slide from left (back navigation) */
+.screen--enter-left   { opacity: 0; translate: -80% 0; }
+/* Slide up from bottom (tab switch / sheet) */
+.screen--enter-bottom { opacity: 0; translate: 0 60%; }
+/* Scale+fade (popup / modal enter) */
+.screen--enter-scale  { opacity: 0; scale: 0.88; }
 
-.screen--enter-left {
-    opacity: 0;
-    translate: -100% 0;
-}
+/* Exit: push left */
+.screen--exit-left    { opacity: 0; translate: -50% 0; }
+/* Exit: push right */
+.screen--exit-right   { opacity: 0; translate:  50% 0; }
+/* Exit: sink down */
+.screen--exit-down    { opacity: 0; translate: 0 40%; }
+/* Exit: shrink */
+.screen--exit-scale   { opacity: 0; scale: 0.88; }
 
-.screen--enter-bottom {
-    opacity: 0;
-    translate: 0 100%;
-}
-
-.screen--exit-left {
-    opacity: 0;
-    translate: -100% 0;
-}
-
-.screen--exit-right {
-    opacity: 0;
-    translate: 100% 0;
-}
+/* ── Overlay / Popup Shell ───────────────────────────────────────────── */
 
 .overlay {
+    position: absolute;
+    left: 0; top: 0; right: 0; bottom: 0;
     opacity: 0;
-    scale: 0.9;
+    scale: 0.92;
     transition-property: opacity, scale;
-    transition-duration: 0.2s, 0.2s;
-    transition-timing-function: ease, ease;
+    transition-duration: 0.20s, 0.20s;
+    transition-timing-function: ease, cubic-bezier(0.34, 1.56, 0.64, 1);
+    background-color: rgba(0,0,0,0.72);
+    align-items: center;
+    justify-content: center;
 }
+.overlay--open  { opacity: 1; scale: 1; }
+.overlay--close { opacity: 0; scale: 0.92; }
 
-.overlay--open {
-    opacity: 1;
-    scale: 1;
-}
-
-.overlay--close {
+/* Slide-up sheet variant (daily streak, auth prompt) */
+.overlay-sheet {
+    position: absolute;
+    left: 0; bottom: 0; right: 0;
     opacity: 0;
-    scale: 0.9;
+    translate: 0 100%;
+    transition-property: opacity, translate;
+    transition-duration: 0.30s, 0.30s;
+    transition-timing-function: ease, cubic-bezier(0.34, 1.56, 0.64, 1);
+    background-color: var(--bg-panel);
+    border-radius: var(--r-xl) var(--r-xl) 0 0;
+    border-width: 2px 2px 0 2px;
+    border-color: rgba(255,255,255,0.1);
+    padding: var(--sp-24);
+    padding-bottom: var(--sp-40);
 }
+.overlay-sheet--open  { opacity: 1; translate: 0 0; }
+.overlay-sheet--close { opacity: 0; translate: 0 100%; }
+
+/* ── Content Scroll Container ────────────────────────────────────────── */
+
+.scroll-content {
+    flex-grow: 1;
+    overflow: scroll;
+}
+
+/* ── Screen-Level Common Layouts ─────────────────────────────────────── */
+
+/* Full-screen centered (splash, error states) */
+.layout-center {
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+    padding: var(--sp-24);
+}
+
+/* Standard screen column: top-bar + content + nav-bar */
+.layout-screen {
+    flex-grow: 1;
+    flex-direction: column;
+    background-color: var(--bg-deep);
+}
+
+/* Content area between top-bar and nav-bar */
+.layout-content {
+    flex-grow: 1;
+    overflow: scroll;
+    padding: 0 var(--sp-16);
+}
+
+/* Side padding wrapper */
+.layout-padded {
+    padding: var(--sp-16);
+}
+
+/* Two-column row */
+.layout-row {
+    flex-direction: row;
+    align-items: center;
+}
+.layout-row--spaced { justify-content: space-between; }
+.layout-row--center { justify-content: center; }
+.layout-row--end    { justify-content: flex-end; }
+
+/* Wrap grid for cards */
+.layout-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: var(--sp-8);
+}
+
+/* ── Fade-in / Stagger Helpers (DOTween applies these) ───────────────── */
+
+.fade-hidden  { opacity: 0; }
+.fade-visible { opacity: 1; transition-property: opacity; transition-duration: 0.3s; }
+
+.slide-hidden-down  { translate: 0 32px; opacity: 0; }
+.slide-hidden-up    { translate: 0 -32px; opacity: 0; }
+.slide-visible      { translate: 0 0; opacity: 1;
+    transition-property: translate, opacity;
+    transition-duration: 0.3s, 0.3s;
+    transition-timing-function: cubic-bezier(0.0,0.0,0.2,1), ease;
+}
+
+/* ── Match State Banner ──────────────────────────────────────────────── */
+
+.match-banner {
+    position: absolute;
+    left: 0; right: 0;
+    top: 52px;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+.match-banner__text {
+    background-color: rgba(0,0,0,0.75);
+    border-radius: var(--r-md);
+    padding: var(--sp-8) var(--sp-32);
+    color: var(--txt-primary);
+    font-size: var(--fs-28);
+    -unity-font-style: bold;
+    letter-spacing: 4px;
+}
+.match-banner__text--fire { color: var(--clr-fire-light); }
+.match-banner__text--gold { color: var(--clr-gold); }
+.match-banner__text--cyan { color: var(--clr-cyan); }
+
+/* ── Rank Badge ──────────────────────────────────────────────────────── */
+
+.rank-badge {
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    border-radius: var(--r-full);
+    border-width: 3px;
+    border-color: var(--clr-ranked);
+    background-color: rgba(155,89,182,0.2);
+}
+.rank-badge__icon { font-size: var(--fs-28); }
+.rank-badge__label { color: var(--clr-ranked-lt); font-size: var(--fs-10); -unity-font-style: bold; }
+
+/* ── Achievement Row ─────────────────────────────────────────────────── */
+
+.achievement-row {
+    flex-direction: row;
+    align-items: center;
+    padding: var(--sp-12);
+    background-color: var(--bg-glass);
+    border-radius: var(--r-md);
+    border-width: 1px;
+    border-color: var(--border-panel);
+    margin-bottom: var(--sp-8);
+}
+.achievement-row__icon { font-size: var(--fs-28); width: 44px; -unity-text-align: middle-center; }
+.achievement-row__info { flex-grow: 1; margin-left: var(--sp-8); }
+.achievement-row__name { color: var(--txt-primary); font-size: var(--fs-14); -unity-font-style: bold; }
+.achievement-row__desc { color: var(--txt-secondary); font-size: var(--fs-12); margin-top: var(--sp-2); }
+.achievement-row__reward { color: var(--clr-gold); font-size: var(--fs-13); -unity-font-style: bold; }
+
+/* ── Season Pass Tier ────────────────────────────────────────────────── */
+
+.tier-item {
+    width: 80px;
+    align-items: center;
+    margin: 0 var(--sp-8);
+    flex-shrink: 0;
+}
+.tier-item__badge {
+    width: 60px; height: 60px;
+    border-radius: var(--r-md);
+    background-color: var(--bg-surface);
+    border-width: 2px;
+    border-color: var(--border-panel);
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--sp-6);
+}
+.tier-item__badge--unlocked { border-color: var(--clr-gold); background-color: rgba(255,215,0,0.15); }
+.tier-item__badge--premium  { border-color: var(--clr-fire); background-color: rgba(255,107,0,0.15); }
+.tier-item__icon { font-size: var(--fs-28); }
+.tier-item__num  { color: var(--txt-muted); font-size: var(--fs-11); }
+
+/* ── Toast (temporary notification) ─────────────────────────────────── */
+
+.toast {
+    position: absolute;
+    left: var(--sp-16);
+    right: var(--sp-16);
+    bottom: 80px;
+    background-color: var(--bg-panel-alt);
+    border-radius: var(--r-md);
+    border-width: 2px;
+    border-color: var(--border-panel);
+    padding: var(--sp-12) var(--sp-16);
+    flex-direction: row;
+    align-items: center;
+    opacity: 0;
+    translate: 0 20px;
+    transition-property: opacity, translate;
+    transition-duration: 0.25s, 0.25s;
+    transition-timing-function: ease, var(--ease-spring);
+}
+.toast--show { opacity: 1; translate: 0 0; }
+.toast__icon { font-size: var(--fs-20); margin-right: var(--sp-10); }
+.toast__msg  { color: var(--txt-primary); font-size: var(--fs-14); flex-grow: 1; }

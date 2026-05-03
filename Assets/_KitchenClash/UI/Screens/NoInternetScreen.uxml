@@ -1,13 +1,62 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
     <Style src="../Styles/theme.uss" />
     <Style src="../Styles/screens.uss" />
+    <Style src="../Styles/components.uss" />
 
-    <ui:VisualElement name="no-internet-root" class="screen-root no-internet-root">
-        <ui:VisualElement class="no-internet-center">
-            <ui:Label text="📡" class="no-internet-icon" />
-            <ui:Label text="No Internet Connection" class="no-internet-title" />
-            <ui:Label name="lbl-message" text="Please check your connection and try again." class="no-internet-message" />
-            <ui:Button name="btn-retry" text="Retry" class="no-internet-retry-btn" />
+    <!--
+        NoInternetScreen — Hot Kitchen Design System v2.0
+        bg-deep base, centered satellite icon, white title, retry button.
+        Named elements: lbl-message (preserved from existing file), btn-retry
+    -->
+    <ui:VisualElement name="no-internet-root" class="screen-root layout-screen">
+
+        <ui:VisualElement class="layout-center" style="
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        ">
+
+            <!-- Satellite dish emoji icon -->
+            <ui:Label text="📡" style="
+                font-size: 64px;
+                -unity-text-align: middle-center;
+                margin-bottom: 20px;
+            " />
+
+            <!-- Title -->
+            <ui:Label text="No Connection" style="
+                color: #FFFFFF;
+                font-size: 24px;
+                -unity-font-style: bold;
+                -unity-text-align: middle-center;
+                letter-spacing: 2px;
+                margin-bottom: 16px;
+            " />
+
+            <!-- Message -->
+            <ui:Label name="lbl-message"
+                text="Check your internet connection and try again."
+                style="
+                    color: #A0A0C0;
+                    font-size: 14px;
+                    -unity-text-align: middle-center;
+                    white-space: normal;
+                    padding-left: 24px;
+                    padding-right: 24px;
+                "
+            />
+
+            <!-- Spacer -->
+            <ui:VisualElement style="height: 24px;" />
+
+            <!-- Retry button -->
+            <ui:Button name="btn-retry" class="btn-primary" style="
+                min-width: 200px;
+            ">
+                <ui:Label text="Retry" class="btn-primary__label" />
+            </ui:Button>
+
         </ui:VisualElement>
+
     </ui:VisualElement>
 </ui:UXML>

@@ -1,16 +1,107 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   KITCHEN CLASH — Design Token System  v2.0  "Hot Kitchen"
+   Mobile-first, no hover states, DOTween handles runtime animation.
+   USS transitions are used for state changes only (active press, show/hide).
+   ═══════════════════════════════════════════════════════════════════════ */
+
 :root {
-    --color-primary: #FFD700;
-    --color-secondary: #FF6B35;
-    --color-bg-dark: #1A1A2E;
-    --color-bg-medium: #16213E;
-    --color-text-primary: #FFFFFF;
-    --color-text-secondary: #B0B0B0;
-    --font-size-title: 32px;
-    --font-size-header: 24px;
-    --font-size-body: 16px;
-    --font-size-small: 12px;
-    --spacing-sm: 8px;
-    --spacing-md: 16px;
-    --spacing-lg: 24px;
-    --spacing-xl: 32px;
+    /* ── Background Palette ─────────────────────────────────────── */
+    --bg-deepest:   #0D0D1A;   /* full-screen base */
+    --bg-deep:      #12121F;   /* screen root */
+    --bg-panel:     #1C1C2E;   /* cards, panels */
+    --bg-panel-alt: #222236;   /* secondary panels */
+    --bg-surface:   #2A2A42;   /* input fields, inner slots */
+    --bg-glass:     rgba(255, 255, 255, 0.06);   /* frosted glass surfaces */
+    --bg-glass-md:  rgba(255, 255, 255, 0.10);
+    --bg-scrim:     rgba(0, 0, 0, 0.72);          /* modal backdrop */
+
+    /* ── Primary — Fire / Amber ──────────────────────────────────── */
+    --clr-fire:        #FF6B00;   /* primary action */
+    --clr-fire-light:  #FF8C2A;
+    --clr-fire-bright: #FFA040;
+    --clr-gold:        #FFD700;   /* gold / premium */
+    --clr-gold-light:  #FFE566;
+    --clr-amber:       #FFAA00;   /* mid-tone accent */
+
+    /* ── Secondary — Electric Cyan ──────────────────────────────── */
+    --clr-cyan:        #00E5FF;   /* HUD scores, highlights */
+    --clr-cyan-dim:    #00B8CC;
+    --clr-teal:        #00F0C8;   /* online / ready */
+
+    /* ── Semantic Colours ────────────────────────────────────────── */
+    --clr-success:   #2ECC71;
+    --clr-danger:    #E74C3C;
+    --clr-warning:   #F39C12;
+    --clr-info:      #3498DB;
+    --clr-ranked:    #9B59B6;    /* ranked / trophy */
+    --clr-ranked-lt: #C39BD3;
+
+    /* ── Text ────────────────────────────────────────────────────── */
+    --txt-primary:   #FFFFFF;
+    --txt-secondary: #A0A0C0;
+    --txt-muted:     #5A5A80;
+    --txt-fire:      #FF8C2A;
+    --txt-gold:      #FFD700;
+    --txt-cyan:      #00E5FF;
+    --txt-danger:    #FF4A4A;
+
+    /* ── Border / Stroke ─────────────────────────────────────────── */
+    --border-ink:    #000000;    /* thick cartoon stroke */
+    --border-ink-w:  3px;
+    --border-panel:  rgba(255, 255, 255, 0.08);
+    --border-active: rgba(255, 107, 0, 0.6);
+    --border-gold:   rgba(255, 215, 0, 0.5);
+
+    /* ── Border Radius ───────────────────────────────────────────── */
+    --r-xs:  6px;
+    --r-sm:  10px;
+    --r-md:  16px;
+    --r-lg:  22px;
+    --r-xl:  30px;
+    --r-full: 999px;
+
+    /* ── Spacing ─────────────────────────────────────────────────── */
+    --sp-2:   2px;
+    --sp-4:   4px;
+    --sp-6:   6px;
+    --sp-8:   8px;
+    --sp-12:  12px;
+    --sp-16:  16px;
+    --sp-20:  20px;
+    --sp-24:  24px;
+    --sp-32:  32px;
+    --sp-40:  40px;
+    --sp-48:  48px;
+
+    /* ── Typography ──────────────────────────────────────────────── */
+    --fs-10:  10px;
+    --fs-11:  11px;
+    --fs-12:  12px;
+    --fs-13:  13px;
+    --fs-14:  14px;
+    --fs-16:  16px;
+    --fs-18:  18px;
+    --fs-20:  20px;
+    --fs-22:  22px;
+    --fs-24:  24px;
+    --fs-28:  28px;
+    --fs-32:  32px;
+    --fs-40:  40px;
+    --fs-48:  48px;
+
+    /* ── Shadow / Glow ───────────────────────────────────────────── */
+    /* Unity USS only supports box shadows; glow = large soft shadow */
+    --shadow-sm:   0 2px 8px rgba(0,0,0,0.5);
+    --shadow-md:   0 4px 16px rgba(0,0,0,0.6);
+    --shadow-lg:   0 8px 32px rgba(0,0,0,0.7);
+    --glow-fire:   0 0 24px rgba(255, 107, 0, 0.7);
+    --glow-gold:   0 0 20px rgba(255, 215, 0, 0.6);
+    --glow-cyan:   0 0 20px rgba(0, 229, 255, 0.6);
+
+    /* ── Transition Speeds ───────────────────────────────────────── */
+    --dur-fast:   0.12s;
+    --dur-norm:   0.22s;
+    --dur-slow:   0.35s;
+    --ease-out:   cubic-bezier(0.0, 0.0, 0.2, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);  /* bouncy spring */
 }

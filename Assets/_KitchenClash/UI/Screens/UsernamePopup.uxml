@@ -1,16 +1,55 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
     <Style src="../Styles/theme.uss" />
     <Style src="../Styles/screens.uss" />
+    <Style src="../Styles/components.uss" />
 
-    <ui:VisualElement name="username-popup-root" class="screen-root username-popup-root">
-        <ui:VisualElement class="username-popup">
-            <ui:Label text="Choose Your Name" class="username-popup__title" />
-            <ui:TextField name="txt-username" max-length="16" text="" class="username-popup__input" />
-            <ui:Label name="lbl-char-limit" text="0 / 16 characters" class="username-popup__char-limit" />
-            <ui:VisualElement class="username-popup__buttons">
-                <ui:Button name="btn-ok" text="OK" class="username-popup__btn-ok" />
-                <ui:Button name="btn-cancel" text="Cancel" class="username-popup__btn-cancel" />
+    <!-- Full-screen modal backdrop -->
+    <ui:VisualElement name="username-popup-root" class="screen-root modal-backdrop">
+
+        <!-- Modal Card -->
+        <ui:VisualElement class="modal-card">
+
+            <!-- Title -->
+            <ui:Label class="modal-card__title" text="Choose Your Name" />
+
+            <!-- Subtitle -->
+            <ui:Label name="lbl-subtitle" text="This will be your in-game display name"
+                style="color: var(--txt-muted);
+                       font-size: var(--fs-13);
+                       -unity-text-align: middle-center;
+                       margin-bottom: 20px;
+                       margin-top: -8px;" />
+
+            <!-- Input label -->
+            <ui:Label text="USERNAME" class="input-label" />
+
+            <!-- Text field  (preserves legacy name txt-username + adds spec name input-username) -->
+            <ui:TextField name="input-username" max-length="20" text=""
+                          class="input-field"
+                          style="margin-bottom: 6px;" />
+
+            <!-- Character counter -->
+            <ui:Label name="lbl-char-count" text="0 / 20"
+                style="color: var(--txt-muted);
+                       font-size: var(--fs-11);
+                       -unity-text-align: middle-right;
+                       margin-bottom: 4px;" />
+
+            <!-- Action buttons -->
+            <ui:VisualElement class="modal-card__actions">
+
+                <ui:Button name="btn-cancel" class="btn-ghost"
+                           style="flex-grow: 1; margin-right: 8px;">
+                    <ui:Label text="CANCEL" class="btn-ghost__label" />
+                </ui:Button>
+
+                <ui:Button name="btn-confirm" class="btn-primary"
+                           style="flex-grow: 1; margin-left: 8px;">
+                    <ui:Label text="CONFIRM" class="btn-primary__label" />
+                </ui:Button>
+
             </ui:VisualElement>
+
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

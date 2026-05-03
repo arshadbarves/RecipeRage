@@ -1,40 +1,111 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
     <Style src="../Styles/theme.uss" />
     <Style src="../Styles/screens.uss" />
+    <Style src="../Styles/components.uss" />
 
-    <ui:VisualElement name="daily-streak-root" class="screen-root daily-streak-root">
-        <ui:Label text="DAILY STREAK" class="screen-title" />
+    <ui:VisualElement name="daily-streak-root" class="screen-root bg-deep">
 
-        <!-- Streak Counter -->
-        <ui:VisualElement class="streak-counter">
-            <ui:Label text="🔥" class="streak-counter__icon" />
-            <ui:Label name="lbl-streak-count" text="5" class="streak-counter__value" />
-            <ui:Label text="Day Streak" class="streak-counter__label" />
+        <!-- ── TOP BAR ── -->
+        <ui:VisualElement class="top-bar"
+            style="flex-direction: row; align-items: center;">
+            <ui:Button name="btn-back" text="‹" class="btn-ghost"
+                style="width: 40px; height: 40px; font-size: 22px; padding: 0; margin-right: 8px;" />
+            <ui:Label text="DAILY STREAK" class="screen-title text-bold" style="flex-grow: 1;" />
+            <!-- Streak badge -->
+            <ui:VisualElement class="currency-badge"
+                style="flex-direction: row; align-items: center; gap: 4px; padding: 4px 10px;
+                       background-color: rgba(255,140,0,0.18);
+                       border-width: 3px; border-color: rgba(255,165,0,0.7); border-radius: 20px;">
+                <ui:Label text="🔥" style="font-size: 16px;" />
+                <ui:Label name="lbl-streak-count" text="5" class="text-bold clr-fire"
+                    style="font-size: 16px;" />
+            </ui:VisualElement>
         </ui:VisualElement>
 
-        <!-- Calendar Grid (7 columns) -->
-        <ui:VisualElement class="streak-header">
-            <ui:Label text="Mon" class="streak-header__day" />
-            <ui:Label text="Tue" class="streak-header__day" />
-            <ui:Label text="Wed" class="streak-header__day" />
-            <ui:Label text="Thu" class="streak-header__day" />
-            <ui:Label text="Fri" class="streak-header__day" />
-            <ui:Label text="Sat" class="streak-header__day" />
-            <ui:Label text="Sun" class="streak-header__day" />
+        <!-- ── CENTER CARD (today's reward) ── -->
+        <ui:VisualElement class="card card--gold"
+            style="align-items: center; padding: 20px; margin-bottom: 16px;
+                   border-width: 3px; border-color: rgba(255,200,0,0.65);">
+            <ui:Label name="lbl-streak-day" text="DAY 4" class="text-bold clr-gold"
+                style="font-size: 28px; -unity-text-align: middle-center; margin-bottom: 6px;" />
+            <ui:Label name="lbl-streak-reward" text="50 Gems + Rare Card" class="text-secondary"
+                style="-unity-text-align: middle-center;" />
         </ui:VisualElement>
 
-        <ui:VisualElement name="streak-calendar" class="streak-calendar">
-            <!-- Day cells populated at runtime -->
-            <ui:VisualElement class="streak-day streak-day--claimed"><ui:Label text="1" /></ui:VisualElement>
-            <ui:VisualElement class="streak-day streak-day--claimed"><ui:Label text="2" /></ui:VisualElement>
-            <ui:VisualElement class="streak-day streak-day--claimed"><ui:Label text="3" /></ui:VisualElement>
-            <ui:VisualElement class="streak-day streak-day--claimed"><ui:Label text="4" /></ui:VisualElement>
-            <ui:VisualElement class="streak-day streak-day--claimed"><ui:Label text="5" /></ui:VisualElement>
-            <ui:VisualElement class="streak-day streak-day--today"><ui:Label text="6" /></ui:VisualElement>
-            <ui:VisualElement class="streak-day"><ui:Label text="7" /></ui:VisualElement>
+        <!-- ── 7-DAY CALENDAR ── -->
+        <ui:VisualElement class="layout-row"
+            style="flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 20px;">
+
+            <!-- Day 1 — past (claimed) -->
+            <ui:VisualElement name="day-0" class="streak-day streak-day--past"
+                style="align-items: center; width: 44px;">
+                <ui:Label class="streak-day__icon" text="✅" style="font-size: 20px;" />
+                <ui:Label class="streak-day__num" text="1" class="text-bold"
+                    style="font-size: 11px; color: white;" />
+            </ui:VisualElement>
+
+            <!-- Day 2 — past -->
+            <ui:VisualElement name="day-1" class="streak-day streak-day--past"
+                style="align-items: center; width: 44px;">
+                <ui:Label class="streak-day__icon" text="✅" style="font-size: 20px;" />
+                <ui:Label class="streak-day__num" text="2" class="text-bold"
+                    style="font-size: 11px; color: white;" />
+            </ui:VisualElement>
+
+            <!-- Day 3 — past -->
+            <ui:VisualElement name="day-2" class="streak-day streak-day--past"
+                style="align-items: center; width: 44px;">
+                <ui:Label class="streak-day__icon" text="✅" style="font-size: 20px;" />
+                <ui:Label class="streak-day__num" text="3" class="text-bold"
+                    style="font-size: 11px; color: white;" />
+            </ui:VisualElement>
+
+            <!-- Day 4 — TODAY -->
+            <ui:VisualElement name="day-3" class="streak-day streak-day--today"
+                style="align-items: center; width: 44px;
+                       border-width: 3px; border-color: rgba(255,200,0,0.8); border-radius: 10px;
+                       background-color: rgba(255,200,0,0.12); padding: 4px;">
+                <ui:Label class="streak-day__icon" text="🎁" style="font-size: 22px;" />
+                <ui:Label class="streak-day__num" text="4" class="text-bold clr-gold"
+                    style="font-size: 11px;" />
+            </ui:VisualElement>
+
+            <!-- Day 5 — future -->
+            <ui:VisualElement name="day-4" class="streak-day streak-day--future"
+                style="align-items: center; width: 44px;">
+                <ui:Label class="streak-day__icon" text="❓" style="font-size: 20px;" />
+                <ui:Label class="streak-day__num" text="5" class="text-muted"
+                    style="font-size: 11px;" />
+            </ui:VisualElement>
+
+            <!-- Day 6 — future -->
+            <ui:VisualElement name="day-5" class="streak-day streak-day--future"
+                style="align-items: center; width: 44px;">
+                <ui:Label class="streak-day__icon" text="❓" style="font-size: 20px;" />
+                <ui:Label class="streak-day__num" text="6" class="text-muted"
+                    style="font-size: 11px;" />
+            </ui:VisualElement>
+
+            <!-- Day 7 — future -->
+            <ui:VisualElement name="day-6" class="streak-day streak-day--future"
+                style="align-items: center; width: 44px;">
+                <ui:Label class="streak-day__icon" text="❓" style="font-size: 20px;" />
+                <ui:Label class="streak-day__num" text="7" class="text-muted"
+                    style="font-size: 11px;" />
+            </ui:VisualElement>
+
         </ui:VisualElement>
 
-        <ui:Button name="btn-claim" text="Claim Today's Reward" class="streak-claim-btn" />
-        <ui:Button name="btn-back" text="Back" class="btn-back" />
+        <!-- ── SPACER ── -->
+        <ui:VisualElement style="flex-grow: 1;" />
+
+        <!-- ── CLAIM BUTTON ── -->
+        <ui:Button name="btn-claim" text="CLAIM REWARD 🎁" class="btn-primary"
+            style="height: 60px; font-size: 18px; margin-bottom: 10px;" />
+
+        <!-- ── NEXT RESET LABEL ── -->
+        <ui:Label name="lbl-next-reset" text="Resets in 12:34:56" class="text-muted"
+            style="font-size: 12px; -unity-text-align: middle-center; margin-bottom: 8px;" />
+
     </ui:VisualElement>
 </ui:UXML>

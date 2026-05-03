@@ -1,115 +1,182 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
     <Style src="../Styles/theme.uss" />
+    <Style src="../Styles/screens.uss" />
+    <Style src="../Styles/components.uss" />
     <Style src="../Styles/home.uss" />
 
     <ui:VisualElement name="home-root" class="home-root">
 
-        <!-- Compatibility elements for presenter queries (hidden) -->
-        <ui:Label name="gold-amount" text="0" style="display: none;" />
-        <ui:Label name="player-nick" text="" style="display: none;" />
-        <ui:VisualElement name="main-tabs" style="display: none;" />
-        <ui:VisualElement name="lobby-root" style="display: none;" />
-        <ui:VisualElement name="shop-root" style="display: none;" />
+        <!-- ── Hidden compatibility elements for presenter queries ── -->
+        <ui:Label name="gold-amount"   text="0"  style="display: none;" />
+        <ui:Label name="gems-amount"   text="0"  style="display: none;" />
+        <ui:Label name="player-nick"   text=""   style="display: none;" />
+        <ui:VisualElement name="main-tabs"   style="display: none;" />
+        <ui:VisualElement name="lobby-root"  style="display: none;" />
+        <ui:VisualElement name="shop-root"   style="display: none;" />
 
-        <!-- ── Top Bar ── -->
-        <ui:VisualElement class="top-bar">
-            <ui:Button name="btn-settings" class="top-bar__btn">
-                <ui:Label text="⚙" />
+        <!-- ── Top Bar ───────────────────────────────────────────── -->
+        <ui:VisualElement class="home-top-bar">
+
+            <!-- Settings round icon -->
+            <ui:Button name="btn-settings" class="btn-icon-round">
+                <ui:Label text="⚙" class="btn-icon-round__label" />
             </ui:Button>
-            <ui:Label text="KITCHEN CLASH" class="top-bar__title" />
-            <ui:VisualElement class="top-bar__right">
-                <ui:Button name="btn-streak" class="top-bar__btn">
-                    <ui:Label text="🔥" />
+
+            <!-- Logo wordmark -->
+            <ui:Label class="home-top-bar__logo"
+                text="KITCHEN CLASH"
+                style="flex-grow: 1; -unity-text-align: middle-center;" />
+
+            <!-- Right cluster: streak + friends + currency badges -->
+            <ui:VisualElement class="home-top-bar__currencies"
+                style="flex-direction: row; align-items: center;">
+
+                <ui:Button name="btn-streak" class="btn-icon-round"
+                    style="margin-right: var(--sp-6);">
+                    <ui:Label text="🔥" class="btn-icon-round__label" />
                 </ui:Button>
-                <ui:Button name="btn-friends" class="top-bar__btn">
-                    <ui:Label text="👥" />
+
+                <ui:Button name="btn-friends" class="btn-icon-round"
+                    style="margin-right: var(--sp-8);">
+                    <ui:Label text="👥" class="btn-icon-round__label" />
                 </ui:Button>
-                <ui:VisualElement class="gem-badge">
-                    <ui:Label text="💎" />
-                    <ui:Label name="gems-amount" text="250" class="gem-badge__label" />
+
+                <!-- Gold badge (hidden compat — keeps gold-amount accessible) -->
+                <ui:VisualElement class="currency-badge currency-badge--gold"
+                    style="margin-right: var(--sp-6); display: none;">
+                    <ui:Label text="🪙" class="currency-badge__icon" />
+                    <ui:Label name="gold-amount-display" text="0" class="currency-badge__value" />
                 </ui:VisualElement>
+
+                <!-- Gems badge -->
+                <ui:VisualElement class="currency-badge currency-badge--gems">
+                    <ui:Label text="💎" class="currency-badge__icon" />
+                    <ui:Label name="gems-amount" text="250" class="currency-badge__value" />
+                </ui:VisualElement>
+
             </ui:VisualElement>
         </ui:VisualElement>
 
-        <!-- ── Chef Display + Party Panel ── -->
-        <ui:VisualElement class="chef-section">
-            <ui:VisualElement class="chef-card">
-                <ui:Label name="player-name-main" text="Chef Rosa" class="chef-card__name" />
-                <ui:Label name="player-sub-main" text="★ 850 trophies" class="chef-card__trophies" />
-                <ui:VisualElement name="chef-model-area" class="chef-card__model-area" />
+        <!-- ── Hero: Chef Card + Party Panel ─────────────────────── -->
+        <ui:VisualElement class="home-hero">
+
+            <!-- Chef card -->
+            <ui:VisualElement class="home-chef-card">
+
+                <ui:Label name="player-name-main" text="Chef Rosa"
+                    class="home-chef-card__name" />
+                <ui:Label name="player-sub-main" text="★ 850 trophies"
+                    class="home-chef-card__trophies" />
+
+                <!-- 3D model render area -->
+                <ui:VisualElement name="chef-model-area"
+                    class="home-chef-card__model" />
+
             </ui:VisualElement>
-            <ui:VisualElement class="party-panel">
-                <ui:Button name="btn-party-slot-1" class="party-slot">
-                    <ui:Label text="+" class="party-slot__label" />
+
+            <!-- Party panel -->
+            <ui:VisualElement class="home-party-panel">
+
+                <ui:Button name="btn-party-slot-1" class="home-party-slot">
+                    <ui:Label text="+" class="home-party-slot__plus" />
                 </ui:Button>
-                <ui:Button name="btn-party-slot-2" class="party-slot">
-                    <ui:Label text="+" class="party-slot__label" />
+
+                <ui:Button name="btn-party-slot-2" class="home-party-slot">
+                    <ui:Label text="+" class="home-party-slot__plus" />
                 </ui:Button>
+
             </ui:VisualElement>
         </ui:VisualElement>
 
-        <!-- ── Map Slot Carousel ── -->
-        <ui:VisualElement class="map-carousel">
-            <ui:Button name="btn-carousel-prev" class="carousel-arrow">
-                <ui:Label text="‹" class="carousel-arrow__label" />
+        <!-- ── Map Slot Carousel ──────────────────────────────────── -->
+        <ui:VisualElement class="home-carousel">
+
+            <ui:Button name="btn-carousel-prev" class="home-carousel__arrow">
+                <ui:Label text="‹" class="home-carousel__arrow__icon" />
             </ui:Button>
-            <ui:VisualElement class="map-info">
-                <ui:Label name="lbl-map-name" text="SUSHI SHUFFLE" class="map-info__name" />
-                <ui:Label name="lbl-map-mode" text="2v2 — Quick Match" class="map-info__mode" />
-                <ui:Label name="lbl-map-timer" text="5h 23m left" class="map-info__timer" />
+
+            <ui:VisualElement class="home-carousel__info">
+                <ui:Label name="lbl-map-name" text="SUSHI SHUFFLE"
+                    class="home-carousel__map-name" />
+                <ui:Label name="lbl-map-mode" text="2v2 — Quick Match"
+                    class="home-carousel__map-mode" />
+                <ui:Label name="lbl-map-timer" text="5h 23m left"
+                    class="home-carousel__map-timer" />
             </ui:VisualElement>
-            <ui:Button name="btn-carousel-next" class="carousel-arrow">
-                <ui:Label text="›" class="carousel-arrow__label" />
+
+            <ui:Button name="btn-carousel-next" class="home-carousel__arrow">
+                <ui:Label text="›" class="home-carousel__arrow__icon" />
             </ui:Button>
+
         </ui:VisualElement>
 
-        <!-- ── Dot Indicators ── -->
-        <ui:VisualElement class="dot-indicators">
-            <ui:VisualElement class="dot" />
-            <ui:VisualElement class="dot" />
-            <ui:VisualElement name="dot-active" class="dot dot--active" />
-            <ui:VisualElement class="dot" />
-            <ui:VisualElement class="dot" />
+        <!-- ── Dot Indicators ────────────────────────────────────── -->
+        <ui:VisualElement class="home-dots">
+            <ui:VisualElement class="home-dot" />
+            <ui:VisualElement class="home-dot" />
+            <ui:VisualElement class="home-dot home-dot--active" />
+            <ui:VisualElement class="home-dot" />
+            <ui:VisualElement class="home-dot" />
         </ui:VisualElement>
 
-        <!-- ── Play Button ── -->
-        <ui:Button name="btn-play" class="play-button">
-            <ui:Label text="PLAY" class="play-button__label" />
+        <!-- ── Play CTA ──────────────────────────────────────────── -->
+        <ui:Button name="btn-play" class="btn-play">
+            <ui:Label text="PLAY" class="btn-play__label" />
         </ui:Button>
 
-        <!-- ── Action Buttons Row ── -->
-        <ui:VisualElement class="action-row">
-            <ui:Button name="btn-duo-queue" class="action-btn">
-                <ui:Label text="Duo Queue" class="action-btn__label" />
+        <!-- ── Quick Action Buttons Row ──────────────────────────── -->
+        <ui:VisualElement class="home-actions">
+
+            <ui:Button name="btn-duo-queue" class="home-action-btn">
+                <ui:Label text="👥" class="home-action-btn__icon" />
+                <ui:Label text="Duo Queue" class="home-action-btn__label" />
             </ui:Button>
-            <ui:Button name="btn-events" class="action-btn">
-                <ui:Label text="Events" class="action-btn__label" />
+
+            <ui:Button name="btn-events" class="home-action-btn">
+                <ui:Label text="🎪" class="home-action-btn__icon" />
+                <ui:Label text="Events" class="home-action-btn__label" />
             </ui:Button>
-            <ui:Button name="btn-rankings" class="action-btn">
-                <ui:Label text="Rankings" class="action-btn__label" />
+
+            <ui:Button name="btn-rankings" class="home-action-btn">
+                <ui:Label text="🏆" class="home-action-btn__icon" />
+                <ui:Label text="Rankings" class="home-action-btn__label" />
             </ui:Button>
-            <ui:Button name="btn-watch" class="action-btn">
-                <ui:Label text="Watch" class="action-btn__label" />
+
+            <ui:Button name="btn-watch" class="home-action-btn">
+                <ui:Label text="📺" class="home-action-btn__icon" />
+                <ui:Label text="Watch" class="home-action-btn__label" />
             </ui:Button>
+
         </ui:VisualElement>
 
-        <!-- ── Bottom Nav Bar ── -->
+        <!-- ── Bottom Nav Bar ────────────────────────────────────── -->
         <ui:VisualElement class="nav-bar">
+
             <ui:Button name="btn-nav-chefs" class="nav-btn">
+                <ui:Label text="🍳" class="nav-btn__icon" />
                 <ui:Label text="Chefs" class="nav-btn__label" />
             </ui:Button>
+
             <ui:Button name="btn-nav-store" class="nav-btn">
+                <ui:Label text="🛒" class="nav-btn__icon" />
                 <ui:Label text="Store" class="nav-btn__label" />
             </ui:Button>
+
             <ui:Button name="btn-nav-home" class="nav-btn nav-btn--active">
+                <ui:Label text="🏠" class="nav-btn__icon" />
                 <ui:Label text="Home" class="nav-btn__label" />
             </ui:Button>
+
             <ui:Button name="btn-nav-season" class="nav-btn">
-                <ui:Label text="Season Pass" class="nav-btn__label" />
+                <ui:Label text="⭐" class="nav-btn__icon" />
+                <ui:Label text="Season" class="nav-btn__label" />
             </ui:Button>
+
             <ui:Button name="btn-nav-profile" class="nav-btn">
+                <ui:Label text="👤" class="nav-btn__icon" />
                 <ui:Label text="Profile" class="nav-btn__label" />
             </ui:Button>
+
         </ui:VisualElement>
 
     </ui:VisualElement>

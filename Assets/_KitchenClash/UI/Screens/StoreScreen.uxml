@@ -1,36 +1,119 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
     <Style src="../Styles/theme.uss" />
     <Style src="../Styles/screens.uss" />
+    <Style src="../Styles/components.uss" />
 
-    <ui:VisualElement name="store-root" class="screen-root store-root">
-        <!-- Currency Bar -->
-        <ui:VisualElement class="currency-bar">
-            <ui:Label text="Store" class="screen-title" />
-            <ui:VisualElement class="currency-bar__right">
-                <ui:VisualElement class="currency-badge">
-                    <ui:Label text="💎" />
-                    <ui:Label name="lbl-gems" text="250" class="currency-badge__value" />
-                </ui:VisualElement>
-                <ui:VisualElement class="currency-badge">
-                    <ui:Label text="🪙" />
+    <ui:VisualElement name="store-root" class="screen-root layout-screen">
+
+        <!-- ── Top Bar ──────────────────────────────────────────────── -->
+        <ui:VisualElement class="top-bar">
+            <ui:Label text="🛒 STORE" class="top-bar__title" />
+            <ui:VisualElement class="top-bar__right layout-row"
+                style="gap: 8px;">
+                <ui:VisualElement class="currency-badge currency-badge--gold">
+                    <ui:Label text="🪙" class="currency-badge__icon" />
                     <ui:Label name="lbl-coins" text="1200" class="currency-badge__value" />
+                </ui:VisualElement>
+                <ui:VisualElement class="currency-badge currency-badge--gems">
+                    <ui:Label text="💎" class="currency-badge__icon" />
+                    <ui:Label name="lbl-gems" text="250" class="currency-badge__value" />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
 
-        <!-- Tabs -->
-        <ui:VisualElement class="store-tabs">
-            <ui:Button name="btn-tab-characters" text="Characters" class="store-tab store-tab--active" />
-            <ui:Button name="btn-tab-skins" text="Skins" class="store-tab" />
-            <ui:Button name="btn-tab-boosters" text="Boosters" class="store-tab" />
-            <ui:Button name="btn-tab-gems" text="Gems" class="store-tab" />
+        <!-- ── Tab Row ──────────────────────────────────────────────── -->
+        <ui:VisualElement class="layout-row"
+            style="padding: 8px 16px; background-color: var(--bg-deepest);
+                   border-bottom-width: 2px; border-color: var(--border-panel); gap: 6px;">
+            <!-- Active tab uses btn-primary style; rest use btn-ghost -->
+            <ui:Button name="tab-characters" class="btn-primary"
+                style="flex-grow: 1; height: 44px; border-radius: 999px;">
+                <ui:Label text="Characters" class="btn-primary__label"
+                    style="font-size: 13px;" />
+            </ui:Button>
+            <ui:Button name="tab-skins" class="btn-ghost" style="flex-grow: 1;">
+                <ui:Label text="Skins" class="btn-ghost__label" />
+            </ui:Button>
+            <ui:Button name="tab-boosters" class="btn-ghost" style="flex-grow: 1;">
+                <ui:Label text="Boosters" class="btn-ghost__label" />
+            </ui:Button>
+            <ui:Button name="tab-gems" class="btn-ghost" style="flex-grow: 1;">
+                <ui:Label text="Gems" class="btn-ghost__label" />
+            </ui:Button>
         </ui:VisualElement>
 
-        <!-- Item Grid -->
-        <ui:ScrollView name="store-scroll" class="store-scroll">
-            <ui:VisualElement name="store-item-grid" class="store-item-grid" />
-        </ui:ScrollView>
+        <!-- ── Scrollable Content ───────────────────────────────────── -->
+        <ui:VisualElement class="layout-content">
 
-        <ui:Button name="btn-back" text="Back" class="btn-back" />
+            <!-- Featured Banner (top) -->
+            <ui:VisualElement class="card card--gold layout-row layout-row--spaced"
+                style="margin: 16px 0 8px 0; padding: 10px 16px; height: 56px;">
+                <ui:Label text="✨ Limited Time Offer"
+                    style="color: var(--clr-gold); font-size: 16px;
+                           -unity-font-style: bold; letter-spacing: 1px;" />
+                <ui:Label text="⏰ 2d 14h"
+                    style="color: var(--txt-secondary); font-size: 13px;" />
+            </ui:VisualElement>
+
+            <!-- Store Grid -->
+            <ui:ScrollView name="store-grid">
+                <ui:VisualElement class="layout-grid" style="padding-bottom: 16px;">
+
+                    <!-- Item 0 — Featured -->
+                    <ui:VisualElement class="store-item store-item--featured">
+                        <ui:VisualElement class="store-item__thumb" />
+                        <ui:Label text="Item Name" class="store-item__name" />
+                        <ui:Label text="⭐ Featured" class="store-item__price"
+                            style="color: var(--clr-gold);" />
+                    </ui:VisualElement>
+
+                    <!-- Item 1 -->
+                    <ui:VisualElement class="store-item">
+                        <ui:VisualElement class="store-item__thumb" />
+                        <ui:Label text="Item Name" class="store-item__name" />
+                        <ui:Label text="💎 120" class="store-item__price" />
+                    </ui:VisualElement>
+
+                    <!-- Item 2 -->
+                    <ui:VisualElement class="store-item">
+                        <ui:VisualElement class="store-item__thumb" />
+                        <ui:Label text="Item Name" class="store-item__name" />
+                        <ui:Label text="💎 120" class="store-item__price" />
+                    </ui:VisualElement>
+
+                    <!-- Item 3 -->
+                    <ui:VisualElement class="store-item">
+                        <ui:VisualElement class="store-item__thumb" />
+                        <ui:Label text="Item Name" class="store-item__name" />
+                        <ui:Label text="💎 120" class="store-item__price" />
+                    </ui:VisualElement>
+
+                    <!-- Item 4 -->
+                    <ui:VisualElement class="store-item">
+                        <ui:VisualElement class="store-item__thumb" />
+                        <ui:Label text="Item Name" class="store-item__name" />
+                        <ui:Label text="💎 120" class="store-item__price" />
+                    </ui:VisualElement>
+
+                    <!-- Item 5 -->
+                    <ui:VisualElement class="store-item">
+                        <ui:VisualElement class="store-item__thumb" />
+                        <ui:Label text="Item Name" class="store-item__name" />
+                        <ui:Label text="💎 120" class="store-item__price" />
+                    </ui:VisualElement>
+
+                </ui:VisualElement>
+            </ui:ScrollView>
+
+        </ui:VisualElement>
+
+        <!-- ── Static Featured Bottom Banner ───────────────────────── -->
+        <ui:VisualElement class="card card--gold layout-row layout-row--center"
+            style="margin: 0 16px 12px 16px; padding: 10px 16px; height: 52px;">
+            <ui:Label text="✨ Limited Time Offer"
+                style="color: var(--clr-gold); font-size: 16px;
+                       -unity-font-style: bold; letter-spacing: 1px;" />
+        </ui:VisualElement>
+
     </ui:VisualElement>
 </ui:UXML>

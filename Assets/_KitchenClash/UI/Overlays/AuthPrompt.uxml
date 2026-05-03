@@ -1,18 +1,57 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
     <Style src="../Styles/theme.uss" />
     <Style src="../Styles/screens.uss" />
+    <Style src="../Styles/components.uss" />
 
-    <ui:VisualElement name="auth-prompt-root" class="overlay-root auth-prompt">
-        <ui:VisualElement class="overlay-backdrop" />
-        <ui:VisualElement class="auth-prompt-card">
-            <ui:Label text="Link Your Account" class="auth-prompt__title" />
-            <ui:Label text="Save your progress by linking an account." class="auth-prompt__subtitle" />
-            <ui:VisualElement class="auth-prompt__buttons">
-                <ui:Button name="btn-google" text="Google" class="auth-prompt__btn auth-prompt__btn--google" />
-                <ui:Button name="btn-facebook" text="Facebook" class="auth-prompt__btn auth-prompt__btn--facebook" />
-                <ui:Button name="btn-apple" text="Apple" class="auth-prompt__btn auth-prompt__btn--apple" />
-                <ui:Button name="btn-stay-guest" text="Stay as Guest" class="auth-prompt__btn auth-prompt__btn--guest" />
-            </ui:VisualElement>
+    <!-- Full-screen modal backdrop, centered card -->
+    <ui:VisualElement name="auth-prompt-root" class="modal-backdrop">
+
+        <ui:VisualElement class="modal-card">
+
+            <!-- Title -->
+            <ui:Label text="💾 Save Your Progress"
+                class="modal-card__title" />
+
+            <!-- Body message -->
+            <ui:Label name="lbl-auth-message"
+                text="Link an account to save your progress across devices"
+                style="font-size: var(--fs-13); color: var(--txt-secondary);
+                       -unity-text-align: middle-center;
+                       margin-bottom: var(--sp-20);" />
+
+            <!-- Divider -->
+            <ui:VisualElement class="divider" />
+
+            <!-- Google -->
+            <ui:Button name="btn-google" class="btn-social btn-social--google">
+                <ui:Label text="G" class="btn-social__icon"
+                    style="color: #EA4335;" />
+                <ui:Label text="Link with Google" class="btn-social__label" />
+            </ui:Button>
+
+            <!-- Facebook -->
+            <ui:Button name="btn-facebook" class="btn-social btn-social--facebook">
+                <ui:Label text="f" class="btn-social__icon"
+                    style="color: #3B5998; -unity-font-style: bold;" />
+                <ui:Label text="Link with Facebook" class="btn-social__label" />
+            </ui:Button>
+
+            <!-- Apple -->
+            <ui:Button name="btn-apple" class="btn-social btn-social--apple">
+                <ui:Label text="🍎" class="btn-social__icon" />
+                <ui:Label text="Link with Apple" class="btn-social__label" />
+            </ui:Button>
+
+            <!-- Fire divider -->
+            <ui:VisualElement class="divider divider--fire" />
+
+            <!-- Stay as Guest ghost button -->
+            <ui:Button name="btn-stay-guest" class="btn-ghost"
+                style="width: 100%;">
+                <ui:Label text="Stay as Guest" class="btn-ghost__label"
+                    style="-unity-text-align: middle-center;" />
+            </ui:Button>
+
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

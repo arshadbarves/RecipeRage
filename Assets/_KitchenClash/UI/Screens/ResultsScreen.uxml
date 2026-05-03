@@ -1,50 +1,89 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
     <Style src="../Styles/theme.uss" />
     <Style src="../Styles/screens.uss" />
+    <Style src="../Styles/components.uss" />
 
-    <ui:VisualElement name="results-root" class="screen-root results-root">
-        <ui:Label text="MATCH RESULTS" class="screen-title" />
+    <ui:VisualElement name="results-root" class="screen-root bg-deep">
 
-        <!-- Team Scores -->
-        <ui:VisualElement class="results-scores">
-            <ui:VisualElement class="results-team">
-                <ui:Label text="Team A" class="results-team__name" />
-                <ui:Label name="lbl-score-a" text="12" class="results-team__score" />
+        <!-- ── TOP BAR ── -->
+        <ui:VisualElement class="top-bar"
+            style="flex-direction: row; align-items: center; justify-content: center; gap: 8px;">
+            <ui:Label text="🔥" style="font-size: 22px;" />
+            <ui:Label text="RESULTS" class="screen-title text-bold" />
+            <ui:Label text="🔥" style="font-size: 22px;" />
+        </ui:VisualElement>
+
+        <!-- ── RESULT BANNER ── -->
+        <ui:Label name="lbl-result" text="VICTORY" class="text-bold clr-gold"
+            style="font-size: 40px; -unity-text-align: middle-center;
+                   margin-top: 8px; margin-bottom: 12px; letter-spacing: 3px;" />
+
+        <!-- ── MVP CARD ── -->
+        <ui:VisualElement name="mvp-card" class="mvp-card card"
+            style="align-items: center; padding: 16px; margin-bottom: 12px;">
+            <ui:Label text="👑" style="font-size: 32px; margin-bottom: 4px;" />
+            <ui:VisualElement name="mvp-portrait"
+                style="width: 72px; height: 72px; border-radius: 36px;
+                       background-color: rgba(255,200,0,0.18);
+                       border-width: 3px; border-color: rgba(255,200,0,0.6);
+                       margin-bottom: 8px;" />
+            <ui:Label name="lbl-mvp-name" text="Player1" class="text-bold"
+                style="font-size: 18px; color: white; -unity-text-align: middle-center;" />
+            <ui:Label name="lbl-mvp-stat" text="Best Chef" class="text-muted"
+                style="-unity-text-align: middle-center;" />
+        </ui:VisualElement>
+
+        <!-- ── TEAM SCORES ── -->
+        <ui:VisualElement class="layout-row--spaced" style="flex-shrink: 0; margin-bottom: 12px; padding: 0 16px;">
+
+            <ui:VisualElement class="card" style="flex: 1; align-items: center; margin-right: 8px;">
+                <ui:Label name="lbl-final-score-a" text="12" class="text-bold clr-cyan"
+                    style="font-size: 32px;" />
+                <ui:Label text="TEAM A" class="text-muted text-bold" style="font-size: 11px;" />
             </ui:VisualElement>
-            <ui:Label text="—" class="results-divider" />
-            <ui:VisualElement class="results-team">
-                <ui:Label text="Team B" class="results-team__name" />
-                <ui:Label name="lbl-score-b" text="8" class="results-team__score" />
+
+            <ui:Label text="—" class="text-bold text-muted"
+                style="font-size: 24px; align-self: center;" />
+
+            <ui:VisualElement class="card" style="flex: 1; align-items: center; margin-left: 8px;">
+                <ui:Label name="lbl-final-score-b" text="8" class="text-bold clr-fire"
+                    style="font-size: 32px;" />
+                <ui:Label text="TEAM B" class="text-muted text-bold" style="font-size: 11px;" />
+            </ui:VisualElement>
+
+        </ui:VisualElement>
+
+        <!-- ── REWARDS CARD ── -->
+        <ui:VisualElement class="card" style="margin-bottom: 16px;">
+            <ui:Label text="REWARDS" class="text-bold clr-gold"
+                style="font-size: 14px; letter-spacing: 2px; margin-bottom: 10px;" />
+
+            <!-- Gems row -->
+            <ui:VisualElement class="layout-row--spaced" style="margin-bottom: 6px;">
+                <ui:Label text="💎  Gems" class="text-bold" style="color: white;" />
+                <ui:Label name="lbl-reward-gems" text="+3" class="text-bold clr-cyan" style="font-size: 16px;" />
+            </ui:VisualElement>
+
+            <!-- Trophies row -->
+            <ui:VisualElement class="layout-row--spaced" style="margin-bottom: 6px;">
+                <ui:Label text="🏆  Trophies" class="text-bold" style="color: white;" />
+                <ui:Label name="lbl-reward-trophies" text="+25" class="text-bold clr-gold" style="font-size: 16px;" />
+            </ui:VisualElement>
+
+            <!-- XP row -->
+            <ui:VisualElement class="layout-row--spaced">
+                <ui:Label text="⭐  XP" class="text-bold" style="color: white;" />
+                <ui:Label name="lbl-reward-xp" text="+120" class="text-bold clr-fire" style="font-size: 16px;" />
             </ui:VisualElement>
         </ui:VisualElement>
 
-        <!-- MVP Card -->
-        <ui:VisualElement name="mvp-card" class="results-mvp">
-            <ui:Label text="⭐ MVP" class="results-mvp__title" />
-            <ui:VisualElement name="mvp-icon" class="results-mvp__icon" />
-            <ui:Label name="lbl-mvp-name" text="Player1" class="results-mvp__name" />
-            <ui:Label name="lbl-mvp-stat" text="8 dishes served" class="results-mvp__stat" />
-        </ui:VisualElement>
+        <!-- ── WATCH AD BUTTON ── -->
+        <ui:Button name="btn-watch-ad" text="Watch Ad for +3 💎" class="btn-gold"
+            style="margin-bottom: 10px;" />
 
-        <!-- Reward Summary -->
-        <ui:VisualElement class="results-rewards">
-            <ui:Label text="Rewards" class="results-rewards__title" />
-            <ui:VisualElement class="results-reward-row">
-                <ui:Label text="🏆 Trophies" class="results-reward-row__label" />
-                <ui:Label name="lbl-trophies" text="+12" class="results-reward-row__value" />
-            </ui:VisualElement>
-            <ui:VisualElement class="results-reward-row">
-                <ui:Label text="🪙 Coins" class="results-reward-row__label" />
-                <ui:Label name="lbl-coins" text="+50" class="results-reward-row__value" />
-            </ui:VisualElement>
-            <ui:VisualElement class="results-reward-row">
-                <ui:Label text="⭐ XP" class="results-reward-row__label" />
-                <ui:Label name="lbl-xp" text="+120" class="results-reward-row__value" />
-            </ui:VisualElement>
-        </ui:VisualElement>
+        <!-- ── CONTINUE BUTTON ── -->
+        <ui:Button name="btn-continue" text="CONTINUE" class="btn-primary"
+            style="height: 56px; font-size: 18px;" />
 
-        <!-- Buttons -->
-        <ui:Button name="btn-ad-gems" text="📺 Watch Ad +3 💎" class="results-ad-btn" />
-        <ui:Button name="btn-continue" text="Continue" class="results-continue-btn" />
     </ui:VisualElement>
 </ui:UXML>

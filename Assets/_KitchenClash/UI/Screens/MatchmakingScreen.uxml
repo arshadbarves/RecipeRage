@@ -1,14 +1,30 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
     <Style src="../Styles/theme.uss" />
     <Style src="../Styles/screens.uss" />
+    <Style src="../Styles/components.uss" />
 
-    <ui:VisualElement name="matchmaking-root" class="screen-root matchmaking-root">
-        <ui:VisualElement class="matchmaking-center">
-            <ui:VisualElement name="matchmaking-spinner" class="matchmaking-spinner" />
-            <ui:Label text="Searching for match..." class="matchmaking-title" />
-            <ui:Label name="lbl-search-timer" text="0:00" class="matchmaking-timer" />
-            <ui:Label name="lbl-player-count" text="Players in queue: 42" class="matchmaking-player-count" />
-        </ui:VisualElement>
-        <ui:Button name="btn-cancel" text="Cancel" class="matchmaking-cancel-btn" />
+    <ui:VisualElement name="matchmaking-root" class="screen-root bg-deep layout-center">
+
+        <!-- ── PULSING SEARCH ICON ── -->
+        <ui:Label name="icon-searching" text="🍳" style="font-size: 72px; -unity-text-align: middle-center; margin-bottom: 16px;" />
+
+        <!-- ── TITLE ── -->
+        <ui:Label name="lbl-searching" text="Finding Match..." class="text-bold"
+            style="font-size: 24px; color: white; -unity-text-align: middle-center; margin-bottom: 8px;" />
+
+        <!-- ── MATCH TIMER ── -->
+        <ui:Label name="lbl-mm-timer" text="0:00" class="clr-cyan text-bold"
+            style="font-size: 32px; -unity-text-align: middle-center; margin-bottom: 12px;" />
+
+        <!-- ── PLAYER COUNT ── -->
+        <ui:Label name="lbl-player-count" text="Players in queue: 124" class="text-muted"
+            style="-unity-text-align: middle-center; margin-bottom: 8px;" />
+
+        <!-- ── SPACER ── -->
+        <ui:VisualElement style="height: 32px; flex-shrink: 0;" />
+
+        <!-- ── CANCEL ── -->
+        <ui:Button name="btn-cancel" text="CANCEL" class="btn-ghost" />
+
     </ui:VisualElement>
 </ui:UXML>
