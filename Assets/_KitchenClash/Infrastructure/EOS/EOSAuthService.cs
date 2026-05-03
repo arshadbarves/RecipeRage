@@ -32,7 +32,9 @@ namespace KitchenClash.Infrastructure.EOS
         {
             try
             {
-                // TODO: EOS SDK version compatibility - connect interface access may differ across EOS SDK versions.
+                // NOTE: ConnectInterface access pattern may differ across EOS SDK versions.
+                //       Verify EOSManager.Instance.GetEOSConnectInterface() is available in
+                //       the version of PlayEveryWare.EpicOnlineServices in use.
                 ConnectInterface connectInterface = EOSManager.Instance.GetEOSConnectInterface();
                 if (connectInterface == null)
                 {
@@ -75,30 +77,33 @@ namespace KitchenClash.Infrastructure.EOS
 
         public async Task<AuthResult> LoginWithGoogleAsync()
         {
-            // GDD: GoogleSignIn.DefaultInstance.SignIn() -> idToken
-            // Then EOS Connect.Login(ExternalCredentialType.GoogleIdToken, token)
-            // TODO: Integrate Google Sign-In SDK
-            return await Task.FromResult(AuthResult.Failed("Google login not yet implemented"));
+            // REQUIRES: Google Sign-In Unity SDK (com.google.signin) and a matching
+            //           Google OAuth client ID in google-services.json.
+            //           Flow: GoogleSignIn.DefaultInstance.SignIn() → idToken
+            //           → EOS Connect.Login(ExternalCredentialType.GoogleIdToken, token)
+            return await Task.FromResult(AuthResult.Failed("Google login not yet implemented — Google Sign-In SDK required"));
         }
 
         public async Task<AuthResult> LoginWithFacebookAsync()
         {
-            // GDD: ExternalCredentialType.FacebookAccessToken
-            // TODO: Integrate Facebook SDK
-            return await Task.FromResult(AuthResult.Failed("Facebook login not yet implemented"));
+            // REQUIRES: Facebook SDK for Unity (com.facebook.sdk).
+            //           Flow: FB.LogInWithReadPermissions() → accessToken
+            //           → EOS Connect.Login(ExternalCredentialType.FacebookAccessToken, token)
+            return await Task.FromResult(AuthResult.Failed("Facebook login not yet implemented — Facebook SDK required"));
         }
 
         public async Task<AuthResult> LoginWithAppleAsync()
         {
-            // GDD: ExternalCredentialType.AppleIdToken
-            // TODO: Integrate Apple Sign-In SDK
-            return await Task.FromResult(AuthResult.Failed("Apple login not yet implemented"));
+            // REQUIRES: Apple Sign-In Unity plugin (e.g. com.lupidan.apple-signin-unity).
+            //           Flow: AppleAuthManager.LoginWithAppleId() → idToken
+            //           → EOS Connect.Login(ExternalCredentialType.AppleIdToken, token)
+            return await Task.FromResult(AuthResult.Failed("Apple login not yet implemented — Apple Sign-In plugin required"));
         }
 
         public async Task LinkToGoogleAsync()
         {
-            // GDD: EOS Connect.LinkAccount(DeviceId PUID -> Google PUID)
-            // TODO: Implement account linking
+            // REQUIRES: Google Sign-In SDK (same as LoginWithGoogleAsync).
+            //           Flow: obtain Google idToken → EOS Connect.LinkAccount(DeviceId PUID → Google PUID)
             await Task.CompletedTask;
         }
     }

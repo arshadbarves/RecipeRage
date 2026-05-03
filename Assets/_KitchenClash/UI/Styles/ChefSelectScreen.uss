@@ -1,0 +1,126 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   ChefSelectScreen.uss  —  Kitchen Clash Design System v3.0
+   ═══════════════════════════════════════════════════════════════════════════ */
+@import url("project://database/Assets/_KitchenClash/UI/Styles/DesignSystem.uss");
+
+/* ─── Screen root ─────────────────────────────────────────────────────────── */
+.chef-select-screen {
+    background-color: rgb(255, 255, 255);
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+}
+
+/* ─── Preview banner ──────────────────────────────────────────────────────── */
+.chef-preview-area {
+    height: 320px;
+    background-color: rgb(245, 245, 245);
+    border-bottom-width: 4px;
+    border-bottom-color: rgb(26, 26, 26);
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+.chef-preview__name {
+    font-size: 56px;
+    color: rgb(26, 26, 26);
+    -unity-font-definition: var(--font-anton);
+    letter-spacing: 2px;
+    -unity-text-align: middle-center;
+}
+
+.chef-preview__level {
+    font-size: 24px;
+    color: rgb(136, 136, 136);
+    -unity-font-definition: var(--font-rajdhani);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    letter-spacing: 2px;
+}
+
+/* ─── Chef grid (scrollable) ──────────────────────────────────────────────── */
+.chef-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 20px 32px;
+    flex-grow: 1;
+}
+
+/* ─── Individual chef slot ────────────────────────────────────────────────── */
+.chef-slot {
+    width: 160px;
+    height: 220px;
+    background-color: rgb(255, 255, 255);
+    border-radius: 20px;
+    border-width: 3px;
+    border-color: rgb(26, 26, 26);
+    margin: 10px;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    flex-direction: column;
+    position: relative;
+    transition-property: scale;
+    transition-duration: 0.08s;
+    transition-timing-function: ease-out;
+}
+
+.chef-slot:active {
+    scale: 0.93;
+}
+
+.chef-slot--selected {
+    border-color: var(--clr-primary);
+    border-width: 4px;
+}
+
+.chef-slot--locked {
+    opacity: 0.5;
+}
+
+.chef-slot__portrait {
+    width: 100px;
+    height: 120px;
+    background-color: rgb(240, 240, 240);
+    border-radius: 12px;
+    border-width: 2px;
+    border-color: rgb(26, 26, 26);
+    margin-bottom: 10px;
+}
+
+.chef-slot__name {
+    font-size: 20px;
+    color: rgb(26, 26, 26);
+    -unity-font-definition: var(--font-anton);
+    -unity-text-align: middle-center;
+}
+
+.chef-slot__lock {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-size: 20px;
+    color: rgb(170, 170, 170);
+}
+
+/* ─── Bottom action bar ───────────────────────────────────────────────────── */
+.chef-bottom-bar {
+    flex-direction: row;
+    padding: 20px 40px;
+    background-color: rgb(255, 255, 255);
+    border-top-width: 3px;
+    border-top-color: rgb(26, 26, 26);
+    border-left-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+}

@@ -1,0 +1,58 @@
+@import url("project://database/Assets/_KitchenClash/UI/Styles/DesignSystem.uss");
+
+/* ── ConnectivityOverlay ──────────────────────────────────────────────────── */
+
+.connectivity-overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--clr-scrim);
+    align-items: center;
+    justify-content: center;
+}
+
+.connectivity-card {
+    background-color: var(--clr-canvas);
+    border-radius: 28px;
+    border-width: 4px;
+    border-color: var(--clr-ink);
+    padding: 40px;
+    min-width: 360px;
+    max-width: 480px;
+    width: 80%;
+    align-items: center;
+}
+
+.connectivity-icon {
+    font-size: 80px;
+    -unity-text-align: middle-center;
+    margin-bottom: 16px;
+}
+
+.connectivity-title {
+    font-size: 40px;
+    color: rgb(26, 26, 26);
+    -unity-font-definition: var(--font-anton);
+    letter-spacing: 2px;
+    -unity-text-align: middle-center;
+}
+
+.connectivity-msg {
+    font-size: 20px;
+    color: rgb(85, 85, 85);
+    -unity-font-definition: var(--font-rajdhani);
+    -unity-text-align: middle-center;
+    margin-top: 8px;
+    white-space: normal;
+}
+
+.connectivity-countdown {
+    font-size: 32px;
+    color: rgb(52, 152, 219);
+    -unity-font-definition: var(--font-anton);
+    -unity-text-align: middle-center;
+    margin-top: 16px;
+    margin-bottom: 24px;
+}

@@ -1,77 +1,29 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <Style src="../Styles/theme.uss" />
-    <Style src="../Styles/screens.uss" />
-    <Style src="../Styles/components.uss" />
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/_KitchenClash/UI/Styles/MaintenanceScreen.uss"/>
 
     <!--
-        MaintenanceScreen — Hot Kitchen Design System v2.0
-        bg-deep base, centered card, wrench icon, gold title, retry button.
-        Named elements: lbl-message (was lbl-maintenance-message in spec,
-        but existing presenter uses lbl-message — preserved),
-        lbl-estimated-time (was lbl-eta in spec, preserved from existing file),
-        btn-retry
+        MaintenanceScreen — Kitchen Clash Design System v3.0
+        White canvas, centered column: wrench icon, Anton title, message, ETA, yellow retry CTA.
+        Named elements: lbl-message, lbl-estimated-time, btn-retry
     -->
-    <ui:VisualElement name="maintenance-root" class="screen-root layout-screen">
+    <ui:VisualElement name="screen-container" class="screen-root maintenance-screen">
 
-        <ui:VisualElement class="layout-center" style="
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        ">
+        <!-- Wrench icon -->
+        <ui:Label text="🔧" class="maintenance-icon" />
 
-            <!-- Wrench emoji icon -->
-            <ui:Label text="🔧" style="
-                font-size: 64px;
-                -unity-text-align: middle-center;
-                margin-bottom: 20px;
-            " />
+        <!-- Title -->
+        <ui:Label text="UNDER MAINTENANCE" class="maintenance-title" />
 
-            <!-- Title -->
-            <ui:Label text="Under Maintenance" style="
-                color: #FFD700;
-                font-size: 24px;
-                -unity-font-style: bold;
-                -unity-text-align: middle-center;
-                letter-spacing: 2px;
-                margin-bottom: 16px;
-            " />
+        <!-- Message (set at runtime) -->
+        <ui:Label name="lbl-message" text="We&#39;re cooking up something great! Back soon." class="maintenance-msg" />
 
-            <!-- Message -->
-            <ui:Label name="lbl-message"
-                text="We're cooking up something great! Back soon."
-                style="
-                    color: #A0A0C0;
-                    font-size: 14px;
-                    -unity-text-align: middle-center;
-                    white-space: normal;
-                    padding-left: 24px;
-                    padding-right: 24px;
-                    margin-bottom: 8px;
-                "
-            />
+        <!-- ETA (set at runtime) -->
+        <ui:Label name="lbl-estimated-time" text="Estimated: --:--" class="maintenance-eta-label" />
 
-            <!-- Spacer -->
-            <ui:VisualElement style="height: 24px;" />
-
-            <!-- Estimated time -->
-            <ui:Label name="lbl-estimated-time"
-                text="Estimated: --:--"
-                style="
-                    color: #5A5A80;
-                    font-size: 13px;
-                    -unity-text-align: middle-center;
-                    margin-bottom: 32px;
-                "
-            />
-
-            <!-- Retry button -->
-            <ui:Button name="btn-retry" class="btn-primary" style="
-                min-width: 200px;
-            ">
-                <ui:Label text="Retry" class="btn-primary__label" />
-            </ui:Button>
-
-        </ui:VisualElement>
+        <!-- Retry CTA -->
+        <ui:Button name="btn-retry" class="btn-primary maintenance-retry-btn">
+            <ui:Label text="RETRY" class="btn-primary__label" />
+        </ui:Button>
 
     </ui:VisualElement>
 </ui:UXML>

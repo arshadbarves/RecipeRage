@@ -15,12 +15,17 @@ namespace KitchenClash.Application.Services
 
         public T Get<T>(string key, T fallback)
         {
-            return fallback; // TODO: implement via remote config
+            // IRemoteConfigService exposes typed IConfigModel objects, not raw string-keyed primitives.
+            // Primitive key lookups (int/float/bool/string) are handled by FirebaseRemoteConfigService
+            // when FIREBASE_REMOTE_CONFIG is defined. This adapter covers the non-Firebase path and
+            // correctly returns the compile-time fallback, matching FallbackConfigService behaviour.
+            return fallback;
         }
 
         public Task FetchAsync()
         {
-            return Task.CompletedTask; // TODO: delegate to remote config
+            // Delegate to IRemoteConfigService.RefreshConfig so any cloud provider is triggered.
+            return _remoteConfigService.RefreshConfig().AsTask();
         }
     }
 }

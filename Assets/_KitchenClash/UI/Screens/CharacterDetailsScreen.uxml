@@ -1,198 +1,122 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <Style src="../Styles/theme.uss" />
-    <Style src="../Styles/screens.uss" />
-    <Style src="../Styles/components.uss" />
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/_KitchenClash/UI/Styles/CharacterDetailsScreen.uss"/>
 
-    <ui:VisualElement name="char-details-root" class="screen-root layout-screen">
+    <ui:VisualElement name="screen-container" class="screen-root char-details-screen">
 
-        <!-- ── Top Bar ──────────────────────────────────────────────── -->
-        <ui:VisualElement class="top-bar">
-            <ui:VisualElement class="top-bar__left">
-                <ui:Button name="btn-back" class="btn-icon">
-                    <ui:Label text="‹" class="btn-icon__label" />
+        <!-- ══════════════════════════════════════════════════════════════
+             LEFT PANEL — back, name, class, description, stats, CTA
+             ══════════════════════════════════════════════════════════════ -->
+        <ui:VisualElement name="char-details-left" class="char-details-left">
+
+            <!-- Back button -->
+            <ui:Button name="btn-back" class="btn-back" style="align-self: flex-start; margin-bottom: 32px;">
+                <ui:Label text="&lt; BACK" class="btn-back__label"/>
+            </ui:Button>
+
+            <!-- Character name -->
+            <ui:Label name="lbl-char-name" text="CHEF ROSA" class="char-name"/>
+
+            <!-- Class tag pill -->
+            <ui:VisualElement class="tag-pill tag-pill--yellow" style="margin-bottom: 16px;">
+                <ui:Label name="lbl-char-class" text="SPEEDSTER" class="tag-pill__label"/>
+            </ui:VisualElement>
+
+            <!-- Description -->
+            <ui:Label name="char-description" text="Fast and agile, Rosa dashes through the kitchen with unmatched speed. Her quick reflexes let her grab ingredients before anyone else." class="char-desc"/>
+
+            <!-- Stats block -->
+            <ui:VisualElement name="character-stats" class="char-stats">
+
+                <ui:VisualElement class="char-stat-row">
+                    <ui:Label text="SPEED" class="char-stat-name"/>
+                    <ui:Label name="stat-speed" text="92" class="char-stat-value"/>
+                </ui:VisualElement>
+
+                <ui:VisualElement class="char-stat-row">
+                    <ui:Label text="COOKING" class="char-stat-name"/>
+                    <ui:Label name="stat-cooking" text="78" class="char-stat-value"/>
+                </ui:VisualElement>
+
+                <ui:VisualElement class="char-stat-row">
+                    <ui:Label text="SPECIAL" class="char-stat-name"/>
+                    <ui:Label name="stat-special" text="85" class="char-stat-value"/>
+                </ui:VisualElement>
+
+                <ui:VisualElement class="char-stat-row">
+                    <ui:Label text="STAMINA" class="char-stat-name"/>
+                    <ui:Label name="stat-stamina" text="65" class="char-stat-value"/>
+                </ui:VisualElement>
+
+            </ui:VisualElement>
+
+            <!-- Spacer pushes CTA to bottom -->
+            <ui:VisualElement class="spacer"/>
+
+            <!-- Action area -->
+            <ui:VisualElement name="action-area">
+                <ui:Button name="btn-unlock-select" class="char-action-btn char-action-btn--select">
+                    <ui:Label text="SELECT" class="char-action-btn__label"/>
                 </ui:Button>
             </ui:VisualElement>
-            <ui:Label text="CHEF DETAILS" class="top-bar__title" />
-            <ui:VisualElement class="top-bar__right"
-                style="width: 48px;" />
+
         </ui:VisualElement>
 
-        <!-- ── Scrollable Body ──────────────────────────────────────── -->
-        <ui:ScrollView class="layout-content">
+        <!-- ══════════════════════════════════════════════════════════════
+             CENTRE PANEL — 3D model viewport
+             ══════════════════════════════════════════════════════════════ -->
+        <ui:VisualElement name="char-model-area" class="char-details-center"/>
 
-            <!-- Chef Model Area -->
-            <ui:VisualElement name="char-model-area" class="card"
-                style="height: 220px; align-items: center; justify-content: center;
-                       margin: 16px 0; border-radius: 30px;" />
+        <!-- ══════════════════════════════════════════════════════════════
+             RIGHT PANEL — abilities
+             ══════════════════════════════════════════════════════════════ -->
+        <ui:VisualElement name="char-details-right" class="char-details-right">
 
-            <!-- Chef Name -->
-            <ui:Label name="lbl-char-name" text="Chef Rosa"
-                style="font-size: 28px; -unity-font-style: bold; color: var(--txt-primary);
-                       -unity-text-align: middle-center; margin-bottom: 8px;" />
-
-            <!-- Class Tag Row -->
-            <ui:VisualElement class="layout-row layout-row--center"
-                style="margin-bottom: 16px;">
-                <ui:VisualElement class="tag tag--fire">
-                    <ui:Label name="lbl-char-class" text="🔥 Fire Chef"
-                        class="tag__label" />
-                </ui:VisualElement>
-            </ui:VisualElement>
-
-            <ui:VisualElement class="divider" />
-
-            <!-- ── Stats Section ──────────────────────────────────── -->
-            <ui:VisualElement class="section-header">
-                <ui:Label text="STATS" class="section-header__title" />
-            </ui:VisualElement>
-
-            <!-- Speed -->
-            <ui:VisualElement class="stat-row" style="flex-direction: column; align-items: stretch; padding: 8px 0;">
-                <ui:VisualElement class="layout-row layout-row--spaced"
-                    style="margin-bottom: 4px;">
-                    <ui:Label text="⚡ Speed" class="stat-row__label" />
-                    <ui:Label text="70" class="stat-row__value stat-row__value--cyan" />
-                </ui:VisualElement>
-                <ui:VisualElement class="bar-track">
-                    <ui:VisualElement name="bar-speed" class="bar-fill bar-fill--xp"
-                        style="width: 70%;" />
-                </ui:VisualElement>
-            </ui:VisualElement>
-
-            <!-- Cooking -->
-            <ui:VisualElement class="stat-row" style="flex-direction: column; align-items: stretch; padding: 8px 0;">
-                <ui:VisualElement class="layout-row layout-row--spaced"
-                    style="margin-bottom: 4px;">
-                    <ui:Label text="🍳 Cooking" class="stat-row__label" />
-                    <ui:Label text="85" class="stat-row__value stat-row__value--fire" />
-                </ui:VisualElement>
-                <ui:VisualElement class="bar-track">
-                    <ui:VisualElement name="bar-cooking" class="bar-fill"
-                        style="width: 85%;" />
-                </ui:VisualElement>
-            </ui:VisualElement>
-
-            <!-- Special -->
-            <ui:VisualElement class="stat-row" style="flex-direction: column; align-items: stretch; padding: 8px 0;">
-                <ui:VisualElement class="layout-row layout-row--spaced"
-                    style="margin-bottom: 4px;">
-                    <ui:Label text="✨ Special" class="stat-row__label" />
-                    <ui:Label text="90" class="stat-row__value stat-row__value--gold" />
-                </ui:VisualElement>
-                <ui:VisualElement class="bar-track">
-                    <ui:VisualElement name="bar-special" class="bar-fill bar-fill--gold"
-                        style="width: 90%;" />
-                </ui:VisualElement>
-            </ui:VisualElement>
-
-            <!-- Stamina -->
-            <ui:VisualElement class="stat-row" style="flex-direction: column; align-items: stretch; padding: 8px 0;">
-                <ui:VisualElement class="layout-row layout-row--spaced"
-                    style="margin-bottom: 4px;">
-                    <ui:Label text="❤️ Stamina" class="stat-row__label" />
-                    <ui:Label text="60" class="stat-row__value stat-row__value--ranked" />
-                </ui:VisualElement>
-                <ui:VisualElement class="bar-track">
-                    <ui:VisualElement name="bar-stamina" class="bar-fill bar-fill--health"
-                        style="width: 60%;" />
-                </ui:VisualElement>
-            </ui:VisualElement>
-
-            <ui:VisualElement class="divider" />
-
-            <!-- ── Abilities Section ──────────────────────────────── -->
-            <ui:VisualElement class="section-header">
-                <ui:Label text="ABILITIES" class="section-header__title" />
-            </ui:VisualElement>
+            <ui:Label text="ABILITIES" class="abilities-title"/>
 
             <!-- Passive -->
-            <ui:VisualElement name="ability-passive" class="layout-row card"
-                style="margin-bottom: 8px; padding: 12px;">
-                <ui:Label text="🌿"
-                    style="font-size: 28px; width: 44px; -unity-text-align: middle-center;
-                           margin-right: 12px;" />
+            <ui:VisualElement name="ability-passive" class="char-ability-row">
+                <ui:VisualElement class="char-ability-icon-bg">
+                    <ui:Label text="🛡" class="char-ability-icon"/>
+                </ui:VisualElement>
                 <ui:VisualElement style="flex-grow: 1;">
-                    <ui:VisualElement class="layout-row layout-row--spaced">
-                        <ui:Label text="Spice Master"
-                            style="color: var(--txt-primary); font-size: 15px;
-                                   -unity-font-style: bold;" />
-                        <ui:VisualElement class="tag tag--fire">
-                            <ui:Label text="PASSIVE" class="tag__label" />
-                        </ui:VisualElement>
-                    </ui:VisualElement>
-                    <ui:Label text="Gains bonus points for spicy dishes."
-                        style="color: var(--txt-secondary); font-size: 12px; margin-top: 4px;" />
+                    <ui:Label text="SPICE SHIELD" class="char-ability-name"/>
+                    <ui:Label text="Passive · Reduces incoming debuffs by 25%." class="char-ability-desc"/>
                 </ui:VisualElement>
             </ui:VisualElement>
 
             <!-- Active -->
-            <ui:VisualElement name="ability-active" class="layout-row card"
-                style="margin-bottom: 8px; padding: 12px;">
-                <ui:Label text="💨"
-                    style="font-size: 28px; width: 44px; -unity-text-align: middle-center;
-                           margin-right: 12px;" />
+            <ui:VisualElement name="ability-active" class="char-ability-row">
+                <ui:VisualElement class="char-ability-icon-bg">
+                    <ui:Label text="⚡" class="char-ability-icon"/>
+                </ui:VisualElement>
                 <ui:VisualElement style="flex-grow: 1;">
-                    <ui:VisualElement class="layout-row layout-row--spaced">
-                        <ui:Label text="Flame Dash"
-                            style="color: var(--txt-primary); font-size: 15px;
-                                   -unity-font-style: bold;" />
-                        <ui:VisualElement class="tag tag--cyan">
-                            <ui:Label text="ACTIVE" class="tag__label" />
-                        </ui:VisualElement>
-                    </ui:VisualElement>
-                    <ui:Label text="Dash forward leaving a fire trail."
-                        style="color: var(--txt-secondary); font-size: 12px; margin-top: 4px;" />
+                    <ui:Label text="FLAME DASH" class="char-ability-name"/>
+                    <ui:Label text="Active · Dash forward leaving a fire trail." class="char-ability-desc"/>
                 </ui:VisualElement>
             </ui:VisualElement>
 
             <!-- Super -->
-            <ui:VisualElement name="ability-super" class="layout-row card card--gold"
-                style="margin-bottom: 8px; padding: 12px;">
-                <ui:Label text="🔥"
-                    style="font-size: 28px; width: 44px; -unity-text-align: middle-center;
-                           margin-right: 12px;" />
+            <ui:VisualElement name="ability-super" class="char-ability-row">
+                <ui:VisualElement class="char-ability-icon-bg">
+                    <ui:Label text="💥" class="char-ability-icon"/>
+                </ui:VisualElement>
                 <ui:VisualElement style="flex-grow: 1;">
-                    <ui:VisualElement class="layout-row layout-row--spaced">
-                        <ui:Label text="Inferno Burst"
-                            style="color: var(--txt-primary); font-size: 15px;
-                                   -unity-font-style: bold;" />
-                        <ui:VisualElement class="tag tag--gold">
-                            <ui:Label text="SUPER" class="tag__label" />
-                        </ui:VisualElement>
-                    </ui:VisualElement>
-                    <ui:Label text="AoE fire blast that stuns nearby opponents."
-                        style="color: var(--txt-secondary); font-size: 12px; margin-top: 4px;" />
+                    <ui:Label text="INFERNO BURST" class="char-ability-name"/>
+                    <ui:Label text="Super · AoE blast that stuns nearby opponents." class="char-ability-desc"/>
                 </ui:VisualElement>
             </ui:VisualElement>
 
             <!-- Gadget -->
-            <ui:VisualElement name="ability-gadget" class="layout-row card"
-                style="margin-bottom: 16px; padding: 12px;">
-                <ui:Label text="💣"
-                    style="font-size: 28px; width: 44px; -unity-text-align: middle-center;
-                           margin-right: 12px;" />
+            <ui:VisualElement name="ability-gadget" class="char-ability-row">
+                <ui:VisualElement class="char-ability-icon-bg">
+                    <ui:Label text="🔧" class="char-ability-icon"/>
+                </ui:VisualElement>
                 <ui:VisualElement style="flex-grow: 1;">
-                    <ui:VisualElement class="layout-row layout-row--spaced">
-                        <ui:Label text="Pepper Bomb"
-                            style="color: var(--txt-primary); font-size: 15px;
-                                   -unity-font-style: bold;" />
-                        <ui:VisualElement class="tag tag--ranked">
-                            <ui:Label text="GADGET" class="tag__label" />
-                        </ui:VisualElement>
-                    </ui:VisualElement>
-                    <ui:Label text="Throwable that blinds enemies briefly."
-                        style="color: var(--txt-secondary); font-size: 12px; margin-top: 4px;" />
+                    <ui:Label text="PEPPER BOMB" class="char-ability-name"/>
+                    <ui:Label text="Gadget · Throwable that blinds enemies briefly." class="char-ability-desc"/>
                 </ui:VisualElement>
             </ui:VisualElement>
 
-        </ui:ScrollView>
-
-        <!-- ── Bottom CTA ────────────────────────────────────────────── -->
-        <ui:VisualElement style="padding: 12px 16px; background-color: var(--bg-deepest);
-                                  border-top-width: 2px; border-color: var(--border-panel);">
-            <ui:Button name="btn-unlock-select" class="btn-primary">
-                <ui:Label text="SELECT" class="btn-primary__label" />
-            </ui:Button>
         </ui:VisualElement>
 
     </ui:VisualElement>

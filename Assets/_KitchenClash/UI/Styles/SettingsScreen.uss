@@ -1,0 +1,69 @@
+/* SettingsScreen.uss */
+@import url("project://database/Assets/_KitchenClash/UI/Styles/DesignSystem.uss");
+
+/* ── Screen shell ──────────────────────────────────────────────────────── */
+.settings-screen {
+    background-color: rgb(255, 255, 255);
+    flex-direction: column;
+}
+
+/* ── Scroll container ──────────────────────────────────────────────────── */
+.settings-scroll {
+    flex-grow: 1;
+    padding-left: 0;
+    padding-right: 0;
+    padding-bottom: 40px;
+}
+.settings-scroll > .unity-scroll-view__content-container {
+    padding-left: 40px;
+    padding-right: 40px;
+}
+
+/* ── Section title (AUDIO / GAMEPLAY / ACCOUNT) ────────────────────────── */
+.settings-section-title {
+    font-size: 18px;
+    color: rgb(136, 136, 136);
+    -unity-font-definition: var(--font-rajdhani);
+    -unity-font-style: bold;
+    letter-spacing: 3px;
+    -unity-text-align: middle-left;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    margin-top: 24px;
+}
+
+/* ── Individual row ────────────────────────────────────────────────────── */
+.settings-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    background-color: rgb(255, 255, 255);
+    border-radius: 16px;
+    border-width: 2px;
+    border-color: rgb(224, 224, 224);
+    margin-bottom: 8px;
+}
+
+.settings-row__label {
+    font-size: 24px;
+    color: rgb(26, 26, 26);
+    -unity-font-definition: var(--font-anton);
+    width: 200px;
+    -unity-text-align: middle-left;
+}
+
+.settings-row__control {
+    flex-grow: 1;
+    margin-left: 24px;
+}
+
+/* ── Version label ─────────────────────────────────────────────────────── */
+.settings-version {
+    font-size: 16px;
+    color: rgb(170, 170, 170);
+    -unity-font-definition: var(--font-rajdhani);
+    -unity-text-align: middle-center;
+    margin-top: 8px;
+    margin-bottom: 24px;
+}

@@ -1,0 +1,135 @@
+@import url("project://database/Assets/_KitchenClash/UI/Styles/DesignSystem.uss");
+
+/* ── MatchmakingScreen ────────────────────────────────────────────────────── */
+
+.matchmaking-screen {
+    background-color: var(--clr-canvas);
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+}
+
+.matchmaking-header {
+    height: 120px;
+    padding-left: 40px;
+    padding-right: 40px;
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.matchmaking-mode-label {
+    font-size: 18px;
+    color: var(--clr-primary-dark);
+    -unity-font-definition: var(--font-rajdhani);
+    -unity-font-style: bold;
+    letter-spacing: 4px;
+}
+
+.matchmaking-title {
+    font-size: 64px;
+    color: rgb(26, 26, 26);
+    -unity-font-definition: var(--font-anton);
+    letter-spacing: 2px;
+}
+
+.matchmaking-center {
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+}
+
+.matchmaking-ring {
+    width: 280px;
+    height: 280px;
+    border-radius: 140px;
+    border-width: 4px;
+    border-color: var(--clr-primary);
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.matchmaking-pulse {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 9999px;
+    border-width: 2px;
+    border-color: var(--clr-primary);
+    opacity: 0;
+}
+
+.matchmaking-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 60px;
+    background-color: rgb(245, 245, 245);
+    border-width: 4px;
+    border-color: var(--clr-ink);
+    align-items: center;
+    justify-content: center;
+}
+
+.matchmaking-avatar__icon {
+    font-size: 64px;
+    -unity-text-align: middle-center;
+}
+
+.matchmaking-status {
+    align-items: center;
+    margin-top: 48px;
+}
+
+.matchmaking-count-row {
+    flex-direction: row;
+    align-items: flex-end;
+}
+
+.matchmaking-count-current {
+    font-size: 80px;
+    color: var(--clr-primary-dark);
+    -unity-font-definition: var(--font-anton);
+}
+
+.matchmaking-count-sep {
+    font-size: 80px;
+    color: rgb(204, 204, 204);
+    -unity-font-definition: var(--font-anton);
+    margin-left: 8px;
+    margin-right: 8px;
+}
+
+.matchmaking-count-max {
+    font-size: 80px;
+    color: rgb(204, 204, 204);
+    -unity-font-definition: var(--font-anton);
+}
+
+.matchmaking-count-sub {
+    font-size: 18px;
+    color: rgb(136, 136, 136);
+    -unity-font-definition: var(--font-rajdhani);
+    -unity-font-style: bold;
+    letter-spacing: 3px;
+    -unity-text-align: middle-center;
+    margin-top: 4px;
+}
+
+.matchmaking-timer {
+    font-size: 20px;
+    color: var(--clr-primary-dark);
+    -unity-font-definition: var(--font-rajdhani);
+    -unity-text-align: middle-center;
+    margin-top: 12px;
+}
+
+.matchmaking-footer {
+    height: 160px;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 40px;
+    flex-shrink: 0;
+}

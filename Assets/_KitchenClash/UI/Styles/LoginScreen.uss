@@ -1,0 +1,157 @@
+@import url("project://database/Assets/_KitchenClash/UI/Styles/DesignSystem.uss");
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LoginScreen.uss  —  Kitchen Clash Design System v3.0
+   White canvas, centered card, social buttons, guest ghost, terms footer.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.login-screen {
+    background-color: rgb(255, 255, 255);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+/* ── Centering layout ───────────────────────────────────────────────────── */
+.login-screen-layout {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+/* ── Card container ─────────────────────────────────────────────────────── */
+.login-card {
+    background-color: rgb(255, 255, 255);
+    border-radius: 30px;
+    border-width: 3px;
+    border-color: rgb(0, 0, 0);
+    padding: 48px 48px 40px 48px;
+    max-width: 520px;
+    width: 88%;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+/* ── Title row ─────────────────────────────────────────────────────────── */
+.login-title-row {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: center;
+    margin-bottom: 8px;
+}
+
+.login-title {
+    font-size: 80px;
+    color: rgb(26, 26, 26);
+    -unity-font-definition: var(--font-anton);
+    letter-spacing: 3px;
+    -unity-text-align: middle-center;
+    margin-right: 12px;
+}
+
+.login-title-accent {
+    font-size: 80px;
+    color: rgb(230, 57, 70);
+    -unity-font-definition: var(--font-anton);
+    letter-spacing: 3px;
+    -unity-text-align: middle-center;
+}
+
+/* ── Subtitle ───────────────────────────────────────────────────────────── */
+.login-subtitle {
+    font-size: 20px;
+    color: rgb(136, 136, 136);
+    -unity-font-definition: var(--font-rajdhani);
+    letter-spacing: 4px;
+    -unity-text-align: middle-center;
+    margin-bottom: 40px;
+    white-space: normal;
+}
+
+/* ── Social buttons ─────────────────────────────────────────────────────── */
+.login-btn {
+    height: 80px;
+    background-color: rgb(255, 255, 255);
+    border-width: 3px;
+    border-color: rgb(0, 0, 0);
+    border-radius: 16px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    transition-property: scale;
+    transition-duration: 0.08s;
+    transition-timing-function: ease-out;
+}
+
+.login-btn:active {
+    scale: 0.95;
+}
+
+.login-btn > Label {
+    font-size: 24px;
+    color: rgb(26, 26, 26);
+    -unity-font-definition: var(--font-anton);
+    letter-spacing: 1px;
+}
+
+/* ── OR divider ─────────────────────────────────────────────────────────── */
+.login-divider {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.login-divider-line {
+    flex-grow: 1;
+    height: 1px;
+    background-color: rgb(224, 224, 224);
+}
+
+.login-divider-label {
+    font-size: 18px;
+    color: rgb(136, 136, 136);
+    -unity-font-definition: var(--font-rajdhani);
+    margin-left: 16px;
+    margin-right: 16px;
+    -unity-text-align: middle-center;
+}
+
+/* ── Guest ghost button ─────────────────────────────────────────────────── */
+.login-guest-btn {
+    background-color: transparent;
+    border-radius: 999px;
+    border-width: 2px;
+    border-color: rgb(204, 204, 204);
+    height: 64px;
+    align-items: center;
+    justify-content: center;
+    transition-property: scale;
+    transition-duration: 0.08s;
+    transition-timing-function: ease-out;
+}
+
+.login-guest-btn:active {
+    scale: 0.95;
+}
+
+.login-guest-btn > Label {
+    font-size: 24px;
+    color: rgb(120, 120, 120);
+    -unity-font-definition: var(--font-anton);
+    letter-spacing: 2px;
+}
+
+/* ── Terms label ────────────────────────────────────────────────────────── */
+.login-terms {
+    font-size: 14px;
+    color: rgb(170, 170, 170);
+    -unity-font-definition: var(--font-inter);
+    -unity-text-align: middle-center;
+    margin-top: 24px;
+    white-space: normal;
+}

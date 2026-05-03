@@ -1,87 +1,38 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <Style src="../Styles/theme.uss" />
-    <Style src="../Styles/screens.uss" />
-    <Style src="../Styles/components.uss" />
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/_KitchenClash/UI/Styles/SplashScreen.uss"/>
 
     <!--
-        SplashScreen — Hot Kitchen Design System v2.0
-        bg-deepest base, gold title, fire progress bar.
-        Named elements: loading-bar, lbl-loading-status, lbl-version
+        SplashScreen — Kitchen Clash Design System v3.0
+        White canvas, huge KITCHEN CLASH title, tagline, bottom progress strip.
+        Named elements: progress-fill, progress-icon, lbl-loading-status, lbl-version
     -->
-    <ui:VisualElement name="splash-root" class="screen-root" style="
-        background-color: #0D0D1A;
-        flex-direction: column;
-        align-items: stretch;
-        justify-content: space-between;
-    ">
+    <ui:VisualElement name="screen-container" class="screen-root splash-screen">
 
-        <!-- Top spacer -->
-        <ui:VisualElement style="flex-grow: 1;" />
-
-        <!-- Center branding -->
-        <ui:VisualElement style="
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-        ">
-            <!-- Fire emoji icon -->
-            <ui:Label text="🔥" style="
-                font-size: 80px;
-                -unity-text-align: middle-center;
-                margin-bottom: 12px;
-            " />
-
-            <!-- Game title -->
-            <ui:Label name="lbl-title" text="KITCHEN CLASH" style="
-                color: #FFD700;
-                font-size: 48px;
-                -unity-font-style: bold;
-                -unity-text-align: middle-center;
-                letter-spacing: 4px;
-            " />
-
-            <!-- Season subtitle -->
-            <ui:Label text="Season 1" style="
-                color: #5A5A80;
-                font-size: 16px;
-                -unity-text-align: middle-center;
-                margin-top: 6px;
-                letter-spacing: 2px;
-            " />
+        <!-- ── Branding: KITCHEN CLASH ── -->
+        <ui:VisualElement name="title-row" class="splash-title-row">
+            <ui:Label text="KITCHEN" class="splash-title-recipe" />
+            <ui:Label text="CLASH" class="splash-title-clash" />
         </ui:VisualElement>
 
-        <!-- Bottom spacer -->
-        <ui:VisualElement style="flex-grow: 1;" />
+        <!-- ── Tagline ── -->
+        <ui:Label text="COOK. COMPETE. CONQUER." class="splash-tagline" />
 
-        <!-- Bottom loading section -->
-        <ui:VisualElement style="
-            flex-direction: column;
-            align-items: stretch;
-            padding-bottom: 40px;
-        ">
-            <!-- Progress bar track -->
-            <ui:VisualElement name="loading-bar" class="progress-bar" style="
-                margin-left: 32px;
-                margin-right: 32px;
-                margin-bottom: 10px;
-            ">
-                <ui:VisualElement class="progress-bar__fill" style="width: 0%;" />
+        <!-- ── Loading wrapper (bottom-anchored) ── -->
+        <ui:VisualElement name="loading-wrapper" class="splash-loader-wrap">
+
+            <!-- Progress track + fill + node -->
+            <ui:VisualElement name="progress-track" class="splash-progress-track">
+                <ui:VisualElement name="progress-fill" class="splash-progress-fill">
+                    <ui:VisualElement name="progress-icon" class="splash-progress-node" />
+                </ui:VisualElement>
             </ui:VisualElement>
 
-            <!-- Loading status -->
-            <ui:Label name="lbl-loading-status" text="Loading..." style="
-                color: #5A5A80;
-                font-size: 13px;
-                -unity-text-align: middle-center;
-                margin-bottom: 6px;
-            " />
+            <!-- Status + percentage row -->
+            <ui:VisualElement name="bottom-info" class="splash-bottom-info">
+                <ui:Label name="lbl-loading-status" text="Loading assets..." class="splash-tip" />
+                <ui:Label name="lbl-version" text="0%" class="splash-percent" />
+            </ui:VisualElement>
 
-            <!-- Version label -->
-            <ui:Label name="lbl-version" text="v1.0.0" style="
-                color: #3A3A58;
-                font-size: 11px;
-                -unity-text-align: middle-center;
-            " />
         </ui:VisualElement>
 
     </ui:VisualElement>

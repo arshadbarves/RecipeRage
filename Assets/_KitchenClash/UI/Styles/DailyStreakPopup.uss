@@ -1,0 +1,125 @@
+@import url("project://database/Assets/_KitchenClash/UI/Styles/DesignSystem.uss");
+
+/* ── DailyStreakPopup ─────────────────────────────────────────────────────── */
+
+.streak-popup {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--clr-scrim);
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.streak-sheet {
+    background-color: var(--clr-canvas);
+    border-top-left-radius: 28px;
+    border-top-right-radius: 28px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-top-width: 4px;
+    border-left-width: 4px;
+    border-right-width: 4px;
+    border-bottom-width: 0;
+    border-color: var(--clr-ink);
+    padding-top: 32px;
+    padding-left: 40px;
+    padding-right: 40px;
+    padding-bottom: 56px;
+    align-items: center;
+    width: 100%;
+}
+
+.streak-sheet__handle {
+    width: 48px;
+    height: 6px;
+    background-color: rgb(208, 208, 208);
+    border-radius: 999px;
+    margin-bottom: 24px;
+    border-width: 0;
+}
+
+.streak-sheet__title {
+    font-size: 48px;
+    color: rgb(26, 26, 26);
+    -unity-font-definition: var(--font-anton);
+    letter-spacing: 2px;
+    -unity-text-align: middle-center;
+    margin-bottom: 8px;
+}
+
+.streak-sheet__day {
+    font-size: 28px;
+    color: var(--clr-primary-dark);
+    -unity-font-definition: var(--font-rajdhani);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    margin-bottom: 24px;
+}
+
+.streak-reward-box {
+    background-color: rgba(255, 209, 0, 0.12);
+    border-radius: 20px;
+    border-width: 3px;
+    border-color: var(--clr-primary);
+    padding: 24px 40px;
+    align-items: center;
+    margin-bottom: 24px;
+    width: 100%;
+}
+
+.streak-reward-icon {
+    font-size: 64px;
+    -unity-text-align: middle-center;
+    margin-bottom: 8px;
+}
+
+.streak-reward-desc {
+    font-size: 24px;
+    color: rgb(26, 26, 26);
+    -unity-font-definition: var(--font-anton);
+    -unity-text-align: middle-center;
+}
+
+.streak-reward-amount {
+    font-size: 48px;
+    color: var(--clr-primary-dark);
+    -unity-font-definition: var(--font-anton);
+    -unity-text-align: middle-center;
+    margin-top: 4px;
+}
+
+.streak-upcoming {
+    flex-direction: row;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.streak-mini-cell {
+    width: 52px;
+    height: 64px;
+    border-radius: 12px;
+    background-color: rgb(245, 245, 245);
+    border-width: 2px;
+    border-color: rgb(224, 224, 224);
+    align-items: center;
+    justify-content: center;
+    margin-left: 6px;
+    margin-right: 6px;
+    flex-direction: column;
+}
+
+.streak-mini-cell__num {
+    font-size: 14px;
+    color: rgb(170, 170, 170);
+    -unity-font-definition: var(--font-rajdhani);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+}
+
+.streak-mini-cell__icon {
+    font-size: 24px;
+    -unity-text-align: middle-center;
+}

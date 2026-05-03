@@ -1,0 +1,127 @@
+@import url("project://database/Assets/_KitchenClash/UI/Styles/DesignSystem.uss");
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SplashScreen.uss  —  Kitchen Clash Design System v3.0
+   White canvas, huge Anton title, bottom progress strip.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.splash-screen {
+    background-color: rgb(255, 255, 255);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+/* ── Title row ─────────────────────────────────────────────────────────── */
+.splash-title-row {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.splash-title-recipe {
+    font-size: 120px;
+    color: rgb(26, 26, 26);
+    -unity-font-definition: var(--font-anton);
+    letter-spacing: 4px;
+    -unity-text-align: middle-center;
+    margin-right: 20px;
+}
+
+.splash-title-clash {
+    font-size: 120px;
+    color: rgb(230, 57, 70);
+    -unity-font-definition: var(--font-anton);
+    letter-spacing: 4px;
+    -unity-text-align: middle-center;
+}
+
+/* ── Tagline ────────────────────────────────────────────────────────────── */
+.splash-tagline {
+    font-size: 20px;
+    color: rgb(136, 136, 136);
+    -unity-font-definition: var(--font-rajdhani);
+    letter-spacing: 8px;
+    -unity-text-align: middle-center;
+    margin-top: 8px;
+}
+
+/* ── Loading wrapper — anchored near bottom ─────────────────────────────── */
+.splash-loader-wrap {
+    position: absolute;
+    bottom: 10%;
+    width: 75%;
+    max-width: 900px;
+    align-self: center;
+    align-items: center;
+    flex-direction: column;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* ── Progress track ─────────────────────────────────────────────────────── */
+.splash-progress-track {
+    width: 100%;
+    height: 6px;
+    background-color: rgb(224, 224, 224);
+    border-radius: 999px;
+    overflow: visible;
+    flex-direction: row;
+    align-items: center;
+}
+
+.splash-progress-fill {
+    height: 100%;
+    width: 0;
+    background-color: rgb(26, 26, 26);
+    border-radius: 999px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    overflow: visible;
+}
+
+.splash-progress-node {
+    position: absolute;
+    top: -5px;
+    right: -7px;
+    width: 14px;
+    height: 14px;
+    background-color: rgb(255, 255, 255);
+    border-width: 3px;
+    border-color: rgb(0, 0, 0);
+    border-radius: 999px;
+}
+
+/* ── Bottom info row ────────────────────────────────────────────────────── */
+.splash-bottom-info {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 24px;
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+.splash-tip {
+    font-size: 22px;
+    color: rgb(217, 119, 6);
+    -unity-font-definition: var(--font-anton);
+    max-width: 80%;
+    white-space: normal;
+}
+
+.splash-percent {
+    font-size: 40px;
+    color: rgb(26, 26, 26);
+    -unity-font-definition: var(--font-anton);
+    letter-spacing: 3px;
+    -unity-text-align: middle-right;
+    flex-shrink: 0;
+}

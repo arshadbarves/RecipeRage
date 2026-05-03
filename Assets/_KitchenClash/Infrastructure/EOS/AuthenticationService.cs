@@ -89,8 +89,9 @@ namespace KitchenClash.Infrastructure.EOS
         public async Task<AuthResult> LoginWithGoogleAsync()
         {
 #if UNITY_ANDROID
-            // TODO: GoogleSignIn.DefaultInstance.SignIn() -> idToken
-            // Then EOS Connect.Login(ExternalCredentialType.GoogleIdToken, token)
+            // REQUIRES: Google Sign-In Unity SDK (com.google.signin).
+            //           GoogleSignIn.DefaultInstance.SignIn() → idToken
+            //           → EOS Connect.Login(ExternalCredentialType.GoogleIdToken, token)
 #endif
             return await Task.FromResult(AuthResult.Failed("Google login not yet implemented"));
         }
@@ -98,8 +99,9 @@ namespace KitchenClash.Infrastructure.EOS
         public async Task<AuthResult> LoginWithFacebookAsync()
         {
 #if UNITY_ANDROID || UNITY_IOS
-            // TODO: Facebook SDK -> access token
-            // Then EOS Connect.Login(ExternalCredentialType.FacebookAccessToken, token)
+            // REQUIRES: Facebook SDK for Unity (com.facebook.sdk).
+            //           FB.LogInWithReadPermissions() → accessToken
+            //           → EOS Connect.Login(ExternalCredentialType.FacebookAccessToken, token)
 #endif
             return await Task.FromResult(AuthResult.Failed("Facebook login not yet implemented"));
         }
@@ -107,8 +109,9 @@ namespace KitchenClash.Infrastructure.EOS
         public async Task<AuthResult> LoginWithAppleAsync()
         {
 #if UNITY_IOS
-            // TODO: Apple Sign-In -> idToken
-            // Then EOS Connect.Login(ExternalCredentialType.AppleIdToken, token)
+            // REQUIRES: Apple Sign-In Unity plugin (e.g. com.lupidan.apple-signin-unity).
+            //           AppleAuthManager.LoginWithAppleId() → idToken
+            //           → EOS Connect.Login(ExternalCredentialType.AppleIdToken, token)
 #endif
             return await Task.FromResult(AuthResult.Failed("Apple login not yet implemented"));
         }
@@ -116,7 +119,8 @@ namespace KitchenClash.Infrastructure.EOS
         public async Task LinkToGoogleAsync()
         {
 #if UNITY_ANDROID
-            // TODO: EOS Connect.LinkAccount(DeviceId PUID -> Google PUID)
+            // REQUIRES: Google Sign-In SDK.
+            //           EOS Connect.LinkAccount(DeviceId PUID → Google PUID)
 #endif
             await Task.CompletedTask;
         }

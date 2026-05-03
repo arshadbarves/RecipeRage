@@ -120,6 +120,9 @@ public class RootLifetimeScope : LifetimeScope
         builder.Register<KitchenClash.Infrastructure.States.GameplayState>(Lifetime.Transient);
         builder.Register<KitchenClash.Infrastructure.States.GameOverState>(Lifetime.Transient);
 
+        // ── Connectivity overlay (driven by IConnectivityService + IUIService, both Root singletons) ──
+        builder.RegisterEntryPoint<KitchenClash.Presentation.Overlays.ConnectivityOverlayPresenter>();
+
         // ── Entry point ──
         builder.RegisterEntryPoint<GameBootstrapper>();
     }

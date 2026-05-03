@@ -1,0 +1,49 @@
+@import url("project://database/Assets/_KitchenClash/UI/Styles/DesignSystem.uss");
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   NoInternetScreen.uss  —  Kitchen Clash Design System v3.0
+   White canvas, centered column, satellite emoji, Anton title, retry CTA.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.no-internet-screen {
+    background-color: rgb(255, 255, 255);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+/* ── Icon ───────────────────────────────────────────────────────────────── */
+.no-internet-icon {
+    font-size: 96px;
+    -unity-text-align: middle-center;
+    margin-bottom: 24px;
+}
+
+/* ── Title ──────────────────────────────────────────────────────────────── */
+.no-internet-title {
+    font-size: 64px;
+    color: rgb(26, 26, 26);
+    -unity-font-definition: var(--font-anton);
+    letter-spacing: 3px;
+    -unity-text-align: middle-center;
+}
+
+/* ── Message body ───────────────────────────────────────────────────────── */
+.no-internet-msg {
+    font-size: 24px;
+    color: rgb(85, 85, 85);
+    -unity-font-definition: var(--font-rajdhani);
+    -unity-text-align: middle-center;
+    white-space: normal;
+    max-width: 480px;
+    margin-top: 16px;
+    margin-bottom: 48px;
+}
+
+/* ── Retry button ───────────────────────────────────────────────────────── */
+.no-internet-retry-btn {
+    align-self: center;
+    min-width: 280px;
+}

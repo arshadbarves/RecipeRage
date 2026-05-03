@@ -1,30 +1,45 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <Style src="../Styles/theme.uss" />
-    <Style src="../Styles/screens.uss" />
-    <Style src="../Styles/components.uss" />
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/_KitchenClash/UI/Styles/MatchmakingScreen.uss"/>
+    <ui:VisualElement name="screen-container" class="screen-root matchmaking-screen">
 
-    <ui:VisualElement name="matchmaking-root" class="screen-root bg-deep layout-center">
+        <!-- Header -->
+        <ui:VisualElement class="matchmaking-header">
+            <ui:VisualElement style="flex-direction:column;">
+                <ui:Label name="ModeLabel" text="QUICK MATCH" class="matchmaking-mode-label"/>
+                <ui:Label name="TitleLabel" text="MATCHMAKING" class="matchmaking-title"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
 
-        <!-- ── PULSING SEARCH ICON ── -->
-        <ui:Label name="icon-searching" text="🍳" style="font-size: 72px; -unity-text-align: middle-center; margin-bottom: 16px;" />
+        <!-- Center -->
+        <ui:VisualElement class="matchmaking-center">
 
-        <!-- ── TITLE ── -->
-        <ui:Label name="lbl-searching" text="Finding Match..." class="text-bold"
-            style="font-size: 24px; color: white; -unity-text-align: middle-center; margin-bottom: 8px;" />
+            <!-- Ring -->
+            <ui:VisualElement class="matchmaking-ring">
+                <ui:VisualElement name="PulseWave" class="matchmaking-pulse"/>
+                <ui:VisualElement class="matchmaking-avatar">
+                    <ui:Label name="icon-searching" text="🍳" class="matchmaking-avatar__icon"/>
+                </ui:VisualElement>
+            </ui:VisualElement>
 
-        <!-- ── MATCH TIMER ── -->
-        <ui:Label name="lbl-mm-timer" text="0:00" class="clr-cyan text-bold"
-            style="font-size: 32px; -unity-text-align: middle-center; margin-bottom: 12px;" />
+            <!-- Status -->
+            <ui:VisualElement class="matchmaking-status">
+                <ui:VisualElement class="matchmaking-count-row">
+                    <ui:Label name="CurrentCountLabel" text="1" class="matchmaking-count-current"/>
+                    <ui:Label text="/" class="matchmaking-count-sep"/>
+                    <ui:Label name="MaxCountLabel" text="10" class="matchmaking-count-max"/>
+                </ui:VisualElement>
+                <ui:Label name="StatusSubLabel" text="PLAYERS FOUND" class="matchmaking-count-sub"/>
+                <ui:Label name="lbl-mm-timer" text="ESTIMATED TIME: 00:45" class="matchmaking-timer"/>
+            </ui:VisualElement>
 
-        <!-- ── PLAYER COUNT ── -->
-        <ui:Label name="lbl-player-count" text="Players in queue: 124" class="text-muted"
-            style="-unity-text-align: middle-center; margin-bottom: 8px;" />
+        </ui:VisualElement>
 
-        <!-- ── SPACER ── -->
-        <ui:VisualElement style="height: 32px; flex-shrink: 0;" />
-
-        <!-- ── CANCEL ── -->
-        <ui:Button name="btn-cancel" text="CANCEL" class="btn-ghost" />
+        <!-- Footer -->
+        <ui:VisualElement class="matchmaking-footer">
+            <ui:Button name="btn-cancel" class="btn-ghost">
+                <ui:Label text="CANCEL SEARCH" class="btn-ghost__label"/>
+            </ui:Button>
+        </ui:VisualElement>
 
     </ui:VisualElement>
 </ui:UXML>

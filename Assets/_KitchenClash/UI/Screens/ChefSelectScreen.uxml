@@ -1,107 +1,78 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <Style src="../Styles/theme.uss" />
-    <Style src="../Styles/screens.uss" />
-    <Style src="../Styles/components.uss" />
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/_KitchenClash/UI/Styles/ChefSelectScreen.uss"/>
 
-    <ui:VisualElement name="chef-select-root" class="screen-root layout-screen">
+    <ui:VisualElement name="screen-container" class="screen-root chef-select-screen">
 
-        <!-- ── Top Bar ──────────────────────────────────────────────── -->
+        <!-- ── Top Bar ──────────────────────────────────────────────────── -->
         <ui:VisualElement class="top-bar">
-            <ui:VisualElement class="top-bar__left">
-                <ui:Button name="btn-back" class="btn-icon">
-                    <ui:Label text="‹" class="btn-icon__label" />
-                </ui:Button>
-            </ui:VisualElement>
-
-            <ui:Label text="SELECT CHEF" class="top-bar__title" />
-
-            <ui:VisualElement class="top-bar__right">
-                <ui:VisualElement class="currency-badge currency-badge--gems">
-                    <ui:Label text="💎" class="currency-badge__icon" />
-                    <ui:Label name="lbl-gems" text="250" class="currency-badge__value" />
-                </ui:VisualElement>
+            <ui:Button name="btn-back" class="btn-back">
+                <ui:Label text="&lt; BACK" class="btn-back__label"/>
+            </ui:Button>
+            <ui:Label text="SELECT CHEF" class="top-bar__title"/>
+            <!-- Gems wallet pill -->
+            <ui:VisualElement class="wallet-pill">
+                <ui:Label text="💎" class="wallet-pill__icon"/>
+                <ui:Label name="lbl-gems" text="250" class="wallet-pill__value"/>
             </ui:VisualElement>
         </ui:VisualElement>
 
-        <!-- ── Scroll Content ───────────────────────────────────────── -->
-        <ui:ScrollView class="layout-content">
+        <!-- ── Chef Preview Banner ──────────────────────────────────────── -->
+        <ui:VisualElement name="chef-preview-area" class="chef-preview-area">
+            <ui:Label name="lbl-preview-name" text="CHEF ROSA" class="chef-preview__name"/>
+            <ui:Label name="lbl-preview-level" text="LEVEL 10" class="chef-preview__level"/>
+        </ui:VisualElement>
 
-            <!-- Chef Preview Area -->
-            <ui:VisualElement name="chef-preview-area" class="card"
-                style="height: 260px; align-items: center; justify-content: center;
-                       margin: 16px 0; border-radius: 30px;">
-                <!-- Portrait placeholder — runtime replaces with actual chef sprite -->
-                <ui:VisualElement style="width: 160px; height: 200px;
-                                         background-color: var(--bg-surface);
-                                         border-radius: var(--r-xl);
-                                         border-width: 3px;
-                                         border-color: var(--border-ink);" />
+        <!-- ── Chef Grid ────────────────────────────────────────────────── -->
+        <ui:ScrollView name="chef-grid-scroll" class="chef-grid">
+
+            <!-- Card 0 — Unlocked -->
+            <ui:VisualElement name="chef-card-0" class="chef-slot chef-slot--selected">
+                <ui:VisualElement class="chef-slot__portrait"/>
+                <ui:Label text="ROSA" class="chef-slot__name"/>
             </ui:VisualElement>
 
-            <!-- Preview Name & Level (below the portrait card) -->
-            <ui:Label name="lbl-preview-name" text="Chef Rosa"
-                style="font-size: 22px; -unity-font-style: bold; color: var(--txt-primary);
-                       -unity-text-align: middle-center; margin-top: 8px;" />
-            <ui:Label name="lbl-preview-level" text="Lv. 1"
-                style="font-size: 14px; color: var(--clr-fire-light);
-                       -unity-text-align: middle-center; margin-bottom: 12px;" />
-
-            <!-- Chef Card Grid -->
-            <ui:VisualElement class="layout-grid" style="margin-bottom: 16px;">
-
-                <!-- Card 0 — Unlocked -->
-                <ui:VisualElement name="chef-card-0" class="chef-card-item">
-                    <ui:VisualElement class="chef-card-item__portrait" />
-                    <ui:Label text="Chef Rosa" class="chef-card-item__name" />
-                </ui:VisualElement>
-
-                <!-- Card 1 — Unlocked -->
-                <ui:VisualElement name="chef-card-1" class="chef-card-item">
-                    <ui:VisualElement class="chef-card-item__portrait" />
-                    <ui:Label text="Chef Marco" class="chef-card-item__name" />
-                </ui:VisualElement>
-
-                <!-- Card 2 — Unlocked -->
-                <ui:VisualElement name="chef-card-2" class="chef-card-item">
-                    <ui:VisualElement class="chef-card-item__portrait" />
-                    <ui:Label text="Chef Yuki" class="chef-card-item__name" />
-                </ui:VisualElement>
-
-                <!-- Card 3 — Locked -->
-                <ui:VisualElement name="chef-card-3" class="chef-card-item chef-card-item--locked">
-                    <ui:VisualElement class="chef-card-item__portrait" />
-                    <ui:Label text="Chef Amara" class="chef-card-item__name" />
-                    <ui:Label text="🔒" class="chef-card-item__lock" />
-                </ui:VisualElement>
-
-                <!-- Card 4 — Locked -->
-                <ui:VisualElement name="chef-card-4" class="chef-card-item chef-card-item--locked">
-                    <ui:VisualElement class="chef-card-item__portrait" />
-                    <ui:Label text="Chef Bjorn" class="chef-card-item__name" />
-                    <ui:Label text="🔒" class="chef-card-item__lock" />
-                </ui:VisualElement>
-
-                <!-- Card 5 — Locked -->
-                <ui:VisualElement name="chef-card-5" class="chef-card-item chef-card-item--locked">
-                    <ui:VisualElement class="chef-card-item__portrait" />
-                    <ui:Label text="Chef Priya" class="chef-card-item__name" />
-                    <ui:Label text="🔒" class="chef-card-item__lock" />
-                </ui:VisualElement>
-
+            <!-- Card 1 — Unlocked -->
+            <ui:VisualElement name="chef-card-1" class="chef-slot">
+                <ui:VisualElement class="chef-slot__portrait"/>
+                <ui:Label text="MARCO" class="chef-slot__name"/>
             </ui:VisualElement>
+
+            <!-- Card 2 — Unlocked -->
+            <ui:VisualElement name="chef-card-2" class="chef-slot">
+                <ui:VisualElement class="chef-slot__portrait"/>
+                <ui:Label text="YUKI" class="chef-slot__name"/>
+            </ui:VisualElement>
+
+            <!-- Card 3 — Locked -->
+            <ui:VisualElement name="chef-card-3" class="chef-slot chef-slot--locked">
+                <ui:VisualElement class="chef-slot__portrait"/>
+                <ui:Label text="PIERRE" class="chef-slot__name"/>
+                <ui:Label text="🔒" class="chef-slot__lock"/>
+            </ui:VisualElement>
+
+            <!-- Card 4 — Locked -->
+            <ui:VisualElement name="chef-card-4" class="chef-slot chef-slot--locked">
+                <ui:VisualElement class="chef-slot__portrait"/>
+                <ui:Label text="SVEN" class="chef-slot__name"/>
+                <ui:Label text="🔒" class="chef-slot__lock"/>
+            </ui:VisualElement>
+
+            <!-- Card 5 — Locked -->
+            <ui:VisualElement name="chef-card-5" class="chef-slot chef-slot--locked">
+                <ui:VisualElement class="chef-slot__portrait"/>
+                <ui:Label text="LILA" class="chef-slot__name"/>
+                <ui:Label text="🔒" class="chef-slot__lock"/>
+            </ui:VisualElement>
+
         </ui:ScrollView>
 
-        <!-- ── Bottom Action Bar ────────────────────────────────────── -->
-        <ui:VisualElement class="layout-row layout-row--spaced"
-            style="padding: 12px 16px; background-color: var(--bg-deepest);
-                   border-top-width: 2px; border-color: var(--border-panel);">
-            <ui:Button name="btn-details" class="btn-secondary"
-                style="flex-grow: 1; margin-right: 8px;">
-                <ui:Label text="Details" class="btn-secondary__label" />
+        <!-- ── Bottom Action Bar ────────────────────────────────────────── -->
+        <ui:VisualElement class="chef-bottom-bar">
+            <ui:Button name="btn-details" class="btn-secondary">
+                <ui:Label text="DETAILS" class="btn-secondary__label"/>
             </ui:Button>
-            <ui:Button name="btn-select" class="btn-primary"
-                style="flex-grow: 2;">
-                <ui:Label text="SELECT" class="btn-primary__label" />
+            <ui:Button name="btn-select" class="btn-primary">
+                <ui:Label text="SELECT" class="btn-primary__label"/>
             </ui:Button>
         </ui:VisualElement>
 

@@ -1,0 +1,119 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   SeasonPassScreen.uss  —  Kitchen Clash Design System v3.0
+   ═══════════════════════════════════════════════════════════════════════════ */
+@import url("project://database/Assets/_KitchenClash/UI/Styles/DesignSystem.uss");
+
+/* ─── Screen root ─────────────────────────────────────────────────────────── */
+.season-pass-screen {
+    background-color: rgb(255, 255, 255);
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+}
+
+/* ─── Progress card ───────────────────────────────────────────────────────── */
+.season-progress-card {
+    margin-left: 40px;
+    margin-right: 40px;
+    margin-top: 0;
+    margin-bottom: 16px;
+    padding: 24px;
+    background-color: rgb(255, 255, 255);
+    border-radius: 20px;
+    border-width: 3px;
+    border-color: rgb(26, 26, 26);
+    flex-shrink: 0;
+}
+
+.season-tier-label {
+    font-size: 28px;
+    color: rgb(26, 26, 26);
+    -unity-font-definition: var(--font-anton);
+    margin-bottom: 8px;
+}
+
+/* Gold progress fill variant */
+.progress-fill--gold {
+    height: 100%;
+    background-color: rgb(255, 209, 0);
+    border-radius: 999px;
+    width: 80%;
+    transition-property: width;
+    transition-duration: 0.25s;
+}
+
+/* ─── Free / Premium row ──────────────────────────────────────────────────── */
+.season-track-labels {
+    flex-direction: row;
+    padding-left: 40px;
+    padding-right: 40px;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    flex-shrink: 0;
+}
+
+/* ─── Horizontal reward track ─────────────────────────────────────────────── */
+.season-reward-track {
+    height: 180px;
+    flex-direction: row;
+    align-items: center;
+    padding-left: 40px;
+    padding-right: 40px;
+    flex-shrink: 0;
+}
+
+/* ─── Tier item ───────────────────────────────────────────────────────────── */
+.tier-item {
+    width: 80px;
+    align-items: center;
+    margin-left: 8px;
+    margin-right: 8px;
+    flex-shrink: 0;
+    flex-direction: column;
+}
+
+.tier-item__badge {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    background-color: rgb(245, 245, 245);
+    border-width: 2px;
+    border-color: rgb(224, 224, 224);
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 6px;
+}
+
+.tier-item__badge--unlocked {
+    background-color: rgba(255, 209, 0, 0.2);
+    border-color: var(--clr-primary);
+    border-width: 3px;
+}
+
+.tier-item__icon {
+    font-size: 32px;
+    -unity-text-align: middle-center;
+}
+
+.tier-item__num {
+    font-size: 16px;
+    color: rgb(170, 170, 170);
+    -unity-font-definition: var(--font-rajdhani);
+    -unity-text-align: middle-center;
+}
+
+/* ─── Buy button ──────────────────────────────────────────────────────────── */
+.season-buy-btn {
+    margin-left: 40px;
+    margin-right: 40px;
+    margin-bottom: 24px;
+    height: 100px;
+    flex-shrink: 0;
+}
+
+.season-buy-label {
+    font-size: 40px;
+    color: rgb(26, 26, 26);
+    -unity-font-definition: var(--font-anton);
+    letter-spacing: 2px;
+}

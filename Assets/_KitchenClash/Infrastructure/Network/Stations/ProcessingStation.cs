@@ -392,7 +392,10 @@ namespace KitchenClash.Infrastructure.Network.Stations
             // Update progress bar
             if (_progressBar != null)
             {
-                // TODO: Update progress bar UI
+                // Drive a Unity UI Image fill (radial or horizontal) if present on the prefab.
+                // The progress bar prefab is expected to have a child Image with fillAmount.
+                var fill = _progressBar.GetComponentInChildren<UnityEngine.UI.Image>();
+                if (fill != null) fill.fillAmount = newValue;
             }
         }
     }

@@ -128,7 +128,7 @@ namespace KitchenClash.Presentation.Screens
 
         private void OnChangeNameClicked()
         {
-            // TODO: Show username popup
+            UIService?.PushModal<Overlays.UsernamePopup>();
         }
 
         private void OnBackClicked() => UIService?.GoBack();

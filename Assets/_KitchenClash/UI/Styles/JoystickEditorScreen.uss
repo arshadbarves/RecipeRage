@@ -1,0 +1,70 @@
+@import url("project://database/Assets/_KitchenClash/UI/Styles/DesignSystem.uss");
+
+/* ── JoystickEditorScreen ─────────────────────────────────────────────────── */
+
+.joystick-editor-screen {
+    background-color: var(--clr-canvas);
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+}
+
+.joystick-preview {
+    flex-grow: 1;
+    position: relative;
+    background-color: rgb(245, 245, 245);
+    border-bottom-width: 3px;
+    border-bottom-color: var(--clr-ink);
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+}
+
+.joystick-handle {
+    width: 120px;
+    height: 120px;
+    border-radius: 60px;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-width: 4px;
+    border-color: var(--clr-ink);
+    position: absolute;
+    align-items: center;
+    justify-content: center;
+}
+
+.joystick-handle__inner {
+    width: 50px;
+    height: 50px;
+    border-radius: 25px;
+    background-color: rgba(0, 0, 0, 0.25);
+    border-width: 3px;
+    border-color: var(--clr-ink);
+}
+
+.joystick-handle--left {
+    bottom: 40px;
+    left: 40px;
+}
+
+.joystick-handle--right {
+    bottom: 40px;
+    right: 40px;
+}
+
+.joystick-controls {
+    padding: 24px 40px;
+    border-top-width: 3px;
+    border-top-color: var(--clr-ink);
+    border-left-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    background-color: var(--clr-canvas);
+    flex-shrink: 0;
+}
+
+.joystick-control-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}

@@ -1,0 +1,97 @@
+/* UsernamePopup.uss */
+@import url("project://database/Assets/_KitchenClash/UI/Styles/DesignSystem.uss");
+
+/* ── Full-screen scrim backdrop ─────────────────────────────────────────── */
+.username-popup {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--clr-scrim);
+    align-items: center;
+    justify-content: center;
+}
+
+/* ── Modal card ────────────────────────────────────────────────────────── */
+.username-card {
+    background-color: rgb(255, 255, 255);
+    border-radius: 28px;
+    border-width: 4px;
+    border-color: rgb(0, 0, 0);
+    padding: 40px;
+    min-width: 420px;
+    width: 88%;
+    max-width: 560px;
+}
+
+/* ── Title ─────────────────────────────────────────────────────────────── */
+.username-card__title {
+    font-size: 56px;
+    color: rgb(26, 26, 26);
+    -unity-font-definition: var(--font-anton);
+    -unity-text-align: middle-center;
+    margin-bottom: 8px;
+}
+
+/* ── Subtitle ──────────────────────────────────────────────────────────── */
+.username-card__subtitle {
+    font-size: 18px;
+    color: rgb(136, 136, 136);
+    -unity-font-definition: var(--font-rajdhani);
+    -unity-text-align: middle-center;
+    margin-bottom: 32px;
+    white-space: normal;
+}
+
+/* ── Input label ───────────────────────────────────────────────────────── */
+.username-input-label {
+    font-size: 16px;
+    color: rgb(136, 136, 136);
+    -unity-font-definition: var(--font-rajdhani);
+    -unity-font-style: bold;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+}
+
+/* ── Text input field ──────────────────────────────────────────────────── */
+.username-input {
+    height: 80px;
+    border-radius: 16px;
+    border-width: 3px;
+    border-color: rgb(0, 0, 0);
+    font-size: 28px;
+    -unity-font-definition: var(--font-anton);
+    background-color: rgb(255, 255, 255);
+    padding: 0 20px;
+}
+.username-input > .unity-text-field__input {
+    height: 80px;
+    border-radius: 16px;
+    border-width: 3px;
+    border-color: rgb(0, 0, 0);
+    font-size: 28px;
+    -unity-font-definition: var(--font-anton);
+    background-color: rgb(255, 255, 255);
+    padding: 0 20px;
+}
+.username-input > .unity-text-field__input:focus {
+    border-color: rgb(255, 209, 0);
+}
+
+/* ── Character counter ─────────────────────────────────────────────────── */
+.username-char-count {
+    font-size: 16px;
+    color: rgb(170, 170, 170);
+    -unity-font-definition: var(--font-rajdhani);
+    -unity-text-align: middle-right;
+    margin-top: 8px;
+    margin-bottom: 24px;
+}
+
+/* ── Action row ────────────────────────────────────────────────────────── */
+.username-actions {
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 8px;
+}

@@ -1,135 +1,79 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <Style src="../Styles/theme.uss" />
-    <Style src="../Styles/screens.uss" />
-    <Style src="../Styles/components.uss" />
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/_KitchenClash/UI/Styles/ProfileScreen.uss"/>
+    <ui:VisualElement name="screen-container" class="screen-root profile-screen">
 
-    <ui:VisualElement name="profile-root" class="screen-root layout-screen">
-
-        <!-- Top Bar -->
+        <!-- ── Top Bar ──────────────────────────────────────────────────── -->
         <ui:VisualElement class="top-bar">
-            <ui:VisualElement class="top-bar__left">
-                <ui:Button name="btn-back" class="btn-icon">
-                    <ui:Label text="←" class="btn-icon__label" />
-                </ui:Button>
-            </ui:VisualElement>
+            <ui:Button class="btn-back">
+                <ui:Label text="&lt; BACK" class="btn-back__label" />
+            </ui:Button>
             <ui:Label text="PROFILE" class="top-bar__title" />
-            <ui:VisualElement class="top-bar__right" style="width: 48px;" />
+            <ui:VisualElement style="width: 140px;" />
         </ui:VisualElement>
 
-        <!-- Scrollable Content -->
-        <ui:ScrollView class="layout-content" mode="Vertical">
+        <!-- ── Scrollable body ──────────────────────────────────────────── -->
+        <ui:ScrollView mode="Vertical" style="flex-grow: 1;">
 
-            <!-- ── Avatar Area ───────────────────────────────────── -->
-            <ui:VisualElement style="align-items: center; padding-top: 24px; padding-bottom: 16px;">
-                <!-- Avatar circle 96×96 -->
-                <ui:VisualElement name="avatar-portrait"
-                    style="width: 96px; height: 96px;
-                           border-radius: 999px;
-                           background-color: var(--bg-surface);
-                           border-width: var(--border-ink-w);
-                           border-color: var(--border-ink);
-                           margin-bottom: 12px;" />
-
-                <ui:Label name="lbl-player-name" text="ChefMaster99"
-                    style="color: var(--txt-primary); font-size: var(--fs-22);
-                           -unity-font-style: bold; -unity-text-align: middle-center;" />
-
-                <ui:Label name="lbl-player-level" text="Level 12"
-                    style="color: var(--clr-fire-light); font-size: var(--fs-14);
-                           -unity-text-align: middle-center; margin-top: 4px;" />
-            </ui:VisualElement>
-
-            <!-- ── XP Bar ─────────────────────────────────────────── -->
-            <ui:VisualElement class="xp-bar"
-                              style="margin-left: 16px; margin-right: 16px; margin-bottom: 8px;">
-                <ui:VisualElement class="xp-bar__header">
-                    <ui:Label text="XP" class="xp-bar__label" />
-                    <ui:Label name="lbl-xp" text="650 / 1000 XP" class="xp-bar__value" />
+            <!-- Player hero card -->
+            <ui:VisualElement class="profile-player-card">
+                <!-- Avatar + level badge -->
+                <ui:VisualElement class="profile-avatar-wrap">
+                    <ui:VisualElement name="avatar-portrait" class="profile-avatar" />
+                    <ui:VisualElement class="profile-level-badge">
+                        <ui:Label name="lbl-player-level" text="12" class="profile-level-badge__text" />
+                    </ui:VisualElement>
                 </ui:VisualElement>
-                <ui:VisualElement class="bar-track">
-                    <ui:VisualElement name="xp-fill" class="bar-fill bar-fill--xp"
-                                      style="width: 65%;" />
+                <!-- Name + tag -->
+                <ui:VisualElement class="profile-player-info">
+                    <ui:Label name="lbl-player-name" text="CHEF ARSHAD" class="profile-player-name" />
+                    <ui:Label name="player-tag" text="#KC2024" class="profile-player-tag" />
                 </ui:VisualElement>
             </ui:VisualElement>
 
-            <ui:VisualElement class="divider" />
+            <!-- Stats grid — 6 stat cards, 2 per row via flex-wrap -->
+            <ui:VisualElement class="profile-stats-grid">
 
-            <!-- ── Stats Grid ─────────────────────────────────────── -->
-            <ui:VisualElement class="layout-grid">
-
-                <ui:VisualElement class="card"
-                    style="width: 44%; margin: 6px; align-items: center; padding: 16px 8px;">
-                    <ui:Label name="lbl-matches" text="342"
-                        style="color: var(--clr-cyan); font-size: var(--fs-28);
-                               -unity-font-style: bold; -unity-text-align: middle-center;" />
-                    <ui:Label text="Matches"
-                        style="color: var(--txt-secondary); font-size: var(--fs-12);
-                               -unity-text-align: middle-center; margin-top: 4px;" />
+                <ui:VisualElement name="stat-card-1" class="stat-card" style="width: 42%;">
+                    <ui:Label name="lbl-matches" text="0" class="stat-card__value" />
+                    <ui:Label text="MATCHES" class="stat-card__label" />
                 </ui:VisualElement>
 
-                <ui:VisualElement class="card"
-                    style="width: 44%; margin: 6px; align-items: center; padding: 16px 8px;">
-                    <ui:Label name="lbl-wins" text="198"
-                        style="color: var(--clr-teal); font-size: var(--fs-28);
-                               -unity-font-style: bold; -unity-text-align: middle-center;" />
-                    <ui:Label text="Wins"
-                        style="color: var(--txt-secondary); font-size: var(--fs-12);
-                               -unity-text-align: middle-center; margin-top: 4px;" />
+                <ui:VisualElement name="stat-card-2" class="stat-card" style="width: 42%;">
+                    <ui:Label name="lbl-wins" text="0" class="stat-card__value" />
+                    <ui:Label text="WINS" class="stat-card__label" />
                 </ui:VisualElement>
 
-                <ui:VisualElement class="card"
-                    style="width: 44%; margin: 6px; align-items: center; padding: 16px 8px;">
-                    <ui:Label name="lbl-losses" text="144"
-                        style="color: var(--clr-danger); font-size: var(--fs-28);
-                               -unity-font-style: bold; -unity-text-align: middle-center;" />
-                    <ui:Label text="Losses"
-                        style="color: var(--txt-secondary); font-size: var(--fs-12);
-                               -unity-text-align: middle-center; margin-top: 4px;" />
+                <ui:VisualElement name="stat-card-3" class="stat-card" style="width: 42%;">
+                    <ui:Label name="lbl-losses" text="0" class="stat-card__value" />
+                    <ui:Label text="LOSSES" class="stat-card__label" />
                 </ui:VisualElement>
 
-                <ui:VisualElement class="card"
-                    style="width: 44%; margin: 6px; align-items: center; padding: 16px 8px;">
-                    <ui:Label name="lbl-winrate" text="57.9%"
-                        style="color: var(--clr-gold); font-size: var(--fs-28);
-                               -unity-font-style: bold; -unity-text-align: middle-center;" />
-                    <ui:Label text="Win Rate"
-                        style="color: var(--txt-secondary); font-size: var(--fs-12);
-                               -unity-text-align: middle-center; margin-top: 4px;" />
+                <ui:VisualElement name="stat-card-4" class="stat-card" style="width: 42%;">
+                    <ui:Label name="lbl-winrate" text="0%" class="stat-card__value" />
+                    <ui:Label text="WIN RATE" class="stat-card__label" />
+                </ui:VisualElement>
+
+                <ui:VisualElement name="stat-card-5" class="stat-card" style="width: 42%;">
+                    <ui:Label name="lbl-trophies" text="850" class="stat-card__value" />
+                    <ui:Label text="TROPHIES" class="stat-card__label" />
+                </ui:VisualElement>
+
+                <ui:VisualElement name="stat-card-6" class="stat-card" style="width: 42%;">
+                    <ui:Label name="lbl-rank" text="BRONZE" class="stat-card__value" />
+                    <ui:Label text="RANK" class="stat-card__label" />
                 </ui:VisualElement>
 
             </ui:VisualElement>
 
-            <ui:VisualElement class="divider" />
-
-            <!-- ── Stat Rows ──────────────────────────────────────── -->
-            <ui:VisualElement style="padding: 0 16px;">
-
-                <!-- Favorite Chef -->
-                <ui:VisualElement class="stat-row">
-                    <ui:Label text="Favorite Chef" class="stat-row__label" />
-                    <ui:Label name="lbl-fav-chef" text="Chef Rosa"
-                              class="stat-row__value" />
-                </ui:VisualElement>
-
-                <!-- Rank -->
-                <ui:VisualElement class="stat-row">
-                    <ui:Label text="Rank" class="stat-row__label" />
-                    <ui:Label name="lbl-rank" text="Gold III"
-                              class="stat-row__value stat-row__value--ranked" />
-                </ui:VisualElement>
-
-                <!-- Trophies -->
-                <ui:VisualElement class="stat-row">
-                    <ui:Label text="Trophies" class="stat-row__label" />
-                    <ui:Label name="lbl-trophies" text="🏆  4820"
-                              class="stat-row__value stat-row__value--gold" />
-                </ui:VisualElement>
-
+            <!-- Favourite chef row -->
+            <ui:VisualElement class="profile-streak-card">
+                <ui:Label text="FAV CHEF" class="section-label" />
+                <ui:Label name="lbl-fav-chef" text="ROSA" class="profile-streak-card__value" />
             </ui:VisualElement>
 
-            <!-- bottom breathing room -->
-            <ui:VisualElement style="height: 24px;" />
+            <ui:VisualElement class="spacer--lg" />
 
         </ui:ScrollView>
+
     </ui:VisualElement>
 </ui:UXML>

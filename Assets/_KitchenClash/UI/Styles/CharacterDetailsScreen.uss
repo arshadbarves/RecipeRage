@@ -1,0 +1,186 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   CharacterDetailsScreen.uss  —  Kitchen Clash Design System v3.0
+   ═══════════════════════════════════════════════════════════════════════════ */
+@import url("project://database/Assets/_KitchenClash/UI/Styles/DesignSystem.uss");
+
+/* ─── Screen root ─────────────────────────────────────────────────────────── */
+.char-details-screen {
+    background-color: rgb(255, 255, 255);
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+}
+
+/* ─── Left panel ──────────────────────────────────────────────────────────── */
+.char-details-left {
+    width: 340px;
+    flex-direction: column;
+    padding: 40px;
+    background-color: rgb(255, 255, 255);
+    border-right-width: 2px;
+    border-right-color: rgb(224, 224, 224);
+    border-top-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+    justify-content: flex-start;
+    flex-shrink: 0;
+}
+
+/* ─── Centre panel (3D model viewport) ───────────────────────────────────── */
+.char-details-center {
+    flex-grow: 1;
+    position: relative;
+}
+
+/* ─── Right panel ─────────────────────────────────────────────────────────── */
+.char-details-right {
+    width: 320px;
+    flex-direction: column;
+    padding: 40px;
+    background-color: rgb(255, 255, 255);
+    border-left-width: 2px;
+    border-left-color: rgb(224, 224, 224);
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    flex-shrink: 0;
+}
+
+/* ─── Character name ──────────────────────────────────────────────────────── */
+.char-name {
+    font-size: 64px;
+    color: rgb(26, 26, 26);
+    -unity-font-definition: var(--font-anton);
+    letter-spacing: 2px;
+    -unity-text-transform: upper;
+    margin-bottom: 8px;
+}
+
+/* ─── Description ─────────────────────────────────────────────────────────── */
+.char-desc {
+    font-size: 18px;
+    color: rgb(85, 85, 85);
+    -unity-font-definition: var(--font-rajdhani);
+    white-space: normal;
+    margin-bottom: 24px;
+}
+
+/* ─── Stats block ─────────────────────────────────────────────────────────── */
+.char-stats {
+    border-top-width: 1px;
+    border-top-color: rgb(224, 224, 224);
+    border-bottom-width: 1px;
+    border-bottom-color: rgb(224, 224, 224);
+    border-left-width: 0;
+    border-right-width: 0;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    margin-bottom: 24px;
+}
+
+.char-stat-row {
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    align-items: center;
+}
+
+.char-stat-name {
+    font-size: 16px;
+    color: rgb(136, 136, 136);
+    -unity-font-definition: var(--font-rajdhani);
+    -unity-font-style: bold;
+    letter-spacing: 1px;
+    -unity-text-transform: upper;
+}
+
+.char-stat-value {
+    font-size: 24px;
+    color: rgb(230, 57, 70);
+    -unity-font-definition: var(--font-anton);
+}
+
+/* ─── Ability rows ────────────────────────────────────────────────────────── */
+.char-ability-row {
+    flex-direction: row;
+    align-items: center;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgb(240, 240, 240);
+    border-top-width: 0;
+    border-left-width: 0;
+    border-right-width: 0;
+}
+
+.char-ability-icon-bg {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background-color: rgb(245, 245, 245);
+    border-width: 2px;
+    border-color: rgb(26, 26, 26);
+    align-items: center;
+    justify-content: center;
+    margin-right: 16px;
+    flex-shrink: 0;
+}
+
+.char-ability-icon {
+    font-size: 24px;
+    -unity-text-align: middle-center;
+}
+
+.char-ability-name {
+    font-size: 20px;
+    color: rgb(26, 26, 26);
+    -unity-font-definition: var(--font-anton);
+}
+
+.char-ability-desc {
+    font-size: 15px;
+    color: rgb(136, 136, 136);
+    -unity-font-definition: var(--font-rajdhani);
+    margin-top: 2px;
+}
+
+/* ─── Action button ───────────────────────────────────────────────────────── */
+.char-action-btn {
+    height: 64px;
+    border-radius: 12px;
+    border-width: 3px;
+    border-color: rgb(26, 26, 26);
+    align-items: center;
+    justify-content: center;
+    margin-top: 12px;
+    transition-property: scale;
+    transition-duration: 0.08s;
+    transition-timing-function: ease-out;
+}
+
+.char-action-btn:active {
+    scale: 0.95;
+}
+
+.char-action-btn--select {
+    background-color: var(--clr-primary);
+}
+
+.char-action-btn--unlock {
+    background-color: rgb(243, 156, 18);
+}
+
+.char-action-btn__label {
+    font-size: 24px;
+    color: rgb(26, 26, 26);
+    -unity-font-definition: var(--font-anton);
+    letter-spacing: 1px;
+}
+
+/* ─── Abilities section title ─────────────────────────────────────────────── */
+.abilities-title {
+    font-size: 28px;
+    color: rgb(26, 26, 26);
+    -unity-font-definition: var(--font-anton);
+    margin-bottom: 16px;
+}

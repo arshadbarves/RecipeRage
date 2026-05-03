@@ -1,56 +1,39 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <Style src="../Styles/theme.uss" />
-    <Style src="../Styles/screens.uss" />
-    <Style src="../Styles/components.uss" />
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/_KitchenClash/UI/Styles/NotificationScreen.uss"/>
+    <ui:VisualElement name="screen-container" class="screen-root notification-screen">
 
-    <ui:VisualElement name="notification-root" class="screen-root layout-screen">
-
-        <!-- Top Bar -->
+        <!-- ── Top Bar ──────────────────────────────────────────────────── -->
         <ui:VisualElement class="top-bar">
-            <ui:VisualElement class="top-bar__left">
-                <ui:Button name="btn-back" class="btn-icon">
-                    <ui:Label text="←" class="btn-icon__label" />
-                </ui:Button>
-            </ui:VisualElement>
+            <ui:Button class="btn-back">
+                <ui:Label text="&lt; BACK" class="btn-back__label" />
+            </ui:Button>
             <ui:Label text="NOTIFICATIONS" class="top-bar__title" />
-            <ui:VisualElement class="top-bar__right">
-                <ui:Button name="btn-dismiss-all" class="btn-ghost">
-                    <ui:Label text="Clear All" class="btn-ghost__label" />
-                </ui:Button>
-            </ui:VisualElement>
+            <ui:Button name="btn-dismiss-all" class="btn-ghost">
+                <ui:Label text="CLEAR ALL" class="btn-ghost__label" />
+            </ui:Button>
         </ui:VisualElement>
 
-        <!-- Scrollable Content -->
-        <ui:VisualElement class="layout-content" style="flex-grow: 1;">
+        <!-- ── Scrollable notification list ────────────────────────────── -->
+        <ui:ScrollView mode="Vertical" class="notification-list">
 
-            <!-- Runtime-populated notification list -->
-            <ui:ScrollView name="list-notifications" mode="Vertical"
-                           style="flex-grow: 1; padding-top: 8px;">
-                <!-- .notif-item rows injected at runtime -->
-            </ui:ScrollView>
+            <!-- Runtime container — C# injects .notif-item rows here -->
+            <ui:VisualElement name="list-notifications" />
 
-            <!-- Empty state — shown by presenter when list is empty -->
-            <ui:Label name="lbl-empty" text="No notifications yet"
-                style="display: none;
-                       color: var(--txt-muted);
-                       font-size: var(--fs-14);
-                       -unity-text-align: middle-center;
-                       flex-grow: 1;
-                       -unity-font-style: italic;
-                       margin-top: 48px;" />
+            <!-- Empty state — shown when list is empty -->
+            <ui:Label name="lbl-empty" text="NO NOTIFICATIONS YET" class="notif-empty" />
 
-        </ui:VisualElement>
+        </ui:ScrollView>
 
-        <!-- ── Notification Item Template (hidden — cloned at runtime) -->
-        <ui:VisualElement name="notif-template" style="display: none;">
+        <!-- ── Notification item template (hidden, cloned at runtime) ───── -->
+        <ui:VisualElement name="notif-template" class="hidden">
             <ui:VisualElement class="notif-item">
-                <ui:VisualElement class="notif-item__icon-wrap">
+                <ui:VisualElement class="notif-item__icon-bg">
                     <ui:Label text="🔔" class="notif-item__icon" />
                 </ui:VisualElement>
-                <ui:VisualElement class="notif-item__content">
-                    <ui:Label class="notif-item__title" text="Notification" />
-                    <ui:Label class="notif-item__msg"  text="Message text" />
-                    <ui:Label class="notif-item__time" text="2m ago" />
+                <ui:VisualElement class="notif-item__body">
+                    <ui:Label text="Notification" class="notif-item__title" />
+                    <ui:Label text="Message" class="notif-item__msg" />
+                    <ui:Label text="2m ago" class="notif-item__time" />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>

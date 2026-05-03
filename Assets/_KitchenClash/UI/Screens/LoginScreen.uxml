@@ -1,133 +1,60 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <Style src="../Styles/theme.uss" />
-    <Style src="../Styles/screens.uss" />
-    <Style src="../Styles/components.uss" />
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/_KitchenClash/UI/Styles/LoginScreen.uss"/>
 
     <!--
-        LoginScreen — Hot Kitchen Design System v2.0
-        bg-deep base, fire-light title, social buttons, guest ghost, terms.
+        LoginScreen — Kitchen Clash Design System v3.0
+        White canvas, centered card, KITCHEN CLASH header, social buttons,
+        OR divider, guest ghost pill, terms footer.
         Named elements: btn-google, btn-facebook, btn-apple, btn-guest, lbl-terms
     -->
-    <ui:VisualElement name="login-root" class="screen-root layout-screen">
+    <ui:VisualElement name="screen-container" class="screen-root login-screen">
 
-        <!-- ── Top hero area (flex-grow, centered) ── -->
-        <ui:VisualElement style="
-            flex-grow: 1;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-        ">
-            <!-- Pan emoji icon -->
-            <ui:Label text="🍳" style="
-                font-size: 72px;
-                -unity-text-align: middle-center;
-                margin-bottom: 16px;
-            " />
+        <ui:VisualElement class="login-screen-layout">
 
-            <!-- Game title -->
-            <ui:Label text="KITCHEN CLASH" style="
-                color: #FF8C2A;
-                font-size: 40px;
-                -unity-font-style: bold;
-                -unity-text-align: middle-center;
-                letter-spacing: 4px;
-            " />
+            <!-- ── Card ── -->
+            <ui:VisualElement class="login-card">
 
-            <!-- Tagline -->
-            <ui:Label text="Cook. Compete. Conquer." style="
-                color: #5A5A80;
-                font-size: 14px;
-                -unity-text-align: middle-center;
-                margin-top: 8px;
-                letter-spacing: 1px;
-            " />
-        </ui:VisualElement>
+                <!-- Title row: KITCHEN CLASH -->
+                <ui:VisualElement class="login-title-row">
+                    <ui:Label text="KITCHEN" class="login-title" />
+                    <ui:Label text="CLASH" class="login-title-accent" />
+                </ui:VisualElement>
 
-        <!-- ── Social login buttons ── -->
-        <ui:VisualElement style="
-            flex-direction: column;
-            align-items: stretch;
-            padding-left: 24px;
-            padding-right: 24px;
-        ">
+                <!-- Subtitle -->
+                <ui:Label text="MULTIPLAYER COOKING MAYHEM" class="login-subtitle" />
 
-            <!-- Google -->
-            <ui:Button name="btn-google" class="btn-social btn-social--google" style="margin-bottom: 12px;">
-                <ui:Label text="G" class="btn-social__icon" style="
-                    font-size: 22px;
-                    color: #EA4335;
-                    -unity-font-style: bold;
-                " />
-                <ui:Label text="Continue with Google" class="btn-social__label" />
-            </ui:Button>
+                <!-- Social buttons -->
+                <ui:Button name="btn-google" class="login-btn">
+                    <ui:Label text="G  Continue with Google" />
+                </ui:Button>
 
-            <!-- Facebook -->
-            <ui:Button name="btn-facebook" class="btn-social btn-social--facebook" style="margin-bottom: 12px;">
-                <ui:Label text="f" class="btn-social__icon" style="
-                    font-size: 22px;
-                    color: #4267B2;
-                    -unity-font-style: bold;
-                " />
-                <ui:Label text="Continue with Facebook" class="btn-social__label" />
-            </ui:Button>
+                <ui:Button name="btn-facebook" class="login-btn">
+                    <ui:Label text="f  Continue with Facebook" />
+                </ui:Button>
 
-            <!-- Apple -->
-            <ui:Button name="btn-apple" class="btn-social btn-social--apple" style="margin-bottom: 0;">
-                <ui:Label text="🍎" class="btn-social__icon" />
-                <ui:Label text="Continue with Apple" class="btn-social__label" />
-            </ui:Button>
+                <ui:Button name="btn-apple" class="login-btn">
+                    <ui:Label text="🍎  Continue with Apple" />
+                </ui:Button>
+
+                <!-- OR divider -->
+                <ui:VisualElement class="login-divider">
+                    <ui:VisualElement class="login-divider-line" />
+                    <ui:Label text="OR" class="login-divider-label" />
+                    <ui:VisualElement class="login-divider-line" />
+                </ui:VisualElement>
+
+                <!-- Guest ghost button -->
+                <ui:Button name="btn-guest" class="login-guest-btn">
+                    <ui:Label name="guest-btn-label" text="PLAY AS GUEST" />
+                </ui:Button>
+
+                <!-- Terms -->
+                <ui:Label name="lbl-terms" text="By playing you agree to our Terms of Service &amp; Privacy Policy" class="login-terms" />
+
+            </ui:VisualElement>
+            <!-- /card -->
 
         </ui:VisualElement>
-
-        <!-- ── OR divider ── -->
-        <ui:VisualElement style="
-            flex-direction: row;
-            align-items: center;
-            margin-top: 20px;
-            margin-bottom: 20px;
-            padding-left: 24px;
-            padding-right: 24px;
-        ">
-            <ui:VisualElement class="divider" style="flex-grow: 1;" />
-            <ui:Label text="OR" style="
-                color: #5A5A80;
-                font-size: 12px;
-                -unity-font-style: bold;
-                letter-spacing: 2px;
-                margin-left: 12px;
-                margin-right: 12px;
-            " />
-            <ui:VisualElement class="divider" style="flex-grow: 1;" />
-        </ui:VisualElement>
-
-        <!-- ── Guest button (ghost pill) ── -->
-        <ui:VisualElement style="
-            align-items: center;
-            padding-left: 24px;
-            padding-right: 24px;
-        ">
-            <ui:Button name="btn-guest" class="btn-ghost" style="
-                width: 100%;
-                height: 44px;
-            ">
-                <ui:Label text="Play as Guest" class="btn-ghost__label" />
-            </ui:Button>
-        </ui:VisualElement>
-
-        <!-- ── Terms of service ── -->
-        <ui:Label name="lbl-terms"
-            text="By playing you agree to our Terms of Service"
-            style="
-                color: #5A5A80;
-                font-size: 11px;
-                -unity-text-align: middle-center;
-                white-space: normal;
-                padding-left: 32px;
-                padding-right: 32px;
-                margin-top: 16px;
-                margin-bottom: 32px;
-            "
-        />
 
     </ui:VisualElement>
 </ui:UXML>

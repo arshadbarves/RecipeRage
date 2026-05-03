@@ -1,0 +1,77 @@
+@import url("project://database/Assets/_KitchenClash/UI/Styles/DesignSystem.uss");
+
+/* ── AuthPrompt ───────────────────────────────────────────────────────────── */
+
+.auth-prompt {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--clr-scrim);
+    align-items: center;
+    justify-content: center;
+}
+
+.auth-card {
+    background-color: var(--clr-canvas);
+    border-radius: 28px;
+    border-width: 4px;
+    border-color: var(--clr-ink);
+    padding: 40px;
+    min-width: 420px;
+    max-width: 560px;
+    width: 88%;
+}
+
+.auth-card__title {
+    font-size: 48px;
+    color: rgb(26, 26, 26);
+    -unity-font-definition: var(--font-anton);
+    letter-spacing: 2px;
+    -unity-text-align: middle-center;
+    margin-bottom: 8px;
+}
+
+.auth-card__msg {
+    font-size: 20px;
+    color: rgb(85, 85, 85);
+    -unity-font-definition: var(--font-rajdhani);
+    -unity-text-align: middle-center;
+    white-space: normal;
+    margin-bottom: 32px;
+}
+
+.auth-social-btn {
+    height: 80px;
+    background-color: var(--clr-canvas);
+    border-radius: 16px;
+    border-width: 3px;
+    border-color: var(--clr-ink);
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+    font-size: 24px;
+    -unity-font-definition: var(--font-anton);
+    letter-spacing: 1px;
+    color: rgb(26, 26, 26);
+    transition-property: scale;
+    transition-duration: 0.08s;
+}
+
+.auth-social-btn:active {
+    scale: 0.95;
+}
+
+.auth-social-btn__icon {
+    font-size: 28px;
+    margin-right: 16px;
+    -unity-text-align: middle-center;
+}
+
+.auth-social-btn__label {
+    font-size: 24px;
+    color: rgb(26, 26, 26);
+    -unity-font-definition: var(--font-anton);
+}

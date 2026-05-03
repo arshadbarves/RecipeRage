@@ -1,0 +1,60 @@
+@import url("project://database/Assets/_KitchenClash/UI/Styles/DesignSystem.uss");
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MaintenanceScreen.uss  —  Kitchen Clash Design System v3.0
+   White canvas, centered column, emoji icon, Anton title, retry CTA.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.maintenance-screen {
+    background-color: rgb(255, 255, 255);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px;
+    width: 100%;
+    height: 100%;
+}
+
+/* ── Icon ───────────────────────────────────────────────────────────────── */
+.maintenance-icon {
+    font-size: 96px;
+    -unity-text-align: middle-center;
+    margin-bottom: 24px;
+}
+
+/* ── Title ──────────────────────────────────────────────────────────────── */
+.maintenance-title {
+    font-size: 64px;
+    color: rgb(26, 26, 26);
+    -unity-font-definition: var(--font-anton);
+    letter-spacing: 3px;
+    -unity-text-align: middle-center;
+    margin-bottom: 16px;
+}
+
+/* ── Message body ───────────────────────────────────────────────────────── */
+.maintenance-msg {
+    font-size: 24px;
+    color: rgb(85, 85, 85);
+    -unity-font-definition: var(--font-rajdhani);
+    -unity-text-align: middle-center;
+    white-space: normal;
+    max-width: 520px;
+    margin-bottom: 40px;
+}
+
+/* ── ETA label ──────────────────────────────────────────────────────────── */
+.maintenance-eta-label {
+    font-size: 18px;
+    color: rgb(136, 136, 136);
+    -unity-font-definition: var(--font-rajdhani);
+    letter-spacing: 2px;
+    -unity-text-align: middle-center;
+    margin-bottom: 48px;
+}
+
+/* ── Retry button ───────────────────────────────────────────────────────── */
+.maintenance-retry-btn {
+    align-self: center;
+    min-width: 280px;
+}

@@ -1,0 +1,122 @@
+@import url("project://database/Assets/_KitchenClash/UI/Styles/DesignSystem.uss");
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LoadingScreen.uss  —  Kitchen Clash Design System v3.0
+   White canvas, Anton title, spinner, progress bar, tip + percent.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.loading-screen {
+    background-color: rgb(255, 255, 255);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+/* ── Title row ─────────────────────────────────────────────────────────── */
+.loading-title-row {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: center;
+    margin-bottom: 100px;
+}
+
+.loading-title-kitchen {
+    font-size: 80px;
+    color: rgb(26, 26, 26);
+    -unity-font-definition: var(--font-anton);
+    letter-spacing: 3px;
+    -unity-text-align: middle-center;
+    margin-right: 16px;
+}
+
+.loading-title-clash {
+    font-size: 80px;
+    color: rgb(230, 57, 70);
+    -unity-font-definition: var(--font-anton);
+    letter-spacing: 3px;
+    -unity-text-align: middle-center;
+}
+
+/* ── Loading wrapper (centered column) ─────────────────────────────────── */
+.loading-wrapper {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 75%;
+    max-width: 900px;
+}
+
+/* ── Spinner — DOTween rotates at runtime ───────────────────────────────── */
+.loading-spinner {
+    width: 60px;
+    height: 60px;
+    border-radius: 999px;
+    border-width: 4px;
+    border-color: rgb(224, 224, 224);
+    border-top-color: rgb(26, 26, 26);
+    margin-bottom: 40px;
+}
+
+/* ── Progress track ─────────────────────────────────────────────────────── */
+.loading-progress-track {
+    width: 100%;
+    height: 6px;
+    background-color: rgb(224, 224, 224);
+    border-radius: 999px;
+    overflow: visible;
+    flex-direction: row;
+    align-items: center;
+}
+
+.loading-progress-fill {
+    height: 100%;
+    width: 0;
+    background-color: rgb(26, 26, 26);
+    border-radius: 999px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    overflow: visible;
+}
+
+.loading-progress-node {
+    position: absolute;
+    top: -5px;
+    right: -7px;
+    width: 14px;
+    height: 14px;
+    background-color: rgb(255, 255, 255);
+    border-width: 3px;
+    border-color: rgb(0, 0, 0);
+    border-radius: 999px;
+}
+
+/* ── Bottom info row ────────────────────────────────────────────────────── */
+.loading-bottom-info {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 24px;
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+.loading-tip {
+    font-size: 22px;
+    color: rgb(217, 119, 6);
+    -unity-font-definition: var(--font-anton);
+    max-width: 80%;
+    white-space: normal;
+}
+
+.loading-percent {
+    font-size: 40px;
+    color: rgb(26, 26, 26);
+    -unity-font-definition: var(--font-anton);
+    letter-spacing: 3px;
+    -unity-text-align: middle-right;
+    flex-shrink: 0;
+}

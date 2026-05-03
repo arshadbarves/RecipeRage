@@ -1,68 +1,47 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <Style src="../Styles/theme.uss" />
-    <Style src="../Styles/screens.uss" />
-    <Style src="../Styles/components.uss" />
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/_KitchenClash/UI/Styles/FriendsScreen.uss"/>
+    <ui:VisualElement name="screen-container" class="screen-root friends-screen">
 
-    <ui:VisualElement name="friends-root" class="screen-root layout-screen">
-
-        <!-- Top Bar -->
+        <!-- ── Top Bar ──────────────────────────────────────────────────── -->
         <ui:VisualElement class="top-bar">
-            <ui:VisualElement class="top-bar__left">
-                <ui:Button name="btn-back" class="btn-icon">
-                    <ui:Label text="←" class="btn-icon__label" />
-                </ui:Button>
-            </ui:VisualElement>
+            <ui:Button class="btn-back">
+                <ui:Label text="&lt; BACK" class="btn-back__label" />
+            </ui:Button>
             <ui:Label text="FRIENDS" class="top-bar__title" />
-            <ui:VisualElement class="top-bar__right">
-                <ui:Button name="btn-invite" class="btn-icon">
-                    <ui:Label text="➕" class="btn-icon__label" />
-                </ui:Button>
-            </ui:VisualElement>
+            <ui:Button name="btn-invite" class="btn-invite">
+                <ui:Label text="+" class="btn-invite__label" />
+            </ui:Button>
         </ui:VisualElement>
 
-        <!-- Search Bar -->
-        <ui:VisualElement style="padding: 12px 16px 4px 16px;">
-            <ui:TextField name="search-bar" class="input-field"
-                          text="" max-length="64"
-                          style="padding-left: 16px;" />
+        <!-- ── Search ───────────────────────────────────────────────────── -->
+        <ui:TextField name="search-bar" class="friends-search"
+                      placeholder-text="SEARCH FRIENDS..." max-length="64" />
+
+        <!-- ── Online section ───────────────────────────────────────────── -->
+        <ui:VisualElement class="friends-section-header">
+            <ui:Label text="ONLINE (0)" class="friends-section-title" />
         </ui:VisualElement>
 
-        <!-- Scrollable Content -->
-        <ui:ScrollView class="layout-content" mode="Vertical"
-                       style="padding-top: 4px;">
+        <ui:ScrollView name="list-online" class="friends-list" mode="Vertical"
+                       style="max-height: 280px;" />
 
-            <!-- ── Online ──────────────────────────────────────────── -->
-            <ui:VisualElement class="section-header">
-                <ui:Label text="🟢  ONLINE (0)" class="section-header__title" />
-            </ui:VisualElement>
+        <!-- ── Divider ──────────────────────────────────────────────────── -->
+        <ui:VisualElement class="divider" style="margin-left: 40px; margin-right: 40px;" />
 
-            <!-- Runtime-populated online list -->
-            <ui:ScrollView name="list-online" mode="Vertical"
-                           style="max-height: 260px;">
-                <!-- .friend-row items injected at runtime -->
-            </ui:ScrollView>
+        <!-- ── All friends section ──────────────────────────────────────── -->
+        <ui:VisualElement class="friends-section-header">
+            <ui:Label text="ALL FRIENDS" class="friends-section-title" />
+        </ui:VisualElement>
 
-            <ui:VisualElement class="divider" />
+        <ui:ScrollView name="list-all" class="friends-list" mode="Vertical"
+                       style="flex-grow: 1;" />
 
-            <!-- ── All Friends ─────────────────────────────────────── -->
-            <ui:VisualElement class="section-header">
-                <ui:Label text="👥  ALL FRIENDS" class="section-header__title" />
-            </ui:VisualElement>
-
-            <!-- Runtime-populated full list -->
-            <ui:ScrollView name="list-all" mode="Vertical"
-                           style="flex-grow: 1;">
-                <!-- .friend-row items injected at runtime -->
-            </ui:ScrollView>
-
-        </ui:ScrollView>
-
-        <!-- ── Friend Row Template (hidden — cloned at runtime) ──── -->
-        <ui:VisualElement name="friend-row-template" style="display: none;">
-            <ui:VisualElement class="friend-row">
-                <ui:VisualElement class="friend-row__avatar" />
-                <ui:Label class="friend-row__name" text="Friend Name" />
-                <ui:Label class="friend-row__status" text="Online" />
+        <!-- ── Friend row template (hidden, cloned at runtime) ──────────── -->
+        <ui:VisualElement name="friend-row-template" class="hidden">
+            <ui:VisualElement class="friend-item">
+                <ui:VisualElement class="friend-item__avatar" />
+                <ui:Label text="Friend" class="friend-item__name" />
+                <ui:Label text="Online" class="friend-item__status friend-item__status--online" />
                 <ui:VisualElement class="online-dot" />
             </ui:VisualElement>
         </ui:VisualElement>

@@ -1,61 +1,70 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <Style src="../Styles/theme.uss" />
-    <Style src="../Styles/screens.uss" />
-    <Style src="../Styles/components.uss" />
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/_KitchenClash/UI/Styles/MatchLobbyScreen.uss"/>
+    <ui:VisualElement name="screen-container" class="screen-root match-lobby-screen">
 
-    <ui:VisualElement name="match-lobby-root" class="screen-root bg-deep">
-
-        <!-- ── TOP BAR ── -->
+        <!-- Top Bar -->
         <ui:VisualElement class="top-bar">
-            <ui:Label text="MATCH LOBBY" class="screen-title text-bold" />
-            <ui:VisualElement class="hud-timer">
-                <ui:Label name="lbl-lobby-timer" text="0:30" class="hud-timer__value clr-cyan" />
-            </ui:VisualElement>
+            <ui:Button class="btn-back">
+                <ui:Label text="◀ BACK" class="btn-back__label"/>
+            </ui:Button>
+            <ui:Label text="MATCH LOBBY" class="top-bar__title"/>
+            <ui:Label name="lbl-lobby-timer" text="00:30"
+                style="font-size:32px; -unity-font-definition:var(--font-anton); color:rgb(52,152,219);"/>
         </ui:VisualElement>
 
-        <!-- ── MAP PREVIEW ── -->
-        <ui:VisualElement name="map-preview" class="card" style="height: 140px; align-items: center; justify-content: center;">
-            <ui:Label name="lbl-lobby-map" text="Sushi Shuffle" class="text-bold clr-fire" style="font-size: 20px; -unity-text-align: middle-center;" />
+        <!-- Map Preview -->
+        <ui:VisualElement name="map-preview" class="lobby-map-preview">
+            <ui:Label name="lbl-lobby-map" text="SUSHI SHUFFLE" class="lobby-map-preview__name"/>
         </ui:VisualElement>
 
-        <!-- ── TEAM PANELS ── -->
-        <ui:VisualElement class="layout-row--spaced" style="flex-shrink: 0;">
+        <!-- Teams Row -->
+        <ui:VisualElement class="lobby-teams-row">
 
             <!-- Team A -->
-            <ui:VisualElement class="card" style="flex: 1; margin-right: 8px;">
-                <ui:Label text="TEAM A" class="text-bold clr-cyan" style="font-size: 16px; margin-bottom: 8px;" />
-                <ui:VisualElement name="slot-a-0" class="friend-row friend-row--condensed">
-                    <ui:Label text="Waiting..." class="text-muted" />
+            <ui:VisualElement class="lobby-team-panel">
+                <ui:Label text="TEAM A" class="lobby-team-title lobby-team-title--a"/>
+
+                <ui:VisualElement name="slot-a-0" class="lobby-player-slot">
+                    <ui:VisualElement class="lobby-player-slot__avatar"/>
+                    <ui:Label text="WAITING..." class="lobby-player-slot__name"/>
+                    <ui:Label text="NOT READY" class="lobby-player-slot__status"/>
                 </ui:VisualElement>
-                <ui:VisualElement name="slot-a-1" class="friend-row friend-row--condensed">
-                    <ui:Label text="Waiting..." class="text-muted" />
+
+                <ui:VisualElement name="slot-a-1" class="lobby-player-slot">
+                    <ui:VisualElement class="lobby-player-slot__avatar"/>
+                    <ui:Label text="WAITING..." class="lobby-player-slot__name"/>
+                    <ui:Label text="NOT READY" class="lobby-player-slot__status"/>
                 </ui:VisualElement>
             </ui:VisualElement>
 
-            <!-- VS divider -->
-            <ui:Label text="VS" class="text-bold clr-fire" style="font-size: 22px; align-self: center; margin-left: 4px; margin-right: 4px;" />
-
             <!-- Team B -->
-            <ui:VisualElement class="card" style="flex: 1; margin-left: 8px;">
-                <ui:Label text="TEAM B" class="text-bold clr-fire" style="font-size: 16px; margin-bottom: 8px;" />
-                <ui:VisualElement name="slot-b-0" class="friend-row friend-row--condensed">
-                    <ui:Label text="Waiting..." class="text-muted" />
+            <ui:VisualElement class="lobby-team-panel">
+                <ui:Label text="TEAM B" class="lobby-team-title lobby-team-title--b"/>
+
+                <ui:VisualElement name="slot-b-0" class="lobby-player-slot">
+                    <ui:VisualElement class="lobby-player-slot__avatar"/>
+                    <ui:Label text="WAITING..." class="lobby-player-slot__name"/>
+                    <ui:Label text="NOT READY" class="lobby-player-slot__status"/>
                 </ui:VisualElement>
-                <ui:VisualElement name="slot-b-1" class="friend-row friend-row--condensed">
-                    <ui:Label text="Waiting..." class="text-muted" />
+
+                <ui:VisualElement name="slot-b-1" class="lobby-player-slot">
+                    <ui:VisualElement class="lobby-player-slot__avatar"/>
+                    <ui:Label text="WAITING..." class="lobby-player-slot__name"/>
+                    <ui:Label text="NOT READY" class="lobby-player-slot__status"/>
                 </ui:VisualElement>
             </ui:VisualElement>
 
         </ui:VisualElement>
 
-        <!-- ── SPACER ── -->
-        <ui:VisualElement style="flex-grow: 1;" />
-
-        <!-- ── READY BUTTON ── -->
-        <ui:Button name="btn-ready" text="READY ✓" class="btn-primary" style="height: 64px; font-size: 20px; margin-bottom: 12px;" />
-
-        <!-- ── LEAVE BUTTON ── -->
-        <ui:Button name="btn-leave" text="Leave" class="btn-ghost" />
+        <!-- Bottom Bar -->
+        <ui:VisualElement class="lobby-bottom-bar">
+            <ui:Button name="btn-leave" class="btn-ghost">
+                <ui:Label text="LEAVE" class="btn-ghost__label"/>
+            </ui:Button>
+            <ui:Button name="btn-ready" class="btn-primary">
+                <ui:Label text="READY ✓" class="btn-primary__label"/>
+            </ui:Button>
+        </ui:VisualElement>
 
     </ui:VisualElement>
 </ui:UXML>

@@ -348,9 +348,10 @@ namespace KitchenClash.Infrastructure.Network.Stations
         /// </summary>
         private TeamId DetermineStationTeam()
         {
-            // Check parent hierarchy for a team marker or default to TeamA
-            // In most kitchen layouts, stations are shared — default to TeamA
-            // TODO: If stations become team-specific, read from a TeamId field
+            // Check parent hierarchy for a team marker or default to TeamA.
+            // Stations are currently shared across teams in all GDD v3 kitchen layouts.
+            // DEFERRED: If team-specific stations are introduced, add a [SerializeField] TeamId field
+            //           and populate it in the Inspector per station prefab variant.
             return TeamId.TeamA;
         }
 

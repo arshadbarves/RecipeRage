@@ -1,151 +1,50 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <Style src="../Styles/theme.uss" />
-    <Style src="../Styles/screens.uss" />
-    <Style src="../Styles/components.uss" />
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/_KitchenClash/UI/Styles/MatchHUDScreen.uss"/>
+    <ui:VisualElement name="screen-container" class="hud-screen">
 
-    <!--
-        HUD overlay: position absolute, full screen, transparent background.
-        picking-mode="Ignore" on non-interactive containers so game input passes through.
-    -->
-    <ui:VisualElement name="hud-root" class="screen-root"
-        picking-mode="Ignore"
-        style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0);">
+        <!-- Top HUD Bar -->
+        <ui:VisualElement class="hud-top-bar">
 
-        <!-- ════════════════════════════════
-             TOP: SCORE BAR
-        ════════════════════════════════ -->
-        <ui:VisualElement class="hud-score-bar"
-            style="flex-direction: row; justify-content: space-between; align-items: center;
-                   padding: 8px 16px; background-color: rgba(10,10,18,0.72);
-                   border-bottom-width: 3px; border-bottom-color: rgba(255,165,0,0.35);">
-
-            <!-- Team A Score -->
-            <ui:VisualElement class="hud-score hud-score--team-a"
-                style="flex-direction: column; align-items: center; min-width: 64px;">
-                <ui:Label text="TEAM A" class="text-bold clr-cyan"
-                    style="font-size: 10px; letter-spacing: 1px;" />
-                <ui:Label name="lbl-score-a" text="0" class="hud-score__value text-bold"
-                    style="font-size: 28px; color: white;" />
+            <!-- Phase card -->
+            <ui:VisualElement class="hud-stat-card">
+                <ui:Label text="PHASE" class="hud-label"/>
+                <ui:Label name="gameplay-phase" text="COOKING" class="hud-value"/>
             </ui:VisualElement>
 
-            <!-- Centre Timer -->
-            <ui:VisualElement class="hud-timer"
-                style="align-items: center; padding: 4px 20px;
-                       background-color: rgba(10,10,18,0.6);
-                       border-width: 3px; border-color: rgba(0,255,200,0.5); border-radius: 12px;">
-                <ui:Label name="lbl-match-timer" text="3:00" class="hud-timer__value text-bold clr-cyan"
-                    style="font-size: 26px;" />
+            <!-- Timer card -->
+            <ui:VisualElement class="hud-stat-card" style="min-width:220px;">
+                <ui:Label text="TIME" class="hud-label"/>
+                <ui:Label name="lbl-match-timer" text="03:00" class="hud-value"/>
+                <ui:VisualElement class="hud-timer-track">
+                    <ui:VisualElement name="gameplay-timer-fill" class="hud-timer-fill"/>
+                </ui:VisualElement>
             </ui:VisualElement>
 
-            <!-- Team B Score -->
-            <ui:VisualElement class="hud-score hud-score--team-b"
-                style="flex-direction: column; align-items: center; min-width: 64px;">
-                <ui:Label text="TEAM B" class="text-bold clr-fire"
-                    style="font-size: 10px; letter-spacing: 1px;" />
-                <ui:Label name="lbl-score-b" text="0" class="hud-score__value text-bold"
-                    style="font-size: 28px; color: white;" />
+            <!-- Score card -->
+            <ui:VisualElement class="hud-stat-card">
+                <ui:Label text="SCORE" class="hud-label"/>
+                <ui:Label name="gameplay-score" text="0 — 0" class="hud-value"/>
             </ui:VisualElement>
 
         </ui:VisualElement>
 
-        <!-- ════════════════════════════════
-             RIGHT SIDE: ORDER LIST
-             (absolute, right edge, top 60px)
-        ════════════════════════════════ -->
-        <ui:ScrollView name="order-list"
-            picking-mode="Position"
-            style="position: absolute; right: 8px; top: 60px; width: 148px;
-                   max-height: 380px; background-color: rgba(10,10,18,0.55);">
+        <!-- Orders Panel -->
+        <ui:VisualElement class="hud-orders-panel">
+            <ui:Label text="ORDERS" class="hud-orders-title"/>
+            <ui:ScrollView name="order-list" class="orders-scroll"/>
+        </ui:VisualElement>
 
-            <!-- Placeholder order cards (runtime will populate) -->
-            <ui:VisualElement class="order-card"
-                style="margin-bottom: 6px; padding: 8px;
-                       background-color: rgba(30,30,50,0.85);
-                       border-width: 3px; border-color: rgba(255,165,0,0.6); border-radius: 8px;">
-                <ui:Label text="🍣 Order 1" class="text-bold" style="font-size: 12px; color: white;" />
-                <ui:Label text="0:45" class="clr-cyan" style="font-size: 11px;" />
+        <!-- Mobile Controls (hidden by default, C# shows on mobile) -->
+        <ui:VisualElement name="mobile-controls" class="hud-mobile-controls" style="display:none;">
+            <!-- Hidden score labels for C# data binding -->
+            <ui:Label name="lbl-score-a" text="0" class="hidden"/>
+            <ui:Label name="lbl-score-b" text="0" class="hidden"/>
+            <!-- Action buttons -->
+            <ui:VisualElement style="flex-direction:row;">
+                <ui:Button name="btn-super" text="SUPER" class="hud-action-btn"/>
+                <ui:Button name="btn-gadget" text="GADGET" class="hud-action-btn"/>
+                <ui:Button name="mobile-interact" text="INTERACT" class="hud-action-btn"/>
             </ui:VisualElement>
-
-            <ui:VisualElement class="order-card"
-                style="margin-bottom: 6px; padding: 8px;
-                       background-color: rgba(30,30,50,0.85);
-                       border-width: 3px; border-color: rgba(255,165,0,0.6); border-radius: 8px;">
-                <ui:Label text="🍜 Order 2" class="text-bold" style="font-size: 12px; color: white;" />
-                <ui:Label text="1:10" class="clr-cyan" style="font-size: 11px;" />
-            </ui:VisualElement>
-
-            <ui:VisualElement class="order-card"
-                style="margin-bottom: 6px; padding: 8px;
-                       background-color: rgba(30,30,50,0.85);
-                       border-width: 3px; border-color: rgba(255,165,0,0.6); border-radius: 8px;">
-                <ui:Label text="🍔 Order 3" class="text-bold" style="font-size: 12px; color: white;" />
-                <ui:Label text="1:30" class="clr-cyan" style="font-size: 11px;" />
-            </ui:VisualElement>
-
-        </ui:ScrollView>
-
-        <!-- ════════════════════════════════
-             BOTTOM ROW: JOYSTICKS + ABILITIES
-             (absolute, bottom 0, full width)
-        ════════════════════════════════ -->
-        <ui:VisualElement
-            picking-mode="Ignore"
-            style="position: absolute; bottom: 0; left: 0; right: 0;
-                   flex-direction: row; justify-content: space-between; align-items: flex-end;
-                   padding: 12px 16px 24px 16px;">
-
-            <!-- LEFT JOYSTICK -->
-            <ui:VisualElement name="joystick-left"
-                style="width: 160px; height: 160px; border-radius: 80px;
-                       background-color: rgba(255,255,255,0.08);
-                       border-width: 3px; border-color: rgba(255,255,255,0.25);" />
-
-            <!-- CENTRE SPACER -->
-            <ui:VisualElement picking-mode="Ignore" style="flex-grow: 1;" />
-
-            <!-- RIGHT SIDE: ABILITY CLUSTER + JOYSTICK -->
-            <ui:VisualElement picking-mode="Ignore"
-                style="flex-direction: column; align-items: flex-end;">
-
-                <!-- Ability buttons cluster (above right joystick) -->
-                <ui:VisualElement
-                    style="flex-direction: row; align-items: flex-end; margin-bottom: 8px; gap: 8px;">
-
-                    <!-- Passive (no interaction) -->
-                    <ui:VisualElement class="ability-btn--passive"
-                        picking-mode="Ignore"
-                        style="width: 52px; height: 52px; border-radius: 26px; align-items: center; justify-content: center;
-                               background-color: rgba(255,255,255,0.07);
-                               border-width: 3px; border-color: rgba(255,255,255,0.2);">
-                        <ui:Label text="🛡" style="font-size: 22px;" />
-                    </ui:VisualElement>
-
-                    <!-- Gadget button -->
-                    <ui:Button name="btn-gadget" class="ability-btn--gadget"
-                        style="width: 60px; height: 60px; border-radius: 30px; align-items: center; justify-content: center;
-                               background-color: rgba(0,200,255,0.18);
-                               border-width: 3px; border-color: rgba(0,200,255,0.55);">
-                        <ui:Label text="🔧" style="font-size: 24px;" />
-                    </ui:Button>
-
-                    <!-- Super button -->
-                    <ui:Button name="btn-super" class="ability-btn--super"
-                        style="width: 72px; height: 72px; border-radius: 36px; align-items: center; justify-content: center;
-                               background-color: rgba(255,140,0,0.22);
-                               border-width: 3px; border-color: rgba(255,165,0,0.75);">
-                        <ui:Label text="⚡" style="font-size: 30px;" />
-                    </ui:Button>
-
-                </ui:VisualElement>
-
-                <!-- RIGHT JOYSTICK -->
-                <ui:VisualElement name="joystick-right"
-                    style="width: 160px; height: 160px; border-radius: 80px;
-                           background-color: rgba(255,255,255,0.08);
-                           border-width: 3px; border-color: rgba(255,255,255,0.25);" />
-
-            </ui:VisualElement>
-
         </ui:VisualElement>
 
     </ui:VisualElement>

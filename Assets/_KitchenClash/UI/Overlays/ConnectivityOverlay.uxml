@@ -1,50 +1,16 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <Style src="../Styles/theme.uss" />
-    <Style src="../Styles/screens.uss" />
-    <Style src="../Styles/components.uss" />
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/_KitchenClash/UI/Styles/ConnectivityOverlay.uss"/>
+    <ui:VisualElement name="screen-container" class="connectivity-overlay">
 
-    <!-- Full-screen dark scrim with centered connectivity card -->
-    <ui:VisualElement name="connectivity-overlay-root"
-        style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;
-               background-color: var(--bg-scrim);
-               align-items: center; justify-content: center;">
-
-        <!-- Inner card: bg-panel, r-xl, ink border, width 88% -->
-        <ui:VisualElement class="card"
-            style="width: 88%; border-radius: var(--r-xl);
-                   border-width: var(--border-ink-w); border-color: var(--border-ink);
-                   background-color: var(--bg-panel); padding: 24px;
-                   align-items: center;">
-
-            <!-- Signal icon -->
-            <ui:Label text="📡"
-                style="font-size: 48px; -unity-text-align: middle-center;
-                       margin-bottom: var(--sp-12);" />
-
-            <!-- Title -->
-            <ui:Label name="lbl-connectivity-title" text="No Connection"
-                style="font-size: var(--fs-20); -unity-font-style: bold;
-                       color: var(--txt-primary); -unity-text-align: middle-center;
-                       margin-bottom: var(--sp-8);" />
-
-            <!-- Message -->
-            <ui:Label name="lbl-connectivity-msg" text="Check your internet connection"
-                style="font-size: var(--fs-13); color: var(--txt-secondary);
-                       -unity-text-align: middle-center; margin-bottom: var(--sp-12);" />
-
-            <!-- Countdown -->
-            <ui:Label name="lbl-retry-countdown" text="Retrying in 5..."
-                style="font-size: var(--fs-18); -unity-font-style: bold;
-                       color: var(--clr-cyan); -unity-text-align: middle-center;
-                       margin-bottom: var(--sp-20);" />
-
-            <!-- Retry ghost button -->
-            <ui:Button name="btn-retry" class="btn-ghost"
-                style="width: 100%;">
-                <ui:Label text="Retry Now" class="btn-ghost__label"
-                    style="-unity-text-align: middle-center;" />
+        <ui:VisualElement class="connectivity-card">
+            <ui:Label text="📡" class="connectivity-icon"/>
+            <ui:Label name="lbl-connectivity-title" text="NO CONNECTION" class="connectivity-title"/>
+            <ui:Label name="lbl-connectivity-msg" text="Check your internet connection" class="connectivity-msg"/>
+            <ui:Label name="lbl-retry-countdown" text="Retrying in 5..." class="connectivity-countdown"/>
+            <ui:Button name="btn-retry" class="btn-primary">
+                <ui:Label text="RETRY NOW" class="btn-primary__label"/>
             </ui:Button>
-
         </ui:VisualElement>
+
     </ui:VisualElement>
 </ui:UXML>

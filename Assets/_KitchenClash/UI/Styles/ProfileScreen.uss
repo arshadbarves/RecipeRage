@@ -1,0 +1,109 @@
+/* ProfileScreen.uss */
+@import url("project://database/Assets/_KitchenClash/UI/Styles/DesignSystem.uss");
+
+/* ── Screen shell ──────────────────────────────────────────────────────── */
+.profile-screen {
+    background-color: rgb(255, 255, 255);
+    flex-direction: column;
+}
+
+/* ── Player hero card ──────────────────────────────────────────────────── */
+.profile-player-card {
+    flex-direction: row;
+    align-items: center;
+    padding: 30px 40px;
+    background-color: rgb(255, 255, 255);
+    border-bottom-width: 2px;
+    border-color: rgb(224, 224, 224);
+}
+
+/* Avatar wrapper — needs position: relative for badge overlay */
+.profile-avatar-wrap {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin-right: 24px;
+    flex-shrink: 0;
+}
+
+.profile-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 999px;
+    background-color: rgb(245, 245, 245);
+    border-width: 3px;
+    border-color: rgb(0, 0, 0);
+}
+
+/* Level badge — bottom-right of avatar */
+.profile-level-badge {
+    position: absolute;
+    bottom: -8px;
+    right: -8px;
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    background-color: rgb(255, 209, 0);
+    border-width: 3px;
+    border-color: rgb(0, 0, 0);
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-level-badge__text {
+    font-size: 18px;
+    color: rgb(26, 26, 26);
+    -unity-font-definition: var(--font-anton);
+    -unity-text-align: middle-center;
+}
+
+/* Name + tag column */
+.profile-player-info {
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.profile-player-name {
+    font-size: 40px;
+    color: rgb(26, 26, 26);
+    -unity-font-definition: var(--font-anton);
+    -unity-text-align: middle-left;
+}
+
+.profile-player-tag {
+    font-size: 18px;
+    color: rgb(136, 136, 136);
+    -unity-font-definition: var(--font-rajdhani);
+    margin-top: 4px;
+    -unity-text-align: middle-left;
+}
+
+/* ── Stats grid (2-column wrap) ────────────────────────────────────────── */
+.profile-stats-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 20px 32px;
+}
+
+/* ── Favourite chef / streak row ───────────────────────────────────────── */
+.profile-streak-card {
+    flex-direction: row;
+    align-items: center;
+    margin-left: 40px;
+    margin-right: 40px;
+    margin-bottom: 16px;
+    padding: 20px 24px;
+    background-color: rgb(255, 255, 255);
+    border-width: 2px;
+    border-color: rgb(224, 224, 224);
+    border-radius: 16px;
+}
+
+.profile-streak-card__value {
+    flex-grow: 1;
+    font-size: 28px;
+    color: rgb(26, 26, 26);
+    -unity-font-definition: var(--font-anton);
+    -unity-font-style: bold;
+    -unity-text-align: middle-right;
+}
