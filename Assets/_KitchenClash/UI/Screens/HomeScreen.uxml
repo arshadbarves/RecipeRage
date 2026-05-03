@@ -1,8 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <Style src="../Styles/theme.uss" />
-    <Style src="../Styles/screens.uss" />
-    <Style src="../Styles/components.uss" />
-    <Style src="../Styles/home.uss" />
+    <Style src="project://database/Assets/_KitchenClash/UI/Styles/HomeScreen.uss"/>
 
     <ui:VisualElement name="home-root" class="home-root">
 

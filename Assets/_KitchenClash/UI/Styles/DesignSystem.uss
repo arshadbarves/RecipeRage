@@ -17,13 +17,9 @@
     box-sizing: border-box;
 }
 
-/* ─── Fonts ──────────────────────────────────────────────────────────────── */
-Label, Button, TextField, .unity-text-element {
-    -unity-font-definition: var(--font-anton);
-}
-
 /* ─── Token Definitions ─────────────────────────────────────────────────── */
-:root {
+/* Unity USS does not support :root — use VisualElement to cascade variables. */
+VisualElement {
 
     /* Fonts */
     --font-anton:      url("project://database/Assets/Fonts/Anton-Regular%20SDF.asset?fileID=11400000&guid=aa820f8024bbb4ae08525ce0513021a5&type=2#Anton-Regular SDF");
@@ -137,6 +133,11 @@ Label, Button, TextField, .unity-text-element {
     --dur-fast:  0.15s;
     --dur-norm:  0.25s;
     --dur-slow:  0.40s;
+}
+
+/* ─── Default Fonts (after token block so var() resolves correctly) ──────── */
+Label, Button, TextField, .unity-text-element {
+    -unity-font-definition: var(--font-anton);
 }
 
 /* ─── Global Button Press Feel ─────────────────────────────────────────── */
