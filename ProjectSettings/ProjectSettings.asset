@@ -836,7 +836,7 @@ PlayerSettings:
   webWasm2023: 0
   webEnableSubmoduleStrippingCompatibility: 0
   scriptingDefineSymbols:
-    Android: DOTWEEN;UNITY_POST_PROCESSING_STACK_V2;APP_UI_EDITOR_ONLY;SENTIS_ANALYTICS_ENABLED
+    Android: APP_UI_EDITOR_ONLY;DOTWEEN;EOS_AVAILABLE;FIREBASE_REMOTE_CONFIG;SENTIS_ANALYTICS_ENABLED;UNITY_POST_PROCESSING_STACK_V2
     Bratwurst: DOTWEEN
     EmbeddedLinux: DOTWEEN;UNITY_POST_PROCESSING_STACK_V2
     GameCoreScarlett: DOTWEEN;UNITY_POST_PROCESSING_STACK_V2
@@ -848,7 +848,13 @@ PlayerSettings:
     PS4: DOTWEEN;UNITY_POST_PROCESSING_STACK_V2
     PS5: DOTWEEN;UNITY_POST_PROCESSING_STACK_V2
     QNX: DOTWEEN;UNITY_POST_PROCESSING_STACK_V2
-    Standalone: UNITY_NETCODE_GAMEOBJECTS_TESTS;DOTWEEN;UNITY_POST_PROCESSING_STACK_V2;APP_UI_EDITOR_ONLY
+    Standalone: 'Assets/Scripts/Tests/EditMode/Gameplay/ConfigServiceTests.cs(15;13):;error;CS0246:;The;type;or;namespace;name;''ConfigServiceAdapter'';could;not;be;found;(are;you;missing;a;using;directive;an;assembly;reference?)
+
+
+      Assets/Scripts/Tests/EditMode/Gameplay/ConfigServiceTests.cs(26;reference?)
+
+
+'
     VisionOS: DOTWEEN;UNITY_POST_PROCESSING_STACK_V2
     WebGL: DOTWEEN;UNITY_POST_PROCESSING_STACK_V2
     Windows Store Apps: DOTWEEN

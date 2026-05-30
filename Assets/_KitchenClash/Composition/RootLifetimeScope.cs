@@ -46,7 +46,6 @@ public class RootLifetimeScope : LifetimeScope
     private void RegisterCoreServices(IContainerBuilder builder)
     {
         builder.Register<EventBus>(Lifetime.Singleton).As<IEventBus>();
-        builder.Register<FallbackConfigService>(Lifetime.Singleton).As<IConfigService>();
         builder.Register<UnityLoggingService>(Lifetime.Singleton).As<ILoggingService>();
         builder.Register<EncryptionService>(Lifetime.Singleton).As<IEncryptionService>().WithParameter("passphrase", "KitchenClash_2026");
         builder.Register<NetworkConnectivityService>(Lifetime.Singleton).As<IConnectivityService>().As<ITickable>();
@@ -97,7 +96,7 @@ public class RootLifetimeScope : LifetimeScope
 #if FIREBASE_REMOTE_CONFIG
         builder.Register<KitchenClash.Infrastructure.Firebase.FirebaseConfigProvider>(Lifetime.Singleton).As<IConfigProvider>();
 #endif
-        builder.Register<CompositeRemoteConfigService>(Lifetime.Singleton).As<IRemoteConfigService>();
+        builder.Register<CompositeRemoteConfigService>(Lifetime.Singleton).As<IConfigService>().As<IRemoteConfigService>();
         builder.Register<MaintenanceService>(Lifetime.Singleton).As<IMaintenanceService>();
         builder.Register<FirebaseAnalyticsService>(Lifetime.Singleton).As<IAnalyticsService>();
         builder.Register<StubAdsService>(Lifetime.Singleton).As<IAdsService>();

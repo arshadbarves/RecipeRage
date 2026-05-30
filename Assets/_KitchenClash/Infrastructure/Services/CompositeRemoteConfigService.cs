@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using KitchenClash.Application.Services;
 using KitchenClash.Domain;
 using Cysharp.Threading.Tasks;
@@ -9,11 +10,13 @@ namespace KitchenClash.Infrastructure.Services
     /// <summary>
     /// Composite remote config service that tries Firebase first (when available),
     /// then falls back to local defaults. Caches fetched values.
+    /// Implements both IConfigService (raw key-value) and IRemoteConfigService (typed models).
     /// </summary>
-    public sealed class CompositeRemoteConfigService : IRemoteConfigService
+    public sealed class CompositeRemoteConfigService : IConfigService, IRemoteConfigService
     {
         private readonly Dictionary<Type, IConfigModel> _cache = new();
         private readonly FallbackRemoteConfigService _fallback = new();
+        private readonly Dictionary<string, object> _rawCache = new();
 
 #if FIREBASE_REMOTE_CONFIG
         private readonly IConfigProvider _firebaseProvider;
@@ -149,6 +152,18 @@ namespace KitchenClash.Infrastructure.Services
 #endif
             return await _fallback.RefreshConfig<T>();
         }
+
+        public T Get<T>(string key, T fallback)
+        {
+            if (_rawCache.TryGetValue(key, out var cached))
+            {
+                try { return (T)Convert.ChangeType(cached, typeof(T)); }
+                catch { }
+            }
+            return fallback;
+        }
+
+        public Task FetchAsync() => RefreshConfig().AsTask();
 
         private void UpdateHealthStatus(ConfigHealthStatus newStatus)
         {

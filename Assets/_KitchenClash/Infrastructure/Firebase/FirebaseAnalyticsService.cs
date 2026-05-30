@@ -22,15 +22,25 @@ namespace KitchenClash.Infrastructure.Firebase
             foreach (var kvp in parameters)
             {
                 if (kvp.Value is int intVal)
+                {
                     firebaseParams.Add(new Parameter(kvp.Key, intVal));
+                }
                 else if (kvp.Value is float floatVal)
+                {
                     firebaseParams.Add(new Parameter(kvp.Key, floatVal));
+                }
                 else if (kvp.Value is double doubleVal)
+                {
                     firebaseParams.Add(new Parameter(kvp.Key, doubleVal));
+                }
                 else if (kvp.Value is long longVal)
+                {
                     firebaseParams.Add(new Parameter(kvp.Key, longVal));
+                }
                 else
+                {
                     firebaseParams.Add(new Parameter(kvp.Key, kvp.Value?.ToString() ?? ""));
+                }
             }
 
             FirebaseAnalytics.LogEvent(eventName, firebaseParams.ToArray());

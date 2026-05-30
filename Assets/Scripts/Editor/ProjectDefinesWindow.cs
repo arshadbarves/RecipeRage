@@ -31,47 +31,15 @@ namespace RecipeRage.Editor
 
         private static readonly Dictionary<string, DefineInfo> defineRegistry = new Dictionary<string, DefineInfo>
         {
-            // Core
             { "DOTWEEN", new DefineInfo("DOTween Animation Library", "Core", "Tweening and animation system") },
             { "UNITY_POST_PROCESSING_STACK_V2", new DefineInfo("Post Processing Stack V2", "Core", "Unity post-processing effects") },
-
-            // Analytics
-            { "SENTIS_ANALYTICS_ENABLED", new DefineInfo("Sentis Analytics", "Analytics", "Enable Unity Sentis ML analytics") },
-
-            // Editor Only
             { "APP_UI_EDITOR_ONLY", new DefineInfo("UI Editor Only", "Editor", "Editor-only UI tools and debug features") },
+            { "SENTIS_ANALYTICS_ENABLED", new DefineInfo("Sentis Analytics", "Analytics", "Unity Sentis ML analytics") },
+            { "UNITY_NETCODE_GAMEOBJECTS_TESTS", new DefineInfo("Netcode Tests", "Testing", "Unity Netcode GameObjects test code paths") },
 
-            // Development
-            { "ENABLE_DEBUG_LOGS", new DefineInfo("Debug Logging", "Development", "Enable detailed debug logging") },
-            { "ENABLE_CHEAT_MODE", new DefineInfo("Cheat Mode", "Development", "Enable cheat/debug commands") },
-            { "ENABLE_GOD_MODE", new DefineInfo("God Mode", "Development", "Enable god mode for testing") },
-            { "ENABLE_FPS_COUNTER", new DefineInfo("FPS Counter", "Development", "Show FPS counter overlay") },
-            { "ENABLE_NETWORK_DEBUG", new DefineInfo("Network Debug", "Development", "Enable network debugging tools") },
-
-            // Features
-            { "ENABLE_MULTIPLAYER", new DefineInfo("Multiplayer", "Features", "Enable multiplayer/networking features") },
-            { "ENABLE_EOS", new DefineInfo("EOS Integration", "Features", "Enable Epic Online Services integration") },
-            { "ENABLE_FIREBASE", new DefineInfo("Firebase", "Features", "Enable Firebase services") },
-            { "ENABLE_ANALYTICS", new DefineInfo("Analytics", "Features", "Enable analytics tracking") },
-            { "ENABLE_ADS", new DefineInfo("Ads", "Features", "Enable advertisements") },
-            { "ENABLE_IAP", new DefineInfo("In-App Purchases", "Features", "Enable in-app purchase system") },
-            { "ENABLE_NOTIFICATIONS", new DefineInfo("Notifications", "Features", "Enable push notifications") },
-
-            // Platform Specific
-            { "UNITY_IOS", new DefineInfo("iOS Platform", "Platform", "iOS-specific code paths") },
-            { "UNITY_ANDROID", new DefineInfo("Android Platform", "Platform", "Android-specific code paths") },
-            { "UNITY_WEBGL", new DefineInfo("WebGL Platform", "Platform", "WebGL-specific code paths") },
-            { "UNITY_STANDALONE", new DefineInfo("Standalone Platform", "Platform", "Desktop standalone builds") },
-
-            // Performance
-            { "DISABLE_BURST", new DefineInfo("Disable Burst", "Performance", "Disable Burst compiler optimizations") },
-            { "ENABLE_IL2CPP", new DefineInfo("IL2CPP Backend", "Performance", "Use IL2CPP scripting backend") },
-            { "ENABLE_UWP", new DefineInfo("UWP Support", "Platform", "Universal Windows Platform support") },
-
-            // Testing
-            { "ENABLE_UNIT_TESTS", new DefineInfo("Unit Tests", "Testing", "Enable unit test code paths") },
-            { "ENABLE_INTEGRATION_TESTS", new DefineInfo("Integration Tests", "Testing", "Enable integration test code paths") },
-            { "ENABLE_PLAYMODE_TESTS", new DefineInfo("PlayMode Tests", "Testing", "Enable PlayMode test code paths") },
+            { "EOS_AVAILABLE", new DefineInfo("EOS Available", "Features", "Epic Online Services integration active") },
+            { "FIREBASE_ANALYTICS", new DefineInfo("Firebase Analytics", "Features", "Firebase analytics tracking") },
+            { "FIREBASE_REMOTE_CONFIG", new DefineInfo("Firebase Remote Config", "Features", "Firebase remote configuration") },
         };
 
         private static readonly Dictionary<DefinePreset, HashSet<string>> presetDefines = new Dictionary<DefinePreset, HashSet<string>>
@@ -79,25 +47,25 @@ namespace RecipeRage.Editor
             { DefinePreset.Debug, new HashSet<string>
             {
                 "DOTWEEN", "UNITY_POST_PROCESSING_STACK_V2", "APP_UI_EDITOR_ONLY",
-                "ENABLE_DEBUG_LOGS", "ENABLE_CHEAT_MODE", "ENABLE_GOD_MODE",
-                "ENABLE_FPS_COUNTER", "ENABLE_NETWORK_DEBUG"
+                "SENTIS_ANALYTICS_ENABLED",
+                "EOS_AVAILABLE", "FIREBASE_ANALYTICS", "FIREBASE_REMOTE_CONFIG"
             }},
             { DefinePreset.Release, new HashSet<string>
             {
                 "DOTWEEN", "UNITY_POST_PROCESSING_STACK_V2",
-                "ENABLE_MULTIPLAYER", "ENABLE_EOS"
+                "EOS_AVAILABLE", "FIREBASE_ANALYTICS", "FIREBASE_REMOTE_CONFIG"
             }},
             { DefinePreset.Development, new HashSet<string>
             {
                 "DOTWEEN", "UNITY_POST_PROCESSING_STACK_V2", "APP_UI_EDITOR_ONLY",
-                "ENABLE_DEBUG_LOGS", "ENABLE_FPS_COUNTER", "ENABLE_MULTIPLAYER",
-                "ENABLE_EOS", "ENABLE_FIREBASE"
+                "SENTIS_ANALYTICS_ENABLED",
+                "EOS_AVAILABLE", "FIREBASE_ANALYTICS", "FIREBASE_REMOTE_CONFIG",
+                "UNITY_NETCODE_GAMEOBJECTS_TESTS"
             }},
             { DefinePreset.Production, new HashSet<string>
             {
                 "DOTWEEN", "UNITY_POST_PROCESSING_STACK_V2",
-                "ENABLE_MULTIPLAYER", "ENABLE_EOS", "ENABLE_FIREBASE",
-                "ENABLE_ANALYTICS", "ENABLE_ADS", "ENABLE_IAP", "ENABLE_NOTIFICATIONS"
+                "EOS_AVAILABLE", "FIREBASE_ANALYTICS", "FIREBASE_REMOTE_CONFIG"
             }},
         };
 
@@ -381,18 +349,7 @@ namespace RecipeRage.Editor
         {
             if (presetDefines.TryGetValue(preset, out var presetDefs))
             {
-                var allDefines = new HashSet<string>(presetDefs);
-
-                var currentDefines = GetCurrentDefinesSet();
-                foreach (var define in currentDefines)
-                {
-                    if (define.StartsWith("UNITY_"))
-                    {
-                        allDefines.Add(define);
-                    }
-                }
-
-                SetCurrentDefines(string.Join(";", allDefines.OrderBy(d => d)));
+                SetCurrentDefines(string.Join(";", presetDefs.OrderBy(d => d)));
                 Debug.Log($"[ProjectDefines] Applied {preset} preset");
             }
         }

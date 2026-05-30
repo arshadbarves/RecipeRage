@@ -32,7 +32,7 @@ namespace KitchenClash.Infrastructure.Firebase
                 string platform = PlatformUtils.GetPlatform();
                 string environment = PlatformUtils.GetEnvironment();
 
-                FirebaseRemoteConfig remoteConfig = Firebase.RemoteConfig.FirebaseRemoteConfig.DefaultInstance;
+                FirebaseRemoteConfig remoteConfig = FirebaseRemoteConfig.DefaultInstance;
 
                 GameLogger.Log($"Firebase will use device.os for condition matching");
 
