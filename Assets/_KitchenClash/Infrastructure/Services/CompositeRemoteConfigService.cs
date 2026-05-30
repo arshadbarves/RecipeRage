@@ -16,7 +16,7 @@ namespace KitchenClash.Infrastructure.Services
         private readonly FallbackRemoteConfigService _fallback = new();
 
 #if FIREBASE_REMOTE_CONFIG
-        private readonly Firebase.RemoteConfigService _firebaseService;
+        private readonly IConfigProvider _firebaseProvider;
         private bool _firebaseAvailable;
 #endif
 
@@ -34,17 +34,7 @@ namespace KitchenClash.Infrastructure.Services
 #if FIREBASE_REMOTE_CONFIG
         public CompositeRemoteConfigService(IConfigProvider configProvider)
         {
-            _firebaseService = new Firebase.RemoteConfigService(configProvider);
-            _firebaseService.OnConfigUpdated += cfg =>
-            {
-                _cache[cfg.GetType()] = cfg;
-                OnConfigUpdated?.Invoke(cfg);
-            };
-            _firebaseService.OnSpecificConfigUpdated += (t, cfg) =>
-            {
-                _cache[t] = cfg;
-                OnSpecificConfigUpdated?.Invoke(t, cfg);
-            };
+            _firebaseProvider = configProvider;
         }
 #else
         public CompositeRemoteConfigService()
@@ -60,13 +50,12 @@ namespace KitchenClash.Infrastructure.Services
             try
             {
                 GameLogger.Log("[CompositeRemoteConfig] Attempting Firebase initialization...");
-                bool success = await _firebaseService.Initialize();
-                if (success)
+                bool success = await _firebaseProvider.Initialize();
+                if (success && _firebaseProvider.IsAvailable())
                 {
                     _firebaseAvailable = true;
                     _isInitialized = true;
-                    UpdateHealthStatus(_firebaseService.HealthStatus);
-                    _lastUpdateTime = _firebaseService.LastUpdateTime;
+                    UpdateHealthStatus(ConfigHealthStatus.Healthy);
                     GameLogger.Log("[CompositeRemoteConfig] Firebase initialized successfully");
                     return true;
                 }
@@ -76,7 +65,6 @@ namespace KitchenClash.Infrastructure.Services
                 GameLogger.LogError($"[CompositeRemoteConfig] Firebase init failed: {ex.Message}");
             }
 #endif
-            // Fall back to local defaults
             GameLogger.Log("[CompositeRemoteConfig] Using fallback defaults");
             await _fallback.Initialize();
             _isInitialized = true;
@@ -89,17 +77,6 @@ namespace KitchenClash.Infrastructure.Services
             if (_cache.TryGetValue(typeof(T), out var cached))
                 return cached as T;
 
-#if FIREBASE_REMOTE_CONFIG
-            if (_firebaseAvailable)
-            {
-                var config = _firebaseService.GetConfig<T>();
-                if (config != null)
-                {
-                    _cache[typeof(T)] = config;
-                    return config;
-                }
-            }
-#endif
             return _fallback.GetConfig<T>();
         }
 
@@ -116,12 +93,28 @@ namespace KitchenClash.Infrastructure.Services
 #if FIREBASE_REMOTE_CONFIG
             if (_firebaseAvailable)
             {
-                bool result = await _firebaseService.RefreshConfig();
-                if (result)
+                try
                 {
-                    _lastUpdateTime = DateTime.UtcNow;
-                    UpdateHealthStatus(ConfigHealthStatus.Healthy);
-                    return true;
+                    var configs = await _firebaseProvider.FetchAllConfigs();
+                    if (configs != null && configs.Count > 0)
+                    {
+                        foreach (var kvp in configs)
+                        {
+                            if (kvp.Value != null && kvp.Value.Validate())
+                            {
+                                _cache[kvp.Value.GetType()] = kvp.Value;
+                                OnConfigUpdated?.Invoke(kvp.Value);
+                                OnSpecificConfigUpdated?.Invoke(kvp.Value.GetType(), kvp.Value);
+                            }
+                        }
+                        _lastUpdateTime = DateTime.UtcNow;
+                        UpdateHealthStatus(ConfigHealthStatus.Healthy);
+                        return true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    GameLogger.LogError($"[CompositeRemoteConfig] Firebase refresh failed: {ex.Message}");
                 }
                 UpdateHealthStatus(ConfigHealthStatus.Degraded);
             }
@@ -136,11 +129,21 @@ namespace KitchenClash.Infrastructure.Services
 #if FIREBASE_REMOTE_CONFIG
             if (_firebaseAvailable)
             {
-                bool result = await _firebaseService.RefreshConfig<T>();
-                if (result)
+                try
                 {
-                    _lastUpdateTime = DateTime.UtcNow;
-                    return true;
+                    var config = await _firebaseProvider.FetchConfig<T>(typeof(T).Name);
+                    if (config != null && config.Validate())
+                    {
+                        _cache[typeof(T)] = config;
+                        OnConfigUpdated?.Invoke(config);
+                        OnSpecificConfigUpdated?.Invoke(typeof(T), config);
+                        _lastUpdateTime = DateTime.UtcNow;
+                        return true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    GameLogger.LogError($"[CompositeRemoteConfig] Firebase refresh failed: {ex.Message}");
                 }
             }
 #endif
