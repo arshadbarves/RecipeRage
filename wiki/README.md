@@ -14,6 +14,7 @@ Game Design Document v3.0 — Organized Reference
 | [UI-UX](UI-UX.md) | Screens, navigation, RouterService, USS transitions |
 | [Technical](Technical.md) | Architecture, DI, networking, Firebase |
 | [Monetization](Monetization.md) | IAP, ads, battle pass, daily streak |
+| [Analytics](Analytics.md) | Firebase events, tracking, metrics |
 | [Audio](Audio.md) | Sound design, music, SFX |
 | [Art-Direction](Art-Direction.md) | Visual style, 3D models, animations |
 
