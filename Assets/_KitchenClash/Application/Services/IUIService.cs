@@ -59,6 +59,7 @@ namespace KitchenClash.Application.Services
         event Action<Type> OnScreenHidden;
         event Action OnAllScreensHidden;
 
+        void SetCurrentScope(VContainer.IObjectResolver scope);
         void Update(float deltaTime);
     }
 

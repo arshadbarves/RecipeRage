@@ -1,8 +1,7 @@
 using System;
-using KitchenClash.Infrastructure.Logging;
+using KitchenClash.Application.Services;
 using KitchenClash.Domain;
 using KitchenClash.Application.State;
-using KitchenClash.Infrastructure.States;
 using VContainer;
 using VContainer.Unity;
 
@@ -13,6 +12,7 @@ namespace KitchenClash.Infrastructure.DI
         private readonly IObjectResolver _container;
         private readonly IEventBus _eventBus;
         private readonly IGameStateManager _stateManager;
+        private readonly IUIService _uiService;
 
         private LifetimeScope _sessionScope;
 
@@ -20,11 +20,12 @@ namespace KitchenClash.Infrastructure.DI
         public bool IsSessionActive => _sessionScope != null;
 
         [Inject]
-        public SessionManager(IObjectResolver container, IEventBus eventBus, IGameStateManager stateManager)
+        public SessionManager(IObjectResolver container, IEventBus eventBus, IGameStateManager stateManager, IUIService uiService)
         {
             _container = container;
             _eventBus = eventBus;
             _stateManager = stateManager;
+            _uiService = uiService;
         }
 
         public void Initialize()
@@ -36,6 +37,7 @@ namespace KitchenClash.Infrastructure.DI
             if (_sessionScope != null) DestroySession();
             var parentScope = _container.Resolve<LifetimeScope>();
             _sessionScope = parentScope.CreateChild<LifetimeScope>();
+            _uiService.SetCurrentScope(_sessionScope.Container);
             GameLogger.LogInfo("SessionLifetimeScope created.");
         }
 
@@ -45,6 +47,7 @@ namespace KitchenClash.Infrastructure.DI
             {
                 _sessionScope.Dispose();
                 _sessionScope = null;
+                _uiService.SetCurrentScope(null);
                 GameLogger.LogInfo("SessionLifetimeScope destroyed.");
             }
         }

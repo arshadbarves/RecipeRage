@@ -219,6 +219,7 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             public UniTask ShowNotification(string message, NotificationType type = NotificationType.Info, float duration = 3f) => UniTask.CompletedTask;
             public UniTask ShowNotification(string title, string message, NotificationType type = NotificationType.Info, float duration = 3f) => UniTask.CompletedTask;
             public void Update(float deltaTime) { }
+            public void SetCurrentScope(VContainer.IObjectResolver scope) { }
         }
 
         private sealed class FakeConfigService : IConfigService

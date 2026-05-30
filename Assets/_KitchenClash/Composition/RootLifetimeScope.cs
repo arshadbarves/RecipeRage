@@ -1,3 +1,6 @@
+using System;
+using System.Linq;
+using System.Reflection;
 using KitchenClash.Application;
 using KitchenClash.Application.Services;
 using KitchenClash.Application.State;
@@ -18,6 +21,7 @@ using KitchenClash.Presentation;
 using KitchenClash.Presentation.Common;
 using KitchenClash.Presentation.ViewModels;
 using UnityEngine;
+using UnityEngine.UIElements;
 using VContainer;
 using VContainer.Unity;
 
@@ -25,18 +29,34 @@ public class RootLifetimeScope : LifetimeScope
 {
     [SerializeField] private UGSConfig _ugsConfig;
     [SerializeField] private KitchenClash.Infrastructure.Audio.AudioSettings _audioSettings;
+    [SerializeField] private UIDocument _uiDocument;
 
     protected override void Configure(IContainerBuilder builder)
     {
-        // ── Core singletons ──
+        RegisterCoreServices(builder);
+        RegisterAudio(builder);
+        RegisterUI(builder);
+        RegisterInfrastructure(builder);
+        RegisterViewModels(builder);
+        RegisterScreens(builder);
+        RegisterGameStates(builder);
+        RegisterEntryPoints(builder);
+    }
+
+    private void RegisterCoreServices(IContainerBuilder builder)
+    {
         builder.Register<EventBus>(Lifetime.Singleton).As<IEventBus>();
         builder.Register<FallbackConfigService>(Lifetime.Singleton).As<IConfigService>();
         builder.Register<UnityLoggingService>(Lifetime.Singleton).As<ILoggingService>();
-        builder.Register<EncryptionService>(Lifetime.Singleton).As<IEncryptionService>();
+        builder.Register<EncryptionService>(Lifetime.Singleton).As<IEncryptionService>().WithParameter("passphrase", "KitchenClash_2026");
         builder.Register<NetworkConnectivityService>(Lifetime.Singleton).As<IConnectivityService>().As<ITickable>();
         builder.Register<NTPTimeService>(Lifetime.Singleton).As<INTPTimeService>().As<IInitializable>();
+        builder.Register<ChefRegistry>(Lifetime.Singleton);
+        builder.Register<MapRegistry>(Lifetime.Singleton);
+    }
 
-        // ── Audio ──
+    private void RegisterAudio(IContainerBuilder builder)
+    {
         if (_audioSettings != null)
         {
             builder.RegisterInstance(_audioSettings);
@@ -52,50 +72,37 @@ public class RootLifetimeScope : LifetimeScope
         builder.Register<SFXPlayer>(Lifetime.Singleton).As<ISFXPlayer>();
         builder.Register<AudioService>(Lifetime.Singleton).As<IAudioService>();
         builder.Register<AudioEventListener>(Lifetime.Singleton);
+    }
 
-        // ── Shared GDD registries ──
-        builder.Register<ChefRegistry>(Lifetime.Singleton);
-        builder.Register<MapRegistry>(Lifetime.Singleton);
+    private void RegisterUI(IContainerBuilder builder)
+    {
+        builder.Register<UIScreenStackManager>(Lifetime.Singleton).As<IUIScreenStackManager>();
+        if (_uiDocument != null)
+        {
+            builder.RegisterInstance(_uiDocument);
+        }
 
-        // ── UI ──
         builder.Register<UIService>(Lifetime.Singleton).As<IUIService>().As<IStartable>().As<ITickable>();
-
-        // ── Router (lazy-init: root + factory set after UIDocument is available) ──
         builder.Register<RouterService>(Lifetime.Singleton).As<IRouterService>();
-
-        // ── Localization ──
         builder.Register<LocalizationManager>(Lifetime.Singleton).As<ILocalizationManager>().As<IInitializable>();
+    }
 
-        // ── State machine ──
+    private void RegisterInfrastructure(IContainerBuilder builder)
+    {
         builder.Register<GameStateFactory>(Lifetime.Singleton).As<IStateFactory>();
         builder.Register<GameStateManager>(Lifetime.Singleton).As<IGameStateManager>().As<ITickable>();
-
-        // ── Persistence ──
         builder.Register<PlayerDataService>(Lifetime.Singleton).As<IPlayerDataService>();
         builder.Register<LocalSaveService>(Lifetime.Singleton).As<ISaveService>();
 
-        // ── Remote Config (composite: Firebase-first with fallback) ──
 #if FIREBASE_REMOTE_CONFIG
         builder.Register<KitchenClash.Infrastructure.Firebase.FirebaseConfigProvider>(Lifetime.Singleton).As<IConfigProvider>();
-        builder.Register<CompositeRemoteConfigService>(Lifetime.Singleton).As<IRemoteConfigService>();
-#else
-        builder.Register<CompositeRemoteConfigService>(Lifetime.Singleton).As<IRemoteConfigService>();
 #endif
-
-        // ── Maintenance ──
+        builder.Register<CompositeRemoteConfigService>(Lifetime.Singleton).As<IRemoteConfigService>();
         builder.Register<MaintenanceService>(Lifetime.Singleton).As<IMaintenanceService>();
-
-        // ── Analytics ──
         builder.Register<FirebaseAnalyticsService>(Lifetime.Singleton).As<IAnalyticsService>();
-
-        // ── Ads ──
         builder.Register<StubAdsService>(Lifetime.Singleton).As<IAdsService>();
-
-        // ── IAP ──
         builder.Register<StubIAPService>(Lifetime.Singleton).As<IIAPService>();
 
-        // ── Auth ──
-        // UGSConfig ScriptableObject – use serialized field if assigned, otherwise create default
         if (_ugsConfig != null)
         {
             builder.RegisterInstance(_ugsConfig);
@@ -106,24 +113,50 @@ public class RootLifetimeScope : LifetimeScope
         }
 
         builder.Register<AuthenticationService>(Lifetime.Singleton).As<IAuthService>();
+    }
 
-        // ── ViewModels (transient, injected into screens) ──
+    private void RegisterViewModels(IContainerBuilder builder)
+    {
         builder.Register<LoginViewModel>(Lifetime.Transient);
+    }
 
-        // ── Game states (transient, resolved by IStateFactory) ──
-        builder.Register<KitchenClash.Infrastructure.States.BootstrapState>(Lifetime.Transient);
-        builder.Register<KitchenClash.Infrastructure.States.LoginState>(Lifetime.Transient);
-        builder.Register<KitchenClash.Infrastructure.States.MainMenuState>(Lifetime.Transient);
-        builder.Register<KitchenClash.Infrastructure.States.SessionLoadingState>(Lifetime.Transient);
-        builder.Register<KitchenClash.Infrastructure.States.MaintenanceState>(Lifetime.Transient);
-        builder.Register<KitchenClash.Infrastructure.States.MatchmakingState>(Lifetime.Transient);
-        builder.Register<KitchenClash.Infrastructure.States.GameplayState>(Lifetime.Transient);
-        builder.Register<KitchenClash.Infrastructure.States.GameOverState>(Lifetime.Transient);
+    private void RegisterScreens(IContainerBuilder builder)
+    {
+        var screenTypes = AppDomain.CurrentDomain.GetAssemblies()
+            .SelectMany(a =>
+            {
+                try { return a.GetTypes(); }
+                catch { return System.Array.Empty<System.Type>(); }
+            })
+            .Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(BaseUIScreen)))
+            .Where(t => t.GetCustomAttribute<UIScreenAttribute>() != null);
 
-        // ── Connectivity overlay (driven by IConnectivityService + IUIService, both Root singletons) ──
+        foreach (System.Type screenType in screenTypes)
+        {
+            builder.Register(screenType, Lifetime.Transient);
+        }
+    }
+
+    private void RegisterGameStates(IContainerBuilder builder)
+    {
+        var stateTypes = AppDomain.CurrentDomain.GetAssemblies()
+            .SelectMany(a =>
+            {
+                try { return a.GetTypes(); }
+                catch { return System.Array.Empty<System.Type>(); }
+            })
+            .Where(t => t.IsClass && !t.IsAbstract && typeof(IState).IsAssignableFrom(t))
+            .Where(t => t.Namespace?.StartsWith("KitchenClash.Infrastructure.States") == true);
+
+        foreach (System.Type stateType in stateTypes)
+        {
+            builder.Register(stateType, Lifetime.Transient);
+        }
+    }
+
+    private void RegisterEntryPoints(IContainerBuilder builder)
+    {
         builder.RegisterEntryPoint<KitchenClash.Presentation.Overlays.ConnectivityOverlayPresenter>();
-
-        // ── Entry point ──
         builder.RegisterEntryPoint<GameBootstrapper>();
     }
 }

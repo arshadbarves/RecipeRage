@@ -30,6 +30,7 @@ namespace KitchenClash.Presentation.Common
         private readonly Dictionary<Type, BaseUIScreen> _screens = new();
         private readonly IUIScreenStackManager _stackManager;
         private readonly VContainer.IObjectResolver _container;
+        private VContainer.IObjectResolver _currentScope;
 
         public event Action<Type> OnScreenShown;
         public event Action<Type> OnScreenHidden;
@@ -48,6 +49,11 @@ namespace KitchenClash.Presentation.Common
         }
 
         public bool IsInitialized => _isInitialized && _root != null;
+
+        public void SetCurrentScope(VContainer.IObjectResolver scope)
+        {
+            _currentScope = scope;
+        }
 
         public void Start()
         {
@@ -141,11 +147,11 @@ namespace KitchenClash.Presentation.Common
         {
             foreach (Type screenType in UIScreenRegistry.GetRegisteredScreenTypes())
             {
-                CreateScreen(screenType);
+                CreateScreenController(screenType);
             }
         }
 
-        private void CreateScreen(Type screenType)
+        private void CreateScreenController(Type screenType)
         {
             UIScreenAttribute attribute = UIScreenRegistry.GetScreenAttribute(screenType);
             if (attribute == null) return;
@@ -155,12 +161,24 @@ namespace KitchenClash.Presentation.Common
 
             var controller = new UIScreenController(screenType, attribute.Priority, attribute.Category, template, layerRoot);
             _controllers[screenType] = controller;
+        }
 
-            var screen = (BaseUIScreen)_container.Resolve(screenType);
-            if (screen == null) return;
+        private BaseUIScreen ResolveScreen(Type screenType)
+        {
+            if (_screens.TryGetValue(screenType, out BaseUIScreen existing))
+                return existing;
+
+            UIScreenAttribute attribute = UIScreenRegistry.GetScreenAttribute(screenType);
+            if (attribute == null) return null;
+            if (!_controllers.TryGetValue(screenType, out UIScreenController controller)) return null;
+
+            VContainer.IObjectResolver resolver = _currentScope ?? _container;
+            var screen = (BaseUIScreen)resolver.Resolve(screenType);
+            if (screen == null) return null;
 
             screen.Initialize(attribute.Priority, attribute.Category, controller);
             _screens[screenType] = screen;
+            return screen;
         }
 
         private VisualTreeAsset LoadTemplateFromPath(string templatePath)
@@ -334,7 +352,7 @@ namespace KitchenClash.Presentation.Common
 
         public void HideAllScreens(bool animate = false)
         {
-            foreach (BaseUIScreen screen in _screens.Values.Where(s => s.IsVisible))
+            foreach (BaseUIScreen screen in _screens.Values.Where(s => s != null && s.IsVisible))
             {
                 HideScreenInternal(screen, animate);
             }
@@ -343,6 +361,15 @@ namespace KitchenClash.Presentation.Common
 
         public T GetScreen<T>() where T : class
         {
+            foreach (Type screenType in _controllers.Keys)
+            {
+                if (typeof(T).IsAssignableFrom(screenType))
+                {
+                    BaseUIScreen screen = ResolveScreen(screenType);
+                    if (screen is T typedScreen) return typedScreen;
+                }
+            }
+
             foreach (BaseUIScreen screen in _screens.Values)
             {
                 if (screen is T typedScreen) return typedScreen;
@@ -375,7 +402,7 @@ namespace KitchenClash.Presentation.Common
 
         public void Update(float deltaTime)
         {
-            foreach (BaseUIScreen screen in _screens.Values.Where(s => s.IsVisible))
+            foreach (BaseUIScreen screen in _screens.Values.Where(s => s != null && s.IsVisible))
             {
                 screen.Update(deltaTime);
             }
@@ -388,7 +415,8 @@ namespace KitchenClash.Presentation.Common
 
         private void ShowAndTrack(Type screenType, UIScreenCategory category, bool animate, bool clearExisting)
         {
-            if (!_screens.TryGetValue(screenType, out BaseUIScreen screen)) return;
+            BaseUIScreen screen = ResolveScreen(screenType);
+            if (screen == null) return;
 
             if (clearExisting)
             {
@@ -411,7 +439,7 @@ namespace KitchenClash.Presentation.Common
 
         private void HideVisibleScreensInCategory(UIScreenCategory category, bool animate)
         {
-            foreach (BaseUIScreen screen in _screens.Values.Where(s => s.Category == category && s.IsVisible))
+            foreach (BaseUIScreen screen in _screens.Values.Where(s => s != null && s.Category == category && s.IsVisible))
             {
                 HideScreenInternal(screen, animate);
             }

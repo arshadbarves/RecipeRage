@@ -1,4 +1,4 @@
-<UXML xmlns="UnityEngine.UIElements" xmlns:ui="Core.UI.Controls" editor-extension-mode="False">
+<UXML xmlns="UnityEngine.UIElements" xmlns:ui="KitchenClash.Presentation.Controls" editor-extension-mode="False">
     <Style src="project://database/Assets/Resources/UI/Styles/Popups/UsernamePopup.uss?fileID=7433441132597879392&amp;guid=d60aaa89678cc47e39da55e1a6434beb&amp;type=3#UsernamePopup"/>
     <VisualElement name="username-popup-root" class="popup-root-fullscreen">
         <VisualElement name="popup-card-wrapper" class="popup-skewed-container">
