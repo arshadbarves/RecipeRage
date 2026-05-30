@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using KitchenClash.Infrastructure.EOS;
 using KitchenClash.Domain;
 using UGSFriends = Unity.Services.Friends;
 using UGSModels = Unity.Services.Friends.Models;

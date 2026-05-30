@@ -1,6 +1,5 @@
 using KitchenClash.Domain;
 using Unity.Netcode;
-using UnityEngine;
 
 namespace KitchenClash.Infrastructure.Network
 {

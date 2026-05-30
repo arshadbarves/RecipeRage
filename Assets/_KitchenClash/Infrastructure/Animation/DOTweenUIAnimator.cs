@@ -1,5 +1,4 @@
 using System.Threading;
-using KitchenClash.Domain;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;

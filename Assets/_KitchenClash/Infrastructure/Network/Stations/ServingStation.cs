@@ -4,7 +4,6 @@ using KitchenClash.Infrastructure.Network.Cooking;
 using KitchenClash.Infrastructure.Gameplay;
 using KitchenClash.Application;
 using KitchenClash.Application.Services;
-using KitchenClash.Infrastructure.Network;
 using Unity.Netcode;
 using UnityEngine;
 using VContainer;

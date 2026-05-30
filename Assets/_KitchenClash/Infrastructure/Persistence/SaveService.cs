@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using KitchenClash.Domain;
 using KitchenClash.Infrastructure.EOS;
-using KitchenClash.Infrastructure.Persistence;
 using Cysharp.Threading.Tasks;
 
 namespace KitchenClash.Infrastructure.Persistence

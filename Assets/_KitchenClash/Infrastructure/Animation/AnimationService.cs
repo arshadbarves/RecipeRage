@@ -3,8 +3,6 @@ using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
-using DG.Tweening.Core;
-using DG.Tweening.Plugins.Options;
 using UnityEngine;
 using UnityEngine.UIElements;
 

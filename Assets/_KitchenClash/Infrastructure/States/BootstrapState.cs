@@ -3,9 +3,7 @@ using System;
 using KitchenClash.Application.Services;
 using KitchenClash.Application.State;
 using Cysharp.Threading.Tasks;
-using KitchenClash.Infrastructure.Logging;
 using KitchenClash.Domain;
-using KitchenClash.Infrastructure.EOS;
 using KitchenClash.Infrastructure.Services;
 
 namespace KitchenClash.Infrastructure.States

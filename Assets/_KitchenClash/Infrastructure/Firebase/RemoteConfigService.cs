@@ -1,7 +1,6 @@
 using System;
 using KitchenClash.Application.Services;
 using System.Collections.Generic;
-using KitchenClash.Infrastructure.Logging;
 using KitchenClash.Domain;
 using Cysharp.Threading.Tasks;
 using VContainer;

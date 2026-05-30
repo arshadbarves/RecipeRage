@@ -1,5 +1,4 @@
 using System;
-using KitchenClash.Infrastructure.Logging;
 using KitchenClash.Domain;
 using UnityEngine;
 

@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using KitchenClash.Application.Services;
 using KitchenClash.Domain;
 using KitchenClash.Infrastructure.Network.Spawning;
-using KitchenClash.Infrastructure.Network;
 using Unity.Netcode;
 using UnityEngine;
 

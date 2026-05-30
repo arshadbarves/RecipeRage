@@ -1,11 +1,9 @@
 using KitchenClash.Application.Models;
 using KitchenClash.Application;
 using System;
-using KitchenClash.Infrastructure.Network;
 using KitchenClash.Application.Services;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
-using KitchenClash.Infrastructure.Logging;
 using KitchenClash.Domain;
 using UnityEngine;
 using UnityEngine.SceneManagement;

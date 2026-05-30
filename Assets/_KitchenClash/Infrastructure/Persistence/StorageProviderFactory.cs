@@ -1,7 +1,5 @@
 using KitchenClash.Application;
-using KitchenClash.Domain;
 using KitchenClash.Infrastructure.EOS;
-using KitchenClash.Infrastructure.Persistence;
 
 namespace KitchenClash.Infrastructure.Persistence
 {

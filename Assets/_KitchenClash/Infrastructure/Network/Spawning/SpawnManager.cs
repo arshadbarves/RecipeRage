@@ -3,7 +3,6 @@ using KitchenClash.Application.Services;
 using System.Linq;
 using KitchenClash.Infrastructure.Network.Bot;
 using KitchenClash.Domain;
-using KitchenClash.Infrastructure.Network;
 using Unity.Netcode;
 using UnityEngine;
 using VContainer;

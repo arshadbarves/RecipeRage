@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using KitchenClash.Application.Models;
 using KitchenClash.Application.Services;
 using KitchenClash.Domain;
 

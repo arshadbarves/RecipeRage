@@ -1,7 +1,6 @@
 using KitchenClash.Application;
 using System;
 using KitchenClash.Application.Services;
-using KitchenClash.Infrastructure.Network;
 using KitchenClash.Domain;
 using KitchenClash.Application.State;
 using KitchenClash.Infrastructure.EOS;

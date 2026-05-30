@@ -1,7 +1,5 @@
-using KitchenClash.Application.Models;
 using KitchenClash.Application;
 using System.Collections.Generic;
-using KitchenClash.Infrastructure.Network;
 using KitchenClash.Domain;
 using PlayEveryWare.EpicOnlineServices;
 using PlayEveryWare.EpicOnlineServices.Samples;

@@ -3,8 +3,6 @@ using KitchenClash.Application;
 using System;
 using System.Threading.Tasks;
 using KitchenClash.Domain;
-using KitchenClash.Infrastructure.Logging;
-using KitchenClash.Infrastructure.Persistence;
 
 namespace KitchenClash.Infrastructure.Persistence
 {

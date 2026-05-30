@@ -1,6 +1,5 @@
 // Config models have moved to Application.Models.RemoteConfigs.
 // This file provides namespace aliases for backward compatibility within Infrastructure.
-using KitchenClash.Application.Models.RemoteConfigs;
 
 namespace KitchenClash.Infrastructure.Firebase
 {

@@ -1,7 +1,6 @@
 using System;
 using KitchenClash.Domain;
 using KitchenClash.Application.Models;
-using UnityEngine;
 
 namespace KitchenClash.Infrastructure.Gameplay
 {

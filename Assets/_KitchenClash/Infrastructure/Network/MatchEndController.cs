@@ -1,7 +1,5 @@
 using KitchenClash.Application.Models;
 using KitchenClash.Domain;
-using KitchenClash.Infrastructure.EOS;
-using KitchenClash.Application.Services;
 using KitchenClash.Infrastructure.DI;
 using Unity.Netcode;
 using UnityEngine;

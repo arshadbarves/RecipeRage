@@ -4,7 +4,6 @@ using KitchenClash.Domain;
 using KitchenClash.Infrastructure.Configuration;
 using KitchenClash.Application.Models.RemoteConfigs;
 using Cysharp.Threading.Tasks;
-using UnityEngine;
 
 namespace KitchenClash.Infrastructure.Services
 {

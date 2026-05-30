@@ -1,5 +1,4 @@
 using System;
-using KitchenClash.Application;
 using KitchenClash.Application.Services;
 using KitchenClash.Application.State;
 using KitchenClash.Domain;

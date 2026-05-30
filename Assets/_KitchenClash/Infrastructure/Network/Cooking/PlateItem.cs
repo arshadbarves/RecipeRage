@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using KitchenClash.Application.Services;
-using KitchenClash.Infrastructure.Network;
 using KitchenClash.Domain;
 using Unity.Netcode;
 using UnityEngine;

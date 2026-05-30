@@ -2,7 +2,6 @@ using KitchenClash.Application;
 using KitchenClash.Application.Models;
 using KitchenClash.Application.Services;
 using KitchenClash.Domain;
-using KitchenClash.Infrastructure.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;

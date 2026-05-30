@@ -1,6 +1,4 @@
 using KitchenClash.Domain;
-using KitchenClash.Application.Services;
-using KitchenClash.Infrastructure.Network;
 using Unity.Netcode;
 using UnityEngine;
 using VContainer;
