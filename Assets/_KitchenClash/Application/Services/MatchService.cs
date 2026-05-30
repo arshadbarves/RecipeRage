@@ -32,17 +32,25 @@ namespace KitchenClash.Application
 
         public bool CanJoinQueue(string queueId, int playerLevel)
         {
-            if (!TryGetQueue(queueId, out var queue))
+            if (!TryGetQueue(queueId, out MatchQueueDefinition queue))
+            {
                 return false;
+            }
 
             if (!queue.IsEnabled)
+            {
                 return false;
+            }
 
             if (playerLevel < queue.MinLevelRequired)
+            {
                 return false;
+            }
 
             if (!queue.IsEventActive())
+            {
                 return false;
+            }
 
             return true;
         }
@@ -86,10 +94,12 @@ namespace KitchenClash.Application
         private static DateTime? ParseUtcDate(string value)
         {
             if (string.IsNullOrEmpty(value))
+            {
                 return null;
+            }
 
             return DateTime.TryParse(value, null, System.Globalization.DateTimeStyles.RoundtripKind,
-                out var dt) ? dt : null;
+                out DateTime dt) ? dt : null;
         }
     }
 }

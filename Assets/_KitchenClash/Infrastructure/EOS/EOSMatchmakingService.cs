@@ -362,7 +362,7 @@ namespace KitchenClash.Infrastructure.EOS
 
                 if (result == Result.Success && attribute.HasValue)
                 {
-                    var attrData = attribute.Value.Data;
+                    AttributeData? attrData = attribute.Value.Data;
                     if (attrData.Value.Key == key)
                     {
                         return attrData.Value.Value.AsUtf8;
@@ -422,9 +422,11 @@ namespace KitchenClash.Infrastructure.EOS
 
         private void OnMatchLobbyUpdatedDuringMatchmaking()
         {
-            var matchLobby = _lobbyManager.CurrentMatchLobby;
+            LobbyInfo matchLobby = _lobbyManager.CurrentMatchLobby;
             if (matchLobby == null)
+            {
                 return;
+            }
 
             PlayersFound = matchLobby.CurrentPlayers;
             OnPlayersFound?.Invoke(PlayersFound, RequiredPlayers);
@@ -455,14 +457,14 @@ namespace KitchenClash.Infrastructure.EOS
 
         private void UpdateMatchLobbyStatus(string lobbyId, string status)
         {
-            var localUserId = EOSManager.Instance.GetProductUserId();
+            ProductUserId localUserId = EOSManager.Instance.GetProductUserId();
             var modOptions = new UpdateLobbyModificationOptions
             {
                 LobbyId = lobbyId,
                 LocalUserId = localUserId
             };
 
-            var lobbyInterface = EOSManager.Instance.GetEOSLobbyInterface();
+            LobbyInterface lobbyInterface = EOSManager.Instance.GetEOSLobbyInterface();
             Result result = lobbyInterface.UpdateLobbyModification(ref modOptions, out LobbyModification modification);
 
             if (result != Result.Success || modification == null)
@@ -550,11 +552,13 @@ namespace KitchenClash.Infrastructure.EOS
         public void FillMatchWithBots()
         {
             if (_hasFilledWithBots)
+            {
                 return;
+            }
 
             _hasFilledWithBots = true;
 
-            var matchLobby = _lobbyManager.CurrentMatchLobby;
+            LobbyInfo matchLobby = _lobbyManager.CurrentMatchLobby;
             if (matchLobby == null)
             {
                 GameLogger.LogError("Cannot fill with bots - no match lobby");
@@ -582,7 +586,7 @@ namespace KitchenClash.Infrastructure.EOS
                 statusUpdated = true;
             }
 
-            var bots = _botManager.CreateBots(neededBots, startingTeamId: 0);
+            List<BotPlayer> bots = _botManager.CreateBots(neededBots, startingTeamId: 0);
 
             PlayersFound = RequiredPlayers;
             OnPlayersFound?.Invoke(PlayersFound, RequiredPlayers);

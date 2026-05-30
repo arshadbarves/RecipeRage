@@ -35,26 +35,45 @@ namespace KitchenClash.Infrastructure.Gameplay
 
         public virtual void Update(float deltaTime)
         {
-            if (CooldownTimer > 0f) CooldownTimer -= deltaTime;
+            if (CooldownTimer > 0f)
+            {
+                CooldownTimer -= deltaTime;
+            }
+
             if (DurationTimer > 0f)
             {
                 DurationTimer -= deltaTime;
-                if (DurationTimer <= 0f) Deactivate();
+                if (DurationTimer <= 0f)
+                {
+                    Deactivate();
+                }
             }
         }
 
         public virtual bool Activate()
         {
-            if (IsOnCooldown) return false;
+            if (IsOnCooldown)
+            {
+                return false;
+            }
+
             CooldownTimer = Cooldown;
-            if (Duration > 0f) DurationTimer = Duration;
+            if (Duration > 0f)
+            {
+                DurationTimer = Duration;
+            }
+
             OnAbilityActivated?.Invoke(this);
             return true;
         }
 
         public virtual void Deactivate()
         {
-            if (!IsActive) return;
+            if (!IsActive)
+            {
+                return;
+            }
+
             DurationTimer = 0f;
             OnAbilityDeactivated?.Invoke(this);
         }

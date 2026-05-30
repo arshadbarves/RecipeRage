@@ -40,9 +40,11 @@ namespace KitchenClash.Infrastructure.EOS
 
         public async UniTask<T> LoadAsync<T>(string key)
         {
-            var json = await LoadRawAsync(key);
+            string json = await LoadRawAsync(key);
             if (string.IsNullOrEmpty(json))
+            {
                 return default;
+            }
 
             try
             {
@@ -70,7 +72,7 @@ namespace KitchenClash.Infrastructure.EOS
                 // 2. Call ReadFile with read/completion callbacks
                 // 3. Accumulate byte[] chunks, convert to string via UTF8
                 // For now, attempt EOS then fallback.
-                var result = await _fallbackStorage.ReadAsync(key);
+                string result = await _fallbackStorage.ReadAsync(key);
                 return result;
             }
             catch (System.Exception ex)

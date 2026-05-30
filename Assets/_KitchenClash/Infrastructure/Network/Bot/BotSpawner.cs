@@ -50,7 +50,7 @@ namespace KitchenClash.Infrastructure.Network.Bot
 
             GameLogger.Log($"[BotSpawner] Spawning {botPlayers.Count} bots (Team: {team})");
 
-            foreach (var botPlayer in botPlayers)
+            foreach (BotPlayer botPlayer in botPlayers)
             {
                 SpawnBot(botPlayer, ResolveTeam(botPlayer, team));
             }
@@ -99,7 +99,7 @@ namespace KitchenClash.Infrastructure.Network.Bot
             }
 
             // Get BotController component
-            var botController = botObject.GetComponent<BotController>();
+            BotController botController = botObject.GetComponent<BotController>();
             if (botController == null)
             {
                 GameLogger.LogError("[BotSpawner] Bot prefab is missing BotController. Despawning inert bot instance.");
@@ -148,7 +148,7 @@ namespace KitchenClash.Infrastructure.Network.Bot
 
             GameLogger.Log($"[BotSpawner] Despawning {_spawnedBots.Count} bots");
 
-            foreach (var bot in _spawnedBots)
+            foreach (NetworkObject bot in _spawnedBots)
             {
                 if (bot != null && bot.IsSpawned)
                 {
@@ -185,7 +185,7 @@ namespace KitchenClash.Infrastructure.Network.Bot
                 return;
             }
 
-            var playerController = networkObject.GetComponent<PlayerController>();
+            PlayerController playerController = networkObject.GetComponent<PlayerController>();
             if (playerController != null)
             {
                 playerController.SetTeam(teamId);

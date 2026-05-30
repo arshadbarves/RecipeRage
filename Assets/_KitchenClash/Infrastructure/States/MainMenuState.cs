@@ -37,10 +37,16 @@ namespace KitchenClash.Infrastructure.States
                 {
                     await SceneManager.LoadSceneAsync(GameConstants.Scenes.MainMenu).ToUniTask();
                 }
-                if (!IsStateActive) return;
+                if (!IsStateActive)
+                {
+                    return;
+                }
 
                 await UniTask.Delay(1500, cancellationToken: StateCancellationToken);
-                if (!IsStateActive) return;
+                if (!IsStateActive)
+                {
+                    return;
+                }
             }
             catch (OperationCanceledException)
             {

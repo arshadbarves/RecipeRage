@@ -17,13 +17,17 @@ namespace KitchenClash.Infrastructure.Gameplay
         public bool ValidateDish(IList ingredients, object recipe)
         {
             if (ingredients == null || recipe == null || ingredients.Count == 0)
+            {
                 return false;
+            }
 
-            var required = ExtractRequiredIds(recipe);
+            List<int> required = ExtractRequiredIds(recipe);
             if (required == null || required.Count == 0)
+            {
                 return false;
+            }
 
-            var provided = ExtractProvidedIds(ingredients);
+            HashSet<int> provided = ExtractProvidedIds(ingredients);
 
             // Every required ingredient must be present
             return required.All(id => provided.Contains(id));
@@ -31,25 +35,35 @@ namespace KitchenClash.Infrastructure.Gameplay
 
         public DishQuality GetDishQuality(IList ingredients, object recipe)
         {
-            if (!ValidateDish(ingredients, recipe)) return DishQuality.Wrong;
+            if (!ValidateDish(ingredients, recipe))
+            {
+                return DishQuality.Wrong;
+            }
 
-            var required = ExtractRequiredIds(recipe);
-            var provided = ExtractProvidedIds(ingredients);
+            List<int> required = ExtractRequiredIds(recipe);
+            HashSet<int> provided = ExtractProvidedIds(ingredients);
 
             if (provided.Count == required.Count)
+            {
                 return DishQuality.Perfect;
+            }
 
             // Extra ingredients: still good but not perfect
             if (provided.Count <= required.Count + 1)
+            {
                 return DishQuality.Good;
+            }
 
             return DishQuality.Acceptable;
         }
 
         public int CalculateScore(IList ingredients, object recipe, float timeRemaining)
         {
-            var quality = GetDishQuality(ingredients, recipe);
-            if (quality == DishQuality.Wrong) return 0;
+            DishQuality quality = GetDishQuality(ingredients, recipe);
+            if (quality == DishQuality.Wrong)
+            {
+                return 0;
+            }
 
             int score = 100;
             switch (quality)
@@ -91,7 +105,7 @@ namespace KitchenClash.Infrastructure.Gameplay
         private static HashSet<int> ExtractProvidedIds(IList ingredients)
         {
             var ids = new HashSet<int>();
-            foreach (var item in ingredients)
+            foreach (object item in ingredients)
             {
                 if (item is IngredientItem ingredientItem && ingredientItem.Ingredient != null)
                 {

@@ -120,7 +120,10 @@ namespace KitchenClash.Infrastructure.Network.Cooking
                     ulong playerId = player.OwnerClientId;
                     if (_isHeld.Value)
                     {
-                        if (_heldByPlayerId.Value == playerId) Drop();
+                        if (_heldByPlayerId.Value == playerId)
+                        {
+                            Drop();
+                        }
                     }
                     else
                     {

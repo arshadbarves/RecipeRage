@@ -28,7 +28,7 @@ namespace KitchenClash.Infrastructure.States
 
             // Determine victory or defeat for music
             bool won = false;
-            var resultSync = _matchContext.MatchResultSync;
+            MatchResultSync resultSync = _matchContext.MatchResultSync;
             if (resultSync != null && resultSync.CurrentResult.HasResult)
             {
                 won = !resultSync.CurrentResult.IsDraw && resultSync.CurrentResult.WinningTeamId == 0;
@@ -41,13 +41,19 @@ namespace KitchenClash.Infrastructure.States
 
         private void AwardMatchReward()
         {
-            if (_economyService is not EconomyService economy) return;
+            if (_economyService is not EconomyService economy)
+            {
+                return;
+            }
 
-            var resultSync = _matchContext.MatchResultSync;
-            if (resultSync == null || !resultSync.CurrentResult.HasResult) return;
+            MatchResultSync resultSync = _matchContext.MatchResultSync;
+            if (resultSync == null || !resultSync.CurrentResult.HasResult)
+            {
+                return;
+            }
 
-            var result = resultSync.CurrentResult;
-            var scoreManager = _matchContext.ScoreManager;
+            MatchResultState result = resultSync.CurrentResult;
+            ScoreManager scoreManager = _matchContext.ScoreManager;
 
             // Local player assumed team 0 — same convention as ResultsScreen
             int localTeamId = 0;

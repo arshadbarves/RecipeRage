@@ -34,8 +34,12 @@ namespace KitchenClash.Infrastructure.DI
 
         public void CreateSession()
         {
-            if (_sessionScope != null) DestroySession();
-            var parentScope = _container.Resolve<LifetimeScope>();
+            if (_sessionScope != null)
+            {
+                DestroySession();
+            }
+
+            LifetimeScope parentScope = _container.Resolve<LifetimeScope>();
             _sessionScope = parentScope.CreateChild<LifetimeScope>();
             _uiService.SetCurrentScope(_sessionScope.Container);
             GameLogger.LogInfo("SessionLifetimeScope created.");

@@ -54,14 +54,22 @@ namespace KitchenClash.Infrastructure.Animation
         // Kill animations
         public void KillAnimations(VisualElement element)
         {
-            if (element == null) return;
+            if (element == null)
+            {
+                return;
+            }
+
             DG.Tweening.DOTween.Kill(element);
         }
 
         // Extended UI animations
         public void FloatYoyo(VisualElement element, float distance, float duration)
         {
-            if (element == null) return;
+            if (element == null)
+            {
+                return;
+            }
+
             float startY = element.resolvedStyle.translate.y;
             DG.Tweening.DOTween.To(() => startY, y =>
             {
@@ -74,12 +82,20 @@ namespace KitchenClash.Infrastructure.Animation
 
         public void CrossfadeLabel(VisualElement label, string newText, float fontSize, float duration)
         {
-            if (label == null) return;
+            if (label == null)
+            {
+                return;
+            }
+
             DG.Tweening.DOTween.To(() => label.style.opacity.value, x => label.style.opacity = x, 0f, duration * 0.5f)
                 .SetTarget(label)
                 .OnComplete(() =>
                 {
-                    if (label is Label l) l.text = newText;
+                    if (label is Label l)
+                    {
+                        l.text = newText;
+                    }
+
                     DG.Tweening.DOTween.To(() => 0f, x => label.style.opacity = x, 1f, duration * 0.5f).SetTarget(label);
                 });
         }
@@ -87,12 +103,19 @@ namespace KitchenClash.Infrastructure.Animation
         public void BlurIn(VisualElement element, float blurAmount, float duration)
         {
             // UI Toolkit doesn't natively support blur; stub implementation
-            if (element == null) return;
+            if (element == null)
+            {
+                return;
+            }
         }
 
         public void TrackingIn(VisualElement element, float startTracking, float endTracking, float duration)
         {
-            if (element == null) return;
+            if (element == null)
+            {
+                return;
+            }
+
             element.style.letterSpacing = startTracking;
             float current = startTracking;
             DG.Tweening.DOTween.To(() => current, x =>
@@ -106,7 +129,11 @@ namespace KitchenClash.Infrastructure.Animation
 
         public void SlideInfinite(VisualElement element, float startPercent, float endPercent, float duration)
         {
-            if (element == null) return;
+            if (element == null)
+            {
+                return;
+            }
+
             float current = startPercent;
             DG.Tweening.DOTween.To(() => current, x =>
             {
@@ -120,7 +147,11 @@ namespace KitchenClash.Infrastructure.Animation
 
         public void KillAnimations(Transform transform)
         {
-            if (transform == null) return;
+            if (transform == null)
+            {
+                return;
+            }
+
             DG.Tweening.ShortcutExtensions.DOKill(transform);
         }
 

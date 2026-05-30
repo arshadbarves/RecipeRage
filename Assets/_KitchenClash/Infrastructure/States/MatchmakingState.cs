@@ -76,7 +76,9 @@ namespace KitchenClash.Infrastructure.States
             // Show the matchmaking screen
             var screenType = Type.GetType("KitchenClash.Presentation.Screens.MatchmakingScreen, KitchenClash.Presentation");
             if (screenType != null)
+            {
                 _uiService?.Show(screenType);
+            }
 
             CheckMaintenanceAndStartAsync().Forget();
         }
@@ -88,7 +90,11 @@ namespace KitchenClash.Infrastructure.States
                 if (_maintenanceService != null)
                 {
                     bool isInMaintenance = await _maintenanceService.CheckMaintenanceStatusAsync();
-                    if (!IsStateActive) return;
+                    if (!IsStateActive)
+                    {
+                        return;
+                    }
+
                     if (isInMaintenance)
                     {
                         LogMessage("Matchmaking blocked - server is in maintenance mode");
@@ -142,7 +148,10 @@ namespace KitchenClash.Infrastructure.States
 
         public override void Update()
         {
-            if (!_isMatchmakingInProgress) return;
+            if (!_isMatchmakingInProgress)
+            {
+                return;
+            }
 
             _searchTime = Time.time - _searchStartTime;
 

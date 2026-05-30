@@ -113,7 +113,7 @@ namespace KitchenClash.Infrastructure.Network
                     return;
                 }
 
-                var ugsConfig = UnityEngine.Resources.Load<UGSConfig>("UGSConfig");
+                UGSConfig ugsConfig = UnityEngine.Resources.Load<UGSConfig>("UGSConfig");
                 if (ugsConfig == null || !ugsConfig.IsValid())
                 {
                     GameLogger.LogWarning("UGSConfig not found or invalid - Friends system disabled");
@@ -140,7 +140,9 @@ namespace KitchenClash.Infrastructure.Network
         public void Update()
         {
             if (!_isInitialized)
+            {
                 return;
+            }
         }
 
         #endregion
@@ -150,7 +152,9 @@ namespace KitchenClash.Infrastructure.Network
         public void Dispose()
         {
             if (!_isInitialized)
+            {
                 return;
+            }
 
             GameLogger.Log("Disposing - leaving lobbies, closing connections");
 

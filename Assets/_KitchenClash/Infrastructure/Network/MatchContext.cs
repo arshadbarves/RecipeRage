@@ -38,23 +38,57 @@ namespace KitchenClash.Infrastructure.Network
 
         public void Refresh()
         {
-            if (ScoreManager == null) ScoreManager = Object.FindObjectOfType<ScoreManager>();
-            if (NetworkScoreManager == null) NetworkScoreManager = Object.FindObjectOfType<NetworkScoreManager>();
-            if (OrderManager == null) OrderManager = Object.FindObjectOfType<OrderManager>();
-            if (RoundTimer == null) RoundTimer = Object.FindObjectOfType<RoundTimer>();
-            if (GamePhaseSync == null) GamePhaseSync = Object.FindObjectOfType<GamePhaseSync>();
-            if (MatchResultSync == null) MatchResultSync = Object.FindObjectOfType<MatchResultSync>();
-            if (SpawnManager == null) SpawnManager = Object.FindObjectOfType<SpawnManager>();
-            if (IngredientNetworkSpawner == null) IngredientNetworkSpawner = Object.FindObjectOfType<IngredientNetworkSpawner>();
+            if (ScoreManager == null)
+            {
+                ScoreManager = Object.FindObjectOfType<ScoreManager>();
+            }
+
+            if (NetworkScoreManager == null)
+            {
+                NetworkScoreManager = Object.FindObjectOfType<NetworkScoreManager>();
+            }
+
+            if (OrderManager == null)
+            {
+                OrderManager = Object.FindObjectOfType<OrderManager>();
+            }
+
+            if (RoundTimer == null)
+            {
+                RoundTimer = Object.FindObjectOfType<RoundTimer>();
+            }
+
+            if (GamePhaseSync == null)
+            {
+                GamePhaseSync = Object.FindObjectOfType<GamePhaseSync>();
+            }
+
+            if (MatchResultSync == null)
+            {
+                MatchResultSync = Object.FindObjectOfType<MatchResultSync>();
+            }
+
+            if (SpawnManager == null)
+            {
+                SpawnManager = Object.FindObjectOfType<SpawnManager>();
+            }
+
+            if (IngredientNetworkSpawner == null)
+            {
+                IngredientNetworkSpawner = Object.FindObjectOfType<IngredientNetworkSpawner>();
+            }
 
             if (KitchenSupportRuntime == null)
             {
-                var binder = Object.FindObjectOfType<MatchRuntimeSceneBinder>();
-                if (binder != null) KitchenSupportRuntime = binder;
+                MatchRuntimeSceneBinder binder = Object.FindObjectOfType<MatchRuntimeSceneBinder>();
+                if (binder != null)
+                {
+                    KitchenSupportRuntime = binder;
+                }
             }
             if (LocalPlayer == null && LocalClientId.HasValue)
             {
-                foreach (var pc in Object.FindObjectsOfType<PlayerController>())
+                foreach (PlayerController pc in Object.FindObjectsOfType<PlayerController>())
                 {
                     if (pc.OwnerClientId == LocalClientId.Value)
                     {
@@ -69,7 +103,10 @@ namespace KitchenClash.Infrastructure.Network
         {
             networkObject = null;
             if (Unity.Netcode.NetworkManager.Singleton == null || !Unity.Netcode.NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(networkObjectId, out networkObject))
+            {
                 return false;
+            }
+
             return networkObject != null;
         }
 

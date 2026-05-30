@@ -37,8 +37,15 @@ namespace KitchenClash.Infrastructure.Audio
 
         public void PlayMusic(AudioClip clip, float fadeTime)
         {
-            if (clip == null) return;
-            if (_currentMusic == clip && _musicSource.isPlaying) return;
+            if (clip == null)
+            {
+                return;
+            }
+
+            if (_currentMusic == clip && _musicSource.isPlaying)
+            {
+                return;
+            }
 
             float volume = _volumeController.GetMusicVolume();
 
@@ -58,7 +65,10 @@ namespace KitchenClash.Infrastructure.Audio
 
         public void StopMusic(float fadeTime)
         {
-            if (!_musicSource.isPlaying) return;
+            if (!_musicSource.isPlaying)
+            {
+                return;
+            }
 
             if (fadeTime > 0f)
             {

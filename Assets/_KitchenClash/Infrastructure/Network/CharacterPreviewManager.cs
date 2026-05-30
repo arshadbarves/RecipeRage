@@ -13,7 +13,11 @@ namespace KitchenClash.Infrastructure.Network
         public void ShowPreview(GameObject prefab)
         {
             ClearPreview();
-            if (prefab == null || _previewSpawnPoint == null) return;
+            if (prefab == null || _previewSpawnPoint == null)
+            {
+                return;
+            }
+
             _currentPreviewInstance = Instantiate(prefab, _previewSpawnPoint);
             _currentPreviewInstance.transform.localPosition = Vector3.zero;
             _currentPreviewInstance.transform.localRotation = Quaternion.Euler(0, 180, 0);
@@ -31,8 +35,12 @@ namespace KitchenClash.Infrastructure.Network
         public void ShowLobbyCharacter(int slotIndex, GameObject prefab)
         {
             ClearLobbyCharacter(slotIndex);
-            if (prefab == null || _lobbySpawnPoints == null || slotIndex < 0 || slotIndex >= _lobbySpawnPoints.Length) return;
-            var instance = Instantiate(prefab, _lobbySpawnPoints[slotIndex]);
+            if (prefab == null || _lobbySpawnPoints == null || slotIndex < 0 || slotIndex >= _lobbySpawnPoints.Length)
+            {
+                return;
+            }
+
+            GameObject instance = Instantiate(prefab, _lobbySpawnPoints[slotIndex]);
             instance.transform.localPosition = Vector3.zero;
             _currentLobbyInstances[slotIndex] = instance;
         }
@@ -41,14 +49,22 @@ namespace KitchenClash.Infrastructure.Network
         {
             if (slotIndex >= 0 && slotIndex < _currentLobbyInstances.Length)
             {
-                if (_currentLobbyInstances[slotIndex] != null) Destroy(_currentLobbyInstances[slotIndex]);
+                if (_currentLobbyInstances[slotIndex] != null)
+                {
+                    Destroy(_currentLobbyInstances[slotIndex]);
+                }
+
                 _currentLobbyInstances[slotIndex] = null;
             }
             else
             {
                 for (int i = 0; i < _currentLobbyInstances.Length; i++)
                 {
-                    if (_currentLobbyInstances[i] != null) Destroy(_currentLobbyInstances[i]);
+                    if (_currentLobbyInstances[i] != null)
+                    {
+                        Destroy(_currentLobbyInstances[i]);
+                    }
+
                     _currentLobbyInstances[i] = null;
                 }
             }

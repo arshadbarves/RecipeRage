@@ -65,18 +65,33 @@ namespace KitchenClash.Infrastructure.Gameplay
 
         public bool IsUnlocked(ChefId chefId)
         {
-            var chef = _registry.Get(chefId);
-            if (chef == null) return false;
+            ChefDefinition chef = _registry.Get(chefId);
+            if (chef == null)
+            {
+                return false;
+            }
+
             int playerLevel = _playerData?.GetProgress()?.HighestLevel ?? 0;
             return _registry.IsUnlocked(chef, playerLevel, _economy);
         }
 
         public bool SelectChef(ChefId chefId)
         {
-            if (!IsUnlocked(chefId)) return false;
-            var chef = _registry.Get(chefId);
-            if (chef == null) return false;
-            if (_selectedChef?.Id == chef.Id) return true;
+            if (!IsUnlocked(chefId))
+            {
+                return false;
+            }
+
+            ChefDefinition chef = _registry.Get(chefId);
+            if (chef == null)
+            {
+                return false;
+            }
+
+            if (_selectedChef?.Id == chef.Id)
+            {
+                return true;
+            }
 
             _selectedChef = chef;
             OnChefSelected?.Invoke(chef);
@@ -90,9 +105,16 @@ namespace KitchenClash.Infrastructure.Gameplay
 
         public bool TryPurchaseChef(ChefId chefId)
         {
-            var chef = _registry.Get(chefId);
-            if (chef == null || chef.Unlock.Type != UnlockType.Shop) return false;
-            if (IsUnlocked(chefId)) return true;
+            ChefDefinition chef = _registry.Get(chefId);
+            if (chef == null || chef.Unlock.Type != UnlockType.Shop)
+            {
+                return false;
+            }
+
+            if (IsUnlocked(chefId))
+            {
+                return true;
+            }
 
             string itemId = $"chef_{chefId}";
             bool purchased = _economy.Purchase(itemId, chef.Unlock.Value, "coins");
@@ -111,7 +133,7 @@ namespace KitchenClash.Infrastructure.Gameplay
         private void LoadLegacyCharacters()
         {
             CharacterClass[] characters = Resources.LoadAll<CharacterClass>(CharactersPath);
-            foreach (var character in characters)
+            foreach (CharacterClass character in characters)
             {
                 if (character != null)
                 {
@@ -142,13 +164,21 @@ namespace KitchenClash.Infrastructure.Gameplay
                 .ToArray();
         }
 
-        public CharacterClass GetCharacter(int id) => _characters.TryGetValue(id, out var c) ? c : null;
+        public CharacterClass GetCharacter(int id) => _characters.TryGetValue(id, out CharacterClass c) ? c : null;
         public bool IsUnlocked(int characterId) => _unlockedCharacters.Contains(characterId);
 
         public bool Unlock(int characterId)
         {
-            if (!_characters.ContainsKey(characterId)) return false;
-            if (_unlockedCharacters.Contains(characterId)) return true;
+            if (!_characters.ContainsKey(characterId))
+            {
+                return false;
+            }
+
+            if (_unlockedCharacters.Contains(characterId))
+            {
+                return true;
+            }
+
             _unlockedCharacters.Add(characterId);
             OnCharacterUnlocked?.Invoke(characterId);
             return true;
@@ -156,10 +186,22 @@ namespace KitchenClash.Infrastructure.Gameplay
 
         public bool SelectCharacter(int characterId)
         {
-            if (!IsUnlocked(characterId)) return false;
-            var character = GetCharacter(characterId);
-            if (character == null) return false;
-            if (_selectedCharacter == character) return true;
+            if (!IsUnlocked(characterId))
+            {
+                return false;
+            }
+
+            CharacterClass character = GetCharacter(characterId);
+            if (character == null)
+            {
+                return false;
+            }
+
+            if (_selectedCharacter == character)
+            {
+                return true;
+            }
+
             _selectedCharacter = character;
             OnCharacterSelected?.Invoke(character);
             return true;
@@ -168,7 +210,7 @@ namespace KitchenClash.Infrastructure.Gameplay
         private void SyncLegacySelection(ChefDefinition chef)
         {
             // Try to find matching SO by display name
-            foreach (var kvp in _characters)
+            foreach (KeyValuePair<int, CharacterClass> kvp in _characters)
             {
                 if (kvp.Value.DisplayName == chef.DisplayName)
                 {

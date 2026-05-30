@@ -42,9 +42,12 @@ namespace KitchenClash.Infrastructure.Camera
 #if UNITY_EDITOR
         private void OnDrawGizmos()
         {
-            if (!_showGizmos) return;
+            if (!_showGizmos)
+            {
+                return;
+            }
 
-            var col = GetComponent<BoxCollider>();
+            BoxCollider col = GetComponent<BoxCollider>();
             if (col != null)
             {
                 Gizmos.color = new Color(0, 1, 0, 0.3f);

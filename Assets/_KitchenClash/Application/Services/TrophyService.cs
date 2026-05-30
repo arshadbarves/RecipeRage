@@ -1,5 +1,4 @@
 using System;
-using KitchenClash.Application;
 using KitchenClash.Domain;
 
 namespace KitchenClash.Application.Services
@@ -45,11 +44,17 @@ namespace KitchenClash.Application.Services
             int absDiff = Math.Abs(scoreDifference);
             WinType winType;
             if (absDiff > 30)
+            {
                 winType = WinType.Dominant;
+            }
             else if (absDiff >= 10)
+            {
                 winType = WinType.Standard;
+            }
             else
+            {
                 winType = WinType.Close;
+            }
 
             int delta;
             if (won)

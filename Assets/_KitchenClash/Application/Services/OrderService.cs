@@ -29,9 +29,11 @@ namespace KitchenClash.Application
 
         public OrderModel GenerateOrder(float matchTimeRemaining)
         {
-            var allRecipes = _catalog.GetAll();
+            IReadOnlyList<RecipeDefinition> allRecipes = _catalog.GetAll();
             if (allRecipes.Count == 0)
+            {
                 return null;
+            }
 
             // Pick a tier weighted by match time remaining:
             // Early match → more tier 1-2, late match → more tier 2-3
@@ -43,9 +45,11 @@ namespace KitchenClash.Application
                 .ToList();
 
             if (candidates.Count == 0)
+            {
                 candidates = allRecipes.ToList();
+            }
 
-            var recipe = candidates[_random.Next(candidates.Count)];
+            RecipeDefinition recipe = candidates[_random.Next(candidates.Count)];
 
             var order = new OrderModel(
                 Guid.NewGuid(),
@@ -64,9 +68,11 @@ namespace KitchenClash.Application
 
         public CompleteResult CompleteOrder(Guid orderId, float timeLeft, int combo)
         {
-            var order = _activeOrders.FirstOrDefault(o => o.Id == orderId);
+            OrderModel order = _activeOrders.FirstOrDefault(o => o.Id == orderId);
             if (order == null || order.IsCompleted || order.IsExpired)
+            {
                 return new CompleteResult { Success = false, OrderId = orderId };
+            }
 
             order.IsCompleted = true;
             _activeOrders.Remove(order);
@@ -89,8 +95,11 @@ namespace KitchenClash.Application
 
         public void ExpireOrder(Guid orderId)
         {
-            var order = _activeOrders.FirstOrDefault(o => o.Id == orderId);
-            if (order == null || order.IsCompleted) return;
+            OrderModel order = _activeOrders.FirstOrDefault(o => o.Id == orderId);
+            if (order == null || order.IsCompleted)
+            {
+                return;
+            }
 
             order.IsExpired = true;
             _activeOrders.Remove(order);
@@ -101,7 +110,7 @@ namespace KitchenClash.Application
         public bool TryGetBestActiveOrder<T>(IReadOnlyList<T> orders, Func<T, bool> predicate, out T bestOrder)
         {
             bestOrder = default;
-            foreach (var order in orders)
+            foreach (T order in orders)
             {
                 if (predicate(order))
                 {

@@ -37,8 +37,11 @@ namespace KitchenClash.Infrastructure.Network
         
         private void ConfigureRigidbody()
         {
-            if (_rigidbody == null) return;
-            
+            if (_rigidbody == null)
+            {
+                return;
+            }
+
             _rigidbody.freezeRotation = true;
             _rigidbody.interpolation = RigidbodyInterpolation.Interpolate;
             _rigidbody.collisionDetectionMode = CollisionDetectionMode.Continuous;
@@ -46,8 +49,11 @@ namespace KitchenClash.Infrastructure.Network
         
         public void ApplyMovement(Vector2 input, PlayerMovementState state, float deltaTime)
         {
-            if (_rigidbody == null) return;
-            
+            if (_rigidbody == null)
+            {
+                return;
+            }
+
             if (!CanMove(state))
             {
                 StopMovement();
@@ -74,14 +80,21 @@ namespace KitchenClash.Infrastructure.Network
         
         public void StopMovement()
         {
-            if (_rigidbody == null) return;
+            if (_rigidbody == null)
+            {
+                return;
+            }
+
             _rigidbody.linearVelocity = new Vector3(0f, _rigidbody.linearVelocity.y, 0f);
         }
         
         private void RotateTowardsMovement(Vector3 velocity, float deltaTime)
         {
-            if (velocity.sqrMagnitude < 0.01f) return;
-            
+            if (velocity.sqrMagnitude < 0.01f)
+            {
+                return;
+            }
+
             Vector3 lookDirection = new Vector3(velocity.x, 0f, velocity.z);
             Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
             
@@ -121,7 +134,11 @@ namespace KitchenClash.Infrastructure.Network
         
         public float GetCurrentSpeed()
         {
-            if (_rigidbody == null) return 0f;
+            if (_rigidbody == null)
+            {
+                return 0f;
+            }
+
             Vector3 horizontalVelocity = new Vector3(_rigidbody.linearVelocity.x, 0f, _rigidbody.linearVelocity.z);
             return horizontalVelocity.magnitude;
         }

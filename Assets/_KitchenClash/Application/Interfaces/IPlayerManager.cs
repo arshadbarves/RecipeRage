@@ -1,6 +1,5 @@
 using KitchenClash.Domain;
 using System;
-using KitchenClash.Application.Models;
 
 namespace KitchenClash.Application
 {

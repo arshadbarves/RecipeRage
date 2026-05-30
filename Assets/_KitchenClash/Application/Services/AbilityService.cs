@@ -28,39 +28,58 @@ namespace KitchenClash.Application
         /// </summary>
         public void RegisterChefAbilities(ChefId chefId)
         {
-            var def = _chefRegistry.Get(chefId);
-            if (def == null) return;
+            ChefDefinition def = _chefRegistry.Get(chefId);
+            if (def == null)
+            {
+                return;
+            }
 
-            var passive = _abilityFactory.CreateAbility(def.PassiveAbility);
-            if (passive != null) RegisterAbility(chefId, passive);
+            IAbility passive = _abilityFactory.CreateAbility(def.PassiveAbility);
+            if (passive != null)
+            {
+                RegisterAbility(chefId, passive);
+            }
 
-            var active = _abilityFactory.CreateAbility(def.ActiveAbility);
-            if (active != null) RegisterAbility(chefId, active);
+            IAbility active = _abilityFactory.CreateAbility(def.ActiveAbility);
+            if (active != null)
+            {
+                RegisterAbility(chefId, active);
+            }
         }
 
         public void RegisterAbility(ChefId chef, IAbility ability)
         {
             if (!_abilities.ContainsKey(chef))
+            {
                 _abilities[chef] = new Dictionary<AbilitySlot, IAbility>();
+            }
 
             _abilities[chef][ability.Slot] = ability;
         }
 
         public AbilityResult TryActivate(AbilitySlot slot, ChefId chef, AbilityContext ctx)
         {
-            if (!_abilities.TryGetValue(chef, out var slots) || !slots.TryGetValue(slot, out var ability))
+            if (!_abilities.TryGetValue(chef, out Dictionary<AbilitySlot, IAbility> slots) || !slots.TryGetValue(slot, out IAbility ability))
+            {
                 return AbilityResult.Failed;
+            }
 
             if (GetCooldownRemaining(chef, slot) > 0)
+            {
                 return AbilityResult.Failed;
+            }
 
             if (slot == AbilitySlot.Super && (_superCharges.GetValueOrDefault(chef) < 3))
+            {
                 return AbilityResult.Failed;
+            }
 
             if (!ability.CanActivate(ctx))
+            {
                 return AbilityResult.Failed;
+            }
 
-            var result = ability.Activate(ctx);
+            AbilityResult result = ability.Activate(ctx);
 
             if (result.Success)
             {
@@ -68,10 +87,14 @@ namespace KitchenClash.Application
 
                 // Track active duration for auto-deactivation
                 if (result.Duration > 0f)
+                {
                     SetActiveDuration(chef, slot, result.Duration);
+                }
 
                 if (slot == AbilitySlot.Super)
+                {
                     _superCharges[chef] = 0;
+                }
             }
 
             return result;
@@ -88,8 +111,11 @@ namespace KitchenClash.Application
 
         public float GetCooldownRemaining(ChefId chef, AbilitySlot slot)
         {
-            if (!_cooldowns.TryGetValue(chef, out var slots) || !slots.TryGetValue(slot, out var remaining))
+            if (!_cooldowns.TryGetValue(chef, out Dictionary<AbilitySlot, float> slots) || !slots.TryGetValue(slot, out float remaining))
+            {
                 return 0f;
+            }
+
             return Math.Max(0f, remaining);
         }
 
@@ -99,8 +125,8 @@ namespace KitchenClash.Application
         /// </summary>
         public AbilityDefinition GetPassiveDefinition(ChefId chef)
         {
-            if (_abilities.TryGetValue(chef, out var slots) &&
-                slots.TryGetValue(AbilitySlot.Passive, out var ability) &&
+            if (_abilities.TryGetValue(chef, out Dictionary<AbilitySlot, IAbility> slots) &&
+                slots.TryGetValue(AbilitySlot.Passive, out IAbility ability) &&
                 ability is PassiveAbility passive)
             {
                 return passive.Definition;
@@ -115,30 +141,32 @@ namespace KitchenClash.Application
         public void UpdateCooldowns(float deltaTime)
         {
             // Tick cooldowns
-            foreach (var chef in _cooldowns)
+            foreach (KeyValuePair<ChefId, Dictionary<AbilitySlot, float>> chef in _cooldowns)
             {
                 var keys = new List<AbilitySlot>(chef.Value.Keys);
-                foreach (var slot in keys)
+                foreach (AbilitySlot slot in keys)
                 {
                     chef.Value[slot] -= deltaTime;
                     if (chef.Value[slot] <= 0)
+                    {
                         chef.Value.Remove(slot);
+                    }
                 }
             }
 
             // Tick active durations and auto-deactivate
-            foreach (var chef in _activeDurations)
+            foreach (KeyValuePair<ChefId, Dictionary<AbilitySlot, float>> chef in _activeDurations)
             {
                 var keys = new List<AbilitySlot>(chef.Value.Keys);
-                foreach (var slot in keys)
+                foreach (AbilitySlot slot in keys)
                 {
                     chef.Value[slot] -= deltaTime;
                     if (chef.Value[slot] <= 0)
                     {
                         chef.Value.Remove(slot);
                         // Auto-deactivate the ability
-                        if (_abilities.TryGetValue(chef.Key, out var slots) &&
-                            slots.TryGetValue(slot, out var ability))
+                        if (_abilities.TryGetValue(chef.Key, out Dictionary<AbilitySlot, IAbility> slots) &&
+                            slots.TryGetValue(slot, out IAbility ability))
                         {
                             ability.Deactivate();
                         }
@@ -159,14 +187,20 @@ namespace KitchenClash.Application
         private void SetCooldown(ChefId chef, AbilitySlot slot, float cooldown)
         {
             if (!_cooldowns.ContainsKey(chef))
+            {
                 _cooldowns[chef] = new Dictionary<AbilitySlot, float>();
+            }
+
             _cooldowns[chef][slot] = cooldown;
         }
 
         private void SetActiveDuration(ChefId chef, AbilitySlot slot, float duration)
         {
             if (!_activeDurations.ContainsKey(chef))
+            {
                 _activeDurations[chef] = new Dictionary<AbilitySlot, float>();
+            }
+
             _activeDurations[chef][slot] = duration;
         }
     }

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using KitchenClash.Application.Models;
 using UnityEngine;
 
 namespace KitchenClash.Application.Models

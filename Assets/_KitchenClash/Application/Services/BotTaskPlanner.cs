@@ -33,19 +33,31 @@ namespace KitchenClash.Application.Services
 
             // Priority 1: Extinguish fires
             BotTaskPlan firePlan = TryPlanExtinguishFire(snapshot);
-            if (firePlan != null) return firePlan;
+            if (firePlan != null)
+            {
+                return firePlan;
+            }
 
             // Priority 2: Holding cooked item → deliver to serving
             BotTaskPlan deliverPlan = TryPlanDeliverToServing(snapshot);
-            if (deliverPlan != null) return deliverPlan;
+            if (deliverPlan != null)
+            {
+                return deliverPlan;
+            }
 
             // Priority 3: Holding cut/prepped item → bring to cooking
             BotTaskPlan cookingPlan = TryPlanBringToCooking(snapshot);
-            if (cookingPlan != null) return cookingPlan;
+            if (cookingPlan != null)
+            {
+                return cookingPlan;
+            }
 
             // Priority 4: Holding raw ingredient → bring to prep
             BotTaskPlan prepPlan = TryPlanBringToPrep(snapshot);
-            if (prepPlan != null) return prepPlan;
+            if (prepPlan != null)
+            {
+                return prepPlan;
+            }
 
             // Priority 5: Holding burned item → recover (drop it)
             if (snapshot.IsHoldingItem && snapshot.HeldItemIsBurned)
@@ -59,11 +71,17 @@ namespace KitchenClash.Application.Services
 
             // Priority 6: Claim an order if we don't have one
             BotTaskPlan claimPlan = TryPlanClaimOrder(snapshot);
-            if (claimPlan != null) return claimPlan;
+            if (claimPlan != null)
+            {
+                return claimPlan;
+            }
 
             // Priority 7: Fetch ingredient for active order
             BotTaskPlan fetchPlan = TryPlanFetchIngredient(snapshot);
-            if (fetchPlan != null) return fetchPlan;
+            if (fetchPlan != null)
+            {
+                return fetchPlan;
+            }
 
             // Priority 8: Idle with wander
             return new BotTaskPlan
@@ -76,18 +94,26 @@ namespace KitchenClash.Application.Services
         private BotTaskPlan TryPlanExtinguishFire(BotPlanningSnapshot snapshot)
         {
             if (snapshot.StationsOnFire == null || snapshot.StationsOnFire.Count == 0)
+            {
                 return null;
+            }
 
             if (!_config.CanExtinguishFires)
+            {
                 return null;
+            }
 
             // Probabilistic: check fire extinguish chance
             if (_config.FireExtinguishChance < 1.0f && _random.NextDouble() > _config.FireExtinguishChance)
+            {
                 return null;
+            }
 
             // Don't extinguish while holding something
             if (snapshot.IsHoldingItem)
+            {
                 return null;
+            }
 
             string fireStation = snapshot.StationsOnFire[0];
             return new BotTaskPlan
@@ -101,7 +127,9 @@ namespace KitchenClash.Application.Services
         private BotTaskPlan TryPlanDeliverToServing(BotPlanningSnapshot snapshot)
         {
             if (!snapshot.IsHoldingItem || !snapshot.HeldItemIsCooked)
+            {
                 return null;
+            }
 
             // Also handle plates
             if (snapshot.HeldItemIsPlate)
@@ -136,12 +164,20 @@ namespace KitchenClash.Application.Services
         private BotTaskPlan TryPlanBringToCooking(BotPlanningSnapshot snapshot)
         {
             if (!snapshot.IsHoldingItem || !snapshot.HeldItemIsCut)
+            {
                 return null;
+            }
+
             if (snapshot.HeldItemIsCooked || snapshot.HeldItemIsBurned)
+            {
                 return null;
+            }
 
             string cookingId = PickFirst(snapshot.CookingStationIds);
-            if (cookingId == null) return null;
+            if (cookingId == null)
+            {
+                return null;
+            }
 
             return new BotTaskPlan
             {
@@ -155,12 +191,20 @@ namespace KitchenClash.Application.Services
         private BotTaskPlan TryPlanBringToPrep(BotPlanningSnapshot snapshot)
         {
             if (!snapshot.IsHoldingItem || !snapshot.HeldItemIsRaw)
+            {
                 return null;
+            }
+
             if (snapshot.HeldItemIsCut || snapshot.HeldItemIsCooked || snapshot.HeldItemIsBurned)
+            {
                 return null;
+            }
 
             string prepId = PickFirst(snapshot.PrepStationIds);
-            if (prepId == null) return null;
+            if (prepId == null)
+            {
+                return null;
+            }
 
             return new BotTaskPlan
             {
@@ -174,21 +218,34 @@ namespace KitchenClash.Application.Services
         private BotTaskPlan TryPlanClaimOrder(BotPlanningSnapshot snapshot)
         {
             if (snapshot.ClaimedOrderId.HasValue)
+            {
                 return null;
+            }
 
             if (snapshot.Orders == null || snapshot.Orders.Count == 0)
+            {
                 return null;
+            }
 
             // Pick highest priority unclaimed order
             BotOrderDescriptor best = null;
-            foreach (var order in snapshot.Orders)
+            foreach (BotOrderDescriptor order in snapshot.Orders)
             {
-                if (order.IsExpired || order.IsCompleted) continue;
+                if (order.IsExpired || order.IsCompleted)
+                {
+                    continue;
+                }
+
                 if (best == null || order.Priority > best.Priority)
+                {
                     best = order;
+                }
             }
 
-            if (best == null) return null;
+            if (best == null)
+            {
+                return null;
+            }
 
             return new BotTaskPlan
             {
@@ -201,13 +258,20 @@ namespace KitchenClash.Application.Services
         private BotTaskPlan TryPlanFetchIngredient(BotPlanningSnapshot snapshot)
         {
             if (snapshot.IsHoldingItem)
+            {
                 return null;
+            }
 
             if (!snapshot.ClaimedOrderId.HasValue)
+            {
                 return null;
+            }
 
             string ingredientStationId = PickFirst(snapshot.IngredientStationIds);
-            if (ingredientStationId == null) return null;
+            if (ingredientStationId == null)
+            {
+                return null;
+            }
 
             // Determine ingredient to fetch - apply mistake chance
             IngredientType targetIngredient = DetermineIngredientToFetch(snapshot);
@@ -230,16 +294,20 @@ namespace KitchenClash.Application.Services
                 if (snapshot.AvailableIngredients != null && snapshot.AvailableIngredients.Length > 0)
                 {
                     string randomName = snapshot.AvailableIngredients[_random.Next(snapshot.AvailableIngredients.Length)];
-                    if (Enum.TryParse<IngredientType>(randomName, true, out var mistakeType))
+                    if (Enum.TryParse<IngredientType>(randomName, true, out IngredientType mistakeType))
+                    {
                         return mistakeType;
+                    }
                 }
             }
 
             // Otherwise pick the first available ingredient (correct one would be recipe-driven)
             if (snapshot.AvailableIngredients != null && snapshot.AvailableIngredients.Length > 0)
             {
-                if (Enum.TryParse<IngredientType>(snapshot.AvailableIngredients[0], true, out var correctType))
+                if (Enum.TryParse<IngredientType>(snapshot.AvailableIngredients[0], true, out IngredientType correctType))
+                {
                     return correctType;
+                }
             }
 
             return IngredientType.None;

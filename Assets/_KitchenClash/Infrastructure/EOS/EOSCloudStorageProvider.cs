@@ -1,5 +1,6 @@
 using KitchenClash.Application;
 using System;
+using System.Collections.Generic;
 using KitchenClash.Domain;
 using Cysharp.Threading.Tasks;
 using Epic.OnlineServices;
@@ -81,7 +82,7 @@ namespace KitchenClash.Infrastructure.EOS
                     tcs.TrySetResult(downloadedData);
                 });
 
-                var result = await tcs.Task.Timeout(TimeSpan.FromSeconds(30));
+                string result = await tcs.Task.Timeout(TimeSpan.FromSeconds(30));
                 return result;
             }
             catch (TimeoutException)
@@ -132,7 +133,7 @@ namespace KitchenClash.Infrastructure.EOS
                 return false;
             }
 
-            var cachedData = _eosStorage.GetLocallyCachedData();
+            Dictionary<string, string> cachedData = _eosStorage.GetLocallyCachedData();
             return cachedData.ContainsKey(key);
         }
 
@@ -189,7 +190,7 @@ namespace KitchenClash.Infrastructure.EOS
 
             if (_eosStorage != null)
             {
-                var cachedData = _eosStorage.GetLocallyCachedData();
+                Dictionary<string, string> cachedData = _eosStorage.GetLocallyCachedData();
                 if (cachedData != null)
                 {
                     cachedData.Clear();

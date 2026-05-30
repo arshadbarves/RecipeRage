@@ -21,10 +21,16 @@ namespace KitchenClash.Infrastructure.Audio
 
         public AudioSource PlaySFX(AudioClip clip, float pitch = 1f)
         {
-            if (clip == null) return null;
+            if (clip == null)
+            {
+                return null;
+            }
 
             AudioSource source = _poolManager.GetAudioSource();
-            if (source == null) return null;
+            if (source == null)
+            {
+                return null;
+            }
 
             source.clip = clip;
             source.volume = _volumeController.GetSFXVolume();
@@ -40,10 +46,16 @@ namespace KitchenClash.Infrastructure.Audio
 
         public AudioSource PlaySFXAtPosition(AudioClip clip, Vector3 position)
         {
-            if (clip == null) return null;
+            if (clip == null)
+            {
+                return null;
+            }
 
             AudioSource source = _poolManager.GetAudioSource();
-            if (source == null) return null;
+            if (source == null)
+            {
+                return null;
+            }
 
             source.clip = clip;
             source.volume = _volumeController.GetSFXVolume();
@@ -59,7 +71,10 @@ namespace KitchenClash.Infrastructure.Audio
 
         public void StopSound(AudioSource source, float fadeTime)
         {
-            if (source == null) return;
+            if (source == null)
+            {
+                return;
+            }
 
             if (fadeTime > 0f)
             {

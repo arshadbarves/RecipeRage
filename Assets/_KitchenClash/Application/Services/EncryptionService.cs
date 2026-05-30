@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using KitchenClash.Domain;
@@ -24,9 +23,9 @@ namespace KitchenClash.Application
             using var aes = Aes.Create();
             aes.Key = _key;
             aes.IV = _iv;
-            using var encryptor = aes.CreateEncryptor();
-            var bytes = Encoding.UTF8.GetBytes(data);
-            var encrypted = encryptor.TransformFinalBlock(bytes, 0, bytes.Length);
+            using ICryptoTransform encryptor = aes.CreateEncryptor();
+            byte[] bytes = Encoding.UTF8.GetBytes(data);
+            byte[] encrypted = encryptor.TransformFinalBlock(bytes, 0, bytes.Length);
             return Convert.ToBase64String(encrypted);
         }
 
@@ -35,9 +34,9 @@ namespace KitchenClash.Application
             using var aes = Aes.Create();
             aes.Key = _key;
             aes.IV = _iv;
-            using var decryptor = aes.CreateDecryptor();
-            var bytes = Convert.FromBase64String(data);
-            var decrypted = decryptor.TransformFinalBlock(bytes, 0, bytes.Length);
+            using ICryptoTransform decryptor = aes.CreateDecryptor();
+            byte[] bytes = Convert.FromBase64String(data);
+            byte[] decrypted = decryptor.TransformFinalBlock(bytes, 0, bytes.Length);
             return Encoding.UTF8.GetString(decrypted);
         }
     }

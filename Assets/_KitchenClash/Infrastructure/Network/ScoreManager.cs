@@ -99,7 +99,10 @@ namespace KitchenClash.Infrastructure.Network
 
         private void HandleOrderCompleted(RecipeOrderState order)
         {
-            if (!IsServer) return;
+            if (!IsServer)
+            {
+                return;
+            }
 
             int teamId = order.CompletedByTeamId;
             if (teamId < 0 || teamId >= _teamScores.Count)
@@ -123,7 +126,10 @@ namespace KitchenClash.Infrastructure.Network
 
         private void HandleScoreChanged(ScoreChangedEvent e)
         {
-            if (!IsServer) return;
+            if (!IsServer)
+            {
+                return;
+            }
 
             // Sync network state from ScoreService
             _teamScores[0] = _scoreService.TeamAScore;
@@ -135,7 +141,10 @@ namespace KitchenClash.Infrastructure.Network
         public int GetScore(int teamId)
         {
             if (teamId >= 0 && teamId < _teamScores.Count)
+            {
                 return _teamScores[teamId];
+            }
+
             return 0;
         }
 
@@ -152,16 +161,33 @@ namespace KitchenClash.Infrastructure.Network
 
         public void AddPoints(int teamId, int points)
         {
-             if (!IsServer) return;
+             if (!IsServer)
+             {
+                 return;
+             }
+
              if (teamId >= 0 && teamId < _teamScores.Count)
-                _teamScores[teamId] += points;
+             {
+                 _teamScores[teamId] += points;
+             }
         }
 
         public void ResetScores()
         {
-            if (!IsServer) return;
-            for(int i=0; i<_teamScores.Count; i++) _teamScores[i] = 0;
-            for(int i=0; i<_teamComboCounts.Count; i++) _teamComboCounts[i] = 0;
+            if (!IsServer)
+            {
+                return;
+            }
+
+            for(int i=0; i<_teamScores.Count; i++)
+            {
+                _teamScores[i] = 0;
+            }
+
+            for(int i=0; i<_teamComboCounts.Count; i++)
+            {
+                _teamComboCounts[i] = 0;
+            }
         }
 
         private void OnTeamScoresChanged(NetworkListEvent<int> changeEvent)
@@ -172,7 +198,9 @@ namespace KitchenClash.Infrastructure.Network
         private void OnTeamComboChanged(NetworkListEvent<int> changeEvent)
         {
             if (changeEvent.Value > 1)
+            {
                 OnTeamComboAchieved?.Invoke(changeEvent.Index, changeEvent.Value);
+            }
         }
     }
 }

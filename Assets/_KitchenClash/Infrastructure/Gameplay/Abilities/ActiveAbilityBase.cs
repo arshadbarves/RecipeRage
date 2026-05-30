@@ -26,7 +26,9 @@ namespace KitchenClash.Infrastructure.Gameplay.Abilities
         public AbilityResult Activate(AbilityContext ctx)
         {
             if (!CanActivate(ctx))
+            {
                 return AbilityResult.Failed;
+            }
 
             ApplyEffect(ctx);
             Debug.Log($"[Ability] {Def.DisplayName} activated for chef {ctx.Chef}");

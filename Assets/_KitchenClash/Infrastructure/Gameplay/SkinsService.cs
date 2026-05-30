@@ -30,18 +30,31 @@ namespace KitchenClash.Infrastructure.Gameplay
         private void LoadSkinsFromCharacterClasses()
         {
             CharacterClass[] characterClasses = Resources.LoadAll<CharacterClass>(CHARACTERS_PATH);
-            if (characterClasses == null || characterClasses.Length == 0) return;
-
-            foreach (var character in characterClasses)
+            if (characterClasses == null || characterClasses.Length == 0)
             {
-                if (character.Skins == null || character.Skins.Count == 0) continue;
+                return;
+            }
 
-                foreach (var skin in character.Skins)
+            foreach (CharacterClass character in characterClasses)
+            {
+                if (character.Skins == null || character.Skins.Count == 0)
                 {
-                    if (string.IsNullOrEmpty(skin.id)) continue;
+                    continue;
+                }
+
+                foreach (SkinItem skin in character.Skins)
+                {
+                    if (string.IsNullOrEmpty(skin.id))
+                    {
+                        continue;
+                    }
+
                     _skinsById[skin.id] = skin;
                     if (!_skinsByCharacter.ContainsKey(character.Id))
+                    {
                         _skinsByCharacter[character.Id] = new List<SkinItem>();
+                    }
+
                     _skinsByCharacter[character.Id].Add(skin);
                 }
             }
@@ -53,22 +66,26 @@ namespace KitchenClash.Infrastructure.Gameplay
 
         public List<SkinItem> GetSkinsForCharacter(int characterId)
         {
-            return _skinsByCharacter.TryGetValue(characterId, out var skins) ? skins : new List<SkinItem>();
+            return _skinsByCharacter.TryGetValue(characterId, out List<SkinItem> skins) ? skins : new List<SkinItem>();
         }
 
         public SkinItem GetDefaultSkinForCharacter(int characterId)
         {
-            var skins = GetSkinsForCharacter(characterId);
+            List<SkinItem> skins = GetSkinsForCharacter(characterId);
             return skins.FirstOrDefault(s => s.isDefault);
         }
 
-        public SkinItem GetSkin(string skinId) => _skinsById.TryGetValue(skinId, out var skin) ? skin : null;
+        public SkinItem GetSkin(string skinId) => _skinsById.TryGetValue(skinId, out SkinItem skin) ? skin : null;
         public bool IsSkinUnlocked(string skinId) => _economyService.HasItem(skinId);
 
         public bool UnlockSkin(string skinId)
         {
-            if (!_skinsById.ContainsKey(skinId)) return false;
-            var skin = _skinsById[skinId];
+            if (!_skinsById.ContainsKey(skinId))
+            {
+                return false;
+            }
+
+            SkinItem skin = _skinsById[skinId];
             return _economyService.Purchase(skinId, skin.Price, EconomyKeys.CurrencyCoins);
         }
 
@@ -76,7 +93,11 @@ namespace KitchenClash.Infrastructure.Gameplay
 
         public bool EquipSkin(int characterId, string skinId)
         {
-            if (!IsSkinUnlocked(skinId)) return false;
+            if (!IsSkinUnlocked(skinId))
+            {
+                return false;
+            }
+
             OnSkinEquipped?.Invoke(characterId, skinId);
             return true;
         }

@@ -2,6 +2,7 @@ using System;
 using KitchenClash.Infrastructure.Network.Cooking;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace KitchenClash.Infrastructure.Network.Stations
 {
@@ -393,8 +394,11 @@ namespace KitchenClash.Infrastructure.Network.Stations
             {
                 // Drive a Unity UI Image fill (radial or horizontal) if present on the prefab.
                 // The progress bar prefab is expected to have a child Image with fillAmount.
-                var fill = _progressBar.GetComponentInChildren<UnityEngine.UI.Image>();
-                if (fill != null) fill.fillAmount = newValue;
+                Image fill = _progressBar.GetComponentInChildren<UnityEngine.UI.Image>();
+                if (fill != null)
+                {
+                    fill.fillAmount = newValue;
+                }
             }
         }
     }

@@ -1,4 +1,5 @@
 using KitchenClash.Application;
+using KitchenClash.Application.Models;
 using KitchenClash.Domain;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -40,9 +41,12 @@ namespace KitchenClash.Infrastructure.Audio
 
         private void ApplySettings()
         {
-            if (_saveService == null) return;
+            if (_saveService == null)
+            {
+                return;
+            }
 
-            var settings = _saveService.GetSettings();
+            GameSettingsData settings = _saveService.GetSettings();
             SetMasterVolume(settings.MasterVolume);
             SetMusicVolume(settings.MusicVolume);
             SetSFXVolume(settings.SFXVolume);
@@ -80,7 +84,10 @@ namespace KitchenClash.Infrastructure.Audio
 
         private void SetMixerVolume(string paramName, float volume)
         {
-            if (_audioMixer == null) return;
+            if (_audioMixer == null)
+            {
+                return;
+            }
 
             float decibelValue = volume > 0.0001f ? 20f * Mathf.Log10(volume) : -80f;
             _audioMixer.SetFloat(paramName, decibelValue);

@@ -31,8 +31,11 @@ namespace KitchenClash.Infrastructure.Analytics
             {
                 var sb = new System.Text.StringBuilder();
                 sb.Append($"[Analytics] {eventName} {{ ");
-                foreach (var kvp in parameters)
+                foreach (KeyValuePair<string, object> kvp in parameters)
+                {
                     sb.Append($"{kvp.Key}={kvp.Value}, ");
+                }
+
                 sb.Append("}");
                 Debug.Log(sb.ToString());
             }

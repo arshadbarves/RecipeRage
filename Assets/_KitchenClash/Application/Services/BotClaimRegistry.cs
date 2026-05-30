@@ -12,8 +12,16 @@ namespace KitchenClash.Application.Services
 
         public bool TryClaimOrder(int orderId, string botId)
         {
-            if (string.IsNullOrWhiteSpace(botId)) return false;
-            if (_orderClaims.TryGetValue(orderId, out string existingBot)) return existingBot == botId;
+            if (string.IsNullOrWhiteSpace(botId))
+            {
+                return false;
+            }
+
+            if (_orderClaims.TryGetValue(orderId, out string existingBot))
+            {
+                return existingBot == botId;
+            }
+
             ReleaseOrderForBot(botId);
             _orderClaims[orderId] = botId;
             _botOrders[botId] = orderId;
@@ -22,16 +30,30 @@ namespace KitchenClash.Application.Services
 
         public void AssignCounter(int orderId, string counterId)
         {
-            if (!string.IsNullOrWhiteSpace(counterId)) _orderCounters[orderId] = counterId;
+            if (!string.IsNullOrWhiteSpace(counterId))
+            {
+                _orderCounters[orderId] = counterId;
+            }
         }
 
         public bool IsCounterClaimedByAnotherBot(string counterId, string botId)
         {
-            if (string.IsNullOrWhiteSpace(counterId)) return false;
-            foreach (var pair in _orderCounters)
+            if (string.IsNullOrWhiteSpace(counterId))
             {
-                if (pair.Value != counterId) continue;
-                if (_orderClaims.TryGetValue(pair.Key, out string claimant) && claimant != botId) return true;
+                return false;
+            }
+
+            foreach (KeyValuePair<int, string> pair in _orderCounters)
+            {
+                if (pair.Value != counterId)
+                {
+                    continue;
+                }
+
+                if (_orderClaims.TryGetValue(pair.Key, out string claimant) && claimant != botId)
+                {
+                    return true;
+                }
             }
             return false;
         }
@@ -53,14 +75,22 @@ namespace KitchenClash.Application.Services
 
         public void ReleaseOrder(int orderId)
         {
-            if (_orderClaims.TryGetValue(orderId, out string botId)) _botOrders.Remove(botId);
+            if (_orderClaims.TryGetValue(orderId, out string botId))
+            {
+                _botOrders.Remove(botId);
+            }
+
             _orderClaims.Remove(orderId);
             _orderCounters.Remove(orderId);
         }
 
         public void ReleaseOrderForBot(string botId)
         {
-            if (string.IsNullOrWhiteSpace(botId)) return;
+            if (string.IsNullOrWhiteSpace(botId))
+            {
+                return;
+            }
+
             if (_botOrders.TryGetValue(botId, out int orderId))
             {
                 _botOrders.Remove(botId);

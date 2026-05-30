@@ -101,14 +101,14 @@ namespace KitchenClash.Infrastructure.Persistence
 
         public void UpdateSettings(Action<GameSettingsData> updateAction)
         {
-            var settings = GetSettings();
+            GameSettingsData settings = GetSettings();
             updateAction?.Invoke(settings);
             SaveSettings(settings);
         }
 
         public SyncStatus GetSyncStatus(string key)
         {
-            return _syncStatus.TryGetValue(key, out var status) ? status : null;
+            return _syncStatus.TryGetValue(key, out SyncStatus status) ? status : null;
         }
 
         public async UniTask SyncAllCloudDataAsync()
@@ -120,7 +120,7 @@ namespace KitchenClash.Infrastructure.Persistence
             }
 
             var syncTasks = new List<UniTask>();
-            foreach (var config in _storageConfigs.Values)
+            foreach (StorageConfig config in _storageConfigs.Values)
             {
                 if (config.Strategy is StorageStrategy.CloudWithCache or StorageStrategy.CloudOnly)
                 {
@@ -132,8 +132,8 @@ namespace KitchenClash.Infrastructure.Persistence
 
         public T LoadData<T>(string key) where T : class, new()
         {
-            var config = GetStorageConfig(key);
-            var provider = GetProviderForStrategy(config.Strategy);
+            StorageConfig config = GetStorageConfig(key);
+            IStorageProvider provider = GetProviderForStrategy(config.Strategy);
 
             if (provider.Exists(key))
             {
@@ -164,15 +164,15 @@ namespace KitchenClash.Infrastructure.Persistence
 
         public void Save(string key, object data)
         {
-            var config = GetStorageConfig(key);
+            StorageConfig config = GetStorageConfig(key);
             string content = SerializeData(data, config.EncryptData);
             _localProvider.Write(key, content);
         }
 
         public T Load<T>(string key, T defaultValue)
         {
-            var config = GetStorageConfig(key);
-            var provider = GetProviderForStrategy(config.Strategy);
+            StorageConfig config = GetStorageConfig(key);
+            IStorageProvider provider = GetProviderForStrategy(config.Strategy);
             if (provider.Exists(key))
             {
                 string content = provider.Read(key);
@@ -181,7 +181,10 @@ namespace KitchenClash.Infrastructure.Persistence
                     try
                     {
                         if (config.EncryptData && _encryption != null)
+                        {
                             content = _encryption.Decrypt(content);
+                        }
+
                         return UnityEngine.JsonUtility.FromJson<T>(content);
                     }
                     catch { }
@@ -192,7 +195,7 @@ namespace KitchenClash.Infrastructure.Persistence
 
         private void SaveInternal(string key, object data)
         {
-            var config = GetStorageConfig(key);
+            StorageConfig config = GetStorageConfig(key);
             string content = SerializeData(data, config.EncryptData);
 
             switch (config.Strategy)
@@ -202,9 +205,14 @@ namespace KitchenClash.Infrastructure.Persistence
                     break;
                 case StorageStrategy.CloudOnly:
                     if (_cloudProvider.IsAvailable)
+                    {
                         _cloudProvider.Write(key, content);
+                    }
                     else
+                    {
                         GameLogger.LogWarning($"[SaveService] Cloud not available for {key}");
+                    }
+
                     break;
                 case StorageStrategy.CloudWithCache:
                     _localProvider.Write(key, content);
@@ -223,10 +231,13 @@ namespace KitchenClash.Infrastructure.Persistence
 
         private async UniTask SyncToCloudAsync(string key)
         {
-            var config = GetStorageConfig(key);
-            var status = _syncStatus.TryGetValue(key, out var s) ? s : null;
+            StorageConfig config = GetStorageConfig(key);
+            SyncStatus status = _syncStatus.TryGetValue(key, out SyncStatus s) ? s : null;
 
-            if (status == null || status.IsSyncing) return;
+            if (status == null || status.IsSyncing)
+            {
+                return;
+            }
 
             status.MarkSyncStarted();
 
@@ -253,7 +264,10 @@ namespace KitchenClash.Infrastructure.Persistence
         {
             string content = UnityEngine.JsonUtility.ToJson(data, true);
             if (encrypt && _encryption != null)
+            {
                 content = _encryption.Encrypt(content);
+            }
+
             return content;
         }
 
@@ -262,7 +276,10 @@ namespace KitchenClash.Infrastructure.Persistence
             try
             {
                 if (encrypted && _encryption != null)
+                {
                     content = _encryption.Decrypt(content);
+                }
+
                 return UnityEngine.JsonUtility.FromJson<T>(content);
             }
             catch (Exception ex)
@@ -274,7 +291,7 @@ namespace KitchenClash.Infrastructure.Persistence
 
         private StorageConfig GetStorageConfig(string key)
         {
-            return _storageConfigs.TryGetValue(key, out var config)
+            return _storageConfigs.TryGetValue(key, out StorageConfig config)
                 ? config
                 : new StorageConfig(key, StorageStrategy.LocalOnly, false);
         }

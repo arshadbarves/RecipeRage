@@ -95,26 +95,47 @@ namespace KitchenClash.Infrastructure.Firebase
 
                 var configs = new Dictionary<string, IConfigModel>();
 
-                var gameSettings = await FetchConfig<GameSettingsConfig>("GameSettings");
-                if (gameSettings != null) configs["GameSettings"] = gameSettings;
+                GameSettingsConfig gameSettings = await FetchConfig<GameSettingsConfig>("GameSettings");
+                if (gameSettings != null)
+                {
+                    configs["GameSettings"] = gameSettings;
+                }
 
-                var shopConfig = await FetchConfig<ShopConfig>("ShopConfig");
-                if (shopConfig != null) configs["ShopConfig"] = shopConfig;
+                ShopConfig shopConfig = await FetchConfig<ShopConfig>("ShopConfig");
+                if (shopConfig != null)
+                {
+                    configs["ShopConfig"] = shopConfig;
+                }
 
-                var characterConfig = await FetchConfig<CharacterConfig>("CharacterConfig");
-                if (characterConfig != null) configs["CharacterConfig"] = characterConfig;
+                CharacterConfig characterConfig = await FetchConfig<CharacterConfig>("CharacterConfig");
+                if (characterConfig != null)
+                {
+                    configs["CharacterConfig"] = characterConfig;
+                }
 
-                var mapConfig = await FetchConfig<MapConfig>("MapConfig");
-                if (mapConfig != null) configs["MapConfig"] = mapConfig;
+                MapConfig mapConfig = await FetchConfig<MapConfig>("MapConfig");
+                if (mapConfig != null)
+                {
+                    configs["MapConfig"] = mapConfig;
+                }
 
-                var skinsConfig = await FetchConfig<SkinsConfig>("SkinsConfig");
-                if (skinsConfig != null) configs["SkinsConfig"] = skinsConfig;
+                SkinsConfig skinsConfig = await FetchConfig<SkinsConfig>("SkinsConfig");
+                if (skinsConfig != null)
+                {
+                    configs["SkinsConfig"] = skinsConfig;
+                }
 
-                var maintenanceConfig = await FetchConfig<MaintenanceConfig>("MaintenanceConfig");
-                if (maintenanceConfig != null) configs["MaintenanceConfig"] = maintenanceConfig;
+                MaintenanceConfig maintenanceConfig = await FetchConfig<MaintenanceConfig>("MaintenanceConfig");
+                if (maintenanceConfig != null)
+                {
+                    configs["MaintenanceConfig"] = maintenanceConfig;
+                }
 
-                var forceUpdateConfig = await FetchConfig<ForceUpdateConfig>("ForceUpdateConfig");
-                if (forceUpdateConfig != null) configs["ForceUpdateConfig"] = forceUpdateConfig;
+                ForceUpdateConfig forceUpdateConfig = await FetchConfig<ForceUpdateConfig>("ForceUpdateConfig");
+                if (forceUpdateConfig != null)
+                {
+                    configs["ForceUpdateConfig"] = forceUpdateConfig;
+                }
 
                 GameLogger.Log($"Fetched {configs.Count} configs from Firebase");
                 return configs;

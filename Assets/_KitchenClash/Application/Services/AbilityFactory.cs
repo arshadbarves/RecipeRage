@@ -195,7 +195,7 @@ namespace KitchenClash.Application
 
         public AbilityDefinition GetDefinition(AbilityType type)
         {
-            return Definitions.TryGetValue(type, out var def) ? def : null;
+            return Definitions.TryGetValue(type, out AbilityDefinition def) ? def : null;
         }
 
         /// <summary>
@@ -204,11 +204,16 @@ namespace KitchenClash.Application
         /// </summary>
         public IAbility CreateAbility(AbilityType type)
         {
-            var def = GetDefinition(type);
-            if (def == null) return null;
+            AbilityDefinition def = GetDefinition(type);
+            if (def == null)
+            {
+                return null;
+            }
 
             if (def.Slot == AbilitySlot.Passive)
+            {
                 return new PassiveAbility(def);
+            }
 
             return type switch
             {

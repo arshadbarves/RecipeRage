@@ -47,7 +47,10 @@ namespace KitchenClash.Infrastructure.Services
 
         public async UniTask<bool> Initialize()
         {
-            if (_isInitialized) return true;
+            if (_isInitialized)
+            {
+                return true;
+            }
 
 #if FIREBASE_REMOTE_CONFIG
             try
@@ -77,8 +80,10 @@ namespace KitchenClash.Infrastructure.Services
 
         public T GetConfig<T>() where T : class, IConfigModel
         {
-            if (_cache.TryGetValue(typeof(T), out var cached))
+            if (_cache.TryGetValue(typeof(T), out IConfigModel cached))
+            {
                 return cached as T;
+            }
 
             return _fallback.GetConfig<T>();
         }
@@ -91,17 +96,20 @@ namespace KitchenClash.Infrastructure.Services
 
         public async UniTask<bool> RefreshConfig()
         {
-            if (!_isInitialized) return false;
+            if (!_isInitialized)
+            {
+                return false;
+            }
 
 #if FIREBASE_REMOTE_CONFIG
             if (_firebaseAvailable)
             {
                 try
                 {
-                    var configs = await _firebaseProvider.FetchAllConfigs();
+                    Dictionary<string, IConfigModel> configs = await _firebaseProvider.FetchAllConfigs();
                     if (configs != null && configs.Count > 0)
                     {
-                        foreach (var kvp in configs)
+                        foreach (KeyValuePair<string, IConfigModel> kvp in configs)
                         {
                             if (kvp.Value != null && kvp.Value.Validate())
                             {
@@ -127,14 +135,17 @@ namespace KitchenClash.Infrastructure.Services
 
         public async UniTask<bool> RefreshConfig<T>() where T : class, IConfigModel
         {
-            if (!_isInitialized) return false;
+            if (!_isInitialized)
+            {
+                return false;
+            }
 
 #if FIREBASE_REMOTE_CONFIG
             if (_firebaseAvailable)
             {
                 try
                 {
-                    var config = await _firebaseProvider.FetchConfig<T>(typeof(T).Name);
+                    T config = await _firebaseProvider.FetchConfig<T>(typeof(T).Name);
                     if (config != null && config.Validate())
                     {
                         _cache[typeof(T)] = config;
@@ -155,7 +166,7 @@ namespace KitchenClash.Infrastructure.Services
 
         public T Get<T>(string key, T fallback)
         {
-            if (_rawCache.TryGetValue(key, out var cached))
+            if (_rawCache.TryGetValue(key, out object cached))
             {
                 try { return (T)Convert.ChangeType(cached, typeof(T)); }
                 catch { }

@@ -242,7 +242,7 @@ namespace KitchenClash.Application.Services
 
         public MapDefinition Get(string mapId)
         {
-            return _maps.TryGetValue(mapId, out var def) ? def : null;
+            return _maps.TryGetValue(mapId, out MapDefinition def) ? def : null;
         }
 
         public IReadOnlyList<MapDefinition> GetAll()
@@ -262,18 +262,32 @@ namespace KitchenClash.Application.Services
         /// </summary>
         public void ApplyRemoteConfig(MapConfig config)
         {
-            if (config?.Overrides == null) return;
-
-            foreach (var ov in config.Overrides)
+            if (config?.Overrides == null)
             {
-                if (string.IsNullOrEmpty(ov.MapId)) continue;
-                if (!_maps.TryGetValue(ov.MapId, out var map)) continue;
+                return;
+            }
+
+            foreach (MapOverride ov in config.Overrides)
+            {
+                if (string.IsNullOrEmpty(ov.MapId))
+                {
+                    continue;
+                }
+
+                if (!_maps.TryGetValue(ov.MapId, out MapDefinition map))
+                {
+                    continue;
+                }
 
                 if (ov.FireChanceMultiplier >= 0)
+                {
                     map.Hazards.FireChanceMultiplier = ov.FireChanceMultiplier;
+                }
 
                 if (ov.HasSpecialHazards.HasValue)
+                {
                     map.Hazards.HasSpecialHazards = ov.HasSpecialHazards.Value;
+                }
 
                 GameLogger.Log($"[MapRegistry] Applied remote overrides for {ov.MapId}");
             }

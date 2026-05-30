@@ -55,7 +55,7 @@ namespace KitchenClash.Infrastructure.Network
         {
             ResetBotRuntimeState();
 
-            var matchLobby = _lobbyManager.CurrentMatchLobby;
+            LobbyInfo matchLobby = _lobbyManager.CurrentMatchLobby;
 
             if (matchLobby == null)
             {
@@ -69,7 +69,7 @@ namespace KitchenClash.Infrastructure.Network
                 return;
             }
 
-            var localUserId = EOSManager.Instance.GetProductUserId();
+            ProductUserId localUserId = EOSManager.Instance.GetProductUserId();
             bool isHost = matchLobby.IsOwner(localUserId?.ToString());
 
             GameLogger.Log($"Starting game - IsHost: {isHost}, Lobby: {matchLobby.LobbyId}");
@@ -139,7 +139,9 @@ namespace KitchenClash.Infrastructure.Network
         private void SpawnPlayerForClient(ulong clientId)
         {
             if (NetcodeManager?.IsServer != true)
+            {
                 return;
+            }
 
             GameLogger.Log($"Spawning player for client {clientId}");
             int assignedTeamId = ReserveNextHumanTeam();
@@ -212,7 +214,7 @@ namespace KitchenClash.Infrastructure.Network
 
             _spawnManager = _matchContext?.SpawnManager;
 
-            var transport = NetcodeManager?.GetComponent<EOSTransport>();
+            EOSTransport transport = NetcodeManager?.GetComponent<EOSTransport>();
 
             if (transport == null)
             {
@@ -325,7 +327,9 @@ namespace KitchenClash.Infrastructure.Network
         private void OnClientDisconnected(ulong clientId)
         {
             if (!_isGameActive)
+            {
                 return;
+            }
 
             if (_spawnManager != null && NetcodeManager?.IsServer == true)
             {

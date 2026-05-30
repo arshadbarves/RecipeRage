@@ -38,7 +38,7 @@ namespace KitchenClash.Infrastructure.Persistence
 
         public void UpdateSettings(Action<GameSettingsData> updateAction)
         {
-            var s = GetSettings();
+            GameSettingsData s = GetSettings();
             updateAction?.Invoke(s);
             SaveSettings(s);
         }

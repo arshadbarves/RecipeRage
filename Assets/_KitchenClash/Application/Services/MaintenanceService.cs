@@ -33,7 +33,7 @@ namespace KitchenClash.Application.Services
                     return false;
                 }
 
-                if (_remoteConfigService.TryGetConfig<MaintenanceConfig>(out var config) && config != null)
+                if (_remoteConfigService.TryGetConfig<MaintenanceConfig>(out MaintenanceConfig config) && config != null)
                 {
                     IsInMaintenance = config.IsEnabled;
                     MaintenanceMessage = config.Message ?? "We are currently performing maintenance.";

@@ -31,9 +31,14 @@ namespace KitchenClash.Application.Services
 
         public static IAPItem GetById(string productId)
         {
-            foreach (var item in Items)
+            foreach (IAPItem item in Items)
+            {
                 if (item.ProductId == productId)
+                {
                     return item;
+                }
+            }
+
             return null;
         }
     }

@@ -33,14 +33,27 @@ namespace KitchenClash.Infrastructure.Ads
 
         public bool ShouldShowInterstitial(int matchCount)
         {
-            if (_interstitialsDisabled) return false;
-            if (!_cfg.Get("ad_interstitial_enabled", true)) return false;
+            if (_interstitialsDisabled)
+            {
+                return false;
+            }
+
+            if (!_cfg.Get("ad_interstitial_enabled", true))
+            {
+                return false;
+            }
 
             int frequency = _cfg.Get("ad_interstitial_frequency", 3);
-            if (matchCount % frequency != 0) return false;
+            if (matchCount % frequency != 0)
+            {
+                return false;
+            }
 
             int minGapSec = _cfg.Get("ad_interstitial_min_gap_sec", 180);
-            if ((DateTime.UtcNow - _lastInterstitialUtc).TotalSeconds < minGapSec) return false;
+            if ((DateTime.UtcNow - _lastInterstitialUtc).TotalSeconds < minGapSec)
+            {
+                return false;
+            }
 
             return true;
         }

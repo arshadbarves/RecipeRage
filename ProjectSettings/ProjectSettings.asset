@@ -851,10 +851,7 @@ PlayerSettings:
     Standalone: 'Assets/Scripts/Tests/EditMode/Gameplay/ConfigServiceTests.cs(15;13):;error;CS0246:;The;type;or;namespace;name;''ConfigServiceAdapter'';could;not;be;found;(are;you;missing;a;using;directive;an;assembly;reference?)
 
 
-      Assets/Scripts/Tests/EditMode/Gameplay/ConfigServiceTests.cs(26;reference?)
-
-
-'
+      Assets/Scripts/Tests/EditMode/Gameplay/ConfigServiceTests.cs(26;reference?);UNITY_POST_PROCESSING_STACK_V2'
     VisionOS: DOTWEEN;UNITY_POST_PROCESSING_STACK_V2
     WebGL: DOTWEEN;UNITY_POST_PROCESSING_STACK_V2
     Windows Store Apps: DOTWEEN

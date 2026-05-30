@@ -17,7 +17,10 @@ namespace KitchenClash.Infrastructure.Animation
 
         private static void EnsureInitialized()
         {
-            if (_isInitialized) return;
+            if (_isInitialized)
+            {
+                return;
+            }
 
             IDOTweenInit init = DOTween.Init(
                 recycleAllByDefault: true,
@@ -32,7 +35,10 @@ namespace KitchenClash.Infrastructure.Animation
 
         public async UniTask FadeIn(VisualElement element, float duration, CancellationToken token = default)
         {
-            if (element == null) return;
+            if (element == null)
+            {
+                return;
+            }
 
             element.style.opacity = 0f;
             await DOTween.To(() => element.style.opacity.value,
@@ -46,7 +52,10 @@ namespace KitchenClash.Infrastructure.Animation
 
         public async UniTask FadeOut(VisualElement element, float duration, CancellationToken token = default)
         {
-            if (element == null) return;
+            if (element == null)
+            {
+                return;
+            }
 
             await DOTween.To(() => element.style.opacity.value,
                 x => element.style.opacity = x,
@@ -59,7 +68,10 @@ namespace KitchenClash.Infrastructure.Animation
 
         public async UniTask SlideIn(VisualElement element, SlideDirection direction, float duration, CancellationToken token = default)
         {
-            if (element == null) return;
+            if (element == null)
+            {
+                return;
+            }
 
             Vector2 startPos = GetSlideStartPosition(element, direction);
             Vector2 endPos = new Vector2(element.resolvedStyle.left, element.resolvedStyle.top);
@@ -72,7 +84,10 @@ namespace KitchenClash.Infrastructure.Animation
 
         public async UniTask SlideOut(VisualElement element, SlideDirection direction, float duration, CancellationToken token = default)
         {
-            if (element == null) return;
+            if (element == null)
+            {
+                return;
+            }
 
             Vector2 startPos = new Vector2(element.resolvedStyle.left, element.resolvedStyle.top);
             Vector2 endPos = GetSlideEndPosition(element, direction);
@@ -82,7 +97,10 @@ namespace KitchenClash.Infrastructure.Animation
 
         public async UniTask ScaleIn(VisualElement element, float duration, CancellationToken token = default)
         {
-            if (element == null) return;
+            if (element == null)
+            {
+                return;
+            }
 
             element.style.scale = new StyleScale(Vector2.zero);
 
@@ -97,7 +115,10 @@ namespace KitchenClash.Infrastructure.Animation
 
         public async UniTask ScaleOut(VisualElement element, float duration, CancellationToken token = default)
         {
-            if (element == null) return;
+            if (element == null)
+            {
+                return;
+            }
 
             await DOTween.To(() => 1f,
                 x => element.style.scale = new StyleScale(new Vector2(x, x)),
@@ -110,7 +131,10 @@ namespace KitchenClash.Infrastructure.Animation
 
         public async UniTask BounceIn(VisualElement element, float duration, CancellationToken token = default)
         {
-            if (element == null) return;
+            if (element == null)
+            {
+                return;
+            }
 
             element.style.scale = new StyleScale(Vector2.zero);
             element.style.opacity = 0f;
@@ -134,7 +158,10 @@ namespace KitchenClash.Infrastructure.Animation
 
         public async UniTask BounceOut(VisualElement element, float duration, CancellationToken token = default)
         {
-            if (element == null) return;
+            if (element == null)
+            {
+                return;
+            }
 
             Sequence sequence = DOTween.Sequence();
 
@@ -155,7 +182,10 @@ namespace KitchenClash.Infrastructure.Animation
 
         public async UniTask PopupIn(VisualElement container, float duration, CancellationToken token = default)
         {
-            if (container == null) return;
+            if (container == null)
+            {
+                return;
+            }
 
             VisualElement overlay = container.Q<VisualElement>("modal-background");
             VisualElement content = container.Q<VisualElement>("modal-content");
@@ -195,7 +225,10 @@ namespace KitchenClash.Infrastructure.Animation
 
         public async UniTask PopupOut(VisualElement container, float duration, CancellationToken token = default)
         {
-            if (container == null) return;
+            if (container == null)
+            {
+                return;
+            }
 
             VisualElement overlay = container.Q<VisualElement>("modal-background");
             VisualElement content = container.Q<VisualElement>("modal-content");
@@ -231,7 +264,10 @@ namespace KitchenClash.Infrastructure.Animation
 
         public async UniTask Pulse(VisualElement element, float duration, CancellationToken token = default)
         {
-            if (element == null) return;
+            if (element == null)
+            {
+                return;
+            }
 
             const float pulseScale = 1.1f;
             float halfDuration = duration * 0.5f;
@@ -254,7 +290,10 @@ namespace KitchenClash.Infrastructure.Animation
 
         public async UniTask Shake(VisualElement element, float duration, float intensity, CancellationToken token = default)
         {
-            if (element == null) return;
+            if (element == null)
+            {
+                return;
+            }
 
             var originalPos = new Vector2(element.resolvedStyle.left, element.resolvedStyle.top);
 
@@ -325,7 +364,10 @@ namespace KitchenClash.Infrastructure.Animation
 
         public async UniTask BlurIn(VisualElement element, float startRadius, float duration, CancellationToken token = default)
         {
-            if (element == null) return;
+            if (element == null)
+            {
+                return;
+            }
 
             float currentBlur = startRadius;
 
@@ -353,7 +395,10 @@ namespace KitchenClash.Infrastructure.Animation
 
         public async UniTask TrackingIn(Label element, float startSpacing, float endSpacing, float duration, CancellationToken token = default)
         {
-            if (element == null) return;
+            if (element == null)
+            {
+                return;
+            }
 
             float currentSpacing = startSpacing;
             await DOTween.To(() => currentSpacing,
@@ -369,7 +414,10 @@ namespace KitchenClash.Infrastructure.Animation
 
         public void SlideInfinite(VisualElement element, float startPercentX, float endPercentX, float duration)
         {
-            if (element == null) return;
+            if (element == null)
+            {
+                return;
+            }
 
             float currentX = startPercentX;
             DOTween.To(() => currentX,
@@ -384,7 +432,10 @@ namespace KitchenClash.Infrastructure.Animation
 
         public void FloatYoyo(VisualElement element, float offsetY, float duration)
         {
-            if (element == null) return;
+            if (element == null)
+            {
+                return;
+            }
 
             float currentY = 0f;
             DOTween.To(() => currentY, y =>
@@ -399,7 +450,10 @@ namespace KitchenClash.Infrastructure.Animation
 
         public async UniTask CrossfadeLabel(Label label, string newText, float slidePx, float duration, CancellationToken token = default)
         {
-            if (label == null) return;
+            if (label == null)
+            {
+                return;
+            }
 
             float halfDuration = duration * 0.5f;
             float opacity = 1f;

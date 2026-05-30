@@ -35,9 +35,13 @@ namespace KitchenClash.Infrastructure.States
 
             _loginScreenType ??= Type.GetType(LoginScreenTypeName);
             if (_loginScreenType != null)
+            {
                 _uiService.Show(_loginScreenType);
+            }
             else
+            {
                 GameLogger.LogWarning("[LoginState] LoginScreen type not found — UI will not be shown");
+            }
         }
 
         public override void Exit()
@@ -49,7 +53,9 @@ namespace KitchenClash.Infrastructure.States
             _eventBus.Unsubscribe<LoginFailedEvent>(OnLoginFailed);
 
             if (_loginScreenType != null)
+            {
                 _uiService.Hide(_loginScreenType);
+            }
         }
 
         private void OnLoginSuccess(LoginSuccessEvent evt)

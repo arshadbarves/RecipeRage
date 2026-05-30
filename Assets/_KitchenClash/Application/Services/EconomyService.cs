@@ -32,7 +32,11 @@ namespace KitchenClash.Application
 
         public bool TrySpendCoins(int amount)
         {
-            if (_coins < amount) return false;
+            if (_coins < amount)
+            {
+                return false;
+            }
+
             _coins -= amount;
             NotifyAndSave();
             return true;
@@ -40,7 +44,11 @@ namespace KitchenClash.Application
 
         public bool TrySpendGems(int amount)
         {
-            if (_gems < amount) return false;
+            if (_gems < amount)
+            {
+                return false;
+            }
+
             _gems -= amount;
             NotifyAndSave();
             return true;
@@ -67,14 +75,24 @@ namespace KitchenClash.Application
 
         public int GetBalance(string currencyId)
         {
-            if (currencyId == EconomyKeys.CurrencyGems) return _gems;
+            if (currencyId == EconomyKeys.CurrencyGems)
+            {
+                return _gems;
+            }
+
             return _coins;
         }
 
         public void AddCurrency(string currencyId, int amount)
         {
-            if (currencyId == EconomyKeys.CurrencyGems) AddGems(amount);
-            else AddCoins(amount);
+            if (currencyId == EconomyKeys.CurrencyGems)
+            {
+                AddGems(amount);
+            }
+            else
+            {
+                AddCoins(amount);
+            }
         }
 
         /// <summary>
@@ -114,7 +132,10 @@ namespace KitchenClash.Application
         /// </summary>
         public bool Purchase(string itemId, int cost, string currencyType)
         {
-            if (HasItem(itemId)) return false;
+            if (HasItem(itemId))
+            {
+                return false;
+            }
 
             bool spent = currencyType == EconomyKeys.CurrencyGems
                 ? TrySpendGems(cost)
@@ -134,14 +155,19 @@ namespace KitchenClash.Application
         /// </summary>
         public void Initialize()
         {
-            var data = _saveService.LoadData<EconomySaveData>(EconomyKeys.SaveKey);
+            EconomySaveData data = _saveService.LoadData<EconomySaveData>(EconomyKeys.SaveKey);
 
             if (data != null && (data.Coins > 0 || data.Gems > 0 || data.OwnedItems?.Count > 0))
             {
                 _coins = data.Coins > 0 ? data.Coins : StarterCoins;
                 _gems = data.Gems;
                 if (data.OwnedItems != null)
-                    foreach (var item in data.OwnedItems) _ownedItems.Add(item);
+                {
+                    foreach (string item in data.OwnedItems)
+                    {
+                        _ownedItems.Add(item);
+                    }
+                }
             }
             else
             {

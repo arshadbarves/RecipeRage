@@ -43,9 +43,12 @@ namespace KitchenClash.Infrastructure.Gameplay.Abilities
 
         private void OnAbilityActivated(AbilityActivatedEvent evt)
         {
-            if (evt == null) return;
+            if (evt == null)
+            {
+                return;
+            }
 
-            if (_handlers.TryGetValue(evt.AbilityType, out var handler))
+            if (_handlers.TryGetValue(evt.AbilityType, out ActiveAbilityBase handler))
             {
                 // Activate the concrete handler with the event's context
                 handler.Activate(evt.Context);

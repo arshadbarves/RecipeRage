@@ -32,7 +32,9 @@ namespace KitchenClash.Application
         public bool TryExtinguish(string stationId, float currentTime)
         {
             if (!_activeFires.TryGetValue(stationId, out float startTime))
+            {
                 return false;
+            }
 
             float window = GetFireExtinguishWindow();
             if (currentTime - startTime > window)

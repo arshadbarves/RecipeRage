@@ -1,4 +1,3 @@
-using KitchenClash.Application;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -31,10 +30,14 @@ namespace KitchenClash.Application
 
         public async Task LoadAsync()
         {
-            var data = await _playerData.LoadAsync(StorageKey);
-            if (string.IsNullOrEmpty(data)) return;
+            string data = await _playerData.LoadAsync(StorageKey);
+            if (string.IsNullOrEmpty(data))
+            {
+                return;
+            }
+
             // Parse stored streak data
-            var parts = data.Split('|');
+            string[] parts = data.Split('|');
             if (parts.Length >= 3)
             {
                 int.TryParse(parts[0], out _currentDay);
@@ -45,18 +48,24 @@ namespace KitchenClash.Application
 
         public bool CanClaim(DateTime utcNow)
         {
-            var resetHour = 8; // 08:00 UTC per GDD
-            var lastReset = utcNow.Date.AddHours(resetHour);
-            if (utcNow < lastReset) lastReset = lastReset.AddDays(-1);
+            int resetHour = 8; // 08:00 UTC per GDD
+            DateTime lastReset = utcNow.Date.AddHours(resetHour);
+            if (utcNow < lastReset)
+            {
+                lastReset = lastReset.AddDays(-1);
+            }
 
             return _lastClaimUtc < lastReset;
         }
 
         public DailyStreakReward Claim(DateTime utcNow)
         {
-            if (!CanClaim(utcNow)) return null;
+            if (!CanClaim(utcNow))
+            {
+                return null;
+            }
 
-            var daysSinceLastClaim = (int)(utcNow - _lastClaimUtc).TotalDays;
+            int daysSinceLastClaim = (int)(utcNow - _lastClaimUtc).TotalDays;
 
             // Miss 2+ days = reset. Miss 1 = forgiven.
             if (daysSinceLastClaim > 2 && _currentDay > 0)
@@ -68,7 +77,7 @@ namespace KitchenClash.Application
             _currentDay = (_currentDay % CycleDays) + 1;
             _lastClaimUtc = utcNow;
 
-            var reward = GetRewardForDay(_currentDay);
+            DailyStreakReward reward = GetRewardForDay(_currentDay);
             RedeemReward(reward);
             return reward;
         }
@@ -119,7 +128,7 @@ namespace KitchenClash.Application
 
         public async Task SaveAsync()
         {
-            var data = $"{_currentDay}|{_lastClaimUtc:O}|{_missedDays}";
+            string data = $"{_currentDay}|{_lastClaimUtc:O}|{_missedDays}";
             await _playerData.SaveAsync(StorageKey, data);
         }
 

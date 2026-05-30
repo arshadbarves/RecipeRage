@@ -8,7 +8,6 @@ namespace KitchenClash.Infrastructure.Network
     /// <summary>
     /// GDD Section 5: Connectivity state machine.
     /// Online / OfflineMenu (retry 3s) / OfflineMatch (3×5s reconnect, then forfeit) / HostDropped (3s timeout).
-    /// Pure C# ITickable, no MonoBehaviour.
     /// </summary>
     public sealed class NetworkConnectivityService : IConnectivityService, ITickable
     {
@@ -150,7 +149,11 @@ namespace KitchenClash.Infrastructure.Network
 
         private void TransitionTo(ConnectivityState newState)
         {
-            if (CurrentState == newState) return;
+            if (CurrentState == newState)
+            {
+                return;
+            }
+
             CurrentState = newState;
             OnStateChanged?.Invoke(newState);
         }

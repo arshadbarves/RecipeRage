@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using KitchenClash.Application.Models;
 using KitchenClash.Application.Services;
 using KitchenClash.Domain;
 
@@ -28,9 +29,11 @@ namespace KitchenClash.Infrastructure.IAP
 #if UNITY_EDITOR
             GameLogger.Log($"[StubIAPService] Simulating purchase: {productId}");
 
-            var item = IAPCatalog.GetById(productId);
+            IAPItem item = IAPCatalog.GetById(productId);
             if (item == null)
+            {
                 return new IAPResult(false, productId, "Product not found in catalog");
+            }
 
             if (item.Gems > 0 && _economy != null)
             {

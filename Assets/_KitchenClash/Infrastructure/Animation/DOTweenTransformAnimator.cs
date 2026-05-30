@@ -16,7 +16,10 @@ namespace KitchenClash.Infrastructure.Animation
 
         private static void EnsureInitialized()
         {
-            if (_isInitialized) return;
+            if (_isInitialized)
+            {
+                return;
+            }
 
             IDOTweenInit init = DOTween.Init(
                 recycleAllByDefault: true,
@@ -32,7 +35,10 @@ namespace KitchenClash.Infrastructure.Animation
         public async UniTask MoveTo(Transform transform, Vector3 target, float duration,
             CancellationToken token = default)
         {
-            if (transform == null) return;
+            if (transform == null)
+            {
+                return;
+            }
 
             await transform.DOMove(target, duration)
                 .SetEase(Ease.OutQuad)
@@ -43,7 +49,10 @@ namespace KitchenClash.Infrastructure.Animation
         public async UniTask ScaleTo(Transform transform, Vector3 target, float duration,
             CancellationToken token = default)
         {
-            if (transform == null) return;
+            if (transform == null)
+            {
+                return;
+            }
 
             await transform.DOScale(target, duration)
                 .SetEase(Ease.OutQuad)
@@ -54,7 +63,10 @@ namespace KitchenClash.Infrastructure.Animation
         public async UniTask RotateTo(Transform transform, Vector3 target, float duration,
             CancellationToken token = default)
         {
-            if (transform == null) return;
+            if (transform == null)
+            {
+                return;
+            }
 
             await transform.DORotate(target, duration)
                 .SetEase(Ease.OutQuad)
@@ -65,7 +77,10 @@ namespace KitchenClash.Infrastructure.Animation
         public async UniTask Punch(Transform transform, Vector3 direction, float duration,
             CancellationToken token = default)
         {
-            if (transform == null) return;
+            if (transform == null)
+            {
+                return;
+            }
 
             await transform.DOPunchPosition(direction, duration, 10, 1)
                 .ToUniTask()
@@ -75,7 +90,10 @@ namespace KitchenClash.Infrastructure.Animation
         public async UniTask Shake(Transform transform, float duration, float strength,
             CancellationToken token = default)
         {
-            if (transform == null) return;
+            if (transform == null)
+            {
+                return;
+            }
 
             await transform.DOShakePosition(duration, strength, 10, 90, false, true)
                 .ToUniTask()

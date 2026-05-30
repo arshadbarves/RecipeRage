@@ -1,5 +1,6 @@
 using KitchenClash.Application;
 using System;
+using System.Collections.Generic;
 using KitchenClash.Domain;
 using Epic.OnlineServices;
 using Epic.OnlineServices.Lobby;
@@ -389,14 +390,18 @@ namespace KitchenClash.Infrastructure.EOS
         /// </summary>
         public bool AreAllPlayersReady()
         {
-            var lobby = CurrentMatchLobby ?? CurrentPartyLobby;
+            LobbyInfo lobby = CurrentMatchLobby ?? CurrentPartyLobby;
             if (lobby == null || lobby.Players.Count == 0)
+            {
                 return false;
+            }
 
-            foreach (var player in lobby.Players)
+            foreach (PlayerInfo player in lobby.Players)
             {
                 if (!player.IsReady)
+                {
                     return false;
+                }
             }
 
             return true;
@@ -408,10 +413,14 @@ namespace KitchenClash.Infrastructure.EOS
         public LobbyInfo GetLobbyInfo(string lobbyId)
         {
             if (CurrentPartyLobby?.LobbyId == lobbyId)
+            {
                 return CurrentPartyLobby;
+            }
 
             if (CurrentMatchLobby?.LobbyId == lobbyId)
+            {
                 return CurrentMatchLobby;
+            }
 
             return null;
         }
@@ -422,7 +431,7 @@ namespace KitchenClash.Infrastructure.EOS
 
         private void CreateLobbyInternal(LobbyConfig config, LobbyType type)
         {
-            var localUserId = EOSManager.Instance.GetProductUserId();
+            ProductUserId localUserId = EOSManager.Instance.GetProductUserId();
             if (!localUserId.IsValid())
             {
                 OnError?.Invoke("Invalid user ID");
@@ -444,7 +453,7 @@ namespace KitchenClash.Infrastructure.EOS
                 EnableRTCRoom = config.RTCEnabled
             };
 
-            var lobbyInterface = EOSManager.Instance.GetEOSLobbyInterface();
+            LobbyInterface lobbyInterface = EOSManager.Instance.GetEOSLobbyInterface();
             lobbyInterface.CreateLobby(ref createOptions, null, (ref CreateLobbyCallbackInfo callbackData) =>
             {
                 OnCreateLobbyCallback(callbackData, config, type);
@@ -506,7 +515,7 @@ namespace KitchenClash.Infrastructure.EOS
 
         private void JoinLobbyInternal(string lobbyId, LobbyType type)
         {
-            var localUserId = EOSManager.Instance.GetProductUserId();
+            ProductUserId localUserId = EOSManager.Instance.GetProductUserId();
             if (!localUserId.IsValid())
             {
                 OnError?.Invoke("Invalid user ID");
@@ -521,7 +530,7 @@ namespace KitchenClash.Infrastructure.EOS
                 LocalUserId = localUserId
             };
 
-            var lobbyInterface = EOSManager.Instance.GetEOSLobbyInterface();
+            LobbyInterface lobbyInterface = EOSManager.Instance.GetEOSLobbyInterface();
             Result result = lobbyInterface.CopyLobbyDetailsHandle(ref copyOptions, out LobbyDetails lobbyDetails);
 
             if (result != Result.Success || lobbyDetails == null)
@@ -577,14 +586,14 @@ namespace KitchenClash.Infrastructure.EOS
 
         private void RefreshLobbyDetails(string lobbyId, Action<LobbyInfo> callback = null)
         {
-            var localUserId = EOSManager.Instance.GetProductUserId();
+            ProductUserId localUserId = EOSManager.Instance.GetProductUserId();
             var copyOptions = new CopyLobbyDetailsHandleOptions
             {
                 LobbyId = lobbyId,
                 LocalUserId = localUserId
             };
 
-            var lobbyInterface = EOSManager.Instance.GetEOSLobbyInterface();
+            LobbyInterface lobbyInterface = EOSManager.Instance.GetEOSLobbyInterface();
             Result result = lobbyInterface.CopyLobbyDetailsHandle(ref copyOptions, out LobbyDetails lobbyDetails);
 
             if (result != Result.Success || lobbyDetails == null)
@@ -604,7 +613,7 @@ namespace KitchenClash.Infrastructure.EOS
                 return;
             }
 
-            var info = lobbyDetailsInfo.Value;
+            LobbyDetailsInfo info = lobbyDetailsInfo.Value;
 
             var lobbyInfo = new LobbyInfo
             {
@@ -624,7 +633,7 @@ namespace KitchenClash.Infrastructure.EOS
 
                 if (result == Result.Success && attribute.HasValue)
                 {
-                    var attrData = attribute.Value.Data;
+                    AttributeData? attrData = attribute.Value.Data;
                     string key = attrData.Value.Key;
                     string value = attrData.Value.Value.AsUtf8;
 
@@ -633,7 +642,7 @@ namespace KitchenClash.Infrastructure.EOS
                     switch (key)
                     {
                         case "Type":
-                            lobbyInfo.Type = Enum.TryParse<LobbyType>(value, out var lobbyType) ? lobbyType : LobbyType.Party;
+                            lobbyInfo.Type = Enum.TryParse<LobbyType>(value, out LobbyType lobbyType) ? lobbyType : LobbyType.Party;
                             break;
                         case "GameMode":
                             lobbyInfo.GameModeId = value;
@@ -642,7 +651,7 @@ namespace KitchenClash.Infrastructure.EOS
                             lobbyInfo.MapName = value;
                             break;
                         case "TeamSize":
-                            lobbyInfo.TeamSize = int.TryParse(value, out var teamSize) ? teamSize : 2;
+                            lobbyInfo.TeamSize = int.TryParse(value, out int teamSize) ? teamSize : 2;
                             break;
                         case "Status":
                             lobbyInfo.Status = value;
@@ -658,14 +667,14 @@ namespace KitchenClash.Infrastructure.EOS
 
         private void SetLobbyAttributes(string lobbyId, LobbyConfig config)
         {
-            var localUserId = EOSManager.Instance.GetProductUserId();
+            ProductUserId localUserId = EOSManager.Instance.GetProductUserId();
             var modOptions = new UpdateLobbyModificationOptions
             {
                 LobbyId = lobbyId,
                 LocalUserId = localUserId
             };
 
-            var lobbyInterface = EOSManager.Instance.GetEOSLobbyInterface();
+            LobbyInterface lobbyInterface = EOSManager.Instance.GetEOSLobbyInterface();
             Result result = lobbyInterface.UpdateLobbyModification(ref modOptions, out LobbyModification modification);
 
             if (result != Result.Success || modification == null)
@@ -674,7 +683,7 @@ namespace KitchenClash.Infrastructure.EOS
                 return;
             }
 
-            foreach (var kvp in config.CustomAttributes)
+            foreach (KeyValuePair<string, string> kvp in config.CustomAttributes)
             {
                 AddLobbyAttribute(modification, kvp.Key, kvp.Value);
             }
@@ -733,14 +742,14 @@ namespace KitchenClash.Infrastructure.EOS
 
         private void UpdateLobbyAttributeValue(string lobbyId, string key, string value)
         {
-            var localUserId = EOSManager.Instance.GetProductUserId();
+            ProductUserId localUserId = EOSManager.Instance.GetProductUserId();
             var modOptions = new UpdateLobbyModificationOptions
             {
                 LobbyId = lobbyId,
                 LocalUserId = localUserId
             };
 
-            var lobbyInterface = EOSManager.Instance.GetEOSLobbyInterface();
+            LobbyInterface lobbyInterface = EOSManager.Instance.GetEOSLobbyInterface();
             Result result = lobbyInterface.UpdateLobbyModification(ref modOptions, out LobbyModification modification);
 
             if (result != Result.Success || modification == null)
@@ -769,9 +778,16 @@ namespace KitchenClash.Infrastructure.EOS
 
         private void SubscribeToLobbyNotifications()
         {
-            if (EOSManager.Instance == null) return;
-            var lobbyInterface = EOSManager.Instance.GetEOSLobbyInterface();
-            if (lobbyInterface == null) return;
+            if (EOSManager.Instance == null)
+            {
+                return;
+            }
+
+            LobbyInterface lobbyInterface = EOSManager.Instance.GetEOSLobbyInterface();
+            if (lobbyInterface == null)
+            {
+                return;
+            }
 
             var updateOptions = new AddNotifyLobbyUpdateReceivedOptions();
             _lobbyUpdateNotification = lobbyInterface.AddNotifyLobbyUpdateReceived(ref updateOptions, null, OnLobbyUpdateReceived);
@@ -787,10 +803,16 @@ namespace KitchenClash.Infrastructure.EOS
 
         private void UnsubscribeFromLobbyNotifications()
         {
-            if (EOSManager.Instance == null) return;
+            if (EOSManager.Instance == null)
+            {
+                return;
+            }
 
-            var lobbyInterface = EOSManager.Instance.GetEOSLobbyInterface();
-            if (lobbyInterface == null) return;
+            LobbyInterface lobbyInterface = EOSManager.Instance.GetEOSLobbyInterface();
+            if (lobbyInterface == null)
+            {
+                return;
+            }
 
             if (_lobbyUpdateNotification != 0)
             {
@@ -852,9 +874,11 @@ namespace KitchenClash.Infrastructure.EOS
         private void ChangeState(LobbyState newState)
         {
             if (CurrentState == newState)
+            {
                 return;
+            }
 
-            var oldState = CurrentState;
+            LobbyState oldState = CurrentState;
             CurrentState = newState;
 
             GameLogger.Log($"State changed: {oldState} -> {newState}");

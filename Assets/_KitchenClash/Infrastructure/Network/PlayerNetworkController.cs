@@ -62,7 +62,10 @@ namespace KitchenClash.Infrastructure.Network
 
         public void ReconcileState(PlayerStateData serverState, Transform transform, Rigidbody rigidbody, Action<PlayerInputData> replayAction)
         {
-            if (!_enablePrediction) return;
+            if (!_enablePrediction)
+            {
+                return;
+            }
 
             float delta = Vector3.Distance(transform.position, serverState.Position);
             if (delta > _reconciliationThreshold)
@@ -74,7 +77,7 @@ namespace KitchenClash.Infrastructure.Network
                 _lastAcknowledgedSequence = serverState.SequenceNumber;
 
                 // Replay unacknowledged inputs
-                foreach (var input in _inputHistory)
+                foreach (PlayerInputData input in _inputHistory)
                 {
                     if (input.SequenceNumber > _lastAcknowledgedSequence)
                     {

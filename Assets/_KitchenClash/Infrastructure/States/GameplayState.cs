@@ -46,16 +46,25 @@ namespace KitchenClash.Infrastructure.States
                 {
                     await SceneManager.LoadSceneAsync(GameConstants.Scenes.Game).ToUniTask();
                 }
-                if (!IsStateActive) return;
+                if (!IsStateActive)
+                {
+                    return;
+                }
 
                 await UniTask.Yield(cancellationToken: StateCancellationToken);
-                if (!IsStateActive) return;
+                if (!IsStateActive)
+                {
+                    return;
+                }
 
                 if (!string.IsNullOrEmpty(_gameModeService?.SelectedGameMode?.MapSceneName))
                 {
                     await _gameModeService.LoadMapAsync(_gameModeService.SelectedGameMode.MapSceneName);
                 }
-                if (!IsStateActive) return;
+                if (!IsStateActive)
+                {
+                    return;
+                }
 
                 _sessionContext.GameStarter?.StartGame();
             }

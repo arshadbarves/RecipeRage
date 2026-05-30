@@ -80,7 +80,10 @@ namespace KitchenClash.Infrastructure.Localization
         private void ParseCSV(string csvText)
         {
             string[] lines = csvText.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-            if (lines.Length == 0) return;
+            if (lines.Length == 0)
+            {
+                return;
+            }
 
             // Header Row: Key, English, Spanish, ...
             string[] headers = ParseCSVLine(lines[0]);
@@ -183,12 +186,12 @@ namespace KitchenClash.Infrastructure.Localization
         private void BuildOptimizedCache()
         {
             // Build optimized dictionary for current language
-            if (!_optimizedCache.TryGetValue(_currentLanguage, out var cache))
+            if (!_optimizedCache.TryGetValue(_currentLanguage, out Dictionary<string, string> cache))
             {
                 cache = new Dictionary<string, string>();
                 _optimizedCache[_currentLanguage] = cache;
 
-                foreach (var kvp in _localizationTable)
+                foreach (KeyValuePair<string, string[]> kvp in _localizationTable)
                 {
                     string key = kvp.Key;
                     string[] row = kvp.Value;
@@ -218,7 +221,7 @@ namespace KitchenClash.Infrastructure.Localization
         public string GetText(string key)
         {
             // Use optimized cache if available
-            if (_optimizedCache.TryGetValue(_currentLanguage, out var cache))
+            if (_optimizedCache.TryGetValue(_currentLanguage, out Dictionary<string, string> cache))
             {
                 if (cache.TryGetValue(key, out string cachedValue))
                 {
@@ -244,7 +247,7 @@ namespace KitchenClash.Infrastructure.Localization
                     }
 
                     // Try fallback languages
-                    foreach (var fallbackLang in _fallbackLanguages)
+                    foreach (string fallbackLang in _fallbackLanguages)
                     {
                         if (_languageColumnIndices.TryGetValue(fallbackLang, out int fallbackIndex) && fallbackIndex < row.Length)
                         {
@@ -333,7 +336,7 @@ namespace KitchenClash.Infrastructure.Localization
             report.AppendLine($"Missing Keys Report ({_missingKeys.Count} keys):");
             report.AppendLine("------------------------------------");
 
-            foreach (var key in _missingKeys.OrderBy(k => k))
+            foreach (string key in _missingKeys.OrderBy(k => k))
             {
                 report.AppendLine($"- {key}");
             }
@@ -370,12 +373,12 @@ namespace KitchenClash.Infrastructure.Localization
         {
             var missingTranslations = new Dictionary<string, List<string>>();
 
-            foreach (var kvp in _localizationTable)
+            foreach (KeyValuePair<string, string[]> kvp in _localizationTable)
             {
                 string key = kvp.Key;
                 string[] row = kvp.Value;
 
-                foreach (var langKvp in _languageColumnIndices)
+                foreach (KeyValuePair<string, int> langKvp in _languageColumnIndices)
                 {
                     string language = langKvp.Key;
                     int index = langKvp.Value;
@@ -420,7 +423,10 @@ namespace KitchenClash.Infrastructure.Localization
 
         public void RegisterBinding(object owner, string key, Action<string> onUpdate)
         {
-            if (owner == null) return;
+            if (owner == null)
+            {
+                return;
+            }
 
             if (!_bindings.ContainsKey(owner))
             {
@@ -444,9 +450,9 @@ namespace KitchenClash.Infrastructure.Localization
 
         private void UpdateBindings()
         {
-            foreach (var group in _bindings.Values)
+            foreach (List<(string Key, Action<string> Action)> group in _bindings.Values)
             {
-                foreach (var binding in group)
+                foreach ((string Key, Action<string> Action) binding in group)
                 {
                     binding.Action?.Invoke(GetText(binding.Key));
                 }

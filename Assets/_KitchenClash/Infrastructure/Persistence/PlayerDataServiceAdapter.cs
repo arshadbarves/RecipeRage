@@ -47,7 +47,10 @@ namespace KitchenClash.Infrastructure.Persistence
             _stats.RecordGamePlayed(won, gameModeId, characterId, playTime, score);
             bool leveledUp = _stats.AddExperience(xp);
             OnStatsChanged?.Invoke(_stats);
-            if (leveledUp) OnLevelUp?.Invoke();
+            if (leveledUp)
+            {
+                OnLevelUp?.Invoke();
+            }
         }
 
         public Task<string> LoadAsync(string key)

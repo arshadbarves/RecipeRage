@@ -33,7 +33,7 @@ namespace KitchenClash.Infrastructure.Gameplay
         private void LoadGameModes()
         {
             GameMode[] modes = Resources.LoadAll<GameMode>("ScriptableObjects/GameModes");
-            foreach (var mode in modes)
+            foreach (GameMode mode in modes)
             {
                 if (mode != null && !string.IsNullOrEmpty(mode.Id))
                 {
@@ -43,7 +43,7 @@ namespace KitchenClash.Infrastructure.Gameplay
 
             if (_gameModes.Count > 0)
             {
-                foreach (var mode in _gameModes.Values)
+                foreach (GameMode mode in _gameModes.Values)
                 {
                     if (mode.UnlockedByDefault)
                     {
@@ -59,20 +59,31 @@ namespace KitchenClash.Infrastructure.Gameplay
         public GameMode[] GetAvailableGameModes()
         {
             var unlocked = new List<GameMode>();
-            foreach (var mode in _gameModes.Values)
+            foreach (GameMode mode in _gameModes.Values)
             {
-                if (mode.UnlockedByDefault) unlocked.Add(mode);
+                if (mode.UnlockedByDefault)
+                {
+                    unlocked.Add(mode);
+                }
             }
             return unlocked.ToArray();
         }
 
-        public GameMode GetGameMode(string id) => _gameModes.TryGetValue(id, out var mode) ? mode : null;
+        public GameMode GetGameMode(string id) => _gameModes.TryGetValue(id, out GameMode mode) ? mode : null;
 
         public bool SelectGameMode(string id)
         {
-            var mode = GetGameMode(id);
-            if (mode == null) return false;
-            if (_selectedGameMode == mode) return true;
+            GameMode mode = GetGameMode(id);
+            if (mode == null)
+            {
+                return false;
+            }
+
+            if (_selectedGameMode == mode)
+            {
+                return true;
+            }
+
             _selectedGameMode = mode;
             OnGameModeChanged?.Invoke(mode);
             return true;
@@ -80,7 +91,10 @@ namespace KitchenClash.Infrastructure.Gameplay
 
         public async UniTask<bool> LoadMapAsync(string sceneName)
         {
-            if (string.IsNullOrEmpty(sceneName)) return false;
+            if (string.IsNullOrEmpty(sceneName))
+            {
+                return false;
+            }
 
             if (!string.IsNullOrEmpty(_currentLoadedSceneName))
             {
@@ -102,7 +116,10 @@ namespace KitchenClash.Infrastructure.Gameplay
 
         public async UniTask UnloadCurrentMapAsync()
         {
-            if (string.IsNullOrEmpty(_currentLoadedSceneName)) return;
+            if (string.IsNullOrEmpty(_currentLoadedSceneName))
+            {
+                return;
+            }
 
             try
             {

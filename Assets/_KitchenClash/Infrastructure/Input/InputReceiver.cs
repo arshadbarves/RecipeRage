@@ -55,7 +55,7 @@ namespace KitchenClash.Infrastructure.Input
                 _lastChopTapTime = -1f;
             }
 
-            foreach (var t in UnityEngine.Input.touches)
+            foreach (Touch t in UnityEngine.Input.touches)
             {
                 bool left = t.position.x < Screen.width * 0.5f;
                 if (left)
@@ -72,7 +72,7 @@ namespace KitchenClash.Infrastructure.Input
                         _rightTouchStartPos = t.position;
                     }
 
-                    var v = Clamp(t.position - RB);
+                    Vector2 v = Clamp(t.position - RB);
                     AimJustReleased = t.phase == TouchPhase.Ended && AimInput.magnitude > 0.3f;
 
                     // Detect chop tap: short duration, minimal drag

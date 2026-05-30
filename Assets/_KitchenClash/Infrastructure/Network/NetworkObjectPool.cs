@@ -154,7 +154,7 @@ namespace KitchenClash.Infrastructure.Network
                 return;
             }
 
-            foreach (var pool in _pools.Values)
+            foreach (Queue<NetworkObject> pool in _pools.Values)
             {
                 while (pool.Count > 0)
                 {
@@ -174,7 +174,7 @@ namespace KitchenClash.Infrastructure.Network
 
         private GameObject FindPrefabForObject(NetworkObject networkObject)
         {
-            foreach (var kvp in _pools)
+            foreach (KeyValuePair<GameObject, Queue<NetworkObject>> kvp in _pools)
             {
                 if (networkObject.name.StartsWith(kvp.Key.name))
                 {

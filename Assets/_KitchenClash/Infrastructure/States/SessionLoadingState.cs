@@ -3,7 +3,9 @@ using KitchenClash.Application.Services;
 using KitchenClash.Infrastructure.DI;
 using KitchenClash.Application.State;
 using Cysharp.Threading.Tasks;
+using KitchenClash.Application;
 using KitchenClash.Domain;
+using KitchenClash.Infrastructure.Persistence;
 
 namespace KitchenClash.Infrastructure.States
 {
@@ -42,18 +44,30 @@ namespace KitchenClash.Infrastructure.States
                 {
                     _sessionManager.CreateSession();
                 }
-                if (!IsStateActive) return;
+                if (!IsStateActive)
+                {
+                    return;
+                }
 
-                var economyService = _sessionContext.EconomyService;
+                EconomyService economyService = _sessionContext.EconomyService;
                 economyService?.Initialize();
-                if (!IsStateActive) return;
+                if (!IsStateActive)
+                {
+                    return;
+                }
 
-                var playerDataService = _sessionContext.PlayerDataService;
+                PlayerDataService playerDataService = _sessionContext.PlayerDataService;
                 playerDataService?.Initialize();
-                if (!IsStateActive) return;
+                if (!IsStateActive)
+                {
+                    return;
+                }
 
                 await UniTask.Delay(300, cancellationToken: StateCancellationToken);
-                if (!IsStateActive) return;
+                if (!IsStateActive)
+                {
+                    return;
+                }
 
                 GameLogger.Log("[SessionLoadingState] Loading complete. Transitioning to MainMenu.");
                 _stateManager.ChangeState<MainMenuState>();

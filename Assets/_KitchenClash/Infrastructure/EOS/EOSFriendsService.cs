@@ -103,19 +103,25 @@ namespace KitchenClash.Infrastructure.EOS
         public async Task<FriendRequest> SendFriendRequestAsync(string friendCode)
         {
             if (!IsInitialized)
+            {
                 throw new InvalidOperationException("Service not initialized");
+            }
 
             if (string.IsNullOrEmpty(friendCode))
+            {
                 throw new ArgumentException("Friend code cannot be empty");
+            }
 
             if (friendCode == MyFriendCode)
+            {
                 throw new ArgumentException("Cannot send request to yourself");
+            }
 
             GameLogger.Log($"Sending friend request to: {friendCode}");
 
             try
             {
-                var relationship = await _ugsInstance.AddFriendAsync(friendCode);
+                UGSModels.Relationship relationship = await _ugsInstance.AddFriendAsync(friendCode);
 
                 GameLogger.Log($"Friend request sent to {friendCode}");
 
@@ -140,16 +146,20 @@ namespace KitchenClash.Infrastructure.EOS
         public async Task AcceptFriendRequestAsync(string requestId)
         {
             if (!IsInitialized)
+            {
                 throw new InvalidOperationException("Service not initialized");
+            }
 
             GameLogger.Log($"Accepting friend request: {requestId}");
 
             try
             {
-                var request = _ugsInstance.IncomingFriendRequests.FirstOrDefault(r => r.Id == requestId);
+                UGSModels.Relationship request = _ugsInstance.IncomingFriendRequests.FirstOrDefault(r => r.Id == requestId);
 
                 if (request == null)
+                {
                     throw new Exception("Friend request not found");
+                }
 
                 await _ugsInstance.AddFriendAsync(request.Member.Id);
 
@@ -165,16 +175,20 @@ namespace KitchenClash.Infrastructure.EOS
         public async Task RejectFriendRequestAsync(string requestId)
         {
             if (!IsInitialized)
+            {
                 throw new InvalidOperationException("Service not initialized");
+            }
 
             GameLogger.Log($"Rejecting friend request: {requestId}");
 
             try
             {
-                var request = _ugsInstance.IncomingFriendRequests.FirstOrDefault(r => r.Id == requestId);
+                UGSModels.Relationship request = _ugsInstance.IncomingFriendRequests.FirstOrDefault(r => r.Id == requestId);
 
                 if (request == null)
+                {
                     throw new Exception("Friend request not found");
+                }
 
                 await _ugsInstance.DeleteIncomingFriendRequestAsync(request.Member.Id);
 
@@ -190,7 +204,9 @@ namespace KitchenClash.Infrastructure.EOS
         public async Task RefreshFriendRequestsAsync()
         {
             if (!IsInitialized)
+            {
                 return;
+            }
 
             GameLogger.Log("Refreshing friend requests...");
 
@@ -215,7 +231,9 @@ namespace KitchenClash.Infrastructure.EOS
         public async Task RefreshFriendsAsync()
         {
             if (!IsInitialized)
+            {
                 return;
+            }
 
             GameLogger.Log("Refreshing friends list...");
 
@@ -236,11 +254,15 @@ namespace KitchenClash.Infrastructure.EOS
         public async Task RemoveFriendAsync(string friendCode)
         {
             if (!IsInitialized)
+            {
                 throw new InvalidOperationException("Service not initialized");
+            }
 
-            var friend = _friends.FirstOrDefault(f => f.FriendCode == friendCode);
+            FriendInfo friend = _friends.FirstOrDefault(f => f.FriendCode == friendCode);
             if (friend == null)
+            {
                 throw new Exception("Friend not found");
+            }
 
             GameLogger.Log($"Removing friend: {friend.DisplayName}");
 
@@ -264,12 +286,16 @@ namespace KitchenClash.Infrastructure.EOS
         public async void AddRecentPlayer(string productUserId, string displayName)
         {
             if (!IsInitialized || string.IsNullOrEmpty(productUserId))
+            {
                 return;
+            }
 
             try
             {
                 if (productUserId == _authManager.EosProductUserId)
+                {
                     return;
+                }
 
                 GameLogger.Log($"Adding recent player: {displayName}");
 
@@ -310,7 +336,7 @@ namespace KitchenClash.Infrastructure.EOS
                 return;
             }
 
-            var friend = _friends.FirstOrDefault(f => f.FriendCode == friendCode);
+            FriendInfo friend = _friends.FirstOrDefault(f => f.FriendCode == friendCode);
             if (friend == null)
             {
                 GameLogger.LogError($"Friend not found: {friendCode}");
@@ -340,11 +366,11 @@ namespace KitchenClash.Infrastructure.EOS
         {
             _friends.Clear();
 
-            foreach (var relationship in _ugsInstance.Friends)
+            foreach (UGSModels.Relationship relationship in _ugsInstance.Friends)
             {
-                var member = relationship.Member;
-                var profile = member.Profile;
-                var presence = member.Presence;
+                UGSModels.Member member = relationship.Member;
+                UGSModels.Profile profile = member.Profile;
+                UGSModels.Presence presence = member.Presence;
 
                 bool isOnline = presence != null && presence.Availability == UGSModels.Availability.Online;
                 DateTime lastSeen = presence?.LastSeen ?? DateTime.MinValue;
@@ -364,7 +390,10 @@ namespace KitchenClash.Infrastructure.EOS
             _friends.Sort((a, b) =>
             {
                 if (a.IsOnline != b.IsOnline)
+                {
                     return b.IsOnline.CompareTo(a.IsOnline);
+                }
+
                 return string.Compare(a.DisplayName, b.DisplayName, StringComparison.Ordinal);
             });
 
@@ -375,7 +404,7 @@ namespace KitchenClash.Infrastructure.EOS
         {
             _pendingRequests.Clear();
 
-            foreach (var request in _ugsInstance.IncomingFriendRequests)
+            foreach (UGSModels.Relationship request in _ugsInstance.IncomingFriendRequests)
             {
                 _pendingRequests.Add(new FriendRequest
                 {
@@ -389,7 +418,7 @@ namespace KitchenClash.Infrastructure.EOS
                 });
             }
 
-            foreach (var request in _pendingRequests)
+            foreach (FriendRequest request in _pendingRequests)
             {
                 OnFriendRequestReceived?.Invoke(request);
             }
@@ -425,14 +454,14 @@ namespace KitchenClash.Infrastructure.EOS
 
         private void OnRelationshipAdded(UGSNotifications.IRelationshipAddedEvent eventData)
         {
-            var relationship = eventData.Relationship;
+            UGSModels.Relationship relationship = eventData.Relationship;
             GameLogger.Log($"Relationship added: {relationship.Member.Profile?.Name ?? "Unknown"}");
 
             if (relationship.Type == UGSModels.RelationshipType.Friend)
             {
                 UpdateLocalFriends();
 
-                var friend = _friends.FirstOrDefault(f => f.FriendCode == relationship.Member.Id);
+                FriendInfo friend = _friends.FirstOrDefault(f => f.FriendCode == relationship.Member.Id);
                 if (friend != null)
                 {
                     OnFriendAdded?.Invoke(friend);
@@ -446,10 +475,10 @@ namespace KitchenClash.Infrastructure.EOS
 
         private void OnRelationshipDeleted(UGSNotifications.IRelationshipDeletedEvent eventData)
         {
-            var relationship = eventData.Relationship;
+            UGSModels.Relationship relationship = eventData.Relationship;
             GameLogger.Log($"Relationship deleted: {relationship.Member.Profile?.Name ?? "Unknown"}");
 
-            var friendCode = relationship.Member.Id;
+            string friendCode = relationship.Member.Id;
             _friends.RemoveAll(f => f.FriendCode == friendCode);
             _pendingRequests.RemoveAll(r => r.FromFriendCode == friendCode);
 
@@ -459,10 +488,10 @@ namespace KitchenClash.Infrastructure.EOS
 
         private void OnPresenceUpdated(UGSNotifications.IPresenceUpdatedEvent eventData)
         {
-            var presence = eventData.Presence;
+            UGSModels.Presence presence = eventData.Presence;
             GameLogger.Log($"Presence updated for: {eventData.ID} - {presence.Availability}");
 
-            var friend = _friends.FirstOrDefault(f => f.FriendCode == eventData.ID);
+            FriendInfo friend = _friends.FirstOrDefault(f => f.FriendCode == eventData.ID);
             if (friend != null)
             {
                 friend.IsOnline = presence.Availability == UGSModels.Availability.Online;

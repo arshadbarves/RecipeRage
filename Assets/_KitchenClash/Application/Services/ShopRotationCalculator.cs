@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using KitchenClash.Domain;
 
 namespace KitchenClash.Application.Services
 {

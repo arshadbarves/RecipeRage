@@ -37,8 +37,11 @@ namespace KitchenClash.Infrastructure.Network.Stations
         protected override void Awake()
         {
             base.Awake();
-            if (_dirtyDishesVisual != null) _dirtyDishesVisual.SetActive(false);
-            
+            if (_dirtyDishesVisual != null)
+            {
+                _dirtyDishesVisual.SetActive(false);
+            }
+
             // Setup Progress Bar
             if (_progressBarPrefab != null && _ingredientPlacementPoint != null)
             {
@@ -67,7 +70,10 @@ namespace KitchenClash.Infrastructure.Network.Stations
 
         protected void Update()
         {
-            if (!IsServer) return;
+            if (!IsServer)
+            {
+                return;
+            }
 
             if (_isWashing.Value)
             {
@@ -145,8 +151,11 @@ namespace KitchenClash.Infrastructure.Network.Stations
         {
             _isWashing.Value = true;
             _currentWashTimer = 0f;
-            if (_progressBar) _progressBar.SetActive(true);
-            
+            if (_progressBar)
+            {
+                _progressBar.SetActive(true);
+            }
+
             if (_audioSource && _washSound)
             {
                 _audioSource.clip = _washSound;
@@ -167,7 +176,10 @@ namespace KitchenClash.Infrastructure.Network.Stations
             if (_audioSource) 
             {
                 _audioSource.Stop();
-                if (_cleanSound) _audioSource.PlayOneShot(_cleanSound);
+                if (_cleanSound)
+                {
+                    _audioSource.PlayOneShot(_cleanSound);
+                }
             }
             
             // Restart if more plates?
@@ -187,8 +199,15 @@ namespace KitchenClash.Infrastructure.Network.Stations
 
         private void OnWashingStateChanged(bool prev, bool curr)
         {
-            if (_progressBar != null) _progressBar.SetActive(curr);
-            if (!curr && _audioSource) _audioSource.Stop();
+            if (_progressBar != null)
+            {
+                _progressBar.SetActive(curr);
+            }
+
+            if (!curr && _audioSource)
+            {
+                _audioSource.Stop();
+            }
         }
     }
 }

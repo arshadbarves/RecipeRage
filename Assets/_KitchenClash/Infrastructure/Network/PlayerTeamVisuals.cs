@@ -44,7 +44,10 @@ namespace KitchenClash.Infrastructure.Network
 
         private void Update()
         {
-            if (!IsSpawned) return;
+            if (!IsSpawned)
+            {
+                return;
+            }
 
             _matchContext?.Refresh();
 
@@ -71,22 +74,38 @@ namespace KitchenClash.Infrastructure.Network
             bool isAlly = localTeamId == _playerController.TeamId;
             bool isMe = (localPlayer == _playerController);
 
-            if (_allyHighlight != null) _allyHighlight.SetActive(isAlly || isMe);
-            if (_enemyHighlight != null) _enemyHighlight.SetActive(!isAlly && !isMe);
+            if (_allyHighlight != null)
+            {
+                _allyHighlight.SetActive(isAlly || isMe);
+            }
+
+            if (_enemyHighlight != null)
+            {
+                _enemyHighlight.SetActive(!isAlly && !isMe);
+            }
 
             if (_targetRenderer != null)
             {
                 if (isMe)
                 {
-                    if (_allyMaterial != null) _targetRenderer.material = _allyMaterial;
+                    if (_allyMaterial != null)
+                    {
+                        _targetRenderer.material = _allyMaterial;
+                    }
                 }
                 else if (isAlly)
                 {
-                     if (_allyMaterial != null) _targetRenderer.material = _allyMaterial;
+                     if (_allyMaterial != null)
+                     {
+                         _targetRenderer.material = _allyMaterial;
+                     }
                 }
                 else
                 {
-                     if (_enemyMaterial != null) _targetRenderer.material = _enemyMaterial;
+                     if (_enemyMaterial != null)
+                     {
+                         _targetRenderer.material = _enemyMaterial;
+                     }
                 }
             }
         }

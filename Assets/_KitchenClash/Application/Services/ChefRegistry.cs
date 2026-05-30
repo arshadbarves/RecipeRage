@@ -17,7 +17,7 @@ namespace KitchenClash.Application.Services
             _chefs = BuildAll().ToDictionary(c => c.Id);
         }
 
-        public ChefDefinition Get(ChefId id) => _chefs.TryGetValue(id, out var c) ? c : null;
+        public ChefDefinition Get(ChefId id) => _chefs.TryGetValue(id, out ChefDefinition c) ? c : null;
 
         public IReadOnlyList<ChefDefinition> GetAll() => _chefs.Values.ToList();
 
@@ -27,10 +27,12 @@ namespace KitchenClash.Application.Services
         public IReadOnlyList<ChefDefinition> GetUnlockedChefs(int playerLevel, IEconomyService economy)
         {
             var result = new List<ChefDefinition>();
-            foreach (var chef in _chefs.Values)
+            foreach (ChefDefinition chef in _chefs.Values)
             {
                 if (IsUnlocked(chef, playerLevel, economy))
+                {
                     result.Add(chef);
+                }
             }
             return result;
         }
@@ -62,15 +64,29 @@ namespace KitchenClash.Application.Services
         /// </summary>
         public void ApplyRemoteConfig(CharacterConfig config)
         {
-            if (config?.Overrides == null) return;
-
-            foreach (var ov in config.Overrides)
+            if (config?.Overrides == null)
             {
-                if (string.IsNullOrEmpty(ov.ChefId)) continue;
-                if (!System.Enum.TryParse<ChefId>(ov.ChefId, true, out var chefId)) continue;
-                if (!_chefs.TryGetValue(chefId, out var chef)) continue;
+                return;
+            }
 
-                var stats = chef.Stats;
+            foreach (CharacterStatOverride ov in config.Overrides)
+            {
+                if (string.IsNullOrEmpty(ov.ChefId))
+                {
+                    continue;
+                }
+
+                if (!System.Enum.TryParse<ChefId>(ov.ChefId, true, out ChefId chefId))
+                {
+                    continue;
+                }
+
+                if (!_chefs.TryGetValue(chefId, out ChefDefinition chef))
+                {
+                    continue;
+                }
+
+                ChefStatBlock stats = chef.Stats;
                 var newStats = new ChefStatBlock(
                     ov.SpeedMultiplier >= 0 ? ov.SpeedMultiplier : stats.MoveSpeed,
                     ov.CookingSpeedMultiplier >= 0 ? ov.CookingSpeedMultiplier : stats.CookSpeedMult,

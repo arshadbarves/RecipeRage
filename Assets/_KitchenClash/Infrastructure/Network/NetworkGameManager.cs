@@ -72,7 +72,7 @@ namespace KitchenClash.Infrastructure.Network
                 return;
             }
 
-            var playerPrefabSource = _networkManager?.NetworkConfig?.PlayerPrefab;
+            GameObject playerPrefabSource = _networkManager?.NetworkConfig?.PlayerPrefab;
             if (playerPrefabSource == null)
             {
                 GameLogger.LogError("[NetworkGameManager] NetworkManager player prefab is not configured");
@@ -175,7 +175,7 @@ namespace KitchenClash.Infrastructure.Network
             NetworkObject playerObject = _networkManager?.SpawnManager?.GetPlayerNetworkObject(clientId);
             if (playerObject != null)
             {
-                var playerController = playerObject.GetComponent<IPlayerController>();
+                IPlayerController playerController = playerObject.GetComponent<IPlayerController>();
 
                 if (playerController != null)
                 {
@@ -215,7 +215,7 @@ namespace KitchenClash.Infrastructure.Network
 
             List<NetworkObject> objectsToCleanup = new List<NetworkObject>();
 
-            foreach (var kvp in _networkManager.SpawnManager.SpawnedObjects)
+            foreach (KeyValuePair<ulong, NetworkObject> kvp in _networkManager.SpawnManager.SpawnedObjects)
             {
                 NetworkObject networkObject = kvp.Value;
 
@@ -227,7 +227,10 @@ namespace KitchenClash.Infrastructure.Network
 
             foreach (NetworkObject networkObject in objectsToCleanup)
             {
-                if (networkObject == null) continue;
+                if (networkObject == null)
+                {
+                    continue;
+                }
 
                 if (networkObject.IsPlayerObject)
                 {

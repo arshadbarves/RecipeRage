@@ -130,7 +130,10 @@ namespace KitchenClash.Infrastructure.EOS
 
         public async UniTask<bool> InitializeAsync()
         {
-            if (IsInitialized) return true;
+            if (IsInitialized)
+            {
+                return true;
+            }
 
             try
             {
@@ -162,8 +165,12 @@ namespace KitchenClash.Infrastructure.EOS
 
         private bool IsLoggedIn()
         {
-            if (EOSManager.Instance == null) return false;
-            var productUserId = EOSManager.Instance.GetProductUserId();
+            if (EOSManager.Instance == null)
+            {
+                return false;
+            }
+
+            ProductUserId productUserId = EOSManager.Instance.GetProductUserId();
             bool eosLoggedIn = productUserId != null && productUserId.IsValid();
             
             // UGS is now optional for the general "IsSignedIn" state
@@ -235,7 +242,7 @@ namespace KitchenClash.Infrastructure.EOS
             // 3. EOS Logout
             if (EOSManager.Instance != null)
             {
-                var productUserId = EOSManager.Instance.GetProductUserId();
+                ProductUserId productUserId = EOSManager.Instance.GetProductUserId();
                 if (productUserId != null && productUserId.IsValid())
                 {
                     EOSManager.Instance.ClearConnectId(productUserId);
@@ -255,7 +262,10 @@ namespace KitchenClash.Infrastructure.EOS
         private async UniTask<bool> LoginWithEosDeviceIdAsync()
         {
             bool deviceIdReady = await EnsureEosDeviceIdCreated();
-            if (!deviceIdReady) return false;
+            if (!deviceIdReady)
+            {
+                return false;
+            }
 
             var tcs = new UniTaskCompletionSource<bool>();
 
@@ -296,7 +306,10 @@ namespace KitchenClash.Infrastructure.EOS
             try
             {
                 string eosId = EosProductUserId;
-                if (string.IsNullOrEmpty(eosId)) return false;
+                if (string.IsNullOrEmpty(eosId))
+                {
+                    return false;
+                }
 
                 GameLogger.Log($"Signing in to UGS with EOS identity: {eosId}");
 
@@ -316,8 +329,11 @@ namespace KitchenClash.Infrastructure.EOS
 
         private async UniTask<bool> EnsureEosDeviceIdCreated()
         {
-            var connectInterface = EOSManager.Instance.GetEOSConnectInterface();
-            if (connectInterface == null) return false;
+            ConnectInterface connectInterface = EOSManager.Instance.GetEOSConnectInterface();
+            if (connectInterface == null)
+            {
+                return false;
+            }
 
             // Retry logic with exponential backoff
             const int MAX_RETRIES = 3;
@@ -368,7 +384,7 @@ namespace KitchenClash.Infrastructure.EOS
         {
             if (UnityServices.State == ServicesInitializationState.Initialized)
             {
-                var authService = Unity.Services.Authentication.AuthenticationService.Instance;
+                IAuthenticationService authService = Unity.Services.Authentication.AuthenticationService.Instance;
                 if (authService != null)
                 {
                     authService.SignedIn -= OnUgsSignedIn;

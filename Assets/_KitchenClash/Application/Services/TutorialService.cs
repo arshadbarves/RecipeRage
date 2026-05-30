@@ -28,7 +28,10 @@ namespace KitchenClash.Application.Services
 
         public void StartTutorial()
         {
-            if (_isComplete) return;
+            if (_isComplete)
+            {
+                return;
+            }
 
             _isActive = true;
             _currentStep = TutorialStep.Welcome;
@@ -37,7 +40,10 @@ namespace KitchenClash.Application.Services
 
         public void AdvanceStep()
         {
-            if (!_isActive || _isComplete) return;
+            if (!_isActive || _isComplete)
+            {
+                return;
+            }
 
             int next = (int)_currentStep + 1;
             var values = (TutorialStep[])Enum.GetValues(typeof(TutorialStep));
@@ -80,7 +86,7 @@ namespace KitchenClash.Application.Services
 
         private void LoadState()
         {
-            var data = _saveService.Load(TutorialKey, new TutorialSaveData());
+            TutorialSaveData data = _saveService.Load(TutorialKey, new TutorialSaveData());
             _currentStep = (TutorialStep)data.CurrentStep;
             _isComplete = data.IsComplete;
         }

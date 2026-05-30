@@ -9,13 +9,17 @@ namespace KitchenClash.Infrastructure.Logging
     public sealed class UnityLoggingService : ILoggingService
     {
         private readonly List<LogEntry> _logs = new();
-        private LogLevel _minLevel = LogLevel.Verbose;
+        private const LogLevel MinLevel = LogLevel.Verbose;
 
         public event Action<LogEntry> OnLogAdded;
 
         public void Log(string message, LogLevel level = LogLevel.Info, string category = "General")
         {
-            if (level < _minLevel) return;
+            if (level < MinLevel)
+            {
+                return;
+            }
+
             var entry = new LogEntry(message, level, category);
             _logs.Add(entry);
             OnLogAdded?.Invoke(entry);
@@ -29,6 +33,8 @@ namespace KitchenClash.Infrastructure.Logging
                 case LogLevel.Critical:
                     UnityEngine.Debug.LogError($"[{category}] {message}");
                     break;
+                case LogLevel.Verbose:
+                case LogLevel.Info:
                 default:
                     UnityEngine.Debug.Log($"[{category}] {message}");
                     break;
@@ -52,7 +58,7 @@ namespace KitchenClash.Infrastructure.Logging
 
         public void SaveLogsToFile(string filePath)
         {
-            var lines = _logs.Select(l => $"[{l.Timestamp}] [{l.Level}] [{l.Category}] {l.Message}");
+            IEnumerable<string> lines = _logs.Select(l => $"[{l.Timestamp}] [{l.Level}] [{l.Category}] {l.Message}");
             File.WriteAllLines(filePath, lines);
         }
 

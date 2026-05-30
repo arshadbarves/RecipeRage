@@ -56,8 +56,11 @@ namespace KitchenClash.Infrastructure.Network
             CharacterAbility ability,
             PlayerStateController stateController)
         {
-            if (ability == null) return false;
-            
+            if (ability == null)
+            {
+                return false;
+            }
+
             if (stateController.CurrentState == PlayerMovementState.Stunned)
             {
                 return false;

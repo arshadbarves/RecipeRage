@@ -145,7 +145,7 @@ namespace KitchenClash.Infrastructure.Network.Bot
                 return;
             }
 
-            var planningSnapshot = _snapshot.Capture(_playerController, _botData.BotId, _claimRegistry);
+            BotPlanningSnapshot planningSnapshot = _snapshot.Capture(_playerController, _botData.BotId, _claimRegistry);
             if (ClaimedOrderNeedsRelease(planningSnapshot))
             {
                 ReleaseClaims();

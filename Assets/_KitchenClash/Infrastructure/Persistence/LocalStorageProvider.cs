@@ -17,30 +17,42 @@ namespace KitchenClash.Infrastructure.Persistence
 
         public string Read(string key)
         {
-            var path = GetPath(key);
+            string path = GetPath(key);
             return File.Exists(path) ? File.ReadAllText(path) : null;
         }
 
         public void Write(string key, string content)
         {
-            var path = GetPath(key);
-            var dir = Path.GetDirectoryName(path);
-            if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+            string path = GetPath(key);
+            string dir = Path.GetDirectoryName(path);
+            if (!Directory.Exists(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+
             File.WriteAllText(path, content);
         }
 
         public async UniTask<string> ReadAsync(string key)
         {
-            var path = GetPath(key);
-            if (!File.Exists(path)) return null;
+            string path = GetPath(key);
+            if (!File.Exists(path))
+            {
+                return null;
+            }
+
             return await File.ReadAllTextAsync(path);
         }
 
         public async UniTask WriteAsync(string key, string content)
         {
-            var path = GetPath(key);
-            var dir = Path.GetDirectoryName(path);
-            if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+            string path = GetPath(key);
+            string dir = Path.GetDirectoryName(path);
+            if (!Directory.Exists(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+
             await File.WriteAllTextAsync(path, content);
         }
 
@@ -48,8 +60,11 @@ namespace KitchenClash.Infrastructure.Persistence
 
         public void Delete(string key)
         {
-            var path = GetPath(key);
-            if (File.Exists(path)) File.Delete(path);
+            string path = GetPath(key);
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
         }
 
         private string GetPath(string key) => Path.Combine(_basePath, key);

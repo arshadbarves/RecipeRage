@@ -43,7 +43,9 @@ namespace KitchenClash.Infrastructure.Network.Spawning
         public Vector3 GetSpawnPosition(bool randomize = false)
         {
             if (!randomize)
+            {
                 return transform.position;
+            }
 
             Vector2 randomOffset = Random.insideUnitCircle * _spawnRadius;
             return transform.position + new Vector3(randomOffset.x, 0f, randomOffset.y);
@@ -59,7 +61,10 @@ namespace KitchenClash.Infrastructure.Network.Spawning
 
         private void OnDrawGizmos()
         {
-            if (!_showGizmos) return;
+            if (!_showGizmos)
+            {
+                return;
+            }
 
             // Set color based on team
             Color color = _teamCategory switch
@@ -86,7 +91,10 @@ namespace KitchenClash.Infrastructure.Network.Spawning
 
         private void OnDrawGizmosSelected()
         {
-            if (!_showGizmos) return;
+            if (!_showGizmos)
+            {
+                return;
+            }
 
             Gizmos.color = Color.yellow;
             Gizmos.DrawWireSphere(transform.position, _spawnRadius);

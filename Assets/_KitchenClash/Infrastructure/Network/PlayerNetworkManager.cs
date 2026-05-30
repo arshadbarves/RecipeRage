@@ -12,19 +12,27 @@ namespace KitchenClash.Infrastructure.Network
 
         public void RegisterPlayer(ulong clientId, IPlayerController player)
         {
-            if (player == null || _players.ContainsKey(clientId)) return;
+            if (player == null || _players.ContainsKey(clientId))
+            {
+                return;
+            }
+
             _players[clientId] = player;
             OnPlayerRegistered?.Invoke(player);
         }
 
         public void UnregisterPlayer(ulong clientId)
         {
-            if (!_players.ContainsKey(clientId)) return;
+            if (!_players.ContainsKey(clientId))
+            {
+                return;
+            }
+
             _players.Remove(clientId);
             OnPlayerUnregistered?.Invoke(clientId);
         }
 
-        public IPlayerController GetPlayer(ulong clientId) => _players.TryGetValue(clientId, out var p) ? p : null;
+        public IPlayerController GetPlayer(ulong clientId) => _players.TryGetValue(clientId, out IPlayerController p) ? p : null;
         public IReadOnlyList<IPlayerController> GetAllPlayers() => new List<IPlayerController>(_players.Values);
         public int GetPlayerCount() => _players.Count;
         public bool IsPlayerRegistered(ulong clientId) => _players.ContainsKey(clientId);

@@ -57,11 +57,17 @@ namespace KitchenClash.Infrastructure.Network
             ntpData[0] = 0x1B;
 
             IPAddress[] addresses = await Dns.GetHostAddressesAsync(server);
-            if (addresses.Length == 0) throw new Exception($"Cannot resolve: {server}");
+            if (addresses.Length == 0)
+            {
+                throw new Exception($"Cannot resolve: {server}");
+            }
 
             IPAddress addr = null;
-            foreach (var a in addresses)
+            foreach (IPAddress a in addresses)
+            {
                 if (a.AddressFamily == AddressFamily.InterNetwork) { addr = a; break; }
+            }
+
             addr ??= addresses[0];
 
             using var socket = new Socket(addr.AddressFamily, SocketType.Dgram, ProtocolType.Udp);

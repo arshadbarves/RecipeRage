@@ -29,25 +29,39 @@ namespace KitchenClash.Application.Services
             => _items.Where(i => i.category == category).ToList();
 
         public ShopItem GetItem(string itemId)
-            => _lookup.TryGetValue(itemId, out var item) ? item : null;
+            => _lookup.TryGetValue(itemId, out ShopItem item) ? item : null;
 
         /// <summary>
         /// Applies remote config overrides to shop item prices and badges.
         /// </summary>
         public void ApplyRemoteConfig(ShopConfig config)
         {
-            if (config?.ItemOverrides == null) return;
-
-            foreach (var ov in config.ItemOverrides)
+            if (config?.ItemOverrides == null)
             {
-                if (string.IsNullOrEmpty(ov.ItemId)) continue;
-                if (!_lookup.TryGetValue(ov.ItemId, out var item)) continue;
+                return;
+            }
+
+            foreach (ShopItemOverride ov in config.ItemOverrides)
+            {
+                if (string.IsNullOrEmpty(ov.ItemId))
+                {
+                    continue;
+                }
+
+                if (!_lookup.TryGetValue(ov.ItemId, out ShopItem item))
+                {
+                    continue;
+                }
 
                 if (ov.Price >= 0)
+                {
                     item.price = ov.Price;
+                }
 
                 if (ov.Badge != null)
+                {
                     item.badge = ov.Badge;
+                }
 
                 GameLogger.Log($"[ShopCatalog] Applied remote overrides for {ov.ItemId}");
             }

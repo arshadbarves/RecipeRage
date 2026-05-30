@@ -36,7 +36,10 @@ namespace KitchenClash.Infrastructure.Network
 
         public void Update()
         {
-            if (!_isRunning || _networkManager == null || !_networkManager.IsClient) return;
+            if (!_isRunning || _networkManager == null || !_networkManager.IsClient)
+            {
+                return;
+            }
 
             if (Time.time - _lastPingTime >= PING_INTERVAL)
             {
@@ -47,8 +50,11 @@ namespace KitchenClash.Infrastructure.Network
 
         private void RegisterHandlers()
         {
-            if (_networkManager == null) return;
-            
+            if (_networkManager == null)
+            {
+                return;
+            }
+
             _networkManager.CustomMessagingManager.RegisterNamedMessageHandler(PING_MESSAGE_NAME, HandlePingServer);
             _networkManager.CustomMessagingManager.RegisterNamedMessageHandler(PONG_MESSAGE_NAME, HandlePongClient);
         }
@@ -64,7 +70,10 @@ namespace KitchenClash.Infrastructure.Network
 
         private void SendPing()
         {
-            if (_networkManager == null || !_networkManager.IsClient) return;
+            if (_networkManager == null || !_networkManager.IsClient)
+            {
+                return;
+            }
 
             var writer = new FastBufferWriter(8, Allocator.Temp);
             using (writer)
@@ -82,7 +91,10 @@ namespace KitchenClash.Infrastructure.Network
 
         private void HandlePongClient(ulong senderId, FastBufferReader reader)
         {
-            if (senderId != NetworkManager.ServerClientId) return;
+            if (senderId != NetworkManager.ServerClientId)
+            {
+                return;
+            }
 
             float clientSendTime;
             reader.ReadValueSafe(out clientSendTime);

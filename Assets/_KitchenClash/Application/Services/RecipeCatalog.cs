@@ -135,7 +135,7 @@ namespace KitchenClash.Application.Services
 
         public RecipeDefinition Get(string recipeId)
         {
-            return _recipes.TryGetValue(recipeId, out var def) ? def : null;
+            return _recipes.TryGetValue(recipeId, out RecipeDefinition def) ? def : null;
         }
 
         public IReadOnlyList<RecipeDefinition> GetByTier(int tier)

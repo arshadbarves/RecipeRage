@@ -29,13 +29,13 @@ namespace KitchenClash.Infrastructure.Services
                 GameLogger.Log("[ForceUpdateChecker] Checking for force update...");
 
                 // Try ForceUpdateConfig first
-                if (_remoteConfigService.TryGetConfig<ForceUpdateConfig>(out var forceUpdateConfig) && forceUpdateConfig != null)
+                if (_remoteConfigService.TryGetConfig<ForceUpdateConfig>(out ForceUpdateConfig forceUpdateConfig) && forceUpdateConfig != null)
                 {
                     return EvaluateVersion(forceUpdateConfig.MinimumVersion, forceUpdateConfig.UpdateMessage, forceUpdateConfig.UpdateUrl);
                 }
 
                 // Fallback: check GameSettingsConfig.MinimumAppVersion
-                if (_remoteConfigService.TryGetConfig<GameSettingsConfig>(out var gameSettings) && gameSettings != null)
+                if (_remoteConfigService.TryGetConfig<GameSettingsConfig>(out GameSettingsConfig gameSettings) && gameSettings != null)
                 {
                     return EvaluateVersion(gameSettings.MinimumAppVersion, "A new version is available. Please update to continue.", "");
                 }
@@ -90,23 +90,29 @@ namespace KitchenClash.Infrastructure.Services
         /// </summary>
         internal static int CompareVersions(string a, string b)
         {
-            var partsA = ParseVersion(a);
-            var partsB = ParseVersion(b);
+            int[] partsA = ParseVersion(a);
+            int[] partsB = ParseVersion(b);
 
             for (int i = 0; i < 3; i++)
             {
                 int diff = partsA[i] - partsB[i];
-                if (diff != 0) return diff;
+                if (diff != 0)
+                {
+                    return diff;
+                }
             }
             return 0;
         }
 
         private static int[] ParseVersion(string version)
         {
-            var result = new int[3];
-            if (string.IsNullOrEmpty(version)) return result;
+            int[] result = new int[3];
+            if (string.IsNullOrEmpty(version))
+            {
+                return result;
+            }
 
-            var parts = version.Split('.');
+            string[] parts = version.Split('.');
             for (int i = 0; i < Math.Min(parts.Length, 3); i++)
             {
                 int.TryParse(parts[i], out result[i]);

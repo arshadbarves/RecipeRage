@@ -89,8 +89,8 @@ namespace KitchenClash.Infrastructure.Network.Stations
 
         private void FindLinkedSink()
         {
-            var sinks = FindObjectsByType<SinkStation>(FindObjectsSortMode.None);
-            foreach (var sink in sinks)
+            SinkStation[] sinks = FindObjectsByType<SinkStation>(FindObjectsSortMode.None);
+            foreach (SinkStation sink in sinks)
             {
                 if (sink.TeamId == _teamId)
                 {

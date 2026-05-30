@@ -53,7 +53,7 @@ namespace KitchenClash.Infrastructure.Audio
         public AudioClip GetMusicClip(MusicTrack track)
         {
             EnsureMusicLookup();
-            return _musicLookup.TryGetValue(track, out var clip) ? clip : null;
+            return _musicLookup.TryGetValue(track, out AudioClip clip) ? clip : null;
         }
 
         /// <summary>
@@ -66,33 +66,48 @@ namespace KitchenClash.Infrastructure.Audio
             // Fallback to UI SFX for button sounds
             if (type == SFXType.ButtonClick || type == SFXType.ButtonHover)
             {
-                if (_sfxLookup.TryGetValue(type, out var uiClip))
+                if (_sfxLookup.TryGetValue(type, out AudioClip uiClip))
+                {
                     return uiClip;
+                }
+
                 return _uiSFX;
             }
 
-            return _sfxLookup.TryGetValue(type, out var clip) ? clip : null;
+            return _sfxLookup.TryGetValue(type, out AudioClip clip) ? clip : null;
         }
 
         private void EnsureMusicLookup()
         {
-            if (_musicLookup != null) return;
+            if (_musicLookup != null)
+            {
+                return;
+            }
+
             _musicLookup = new Dictionary<MusicTrack, AudioClip>();
-            foreach (var entry in _musicTrackMap)
+            foreach (MusicTrackEntry entry in _musicTrackMap)
             {
                 if (entry.Clip != null)
+                {
                     _musicLookup[entry.Track] = entry.Clip;
+                }
             }
         }
 
         private void EnsureSFXLookup()
         {
-            if (_sfxLookup != null) return;
+            if (_sfxLookup != null)
+            {
+                return;
+            }
+
             _sfxLookup = new Dictionary<SFXType, AudioClip>();
-            foreach (var entry in _sfxMap)
+            foreach (SFXEntry entry in _sfxMap)
             {
                 if (entry.Clip != null)
+                {
                     _sfxLookup[entry.Type] = entry.Clip;
+                }
             }
         }
 

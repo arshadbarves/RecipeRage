@@ -43,13 +43,13 @@ namespace KitchenClash.Infrastructure.Network.Stations
                 float baseTime = _burningTime;
 
                 // If a local player has SlowerBurnRate passive, extend burn timer
-                var localPlayer = FindLocalPlayer();
+                PlayerController localPlayer = FindLocalPlayer();
                 if (localPlayer != null)
                 {
-                    var chefDef = FindChefDefinition(localPlayer);
+                    ChefDefinition chefDef = FindChefDefinition(localPlayer);
                     if (chefDef != null && chefDef.PassiveAbility == AbilityType.SlowerBurnRate)
                     {
-                        var passiveDef = _abilityService?.GetPassiveDefinition(chefDef.Id);
+                        AbilityDefinition passiveDef = _abilityService?.GetPassiveDefinition(chefDef.Id);
                         if (passiveDef != null)
                         {
                             // value = 0.30 → burn timer 30% slower → multiply by 1.3
@@ -102,7 +102,11 @@ namespace KitchenClash.Infrastructure.Network.Stations
         /// </summary>
         private void SubscribeToHazardEvents()
         {
-            if (_hazardService == null) return;
+            if (_hazardService == null)
+            {
+                return;
+            }
+
             _hazardService.OnFireStarted += HandleFireStarted;
             _hazardService.OnFireExtinguished += HandleFireExtinguished;
             _hazardService.OnFirePenalty += HandleFirePenalty;
@@ -110,7 +114,11 @@ namespace KitchenClash.Infrastructure.Network.Stations
 
         private void UnsubscribeFromHazardEvents()
         {
-            if (_hazardService == null) return;
+            if (_hazardService == null)
+            {
+                return;
+            }
+
             _hazardService.OnFireStarted -= HandleFireStarted;
             _hazardService.OnFireExtinguished -= HandleFireExtinguished;
             _hazardService.OnFirePenalty -= HandleFirePenalty;
@@ -118,14 +126,21 @@ namespace KitchenClash.Infrastructure.Network.Stations
 
         private void HandleFireStarted(string stationId)
         {
-            if (stationId != StationId) return;
+            if (stationId != StationId)
+            {
+                return;
+            }
             // Visual/audio hook: fire started on this station
             // VFX/SFX wiring deferred to later phases
         }
 
         private void HandleFireExtinguished(string stationId)
         {
-            if (stationId != StationId) return;
+            if (stationId != StationId)
+            {
+                return;
+            }
+
             // Visual/audio hook: fire extinguished on this station
             _isBurning = false;
             HideFireEffectClientRpc();
@@ -134,14 +149,17 @@ namespace KitchenClash.Infrastructure.Network.Stations
 
         private void HandleFirePenalty(string stationId)
         {
-            if (stationId != StationId) return;
+            if (stationId != StationId)
+            {
+                return;
+            }
 
             // Apply -5 fire penalty via ScoreService
             if (_scoreService != null)
             {
                 // Determine which team owns the station area
                 // Fire penalty applies to the team whose station caught fire
-                var teamId = DetermineStationTeam();
+                TeamId teamId = DetermineStationTeam();
                 var scoreEvent = new ScoreEvent(ScoreEventType.FirePenalty);
                 _scoreService.AddScore(teamId, scoreEvent);
             }
@@ -239,7 +257,11 @@ namespace KitchenClash.Infrastructure.Network.Stations
         /// </summary>
         public override bool CanInteract(object playerObj)
         {
-            if (_isBurning) return true;
+            if (_isBurning)
+            {
+                return true;
+            }
+
             return base.CanInteract(playerObj);
         }
 
@@ -248,7 +270,11 @@ namespace KitchenClash.Infrastructure.Network.Stations
         /// </summary>
         public override string GetInteractionPrompt()
         {
-            if (_isBurning) return "Extinguish Fire!";
+            if (_isBurning)
+            {
+                return "Extinguish Fire!";
+            }
+
             return base.GetInteractionPrompt();
         }
 
@@ -361,14 +387,20 @@ namespace KitchenClash.Infrastructure.Network.Stations
         /// </summary>
         private PlayerController FindLocalPlayer()
         {
-            if (!IsServer) return null;
+            if (!IsServer)
+            {
+                return null;
+            }
 
             // On server, find the player who placed the ingredient
             // For simplicity, check all connected players
-            foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
+            foreach (NetworkClient client in NetworkManager.Singleton.ConnectedClientsList)
             {
-                var pc = client.PlayerObject?.GetComponent<PlayerController>();
-                if (pc != null) return pc;
+                PlayerController pc = client.PlayerObject?.GetComponent<PlayerController>();
+                if (pc != null)
+                {
+                    return pc;
+                }
             }
             return null;
         }
@@ -378,7 +410,10 @@ namespace KitchenClash.Infrastructure.Network.Stations
         /// </summary>
         private ChefDefinition FindChefDefinition(PlayerController player)
         {
-            if (player == null) return null;
+            if (player == null)
+            {
+                return null;
+            }
 
             // Try to resolve character service to get the selected chef
             try
@@ -386,7 +421,7 @@ namespace KitchenClash.Infrastructure.Network.Stations
                 var scope = VContainer.Unity.LifetimeScope.Find<VContainer.Unity.LifetimeScope>();
                 if (scope != null)
                 {
-                    var charService = scope.Container.Resolve<ICharacterService>();
+                    ICharacterService charService = scope.Container.Resolve<ICharacterService>();
                     return charService?.SelectedChef;
                 }
             }

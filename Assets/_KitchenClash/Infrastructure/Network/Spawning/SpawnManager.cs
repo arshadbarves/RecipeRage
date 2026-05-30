@@ -66,7 +66,7 @@ namespace KitchenClash.Infrastructure.Network.Spawning
             _spawnPointsByTeam[TeamCategory.TeamA] = new List<SpawnPoint>();
             _spawnPointsByTeam[TeamCategory.TeamB] = new List<SpawnPoint>();
 
-            foreach (var spawnPoint in _allSpawnPoints)
+            foreach (SpawnPoint spawnPoint in _allSpawnPoints)
             {
                 _spawnPointsByTeam[spawnPoint.TeamCategory].Add(spawnPoint);
             }
@@ -191,7 +191,7 @@ namespace KitchenClash.Infrastructure.Network.Spawning
             }
 
             // Initialize bot controller
-            var botController = botObject.GetComponent<BotController>();
+            BotController botController = botObject.GetComponent<BotController>();
             if (botController == null)
             {
                 GameLogger.LogError("[SpawnManager] Bot prefab is missing BotController. Despawning inert bot instance.");
@@ -220,7 +220,7 @@ namespace KitchenClash.Infrastructure.Network.Spawning
         /// </summary>
         public void SpawnBots(List<BotPlayer> botPlayers, TeamCategory team = TeamCategory.Neutral)
         {
-            foreach (var botPlayer in botPlayers)
+            foreach (BotPlayer botPlayer in botPlayers)
             {
                 SpawnBot(botPlayer, team);
             }
@@ -233,7 +233,7 @@ namespace KitchenClash.Infrastructure.Network.Spawning
                 return;
             }
 
-            var playerController = networkObject.GetComponent<PlayerController>();
+            PlayerController playerController = networkObject.GetComponent<PlayerController>();
             if (playerController != null)
             {
                 playerController.SetTeam(teamId);
@@ -265,7 +265,9 @@ namespace KitchenClash.Infrastructure.Network.Spawning
         private SpawnPoint GetRandomAvailableSpawnPoint(List<SpawnPoint> spawnPoints)
         {
             if (spawnPoints == null || spawnPoints.Count == 0)
+            {
                 return null;
+            }
 
             // Get available spawn points
             List<SpawnPoint> availablePoints = spawnPoints.Where(sp => sp.IsAvailable).ToList();
@@ -305,7 +307,7 @@ namespace KitchenClash.Infrastructure.Network.Spawning
         /// </summary>
         public void ResetAllSpawnPoints()
         {
-            foreach (var spawnPoint in _allSpawnPoints)
+            foreach (SpawnPoint spawnPoint in _allSpawnPoints)
             {
                 spawnPoint.IsAvailable = true;
             }
@@ -319,7 +321,7 @@ namespace KitchenClash.Infrastructure.Network.Spawning
         /// </summary>
         public int GetSpawnPointCount(TeamCategory team)
         {
-            return _spawnPointsByTeam.TryGetValue(team, out var points) ? points.Count : 0;
+            return _spawnPointsByTeam.TryGetValue(team, out List<SpawnPoint> points) ? points.Count : 0;
         }
 
         /// <summary>
@@ -327,8 +329,10 @@ namespace KitchenClash.Infrastructure.Network.Spawning
         /// </summary>
         public int GetAvailableSpawnPointCount(TeamCategory team)
         {
-            if (!_spawnPointsByTeam.TryGetValue(team, out var points))
+            if (!_spawnPointsByTeam.TryGetValue(team, out List<SpawnPoint> points))
+            {
                 return 0;
+            }
 
             return points.Count(sp => sp.IsAvailable);
         }

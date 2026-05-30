@@ -64,7 +64,10 @@ namespace KitchenClash.Infrastructure.States
                 while (IsStateActive)
                 {
                     await UniTask.Delay(TimeSpan.FromSeconds(RetryIntervalSeconds), cancellationToken: StateCancellationToken);
-                    if (!IsStateActive) return;
+                    if (!IsStateActive)
+                    {
+                        return;
+                    }
 
                     // Refresh config and re-check
                     await _remoteConfigService.RefreshConfig();

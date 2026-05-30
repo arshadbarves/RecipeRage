@@ -105,11 +105,21 @@ namespace KitchenClash.Infrastructure.Network.Cooking
         /// </summary>
         public void Cut()
         {
-            if (!IsServer) return;
-            if (_ingredientData == null || !_ingredientData.RequiresCutting || _isPlate) return;
+            if (!IsServer)
+            {
+                return;
+            }
+
+            if (_ingredientData == null || !_ingredientData.RequiresCutting || _isPlate)
+            {
+                return;
+            }
 
             IngredientState currentState = _state.Value;
-            if (currentState.IsCut) return;
+            if (currentState.IsCut)
+            {
+                return;
+            }
 
             currentState.IsCut = true;
             currentState.CuttingProgress = 1.0f;
@@ -121,11 +131,21 @@ namespace KitchenClash.Infrastructure.Network.Cooking
         /// </summary>
         public void Cook()
         {
-            if (!IsServer) return;
-            if (_ingredientData == null || !_ingredientData.RequiresCooking || _isPlate) return;
+            if (!IsServer)
+            {
+                return;
+            }
+
+            if (_ingredientData == null || !_ingredientData.RequiresCooking || _isPlate)
+            {
+                return;
+            }
 
             IngredientState currentState = _state.Value;
-            if (currentState.IsBurned) return;
+            if (currentState.IsBurned)
+            {
+                return;
+            }
 
             currentState.IsCooked = true;
             currentState.CookingProgress = 1.0f;
@@ -137,7 +157,10 @@ namespace KitchenClash.Infrastructure.Network.Cooking
         /// </summary>
         public void Burn()
         {
-            if (!IsServer || _isPlate) return;
+            if (!IsServer || _isPlate)
+            {
+                return;
+            }
 
             IngredientState currentState = _state.Value;
             currentState.IsBurned = true;
@@ -157,7 +180,10 @@ namespace KitchenClash.Infrastructure.Network.Cooking
         {
             base.UpdateVisuals();
 
-            if (_ingredientData == null) return;
+            if (_ingredientData == null)
+            {
+                return;
+            }
 
             // Update the sprite
             if (_spriteRenderer != null)
@@ -165,24 +191,38 @@ namespace KitchenClash.Infrastructure.Network.Cooking
                 _spriteRenderer.sprite = _ingredientData.Icon;
                 Color color = _ingredientData.Color;
 
-                if (_state.Value.IsBurned) color = Color.black;
-                else if (_state.Value.IsCooked) color = Color.Lerp(_ingredientData.Color, Color.gray, 0.3f);
+                if (_state.Value.IsBurned)
+                {
+                    color = Color.black;
+                }
+                else if (_state.Value.IsCooked)
+                {
+                    color = Color.Lerp(_ingredientData.Color, Color.gray, 0.3f);
+                }
 
                 _spriteRenderer.color = color;
             }
 
             // Update the visuals based on state
             if (_rawVisual != null)
+            {
                 _rawVisual.SetActive(!_state.Value.IsCut && !_state.Value.IsCooked && !_state.Value.IsBurned);
+            }
 
             if (_cutVisual != null)
+            {
                 _cutVisual.SetActive(_state.Value.IsCut && !_state.Value.IsCooked && !_state.Value.IsBurned);
+            }
 
             if (_cookedVisual != null)
+            {
                 _cookedVisual.SetActive(_state.Value.IsCooked && !_state.Value.IsBurned);
+            }
 
             if (_burnedVisual != null)
+            {
                 _burnedVisual.SetActive(_state.Value.IsBurned);
+            }
         }
     }
 }

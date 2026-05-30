@@ -35,7 +35,9 @@ namespace KitchenClash.Application
         {
             float threshold = _cfg.Get(ScoringConfig.RushModeThresholdSec, ScoringConfig.DefaultRushModeThresholdSec);
             if (!_rushMode && timeRemaining <= threshold)
+            {
                 SetRushMode(true);
+            }
         }
 
         public int CalculateEndOfMatchBonus(TeamId team)
@@ -48,8 +50,15 @@ namespace KitchenClash.Application
         public void AddScore(TeamId team, ScoreEvent e)
         {
             int d = Calc(e);
-            if (team == TeamId.TeamA) _a = Math.Max(0, _a + d);
-            else _b = Math.Max(0, _b + d);
+            if (team == TeamId.TeamA)
+            {
+                _a = Math.Max(0, _a + d);
+            }
+            else
+            {
+                _b = Math.Max(0, _b + d);
+            }
+
             OnScoreChanged?.Invoke(new ScoreChangedEvent(team, d, _a, _b));
             _eventBus?.Publish(new SFXEvent(SFXType.ScorePoint));
         }
@@ -57,9 +66,14 @@ namespace KitchenClash.Application
         private int Calc(ScoreEvent e)
         {
             if (e.Type == ScoreEventType.BurnedServed)
+            {
                 return ApplyRush(-_cfg.Get(ScoringConfig.ScoreBurnPenalty, ScoringConfig.DefaultScoreBurnPenalty));
+            }
+
             if (e.Type == ScoreEventType.FirePenalty)
+            {
                 return ApplyRush(-_cfg.Get(ScoringConfig.ScoreFirePenalty, ScoringConfig.DefaultScoreFirePenalty));
+            }
 
             float mult = e.RecipeTier == 3
                 ? _cfg.Get(ScoringConfig.ScoreTier3Mult, ScoringConfig.DefaultScoreTier3Mult)
@@ -81,7 +95,11 @@ namespace KitchenClash.Application
 
         private int ApplyRush(int raw)
         {
-            if (!_rushMode) return raw;
+            if (!_rushMode)
+            {
+                return raw;
+            }
+
             float mult = _cfg.Get(ScoringConfig.RushModeMultiplier, ScoringConfig.DefaultRushModeMultiplier);
             return (int)(raw * mult);
         }

@@ -20,24 +20,48 @@ namespace KitchenClash.Infrastructure.Gameplay
             {
                 case PlayerMovementState.Idle:
                     if (input.sqrMagnitude > 0.01f)
+                    {
                         newState = isHoldingObject ? PlayerMovementState.Carrying : PlayerMovementState.Moving;
+                    }
+
                     break;
                 case PlayerMovementState.Moving:
-                    if (input.sqrMagnitude < 0.01f) newState = PlayerMovementState.Idle;
-                    else if (isHoldingObject) newState = PlayerMovementState.Carrying;
+                    if (input.sqrMagnitude < 0.01f)
+                    {
+                        newState = PlayerMovementState.Idle;
+                    }
+                    else if (isHoldingObject)
+                    {
+                        newState = PlayerMovementState.Carrying;
+                    }
+
                     break;
                 case PlayerMovementState.Carrying:
-                    if (input.sqrMagnitude < 0.01f) newState = PlayerMovementState.Idle;
-                    else if (!isHoldingObject) newState = PlayerMovementState.Moving;
+                    if (input.sqrMagnitude < 0.01f)
+                    {
+                        newState = PlayerMovementState.Idle;
+                    }
+                    else if (!isHoldingObject)
+                    {
+                        newState = PlayerMovementState.Moving;
+                    }
+
                     break;
             }
 
-            if (newState != _currentState) SetState(newState);
+            if (newState != _currentState)
+            {
+                SetState(newState);
+            }
         }
 
         public void SetState(PlayerMovementState newState)
         {
-            if (newState == _currentState) return;
+            if (newState == _currentState)
+            {
+                return;
+            }
+
             _previousState = _currentState;
             _currentState = newState;
             OnStateChanged?.Invoke(_previousState, _currentState);

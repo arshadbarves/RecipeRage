@@ -47,7 +47,7 @@ namespace KitchenClash.Infrastructure.Camera
             _mainCamera.nearClipPlane = 0.1f;
             _mainCamera.farClipPlane = 1000f;
 
-            var brain = _cameraRig.AddComponent<CinemachineBrain>();
+            CinemachineBrain brain = _cameraRig.AddComponent<CinemachineBrain>();
             brain.DefaultBlend.Time = 0.5f;
             brain.DefaultBlend.Style = CinemachineBlendDefinition.Styles.EaseInOut;
 
@@ -57,7 +57,7 @@ namespace KitchenClash.Infrastructure.Camera
             _virtualCamera = _virtualCameraObj.AddComponent<CinemachineCamera>();
             _virtualCamera.Priority.Value = 10;
 
-            var follow = _virtualCameraObj.AddComponent<CinemachineFollow>();
+            CinemachineFollow follow = _virtualCameraObj.AddComponent<CinemachineFollow>();
             follow.FollowOffset = new Vector3(_settings.cameraSideOffset, _settings.cameraHeight, -_settings.cameraDistance);
             follow.TrackerSettings.PositionDamping = new Vector3(_settings.followSmoothTime, _settings.followSmoothTime, _settings.followSmoothTime);
 
@@ -76,7 +76,10 @@ namespace KitchenClash.Infrastructure.Camera
 
         public void SetFollowTarget(Transform target)
         {
-            if (!_isInitialized || _virtualCamera == null) return;
+            if (!_isInitialized || _virtualCamera == null)
+            {
+                return;
+            }
 
             _virtualCamera.Follow = target;
             _virtualCamera.LookAt = target;
@@ -84,7 +87,10 @@ namespace KitchenClash.Infrastructure.Camera
 
         public void ClearFollowTarget()
         {
-            if (_virtualCamera == null) return;
+            if (_virtualCamera == null)
+            {
+                return;
+            }
 
             _virtualCamera.Follow = null;
             _virtualCamera.LookAt = null;
@@ -96,12 +102,15 @@ namespace KitchenClash.Infrastructure.Camera
 
         public void AutoDetectBounds()
         {
-            if (!_settings.enableBounds || _confiner == null) return;
+            if (!_settings.enableBounds || _confiner == null)
+            {
+                return;
+            }
 
-            var marker = UnityEngine.Object.FindFirstObjectByType<CameraBoundsMarker>();
+            CameraBoundsMarker marker = UnityEngine.Object.FindFirstObjectByType<CameraBoundsMarker>();
             if (marker != null)
             {
-                var boundsCollider = marker.GetBoundsCollider();
+                BoxCollider boundsCollider = marker.GetBoundsCollider();
                 if (boundsCollider != null)
                 {
                     _confiner.BoundingVolume = boundsCollider;
@@ -115,7 +124,10 @@ namespace KitchenClash.Infrastructure.Camera
 
         public void Shake(float intensity, float duration)
         {
-            if (_noise == null) return;
+            if (_noise == null)
+            {
+                return;
+            }
 
             intensity = Mathf.Clamp01(intensity);
             _shakeIntensity = intensity * _settings.maxShakeIntensity;
@@ -126,7 +138,10 @@ namespace KitchenClash.Infrastructure.Camera
 
         public void Update(float deltaTime)
         {
-            if (!_isInitialized) return;
+            if (!_isInitialized)
+            {
+                return;
+            }
 
             if (_shakeTimer < _shakeDuration)
             {

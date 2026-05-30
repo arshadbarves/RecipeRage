@@ -55,7 +55,10 @@ namespace KitchenClash.Infrastructure.States
             try
             {
                 await UniTask.Delay(TimeSpan.FromSeconds(SplashDuration), cancellationToken: StateCancellationToken);
-                if (!IsStateActive) return;
+                if (!IsStateActive)
+                {
+                    return;
+                }
 
                 await InitializeGameSequence();
             }
@@ -80,20 +83,32 @@ namespace KitchenClash.Infrastructure.States
                 await _ntpTimeService.SyncTime().AttachExternalCancellation(cts.Token).SuppressCancellationThrow();
             }
             catch { }
-            if (!IsStateActive) return;
+            if (!IsStateActive)
+            {
+                return;
+            }
 
             // 2. Initialize remote config
             GameLogger.Log("[BootstrapState] Initializing remote config...");
             await _remoteConfigService.Initialize();
-            if (!IsStateActive) return;
+            if (!IsStateActive)
+            {
+                return;
+            }
 
             // 3. Fetch latest config values
             await _remoteConfigService.RefreshConfig();
-            if (!IsStateActive) return;
+            if (!IsStateActive)
+            {
+                return;
+            }
 
             // 4. Force update check
             bool isUpdateRequired = await _forceUpdateChecker.CheckForUpdateAsync();
-            if (!IsStateActive) return;
+            if (!IsStateActive)
+            {
+                return;
+            }
 
             if (isUpdateRequired)
             {
@@ -106,7 +121,10 @@ namespace KitchenClash.Infrastructure.States
             if (_maintenanceService != null)
             {
                 bool isInMaintenance = await _maintenanceService.CheckMaintenanceStatusAsync();
-                if (!IsStateActive) return;
+                if (!IsStateActive)
+                {
+                    return;
+                }
 
                 if (isInMaintenance)
                 {
@@ -115,7 +133,10 @@ namespace KitchenClash.Infrastructure.States
                     return;
                 }
             }
-            if (!IsStateActive) return;
+            if (!IsStateActive)
+            {
+                return;
+            }
 
             // 6. Auth check
             bool isAuthenticated = _authService.IsSignedIn;

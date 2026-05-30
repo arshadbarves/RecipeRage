@@ -129,7 +129,10 @@ namespace KitchenClash.Infrastructure.Network
 
         private void Update()
         {
-            if (!IsLocalPlayer) return;
+            if (!IsLocalPlayer)
+            {
+                return;
+            }
 
             _inputProvider?.Update();
             _inputHandler?.UpdateSmoothing();
@@ -143,7 +146,10 @@ namespace KitchenClash.Infrastructure.Network
 
         private void FixedUpdate()
         {
-            if (!IsLocalPlayer) return;
+            if (!IsLocalPlayer)
+            {
+                return;
+            }
 
             if (_enableClientPrediction && _networkController != null && _networkController.IsPredictionEnabled)
             {
@@ -201,10 +207,10 @@ namespace KitchenClash.Infrastructure.Network
         {
             base.OnNetworkSpawn();
 
-            var sessionContainer = _sessionManager?.SessionContainer;
+            IObjectResolver sessionContainer = _sessionManager?.SessionContainer;
             if (sessionContainer != null && NetworkObject != null && NetworkObject.IsPlayerObject)
             {
-                var playerNetworkManager = sessionContainer.Resolve<IPlayerNetworkManager>();
+                IPlayerNetworkManager playerNetworkManager = sessionContainer.Resolve<IPlayerNetworkManager>();
                 playerNetworkManager?.RegisterPlayer(OwnerClientId, this);
             }
 
@@ -231,10 +237,10 @@ namespace KitchenClash.Infrastructure.Network
                 _eventBus?.Publish(new LocalPlayerDespawnedEvent());
             }
 
-            var sessionContainer = _sessionManager?.SessionContainer;
+            IObjectResolver sessionContainer = _sessionManager?.SessionContainer;
             if (sessionContainer != null && NetworkObject != null && NetworkObject.IsPlayerObject)
             {
-                var playerNetworkManager = sessionContainer.Resolve<IPlayerNetworkManager>();
+                IPlayerNetworkManager playerNetworkManager = sessionContainer.Resolve<IPlayerNetworkManager>();
                 playerNetworkManager?.UnregisterPlayer(OwnerClientId);
             }
 
@@ -273,7 +279,10 @@ namespace KitchenClash.Infrastructure.Network
 
         private void HandleInteractInput()
         {
-            if (!IsLocalPlayer) return;
+            if (!IsLocalPlayer)
+            {
+                return;
+            }
 
             bool interacted = _interactionController?.TryInteract(_stateController, this) ?? false;
             if (interacted)
@@ -284,7 +293,10 @@ namespace KitchenClash.Infrastructure.Network
 
         private void HandleAbilityInput()
         {
-            if (!IsLocalPlayer) return;
+            if (!IsLocalPlayer)
+            {
+                return;
+            }
 
             bool used = _interactionController?.TryUseAbility(PrimaryAbility, _stateController) ?? false;
             if (used)
@@ -299,14 +311,22 @@ namespace KitchenClash.Infrastructure.Network
 
         private void ProcessMovement()
         {
-            if (_inputHandler == null || _movementController == null || _stateController == null) return;
+            if (_inputHandler == null || _movementController == null || _stateController == null)
+            {
+                return;
+            }
+
             Vector2 input = _inputHandler.GetSmoothedInput();
             _movementController.ApplyMovement(input, _stateController.CurrentState, Time.fixedDeltaTime);
         }
 
         private void ProcessMovementWithPrediction()
         {
-            if (_inputHandler == null || _movementController == null || _stateController == null || _networkController == null) return;
+            if (_inputHandler == null || _movementController == null || _stateController == null || _networkController == null)
+            {
+                return;
+            }
+
             Vector2 input = _inputHandler.GetSmoothedInput();
 
             PlayerInputData inputData = _networkController.CreateInputData(input);
@@ -325,7 +345,11 @@ namespace KitchenClash.Infrastructure.Network
         [ServerRpc]
         private void SendInputToServerRpc(PlayerInputData input)
         {
-            if (_movementController == null || _stateController == null || _networkController == null) return;
+            if (_movementController == null || _stateController == null || _networkController == null)
+            {
+                return;
+            }
+
             _movementController.ApplyMovement(input.Movement, _stateController.CurrentState, Time.fixedDeltaTime);
             PlayerStateData authState = _networkController.CreateStateData(transform, _rigidbody, input.SequenceNumber);
             ReconcileStateClientRpc(authState);
@@ -334,7 +358,10 @@ namespace KitchenClash.Infrastructure.Network
         [ClientRpc]
         private void ReconcileStateClientRpc(PlayerStateData serverState)
         {
-            if (IsServer || _networkController == null || _movementController == null || _stateController == null) return;
+            if (IsServer || _networkController == null || _movementController == null || _stateController == null)
+            {
+                return;
+            }
 
             _networkController.ReconcileState(
                 serverState,
@@ -350,7 +377,10 @@ namespace KitchenClash.Infrastructure.Network
         [ClientRpc]
         private void InteractClientRpc()
         {
-            if (IsLocalPlayer) return;
+            if (IsLocalPlayer)
+            {
+                return;
+            }
         }
 
         [ServerRpc]
@@ -359,7 +389,10 @@ namespace KitchenClash.Infrastructure.Network
         [ClientRpc]
         private void UseAbilityClientRpc()
         {
-            if (IsLocalPlayer) return;
+            if (IsLocalPlayer)
+            {
+                return;
+            }
         }
 
         #endregion
@@ -368,7 +401,7 @@ namespace KitchenClash.Infrastructure.Network
 
         private void SetupCharacterClass()
         {
-            var sessionContainer = _sessionManager?.SessionContainer;
+            IObjectResolver sessionContainer = _sessionManager?.SessionContainer;
             ICharacterService characterService = null;
             if (sessionContainer != null)
             {
@@ -382,10 +415,10 @@ namespace KitchenClash.Infrastructure.Network
             }
 
             // Apply GDD chef stats from the selected ChefDefinition
-            var selectedChef = characterService.SelectedChef;
+            ChefDefinition selectedChef = characterService.SelectedChef;
             if (selectedChef != null && _movementController != null)
             {
-                var stats = selectedChef.Stats;
+                ChefStatBlock stats = selectedChef.Stats;
                 _movementController.MovementSpeed = _baseMovementSpeed * stats.MoveSpeed;
                 InteractionSpeed.BaseValue = stats.InteractRange;
                 CarryingCapacity.BaseValue = stats.CarryCapacity;
@@ -400,8 +433,8 @@ namespace KitchenClash.Infrastructure.Network
             else
             {
                 // Fallback: lookup SO by name match via Resources
-                var allClasses = Resources.LoadAll<CharacterClass>("ScriptableObjects/CharacterClasses");
-                foreach (var cc in allClasses)
+                CharacterClass[] allClasses = Resources.LoadAll<CharacterClass>("ScriptableObjects/CharacterClasses");
+                foreach (CharacterClass cc in allClasses)
                 {
                     if (cc != null && cc.DisplayName == selectedChef?.DisplayName)
                     {
@@ -423,7 +456,7 @@ namespace KitchenClash.Infrastructure.Network
             if (selectedChef != null)
             {
                 // AbilityService is resolved by MatchLifetimeScope; access via service locator pattern
-                var abilityService = FindAbilityService();
+                IAbilityService abilityService = FindAbilityService();
                 if (abilityService != null)
                 {
                     abilityService.RegisterChefAbilities(selectedChef.Id);
@@ -455,7 +488,11 @@ namespace KitchenClash.Infrastructure.Network
         [ClientRpc]
         private void SetCharacterClassClientRpc(int characterClassId)
         {
-            if (IsLocalPlayer) return;
+            if (IsLocalPlayer)
+            {
+                return;
+            }
+
             _characterClassId = characterClassId;
             SetupCharacterClass();
         }
@@ -494,7 +531,10 @@ namespace KitchenClash.Infrastructure.Network
 
         private void SetSkinInternal(string skinId)
         {
-            if (!IsServer) return;
+            if (!IsServer)
+            {
+                return;
+            }
 
             if (CharacterClass == null || CharacterClass.Skins == null || CharacterClass.Skins.Count == 0)
             {
@@ -548,7 +588,10 @@ namespace KitchenClash.Infrastructure.Network
 
         private void EnsureSkinInitialized()
         {
-            if (!IsServer) return;
+            if (!IsServer)
+            {
+                return;
+            }
 
             if (!string.IsNullOrEmpty(_skinId.Value.ToString()))
             {
@@ -688,13 +731,21 @@ namespace KitchenClash.Infrastructure.Network
 
         private void EnsureFallbackRendererCached(Transform root)
         {
-            if (_fallbackModelRenderer != null) return;
+            if (_fallbackModelRenderer != null)
+            {
+                return;
+            }
+
             _fallbackModelRenderer = root.GetComponent<MeshRenderer>();
         }
 
         private void SetFallbackModelVisible(bool isVisible)
         {
-            if (_fallbackModelRenderer == null) return;
+            if (_fallbackModelRenderer == null)
+            {
+                return;
+            }
+
             _fallbackModelRenderer.enabled = isVisible;
         }
 
@@ -709,29 +760,41 @@ namespace KitchenClash.Infrastructure.Network
 
         public bool PickUpObject(GameObject obj)
         {
-            if (_heldObject != null || _holdPoint == null) return false;
+            if (_heldObject != null || _holdPoint == null)
+            {
+                return false;
+            }
 
             _heldObject = obj;
             obj.transform.SetParent(_holdPoint);
             obj.transform.localPosition = Vector3.zero;
             obj.transform.localRotation = Quaternion.identity;
 
-            var objRigidbody = obj.GetComponent<Rigidbody>();
-            if (objRigidbody != null) objRigidbody.isKinematic = true;
+            Rigidbody objRigidbody = obj.GetComponent<Rigidbody>();
+            if (objRigidbody != null)
+            {
+                objRigidbody.isKinematic = true;
+            }
 
             return true;
         }
 
         public GameObject DropObject()
         {
-            if (_heldObject == null) return null;
+            if (_heldObject == null)
+            {
+                return null;
+            }
 
             GameObject obj = _heldObject;
             _heldObject = null;
             obj.transform.SetParent(null);
 
-            var objRigidbody = obj.GetComponent<Rigidbody>();
-            if (objRigidbody != null) objRigidbody.isKinematic = false;
+            Rigidbody objRigidbody = obj.GetComponent<Rigidbody>();
+            if (objRigidbody != null)
+            {
+                objRigidbody.isKinematic = false;
+            }
 
             return obj;
         }
@@ -752,7 +815,11 @@ namespace KitchenClash.Infrastructure.Network
         public float MovementSpeed
         {
             get => _movementController?.MovementSpeed ?? 0f;
-            set { if (_movementController != null) _movementController.MovementSpeed = value; }
+            set { if (_movementController != null)
+                {
+                    _movementController.MovementSpeed = value;
+                }
+            }
         }
 
         public void Stun(float duration)
@@ -776,7 +843,10 @@ namespace KitchenClash.Infrastructure.Network
         public void Interact(object playerObj)
         {
             var player = (PlayerController)playerObj;
-            if (!IsServer) return;
+            if (!IsServer)
+            {
+                return;
+            }
 
             if (player.TeamId != TeamId)
             {

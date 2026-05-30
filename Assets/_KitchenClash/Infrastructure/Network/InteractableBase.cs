@@ -11,12 +11,19 @@ namespace KitchenClash.Infrastructure.Network
 
         protected virtual void Update()
         {
-            if (_interactionCooldownTimer > 0f) _interactionCooldownTimer -= Time.deltaTime;
+            if (_interactionCooldownTimer > 0f)
+            {
+                _interactionCooldownTimer -= Time.deltaTime;
+            }
         }
 
         public virtual void Interact(object player)
         {
-            if (!CanInteract(player)) return;
+            if (!CanInteract(player))
+            {
+                return;
+            }
+
             _interactionCooldownTimer = _interactionCooldown;
             OnInteract(player);
         }

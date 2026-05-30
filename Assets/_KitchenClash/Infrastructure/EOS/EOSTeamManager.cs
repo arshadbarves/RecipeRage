@@ -29,7 +29,10 @@ namespace KitchenClash.Infrastructure.EOS
             _teamA.Clear();
             _teamB.Clear();
 
-            if (lobby == null) return;
+            if (lobby == null)
+            {
+                return;
+            }
 
             foreach (LobbyMember member in lobby.Members)
             {
@@ -92,7 +95,7 @@ namespace KitchenClash.Infrastructure.EOS
 
         private void ExtractMemberAttributes(PlayerInfo playerInfo, LobbyMember member)
         {
-            foreach (var kvp in member.MemberAttributes)
+            foreach (KeyValuePair<string, LobbyAttribute> kvp in member.MemberAttributes)
             {
                 LobbyAttribute attribute = kvp.Value;
 

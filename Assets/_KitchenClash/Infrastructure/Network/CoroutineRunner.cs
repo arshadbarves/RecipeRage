@@ -25,17 +25,26 @@ namespace KitchenClash.Infrastructure.Network
 
         public static void Stop(Coroutine coroutine)
         {
-            if (_instance != null && coroutine != null) Instance.StopCoroutine(coroutine);
+            if (_instance != null && coroutine != null)
+            {
+                Instance.StopCoroutine(coroutine);
+            }
         }
 
         public static void StopAll()
         {
-            if (_instance != null) Instance.StopAllCoroutines();
+            if (_instance != null)
+            {
+                Instance.StopAllCoroutines();
+            }
         }
 
         private void OnDestroy()
         {
-            if (_instance == this) _instance = null;
+            if (_instance == this)
+            {
+                _instance = null;
+            }
         }
     }
 }
