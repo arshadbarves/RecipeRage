@@ -23,15 +23,8 @@ namespace KitchenClash.Infrastructure.EOS
 #if EOS_AVAILABLE
             try
             {
-                var pdsInterface = Epic.OnlineServices.Platform.PlatformInterface
-                    // EOS SDK: write file to player data storage
-                    ;
-                // NOTE: Full EOS PDS implementation requires async callback wrappers.
-                // When EOS_AVAILABLE is defined and EOS SDK is initialized:
-                // 1. Get WriteFileOptions with key as filename
-                // 2. Convert data to byte[] via UTF8 encoding
-                // 3. Call WriteFile with write/completion callbacks
-                // For now, attempt EOS then fallback.
+                // TODO: Full EOS PDS implementation requires async callback wrappers.
+                // When EOS SDK is initialized, use PlayerDataStorage.WriteFile API.
                 await _fallbackStorage.WriteAsync(key, data);
                 Debug.Log($"[EOSPlayerDataService] Saved '{key}' ({data.Length} chars) via EOS fallback path");
             }
