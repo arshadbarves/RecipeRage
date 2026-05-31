@@ -96,7 +96,8 @@ public class RootLifetimeScope : LifetimeScope
         builder.Register<GameStateFactory>(Lifetime.Singleton).As<IStateFactory>();
         builder.Register<GameStateManager>(Lifetime.Singleton).As<IGameStateManager>().As<ITickable>();
         builder.Register<PlayerDataService>(Lifetime.Singleton).As<IPlayerDataService>();
-        builder.Register<LocalSaveService>(Lifetime.Singleton).As<ISaveService>();
+        builder.Register<StorageProviderFactory>(Lifetime.Singleton);
+        builder.Register<SaveService>(Lifetime.Singleton).As<ISaveService>();
 
 #if FIREBASE_REMOTE_CONFIG
         builder.Register<KitchenClash.Infrastructure.Firebase.FirebaseConfigProvider>(Lifetime.Singleton).As<IConfigProvider>();
