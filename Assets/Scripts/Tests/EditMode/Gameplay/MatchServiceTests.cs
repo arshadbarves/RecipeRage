@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using KitchenClash.Application;
+using KitchenClash.Application.Models;
 using KitchenClash.Application.Services;
 using KitchenClash.Domain;
 using NUnit.Framework;
+using UnityEngine;
 
 namespace RecipeRage.Tests.EditMode.Gameplay
 {
@@ -14,7 +16,8 @@ namespace RecipeRage.Tests.EditMode.Gameplay
         private MatchService CreateService(DictionaryConfigService config = null)
         {
             config ??= new DictionaryConfigService();
-            var mapRotation = new MapRotationCalculator(new StubRemoteConfigService(), new StubNTPTimeService(), new MapRegistry());
+            var database = ScriptableObject.CreateInstance<MapDatabaseSO>();
+            var mapRotation = new MapRotationCalculator(new StubRemoteConfigService(), new StubNTPTimeService(), new MapRegistry(database));
             return new MatchService(config, mapRotation);
         }
 
