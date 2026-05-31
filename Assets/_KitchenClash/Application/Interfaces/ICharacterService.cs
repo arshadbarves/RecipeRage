@@ -1,4 +1,3 @@
-using System;
 using KitchenClash.Application.Models;
 using KitchenClash.Domain;
 using System.Collections.Generic;
@@ -7,8 +6,6 @@ namespace KitchenClash.Application
 {
     public interface ICharacterService
     {
-        event Action<CharacterClass> OnCharacterSelected;
-
         // ── New GDD v3 chef API ──
 
         /// <summary>Currently selected chef definition for this session.</summary>

@@ -102,31 +102,31 @@ namespace KitchenClash.Infrastructure.Network.Stations
         /// </summary>
         private void SubscribeToHazardEvents()
         {
-            if (_hazardService == null)
+            if (_eventBus == null)
             {
                 return;
             }
 
-            _hazardService.OnFireStarted += HandleFireStarted;
-            _hazardService.OnFireExtinguished += HandleFireExtinguished;
-            _hazardService.OnFirePenalty += HandleFirePenalty;
+            _eventBus.Subscribe<FireStartedEvent>(HandleFireStarted);
+            _eventBus.Subscribe<FireExtinguishedEvent>(HandleFireExtinguished);
+            _eventBus.Subscribe<FirePenaltyEvent>(HandleFirePenalty);
         }
 
         private void UnsubscribeFromHazardEvents()
         {
-            if (_hazardService == null)
+            if (_eventBus == null)
             {
                 return;
             }
 
-            _hazardService.OnFireStarted -= HandleFireStarted;
-            _hazardService.OnFireExtinguished -= HandleFireExtinguished;
-            _hazardService.OnFirePenalty -= HandleFirePenalty;
+            _eventBus.Unsubscribe<FireStartedEvent>(HandleFireStarted);
+            _eventBus.Unsubscribe<FireExtinguishedEvent>(HandleFireExtinguished);
+            _eventBus.Unsubscribe<FirePenaltyEvent>(HandleFirePenalty);
         }
 
-        private void HandleFireStarted(string stationId)
+        private void HandleFireStarted(FireStartedEvent evt)
         {
-            if (stationId != StationId)
+            if (evt.StationId != StationId)
             {
                 return;
             }
@@ -134,9 +134,9 @@ namespace KitchenClash.Infrastructure.Network.Stations
             // VFX/SFX wiring deferred to later phases
         }
 
-        private void HandleFireExtinguished(string stationId)
+        private void HandleFireExtinguished(FireExtinguishedEvent evt)
         {
-            if (stationId != StationId)
+            if (evt.StationId != StationId)
             {
                 return;
             }
@@ -147,9 +147,9 @@ namespace KitchenClash.Infrastructure.Network.Stations
             StopSoundsClientRpc();
         }
 
-        private void HandleFirePenalty(string stationId)
+        private void HandleFirePenalty(FirePenaltyEvent evt)
         {
-            if (stationId != StationId)
+            if (evt.StationId != StationId)
             {
                 return;
             }

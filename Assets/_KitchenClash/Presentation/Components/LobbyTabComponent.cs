@@ -25,6 +25,7 @@ namespace KitchenClash.Presentation.Components
         [Inject] private ICharacterService _characterService;
         [Inject] private ISkinsService _skinsService;
         [Inject] private CharacterPreviewManager _previewManager;
+        [Inject] private IEventBus _eventBus;
 
         private VisualElement _root;
         private readonly LobbyViewModel _viewModel;
@@ -139,18 +140,20 @@ namespace KitchenClash.Presentation.Components
 
         private void SubscribeEvents()
         {
-            if (_characterService != null) _characterService.OnCharacterSelected += OnCharacterSelected;
-            if (_skinsService != null) _skinsService.OnSkinEquipped += OnSkinEquipped;
+            if (_eventBus == null) return;
+            _eventBus.Subscribe<CharacterSelectedEvent>(OnCharacterSelected);
+            _eventBus.Subscribe<SkinEquippedEvent>(OnSkinEquipped);
         }
 
         private void UnsubscribeEvents()
         {
-            if (_characterService != null) _characterService.OnCharacterSelected -= OnCharacterSelected;
-            if (_skinsService != null) _skinsService.OnSkinEquipped -= OnSkinEquipped;
+            if (_eventBus == null) return;
+            _eventBus.Unsubscribe<CharacterSelectedEvent>(OnCharacterSelected);
+            _eventBus.Unsubscribe<SkinEquippedEvent>(OnSkinEquipped);
         }
 
-        private void OnCharacterSelected(CharacterClass character) => UpdateLocalPlayerModel();
-        private void OnSkinEquipped(int charId, string skinId) => UpdateLocalPlayerModel();
+        private void OnCharacterSelected(CharacterSelectedEvent evt) => UpdateLocalPlayerModel();
+        private void OnSkinEquipped(SkinEquippedEvent evt) => UpdateLocalPlayerModel();
 
         private void UpdateLocalPlayerModel()
         {

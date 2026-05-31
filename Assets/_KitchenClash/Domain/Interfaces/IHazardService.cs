@@ -1,5 +1,3 @@
-using System;
-
 namespace KitchenClash.Domain
 {
     public interface IHazardService
@@ -8,9 +6,6 @@ namespace KitchenClash.Domain
         bool TryExtinguish(string stationId, float currentTime);
         float GetFireExtinguishWindow();
         int GetActiveFires();
-        event Action<string> OnFireStarted;
-        event Action<string> OnFireExtinguished;
-        event Action<string> OnFirePenalty;
         void SetCurrentTime(float time);
         void ClearAll();
     }

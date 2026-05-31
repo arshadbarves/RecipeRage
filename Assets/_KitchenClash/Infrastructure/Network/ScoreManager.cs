@@ -21,6 +21,7 @@ namespace KitchenClash.Infrastructure.Network
 
         [Inject] private IMatchContext _matchContext;
         [Inject] private IScoreService _scoreService;
+        [Inject] private IEventBus _eventBus;
 
         private NetworkList<int> _teamScores;
         private NetworkList<int> _teamComboCounts;
@@ -61,9 +62,9 @@ namespace KitchenClash.Infrastructure.Network
             _teamScores.OnListChanged += OnTeamScoresChanged;
             _teamComboCounts.OnListChanged += OnTeamComboChanged;
 
-            if (_scoreService != null)
+            if (_eventBus != null)
             {
-                _scoreService.OnScoreChanged += HandleScoreChanged;
+                _eventBus.Subscribe<ScoreChangedEvent>(HandleScoreChanged);
             }
 
             if (_orderManager != null)
@@ -85,9 +86,9 @@ namespace KitchenClash.Infrastructure.Network
             _teamScores.OnListChanged -= OnTeamScoresChanged;
             _teamComboCounts.OnListChanged -= OnTeamComboChanged;
 
-            if (_scoreService != null)
+            if (_eventBus != null)
             {
-                _scoreService.OnScoreChanged -= HandleScoreChanged;
+                _eventBus.Unsubscribe<ScoreChangedEvent>(HandleScoreChanged);
             }
 
             if (_orderManager != null)

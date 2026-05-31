@@ -4,17 +4,17 @@ namespace KitchenClash.Presentation.ViewModels
 {
     public sealed class MatchHUDViewModel : ScreenViewModel
     {
-        private readonly IScoreService _scoreService;
+        private readonly IEventBus _eventBus;
 
         public BindableProperty<int> TeamAScore { get; } = new(0);
         public BindableProperty<int> TeamBScore { get; } = new(0);
         public BindableProperty<float> TimeRemaining { get; } = new(0f);
         public BindableProperty<int> ComboCount { get; } = new(0);
 
-        public MatchHUDViewModel(IScoreService scoreService)
+        public MatchHUDViewModel(IEventBus eventBus)
         {
-            _scoreService = scoreService;
-            _scoreService.OnScoreChanged += HandleScoreChanged;
+            _eventBus = eventBus;
+            _eventBus.Subscribe<ScoreChangedEvent>(HandleScoreChanged);
         }
 
         private void HandleScoreChanged(ScoreChangedEvent e)
@@ -25,7 +25,7 @@ namespace KitchenClash.Presentation.ViewModels
 
         public override void OnExit()
         {
-            _scoreService.OnScoreChanged -= HandleScoreChanged;
+            _eventBus.Unsubscribe<ScoreChangedEvent>(HandleScoreChanged);
         }
     }
 }

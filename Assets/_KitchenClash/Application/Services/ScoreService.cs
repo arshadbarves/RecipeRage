@@ -19,7 +19,6 @@ namespace KitchenClash.Application
         public int TeamAScore => _a;
         public int TeamBScore => _b;
         public bool IsRushMode => _rushMode;
-        public event Action<ScoreChangedEvent> OnScoreChanged;
 
         public void SetRushMode(bool active)
         {
@@ -59,7 +58,7 @@ namespace KitchenClash.Application
                 _b = Math.Max(0, _b + d);
             }
 
-            OnScoreChanged?.Invoke(new ScoreChangedEvent(team, d, _a, _b));
+            _eventBus?.Publish(new ScoreChangedEvent(team, d, _a, _b));
             _eventBus?.Publish(new SFXEvent(SFXType.ScorePoint));
         }
 

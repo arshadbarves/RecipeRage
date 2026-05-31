@@ -11,18 +11,18 @@ namespace KitchenClash.Infrastructure.Gameplay
 {
     public class SkinsService : ISkinsService, IDisposable
     {
-        public event Action<int, string> OnSkinEquipped;
-
         private const string CHARACTERS_PATH = "ScriptableObjects/CharacterClasses";
 
         private readonly Dictionary<string, SkinItem> _skinsById = new Dictionary<string, SkinItem>();
         private readonly Dictionary<int, List<SkinItem>> _skinsByCharacter = new Dictionary<int, List<SkinItem>>();
         private readonly EconomyService _economyService;
+        private readonly IEventBus _eventBus;
 
         [Inject]
-        public SkinsService(EconomyService economyService)
+        public SkinsService(EconomyService economyService, IEventBus eventBus)
         {
             _economyService = economyService;
+            _eventBus = eventBus;
             LoadSkinsFromCharacterClasses();
         }
 
@@ -97,7 +97,7 @@ namespace KitchenClash.Infrastructure.Gameplay
                 return false;
             }
 
-            OnSkinEquipped?.Invoke(characterId, skinId);
+            _eventBus?.Publish(new SkinEquippedEvent { CharacterId = characterId, SkinId = skinId });
             return true;
         }
 

@@ -60,7 +60,7 @@ namespace KitchenClash.Presentation.Screens
             // Unsubscribe from economy events
             if (_economyService != null)
             {
-                _economyService.OnBalanceChanged -= OnBalanceChanged;
+                _eventBus?.Unsubscribe<CurrencyChangedEvent>(OnCurrencyChanged);
                 _economyService = null;
             }
 
@@ -136,16 +136,17 @@ namespace KitchenClash.Presentation.Screens
             if (_economyService == null) return;
 
             // Subscribe to balance changes
-            _economyService.OnBalanceChanged += OnBalanceChanged;
+            _eventBus?.Subscribe<CurrencyChangedEvent>(OnCurrencyChanged);
 
             // Initial update
             UpdateCurrencyLabel(EconomyKeys.CurrencyCoins, _economyService.GetBalance(EconomyKeys.CurrencyCoins));
             UpdateCurrencyLabel(EconomyKeys.CurrencyGems, _economyService.GetBalance(EconomyKeys.CurrencyGems));
         }
 
-        private void OnBalanceChanged(string currencyId, long newBalance)
+        private void OnCurrencyChanged(CurrencyChangedEvent evt)
         {
-            UpdateCurrencyLabel(currencyId, newBalance);
+            UpdateCurrencyLabel(EconomyKeys.CurrencyCoins, evt.Coins);
+            UpdateCurrencyLabel(EconomyKeys.CurrencyGems, evt.Gems);
         }
 
         private void UpdateCurrencyLabel(string currencyId, long balance)

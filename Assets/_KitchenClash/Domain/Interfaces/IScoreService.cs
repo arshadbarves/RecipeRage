@@ -1,5 +1,3 @@
-using System;
-
 namespace KitchenClash.Domain
 {
     public interface IScoreService
@@ -11,6 +9,5 @@ namespace KitchenClash.Domain
         int CalculateEndOfMatchBonus(TeamId team);
         void SetRushMode(bool active);
         void UpdateMatchTime(float timeRemaining);
-        event Action<ScoreChangedEvent> OnScoreChanged;
     }
 }

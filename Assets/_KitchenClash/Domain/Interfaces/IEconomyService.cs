@@ -1,5 +1,3 @@
-using System;
-
 namespace KitchenClash.Domain
 {
     public interface IEconomyService
@@ -16,6 +14,5 @@ namespace KitchenClash.Domain
         bool Purchase(string itemId, int cost, string currencyType);
         void Initialize();
         void AwardMatchReward(bool won, int score);
-        event Action<string, long> OnBalanceChanged;
     }
 }

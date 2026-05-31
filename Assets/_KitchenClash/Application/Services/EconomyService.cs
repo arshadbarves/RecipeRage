@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using KitchenClash.Domain;
 using UnityEngine;
@@ -18,8 +17,6 @@ namespace KitchenClash.Application
         private int _coins;
         private int _gems;
         private readonly HashSet<string> _ownedItems = new HashSet<string>();
-
-        public event Action<string, long> OnBalanceChanged;
 
         public EconomyService(IEventBus eventBus, ISaveService saveService)
         {
@@ -108,8 +105,6 @@ namespace KitchenClash.Application
         private void NotifyAndSave()
         {
             _eventBus.Publish(new CurrencyChangedEvent { Coins = _coins, Gems = _gems });
-            OnBalanceChanged?.Invoke(EconomyKeys.CurrencyCoins, _coins);
-            OnBalanceChanged?.Invoke(EconomyKeys.CurrencyGems, _gems);
             Save();
         }
 
@@ -177,8 +172,6 @@ namespace KitchenClash.Application
             }
 
             // Fire initial balance state
-            OnBalanceChanged?.Invoke(EconomyKeys.CurrencyCoins, _coins);
-            OnBalanceChanged?.Invoke(EconomyKeys.CurrencyGems, _gems);
             _eventBus.Publish(new CurrencyChangedEvent { Coins = _coins, Gems = _gems });
         }
     }

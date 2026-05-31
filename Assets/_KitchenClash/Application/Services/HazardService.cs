@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using KitchenClash.Domain;
 
@@ -9,10 +8,6 @@ namespace KitchenClash.Application
         private readonly IConfigService _cfg;
         private readonly IEventBus _eventBus;
         private readonly Dictionary<string, float> _activeFires = new();
-
-        public event Action<string> OnFireStarted;
-        public event Action<string> OnFireExtinguished;
-        public event Action<string> OnFirePenalty;
 
         private float _currentTime;
 
@@ -25,7 +20,7 @@ namespace KitchenClash.Application
         public void RegisterFire(string stationId)
         {
             _activeFires[stationId] = _currentTime;
-            OnFireStarted?.Invoke(stationId);
+            _eventBus?.Publish(new FireStartedEvent { StationId = stationId });
             _eventBus?.Publish(new SFXEvent(SFXType.FireStart));
         }
 
@@ -40,12 +35,12 @@ namespace KitchenClash.Application
             if (currentTime - startTime > window)
             {
                 _activeFires.Remove(stationId);
-                OnFirePenalty?.Invoke(stationId);
+                _eventBus?.Publish(new FirePenaltyEvent { StationId = stationId });
                 return false;
             }
 
             _activeFires.Remove(stationId);
-            OnFireExtinguished?.Invoke(stationId);
+            _eventBus?.Publish(new FireExtinguishedEvent { StationId = stationId });
             _eventBus?.Publish(new SFXEvent(SFXType.FireExtinguish));
             return true;
         }

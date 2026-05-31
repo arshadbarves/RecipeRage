@@ -11,14 +11,13 @@ namespace KitchenClash.Infrastructure.Gameplay
 {
     public class CharacterService : ICharacterService, IDisposable
     {
-        public event Action<CharacterClass> OnCharacterSelected;
-
         private const string CharactersPath = "ScriptableObjects/CharacterClasses";
 
         // ── New GDD v3 ──
         private readonly ChefRegistry _registry;
         private readonly IPlayerDataService _playerData;
         private readonly IEconomyService _economy;
+        private readonly IEventBus _eventBus;
         private ChefDefinition _selectedChef;
 
         // ── Legacy SO ──
@@ -30,11 +29,12 @@ namespace KitchenClash.Infrastructure.Gameplay
         public ChefDefinition SelectedChef => _selectedChef;
         public CharacterClass SelectedCharacter => _selectedCharacter;
 
-        public CharacterService(ChefRegistry registry, IPlayerDataService playerData, IEconomyService economy)
+        public CharacterService(ChefRegistry registry, IPlayerDataService playerData, IEconomyService economy, IEventBus eventBus)
         {
             _registry = registry;
             _playerData = playerData;
             _economy = economy;
+            _eventBus = eventBus;
 
             // Default to Rosa (starter)
             _selectedChef = _registry.Get(ChefId.Rosa);
@@ -92,7 +92,7 @@ namespace KitchenClash.Infrastructure.Gameplay
             // Sync legacy selection
             SyncLegacySelection(chef);
 
-            OnCharacterSelected?.Invoke(_selectedCharacter);
+            _eventBus?.Publish(new CharacterSelectedEvent { Character = _selectedCharacter });
 
             GameLogger.Log($"Chef selected: {chef.DisplayName}");
             return true;
@@ -196,7 +196,7 @@ namespace KitchenClash.Infrastructure.Gameplay
             }
 
             _selectedCharacter = character;
-            OnCharacterSelected?.Invoke(_selectedCharacter);
+            _eventBus?.Publish(new CharacterSelectedEvent { Character = _selectedCharacter });
             return true;
         }
 
