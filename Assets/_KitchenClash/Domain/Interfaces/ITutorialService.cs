@@ -1,5 +1,3 @@
-using System;
-
 namespace KitchenClash.Domain
 {
     public interface ITutorialService
@@ -11,8 +9,5 @@ namespace KitchenClash.Domain
         void StartTutorial();
         void AdvanceStep();
         void SkipTutorial();
-
-        event Action<TutorialStep> OnStepChanged;
-        event Action OnTutorialComplete;
     }
 }

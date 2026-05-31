@@ -1,12 +1,14 @@
+using System;
 using KitchenClash.Application.Models;
 using KitchenClash.Domain;
-using System;
 using System.Collections.Generic;
 
 namespace KitchenClash.Application
 {
     public interface ICharacterService
     {
+        event Action<CharacterClass> OnCharacterSelected;
+
         // ── New GDD v3 chef API ──
 
         /// <summary>Currently selected chef definition for this session.</summary>
@@ -27,9 +29,6 @@ namespace KitchenClash.Application
         /// <summary>Attempt to purchase a shop-locked chef. Returns false if insufficient funds.</summary>
         bool TryPurchaseChef(ChefId chefId);
 
-        event Action<ChefDefinition> OnChefSelected;
-        event Action<ChefId> OnChefUnlocked;
-
         // ── Legacy SO-based API (used by existing Presentation layer) ──
 
         CharacterClass SelectedCharacter { get; }
@@ -39,7 +38,5 @@ namespace KitchenClash.Application
         bool IsUnlocked(int characterId);
         bool Unlock(int characterId);
         bool SelectCharacter(int characterId);
-        event Action<CharacterClass> OnCharacterSelected;
-        event Action<int> OnCharacterUnlocked;
     }
 }

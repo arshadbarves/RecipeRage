@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 namespace KitchenClash.Infrastructure.Network
@@ -6,9 +5,6 @@ namespace KitchenClash.Infrastructure.Network
     public class PlayerNetworkManager : IPlayerNetworkManager
     {
         private readonly Dictionary<ulong, IPlayerController> _players = new Dictionary<ulong, IPlayerController>();
-
-        public event Action<IPlayerController> OnPlayerRegistered;
-        public event Action<ulong> OnPlayerUnregistered;
 
         public void RegisterPlayer(ulong clientId, IPlayerController player)
         {
@@ -18,7 +14,6 @@ namespace KitchenClash.Infrastructure.Network
             }
 
             _players[clientId] = player;
-            OnPlayerRegistered?.Invoke(player);
         }
 
         public void UnregisterPlayer(ulong clientId)
@@ -29,7 +24,6 @@ namespace KitchenClash.Infrastructure.Network
             }
 
             _players.Remove(clientId);
-            OnPlayerUnregistered?.Invoke(clientId);
         }
 
         public IPlayerController GetPlayer(ulong clientId) => _players.TryGetValue(clientId, out IPlayerController p) ? p : null;
@@ -46,7 +40,5 @@ namespace KitchenClash.Infrastructure.Network
         IReadOnlyList<IPlayerController> GetAllPlayers();
         int GetPlayerCount();
         bool IsPlayerRegistered(ulong clientId);
-        event Action<IPlayerController> OnPlayerRegistered;
-        event Action<ulong> OnPlayerUnregistered;
     }
 }

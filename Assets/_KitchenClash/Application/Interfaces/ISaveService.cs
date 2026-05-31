@@ -7,8 +7,6 @@ namespace KitchenClash.Application
 {
     public interface ISaveService
     {
-        event Action<GameSettingsData> OnSettingsChanged;
-
         void RegisterStorageConfig(string key, StorageStrategy strategy, bool encrypt);
         void OnUserLoggedIn();
         void OnUserLoggedOut();

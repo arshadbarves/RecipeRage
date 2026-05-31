@@ -1,6 +1,6 @@
 using KitchenClash.Application.Models;
-using System;
 using KitchenClash.Application;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using KitchenClash.Domain;
@@ -11,14 +11,13 @@ namespace KitchenClash.Infrastructure.Gameplay
 {
     public class SkinsService : ISkinsService, IDisposable
     {
+        public event Action<int, string> OnSkinEquipped;
+
         private const string CHARACTERS_PATH = "ScriptableObjects/CharacterClasses";
 
         private readonly Dictionary<string, SkinItem> _skinsById = new Dictionary<string, SkinItem>();
         private readonly Dictionary<int, List<SkinItem>> _skinsByCharacter = new Dictionary<int, List<SkinItem>>();
         private readonly EconomyService _economyService;
-
-        public event Action<string> OnSkinUnlocked;
-        public event Action<int, string> OnSkinEquipped;
 
         [Inject]
         public SkinsService(EconomyService economyService)

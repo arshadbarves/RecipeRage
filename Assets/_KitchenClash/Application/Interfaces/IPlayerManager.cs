@@ -1,13 +1,9 @@
 using KitchenClash.Domain;
-using System;
 
 namespace KitchenClash.Application
 {
     public interface IPlayerManager
     {
-        event Action<PlayerInfo> OnPlayerJoined;
-        event Action<PlayerInfo> OnPlayerLeft;
-
         void SetCurrentLobby(PlayEveryWare.EpicOnlineServices.Samples.Lobby lobby);
         void SetPlayerReady(bool isReady);
         void SetPlayerTeam(TeamId teamId);

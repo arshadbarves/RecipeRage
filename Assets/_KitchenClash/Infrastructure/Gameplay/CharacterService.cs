@@ -1,8 +1,8 @@
+using System;
 using KitchenClash.Application;
 using KitchenClash.Application.Models;
 using KitchenClash.Application.Services;
 using KitchenClash.Domain;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -11,6 +11,8 @@ namespace KitchenClash.Infrastructure.Gameplay
 {
     public class CharacterService : ICharacterService, IDisposable
     {
+        public event Action<CharacterClass> OnCharacterSelected;
+
         private const string CharactersPath = "ScriptableObjects/CharacterClasses";
 
         // ── New GDD v3 ──
@@ -23,14 +25,6 @@ namespace KitchenClash.Infrastructure.Gameplay
         private readonly Dictionary<int, CharacterClass> _characters = new();
         private readonly HashSet<int> _unlockedCharacters = new();
         private CharacterClass _selectedCharacter;
-
-        // ── Events (new) ──
-        public event Action<ChefDefinition> OnChefSelected;
-        public event Action<ChefId> OnChefUnlocked;
-
-        // ── Events (legacy) ──
-        public event Action<CharacterClass> OnCharacterSelected;
-        public event Action<int> OnCharacterUnlocked;
 
         // ── Properties ──
         public ChefDefinition SelectedChef => _selectedChef;
@@ -94,10 +88,11 @@ namespace KitchenClash.Infrastructure.Gameplay
             }
 
             _selectedChef = chef;
-            OnChefSelected?.Invoke(chef);
 
             // Sync legacy selection
             SyncLegacySelection(chef);
+
+            OnCharacterSelected?.Invoke(_selectedCharacter);
 
             GameLogger.Log($"Chef selected: {chef.DisplayName}");
             return true;
@@ -120,7 +115,6 @@ namespace KitchenClash.Infrastructure.Gameplay
             bool purchased = _economy.Purchase(itemId, chef.Unlock.Value, "coins");
             if (purchased)
             {
-                OnChefUnlocked?.Invoke(chefId);
                 GameLogger.Log($"Chef purchased: {chef.DisplayName} for {chef.Unlock.Value} coins");
             }
             return purchased;
@@ -180,7 +174,6 @@ namespace KitchenClash.Infrastructure.Gameplay
             }
 
             _unlockedCharacters.Add(characterId);
-            OnCharacterUnlocked?.Invoke(characterId);
             return true;
         }
 
@@ -203,7 +196,7 @@ namespace KitchenClash.Infrastructure.Gameplay
             }
 
             _selectedCharacter = character;
-            OnCharacterSelected?.Invoke(character);
+            OnCharacterSelected?.Invoke(_selectedCharacter);
             return true;
         }
 
@@ -215,7 +208,6 @@ namespace KitchenClash.Infrastructure.Gameplay
                 if (kvp.Value.DisplayName == chef.DisplayName)
                 {
                     _selectedCharacter = kvp.Value;
-                    OnCharacterSelected?.Invoke(kvp.Value);
                     return;
                 }
             }

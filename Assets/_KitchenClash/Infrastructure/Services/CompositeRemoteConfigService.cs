@@ -27,10 +27,6 @@ namespace KitchenClash.Infrastructure.Services
         public ConfigHealthStatus HealthStatus => _healthStatus;
         public DateTime LastUpdateTime => _lastUpdateTime;
 
-        public event Action<IConfigModel> OnConfigUpdated;
-        public event Action<Type, IConfigModel> OnSpecificConfigUpdated;
-        public event Action<ConfigHealthStatus> OnHealthStatusChanged;
-
 #if FIREBASE_REMOTE_CONFIG
         public CompositeRemoteConfigService(IConfigProvider configProvider, IEventBus eventBus)
         {
@@ -113,8 +109,6 @@ namespace KitchenClash.Infrastructure.Services
                             if (kvp.Value != null && kvp.Value.Validate())
                             {
                                 _cache[kvp.Value.GetType()] = kvp.Value;
-                                OnConfigUpdated?.Invoke(kvp.Value);
-                                OnSpecificConfigUpdated?.Invoke(kvp.Value.GetType(), kvp.Value);
                                 _eventBus.Publish(new ConfigUpdatedEvent(kvp.Value));
                             }
                         }
@@ -149,8 +143,6 @@ namespace KitchenClash.Infrastructure.Services
                     if (config != null && config.Validate())
                     {
                         _cache[typeof(T)] = config;
-                        OnConfigUpdated?.Invoke(config);
-                        OnSpecificConfigUpdated?.Invoke(typeof(T), config);
                         _eventBus.Publish(new ConfigUpdatedEvent(config));
                         _lastUpdateTime = DateTime.UtcNow;
                         return true;
@@ -182,7 +174,7 @@ namespace KitchenClash.Infrastructure.Services
             if (_healthStatus != newStatus)
             {
                 _healthStatus = newStatus;
-                OnHealthStatusChanged?.Invoke(newStatus);
+                _eventBus.Publish(new ConfigHealthStatusChangedEvent { Status = newStatus });
             }
         }
     }

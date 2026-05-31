@@ -26,7 +26,6 @@ namespace KitchenClash.Infrastructure.EOS
 
         public string ProductUserId => _productUserId;
         public bool IsGuest => _isGuest;
-        public event Action<AuthResult> OnAuthChanged;
 
         public async Task<AuthResult> LoginAsGuestAsync()
         {
@@ -58,7 +57,6 @@ namespace KitchenClash.Infrastructure.EOS
                         _productUserId = info.LocalUserId.ToString();
                         _isGuest = true;
                         var result = new AuthResult(true, _productUserId, isGuest: true);
-                        OnAuthChanged?.Invoke(result);
                         tcs.SetResult(result);
                     }
                     else

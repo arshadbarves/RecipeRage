@@ -18,7 +18,6 @@ namespace KitchenClash.Application
         Task LinkToGoogleAsync();
         string ProductUserId { get; }
         bool IsGuest { get; }
-        event Action<AuthResult> OnAuthChanged;
 
         // ── Legacy members (kept for backward compat, callers migrating) ──
         bool IsInitialized { get; }

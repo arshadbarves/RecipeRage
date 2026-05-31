@@ -16,9 +16,6 @@ namespace KitchenClash.Infrastructure.EOS
         private readonly EOSLobbyManager _eosLobbyManager;
         private Lobby _currentLobby;
 
-        public event Action<PlayerInfo> OnPlayerJoined;
-        public event Action<PlayerInfo> OnPlayerLeft;
-
         public EOSPlayerManager(EOSLobbyManager eosLobbyManager)
         {
             _eosLobbyManager = eosLobbyManager ?? throw new ArgumentNullException(nameof(eosLobbyManager));

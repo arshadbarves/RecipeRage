@@ -1,6 +1,5 @@
 using KitchenClash.Application;
 using KitchenClash.Application.Models;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -11,10 +10,6 @@ namespace KitchenClash.Infrastructure.Persistence
         private readonly ISaveService _saveService;
         private readonly Dictionary<string, int> _characterLevels = new();
         private readonly HashSet<string> _unlockedCharacters = new();
-
-        public event Action<PlayerProgressData> OnProgressChanged;
-        public event Action<PlayerStatsData> OnStatsChanged;
-        public event Action OnLevelUp;
 
         public PlayerDataService(ISaveService saveService)
         {
@@ -35,14 +30,13 @@ namespace KitchenClash.Infrastructure.Persistence
 
         public int GetCharacterLevel(string characterId)
         {
-            return _characterLevels.TryGetValue(characterId, out int level) ? level : 1;
+            return _characterLevels.GetValueOrDefault(characterId, 1);
         }
 
         public bool UpgradeCharacter(string characterId, int cost)
         {
             int currentLevel = GetCharacterLevel(characterId);
             _characterLevels[characterId] = currentLevel + 1;
-            OnLevelUp?.Invoke();
             return true;
         }
 

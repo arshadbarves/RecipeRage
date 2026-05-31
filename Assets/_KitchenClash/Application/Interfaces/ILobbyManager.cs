@@ -6,12 +6,6 @@ namespace KitchenClash.Application
 {
     public interface ILobbyManager : IDisposable
     {
-        // Events - Party
-        event Action<Result, LobbyInfo> OnPartyCreated;
-        event Action<PlayerInfo> OnPartyMemberJoined;
-        event Action<PlayerInfo> OnPartyMemberLeft;
-        event Action OnPartyUpdated;
-
         // Events - Match
         event Action<Result, LobbyInfo> OnMatchLobbyCreated;
         event Action<Result, LobbyInfo> OnMatchLobbyJoined;

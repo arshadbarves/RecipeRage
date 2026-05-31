@@ -14,11 +14,10 @@ namespace KitchenClash.Infrastructure.Network
     /// </summary>
     public class ScoreManager : NetworkBehaviour
     {
+        public event Action<int, int> OnTeamScoreChanged;
+
         [Header("References")]
         [SerializeField] private OrderManager _orderManager;
-
-        public event Action<int, int> OnTeamScoreChanged;
-        public event Action<int, int> OnTeamComboAchieved;
 
         [Inject] private IMatchContext _matchContext;
         [Inject] private IScoreService _scoreService;
@@ -192,15 +191,14 @@ namespace KitchenClash.Infrastructure.Network
 
         private void OnTeamScoresChanged(NetworkListEvent<int> changeEvent)
         {
-            OnTeamScoreChanged?.Invoke(changeEvent.Index, changeEvent.Value);
+            if (changeEvent.Type == NetworkListEvent<int>.EventType.Value)
+            {
+                OnTeamScoreChanged?.Invoke(changeEvent.Index, changeEvent.Value);
+            }
         }
 
         private void OnTeamComboChanged(NetworkListEvent<int> changeEvent)
         {
-            if (changeEvent.Value > 1)
-            {
-                OnTeamComboAchieved?.Invoke(changeEvent.Index, changeEvent.Value);
-            }
         }
     }
 }

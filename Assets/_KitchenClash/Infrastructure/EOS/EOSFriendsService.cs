@@ -24,8 +24,6 @@ namespace KitchenClash.Infrastructure.EOS
         #region Events
 
         public event Action OnFriendsListUpdated;
-        public event Action<FriendInfo> OnFriendAdded;
-        public event Action<string> OnFriendRemoved;
         public event Action<FriendRequest> OnFriendRequestReceived;
 
         #endregion
@@ -460,12 +458,6 @@ namespace KitchenClash.Infrastructure.EOS
             if (relationship.Type == UGSModels.RelationshipType.Friend)
             {
                 UpdateLocalFriends();
-
-                FriendInfo friend = _friends.FirstOrDefault(f => f.FriendCode == relationship.Member.Id);
-                if (friend != null)
-                {
-                    OnFriendAdded?.Invoke(friend);
-                }
             }
             else if (relationship.Type == UGSModels.RelationshipType.FriendRequest)
             {
@@ -482,7 +474,6 @@ namespace KitchenClash.Infrastructure.EOS
             _friends.RemoveAll(f => f.FriendCode == friendCode);
             _pendingRequests.RemoveAll(r => r.FromFriendCode == friendCode);
 
-            OnFriendRemoved?.Invoke(friendCode);
             OnFriendsListUpdated?.Invoke();
         }
 

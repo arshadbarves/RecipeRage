@@ -17,11 +17,6 @@ namespace KitchenClash.Infrastructure.EOS
     {
         #region Events
 
-        public event Action<Result, LobbyInfo> OnPartyCreated;
-        public event Action<PlayerInfo> OnPartyMemberJoined;
-        public event Action<PlayerInfo> OnPartyMemberLeft;
-        public event Action OnPartyUpdated;
-
         public event Action<Result, LobbyInfo> OnMatchLobbyCreated;
         public event Action<Result, LobbyInfo> OnMatchLobbyJoined;
         public event Action OnMatchLobbyLeft;
@@ -358,7 +353,6 @@ namespace KitchenClash.Infrastructure.EOS
             {
                 CurrentPartyLobby.GameModeId = gameModeId;
                 UpdateLobbyAttribute(CurrentPartyLobby.LobbyId, "GameMode", gameModeId);
-                OnPartyUpdated?.Invoke();
             }
         }
 
@@ -377,7 +371,6 @@ namespace KitchenClash.Infrastructure.EOS
             {
                 CurrentPartyLobby.MapName = mapName;
                 UpdateLobbyAttribute(CurrentPartyLobby.LobbyId, "MapName", mapName);
-                OnPartyUpdated?.Invoke();
             }
         }
 
@@ -466,11 +459,7 @@ namespace KitchenClash.Infrastructure.EOS
             {
                 GameLogger.LogError($"Failed to create lobby: {data.ResultCode}");
 
-                if (type == LobbyType.Party)
-                {
-                    OnPartyCreated?.Invoke(data.ResultCode, null);
-                }
-                else
+                if (type == LobbyType.Match)
                 {
                     OnMatchLobbyCreated?.Invoke(data.ResultCode, null);
                 }
@@ -501,7 +490,6 @@ namespace KitchenClash.Infrastructure.EOS
             {
                 CurrentPartyLobby = lobbyInfo;
                 ChangeState(LobbyState.InParty);
-                OnPartyCreated?.Invoke(Result.Success, lobbyInfo);
             }
             else
             {
@@ -843,7 +831,6 @@ namespace KitchenClash.Infrastructure.EOS
                 if (CurrentPartyLobby?.LobbyId == lobbyId)
                 {
                     CurrentPartyLobby = lobbyInfo;
-                    OnPartyUpdated?.Invoke();
                 }
                 else if (CurrentMatchLobby?.LobbyId == lobbyId)
                 {

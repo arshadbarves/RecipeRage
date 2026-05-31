@@ -8,8 +8,6 @@ namespace KitchenClash.Domain
         public int Gems { get; set; }
     }
 
-    public sealed class CurrencyResetEvent { }
-
     public sealed class LoginSuccessEvent
     {
         public string UserId { get; set; }
@@ -39,30 +37,6 @@ namespace KitchenClash.Domain
         public string Title { get; set; }
         public string Message { get; set; }
         public bool IsRequired { get; set; }
-    }
-
-    public sealed class StateChangedEvent
-    {
-        public string PreviousState { get; set; }
-        public string CurrentState { get; set; }
-    }
-
-    public sealed class LobbyJoinedEvent
-    {
-        public string LobbyId { get; set; }
-    }
-
-    public sealed class LobbyLeftEvent
-    {
-        public string LobbyId { get; set; }
-    }
-
-    public sealed class AudioSettingsChangedEvent
-    {
-        public float MasterVolume { get; set; }
-        public float MusicVolume { get; set; }
-        public float SFXVolume { get; set; }
-        public bool IsMuted { get; set; }
     }
 
     public sealed class CameraShakeEvent

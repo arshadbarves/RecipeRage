@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 
 namespace KitchenClash.Domain
@@ -7,7 +6,6 @@ namespace KitchenClash.Domain
     {
         Task<IAPResult> PurchaseAsync(string productId);
         bool IsInitialized { get; }
-        event Action<string> OnPurchaseCompleted;
     }
 
     public sealed class IAPResult

@@ -13,10 +13,6 @@ namespace KitchenClash.Infrastructure.Services
         public ConfigHealthStatus HealthStatus => ConfigHealthStatus.Healthy;
         public DateTime LastUpdateTime => DateTime.MinValue;
 
-        public event Action<IConfigModel> OnConfigUpdated;
-        public event Action<Type, IConfigModel> OnSpecificConfigUpdated;
-        public event Action<ConfigHealthStatus> OnHealthStatusChanged;
-
         public UniTask<bool> Initialize()
         {
             GameLogger.Log("[FallbackRemoteConfigService] Initialized with defaults");

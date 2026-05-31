@@ -1,6 +1,5 @@
 using KitchenClash.Application.Models;
 using KitchenClash.Application;
-using System;
 using System.Threading.Tasks;
 using KitchenClash.Domain;
 
@@ -15,10 +14,6 @@ namespace KitchenClash.Infrastructure.Persistence
 
         private PlayerProgressData _progress;
         private PlayerStatsData _stats;
-
-        public event Action<PlayerProgressData> OnProgressChanged;
-        public event Action<PlayerStatsData> OnStatsChanged;
-        public event Action OnLevelUp;
 
         public PlayerDataServiceAdapter(Application.IStorageProvider storageProvider)
         {
@@ -39,18 +34,12 @@ namespace KitchenClash.Infrastructure.Persistence
         {
             _stats.PlayerName = name;
             _stats.UsernameChangeCount++;
-            OnStatsChanged?.Invoke(_stats);
         }
 
         public void RecordGamePlayed(bool won, string gameModeId, string characterId, float playTime, int score, int xp)
         {
             _stats.RecordGamePlayed(won, gameModeId, characterId, playTime, score);
-            bool leveledUp = _stats.AddExperience(xp);
-            OnStatsChanged?.Invoke(_stats);
-            if (leveledUp)
-            {
-                OnLevelUp?.Invoke();
-            }
+            _stats.AddExperience(xp);
         }
 
         public Task<string> LoadAsync(string key)

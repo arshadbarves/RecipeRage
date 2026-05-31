@@ -13,7 +13,6 @@ namespace KitchenClash.Application.Services
         string GetText(string key, params object[] args);
         bool HasKey(string key);
         void Reload();
-        event Action OnLanguageChanged;
         void RegisterBinding(object owner, string key, Action<string> onUpdate);
         void UnregisterAll(object owner);
     }

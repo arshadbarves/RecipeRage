@@ -17,9 +17,6 @@ namespace KitchenClash.Application.Services
         public bool IsComplete => _isComplete;
         public bool IsActive => _isActive;
 
-        public event Action<TutorialStep> OnStepChanged;
-        public event Action OnTutorialComplete;
-
         public TutorialService(ISaveService saveService)
         {
             _saveService = saveService;
@@ -35,7 +32,6 @@ namespace KitchenClash.Application.Services
 
             _isActive = true;
             _currentStep = TutorialStep.Welcome;
-            OnStepChanged?.Invoke(_currentStep);
         }
 
         public void AdvanceStep()
@@ -55,7 +51,6 @@ namespace KitchenClash.Application.Services
             }
 
             _currentStep = (TutorialStep)next;
-            OnStepChanged?.Invoke(_currentStep);
             SaveState();
         }
 
@@ -70,8 +65,6 @@ namespace KitchenClash.Application.Services
             _isActive = false;
             _isComplete = true;
             SaveState();
-            OnStepChanged?.Invoke(_currentStep);
-            OnTutorialComplete?.Invoke();
         }
 
         private void SaveState()

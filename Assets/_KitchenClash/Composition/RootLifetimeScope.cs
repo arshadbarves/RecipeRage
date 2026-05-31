@@ -67,6 +67,7 @@ public class RootLifetimeScope : LifetimeScope
         else
         {
             GameLogger.LogError("AudioSettings not assigned in RootLifetimeScope");
+            return;
         }
 
         builder.Register<AudioVolumeController>(Lifetime.Singleton).As<IAudioVolumeController>().As<IInitializable>();
@@ -83,6 +84,11 @@ public class RootLifetimeScope : LifetimeScope
         if (_uiDocument != null)
         {
             builder.RegisterInstance(_uiDocument);
+        }
+        else
+        {
+            GameLogger.LogError("UIDocument not assigned in RootLifetimeScope");
+            return;
         }
 
         builder.Register<UIService>(Lifetime.Singleton).As<IUIService>().As<IStartable>().As<ITickable>();

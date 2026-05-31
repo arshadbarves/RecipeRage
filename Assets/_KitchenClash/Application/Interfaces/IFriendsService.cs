@@ -14,8 +14,6 @@ namespace KitchenClash.Application
         IReadOnlyList<FriendRequest> PendingRequests { get; }
 
         event Action OnFriendsListUpdated;
-        event Action<FriendInfo> OnFriendAdded;
-        event Action<string> OnFriendRemoved;
         event Action<FriendRequest> OnFriendRequestReceived;
 
         void Initialize();

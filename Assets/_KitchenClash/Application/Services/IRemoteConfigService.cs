@@ -13,8 +13,6 @@ namespace KitchenClash.Application.Services
         UniTask<bool> RefreshConfig<T>() where T : class, IConfigModel;
         ConfigHealthStatus HealthStatus { get; }
         DateTime LastUpdateTime { get; }
-        event Action<IConfigModel> OnConfigUpdated;
-        event Action<Type, IConfigModel> OnSpecificConfigUpdated;
-        event Action<ConfigHealthStatus> OnHealthStatusChanged;
     }
+}
 }

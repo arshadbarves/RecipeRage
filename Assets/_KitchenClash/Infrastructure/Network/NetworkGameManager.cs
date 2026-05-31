@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using KitchenClash.Domain;
 using Unity.Netcode;
@@ -16,8 +15,6 @@ namespace KitchenClash.Infrastructure.Network
         private readonly Dictionary<ulong, NetworkObject> _spawnedPlayers;
         private bool _isGameActive;
 
-        public event Action<ulong> OnPlayerJoined;
-        public event Action<ulong> OnPlayerLeft;
         public bool IsGameActive => _isGameActive;
 
         public NetworkGameManager(NetworkManager networkManager, IPlayerNetworkManager playerNetworkManager)
@@ -182,8 +179,6 @@ namespace KitchenClash.Infrastructure.Network
                     _playerNetworkManager?.RegisterPlayer(clientId, playerController);
                 }
             }
-
-            OnPlayerJoined?.Invoke(clientId);
         }
 
         private void OnClientDisconnected(ulong clientId)
@@ -196,8 +191,6 @@ namespace KitchenClash.Infrastructure.Network
             {
                 _playerNetworkManager.UnregisterPlayer(clientId);
             }
-
-            OnPlayerLeft?.Invoke(clientId);
         }
 
         private void CleanupPlayerObjects(ulong clientId)

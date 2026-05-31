@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using KitchenClash.Application.Models;
 
@@ -6,10 +5,6 @@ namespace KitchenClash.Application
 {
     public interface IPlayerDataService
     {
-        event Action<PlayerProgressData> OnProgressChanged;
-        event Action<PlayerStatsData> OnStatsChanged;
-        event Action OnLevelUp;
-
         void Initialize();
         PlayerProgressData GetProgress();
         PlayerStatsData GetStats();

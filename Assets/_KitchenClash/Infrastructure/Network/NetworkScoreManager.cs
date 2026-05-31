@@ -10,14 +10,12 @@ namespace KitchenClash.Infrastructure.Network
     /// </summary>
     public class NetworkScoreManager : NetworkBehaviour
     {
+        public event Action<ulong, int> OnPlayerScoreUpdated;
+
         private NetworkList<PlayerScore> _playerScores;
 
         private NetworkVariable<int> _teamAScore = new NetworkVariable<int>(0);
         private NetworkVariable<int> _teamBScore = new NetworkVariable<int>(0);
-
-        public event Action<ulong, int> OnPlayerScoreUpdated;
-        public event Action<int, int> OnTeamScoreUpdated;
-        public event Action OnScoreboardUpdated;
 
         private void Awake()
         {
@@ -139,26 +137,19 @@ namespace KitchenClash.Infrastructure.Network
 
         private void OnPlayerScoresChanged(NetworkListEvent<PlayerScore> changeEvent)
         {
-            if (changeEvent.Type == NetworkListEvent<PlayerScore>.EventType.Value ||
-                changeEvent.Type == NetworkListEvent<PlayerScore>.EventType.Add)
+            if (changeEvent.Type == NetworkListEvent<PlayerScore>.EventType.Add ||
+                changeEvent.Type == NetworkListEvent<PlayerScore>.EventType.Value)
             {
-                PlayerScore score = _playerScores[changeEvent.Index];
-                OnPlayerScoreUpdated?.Invoke(score.ClientId, score.Score);
+                OnPlayerScoreUpdated?.Invoke(changeEvent.Value.ClientId, changeEvent.Value.Score);
             }
-
-            OnScoreboardUpdated?.Invoke();
         }
 
         private void OnTeamAScoreChanged(int previousValue, int newValue)
         {
-            OnTeamScoreUpdated?.Invoke(0, newValue);
-            OnScoreboardUpdated?.Invoke();
         }
 
         private void OnTeamBScoreChanged(int previousValue, int newValue)
         {
-            OnTeamScoreUpdated?.Invoke(1, newValue);
-            OnScoreboardUpdated?.Invoke();
         }
 
         [ClientRpc]
@@ -170,7 +161,6 @@ namespace KitchenClash.Infrastructure.Network
         [ClientRpc]
         public void UpdateScoreboardClientRpc()
         {
-            OnScoreboardUpdated?.Invoke();
         }
     }
 

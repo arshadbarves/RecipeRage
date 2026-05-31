@@ -32,8 +32,6 @@ namespace KitchenClash.Infrastructure.Localization
         public IReadOnlyCollection<string> AvailableLanguages => _languageColumnIndices.Keys;
         public IReadOnlyCollection<string> MissingKeys => _missingKeys;
 
-        public event Action OnLanguageChanged;
-
         public void Initialize()
         {
             LoadLocalizationData();
@@ -172,8 +170,6 @@ namespace KitchenClash.Infrastructure.Localization
             {
                 _currentLanguage = languageCode;
                 BuildOptimizedCache(); // Rebuild cache for new language
-                BuildOptimizedCache(); // Rebuild cache for new language
-                OnLanguageChanged?.Invoke();
                 UpdateBindings();
                 GameLogger.Log($"[Localization] Language set to: {_currentLanguage}");
             }
@@ -363,7 +359,6 @@ namespace KitchenClash.Infrastructure.Localization
 
             LoadLocalizationData();
             BuildOptimizedCache();
-            OnLanguageChanged?.Invoke();
 
             GameLogger.Log("[Localization] Localization data reloaded.");
         }

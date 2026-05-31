@@ -29,7 +29,6 @@ namespace KitchenClash.Infrastructure.EOS
         // ── GDD v3 properties ──
         public string ProductUserId => EosProductUserId;
         public bool IsGuest { get; private set; }
-        public event Action<AuthResult> OnAuthChanged;
 
         // ── Legacy properties ──
         public bool IsInitialized { get; private set; }
@@ -61,9 +60,7 @@ namespace KitchenClash.Infrastructure.EOS
                 bool success = await LoginWithEosDeviceIdAsync();
                 if (!success)
                 {
-                    var fail = AuthResult.Failed("EOS Device ID login failed");
-                    OnAuthChanged?.Invoke(fail);
-                    return fail;
+                    return AuthResult.Failed("EOS Device ID login failed");
                 }
 
                 // Best-effort UGS
@@ -73,15 +70,12 @@ namespace KitchenClash.Infrastructure.EOS
                 _saveService.UpdateSettings(s => s.LastLoginMethod = LOGIN_METHOD_DEVICE_ID);
 
                 var result = new AuthResult(true, ProductUserId, isGuest: true);
-                OnAuthChanged?.Invoke(result);
                 _eventBus?.Publish(new LoginSuccessEvent { UserId = EosProductUserId, DisplayName = "User" });
                 return result;
             }
             catch (Exception ex)
             {
-                var fail = AuthResult.Failed(ex.Message);
-                OnAuthChanged?.Invoke(fail);
-                return fail;
+                return AuthResult.Failed(ex.Message);
             }
         }
 
@@ -218,8 +212,6 @@ namespace KitchenClash.Infrastructure.EOS
             }
 
             GameLogger.LogInfo("Unified login successful (EOS primary ready).");
-            var authResult = new AuthResult(true, EosProductUserId, isGuest: IsGuest);
-            OnAuthChanged?.Invoke(authResult);
             _eventBus?.Publish(new LoginSuccessEvent { UserId = EosProductUserId, DisplayName = "User" });
             return true;
         }
@@ -249,8 +241,6 @@ namespace KitchenClash.Infrastructure.EOS
                 }
             }
 
-            var result = AuthResult.Failed("Logged out");
-            OnAuthChanged?.Invoke(result);
             _eventBus?.Publish(new LogoutEvent { UserId = EosProductUserId ?? "unknown" });
             await UniTask.Yield();
         }

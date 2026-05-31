@@ -23,10 +23,6 @@ namespace KitchenClash.Application
 
         public IReadOnlyList<OrderModel> ActiveOrders => _activeOrders;
 
-        public event Action<OrderModel> OnOrderGenerated;
-        public event Action<OrderModel> OnOrderCompleted;
-        public event Action<OrderModel> OnOrderExpired;
-
         public OrderModel GenerateOrder(float matchTimeRemaining)
         {
             IReadOnlyList<RecipeDefinition> allRecipes = _catalog.GetAll();
@@ -62,7 +58,6 @@ namespace KitchenClash.Application
             order.PointValue = recipe.BasePoints;
 
             _activeOrders.Add(order);
-            OnOrderGenerated?.Invoke(order);
             return order;
         }
 
@@ -88,7 +83,6 @@ namespace KitchenClash.Application
                 Score = order.PointValue
             };
 
-            OnOrderCompleted?.Invoke(order);
             _eventBus?.Publish(new SFXEvent(SFXType.OrderComplete));
             return result;
         }
@@ -103,7 +97,6 @@ namespace KitchenClash.Application
 
             order.IsExpired = true;
             _activeOrders.Remove(order);
-            OnOrderExpired?.Invoke(order);
             _eventBus?.Publish(new SFXEvent(SFXType.OrderExpired));
         }
 

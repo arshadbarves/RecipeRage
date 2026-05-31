@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using KitchenClash.Application.Models;
 using KitchenClash.Application.Services;
@@ -15,7 +14,6 @@ namespace KitchenClash.Infrastructure.IAP
         private readonly IEconomyService _economy;
 
         public bool IsInitialized => true;
-        public event Action<string> OnPurchaseCompleted;
 
         public StubIAPService(IEconomyService economy)
         {
@@ -41,7 +39,6 @@ namespace KitchenClash.Infrastructure.IAP
                 GameLogger.Log($"[StubIAPService] Delivered {item.Gems} gems for {productId}");
             }
 
-            OnPurchaseCompleted?.Invoke(productId);
             return new IAPResult(true, productId);
 #else
             GameLogger.Log($"[StubIAPService] IAP not available in production stub: {productId}");

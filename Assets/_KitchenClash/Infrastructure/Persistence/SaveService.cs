@@ -28,8 +28,6 @@ namespace KitchenClash.Infrastructure.Persistence
         // Settings Cache (device-wide, Core responsibility)
         private GameSettingsData _cachedSettings;
 
-        public event Action<GameSettingsData> OnSettingsChanged;
-
         public SaveService(StorageProviderFactory providerFactory, IEncryptionService encryption)
         {
             _providerFactory = providerFactory ?? throw new ArgumentNullException(nameof(providerFactory));
@@ -96,7 +94,6 @@ namespace KitchenClash.Infrastructure.Persistence
         {
             _cachedSettings = settings;
             SaveData("settings.json", settings);
-            OnSettingsChanged?.Invoke(settings);
         }
 
         public void UpdateSettings(Action<GameSettingsData> updateAction)
