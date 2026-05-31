@@ -17,7 +17,8 @@ namespace RecipeRage.Tests.EditMode.Gameplay
         {
             config ??= new DictionaryConfigService();
             var database = ScriptableObject.CreateInstance<MapDatabaseSO>();
-            var mapRotation = new MapRotationCalculator(new StubRemoteConfigService(), new StubNTPTimeService(), new MapRegistry(database));
+            var eventBus = new FakeEventBus();
+            var mapRotation = new MapRotationCalculator(new StubRemoteConfigService(), new StubNTPTimeService(), new MapRegistry(database, eventBus));
             return new MatchService(config, mapRotation);
         }
 
@@ -94,6 +95,14 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             public UniTask<bool> SyncTime() => UniTask.FromResult(true);
             public DateTime GetServerTime() => DateTime.UtcNow;
             public TimeSpan GetTimeOffset() => TimeSpan.Zero;
+        }
+
+        private sealed class FakeEventBus : IEventBus
+        {
+            public void Publish<T>(T evt) where T : class { }
+            public void Subscribe<T>(Action<T> handler) where T : class { }
+            public void Unsubscribe<T>(Action<T> handler) where T : class { }
+            public void ClearAllSubscriptions() { }
         }
     }
 }
