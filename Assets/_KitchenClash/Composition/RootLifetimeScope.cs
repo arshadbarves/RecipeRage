@@ -18,7 +18,6 @@ using KitchenClash.Infrastructure.Logging;
 using KitchenClash.Infrastructure.Network;
 using KitchenClash.Infrastructure.Persistence;
 using KitchenClash.Infrastructure.Services;
-using KitchenClash.Presentation;
 using KitchenClash.Presentation.Common;
 using KitchenClash.Presentation.ViewModels;
 using UnityEngine;
@@ -75,7 +74,7 @@ public class RootLifetimeScope : LifetimeScope
         builder.Register<MusicPlayer>(Lifetime.Singleton).As<IMusicPlayer>();
         builder.Register<SFXPlayer>(Lifetime.Singleton).As<ISFXPlayer>();
         builder.Register<AudioService>(Lifetime.Singleton).As<IAudioService>();
-        builder.Register<AudioEventListener>(Lifetime.Singleton);
+        builder.Register<AudioEventListener>(Lifetime.Singleton).As<IInitializable>();
     }
 
     private void RegisterUI(IContainerBuilder builder)
@@ -87,7 +86,6 @@ public class RootLifetimeScope : LifetimeScope
         }
 
         builder.Register<UIService>(Lifetime.Singleton).As<IUIService>().As<IStartable>().As<ITickable>();
-        builder.Register<RouterService>(Lifetime.Singleton).As<IRouterService>();
         builder.Register<LocalizationManager>(Lifetime.Singleton).As<ILocalizationManager>().As<IInitializable>();
     }
 

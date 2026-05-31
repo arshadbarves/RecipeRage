@@ -7,7 +7,6 @@ namespace KitchenClash.Presentation.Screens
 {
     /// <summary>
     /// Standalone store screen stub - full shop UI is embedded in HomeScreen via ShopTabComponent.
-    /// This screen exists to satisfy ScreenId.Store navigation targets.
     /// </summary>
     [UIScreen(UIScreenCategory.Screen, "Screens/StoreViewTemplate")]
     public class StoreScreen : BaseUIScreen

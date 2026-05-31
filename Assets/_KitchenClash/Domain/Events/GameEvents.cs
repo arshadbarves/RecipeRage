@@ -65,16 +65,6 @@ namespace KitchenClash.Domain
         public bool IsMuted { get; set; }
     }
 
-    public sealed class ScreenShownEvent
-    {
-        public ScreenId Screen { get; set; }
-    }
-
-    public sealed class ScreenHiddenEvent
-    {
-        public ScreenId Screen { get; set; }
-    }
-
     public sealed class CameraShakeEvent
     {
         public float Intensity { get; set; }
