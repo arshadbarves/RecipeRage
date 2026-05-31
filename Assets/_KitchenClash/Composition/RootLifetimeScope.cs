@@ -55,8 +55,8 @@ public class RootLifetimeScope : LifetimeScope
         builder.Register<NTPTimeService>(Lifetime.Singleton).As<INTPTimeService>().As<IInitializable>();
         builder.RegisterInstance(_chefDatabase);
         builder.RegisterInstance(_mapDatabase);
-        builder.Register(c => new ChefRegistry(c.Resolve<ChefDatabaseSO>()), Lifetime.Singleton);
-        builder.Register(c => new MapRegistry(c.Resolve<MapDatabaseSO>()), Lifetime.Singleton);
+        builder.Register(c => new ChefRegistry(c.Resolve<ChefDatabaseSO>(), c.Resolve<IRemoteConfigService>()), Lifetime.Singleton);
+        builder.Register(c => new MapRegistry(c.Resolve<MapDatabaseSO>(), c.Resolve<IRemoteConfigService>()), Lifetime.Singleton);
     }
 
     private void RegisterAudio(IContainerBuilder builder)

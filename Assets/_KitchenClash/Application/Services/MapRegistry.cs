@@ -10,12 +10,19 @@ namespace KitchenClash.Application.Services
     {
         private readonly Dictionary<string, MapDefinition> _maps = new();
 
-        public MapRegistry(MapDatabaseSO database)
+        public MapRegistry(MapDatabaseSO database, IRemoteConfigService remoteConfig)
         {
             foreach (MapDefinition map in database.ToDomainList())
             {
                 _maps[map.MapId] = map;
             }
+            remoteConfig.OnConfigUpdated += OnConfigUpdated;
+        }
+
+        private void OnConfigUpdated(IConfigModel config)
+        {
+            if (config is MapConfig mapConfig)
+                ApplyRemoteConfig(mapConfig);
         }
 
         public MapDefinition Get(string mapId)
@@ -35,7 +42,7 @@ namespace KitchenClash.Application.Services
 
         public int Count => _maps.Count;
 
-        public void ApplyRemoteConfig(MapConfig config)
+        private void ApplyRemoteConfig(MapConfig config)
         {
             if (config?.Overrides == null) return;
 

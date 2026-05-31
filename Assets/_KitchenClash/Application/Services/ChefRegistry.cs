@@ -6,17 +6,20 @@ using KitchenClash.Application.Models.RemoteConfigs;
 
 namespace KitchenClash.Application.Services
 {
-    /// <summary>
-    /// Registry of chef definitions loaded from ScriptableObject database.
-    /// Singleton, no Unity dependency in public API.
-    /// </summary>
     public class ChefRegistry
     {
         private readonly Dictionary<ChefId, ChefDefinition> _chefs;
 
-        public ChefRegistry(ChefDatabaseSO database)
+        public ChefRegistry(ChefDatabaseSO database, IRemoteConfigService remoteConfig)
         {
             _chefs = database.ToDomainList().ToDictionary(c => c.Id);
+            remoteConfig.OnConfigUpdated += OnConfigUpdated;
+        }
+
+        private void OnConfigUpdated(IConfigModel config)
+        {
+            if (config is CharacterConfig characterConfig)
+                ApplyRemoteConfig(characterConfig);
         }
 
         public ChefDefinition Get(ChefId id) => _chefs.TryGetValue(id, out ChefDefinition c) ? c : null;
@@ -56,7 +59,7 @@ namespace KitchenClash.Application.Services
             }
         }
 
-        public void ApplyRemoteConfig(CharacterConfig config)
+        private void ApplyRemoteConfig(CharacterConfig config)
         {
             if (config?.Overrides == null) return;
 
