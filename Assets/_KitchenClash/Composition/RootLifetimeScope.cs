@@ -61,21 +61,8 @@ public class RootLifetimeScope : LifetimeScope
 
     private void RegisterAudio(IContainerBuilder builder)
     {
-        if (_audioSettings != null)
-        {
-            builder.RegisterInstance(_audioSettings);
-        }
-        else
-        {
-            GameLogger.LogError("AudioSettings not assigned in RootLifetimeScope. Please assign it in the inspector.");
-        }
-
-        builder.Register<AudioVolumeController>(Lifetime.Singleton).As<IAudioVolumeController>().As<IInitializable>();
-        builder.Register<AudioPoolManager>(Lifetime.Singleton).WithParameter<Transform>(transform);
-        builder.Register<MusicPlayer>(Lifetime.Singleton).As<IMusicPlayer>();
-        builder.Register<SFXPlayer>(Lifetime.Singleton).As<ISFXPlayer>();
-        builder.Register<AudioService>(Lifetime.Singleton).As<IAudioService>();
-        builder.Register<AudioEventListener>(Lifetime.Singleton);
+        // Audio services are now in AudioLifetimeScope (child)
+        // This method is intentionally empty
     }
 
     private void RegisterUI(IContainerBuilder builder)
@@ -96,8 +83,6 @@ public class RootLifetimeScope : LifetimeScope
         builder.Register<GameStateFactory>(Lifetime.Singleton).As<IStateFactory>();
         builder.Register<GameStateManager>(Lifetime.Singleton).As<IGameStateManager>().As<ITickable>();
         builder.Register<PlayerDataService>(Lifetime.Singleton).As<IPlayerDataService>();
-        builder.Register<StorageProviderFactory>(Lifetime.Singleton);
-        builder.Register<SaveService>(Lifetime.Singleton).As<ISaveService>();
 
 #if FIREBASE_REMOTE_CONFIG
         builder.Register<KitchenClash.Infrastructure.Firebase.FirebaseConfigProvider>(Lifetime.Singleton).As<IConfigProvider>();

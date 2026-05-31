@@ -8,7 +8,7 @@ namespace KitchenClash.Infrastructure.Audio
     /// <summary>
     /// Handles music playback - needs MonoBehaviour for coroutines
     /// </summary>
-    public class MusicPlayer : IMusicPlayer
+    internal class MusicPlayer : IMusicPlayer
     {
         private readonly IAudioVolumeController _volumeController;
         private AudioSource _musicSource;

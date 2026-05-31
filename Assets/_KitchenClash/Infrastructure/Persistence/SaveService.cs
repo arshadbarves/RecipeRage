@@ -12,7 +12,7 @@ namespace KitchenClash.Infrastructure.Persistence
     /// Generic multi-provider save service with cloud and local storage support.
     /// Handles storage strategies and sync. Does NOT hold game-specific data.
     /// </summary>
-    public class SaveService : ISaveService
+    internal class SaveService : ISaveService
     {
         private readonly StorageProviderFactory _providerFactory;
         private readonly IEncryptionService _encryption;

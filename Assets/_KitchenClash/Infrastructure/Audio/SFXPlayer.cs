@@ -8,7 +8,7 @@ namespace KitchenClash.Infrastructure.Audio
     /// <summary>
     /// Handles SFX playback using audio pool
     /// </summary>
-    public class SFXPlayer : ISFXPlayer
+    internal class SFXPlayer : ISFXPlayer
     {
         private readonly AudioPoolManager _poolManager;
         private readonly IAudioVolumeController _volumeController;

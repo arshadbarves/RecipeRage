@@ -3,7 +3,7 @@ using KitchenClash.Infrastructure.EOS;
 
 namespace KitchenClash.Infrastructure.Persistence
 {
-    public class StorageProviderFactory
+    internal class StorageProviderFactory
     {
         private LocalStorageProvider _localProvider;
         private EOSCloudStorageProvider _cloudProvider;
