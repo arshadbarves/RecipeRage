@@ -14,9 +14,9 @@ namespace KitchenClash.Application.Services
     {
         private readonly Dictionary<ChefId, ChefDefinition> _chefs;
 
-        public ChefRegistry(ChefDatabaseSO database = null)
+        public ChefRegistry(ChefDatabaseSO database)
         {
-            _chefs = database?.ToDomainList()?.ToDictionary(c => c.Id) ?? new Dictionary<ChefId, ChefDefinition>();
+            _chefs = database.ToDomainList().ToDictionary(c => c.Id);
         }
 
         public ChefDefinition Get(ChefId id) => _chefs.TryGetValue(id, out ChefDefinition c) ? c : null;

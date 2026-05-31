@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b02b805da4d784cabbc2760fa3459f78, type: 3}
+  m_Name: ChefDatabase
+  m_EditorClassIdentifier: KitchenClash.Application::KitchenClash.Application.Models.ChefDatabaseSO
+  Chefs:
+  - {fileID: 11400000, guid: 95b62c5715d9c481184e4cf9109d24d2, type: 2}
+  - {fileID: 11400000, guid: ed348d493afe34499a679e0cecfb1101, type: 2}
+  - {fileID: 11400000, guid: ebb4f2e10e1044a388c233e95950ad1b, type: 2}
+  - {fileID: 11400000, guid: ce99835b99fc54fd2ba5285539cef305, type: 2}
+  - {fileID: 11400000, guid: 4294b15d5e3764aacaf2c04619a75579, type: 2}
+  - {fileID: 11400000, guid: 210b18274d72b4f178377f4368fdbe2d, type: 2}

@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5f6e43f51baa4dfbb91243f618700ae, type: 3}
+  m_Name: burger_boulevard
+  m_EditorClassIdentifier: KitchenClash.Application::KitchenClash.Application.Models.MapDefinitionSO
+  MapId: burger_boulevard
+  DisplayName: Burger Boulevard
+  Description: American diner with a crosswalk hazard.
+  SceneName: burger_boulevard
+  KitchenTheme: american
+  GameMode: 2v2
+  Difficulty: 1
+  AvailableRecipeIds:
+  - burger
+  - toast
+  - fried_egg
+  StationCount: 4
+  FireChanceMultiplier: 0.8
+  HasSpecialHazards: 1
+  SpecialHazardType: crosswalk

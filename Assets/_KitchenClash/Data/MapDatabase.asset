@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 094867e836f5b4328ba181a3d0d3520d, type: 3}
+  m_Name: MapDatabase
+  m_EditorClassIdentifier: KitchenClash.Application::KitchenClash.Application.Models.MapDatabaseSO
+  Maps:
+  - {fileID: 11400000, guid: 50fc986e0beda4074829c8a491ef9694, type: 2}
+  - {fileID: 11400000, guid: 06884877394f94bd4991a7f6eca39313, type: 2}
+  - {fileID: 11400000, guid: 756d7548e1631487abaa22d1972ef194, type: 2}
+  - {fileID: 11400000, guid: ad186442557d5415193645ae27994413, type: 2}
+  - {fileID: 11400000, guid: 75323ddd76be84e77b83c50672d2d345, type: 2}
+  - {fileID: 11400000, guid: cf85843ee8d794f97b84e5ec0cc417aa, type: 2}
+  - {fileID: 11400000, guid: 073082b625adb4b34809919792bf9f57, type: 2}
+  - {fileID: 11400000, guid: 79e9c3168e15f4318bd6e70c96816ba0, type: 2}
