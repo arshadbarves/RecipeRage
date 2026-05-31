@@ -1,5 +1,6 @@
 using KitchenClash.Application;
 using System;
+using KitchenClash.Application.Models.RemoteConfigs;
 using KitchenClash.Application.Services;
 using KitchenClash.Application.State;
 using Cysharp.Threading.Tasks;
@@ -20,6 +21,8 @@ namespace KitchenClash.Infrastructure.States
         private readonly IGameStateManager _stateManager;
         private readonly Domain.IEventBus _eventBus;
         private readonly ForceUpdateChecker _forceUpdateChecker;
+        private readonly ChefRegistry _chefRegistry;
+        private readonly MapRegistry _mapRegistry;
 
         public BootstrapState(
             IUIService uiService,
@@ -29,7 +32,9 @@ namespace KitchenClash.Infrastructure.States
             Domain.IEncryptionService encryptionService,
             IMaintenanceService maintenanceService,
             IGameStateManager stateManager,
-            Domain.IEventBus eventBus)
+            Domain.IEventBus eventBus,
+            ChefRegistry chefRegistry,
+            MapRegistry mapRegistry)
         {
             _uiService = uiService;
             _ntpTimeService = ntpTimeService;
@@ -39,6 +44,8 @@ namespace KitchenClash.Infrastructure.States
             _maintenanceService = maintenanceService;
             _stateManager = stateManager;
             _eventBus = eventBus;
+            _chefRegistry = chefRegistry;
+            _mapRegistry = mapRegistry;
             _forceUpdateChecker = new ForceUpdateChecker(remoteConfigService, eventBus);
         }
 
@@ -98,6 +105,7 @@ namespace KitchenClash.Infrastructure.States
 
             // 3. Fetch latest config values
             await _remoteConfigService.RefreshConfig();
+            ApplyRegistryOverrides();
             if (!IsStateActive)
             {
                 return;
@@ -149,6 +157,30 @@ namespace KitchenClash.Infrastructure.States
 
             GameLogger.Log("Initialization complete. Transitioning to SessionLoadingState.");
             _stateManager.ChangeState<SessionLoadingState>();
+        }
+
+        private void ApplyRegistryOverrides()
+        {
+            try
+            {
+                CharacterConfig characterConfig = _remoteConfigService.GetConfig<CharacterConfig>();
+                if (characterConfig != null)
+                {
+                    _chefRegistry.ApplyRemoteConfig(characterConfig);
+                    GameLogger.Log("[BootstrapState] Applied character config overrides");
+                }
+
+                MapConfig mapConfig = _remoteConfigService.GetConfig<MapConfig>();
+                if (mapConfig != null)
+                {
+                    _mapRegistry.ApplyRemoteConfig(mapConfig);
+                    GameLogger.Log("[BootstrapState] Applied map config overrides");
+                }
+            }
+            catch (Exception ex)
+            {
+                GameLogger.LogError($"[BootstrapState] Failed to apply registry overrides: {ex.Message}");
+            }
         }
     }
 }
