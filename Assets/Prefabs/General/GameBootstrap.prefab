@@ -123,7 +123,7 @@ MonoBehaviour:
     TypeName: 
   autoRun: 1
   autoInjectGameObjects: []
-  _ugsConfig: {fileID: 0}
+  _ugsConfig: {fileID: 11400000, guid: 6d71d0219292746b9962290e613993f4, type: 2}
   _audioSettings: {fileID: 11400000, guid: 2d054cbd4dde4402089eb98db58374f7, type: 2}
   _uiDocument: {fileID: 7968856636002483841}
   _chefDatabase: {fileID: 11400000, guid: 17e46df60192d4821b456f17253422e6, type: 2}

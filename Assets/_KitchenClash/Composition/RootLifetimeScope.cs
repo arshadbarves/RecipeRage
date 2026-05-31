@@ -120,7 +120,7 @@ public class RootLifetimeScope : LifetimeScope
         }
         else
         {
-            builder.RegisterInstance(ScriptableObject.CreateInstance<UGSConfig>());
+            Debug.LogError("UGSConfig not assigned in RootLifetimeScope");
         }
 
         builder.Register<AuthenticationService>(Lifetime.Singleton).As<IAuthService>();
