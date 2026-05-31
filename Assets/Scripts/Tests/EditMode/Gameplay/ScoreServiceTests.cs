@@ -16,7 +16,7 @@ namespace RecipeRage.Tests.EditMode.Gameplay
         public void SetUp()
         {
             _cfg = new DictionaryConfigService();
-            _svc = new ScoreService(_cfg, new NullEventBus());
+            _svc = new ScoreService(_cfg, new CapturingEventBus());
         }
 
         // --- Task 1: Base score = 10 ---
@@ -238,7 +238,9 @@ namespace RecipeRage.Tests.EditMode.Gameplay
         public void OnScoreChanged_FiresOnAddScore()
         {
             ScoreChangedEvent fired = null;
-            _svc.OnScoreChanged += e => fired = e;
+            var bus = new CapturingEventBus();
+            bus.Subscribe<ScoreChangedEvent>(e => fired = e);
+            _svc = new ScoreService(_cfg, bus);
             _svc.AddScore(TeamId.TeamB, new ScoreEvent(ScoreEventType.DishServed, recipeTier: 1, speedRatio: 1f));
             Assert.IsNotNull(fired);
             Assert.AreEqual(TeamId.TeamB, fired.Team);
@@ -265,12 +267,36 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             public Task FetchAsync() => Task.CompletedTask;
         }
 
-        private sealed class NullEventBus : IEventBus
+        private sealed class CapturingEventBus : IEventBus
         {
-            public void Publish<T>(T evt) where T : class { }
-            public void Subscribe<T>(Action<T> handler) where T : class { }
-            public void Unsubscribe<T>(Action<T> handler) where T : class { }
-            public void ClearAllSubscriptions() { }
+            private readonly Dictionary<Type, List<Delegate>> _handlers = new();
+
+            public void Publish<T>(T evt) where T : class
+            {
+                if (_handlers.TryGetValue(typeof(T), out List<Delegate> list))
+                {
+                    foreach (Delegate d in list)
+                        ((Action<T>)d).Invoke(evt);
+                }
+            }
+
+            public void Subscribe<T>(Action<T> handler) where T : class
+            {
+                if (!_handlers.TryGetValue(typeof(T), out List<Delegate> list))
+                {
+                    list = new List<Delegate>();
+                    _handlers[typeof(T)] = list;
+                }
+                list.Add(handler);
+            }
+
+            public void Unsubscribe<T>(Action<T> handler) where T : class
+            {
+                if (_handlers.TryGetValue(typeof(T), out List<Delegate> list))
+                    list.Remove(handler);
+            }
+
+            public void ClearAllSubscriptions() => _handlers.Clear();
         }
     }
 }

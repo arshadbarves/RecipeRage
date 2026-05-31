@@ -13,4 +13,3 @@ namespace KitchenClash.Domain
         float GetRemainingTime(RecipeOrderState order, float currentTime);
     }
 }
-}

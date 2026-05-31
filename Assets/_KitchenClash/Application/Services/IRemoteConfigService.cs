@@ -15,4 +15,4 @@ namespace KitchenClash.Application.Services
         DateTime LastUpdateTime { get; }
     }
 }
-}
+
