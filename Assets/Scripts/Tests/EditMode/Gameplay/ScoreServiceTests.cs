@@ -10,13 +10,15 @@ namespace RecipeRage.Tests.EditMode.Gameplay
     public class ScoreServiceTests
     {
         private DictionaryConfigService _cfg;
+        private SpyEventBus _eventBus;
         private ScoreService _svc;
 
         [SetUp]
         public void SetUp()
         {
             _cfg = new DictionaryConfigService();
-            _svc = new ScoreService(_cfg, new CapturingEventBus());
+            _eventBus = new SpyEventBus();
+            _svc = new ScoreService(_cfg, _eventBus);
         }
 
         // --- Task 1: Base score = 10 ---
@@ -238,9 +240,7 @@ namespace RecipeRage.Tests.EditMode.Gameplay
         public void OnScoreChanged_FiresOnAddScore()
         {
             ScoreChangedEvent fired = null;
-            var bus = new CapturingEventBus();
-            bus.Subscribe<ScoreChangedEvent>(e => fired = e);
-            _svc = new ScoreService(_cfg, bus);
+            _eventBus.Subscribe<ScoreChangedEvent>(e => fired = e);
             _svc.AddScore(TeamId.TeamB, new ScoreEvent(ScoreEventType.DishServed, recipeTier: 1, speedRatio: 1f));
             Assert.IsNotNull(fired);
             Assert.AreEqual(TeamId.TeamB, fired.Team);
@@ -267,7 +267,7 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             public Task FetchAsync() => Task.CompletedTask;
         }
 
-        private sealed class CapturingEventBus : IEventBus
+        private sealed class SpyEventBus : IEventBus
         {
             private readonly Dictionary<Type, List<Delegate>> _handlers = new();
 
@@ -276,7 +276,9 @@ namespace RecipeRage.Tests.EditMode.Gameplay
                 if (_handlers.TryGetValue(typeof(T), out List<Delegate> list))
                 {
                     foreach (Delegate d in list)
-                        ((Action<T>)d).Invoke(evt);
+                    {
+                        ((Action<T>)d)?.Invoke(evt);
+                    }
                 }
             }
 
@@ -293,7 +295,9 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             public void Unsubscribe<T>(Action<T> handler) where T : class
             {
                 if (_handlers.TryGetValue(typeof(T), out List<Delegate> list))
+                {
                     list.Remove(handler);
+                }
             }
 
             public void ClearAllSubscriptions() => _handlers.Clear();

@@ -78,9 +78,6 @@ namespace RecipeRage.Tests.EditMode.Gameplay
         {
             public ConfigHealthStatus HealthStatus => ConfigHealthStatus.Healthy;
             public DateTime LastUpdateTime => DateTime.UtcNow;
-            public event Action<IConfigModel> OnConfigUpdated;
-            public event Action<Type, IConfigModel> OnSpecificConfigUpdated;
-            public event Action<ConfigHealthStatus> OnHealthStatusChanged;
             public UniTask<bool> Initialize() => UniTask.FromResult(true);
             public T GetConfig<T>() where T : class, IConfigModel => default;
             public bool TryGetConfig<T>(out T config) where T : class, IConfigModel { config = default; return false; }
