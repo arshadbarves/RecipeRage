@@ -8,7 +8,7 @@ namespace KitchenClash.Infrastructure.Audio
     /// <summary>
     /// Manages audio source pooling - requires Transform for GameObject parenting
     /// </summary>
-    internal class AudioPoolManager
+    public class AudioPoolManager
     {
         private readonly Transform _sourcesContainer;
         private readonly Queue<AudioSource> _sfxPool = new Queue<AudioSource>();
