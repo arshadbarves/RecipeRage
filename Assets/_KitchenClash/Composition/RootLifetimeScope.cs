@@ -39,8 +39,7 @@ public class RootLifetimeScope : LifetimeScope
         RegisterAudio(builder);
         RegisterUI(builder);
         RegisterInfrastructure(builder);
-        RegisterViewModels(builder);
-        RegisterScreens(builder);
+        RegisterScreensAndViewModels(builder);
         RegisterGameStates(builder);
         RegisterEntryPoints(builder);
     }
@@ -126,13 +125,10 @@ public class RootLifetimeScope : LifetimeScope
         builder.Register<AuthenticationService>(Lifetime.Singleton).As<IAuthService>();
     }
 
-    private void RegisterViewModels(IContainerBuilder builder)
+    private void RegisterScreensAndViewModels(IContainerBuilder builder)
     {
         builder.Register<LoginViewModel>(Lifetime.Transient);
-    }
 
-    private void RegisterScreens(IContainerBuilder builder)
-    {
         var screenTypes = AppDomain.CurrentDomain.GetAssemblies()
             .SelectMany(a =>
             {
