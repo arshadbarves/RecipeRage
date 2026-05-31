@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using KitchenClash.Application;
+using KitchenClash.Application.Models;
 using KitchenClash.Application.Services;
 using KitchenClash.Application.State;
 using KitchenClash.Composition;
@@ -30,6 +31,8 @@ public class RootLifetimeScope : LifetimeScope
     [SerializeField] private UGSConfig _ugsConfig;
     [SerializeField] private KitchenClash.Infrastructure.Audio.AudioSettings _audioSettings;
     [SerializeField] private UIDocument _uiDocument;
+    [SerializeField] private ChefDatabaseSO _chefDatabase;
+    [SerializeField] private MapDatabaseSO _mapDatabase;
 
     protected override void Configure(IContainerBuilder builder)
     {
@@ -50,8 +53,10 @@ public class RootLifetimeScope : LifetimeScope
         builder.Register<EncryptionService>(Lifetime.Singleton).As<IEncryptionService>().WithParameter("passphrase", "KitchenClash_2026");
         builder.Register<NetworkConnectivityService>(Lifetime.Singleton).As<IConnectivityService>().As<ITickable>();
         builder.Register<NTPTimeService>(Lifetime.Singleton).As<INTPTimeService>().As<IInitializable>();
-        builder.Register<ChefRegistry>(Lifetime.Singleton);
-        builder.Register<MapRegistry>(Lifetime.Singleton);
+        builder.RegisterInstance(_chefDatabase);
+        builder.RegisterInstance(_mapDatabase);
+        builder.Register(c => new ChefRegistry(c.Resolve<ChefDatabaseSO>()), Lifetime.Singleton);
+        builder.Register(c => new MapRegistry(c.Resolve<MapDatabaseSO>()), Lifetime.Singleton);
     }
 
     private void RegisterAudio(IContainerBuilder builder)
@@ -62,7 +67,7 @@ public class RootLifetimeScope : LifetimeScope
         }
         else
         {
-            builder.RegisterInstance(ScriptableObject.CreateInstance<KitchenClash.Infrastructure.Audio.AudioSettings>());
+            GameLogger.LogError("AudioSettings not assigned in RootLifetimeScope. Please assign it in the inspector.");
         }
 
         builder.Register<AudioVolumeController>(Lifetime.Singleton).As<IAudioVolumeController>().As<IInitializable>();

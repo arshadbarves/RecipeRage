@@ -36,14 +36,17 @@ namespace KitchenClash.Infrastructure.Network
             {
                 try
                 {
-                    DateTime ntpTime = await FetchNTPTime(NTP_SERVERS[i]);
+                    DateTime ntpTime = await FetchNtpTimeAsync(NTP_SERVERS[i]);
                     _timeOffset = ntpTime - DateTime.UtcNow;
                     _lastSyncTime = DateTime.UtcNow;
                     _isSynced = true;
                     GameLogger.Log($"NTP sync successful: {NTP_SERVERS[i]}, Offset: {_timeOffset.TotalSeconds:F2}s");
                     return true;
                 }
-                catch { }
+                catch
+                {
+                    // ignored
+                }
             }
             return false;
         }
@@ -51,7 +54,7 @@ namespace KitchenClash.Infrastructure.Network
         public DateTime GetServerTime() => _isSynced ? DateTime.UtcNow + _timeOffset : DateTime.UtcNow;
         public TimeSpan GetTimeOffset() => _timeOffset;
 
-        private async UniTask<DateTime> FetchNTPTime(string server)
+        private async UniTask<DateTime> FetchNtpTimeAsync(string server)
         {
             byte[] ntpData = new byte[48];
             ntpData[0] = 0x1B;
