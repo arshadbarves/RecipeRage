@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using KitchenClash.Domain;
+using Unity.Services.Core;
+using Unity.Services.Authentication;
 using UGSFriends = Unity.Services.Friends;
 using UGSModels = Unity.Services.Friends.Models;
 using UGSNotifications = Unity.Services.Friends.Notifications;
@@ -31,7 +33,9 @@ namespace KitchenClash.Infrastructure.EOS
         #region Properties
 
         public bool IsInitialized { get; private set; }
-        public string MyFriendCode => _authManager?.PlayerId ?? "UNKNOWN";
+        public string MyFriendCode => (UnityServices.State == ServicesInitializationState.Initialized)
+            ? Unity.Services.Authentication.AuthenticationService.Instance?.PlayerId ?? "UNKNOWN"
+            : "UNKNOWN";
         public IReadOnlyList<FriendInfo> Friends => _friends.AsReadOnly();
         public IReadOnlyList<FriendInfo> RecentPlayers => _recentPlayers.AsReadOnly();
         public IReadOnlyList<FriendRequest> PendingRequests => _pendingRequests.AsReadOnly();
@@ -70,7 +74,10 @@ namespace KitchenClash.Infrastructure.EOS
 
             try
             {
-                if (!_authManager.IsUgsSignedIn)
+                bool isUgsSignedIn = UnityServices.State == ServicesInitializationState.Initialized &&
+                                     Unity.Services.Authentication.AuthenticationService.Instance.IsSignedIn;
+
+                if (!isUgsSignedIn)
                 {
                     GameLogger.LogError("UGS not signed in - cannot initialize friends");
                     return;
@@ -290,7 +297,7 @@ namespace KitchenClash.Infrastructure.EOS
 
             try
             {
-                if (productUserId == _authManager.EosProductUserId)
+                if (productUserId == _authManager.ProductUserId)
                 {
                     return;
                 }

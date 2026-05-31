@@ -210,16 +210,16 @@ namespace KitchenClash.Presentation.Screens
 
             if (_accountUidLabel != null && _authService != null)
             {
-                string uid = string.IsNullOrEmpty(_authService.EosProductUserId) ? "NOT SIGNED IN" : _authService.EosProductUserId;
+                string uid = string.IsNullOrEmpty(_authService.ProductUserId) ? "NOT SIGNED IN" : _authService.ProductUserId;
                 _accountUidLabel.text = $"UID: {uid}";
             }
         }
 
         private void OnCopyUidClicked()
         {
-            if (_authService != null && !string.IsNullOrEmpty(_authService.EosProductUserId))
+            if (_authService != null && !string.IsNullOrEmpty(_authService.ProductUserId))
             {
-                GUIUtility.systemCopyBuffer = _authService.EosProductUserId;
+                GUIUtility.systemCopyBuffer = _authService.ProductUserId;
                 UIService?.ShowNotification("Account UID copied to clipboard!", NotificationType.Success);
             }
         }

@@ -139,7 +139,7 @@ namespace KitchenClash.Infrastructure.States
             }
 
             // 6. Auth check
-            bool isAuthenticated = _authService.IsSignedIn;
+            bool isAuthenticated = !string.IsNullOrEmpty(_authService.ProductUserId);
 
             if (!isAuthenticated)
             {

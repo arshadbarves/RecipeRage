@@ -48,7 +48,7 @@ namespace KitchenClash.Presentation.ViewModels
         private void CheckGuestStatus()
         {
             var settings = _saveService.GetSettings();
-            if (settings != null && _authService.IsSignedIn)
+            if (settings != null && !string.IsNullOrEmpty(_authService.ProductUserId))
             {
                 IsGuest.Value = settings.LastLoginMethod == "DeviceID";
             }

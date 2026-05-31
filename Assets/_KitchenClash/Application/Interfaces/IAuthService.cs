@@ -1,7 +1,5 @@
 using KitchenClash.Domain;
-using System;
 using System.Threading.Tasks;
-using Cysharp.Threading.Tasks;
 
 namespace KitchenClash.Application
 {
@@ -10,23 +8,13 @@ namespace KitchenClash.Application
     /// </summary>
     public interface IAuthService
     {
-        // ── GDD v3 contract ──
         Task<AuthResult> LoginAsGuestAsync();
         Task<AuthResult> LoginWithGoogleAsync();
         Task<AuthResult> LoginWithFacebookAsync();
         Task<AuthResult> LoginWithAppleAsync();
         Task LinkToGoogleAsync();
+        Task LogoutAsync();
         string ProductUserId { get; }
         bool IsGuest { get; }
-
-        // ── Legacy members (kept for backward compat, callers migrating) ──
-        bool IsInitialized { get; }
-        bool IsSignedIn { get; }
-        bool IsUgsSignedIn { get; }
-        string PlayerId { get; }
-        string EosProductUserId { get; }
-        UniTask<bool> InitializeAsync();
-        UniTask<bool> LoginAsync(AuthType type);
-        UniTask LogoutAsync();
     }
 }

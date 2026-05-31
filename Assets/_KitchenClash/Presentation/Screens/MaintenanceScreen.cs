@@ -3,7 +3,6 @@ using System;
 using System.Globalization;
 using KitchenClash.Presentation;
 using Cysharp.Threading.Tasks;
-using KitchenClash.Infrastructure.EOS;
 using KitchenClash.Domain;
 using KitchenClash.Infrastructure.Firebase;
 using KitchenClash.Presentation.Common;
@@ -268,9 +267,9 @@ namespace KitchenClash.Presentation.Screens
                     return;
                 }
 
-                bool success = await _authService.LoginAsync(AuthType.DeviceID);
+                AuthResult result = await _authService.LoginAsGuestAsync();
 
-                if (success)
+                if (result.Success)
                 {
                     GameLogger.LogInfo("Reconnect successful");
                     if (_maintenanceService != null)

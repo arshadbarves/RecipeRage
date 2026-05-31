@@ -2,7 +2,6 @@ using KitchenClash.Application;
 using System;
 using VContainer;
 using Cysharp.Threading.Tasks;
-using KitchenClash.Infrastructure.EOS;
 using KitchenClash.Application.Services;
 using KitchenClash.Domain;
 using KitchenClash.Presentation;
@@ -53,9 +52,9 @@ namespace KitchenClash.Presentation.ViewModels
 
             try
             {
-                bool success = await _authService.LoginAsync(AuthType.DeviceID);
+                AuthResult result = await _authService.LoginAsGuestAsync();
 
-                if (success)
+                if (result.Success)
                 {
                     StatusText.Value = _localization.GetText("login_status_connected") ?? "Connected!";
                 }

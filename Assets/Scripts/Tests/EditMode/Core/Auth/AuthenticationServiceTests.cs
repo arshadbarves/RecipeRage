@@ -1,19 +1,9 @@
-using KitchenClash.Infrastructure.EOS;
 using NUnit.Framework;
 
 namespace RecipeRage.Tests.EditMode.Core.Auth
 {
-    /// <summary>
-    /// Unit tests for AuthenticationService constants and utilities
-    /// </summary>
     public class AuthenticationServiceTests
     {
-        [Test]
-        public void LOGIN_METHOD_DEVICE_ID_IsCorrectValue()
-        {
-            Assert.AreEqual("DeviceID", AuthenticationService.LOGIN_METHOD_DEVICE_ID);
-        }
-
         [Test]
         public void DeviceIdExtraction_WithLongId_ReturnsFirst8Chars()
         {

@@ -5,6 +5,8 @@ using KitchenClash.Domain;
 using KitchenClash.Application.State;
 using KitchenClash.Infrastructure.EOS;
 using PlayEveryWare.EpicOnlineServices.Samples;
+using Unity.Services.Core;
+using Unity.Services.Authentication;
 using VContainer;
 using Cysharp.Threading.Tasks;
 
@@ -100,14 +102,19 @@ namespace KitchenClash.Infrastructure.Network
         {
             try
             {
+                bool isUgsSignedIn = UnityServices.State == ServicesInitializationState.Initialized &&
+                                     Unity.Services.Authentication.AuthenticationService.Instance.IsSignedIn;
+
                 int retries = 0;
-                while (!_authService.IsUgsSignedIn && retries < 10)
+                while (!isUgsSignedIn && retries < 10)
                 {
                     await UniTask.Delay(500);
                     retries++;
+                    isUgsSignedIn = UnityServices.State == ServicesInitializationState.Initialized &&
+                                    Unity.Services.Authentication.AuthenticationService.Instance.IsSignedIn;
                 }
 
-                if (!_authService.IsUgsSignedIn)
+                if (!isUgsSignedIn)
                 {
                     GameLogger.LogWarning("AuthService UGS not signed in - Friends system will be disabled");
                     return;
