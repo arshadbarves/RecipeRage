@@ -2,6 +2,7 @@ using System;
 using KitchenClash.Application;
 using KitchenClash.Domain;
 using UnityEngine;
+using VContainer.Unity;
 
 namespace KitchenClash.Infrastructure.Audio
 {
@@ -9,7 +10,7 @@ namespace KitchenClash.Infrastructure.Audio
     /// Bridge between domain SFX/Music events and the actual audio playback via IAudioService.
     /// Subscribes to IEventBus and delegates to IAudioService.
     /// </summary>
-    public sealed class AudioEventListener : IDisposable
+    public sealed class AudioEventListener : IInitializable, IDisposable
     {
         private readonly IEventBus _eventBus;
         private readonly IAudioService _audioService;
@@ -20,7 +21,10 @@ namespace KitchenClash.Infrastructure.Audio
             _eventBus = eventBus;
             _audioService = audioService;
             _audioSettings = audioSettings;
+        }
 
+        public void Initialize()
+        {
             _eventBus.Subscribe<SFXEvent>(OnSFXEvent);
             _eventBus.Subscribe<MusicEvent>(OnMusicEvent);
         }
