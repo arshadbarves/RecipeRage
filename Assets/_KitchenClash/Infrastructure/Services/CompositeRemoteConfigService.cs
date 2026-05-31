@@ -3,20 +3,17 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using KitchenClash.Application.Services;
 using KitchenClash.Domain;
+using KitchenClash.Domain.Events;
 using Cysharp.Threading.Tasks;
 
 namespace KitchenClash.Infrastructure.Services
 {
-    /// <summary>
-    /// Composite remote config service that tries Firebase first (when available),
-    /// then falls back to local defaults. Caches fetched values.
-    /// Implements both IConfigService (raw key-value) and IRemoteConfigService (typed models).
-    /// </summary>
     public sealed class CompositeRemoteConfigService : IConfigService, IRemoteConfigService
     {
         private readonly Dictionary<Type, IConfigModel> _cache = new();
         private readonly FallbackRemoteConfigService _fallback = new();
         private readonly Dictionary<string, object> _rawCache = new();
+        private readonly IEventBus _eventBus;
 
 #if FIREBASE_REMOTE_CONFIG
         private readonly IConfigProvider _firebaseProvider;
@@ -35,13 +32,15 @@ namespace KitchenClash.Infrastructure.Services
         public event Action<ConfigHealthStatus> OnHealthStatusChanged;
 
 #if FIREBASE_REMOTE_CONFIG
-        public CompositeRemoteConfigService(IConfigProvider configProvider)
+        public CompositeRemoteConfigService(IConfigProvider configProvider, IEventBus eventBus)
         {
             _firebaseProvider = configProvider;
+            _eventBus = eventBus;
         }
 #else
-        public CompositeRemoteConfigService()
+        public CompositeRemoteConfigService(IEventBus eventBus)
         {
+            _eventBus = eventBus;
         }
 #endif
 
@@ -116,6 +115,7 @@ namespace KitchenClash.Infrastructure.Services
                                 _cache[kvp.Value.GetType()] = kvp.Value;
                                 OnConfigUpdated?.Invoke(kvp.Value);
                                 OnSpecificConfigUpdated?.Invoke(kvp.Value.GetType(), kvp.Value);
+                                _eventBus.Publish(new ConfigUpdatedEvent(kvp.Value));
                             }
                         }
                         _lastUpdateTime = DateTime.UtcNow;
@@ -151,6 +151,7 @@ namespace KitchenClash.Infrastructure.Services
                         _cache[typeof(T)] = config;
                         OnConfigUpdated?.Invoke(config);
                         OnSpecificConfigUpdated?.Invoke(typeof(T), config);
+                        _eventBus.Publish(new ConfigUpdatedEvent(config));
                         _lastUpdateTime = DateTime.UtcNow;
                         return true;
                     }

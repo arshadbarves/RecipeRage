@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using KitchenClash.Domain;
+using KitchenClash.Domain.Events;
 using KitchenClash.Application.Models;
 using KitchenClash.Application.Models.RemoteConfigs;
 
@@ -10,15 +11,15 @@ namespace KitchenClash.Application.Services
     {
         private readonly Dictionary<ChefId, ChefDefinition> _chefs;
 
-        public ChefRegistry(ChefDatabaseSO database, IRemoteConfigService remoteConfig)
+        public ChefRegistry(ChefDatabaseSO database, IEventBus eventBus)
         {
             _chefs = database.ToDomainList().ToDictionary(c => c.Id);
-            remoteConfig.OnConfigUpdated += OnConfigUpdated;
+            eventBus.Subscribe<ConfigUpdatedEvent>(OnConfigUpdated);
         }
 
-        private void OnConfigUpdated(IConfigModel config)
+        private void OnConfigUpdated(ConfigUpdatedEvent evt)
         {
-            if (config is CharacterConfig characterConfig)
+            if (evt.Config is CharacterConfig characterConfig)
                 ApplyRemoteConfig(characterConfig);
         }
 

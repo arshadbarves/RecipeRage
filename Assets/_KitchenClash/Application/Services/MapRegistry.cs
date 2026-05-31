@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using KitchenClash.Domain;
+using KitchenClash.Domain.Events;
 using KitchenClash.Application.Models;
 using KitchenClash.Application.Models.RemoteConfigs;
 
@@ -10,18 +11,18 @@ namespace KitchenClash.Application.Services
     {
         private readonly Dictionary<string, MapDefinition> _maps = new();
 
-        public MapRegistry(MapDatabaseSO database, IRemoteConfigService remoteConfig)
+        public MapRegistry(MapDatabaseSO database, IEventBus eventBus)
         {
             foreach (MapDefinition map in database.ToDomainList())
             {
                 _maps[map.MapId] = map;
             }
-            remoteConfig.OnConfigUpdated += OnConfigUpdated;
+            eventBus.Subscribe<ConfigUpdatedEvent>(OnConfigUpdated);
         }
 
-        private void OnConfigUpdated(IConfigModel config)
+        private void OnConfigUpdated(ConfigUpdatedEvent evt)
         {
-            if (config is MapConfig mapConfig)
+            if (evt.Config is MapConfig mapConfig)
                 ApplyRemoteConfig(mapConfig);
         }
 

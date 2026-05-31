@@ -55,8 +55,8 @@ public class RootLifetimeScope : LifetimeScope
         builder.Register<NTPTimeService>(Lifetime.Singleton).As<INTPTimeService>().As<IInitializable>();
         builder.RegisterInstance(_chefDatabase);
         builder.RegisterInstance(_mapDatabase);
-        builder.Register(c => new ChefRegistry(c.Resolve<ChefDatabaseSO>(), c.Resolve<IRemoteConfigService>()), Lifetime.Singleton);
-        builder.Register(c => new MapRegistry(c.Resolve<MapDatabaseSO>(), c.Resolve<IRemoteConfigService>()), Lifetime.Singleton);
+        builder.Register(c => new ChefRegistry(c.Resolve<ChefDatabaseSO>(), c.Resolve<IEventBus>()), Lifetime.Singleton);
+        builder.Register(c => new MapRegistry(c.Resolve<MapDatabaseSO>(), c.Resolve<IEventBus>()), Lifetime.Singleton);
     }
 
     private void RegisterAudio(IContainerBuilder builder)
@@ -100,8 +100,10 @@ public class RootLifetimeScope : LifetimeScope
 
 #if FIREBASE_REMOTE_CONFIG
         builder.Register<KitchenClash.Infrastructure.Firebase.FirebaseConfigProvider>(Lifetime.Singleton).As<IConfigProvider>();
+        builder.Register(c => new CompositeRemoteConfigService(c.Resolve<IConfigProvider>(), c.Resolve<IEventBus>()), Lifetime.Singleton).As<IConfigService>().As<IRemoteConfigService>();
+#else
+        builder.Register(c => new CompositeRemoteConfigService(c.Resolve<IEventBus>()), Lifetime.Singleton).As<IConfigService>().As<IRemoteConfigService>();
 #endif
-        builder.Register<CompositeRemoteConfigService>(Lifetime.Singleton).As<IConfigService>().As<IRemoteConfigService>();
         builder.Register<MaintenanceService>(Lifetime.Singleton).As<IMaintenanceService>();
         builder.Register<FirebaseAnalyticsService>(Lifetime.Singleton).As<IAnalyticsService>();
         builder.Register<StubAdsService>(Lifetime.Singleton).As<IAdsService>();
