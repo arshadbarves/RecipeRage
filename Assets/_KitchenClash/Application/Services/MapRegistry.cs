@@ -10,8 +10,9 @@ namespace KitchenClash.Application.Services
     {
         private readonly Dictionary<string, MapDefinition> _maps = new();
 
-        public MapRegistry(MapDatabaseSO database)
+        public MapRegistry(MapDatabaseSO database = null)
         {
+            if (database == null) return;
             foreach (MapDefinition map in database.ToDomainList())
             {
                 _maps[map.MapId] = map;
