@@ -9,28 +9,28 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 24f9293ae08004d33be44552f6254252, type: 3}
-  m_Name: TeamBattle
-  m_EditorClassIdentifier: RecipeRage.Gameplay::Gameplay.GameModes.GameMode
-  _id: team_battle
-  _displayName: Team Battle
-  _description: Work together to outscore the opposing team
+  m_Script: {fileID: 11500000, guid: 379e39f0dd7164e38b2f5b12a59a006f, type: 3}
+  m_Name: HellsKitchen
+  m_EditorClassIdentifier: KitchenClash.Application::KitchenClash.Application.Models.GameMode
+  _id: hells_kitchen
+  _displayName: Hell's Kitchen
+  _description: 3v3 race to the target score. First team to hit the threshold wins.
   _icon: {fileID: 0}
-  _subtitle: Coordinate & Conquer
+  _subtitle: 3v3 Race to Score
   _category: 0
   _teamCount: 2
   _playersPerTeam: 3
   _friendlyFire: 0
-  _gameTime: 360
-  _targetScore: 1500
+  _gameTime: 240
+  _targetScore: 150
   _hasTimeLimit: 1
   _hasScoreLimit: 1
-  _mapSceneName: TeamArena
+  _mapSceneName: Map_HellsKitchen
   _experienceReward: 150
-  _winBonusCoins: 50
+  _winBonusCoins: 40
   _powerUpsEnabled: 1
   _specialAbilitiesEnabled: 1
   _customParameters: 
-  _unlockedByDefault: 0
-  _unlockTrophyCost: 20
+  _unlockedByDefault: 1
+  _unlockTrophyCost: 0
   _unlockLevel: 1

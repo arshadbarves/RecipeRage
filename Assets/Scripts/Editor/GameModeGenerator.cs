@@ -140,25 +140,6 @@ namespace RecipeRage.Editor
             EditorGUILayout.LabelField("Quick Generate Presets", EditorStyles.boldLabel);
             EditorGUILayout.BeginHorizontal();
 
-            if (GUILayout.Button("Classic"))
-            {
-                SetClassicDefaults();
-            }
-
-            if (GUILayout.Button("Team Battle"))
-            {
-                SetTeamBattleDefaults();
-            }
-
-            if (GUILayout.Button("Free For All"))
-            {
-                SetFreeForAllDefaults();
-            }
-
-            EditorGUILayout.EndHorizontal();
-
-            EditorGUILayout.BeginHorizontal();
-
             if (GUILayout.Button("Time Attack"))
             {
                 SetTimeAttackDefaults();
@@ -169,78 +150,11 @@ namespace RecipeRage.Editor
                 SetSurvivalDefaults();
             }
 
-            if (GUILayout.Button("Ranked"))
-            {
-                SetRankedDefaults();
-            }
-
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.EndScrollView();
         }
 
-        private void SetClassicDefaults()
-        {
-            gameModeId = "classic";
-            gameModeName = "Classic Mode";
-            subtitle = "Traditional Battle";
-            gameModeDescription = "Classic cooking competition with teams";
-            category = GameModeCategory.Trophies;
-            teamCount = 2;
-            playersPerTeam = 2;
-            friendlyFire = false;
-            gameTime = 300f;
-            targetScore = 1000;
-            hasTimeLimit = true;
-            hasScoreLimit = true;
-            mapSceneName = "KitchenArena";
-            experienceReward = 100;
-            winBonusCoins = 25;
-            powerUpsEnabled = true;
-            specialAbilitiesEnabled = true;
-        }
-
-        private void SetTeamBattleDefaults()
-        {
-            gameModeId = "team_battle";
-            gameModeName = "Team Battle";
-            subtitle = "Coordinate & Conquer";
-            gameModeDescription = "Work together to outscore the opposing team";
-            category = GameModeCategory.Trophies;
-            teamCount = 2;
-            playersPerTeam = 3;
-            friendlyFire = false;
-            gameTime = 360f;
-            targetScore = 1500;
-            hasTimeLimit = true;
-            hasScoreLimit = true;
-            mapSceneName = "TeamArena";
-            experienceReward = 150;
-            winBonusCoins = 50;
-            powerUpsEnabled = true;
-            specialAbilitiesEnabled = true;
-        }
-
-        private void SetFreeForAllDefaults()
-        {
-            gameModeId = "free_for_all";
-            gameModeName = "Free For All";
-            subtitle = "Every Chef For Themselves";
-            gameModeDescription = "No teams - only one winner!";
-            category = GameModeCategory.Special;
-            teamCount = 4;
-            playersPerTeam = 1;
-            friendlyFire = false;
-            gameTime = 240f;
-            targetScore = 800;
-            hasTimeLimit = true;
-            hasScoreLimit = true;
-            mapSceneName = "FFAKitchen";
-            experienceReward = 120;
-            winBonusCoins = 30;
-            powerUpsEnabled = true;
-            specialAbilitiesEnabled = true;
-        }
 
         private void SetTimeAttackDefaults()
         {
@@ -284,26 +198,6 @@ namespace RecipeRage.Editor
             specialAbilitiesEnabled = true;
         }
 
-        private void SetRankedDefaults()
-        {
-            gameModeId = "ranked";
-            gameModeName = "Ranked Match";
-            subtitle = "Competitive Play";
-            gameModeDescription = "Competitive ranked mode with trophy rewards";
-            category = GameModeCategory.Ranked;
-            teamCount = 2;
-            playersPerTeam = 2;
-            friendlyFire = false;
-            gameTime = 300f;
-            targetScore = 1200;
-            hasTimeLimit = true;
-            hasScoreLimit = true;
-            mapSceneName = "RankedArena";
-            experienceReward = 150;
-            winBonusCoins = 50;
-            powerUpsEnabled = false;
-            specialAbilitiesEnabled = true;
-        }
 
         private void GenerateGameMode()
         {

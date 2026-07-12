@@ -66,9 +66,13 @@
 
 ## Legacy-delete
 
-| Path | Rationale | refs-checked |
-|------|-----------|--------------|
-| `Assets/Scripts/Editor/GameModeGenerator.cs` | Editor tool with FreeForAll/TeamBattle helpers; no mode assets load these formats; self-ref only | yes |
+| Path | Rationale | refs-checked | Status |
+|------|-----------|--------------|--------|
+| ~~`Assets/Scripts/Editor/GameModeGenerator.cs`~~ | Editor tool with FreeForAll/TeamBattle helpers; no mode assets load these formats; self-ref only | yes | **EDITED**: Removed classic mode presets (SetClassicDefaults, SetTeamBattleDefaults, SetFreeForAllDefaults, SetRankedDefaults); kept editor window + Time Attack/Survival presets |
+| ~~`Assets/Resources/ScriptableObjects/GameModes/FreeForAll.asset`~~ | Legacy mode asset; no active refs | yes | **DELETED** |
+| ~~`Assets/Resources/ScriptableObjects/GameModes/RankedMode.asset`~~ | Legacy mode asset; no active refs | yes | **DELETED** |
+| ~~`Assets/Resources/ScriptableObjects/GameModes/TeamBattle.asset`~~ | Legacy mode asset; no active refs | yes | **DELETED** |
+| ~~`Assets/Resources/ScriptableObjects/GameModes/classicMode.asset`~~ | Legacy mode asset; no active refs | yes | **DELETED** |
 
 ## Unknown
 

@@ -9,23 +9,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 24f9293ae08004d33be44552f6254252, type: 3}
-  m_Name: ClassicMode
-  m_EditorClassIdentifier: RecipeRage.Gameplay::Gameplay.GameModes.GameMode
-  _id: classic
-  _displayName: Classic Mode
-  _description: Traditional 2v2 cooking competition
+  m_Script: {fileID: 11500000, guid: 379e39f0dd7164e38b2f5b12a59a006f, type: 3}
+  m_Name: RushService
+  m_EditorClassIdentifier: KitchenClash.Application::KitchenClash.Application.Models.GameMode
+  _id: rush_service
+  _displayName: Rush Service
+  _description: 2v2 tug-of-war. Score dishes to pull the bar to your side before time runs out.
   _icon: {fileID: 0}
-  _subtitle: Traditional Battle
+  _subtitle: 2v2 Tug-of-War
   _category: 0
   _teamCount: 2
   _playersPerTeam: 2
   _friendlyFire: 0
-  _gameTime: 300
-  _targetScore: 1000
+  _gameTime: 180
+  _targetScore: 100
   _hasTimeLimit: 1
   _hasScoreLimit: 1
-  _mapSceneName: KitchenArena
+  _mapSceneName: Map_RushService
   _experienceReward: 100
   _winBonusCoins: 25
   _powerUpsEnabled: 1

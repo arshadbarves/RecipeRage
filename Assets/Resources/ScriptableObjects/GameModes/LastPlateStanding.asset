@@ -9,23 +9,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 24f9293ae08004d33be44552f6254252, type: 3}
-  m_Name: RankedMode
-  m_EditorClassIdentifier: RecipeRage.Gameplay::Gameplay.GameModes.GameMode
-  _id: ranked
-  _displayName: Ranked
-  _description: High-stakes competitive kitchen ladder
+  m_Script: {fileID: 11500000, guid: 379e39f0dd7164e38b2f5b12a59a006f, type: 3}
+  m_Name: LastPlateStanding
+  m_EditorClassIdentifier: KitchenClash.Application::KitchenClash.Application.Models.GameMode
+  _id: last_plate_standing
+  _displayName: Last Plate Standing
+  _description: 2v2 best-of-rounds. Win rounds by outscoring the enemy before the plate drops.
   _icon: {fileID: 0}
-  _subtitle: Competitive Ladder
+  _subtitle: 2v2 Best of Rounds
   _category: 2
   _teamCount: 2
-  _playersPerTeam: 3
+  _playersPerTeam: 2
   _friendlyFire: 0
-  _gameTime: 300
-  _targetScore: 1800
+  _gameTime: 90
+  _targetScore: 0
   _hasTimeLimit: 1
-  _hasScoreLimit: 1
-  _mapSceneName: TeamArena
+  _hasScoreLimit: 0
+  _mapSceneName: Map_LastPlateStanding
   _experienceReward: 200
   _winBonusCoins: 60
   _powerUpsEnabled: 1
@@ -33,4 +33,4 @@ MonoBehaviour:
   _customParameters: 
   _unlockedByDefault: 1
   _unlockTrophyCost: 0
-  _unlockLevel: 1
+  _unlockLevel: 5
