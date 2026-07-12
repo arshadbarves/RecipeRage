@@ -1,0 +1,39 @@
+Assets/Resources/ScriptableObjects/GameModes/HellsKitchen.asset
+  s_512cb384791b2b::t_59ac6664dc76e7 12-17,19-20,24-25,28-30
+Assets/Resources/ScriptableObjects/GameModes/HellsKitchen.asset.meta
+  s_512cb384791b2b::t_1ffe345c4adf1e 2
+Assets/Resources/ScriptableObjects/GameModes/LastPlateStanding.asset
+  s_512cb384791b2b::t_081e85d731b483 12-17,19-20,22,24-25,27-30,34-36
+Assets/Resources/ScriptableObjects/GameModes/LastPlateStanding.asset.meta
+  s_512cb384791b2b::t_b363ff6daefc04 2
+Assets/Resources/ScriptableObjects/GameModes/RushService.asset
+  s_512cb384791b2b::t_fba158df8cbfe1 12-17,19,24-25,28
+Assets/Resources/ScriptableObjects/GameModes/RushService.asset.meta
+  s_512cb384791b2b::t_cd6f2128e3c978 2
+docs/superpowers/plans/2026-07-12-architecture-cleanup-inventory.md
+  s_ef7dbfe20af21a::t_323de1efdac62f 69-75
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "6f605918f008be60f6241db5d41ba0cb4e8e1325",
+  "prompts": {},
+  "sessions": {
+    "s_512cb384791b2b": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "84207e0d-688a-458e-89af-20c6b0662936",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    },
+    "s_ef7dbfe20af21a": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call-83911959-6873-48e0-8321-2ffee2415f11-44",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
