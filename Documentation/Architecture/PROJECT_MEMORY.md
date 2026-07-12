@@ -31,7 +31,7 @@ GDD rule:
 
 Root DI is configured in:
 
-- `Assets/Scripts/Gameplay/Bootstrap/GameLifetimeScope.cs`
+- `Assets/_KitchenClash/Composition/RootLifetimeScope.cs`
 
 This scope owns app-level services, including:
 
@@ -45,11 +45,11 @@ This scope owns app-level services, including:
   - `INetworkObjectPool`
   - `INetworkGameManager`
 
-### Session scope
+### Menu scope
 
-Session-scoped DI is configured in:
+Menu-scoped DI is configured in:
 
-- `Assets/Scripts/Gameplay/Bootstrap/SessionLifetimeScope.cs`
+- `Assets/_KitchenClash/Composition/MenuLifetimeScope.cs`
 
 This scope owns active-session services, including:
 
@@ -60,10 +60,10 @@ This scope owns active-session services, including:
 - `ITeamManager`
 - `IGameStarter`
 
-Session networking ownership rule:
+Menu networking ownership rule:
 
-- `SessionLifetimeScope` creates `TeamManager`, `LobbyService`, `PlayerManager`, and `MatchmakingService` directly through DI.
-- `NetworkingServiceContainer` composes and exposes those session services, but should not manually `new` them.
+- `MenuLifetimeScope` creates `TeamManager`, `LobbyService`, `PlayerManager`, and `MatchmakingService` directly through DI.
+- `NetworkingServiceContainer` composes and exposes those session/menu services, but should not manually `new` them.
 
 Current ownership rule:
 
@@ -75,7 +75,15 @@ are root-owned services exposed through `SessionContext`.
 
 Important constraint:
 
-- `SessionLifetimeScope` is not the place for root network object lifecycle services like `INetworkObjectPool` or `INetworkGameManager`.
+- Menu/session must **not** own `INetworkObjectPool` / `INetworkGameManager` — Root owns those network primitives.
+
+### Match scope
+
+Match DI is configured in:
+
+- `Assets/_KitchenClash/Composition/MatchLifetimeScope.cs`
+
+Match owns score/order/ability/hazard/bots/match context.
 
 ### Match runtime scene bridge
 
@@ -177,14 +185,19 @@ Use these files for current RecipeRage implementation work:
 
 Current roadmap phase:
 
-- `Phase 2: Runtime Verification and Stabilization`
+- `Phase: Architecture Cleanup → Kitchen Brawler Vertical Slices`
 
 This means:
 
-- the current gameplay/state-flow foundation is in place
-- the next immediate work is validating remaining `Partial` GDD items in Unity
-- the next engineering phase after that is singleton-heavy networking/auth architecture cleanup
-- larger roadmap items like `RouterService`, `Root/Menu/Match` scopes, and full external-provider auth remain later planned phases, not current implementation defaults
+- the current cleanup track is active (docs truth, legacy purge, DI ownership Root/Menu/Match, green build)
+- follow-on: Kitchen Brawler vertical slice — recommended first: Rush Service 2v2 to playable
+- legacy cooking-loop verification is **not** the product path
+
+## Kitchen Brawler v2 (scaffold)
+
+Scaffold present; not complete. See `wiki/GameplayDesign.md` and
+`docs/superpowers/plans/2026-07-12-architecture-cleanup-inventory.md` Keep-v2 list.
+Do not extend legacy stand-and-cook when v2 owns the responsibility.
 
 ## Update Rules
 

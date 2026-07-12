@@ -13,26 +13,27 @@ Implementation work follows current code and the current-state markdown GDD. Thi
 
 ## Current Phase
 
-### Phase 2: Runtime Verification and Stabilization
+### Phase: Architecture Cleanup → Kitchen Brawler Vertical Slices
 
-Status: `Current`
+Status: `Current` (cleanup track active)
 
-The project is no longer in early foundation setup, but it is not yet in the large architecture-migration phase.
+Primary targets (in order):
 
-This phase is about proving that the current code path works end to end in Unity and closing the remaining `Partial` items from the GDD alignment matrix.
+1. **Architecture cleanup track** (this work)
+   - Docs truth (wiki + PROJECT_MEMORY + roadmap)
+   - Dead-code purge of legacy-only cooking/mode surface
+   - DI ownership: Root / Menu / Match
+   - Green `dotnet build` + EditMode tests
+2. **Follow-on (separate track):** Kitchen Brawler vertical slice — recommended first: Rush Service 2v2 to playable
 
-Primary targets:
+Exit criteria for cleanup:
 
-- verify queue-selected `quick_2v2` and `quick_3v3` sizing flows through matchmaking, lobby, and gameplay
-- verify timer-expiry and score-limit endings both converge on `GameOverState`
-- verify `MatchResultSync` drives the correct winner/draw result in Game Over UI
-- confirm host disconnect still remains a direct technical return-to-lobby path
+- Wiki/roadmap trustable; no "v2 not started" falsehoods
+- Legacy-delete inventory empty
+- DI ownership matches composition scopes
+- Build + EditMode green
 
-Exit criteria:
-
-- `Queue-driven 2v2 / 3v3 match format` can move from `Partial` to `Implemented`
-- `Game-over transition flow` can move from `Partial` to `Implemented`
-- manual Unity verification confirms the current gameplay loop is stable
+Legacy cooking-loop verification is **not** the product path. Dual-path stations may remain Shared until a v2 scene replaces them; do not prioritize extending stand-and-cook.
 
 ## Completed Foundation
 

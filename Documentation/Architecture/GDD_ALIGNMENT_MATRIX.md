@@ -25,9 +25,15 @@ For implementation decisions:
 | Game-over transition flow | Partial | `MatchEndController` now owns round end through timer expiry or score limit, writes a synchronized `MatchResultSync` snapshot, and `GameplayHudViewModel` transitions only when both phase and final result are ready, but runtime verification is still pending | Gameplay Runtime / App State | Runtime verification |
 | UI Toolkit + view models | Implemented | current UI uses UI Toolkit screens and view models | UI | Keep current |
 | RouterService push/pop architecture | Planned | repo still uses `UIService` + `UIScreenStackManager` | UI Architecture | Major migration |
-| Root/Menu/Match scope split | Planned | repo uses `GameLifetimeScope` + `SessionLifetimeScope` | DI / Bootstrap | Major migration |
+| Root/Menu/Match scope split | Partial | Code has three scopes: RootLifetimeScope, MenuLifetimeScope, MatchLifetimeScope (not aspirational rename — actual current names) | DI / Bootstrap | Cleanup track (active) |
 | Full Google / Facebook / Apple EOS Connect flows | Planned | repo remains guest/EOS-first; provider text existed ahead of implementation | Auth | Feature phase |
 | Zero static singleton goal | Planned | repo still relies on `EOSManager.Instance`, `NetworkManager.Singleton`, and similar globals | Core Networking / Auth | Architecture phase |
+| Player combat controller | Partial | `PlayerCombatController.cs` | Kitchen Brawler v2 | Scaffold; not vertical-slice complete |
+| Autonomous cooking stations | Partial | `AutonomousCookingStation.cs` + T1–T3 prefabs | Kitchen Brawler v2 | Dual-path with legacy stations in `Game.unity` |
+| KO loot pickups | Partial | `LootPickup.cs` | Kitchen Brawler v2 | Scaffold |
+| Mode win conditions (Triplet A) | Partial | `ModeWinConditions.cs`, mode assets | Kitchen Brawler v2 | Rush / Hell's Kitchen / Last Plate |
+| Match win coordinator | Partial | `MatchWinConditionCoordinator.cs` | Kitchen Brawler v2 | Scaffold |
+| Archetype abilities | Partial | `ArchetypeAbilities.cs` | Kitchen Brawler v2 | Scaffold |
 
 ## Singleton-Heavy Backlog
 
