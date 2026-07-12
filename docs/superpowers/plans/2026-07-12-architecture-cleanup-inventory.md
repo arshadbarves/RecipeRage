@@ -101,3 +101,9 @@
 ## Task 7 note (2026-07-12)
 
 No v1 mechanic code found. Exhaustive search for `class *Combo`, `class *Desperation`, `class *HeatChallenge`, `class *HandOff`, `class RouterService`, `interface IRouter` returned zero results. Remaining "combo" references are field names (`ComboCount`, `ComboMultiplier`) in Keep-v2 domain models and obsolete config keys, not v1 mechanic classes.
+
+## Task 8 note (2026-07-12)
+
+Station surface purge blocked on v2 scene replacement — follow-on track.
+Game.unity still depends on CookingPot, CuttingStation, AssemblyStation and related Shared station scripts/prefabs.
+No station scripts or prefabs deleted. AutonomousCookingStation + T1–T3 prefabs remain Keep-v2.
