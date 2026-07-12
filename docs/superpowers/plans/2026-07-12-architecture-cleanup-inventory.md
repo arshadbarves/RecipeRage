@@ -97,3 +97,7 @@
 - `IngredientCrate` resolves `IngredientNetworkSpawner` through `IMatchContext` (v2 pattern), not `FindObjectOfType`.
 - `PlayerController` has v2 dish tracking field (line 80) for `AutonomousCookingStation` integration.
 - Bot systems (`BotTaskPlanner`, `BotPlanningSnapshot`, `BotKitchenSnapshot`) consume both legacy station types and v2 station IDs.
+
+## Task 7 note (2026-07-12)
+
+No v1 mechanic code found. Exhaustive search for `class *Combo`, `class *Desperation`, `class *HeatChallenge`, `class *HandOff`, `class RouterService`, `interface IRouter` returned zero results. Remaining "combo" references are field names (`ComboCount`, `ComboMultiplier`) in Keep-v2 domain models and obsolete config keys, not v1 mechanic classes.
