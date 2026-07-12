@@ -1,0 +1,35 @@
+Assets/_KitchenClash/Presentation/Screens/HomeScreen.cs
+  s_b573c1a4f1388d::t_6313288462f602 185-188
+  s_99229c453cd88d::t_4df6141ab0233b 69-74,93,95-96,174-178,199-206
+docs/superpowers/plans/2026-07-12-architecture-cleanup-inventory.md
+  s_b573c1a4f1388d::t_812cd81c4dde39 199-201,203-204,208,227-236
+Assets/_KitchenClash/Infrastructure/Network/PlayerController.cs
+  s_b573c1a4f1388d::t_9ee60cee215af6 57-58,82-89,220-223,225,247-253,259,261,270,292,328-338,435,442,452,829-972,1045-1050
+  s_b573c1a4f1388d::t_5acac9bcde9ef6 1051-1052
+Assets/_KitchenClash/Presentation/Components/SkinsTabComponent.cs
+  s_b573c1a4f1388d::t_2f2a807c1b4f96 25,27,29
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "08a30f097b1c7353a1113af2d7d57129f352c5d9",
+  "prompts": {},
+  "sessions": {
+    "s_99229c453cd88d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "45070b64-765f-4e79-883a-4a2e9082e950",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    },
+    "s_b573c1a4f1388d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call-134cb3b4-7f26-4c12-ba26-547ce80c045d-7",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
