@@ -24,10 +24,10 @@ namespace RecipeRage.Editor
     /// </summary>
     public class GameModeGenerator : EditorWindow
     {
-        private string gameModeId = "classic";
-        private string gameModeName = "Classic Mode";
-        private string gameModeDescription = "Traditional cooking competition!";
-        private string subtitle = "Cook, Serve, Win!";
+        private string gameModeId = "rush_service";
+        private string gameModeName = "Rush Service";
+        private string gameModeDescription = "2v2 tug-of-war. Score dishes to pull the bar to your side before time runs out.";
+        private string subtitle = "2v2 Tug-of-War";
         private Sprite icon;
         private GameModeCategory category = GameModeCategory.Trophies;
 
@@ -37,13 +37,13 @@ namespace RecipeRage.Editor
         private bool friendlyFire = false;
 
         // Game Settings
-        private float gameTime = 300f;
-        private int targetScore = 1000;
+        private float gameTime = 180f;
+        private int targetScore = 100;
         private bool hasTimeLimit = true;
         private bool hasScoreLimit = true;
 
         // Map Settings
-        private string mapSceneName = "KitchenArena";
+        private string mapSceneName = "Map_RushService";
 
         // Rewards
         private int experienceReward = 100;
@@ -140,14 +140,19 @@ namespace RecipeRage.Editor
             EditorGUILayout.LabelField("Quick Generate Presets", EditorStyles.boldLabel);
             EditorGUILayout.BeginHorizontal();
 
-            if (GUILayout.Button("Time Attack"))
+            if (GUILayout.Button("Rush Service"))
             {
-                SetTimeAttackDefaults();
+                SetRushServiceDefaults();
             }
 
-            if (GUILayout.Button("Survival"))
+            if (GUILayout.Button("Hell's Kitchen"))
             {
-                SetSurvivalDefaults();
+                SetHellsKitchenDefaults();
+            }
+
+            if (GUILayout.Button("Last Plate Standing"))
+            {
+                SetLastPlateStandingDefaults();
             }
 
             EditorGUILayout.EndHorizontal();
@@ -156,44 +161,65 @@ namespace RecipeRage.Editor
         }
 
 
-        private void SetTimeAttackDefaults()
+        private void SetRushServiceDefaults()
         {
-            gameModeId = "time_attack";
-            gameModeName = "Time Attack";
-            subtitle = "Race Against The Clock";
-            gameModeDescription = "Score as many points as possible in limited time!";
-            category = GameModeCategory.Special;
+            gameModeId = "rush_service";
+            gameModeName = "Rush Service";
+            subtitle = "2v2 Tug-of-War";
+            gameModeDescription = "2v2 tug-of-war. Score dishes to pull the bar to your side before time runs out.";
+            category = GameModeCategory.Trophies;
             teamCount = 2;
             playersPerTeam = 2;
             friendlyFire = false;
             gameTime = 180f;
+            targetScore = 100;
+            hasTimeLimit = true;
+            hasScoreLimit = true;
+            mapSceneName = "Map_RushService";
+            experienceReward = 100;
+            winBonusCoins = 25;
+            powerUpsEnabled = true;
+            specialAbilitiesEnabled = true;
+        }
+
+        private void SetHellsKitchenDefaults()
+        {
+            gameModeId = "hells_kitchen";
+            gameModeName = "Hell's Kitchen";
+            subtitle = "3v3 Race to Score";
+            gameModeDescription = "3v3 race to the target score. First team to hit the threshold wins.";
+            category = GameModeCategory.Trophies;
+            teamCount = 2;
+            playersPerTeam = 3;
+            friendlyFire = false;
+            gameTime = 240f;
+            targetScore = 150;
+            hasTimeLimit = true;
+            hasScoreLimit = true;
+            mapSceneName = "Map_HellsKitchen";
+            experienceReward = 150;
+            winBonusCoins = 40;
+            powerUpsEnabled = true;
+            specialAbilitiesEnabled = true;
+        }
+
+        private void SetLastPlateStandingDefaults()
+        {
+            gameModeId = "last_plate_standing";
+            gameModeName = "Last Plate Standing";
+            subtitle = "2v2 Best of Rounds";
+            gameModeDescription = "2v2 best-of-rounds. Win rounds by outscoring the enemy before the plate drops.";
+            category = GameModeCategory.Ranked;
+            teamCount = 2;
+            playersPerTeam = 2;
+            friendlyFire = false;
+            gameTime = 90f;
             targetScore = 0;
             hasTimeLimit = true;
             hasScoreLimit = false;
-            mapSceneName = "SpeedKitchen";
-            experienceReward = 80;
-            winBonusCoins = 20;
-            powerUpsEnabled = true;
-            specialAbilitiesEnabled = false;
-        }
-
-        private void SetSurvivalDefaults()
-        {
-            gameModeId = "survival";
-            gameModeName = "Survival";
-            subtitle = "Last Chef Standing";
-            gameModeDescription = "Survive increasing difficulty waves!";
-            category = GameModeCategory.Special;
-            teamCount = 1;
-            playersPerTeam = 4;
-            friendlyFire = false;
-            gameTime = 600f;
-            targetScore = 0;
-            hasTimeLimit = false;
-            hasScoreLimit = false;
-            mapSceneName = "SurvivalKitchen";
+            mapSceneName = "Map_LastPlateStanding";
             experienceReward = 200;
-            winBonusCoins = 75;
+            winBonusCoins = 60;
             powerUpsEnabled = true;
             specialAbilitiesEnabled = true;
         }
