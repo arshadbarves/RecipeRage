@@ -111,3 +111,12 @@ Chronological record of wiki activity. Each entry starts with timestamp for pars
 - Now: scaffold present / implementation in progress / not playable-complete
 - Track: docs/superpowers/specs/2026-07-12-architecture-cleanup-design.md
 - Keep-v2 anchors listed in docs/superpowers/plans/2026-07-12-architecture-cleanup-inventory.md
+
+## [2026-07-12] drift-resolved | Technical + LLM-Rules scope/nav truth
+
+- Option B: wiki matches Root/Menu/Match + UIService production nav
+- RouterService demoted to aspirational
+- Unity/engine and auth wording aligned to current code
+- Scope names: RootLifetimeScope, MenuLifetimeScope, MatchLifetimeScope
+- UI navigation: UIService + UIScreenStackManager is production
+- Auth: EOS Connect is production path; Firebase may exist for analytics/config

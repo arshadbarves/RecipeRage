@@ -1,0 +1,161 @@
+# LLM Developer Rules — Kitchen Clash
+
+This page is the authoritative rule sheet for any LLM agent or developer working in this codebase.
+It is derived from `SKILL.md v3` in the aspirational GDD and extended with project-specific protocols.
+
+---
+
+## Stack Reference
+
+| Layer | Technology |
+|-------|-----------|
+| Engine | Unity 6.0 (6000.3.0f1) |
+| Language | C# |
+| Networking | Unity NGO over EOS P2P (EOSTransport) |
+| Auth | EOS Connect (Google/Facebook/Apple ExternalCredentialType — production path; Firebase may exist for analytics/config) |
+| UI | UI Toolkit + MVVM + UIService / UIScreenStackManager (RouterService is aspirational, not production) |
+| DI | VContainer — Root → Menu → Match scopes |
+| Async | UniTask |
+| Config | Firebase Remote Config via IConfigService |
+| Analytics | Firebase Analytics + Crashlytics |
+| Player Data | EOS Player Data Storage (5 MB/player) |
+
+---
+
+## Architecture Rules
+
+### Clean Architecture Layers
+
+```
+Domain        → pure C#, zero UnityEngine, 100% unit-testable
+Application   → pure C#, depends on Domain interfaces only
+Presentation  → UI Toolkit, depends on Application only
+Infrastructure → Unity + EOS + Firebase + NGO implementations
+```
+
+**MonoBehaviour is allowed ONLY in these four files:**
+- `UIDocumentRoot.cs` — mounts UIDocument, provides root VisualElement
+- `InputReceiver.cs` — reads touch input, implements IDualStickInput
+- `NetworkObjectAdapter.cs` — thin wrapper for NGO NetworkBehaviour
+- `[Scene]LifetimeScope.cs` — VContainer composition roots
+
+### VContainer Scope Hierarchy
+
+```
+RootLifetimeScope (app-lifetime, DontDestroyOnLoad) → app-lifetime singletons
+  MenuLifetimeScope (session/menu child: lobby, matchmaking, team, economy, networking container)
+    MatchLifetimeScope (match: score, orders, abilities, hazards, bots, match context)
+```
+
+**Rule:** Never inject a child-scope service into a parent scope.
+
+### Remote Config Rule
+
+**Every tunable value must be an `IConfigService.Get(key, fallback)` call.**  
+No hardcoded balance numbers anywhere in logic code.
+
+RC key namespaces: `score_*` | `chop_taps_*` | `match_*` | `ability_*` | `order_*` | `slot_*` | `trophy_*` | `ad_*` | `daily_streak_*`
+
+---
+
+## Forbidden Patterns
+
+| Pattern | Why Forbidden |
+|---------|--------------|
+| Firebase Auth for production auth | EOS Connect handles auth directly via ExternalCredentialType (Firebase may exist for analytics/config) |
+| Unity Relay | EOS P2P (EOSTransport) provides free relay — no cost |
+| `EOS_P2P_SendPacket` for game state | NGO + EOSTransport handles this |
+| Floating joystick | Fixed positions only in InputReceiver.cs |
+| Hold-to-chop | Multi-tap right stick only |
+| Static singletons | VContainer injection only |
+| MonoBehaviour in Domain or Application | Those layers are pure C# |
+| Hardcoded balance numbers | All values = IConfigService.Get |
+| Ads during a match | No interstitials or banners mid-match |
+| Interstitials for Battle Pass owners | Disabled for BP subscribers |
+| `NetworkManager.Singleton` | Use injected NetworkManager instance |
+| `FindObjectOfType` | Use MatchRuntimeSceneBinder / IMatchContext |
+
+---
+
+## Controls (Brawl Stars Fixed Dual-Joystick)
+
+| Input | Action |
+|-------|--------|
+| Left stick | Move chef (8-directional) |
+| Right stick | Aim direction. Release = interact with nearest aimed station |
+| Right stick rapid multi-tap | Chop at prep station (tap count per ingredient via RC) |
+| ABILITY button | Chef active ability |
+| SUPER button | Charged super ability (charged by completing dishes) |
+| GADGET button | 1-use gadget per match |
+
+---
+
+## Authentication Flow
+
+```
+1. Launch → EOS.Platform.Create() → EOS Connect.Login(DeviceId)  [Guest PUID assigned]
+2. After 3rd match → show auth nudge modal (Google | Facebook | Apple | Stay Guest)
+3. Google path:
+   a. GoogleSignIn.DefaultInstance.SignIn() → idToken
+   b. EOS Connect.Login(ExternalCredentialType.GoogleIdToken, token)
+   c. EOS returns permanent ProductUserId
+   d. EOS Connect.LinkAccount(DeviceId PUID → Google PUID)  [preserves guest data]
+   e. Save PUID to PlayerPrefs for fast re-auth on next launch
+4. Apple (required on iOS App Store): same flow, ExternalCredentialType.AppleIdToken
+5. Facebook: ExternalCredentialType.FacebookAccessToken
+```
+
+---
+
+## Connectivity Handling (Brawl Stars Style)
+
+| State | UI Shown | Behaviour |
+|-------|---------|-----------|
+| Online | Nothing | Normal |
+| Offline — Menu | Full-screen blocking overlay | Retries every 3s, auto-dismisses on restore |
+| Offline — In Match | Semi-transparent overlay + countdown | 3 reconnect attempts × 5s each. Fail = forfeit + return to menu |
+| Host dropped | 'Reconnecting...' overlay | EOS host migration. 3s timeout then end match early |
+
+---
+
+## Adding New Features (Checklists)
+
+### New Chef
+1. Create `[Chef]Passive.cs` implementing `IAbility` (Slot = Passive)
+2. Create `[Chef]Active.cs` implementing `IAbility` (Slot = Active)
+3. Create `[Chef]Super.cs` implementing `IAbility` (Slot = Super)
+4. Register in `ChefAbilityRegistrySO`
+5. Add RC keys for all cooldowns and tunable values
+6. No changes to `AbilityService` — Open/Closed principle
+
+### New Game State
+1. Create `MyState : BaseState` in `Infrastructure/States/`
+2. Namespace must be `KitchenClash.Infrastructure.States` for auto-registration
+3. Trigger with `_stateManager.ChangeState<MyState>()`
+
+### New UI Screen
+1. Create UXML + USS in `_KitchenClash/UI/Screens/`
+2. Create `MyScreen : BaseUIScreen` annotated with `[UIScreen]`
+3. Auto-registered Transient by root scope reflection scan
+4. Show with `_uiService.ShowScreen<MyScreen>()`
+
+### New Service
+1. Define `IMyService` in `Application/Interfaces/`
+2. Implement in `Infrastructure/Services/`
+3. Register in appropriate `LifetimeScope.Configure()`
+4. Inject via constructor — VContainer resolves automatically
+
+---
+
+## Drift Warning Protocol
+
+See [DRIFT-PROTOCOL.md](DRIFT-PROTOCOL.md) for the full procedure.
+
+**Summary:** If any implementation decision contradicts this wiki, stop and warn the user before proceeding.
+
+---
+
+## Source Document
+
+Derived from: `Documentation/KitchenClash_GDD_v3_aspirational.docx` — Section 18 (SKILL.md v3)  
+Extended with: `CLAUDE.md`, `Documentation/Architecture/PROJECT_MEMORY.md`

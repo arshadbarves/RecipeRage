@@ -4,7 +4,7 @@
 
 | Layer | Description | Dependencies |
 |-------|-------------|--------------|
-| Presentation | UI Toolkit screens (UXML+USS), ViewModels, RouterService | Application only |
+| Presentation | UI Toolkit screens (UXML+USS), ViewModels, `UIService` + `UIScreenStackManager` | Application only |
 | Application | Use Cases / Presenters (pure C#, VContainer IStartable) | Domain interfaces only |
 | Domain | Pure C# models + interfaces. NO Unity deps. | None |
 | Infrastructure | EOS, Firebase, Google/FB/Apple adapters, NGO NetworkBehaviours | Domain interfaces |
@@ -17,25 +17,35 @@
 
 ## VContainer Scope Tree
 
+> **Historical docs may say `GameLifetimeScope` / `SessionLifetimeScope`. Code names are**
+> **`RootLifetimeScope` / `MenuLifetimeScope` / `MatchLifetimeScope` under**
+> **`Assets/_KitchenClash/Composition/`.**
+
 ```
-RootLifetimeScope (DontDestroyOnLoad)
+RootLifetimeScope (app-lifetime, DontDestroyOnLoad)
   IEOSManager          → EOSManager           (Singleton)
   IAuthService         → EOSAuthService        (Singleton)
   IConfigService       → FirebaseRemoteConfigSvc (Singleton)
   IAnalyticsService    → FirebaseAnalyticsSvc   (Singleton)
   IConnectivityService → NetworkConnectivitySvc (Singleton + ITickable)
   IPlayerDataService   → EOSPlayerDataService   (Singleton)
-  IRouterService       → RouterService          (Singleton)
+  IUIService           → UIService              (Singleton)
+  UIScreenStackManager → UIScreenStackManager   (Singleton)
 
-  MenuLifetimeScope (child, active: home/store/lobby)
+  MenuLifetimeScope (child, active: session/menu/lobby/matchmaking)
     IMatchmakingService → EOSMatchmakingService (Scoped)
     IFriendsService     → EOSFriendsService     (Scoped)
+    ITeamManager        → TeamManager           (Scoped)
+    ILobbyManager       → LobbyManager          (Scoped)
+    INetworkingServices → NetworkingServiceContainer (Scoped)
 
     MatchLifetimeScope (child, active: during a match only)
       IScoreService   → ScoreService    (Scoped)
       IOrderService   → OrderService    (Scoped)
       IHazardService  → HazardService   (Scoped)
       IAbilityService → AbilityService  (Scoped)
+      IMatchContext   → MatchContext    (Scoped)
+      BotManager      → BotManager      (Scoped)
 ```
 
 ## SOLID Summary
@@ -86,7 +96,7 @@ public interface IConfigService {
 | Game state sync | Unity NGO (NetworkVariables + RPCs) | Never call EOS SendPacket for game state directly |
 | Social/Friends | EOS Friends + Custom Invites | Party panel, invite links |
 | Player data | EOS Player Data Storage | Trophies, streak, settings (5MB/player) |
-| Auth linking | EOS Connect | Links external tokens to ProductUserId |
+| Auth linking | EOS Connect | Links external tokens to ProductUserId — project auth path; Firebase may exist for analytics/config |
 
 ## Connectivity (Brawl Stars Style)
 
@@ -185,9 +195,9 @@ Assets/_KitchenClash/
 │   ├── Network/      KitchenNetworkState, ChefNetController
 │   └── Platform/     GoogleSignInAdapter, FacebookAdapter
 ├── Presentation/     ← UI Toolkit presentation
-│   ├── Router/       RouterService, IScreen, ScreenPresenter<T>
-│   ├── Screens/      HomeScreen, StoreScreen, MatchHUD
+│   ├── Screens/      HomeScreen, StoreScreen, MatchHUD (BaseUIScreen subclasses)
 │   ├── Overlays/     ConnectivityOverlay, DailyStreakPopup
+│   ├── ViewModels/   HomeScreenVM, StoreVM, MatchHUDVM
 │   └── Common/       ObservableProperty<T>, UIDocumentRoot
 ├── Composition/      ← VContainer LifetimeScopes
 │   ├── RootLifetimeScope.cs
@@ -202,7 +212,7 @@ Assets/_KitchenClash/
 ## Forbidden
 
 - Hardcoded balance (all = IConfigService.Get with RC key + fallback)
-- Firebase Auth (use EOS Connect ExternalCredentialType)
+- Firebase Auth for production auth (EOS Connect ExternalCredentialType is production path)
 - Unity Relay (EOS P2P only via EOSTransport)
 - Manual EOS_P2P_SendPacket for game state
 - Floating joystick (fixed positions in InputReceiver.cs)
