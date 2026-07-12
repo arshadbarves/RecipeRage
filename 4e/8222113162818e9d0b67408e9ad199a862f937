@@ -1,0 +1,19 @@
+.superpowers/sdd/task-8-report.md
+  s_61473983472ec8::t_86e7a7d130e473 1-104
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "4e8222113162818e9d0b67408e9ad199a862f937",
+  "prompts": {},
+  "sessions": {
+    "s_61473983472ec8": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call-6f528f4e-5a8e-4855-a8fb-3904cbe10b54-16",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
