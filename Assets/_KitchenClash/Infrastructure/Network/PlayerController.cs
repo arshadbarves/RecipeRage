@@ -54,6 +54,8 @@ namespace KitchenClash.Infrastructure.Network
 
         [Inject] private SessionManager _sessionManager;
         [Inject] private IEventBus _eventBus;
+        [Inject] private ICharacterService _characterService;
+        [Inject] private IPlayerNetworkManager _playerNetworkManager;
 
         #endregion
 
@@ -77,6 +79,14 @@ namespace KitchenClash.Infrastructure.Network
         #region Character Data
 
         private GameObject _heldObject;
+        // v2: tracks the dish data when a player collects from an AutonomousCookingStation
+        private KitchenClash.Infrastructure.Network.CarriedItemData? _carriedItemData;
+        // Replicated so clients can show carry state / interaction prompts.
+        private readonly NetworkVariable<int> _carriedRecipeTier =
+            new(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+        private readonly NetworkVariable<int> _carriedIngredientType =
+            new(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+        private GameObject _carriedDishVisual;
         public CharacterClass CharacterClass { get; private set; }
         public CharacterAbility PrimaryAbility { get; private set; }
         public ModifiableStat InteractionSpeed { get; } = new ModifiableStat(1f);
@@ -207,10 +217,12 @@ namespace KitchenClash.Infrastructure.Network
         {
             base.OnNetworkSpawn();
 
-            IObjectResolver sessionContainer = _sessionManager?.SessionContainer;
-            if (sessionContainer != null && NetworkObject != null && NetworkObject.IsPlayerObject)
+            _carriedRecipeTier.OnValueChanged += OnCarriedDishChanged;
+            RefreshCarriedDishVisual(_carriedRecipeTier.Value);
+
+            if (NetworkObject != null && NetworkObject.IsPlayerObject)
             {
-                IPlayerNetworkManager playerNetworkManager = sessionContainer.Resolve<IPlayerNetworkManager>();
+                IPlayerNetworkManager playerNetworkManager = ResolvePlayerNetworkManager();
                 playerNetworkManager?.RegisterPlayer(OwnerClientId, this);
             }
 
@@ -232,15 +244,21 @@ namespace KitchenClash.Infrastructure.Network
         {
             base.OnNetworkDespawn();
 
+            _carriedRecipeTier.OnValueChanged -= OnCarriedDishChanged;
+            if (_carriedDishVisual != null)
+            {
+                Destroy(_carriedDishVisual);
+                _carriedDishVisual = null;
+            }
+
             if (IsLocalPlayer)
             {
                 _eventBus?.Publish(new LocalPlayerDespawnedEvent());
             }
 
-            IObjectResolver sessionContainer = _sessionManager?.SessionContainer;
-            if (sessionContainer != null && NetworkObject != null && NetworkObject.IsPlayerObject)
+            if (NetworkObject != null && NetworkObject.IsPlayerObject)
             {
-                IPlayerNetworkManager playerNetworkManager = sessionContainer.Resolve<IPlayerNetworkManager>();
+                IPlayerNetworkManager playerNetworkManager = ResolvePlayerNetworkManager();
                 playerNetworkManager?.UnregisterPlayer(OwnerClientId);
             }
 
@@ -249,6 +267,7 @@ namespace KitchenClash.Infrastructure.Network
                 _inputProvider.OnMovementInput -= HandleMoveInput;
                 _inputProvider.OnInteractionInput -= HandleInteractInput;
                 _inputProvider.OnSpecialAbilityInput -= HandleAbilityInput;
+                _inputProvider.OnAttackInput -= HandleAttackInput;
             }
 
             CleanupSkinSystem();
@@ -270,6 +289,7 @@ namespace KitchenClash.Infrastructure.Network
             _inputProvider.OnMovementInput += HandleMoveInput;
             _inputProvider.OnInteractionInput += HandleInteractInput;
             _inputProvider.OnSpecialAbilityInput += HandleAbilityInput;
+            _inputProvider.OnAttackInput += HandleAttackInput;
         }
 
         private void HandleMoveInput(Vector2 input)
@@ -303,6 +323,17 @@ namespace KitchenClash.Infrastructure.Network
             {
                 UseAbilityServerRpc();
             }
+        }
+
+        private void HandleAttackInput()
+        {
+            if (!IsLocalPlayer)
+            {
+                return;
+            }
+
+            PlayerCombatController combat = GetComponent<PlayerCombatController>();
+            combat?.RequestMeleeAttack();
         }
 
         #endregion
@@ -401,21 +432,14 @@ namespace KitchenClash.Infrastructure.Network
 
         private void SetupCharacterClass()
         {
-            IObjectResolver sessionContainer = _sessionManager?.SessionContainer;
-            ICharacterService characterService = null;
-            if (sessionContainer != null)
-            {
-                characterService = sessionContainer.Resolve<ICharacterService>();
-            }
-
-            if (characterService == null)
+            if (_characterService == null)
             {
                 GameLogger.LogError("Character service not available");
                 return;
             }
 
             // Apply GDD chef stats from the selected ChefDefinition
-            ChefDefinition selectedChef = characterService.SelectedChef;
+            ChefDefinition selectedChef = _characterService.SelectedChef;
             if (selectedChef != null && _movementController != null)
             {
                 ChefStatBlock stats = selectedChef.Stats;
@@ -425,7 +449,7 @@ namespace KitchenClash.Infrastructure.Network
             }
 
             // Legacy SO-based character class (skins, ability prefab data)
-            CharacterClass = characterService.SelectedCharacter;
+            CharacterClass = _characterService.SelectedCharacter;
             if (CharacterClass != null)
             {
                 _characterClassId = CharacterClass.Id;
@@ -802,6 +826,150 @@ namespace KitchenClash.Infrastructure.Network
         public GameObject GetHeldObject() => _heldObject;
         public bool IsHoldingObject() => _heldObject != null;
 
+        // ── v2 combat / carry API ─────────────────────────────────────────
+
+        /// <summary>Maximum carried items (always 1 for the held object model).</summary>
+        public bool IsCarryingMaxItems => _heldObject != null || HasCarriedDish;
+
+        /// <summary>
+        /// True when the player holds a v2 collected dish.
+        /// Uses NetworkVariables so clients can evaluate interaction prompts.
+        /// </summary>
+        public bool HasCarriedDish =>
+            IsServer
+                ? _carriedItemData.HasValue
+                : _carriedRecipeTier.Value >= 1;
+
+        /// <summary>
+        /// Called by AutonomousCookingStation / LootPickup when the player collects a dish.
+        /// Server-authoritative; replicates tier/type for client prompts and local visual.
+        /// </summary>
+        public void ReceiveCollectedDish(int recipeTier, KitchenClash.Domain.IngredientType ingredientType)
+        {
+            if (!IsServer)
+            {
+                return;
+            }
+
+            int tier = Mathf.Clamp(recipeTier, 1, 3);
+            _carriedItemData = new KitchenClash.Infrastructure.Network.CarriedItemData(ingredientType, tier);
+            _carriedRecipeTier.Value = tier;
+            _carriedIngredientType.Value = (int)ingredientType;
+            GameLogger.Log($"[PlayerController] Received dish T{tier} ({ingredientType})");
+        }
+
+        /// <summary>
+        /// Server-only: consume the carried v2 dish for delivery scoring.
+        /// Returns false if nothing was carried.
+        /// </summary>
+        public bool TryConsumeCarriedDish(out CarriedItemData dish)
+        {
+            dish = default;
+            if (!IsServer || !_carriedItemData.HasValue)
+            {
+                return false;
+            }
+
+            dish = _carriedItemData.Value;
+            ClearCarriedDishState();
+            return true;
+        }
+
+        /// <summary>
+        /// Clears all carried items and returns them as data snapshots for loot drop.
+        /// Called by PlayerCombatController on KO (server-only).
+        /// </summary>
+        public System.Collections.Generic.List<KitchenClash.Infrastructure.Network.CarriedItemData> GetAndClearCarriedItems()
+        {
+            var items = new System.Collections.Generic.List<KitchenClash.Infrastructure.Network.CarriedItemData>();
+
+            // Return v2 dish data stored when ReceiveCollectedDish was called
+            if (_carriedItemData.HasValue)
+            {
+                items.Add(_carriedItemData.Value);
+                ClearCarriedDishState();
+            }
+
+            // Despawn any physical held object
+            if (_heldObject != null)
+            {
+                var netObj = _heldObject.GetComponent<Unity.Netcode.NetworkObject>();
+                netObj?.Despawn(destroy: true);
+                _heldObject = null;
+            }
+
+            return items;
+        }
+
+        private void ClearCarriedDishState()
+        {
+            _carriedItemData = null;
+            if (IsServer)
+            {
+                _carriedRecipeTier.Value = -1;
+                _carriedIngredientType.Value = 0;
+            }
+        }
+
+        private void OnCarriedDishChanged(int previousTier, int newTier)
+        {
+            RefreshCarriedDishVisual(newTier);
+        }
+
+        private void RefreshCarriedDishVisual(int tier)
+        {
+            if (_carriedDishVisual != null)
+            {
+                Destroy(_carriedDishVisual);
+                _carriedDishVisual = null;
+            }
+
+            if (tier < 1)
+            {
+                return;
+            }
+
+            Transform parent = _holdPoint != null ? _holdPoint : transform;
+            _carriedDishVisual = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            _carriedDishVisual.name = $"CarriedDish_T{tier}";
+            _carriedDishVisual.transform.SetParent(parent, worldPositionStays: false);
+            _carriedDishVisual.transform.localPosition = Vector3.zero;
+            _carriedDishVisual.transform.localScale = Vector3.one * (0.25f + 0.05f * tier);
+
+            // Visual-only — disable physics so it never blocks interaction spheres.
+            Collider col = _carriedDishVisual.GetComponent<Collider>();
+            if (col != null)
+            {
+                Destroy(col);
+            }
+
+            if (_carriedDishVisual.TryGetComponent(out Renderer renderer))
+            {
+                // Tier tint: T1 warm, T2 orange, T3 red
+                Color color = tier switch
+                {
+                    1 => new Color(0.95f, 0.85f, 0.45f),
+                    2 => new Color(0.95f, 0.55f, 0.2f),
+                    _ => new Color(0.9f, 0.25f, 0.2f),
+                };
+                renderer.material.color = color;
+            }
+        }
+
+        /// <summary>Show or hide the player's visual model (used during KO / respawn).</summary>
+        public void SetVisible(bool visible)
+        {
+            // Enable/disable all renderers on this object and children
+            foreach (var r in GetComponentsInChildren<UnityEngine.Renderer>(includeInactive: true))
+                r.enabled = visible;
+        }
+
+        /// <summary>Enable or disable input processing (used during KO / respawn).</summary>
+        public void SetInputEnabled(bool enabled)
+        {
+            _inputHandler?.SetEnabled(enabled);
+        }
+
         #endregion
 
         #region Public API
@@ -873,6 +1041,14 @@ namespace KitchenClash.Infrastructure.Network
         }
 
         #endregion
+
+        /// <summary>
+        /// Returns injected IPlayerNetworkManager. Never throws if null.
+        /// </summary>
+        private IPlayerNetworkManager ResolvePlayerNetworkManager()
+        {
+            return _playerNetworkManager;
+        }
 
         private IAbilityService FindAbilityService()
         {

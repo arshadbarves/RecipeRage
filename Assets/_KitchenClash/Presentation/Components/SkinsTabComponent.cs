@@ -22,13 +22,11 @@ namespace KitchenClash.Presentation.Components
         private Label _skinNameLabel;
         private Button _equipButton;
         private string _selectedSkinId;
-        private ISkinsService _skinsService;
-        private SessionManager _sessionManager;
+        private readonly ISkinsService _skinsService;
 
-        [Inject]
-        public SkinsTabComponent(SessionManager sessionManager)
+        public SkinsTabComponent(ISkinsService skinsService)
         {
-            _sessionManager = sessionManager;
+            _skinsService = skinsService;
         }
 
         public void Initialize(VisualElement root)
@@ -56,8 +54,6 @@ namespace KitchenClash.Presentation.Components
                 return;
             }
 
-            ResolveServices();
-
             if (_skinsService == null)
             {
                 GameLogger.LogError("SkinsService not available");
@@ -78,16 +74,6 @@ namespace KitchenClash.Presentation.Components
             UpdateEquipButton();
         }
 
-        private void ResolveServices()
-        {
-            if (_skinsService != null) return;
-
-            var sessionContainer = _sessionManager?.SessionContainer;
-            if (sessionContainer != null)
-            {
-                _skinsService = sessionContainer.Resolve<ISkinsService>();
-            }
-        }
 
         private void UpdateSkinNameDisplay()
         {

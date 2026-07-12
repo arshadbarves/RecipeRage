@@ -196,16 +196,16 @@ Firebase code retained in **Shared** bucket. FirebaseAnalyticsService is the onl
 - NetworkManager instance correctly registered in Root
 - No match-scoped services registered in Root
 
-**Task 13 (Menu scope):** 2 violations
-1. `HomeScreen.cs:185` — accesses `SessionContainer` directly instead of injecting services
-2. `SkinsTabComponent.cs:85` — accesses `SessionContainer` directly instead of injecting services
+**Task 13 (Menu scope):** ~~2 violations~~ → **1 remaining (justified)**
+1. ~~`HomeScreen.cs:185` — accesses `SessionContainer` directly instead of injecting services~~ **KEPT** with comment: tabs need Menu-scoped services, HomeScreen's `_container` is Root-scoped
+2. ~~`SkinsTabComponent.cs:85` — accesses `SessionContainer` directly instead of injecting services~~ **FIXED**: Now constructor-injects ISkinsService
 
-**Task 14 (Match scope):** 1 violation
-1. `PlayerController.cs:433,1057` — accesses `SessionContainer` directly instead of injecting services
+**Task 14 (Match scope):** ~~1 violation~~ → **FIXED**
+1. ~~`PlayerController.cs:433,1057` — accesses `SessionContainer` directly instead of injecting services~~ **FIXED**: Now injects ICharacterService and IPlayerNetworkManager via `[Inject]`
 
 **FindObjectOfType violations:** 2 candidates
 1. `SpawnManager:82` — `FindObjectsByType<SpawnPoint>` (fix if registry exposes spawn points)
-2. `ServingStation:112` — `FindObjectsByType<SinkStation>` (fix if registry exposes sinks)
+2. `ServingStation:112` — `FindObjectsByType<SinkStation>` **EDITOR-ONLY**: IMatchContext does not expose sinks; leave as Unknown
 
 ### Task 11 completion summary
 
@@ -224,3 +224,13 @@ Firebase code retained in **Shared** bucket. FirebaseAnalyticsService is the onl
 - Match scope has per-match services only ✅
 - **No composition changes needed** — all services already correctly scoped per target model
 - Task 12 verified as complete with zero moves
+
+### Task 13 completion summary
+
+**Completed 2026-07-12:**
+- **SkinsTabComponent**: Removed SessionContainer.Resolve<ISkinsService>() → now constructor-injects ISkinsService
+- **PlayerController**: Removed SessionContainer resolves → now injects ICharacterService and IPlayerNetworkManager via `[Inject]`
+- **HomeScreen**: Kept SessionContainer usage with explanatory comment — tabs require Menu-scoped services but HomeScreen is Root-scoped, making SessionContainer the correct pattern here
+- **ServingStation**: FindObjectsByType<SinkStation> is editor-only and IMatchContext does not expose sinks — left as Unknown, no registry API built
+- **Result**: 2/3 SessionContainer violations fixed where injection path exists; 1 kept where architecturally correct
+

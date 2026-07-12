@@ -66,6 +66,12 @@ namespace KitchenClash.Presentation.Screens
 
             _lobbyTab?.Dispose();
             _lobbyTab = null;
+
+            _characterTab?.Dispose();
+            _characterTab = null;
+
+            _shopTab?.Dispose();
+            _shopTab = null;
         }
 
         protected override void OnDispose()
@@ -84,9 +90,10 @@ namespace KitchenClash.Presentation.Screens
             var tabs = GetElement<TabView>("main-tabs");
             if (tabs != null)
             {
-                _localizationManager.Bind(tabs.Q<Tab>("tab-lobby"), LocKeys.MainTabPlay, this);
+                _localizationManager.Bind(tabs.Q<Tab>("tab-lobby"),   LocKeys.MainTabPlay,    this);
                 _localizationManager.Bind(tabs.Q<Tab>("tab-compete"), LocKeys.MainTabCompete, this);
-                _localizationManager.Bind(tabs.Q<Tab>("tab-shop"), LocKeys.MainTabShop, this);
+                _localizationManager.Bind(tabs.Q<Tab>("tab-shop"),    LocKeys.MainTabShop,    this);
+                // tab-season uses a hard-coded label in UXML; no localization key needed yet
             }
 
             // Cascade refresh to tabs
@@ -164,13 +171,21 @@ namespace KitchenClash.Presentation.Screens
             InitializeAllTabs();
         }
 
-        public override void Update(float deltaTime) => _lobbyTab?.Update(deltaTime);
+        public override void Update(float deltaTime)
+        {
+            _lobbyTab?.Update(deltaTime);
+            _characterTab?.Update(deltaTime);
+        }
 
         private void InitializeAllTabs()
         {
             if (!_sessionContext.IsSessionActive || _viewModel == null) return;
 
             _viewModel.Initialize();
+            
+            // Note: SessionContainer is required here because tabs have [Inject] dependencies 
+            // on Menu-scoped services (ICharacterService, ISkinsService, etc.), but HomeScreen's
+            // _container is Root-scoped. Using _container.Inject() would fail to resolve Menu services.
             var sessionContainer = _sessionManager.SessionContainer;
 
             var lobbyRoot = GetElement<VisualElement>("lobby-root");
@@ -179,6 +194,14 @@ namespace KitchenClash.Presentation.Screens
                 _lobbyTab = new LobbyTabComponent(_viewModel.LobbyVM);
                 sessionContainer.Inject(_lobbyTab);
                 _lobbyTab.Initialize(lobbyRoot);
+            }
+
+            var characterRoot = GetElement<VisualElement>("character-root");
+            if (characterRoot != null)
+            {
+                _characterTab = new CharacterTabComponent(_sessionContext.CharacterService);
+                sessionContainer.Inject(_characterTab);
+                _characterTab.Initialize(characterRoot);
             }
 
             var shopRoot = GetElement<VisualElement>("shop-root");
