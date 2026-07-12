@@ -1,0 +1,42 @@
+wiki/Gameplay.md
+  s_512cb384791b2b::t_f49910fb2bb834 3-7,9,11-12,14,16-18,20,24-29,31-45,49,55,73,75-81
+wiki/README.md
+  s_b53950c9e29bd1::t_28bcfb9c757b75 18,38,48
+  s_512cb384791b2b::t_164b46c627fd04 3-4,6,14-15,24-25,32,50,54-57,66-67
+wiki/index.md
+  s_512cb384791b2b::t_c72dbca071f35b 9-10,19-20,32-37,48-52,56-60
+  s_b53950c9e29bd1::t_1d95def032fa84 13,27,30
+wiki/log.md
+  s_b53950c9e29bd1::t_0e48c16de9c46b 114-122
+wiki/Technical.md
+  s_b53950c9e29bd1::t_03197ecbc2c984 7,20-23,25,32-33,35,38-40,47-48,99,198,200,215
+wiki/Characters.md
+  s_512cb384791b2b::t_4bb5665cc69078 3-22,25-36,67-69,71-72,76-77
+wiki/LLM-Rules.md
+  s_512cb384791b2b::t_3cdf7e1b465618 1-14,18-44,48-64,66-161
+  s_b53950c9e29bd1::t_c2d75b365b3450 15-17,45-47,65
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "12e9751dba9a1777f003bb95a27302841dd64de5",
+  "prompts": {},
+  "sessions": {
+    "s_512cb384791b2b": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "84207e0d-688a-458e-89af-20c6b0662936",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    },
+    "s_b53950c9e29bd1": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call-0572e166-893f-4dd6-adb3-f4e752447241-25",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
