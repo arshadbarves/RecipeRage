@@ -1,0 +1,23 @@
+Documentation/Architecture/PROJECT_MEMORY.md
+  s_49fa9d73e7f72d::t_0eddde9c205727 34,48,50,52,63,65-66,78-86,188,192-200
+Documentation/Architecture/GDD_ALIGNMENT_MATRIX.md
+  s_49fa9d73e7f72d::t_6c33a055db5c22 28,31-36
+Documentation/Architecture/PHASE_ROADMAP.md
+  s_49fa9d73e7f72d::t_b4766149d3e991 16,18,20,22-27,29,31-34,36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "8c52164026981ec6e819c4aab2f11bf76dd5faa0",
+  "prompts": {},
+  "sessions": {
+    "s_49fa9d73e7f72d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call-616226d1-e75c-458e-9bed-b0671b787169-31",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
