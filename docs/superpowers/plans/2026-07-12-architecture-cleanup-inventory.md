@@ -214,3 +214,13 @@ Firebase code retained in **Shared** bucket. FirebaseAnalyticsService is the onl
 - **Match scope services:** 11 + 2 bridges (13 total) ✅ **COMPLETE**
 - **SessionContainer violations:** 3 files (2 UI, 1 player controller) → Tasks 12–14
 - **FindObjectOfType candidates:** 2 files (SpawnManager, ServingStation) → follow-on if registry available
+
+### Task 12 completion summary
+
+**Verification performed 2026-07-12:**
+- Exhaustive grep scan of all three scopes confirmed zero mis-registrations
+- Root network primitives (INetworkObjectPool, INetworkGameManager, IPlayerNetworkManager) correctly at Root:155–157
+- Menu scope has session services only; does NOT re-register root network primitives ✅
+- Match scope has per-match services only ✅
+- **No composition changes needed** — all services already correctly scoped per target model
+- Task 12 verified as complete with zero moves
