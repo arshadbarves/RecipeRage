@@ -1,0 +1,19 @@
+Assets/Scripts/Editor/GameModeGenerator.cs
+  s_27833403d37771::t_f3bf37b3100c33 27-30,40-41,46,143,145,148,150-155,164,166-170,175,177-180,182,185,187-193,195-216,218,220,222
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "aa82484a551ec0db30929345706ec73564851039",
+  "prompts": {},
+  "sessions": {
+    "s_27833403d37771": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call-5b31b5fc-8304-46bf-913e-acd6baa46211-50",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
