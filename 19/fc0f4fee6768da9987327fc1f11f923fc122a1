@@ -1,0 +1,39 @@
+CODEBASE_ANALYSIS.md
+  s_bec66e8f814969::t_892608b7403e73 185
+  s_bec66e8f814969::t_d3d15958f59843 898
+  s_bec66e8f814969::t_a329f25804f009 721
+  s_512cb384791b2b::t_d41fc8e972108b 1-2,8-9,11-184,186-720,722-897,899-1010
+  s_bec66e8f814969::t_508409b0a1ab4e 3-7,10
+QUICK_REFERENCE.md
+  s_bec66e8f814969::t_95157763a90caa 73-75
+  s_512cb384791b2b::t_7740003891f98b 1-2,8-25,27-30,32-72,76-170,172-275
+  s_bec66e8f814969::t_4e434159b26b08 171
+  s_bec66e8f814969::t_ec2093de979a69 3-7
+  s_bec66e8f814969::t_7a12cf0319edee 26,31
+README.md
+  s_bec66e8f814969::t_c71214e24cd3cc 3,9-11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "19fc0f4fee6768da9987327fc1f11f923fc122a1",
+  "prompts": {},
+  "sessions": {
+    "s_512cb384791b2b": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "84207e0d-688a-458e-89af-20c6b0662936",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    },
+    "s_bec66e8f814969": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call-dd686de6-53d7-425f-ae2b-12ad2992664c-37",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
