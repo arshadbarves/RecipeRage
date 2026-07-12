@@ -1,0 +1,167 @@
+Assets/_KitchenClash/Application/Config/RemoteConfigKeys.cs
+  s_512cb384791b2b::t_d1fee03e36dbb0 123-126
+  s_512cb384791b2b::t_fe03c6cefeab6b 120-122
+  s_512cb384791b2b::t_c0b751751d1e89 127-129
+  s_512cb384791b2b::t_f240c9793ebcce 4-6,10-104,107-119,130-159,161-166,168,171-189,191-231
+docs/superpowers/specs/2026-07-12-architecture-cleanup-design.md
+  s_99229c453cd88d::t_dd24afa0ae7526 1-323
+Assets/_KitchenClash/Infrastructure/Network/LootPickup.cs
+  s_512cb384791b2b::t_4a18f443f53e1e 2-47,55-75,77,89,104,120,125
+  s_512cb384791b2b::t_090a630a397d54 51-54,99,101
+  s_512cb384791b2b::t_8701c8dd17fbec 1,48-50,76,78-88,90-98,100,102-103,105-119,121-124,126-137
+Assets/_KitchenClash/Infrastructure/Gameplay/Abilities/ArchetypeAbilities.cs
+  s_512cb384791b2b::t_3ff8450f23ebdd 25,27,35,37,40-107,210,213
+  s_512cb384791b2b::t_665b9013e111bc 22-24
+  s_512cb384791b2b::t_592f2bb8d753ac 26
+  s_512cb384791b2b::t_d170f65f6fe258 28-30,32-34
+  s_512cb384791b2b::t_182fcac3563e40 36
+  s_512cb384791b2b::t_a3f5e7611de3c7 38-39
+  s_512cb384791b2b::t_c442a342347344 108-110,207-209
+  s_512cb384791b2b::t_9cfc22991a071b 211-212
+  s_512cb384791b2b::t_15bdecf71deba5 214-216
+  s_512cb384791b2b::t_5d9770b6f05aa7 1-21,31,111-206,217-219
+Assets/_KitchenClash/Infrastructure/Network/PlayerController.cs
+  s_512cb384791b2b::t_efb081af4f7d54 811
+  s_512cb384791b2b::t_d961db58b570bb 807-809,829,837-838
+  s_512cb384791b2b::t_15e8ecc6554e06 80-81,810,812-828,830-836,839-863
+Assets/_KitchenClash/Infrastructure/Network/PlayerCombatController.cs
+  s_512cb384791b2b::t_a24aebef166c71 1-307
+Assets/_KitchenClash/Infrastructure/Network/MatchWinConditionCoordinator.cs
+  s_512cb384791b2b::t_6e435bbf310f67 1-151
+Assets/_KitchenClash/Infrastructure/Network/ScoreManager.cs
+  s_512cb384791b2b::t_fa8f20fcd59832 116
+Assets/_KitchenClash/Infrastructure/Network/Spawning/SpawnManager.cs
+  s_512cb384791b2b::t_75096291c4246e 348-359
+Assets/_KitchenClash/Infrastructure/Network/Stations/CookingStation.cs
+  s_512cb384791b2b::t_057385377067bf 157-158
+.claude/settings.json
+  s_512cb384791b2b::t_6c4c1e57affc97 1-3
+.claude/skills/omc-reference/SKILL.md
+  s_512cb384791b2b::t_be828bf2d15206 1-141
+.sisyphus/run-continuation/ses_18177ea53ffe8LSnsOYO3Mzjun.json
+  s_512cb384791b2b::t_8934c5d308c4f2 1-10
+ANALYSIS_INDEX.md
+  s_512cb384791b2b::t_20e721b99aef2b 1-356
+"Assets/Fonts/FontAssets/Anton-Regular SDF.asset"
+  s_512cb384791b2b::t_6fdd7dc0518df5 63-64,75,79,5123-5125,5150-5151
+Assets/Scripts/Editor/MapSceneGenerator.cs
+  s_512cb384791b2b::t_6979a5575c82b2 1-91
+Assets/Scripts/Editor/MapSceneGenerator.cs.meta
+  s_512cb384791b2b::t_61e2004f5e3539 1-2
+Assets/Scripts/Tests/EditMode/Gameplay/ScoreServiceTests.cs
+  s_512cb384791b2b::t_c05636e89ca92c 10-23,33,35,38,41,43,48,50-51,55,57-58,61,64,66-68,72,74-76,80,82-84,87,90,92-95,98,101,103-106,109,112,114-117,120,123,125-126,130,133,139,146,148,153,155-156,159,162,164-165,167,169-173,177,179-180,183-188,191,218,225-226,232
+Assets/StreamingAssets/google-services-desktop.json.meta
+  s_512cb384791b2b::t_0c7a30f8f05afd 2
+Assets/_KitchenClash/Application/Interfaces/IPlayerDataService.cs
+  s_512cb384791b2b::t_cba79a5f8268bb 14-18
+Assets/_KitchenClash/Application/Models/PlayerProgressData.cs
+  s_512cb384791b2b::t_2e34c2b15f0b25 22-23
+Assets/_KitchenClash/Application/Services/IModeWinCondition.cs
+  s_512cb384791b2b::t_5fa4165a8f15c8 1-35
+Assets/_KitchenClash/Application/Services/IModeWinCondition.cs.meta
+  s_512cb384791b2b::t_33c520c767b192 1-2
+Assets/_KitchenClash/Application/Services/MatchService.cs
+  s_512cb384791b2b::t_2e0b796e2dc835 61-65,69-71,73-75,77-79,84-86
+Assets/_KitchenClash/Application/Services/ModeWinConditions.cs
+  s_512cb384791b2b::t_3de208d0a2aa28 1-187
+Assets/_KitchenClash/Application/Services/ModeWinConditions.cs.meta
+  s_512cb384791b2b::t_805eafe8f41481 1-2
+Assets/_KitchenClash/Application/Services/ScoreService.cs
+  s_512cb384791b2b::t_133b15f7bc3e79 2,7-22,27-29,33-34,40-44,46-47,49-53,57,59,61,63,69-70,72,74-77
+Assets/_KitchenClash/Domain/Enums/AbilityType.cs
+  s_512cb384791b2b::t_48b9336af40dfd 106-113
+Assets/_KitchenClash/Domain/Enums/ChefArchetype.cs
+  s_512cb384791b2b::t_ff1b5e9021da29 1-21
+Assets/_KitchenClash/Domain/Enums/ChefArchetype.cs.meta
+  s_512cb384791b2b::t_8b8d8973676ba7 1-2
+Assets/_KitchenClash/Domain/Enums/ScoreEventType.cs
+  s_512cb384791b2b::t_3c6ebbd0b8f0ba 3-7,10-17
+Assets/_KitchenClash/Domain/Enums/StationPhase.cs
+  s_512cb384791b2b::t_d1e3893fc99c9f 1-39
+Assets/_KitchenClash/Domain/Enums/StationPhase.cs.meta
+  s_512cb384791b2b::t_b1896888917e28 1-2
+Assets/_KitchenClash/Domain/Events/CombatEvents.cs
+  s_512cb384791b2b::t_c457426659ada8 1-47
+Assets/_KitchenClash/Domain/Events/CombatEvents.cs.meta
+  s_512cb384791b2b::t_3c22227d8ac2da 1-2
+Assets/_KitchenClash/Domain/Models/AbilityResult.cs
+  s_512cb384791b2b::t_c4fbc9a14ab29f 3-7,12-27,30-36,39-50
+Assets/_KitchenClash/Domain/Models/ScoreEvent.cs
+  s_512cb384791b2b::t_afdf57fd00dc3a 3-6,9,11-16,19,21,24-27
+Assets/_KitchenClash/Infrastructure/Configuration/GameConstants.cs
+  s_512cb384791b2b::t_dd5b9d1beaeddd 12-26,28-39
+Assets/_KitchenClash/Infrastructure/EOS/EOSMatchmakingService.cs
+  s_512cb384791b2b::t_112b23eaea390e 3,12,63,65-101,597-604
+Assets/_KitchenClash/Infrastructure/Gameplay/Abilities/ArchetypeAbilities.cs.meta
+  s_512cb384791b2b::t_bb2cd5ba4c3c30 1-2
+Assets/_KitchenClash/Infrastructure/Input/PlayerInputHandler.cs
+  s_512cb384791b2b::t_d1541187938b24 14-15,19-27,30,42-43
+Assets/_KitchenClash/Infrastructure/Network/LootPickup.cs.meta
+  s_512cb384791b2b::t_12f2b24c29c722 1-2
+Assets/_KitchenClash/Infrastructure/Network/MatchWinConditionCoordinator.cs.meta
+  s_512cb384791b2b::t_4ab06e7c2d1e01 1-2
+Assets/_KitchenClash/Infrastructure/Network/PlayerCombatController.cs.meta
+  s_512cb384791b2b::t_29d878558b9030 1-2
+Assets/_KitchenClash/Infrastructure/Network/Stations/AutonomousCookingStation.cs
+  s_512cb384791b2b::t_5555a7b973283b 1-283
+Assets/_KitchenClash/Infrastructure/Network/Stations/AutonomousCookingStation.cs.meta
+  s_512cb384791b2b::t_78d9192afbbcb3 1-2
+Assets/_KitchenClash/Infrastructure/Persistence/PlayerDataService.cs
+  s_512cb384791b2b::t_4657257add3ede 31-39
+Assets/_KitchenClash/Infrastructure/Persistence/PlayerDataServiceAdapter.cs
+  s_512cb384791b2b::t_7486cf459635f4 54-59
+Assets/_KitchenClash/Presentation/ViewModels/ResultsViewModel.cs
+  s_512cb384791b2b::t_8a9a379628fa67 19-23
+CLAUDE.md
+  s_512cb384791b2b::t_7a1756f246acb8 1-189
+CODEBASE_ANALYSIS.md
+  s_512cb384791b2b::t_d41fc8e972108b 1-1006
+Documentation/LevelDesign/LEVEL_DESIGN_SPEC.md
+  s_512cb384791b2b::t_f9bad630de2ac1 1-899
+QUICK_REFERENCE.md
+  s_512cb384791b2b::t_7740003891f98b 1-270
+UserSettings/AI.Generators/DragAndDropCache.asset
+  s_512cb384791b2b::t_3a214e69be6ad4 5,14
+UserSettings/Layouts/default-6000.dwlt
+  s_512cb384791b2b::t_707191d4ca85f2 22-23,27,40-42,55,76-77,98,111-112,124,137-138,150,163-164,176,197,199,202,223,225-226,229,250,252-254,257,278,280,283,389,669,715,733,741,1384,1397,1420,1422,1447,1457,1464,1466,1468,1471-1479,1497,1512-1520,1547-1550,1581,1620,1810
+wiki/Characters.md
+  s_512cb384791b2b::t_4bb5665cc69078 3-22,25-36,67-69,71-72,76-77
+wiki/DRIFT-PROTOCOL.md
+  s_512cb384791b2b::t_edebcc342cbfb1 1-138
+wiki/Gameplay.md
+  s_512cb384791b2b::t_f49910fb2bb834 3-7,9,11-12,14,16-18,20,24-29,31-45,49,55,73,75-81
+wiki/GameplayDesign.md
+  s_512cb384791b2b::t_6f96b561c9f265 1-332
+wiki/LLM-Rules.md
+  s_512cb384791b2b::t_3cdf7e1b465618 1-161
+wiki/README.md
+  s_512cb384791b2b::t_164b46c627fd04 3-4,6,14-15,24-25,32,39,50,54-57,66-67
+wiki/index.md
+  s_512cb384791b2b::t_c72dbca071f35b 9-10,19-20,31-37,48-52,56-60
+wiki/log.md
+  s_512cb384791b2b::t_606b73fb31f9a2 32-105
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "6ec0b0641f8851754f106c5cb930dd1c5cc87a6f",
+  "prompts": {},
+  "sessions": {
+    "s_512cb384791b2b": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "84207e0d-688a-458e-89af-20c6b0662936",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    },
+    "s_99229c453cd88d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "45070b64-765f-4e79-883a-4a2e9082e950",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
