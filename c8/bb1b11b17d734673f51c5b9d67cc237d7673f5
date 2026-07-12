@@ -1,0 +1,19 @@
+docs/superpowers/plans/2026-07-12-architecture-cleanup-inventory.md
+  s_ccb3776bc01849::t_a26442ef3c8547 117-209
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "c8bb1b11b17d734673f51c5b9d67cc237d7673f5",
+  "prompts": {},
+  "sessions": {
+    "s_ccb3776bc01849": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call-08ceabc4-6cc5-41ae-b3bb-8907c2cf7d44-41",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
