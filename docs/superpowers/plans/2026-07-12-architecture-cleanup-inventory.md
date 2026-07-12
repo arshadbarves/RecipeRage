@@ -63,6 +63,9 @@
 | `Assets/_KitchenClash/Application/Services/BotPlanningSnapshot.cs` | Bot planning state; lists CookingStationIds, ServingStationIds, PlateDispenserIds | n/a |
 | `Assets/_KitchenClash/Infrastructure/Network/MatchRuntimeSceneBinder.cs` | Scene runtime binder; includes DeliveryZone + all station types in discovery | n/a |
 | `Assets/Scenes/Game.unity` | Active legacy match scene; references CookingPot, CuttingStation, AssemblyStation, ServingStation | n/a |
+| `Assets/_KitchenClash/Infrastructure/Analytics/FirebaseAnalyticsService.cs` | Only registered IAnalyticsService implementation; live in RootLifetimeScope line 123 | yes |
+| `Assets/_KitchenClash/Infrastructure/Firebase/FirebaseConfigProvider.cs` | IConfigProvider implementation; live behind FIREBASE_REMOTE_CONFIG define (RootLifetimeScope line 117) | yes |
+| `Assets/_KitchenClash/Infrastructure/Firebase/ConfigModels.cs` | Firebase config DTOs; consumed by FirebaseConfigProvider | yes |
 
 ## Legacy-delete
 
@@ -107,3 +110,7 @@ No v1 mechanic code found. Exhaustive search for `class *Combo`, `class *Despera
 Station surface purge blocked on v2 scene replacement — follow-on track.
 Game.unity still depends on CookingPot, CuttingStation, AssemblyStation and related Shared station scripts/prefabs.
 No station scripts or prefabs deleted. AutonomousCookingStation + T1–T3 prefabs remain Keep-v2.
+
+## Task 9 note (2026-07-12)
+
+Firebase code retained in **Shared** bucket. FirebaseAnalyticsService is the only registered IAnalyticsService implementation (RootLifetimeScope line 123). FirebaseConfigProvider is live behind FIREBASE_REMOTE_CONFIG define (active for Android). No alternative implementations exist. Per brief decision rule: "If RootLifetimeScope still registers Firebase as the live IAnalyticsService / config provider → Shared (do not delete)." Package removal out of scope.
