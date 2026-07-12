@@ -1,0 +1,31 @@
+wiki/GameplayDesign.md
+  s_512cb384791b2b::t_6f96b561c9f265 1-2,4-5,9-334
+  s_607e9d245d22b8::t_e40306b71b9f4f 3,6-8
+wiki/log.md
+  s_512cb384791b2b::t_606b73fb31f9a2 32-105
+  s_607e9d245d22b8::t_a70ef08d24f66b 106-113
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "b31a5247f425a2a7fbc0bc511ba19b905f56f165",
+  "prompts": {},
+  "sessions": {
+    "s_512cb384791b2b": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "84207e0d-688a-458e-89af-20c6b0662936",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    },
+    "s_607e9d245d22b8": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call-ccf63c08-d933-4e9e-a718-4aa152492c3e-19",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
