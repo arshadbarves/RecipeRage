@@ -153,9 +153,14 @@ Firebase code retained in **Shared** bucket. FirebaseAnalyticsService is the onl
 | IPlayerManager | Menu (line 40) | Menu | **no** | Player management |
 | ILobbyManager | Menu (line 41) | Menu | **no** | Lobby operations |
 | IMatchmakingService | Menu (line 42) | Menu | **no** | Matchmaking operations |
+| IFriendsService | Menu (line 43) | Menu | **no** | Friends operations (EOSFriendsService) |
 | INetworkingServices | Menu (line 48–50) | Menu | **no** | NetworkingServiceContainer |
+| IBotSpawnerRegistry | Menu (line 48–50) | Menu | **no** | Bot spawner registry via NetworkingServiceContainer |
 | IGameStarter | Menu (line 52–53) | Menu | **no** | Factory delegate from NetworkingServiceContainer |
 | IMatchContextReceiver | Menu (line 54–55) | Menu | **no** | Factory delegate from NetworkingServiceContainer |
+| MatchRewardHandler | Menu (line 24) | Menu | **no** | Match reward handler (IInitializable, IDisposable) |
+| MapRotationCalculator | Menu (line 27) | Menu | **no** | Map rotation calculation |
+| ShopCatalog | Menu (line 28) | Menu | **no** | Shop catalog management |
 | **Match services** |
 | IScoreService | Match (line 23) | Match | **no** | Per-match scoring |
 | IOrderService | Match (line 24) | Match | **no** | Per-match orders |
@@ -169,6 +174,8 @@ Firebase code retained in **Shared** bucket. FirebaseAnalyticsService is the onl
 | BotTaskPlanner | Match (line 37) | Match | **no** | Per-match bot planning |
 | AbilityFactory | Match (line 17) | Match | **no** | Per-match ability creation |
 | AbilityEffectHandler | Match (line 20) | Match | **no** | Per-match ability effects |
+| MatchContextBridge | Match (line 41–43) | Match | **no** | Bridges IMatchContext to IMatchContextReceiver (IStartable, IDisposable) |
+| MatchConnectivityBridge | Match (line 46–48) | Match | **no** | Bridges match lifecycle to connectivity (IStartable, IDisposable) |
 
 ### Anti-pattern scan results
 
@@ -203,7 +210,7 @@ Firebase code retained in **Shared** bucket. FirebaseAnalyticsService is the onl
 ### Task 11 completion summary
 
 - **Root scope services:** 17 core + 3 network primitives (20 total) ✅
-- **Menu scope services:** 14 + 2 factory delegates (16 total) ✅
-- **Match scope services:** 11 + 2 bridges (13 total) ✅
+- **Menu scope services:** 14 + 3 bridges + 3 factories + 1 friends (24 total) ✅ **COMPLETE**
+- **Match scope services:** 11 + 2 bridges (13 total) ✅ **COMPLETE**
 - **SessionContainer violations:** 3 files (2 UI, 1 player controller) → Tasks 12–14
 - **FindObjectOfType candidates:** 2 files (SpawnManager, ServingStation) → follow-on if registry available
