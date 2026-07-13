@@ -197,6 +197,26 @@ namespace Playcenter.GameFlow
             TransitionTo(FlowPhaseId.Results);
         }
 
+        public void NotifySplashComplete()
+        {
+            if (_current != FlowPhaseId.StudioSplash)
+            {
+                return;
+            }
+
+            TransitionTo(FlowPhaseId.Boot);
+        }
+
+        public void NotifyBootComplete()
+        {
+            if (_current != FlowPhaseId.Boot)
+            {
+                return;
+            }
+
+            TransitionTo(FlowPhaseId.Home);
+        }
+
         public void RequestPlayAgain()
         {
             if (_current != FlowPhaseId.Results)

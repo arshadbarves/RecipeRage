@@ -31,6 +31,12 @@ namespace Playcenter.GameFlow
         /// <summary>Match runtime reports end of match.</summary>
         void NotifyMatchCompleted(MatchResultInfo result);
 
+        /// <summary>Splash port finished dwell; advance to Boot.</summary>
+        void NotifySplashComplete();
+
+        /// <summary>Boot sequence finished; advance to Home.</summary>
+        void NotifyBootComplete();
+
         /// <summary>Results → re-queue same mode.</summary>
         void RequestPlayAgain();
 

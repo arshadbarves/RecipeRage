@@ -6,6 +6,7 @@ using Cysharp.Threading.Tasks;
 using KitchenClash.Application;
 using KitchenClash.Domain;
 using KitchenClash.Infrastructure.Persistence;
+using Playcenter.GameFlow;
 
 namespace KitchenClash.Infrastructure.States
 {
@@ -15,17 +16,20 @@ namespace KitchenClash.Infrastructure.States
         private readonly SessionManager _sessionManager;
         private readonly ISessionContext _sessionContext;
         private readonly IGameStateManager _stateManager;
+        private readonly IAppFlow _appFlow;
 
         public SessionLoadingState(
             IUIService uiService,
             SessionManager sessionManager,
             ISessionContext sessionContext,
-            IGameStateManager stateManager)
+            IGameStateManager stateManager,
+            IAppFlow appFlow = null)
         {
             _uiService = uiService;
             _sessionManager = sessionManager;
             _sessionContext = sessionContext;
             _stateManager = stateManager;
+            _appFlow = appFlow;
         }
 
         public override void Enter()
@@ -69,8 +73,15 @@ namespace KitchenClash.Infrastructure.States
                     return;
                 }
 
-                GameLogger.Log("[SessionLoadingState] Loading complete. Transitioning to MainMenu.");
-                _stateManager.ChangeState<MainMenuState>();
+                GameLogger.Log("[SessionLoadingState] Loading complete. Transitioning to Home.");
+                if (_appFlow != null)
+                {
+                    _appFlow.NotifyBootComplete();
+                }
+                else
+                {
+                    _stateManager.ChangeState<MainMenuState>();
+                }
             }
             catch (OperationCanceledException)
             {
@@ -79,7 +90,14 @@ namespace KitchenClash.Infrastructure.States
             catch (Exception ex)
             {
                 GameLogger.LogException(ex);
-                _stateManager.ChangeState<LoginState>();
+                if (_appFlow != null)
+                {
+                    _appFlow.EnterSidePhase(FlowPhaseId.Login);
+                }
+                else
+                {
+                    _stateManager.ChangeState<LoginState>();
+                }
             }
         }
 

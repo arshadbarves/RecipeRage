@@ -5,12 +5,12 @@ using KitchenClash.Application.State;
 using Cysharp.Threading.Tasks;
 using KitchenClash.Domain;
 using KitchenClash.Infrastructure.Services;
+using Playcenter.GameFlow;
 
 namespace KitchenClash.Infrastructure.States
 {
     public class BootstrapState : BaseState
     {
-        private const float SplashDuration = 3.5f;
         private readonly IUIService _uiService;
         private readonly INTPTimeService _ntpTimeService;
         private readonly IRemoteConfigService _remoteConfigService;
@@ -20,6 +20,7 @@ namespace KitchenClash.Infrastructure.States
         private readonly IGameStateManager _stateManager;
         private readonly Domain.IEventBus _eventBus;
         private readonly ForceUpdateChecker _forceUpdateChecker;
+        private readonly IAppFlow _appFlow;
 
         public BootstrapState(
             IUIService uiService,
@@ -29,7 +30,8 @@ namespace KitchenClash.Infrastructure.States
             Domain.IEncryptionService encryptionService,
             IMaintenanceService maintenanceService,
             IGameStateManager stateManager,
-            Domain.IEventBus eventBus)
+            Domain.IEventBus eventBus,
+            IAppFlow appFlow = null)
         {
             _uiService = uiService;
             _ntpTimeService = ntpTimeService;
@@ -40,6 +42,7 @@ namespace KitchenClash.Infrastructure.States
             _stateManager = stateManager;
             _eventBus = eventBus;
             _forceUpdateChecker = new ForceUpdateChecker(remoteConfigService, eventBus);
+            _appFlow = appFlow;
         }
 
         public override void Enter()
@@ -54,12 +57,7 @@ namespace KitchenClash.Infrastructure.States
 
             try
             {
-                await UniTask.Delay(TimeSpan.FromSeconds(SplashDuration), cancellationToken: StateCancellationToken);
-                if (!IsStateActive)
-                {
-                    return;
-                }
-
+                // Splash dwell removed — SplashFlowPort owns it now.
                 await InitializeGameSequence();
             }
             catch (OperationCanceledException)
@@ -69,7 +67,14 @@ namespace KitchenClash.Infrastructure.States
             catch (Exception ex)
             {
                 GameLogger.LogException(ex);
-                _stateManager.ChangeState<LoginState>();
+                if (_appFlow != null)
+                {
+                    _appFlow.EnterSidePhase(FlowPhaseId.Login);
+                }
+                else
+                {
+                    _stateManager.ChangeState<LoginState>();
+                }
             }
         }
 
@@ -114,6 +119,10 @@ namespace KitchenClash.Infrastructure.States
             {
                 GameLogger.LogInfo("[BootstrapState] Force update required. Halting boot sequence.");
                 // ForceUpdateChecker already published ForceUpdateEvent
+                if (_appFlow != null)
+                {
+                    _appFlow.EnterSidePhase(FlowPhaseId.ForceUpdate);
+                }
                 return;
             }
 
@@ -129,7 +138,14 @@ namespace KitchenClash.Infrastructure.States
                 if (isInMaintenance)
                 {
                     GameLogger.LogInfo("[BootstrapState] Maintenance active. Transitioning to MaintenanceState.");
-                    _stateManager.ChangeState<MaintenanceState>();
+                    if (_appFlow != null)
+                    {
+                        _appFlow.EnterSidePhase(FlowPhaseId.Maintenance);
+                    }
+                    else
+                    {
+                        _stateManager.ChangeState<MaintenanceState>();
+                    }
                     return;
                 }
             }
@@ -143,7 +159,14 @@ namespace KitchenClash.Infrastructure.States
 
             if (!isAuthenticated)
             {
-                _stateManager.ChangeState<LoginState>();
+                if (_appFlow != null)
+                {
+                    _appFlow.EnterSidePhase(FlowPhaseId.Login);
+                }
+                else
+                {
+                    _stateManager.ChangeState<LoginState>();
+                }
                 return;
             }
 

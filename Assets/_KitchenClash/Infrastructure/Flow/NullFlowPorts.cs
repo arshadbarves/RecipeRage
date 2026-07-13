@@ -4,6 +4,8 @@ namespace KitchenClash.Infrastructure.Flow
 {
     /// <summary>
     /// No-op ports for phases not yet adapted. Keeps AppFlowController constructible.
+    /// NOTE: NullSplashPort and NullBootPort are for TESTS ONLY.
+    /// Production DI must use SplashFlowPort and BootFlowPort.
     /// </summary>
     public sealed class NullSplashPort : ISplashPort
     {

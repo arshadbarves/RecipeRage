@@ -34,6 +34,8 @@ namespace KitchenClash.Infrastructure.Flow
         public void NotifyMatchIntroReady() => Target.NotifyMatchIntroReady();
         public void NotifyCountdownComplete() => Target.NotifyCountdownComplete();
         public void NotifyMatchCompleted(MatchResultInfo result) => Target.NotifyMatchCompleted(result);
+        public void NotifySplashComplete() => Target.NotifySplashComplete();
+        public void NotifyBootComplete() => Target.NotifyBootComplete();
         public void RequestPlayAgain() => Target.RequestPlayAgain();
         public void ReturnHome() => Target.ReturnHome();
         public void EnterSidePhase(FlowPhaseId sidePhase) => Target.EnterSidePhase(sidePhase);
