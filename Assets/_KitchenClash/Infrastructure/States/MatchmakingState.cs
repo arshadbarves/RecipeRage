@@ -6,6 +6,8 @@ using KitchenClash.Application.State;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using KitchenClash.Domain;
+using Playcenter.GameFlow;
+using KitchenClash.Infrastructure.Flow;
 
 namespace KitchenClash.Infrastructure.States
 {
@@ -18,6 +20,7 @@ namespace KitchenClash.Infrastructure.States
         private readonly IMatchmakingService _matchmakingService;
         private readonly IConfigService _configService;
         private readonly IEventBus _eventBus;
+        private readonly IAppFlow _appFlow;
 
         private bool _isMatchmakingInProgress;
         private float _searchStartTime;
@@ -35,7 +38,8 @@ namespace KitchenClash.Infrastructure.States
             IMaintenanceService maintenanceService,
             IMatchmakingService matchmakingService,
             IConfigService configService,
-            IEventBus eventBus)
+            IEventBus eventBus,
+            IAppFlow appFlow = null)
         {
             _uiService = uiService;
             _sessionContext = sessionContext;
@@ -44,6 +48,7 @@ namespace KitchenClash.Infrastructure.States
             _matchmakingService = matchmakingService;
             _configService = configService;
             _eventBus = eventBus;
+            _appFlow = appFlow;
         }
 
         /// <summary>
@@ -98,7 +103,7 @@ namespace KitchenClash.Infrastructure.States
                     if (isInMaintenance)
                     {
                         LogMessage("Matchmaking blocked - server is in maintenance mode");
-                        _stateManager?.ChangeState<MainMenuState>();
+                        _appFlow?.ReturnHome();
                         return;
                     }
                 }
@@ -112,7 +117,7 @@ namespace KitchenClash.Infrastructure.States
             catch (Exception ex)
             {
                 LogError($"Failed to start matchmaking: {ex.Message}");
-                _stateManager?.ChangeState<MainMenuState>();
+                _appFlow?.ReturnHome();
             }
         }
 
@@ -172,21 +177,22 @@ namespace KitchenClash.Infrastructure.States
         {
             LogMessage($"Match found: {lobbyInfo?.LobbyId}");
             _isMatchmakingInProgress = false;
-            _stateManager?.ChangeState<GameplayState>();
+            _appFlow?.NotifyMatchResolved(
+                FlowMatchInfoFactory.FromLobby(lobbyInfo, _hasFilledWithBots, _teamSize));
         }
 
         private void OnMatchmakingCancelled()
         {
             LogMessage("Matchmaking cancelled by user");
             _isMatchmakingInProgress = false;
-            _stateManager?.ChangeState<MainMenuState>();
+            _appFlow?.CancelMatchmaking();
         }
 
         private void OnMatchmakingFailed(string reason)
         {
             LogError($"Matchmaking failed: {reason}");
             _isMatchmakingInProgress = false;
-            _stateManager?.ChangeState<MainMenuState>();
+            _appFlow?.ReturnHome();
         }
 
         #endregion

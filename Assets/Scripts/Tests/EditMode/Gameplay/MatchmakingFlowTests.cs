@@ -13,6 +13,7 @@ using KitchenClash.Infrastructure.States;
 using Cysharp.Threading.Tasks;
 using NUnit.Framework;
 using UnityEngine;
+using Playcenter.GameFlow;
 
 namespace RecipeRage.Tests.EditMode.Gameplay
 {
@@ -29,7 +30,8 @@ namespace RecipeRage.Tests.EditMode.Gameplay
                 new FakeMaintenanceService(false),
                 matchmakingService,
                 new FakeConfigService(),
-                new FakeEventBus());
+                new FakeEventBus(),
+                new FakeAppFlow());
 
             state.Enter();
 
@@ -49,13 +51,92 @@ namespace RecipeRage.Tests.EditMode.Gameplay
                 new FakeMaintenanceService(false),
                 matchmakingService,
                 new FakeConfigService(),
-                new FakeEventBus());
+                new FakeEventBus(),
+                new FakeAppFlow());
 
             state.Enter();
             Assert.IsTrue(matchmakingService.IsSearching);
 
             state.Exit();
             Assert.IsFalse(matchmakingService.IsSearching);
+        }
+
+        [Test]
+        public void MatchmakingState_OnMatchFound_NotifiesAppFlow()
+        {
+            FakeAppFlow flow = new();
+            FakeMatchmakingService matchmakingService = new();
+            RecordingGameStateManager stateManager = new();
+            MatchmakingState state = new(
+                new FakeUIService(),
+                new FakeSessionContext(matchmakingService, new FakeGameModeService()),
+                stateManager,
+                new FakeMaintenanceService(false),
+                matchmakingService,
+                new FakeConfigService(),
+                new FakeEventBus(),
+                flow);
+            
+            state.SetQueueParameters("quick_2v2", 2);
+            state.Enter();
+            
+            LobbyInfo lobbyInfo = new()
+            {
+                LobbyId = "test-lobby-123",
+                GameModeId = "quick_2v2",
+                MapName = "TestMap",
+                Players = new List<PlayerInfo>()
+            };
+            matchmakingService.RaiseMatchFound(lobbyInfo);
+
+            Assert.AreEqual(1, flow.NotifyMatchResolvedCount, "NotifyMatchResolved should be called once");
+            Assert.IsFalse(stateManager.HasChangeStateCall<GameplayState>(), "Should not call ChangeState<GameplayState>");
+        }
+
+        [Test]
+        public void MatchmakingState_OnMatchmakingCancelled_CallsCancelMatchmaking()
+        {
+            FakeAppFlow flow = new();
+            FakeMatchmakingService matchmakingService = new();
+            RecordingGameStateManager stateManager = new();
+            MatchmakingState state = new(
+                new FakeUIService(),
+                new FakeSessionContext(matchmakingService, new FakeGameModeService()),
+                stateManager,
+                new FakeMaintenanceService(false),
+                matchmakingService,
+                new FakeConfigService(),
+                new FakeEventBus(),
+                flow);
+            
+            state.Enter();
+            matchmakingService.RaiseCancelled();
+
+            Assert.AreEqual(1, flow.CancelMatchmakingCount, "CancelMatchmaking should be called once");
+            Assert.IsFalse(stateManager.HasChangeStateCall<MainMenuState>(), "Should not call ChangeState<MainMenuState>");
+        }
+
+        [Test]
+        public void MatchmakingState_OnMatchmakingFailed_CallsReturnHome()
+        {
+            FakeAppFlow flow = new();
+            FakeMatchmakingService matchmakingService = new();
+            RecordingGameStateManager stateManager = new();
+            MatchmakingState state = new(
+                new FakeUIService(),
+                new FakeSessionContext(matchmakingService, new FakeGameModeService()),
+                stateManager,
+                new FakeMaintenanceService(false),
+                matchmakingService,
+                new FakeConfigService(),
+                new FakeEventBus(),
+                flow);
+            
+            state.Enter();
+            matchmakingService.RaiseFailed("Connection lost");
+
+            Assert.AreEqual(1, flow.ReturnHomeCount, "ReturnHome should be called once");
+            Assert.IsFalse(stateManager.HasChangeStateCall<MainMenuState>(), "Should not call ChangeState<MainMenuState>");
         }
 
         [Test]
@@ -158,6 +239,25 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             public void CreateAndWaitForPlayers(string gameModeId, int teamSize) { }
             public void FillMatchWithBots() { }
             public List<BotPlayer> GetActiveBots() => new();
+
+            // Test helpers to raise events without service side effects
+            public void RaiseMatchFound(LobbyInfo lobbyInfo)
+            {
+                IsSearching = false;
+                OnMatchFound?.Invoke(lobbyInfo);
+            }
+
+            public void RaiseCancelled()
+            {
+                IsSearching = false;
+                OnMatchmakingCancelled?.Invoke();
+            }
+
+            public void RaiseFailed(string reason)
+            {
+                IsSearching = false;
+                OnMatchmakingFailed?.Invoke(reason);
+            }
         }
 
         private sealed class FakeGameStateManager : IGameStateManager
@@ -170,6 +270,76 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             public void ChangeState<T>() where T : IState { }
             public void Update(float deltaTime) { }
             public void FixedUpdate(float fixedDeltaTime) { }
+        }
+
+        private sealed class RecordingGameStateManager : IGameStateManager
+        {
+            private readonly List<Type> _changeStateCalls = new();
+
+            public IState CurrentState => null;
+            public IState PreviousState => null;
+            public event Action<IState, IState> OnStateChanged;
+
+            public void Initialize(IState initialState) { }
+            public void ChangeState(IState newState) { }
+            
+            public void ChangeState<T>() where T : IState
+            {
+                _changeStateCalls.Add(typeof(T));
+            }
+
+            public bool HasChangeStateCall<T>() where T : IState
+            {
+                return _changeStateCalls.Contains(typeof(T));
+            }
+
+            public void Update(float deltaTime) { }
+            public void FixedUpdate(float fixedDeltaTime) { }
+        }
+
+        private sealed class FakeAppFlow : IAppFlow
+        {
+            public int NotifyMatchResolvedCount { get; private set; }
+            public MatchResolvedInfo LastMatchResolved { get; private set; }
+            public int CancelMatchmakingCount { get; private set; }
+            public int ReturnHomeCount { get; private set; }
+
+            public FlowPhaseId Current => FlowPhaseId.Home;
+            public FlowContext Context => null;
+
+            public void NotifyMatchResolved(MatchResolvedInfo info)
+            {
+                NotifyMatchResolvedCount++;
+                LastMatchResolved = info;
+            }
+
+            public void CancelMatchmaking()
+            {
+                CancelMatchmakingCount++;
+            }
+
+            public void ReturnHome()
+            {
+                ReturnHomeCount++;
+            }
+
+            public void StartColdBoot() { }
+            public void RequestPlay(PlayRequest request = null) { }
+            public void NotifyMatchIntroReady() { }
+            public void NotifyCountdownComplete() { }
+            public void NotifyMatchCompleted(MatchResultInfo result) { }
+            public void NotifySplashComplete() { }
+            public void NotifyBootComplete() { }
+            public void RequestPlayAgain() { }
+            public void EnterSidePhase(FlowPhaseId sidePhase) { }
+            public void CompleteSidePhase() { }
+            public bool CanShowSoftPopup() => false;
+
+            public event System.Action<FlowPhaseId, FlowPhaseId> PhaseChanged
+            {
+                add { }
+                remove { }
+            }
         }
 
         private sealed class FakeUIService : IUIService
