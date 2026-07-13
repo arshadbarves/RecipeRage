@@ -1,0 +1,19 @@
+Assets/_KitchenClash/Application/Config/RemoteConfigKeys.cs
+  s_3b6c8a2584ca2a::t_e5c77be3fcca67 24-26,83-85
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "26a6771afb566c54ffe0c87c93607f867da1cc8a",
+  "prompts": {},
+  "sessions": {
+    "s_3b6c8a2584ca2a": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call-6f35a625-fbf4-4f0a-96c6-c748fbc4c829-46",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
