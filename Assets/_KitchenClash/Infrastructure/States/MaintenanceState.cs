@@ -3,6 +3,7 @@ using KitchenClash.Application.Services;
 using KitchenClash.Domain;
 using Cysharp.Threading.Tasks;
 using System;
+using Playcenter.GameFlow;
 
 namespace KitchenClash.Infrastructure.States
 {
@@ -19,19 +20,22 @@ namespace KitchenClash.Infrastructure.States
         private readonly IRemoteConfigService _remoteConfigService;
         private readonly IGameStateManager _stateManager;
         private readonly IEventBus _eventBus;
+        private readonly IAppFlow _appFlow;
 
         public MaintenanceState(
             IUIService uiService,
             IMaintenanceService maintenanceService,
             IRemoteConfigService remoteConfigService,
             IGameStateManager stateManager,
-            IEventBus eventBus)
+            IEventBus eventBus,
+            IAppFlow appFlow = null)
         {
             _uiService = uiService;
             _maintenanceService = maintenanceService;
             _remoteConfigService = remoteConfigService;
             _stateManager = stateManager;
             _eventBus = eventBus;
+            _appFlow = appFlow;
         }
 
         public override void Enter()
@@ -76,6 +80,11 @@ namespace KitchenClash.Infrastructure.States
                     if (!stillInMaintenance)
                     {
                         GameLogger.LogInfo("[MaintenanceState] Maintenance ended, transitioning to LoginState");
+                        
+                        // If entered as side phase, notify completion
+                        _appFlow?.CompleteSidePhase();
+                        
+                        // Continue worker chain to login
                         _stateManager.ChangeState<LoginState>();
                         return;
                     }

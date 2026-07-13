@@ -2,6 +2,7 @@ using System;
 using KitchenClash.Application.Services;
 using KitchenClash.Application.State;
 using KitchenClash.Domain;
+using Playcenter.GameFlow;
 
 namespace KitchenClash.Infrastructure.States
 {
@@ -16,13 +17,15 @@ namespace KitchenClash.Infrastructure.States
         private readonly IUIService _uiService;
         private readonly IEventBus _eventBus;
         private readonly IGameStateManager _stateManager;
+        private readonly IAppFlow _appFlow;
         private Type _loginScreenType;
 
-        public LoginState(IUIService uiService, IEventBus eventBus, IGameStateManager stateManager)
+        public LoginState(IUIService uiService, IEventBus eventBus, IGameStateManager stateManager, IAppFlow appFlow = null)
         {
             _uiService = uiService;
             _eventBus = eventBus;
             _stateManager = stateManager;
+            _appFlow = appFlow;
         }
 
         public override void Enter()
@@ -61,6 +64,11 @@ namespace KitchenClash.Infrastructure.States
         private void OnLoginSuccess(LoginSuccessEvent evt)
         {
             GameLogger.Log($"[LoginState] Login success: {evt.UserId}");
+            
+            // If entered as side phase, notify completion
+            _appFlow?.CompleteSidePhase();
+            
+            // Continue worker chain to load session
             _stateManager.ChangeState<SessionLoadingState>();
         }
 
