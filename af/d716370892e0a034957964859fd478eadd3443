@@ -1,0 +1,21 @@
+Assets/Scripts/Tests/EditMode/Gameplay/MatchmakingFlowTests.cs
+  s_99229c453cd88d::t_4f32e919c74375 16,33-34,54-55,64-141,242-260,275-344
+Assets/_KitchenClash/Infrastructure/States/MatchmakingState.cs
+  s_99229c453cd88d::t_e73a682bc79ffa 9-10,23,41-42,51,106,120,180-181,188,195
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.13",
+  "base_commit_sha": "afd716370892e0a034957964859fd478eadd3443",
+  "prompts": {},
+  "sessions": {
+    "s_99229c453cd88d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "45070b64-765f-4e79-883a-4a2e9082e950",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
