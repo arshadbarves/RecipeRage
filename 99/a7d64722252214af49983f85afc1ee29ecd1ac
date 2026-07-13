@@ -1,0 +1,27 @@
+CLAUDE.md
+  s_99229c453cd88d::t_2b25a80a1d899f 1-195
+wiki/GameFlow-SDK.md
+  s_99229c453cd88d::t_21b637ec56e419 1-209
+wiki/Technical.md
+  s_99229c453cd88d::t_5d3390a80cd600 26-27,53-64
+wiki/log.md
+  s_99229c453cd88d::t_96832588403726 123-133
+wiki/DRIFT-PROTOCOL.md
+  s_99229c453cd88d::t_a994cbb0b5d010 1-138
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.13",
+  "base_commit_sha": "99a7d64722252214af49983f85afc1ee29ecd1ac",
+  "prompts": {},
+  "sessions": {
+    "s_99229c453cd88d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "45070b64-765f-4e79-883a-4a2e9082e950",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
