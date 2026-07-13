@@ -102,9 +102,9 @@ Current ownership rule:
 
 Current gameplay networking assumptions:
 
-- `IngredientNetworkSpawner` is a scene `MonoBehaviour` that receives `INetworkObjectPool` and `INetworkGameManager` from the root `GameLifetimeScope`.
+- `IngredientNetworkSpawner` is a scene `MonoBehaviour` that receives `INetworkObjectPool` and `INetworkGameManager` from the root `RootLifetimeScope`.
 - It should not resolve those services from `SessionManager.SessionContainer`.
-- `NetworkObjectPool` and `NetworkGameManager` are root-owned services that should use the `NetworkManager` instance injected by `GameLifetimeScope`, not `NetworkManager.Singleton`.
+- `NetworkObjectPool` and `NetworkGameManager` are root-owned services that should use the `NetworkManager` instance injected by `RootLifetimeScope`, not `NetworkManager.Singleton`.
 - `IngredientCrate` should resolve `IngredientNetworkSpawner` through the match runtime bridge (`IMatchContext` / `MatchRuntimeSceneBinder`), not through `FindObjectOfType`.
 - `BotKitchenSnapshot` should consume bot-relevant station data from the match runtime bridge, not rebuild the kitchen graph with direct scene searches during replanning.
 - Ingredient assets provide their own prefab references.

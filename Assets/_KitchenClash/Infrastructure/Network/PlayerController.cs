@@ -52,7 +52,6 @@ namespace KitchenClash.Infrastructure.Network
 
         #region Dependencies
 
-        [Inject] private SessionManager _sessionManager;
         [Inject] private IEventBus _eventBus;
         [Inject] private ICharacterService _characterService;
         [Inject] private IPlayerNetworkManager _playerNetworkManager;
