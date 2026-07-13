@@ -1,8 +1,9 @@
 {
   "track_id": "system_registration_refactor_20260109",
   "type": "refactor",
-  "status": "new",
+  "status": "completed",
   "created_at": "2026-01-09T10:00:00Z",
-  "updated_at": "2026-01-09T10:00:00Z",
-  "description": "System Registration and DI Refactor"
+  "updated_at": "2026-07-13T11:32:46Z",
+  "description": "System Registration and DI Refactor",
+  "notes": "Task 14: Reconciled scope names to actual code - GameLifetimeScope→RootLifetimeScope, SessionLifetimeScope→MenuLifetimeScope, GameplayLifetimeScope→MatchLifetimeScope. All phases complete and updated."
 }

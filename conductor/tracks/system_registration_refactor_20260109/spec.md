@@ -8,20 +8,20 @@ This track aims to formalize and complete the dependency injection (DI) setup ac
 ### 1. Scope-Based Registration
 Systems must be registered in the following scopes:
 
-#### Pre-Auth / Project Scope (`GameLifetimeScope`)
+#### Pre-Auth / Project Scope (`RootLifetimeScope`)
 - **Localization:** `ILocalizationManager` (LocalizationManager)
 - **Auth:** `UGSAuthenticationManager` (and any associated interface)
 - **Networking Core:** `IPlayerNetworkManager`
 - **Audio:** (Already implemented)
 
-#### Auth Session Scope (`SessionLifetimeScope`)
+#### Auth Session Scope (`MenuLifetimeScope`)
 - **Player Data:** `IPlayerManager`
 - **Lobby/Matchmaking:** `ILobbyManager`
 - **Social:** `IFriendsManager` (if applicable)
 - **Teams:** `ITeamManager`
 - **UI Navigation:** `IUIScreenStackManager`
 
-#### Gameplay Scope (`GameplayLifetimeScope`)
+#### Gameplay Scope (`MatchLifetimeScope`)
 - **State:** `IGameStateManager`
 - **Scoring:** `IScoreManager`
 - **Orders:** `IOrderManager`
@@ -37,8 +37,8 @@ Systems must be registered in the following scopes:
     - Use `builder.RegisterComponentInNewPrefab(prefab)` or `builder.RegisterComponentInHierarchy(instance)` for MonoBehaviour-based managers.
 
 ### 3. Assembly Adherence
-- Ensure `Core` assembly managers are registered in `GameLifetimeScope` or `SessionLifetimeScope`.
-- Ensure `Gameplay` assembly managers are registered in `GameplayLifetimeScope`.
+- Ensure `Core` assembly managers are registered in `RootLifetimeScope` or `MenuLifetimeScope`.
+- Ensure `Gameplay` assembly managers are registered in `MatchLifetimeScope`.
 
 ## Non-Functional Requirements
 - **Maintainability:** Clear separation between "What" (Interfaces) and "How" (Implementations).
