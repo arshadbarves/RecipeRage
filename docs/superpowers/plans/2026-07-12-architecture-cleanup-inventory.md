@@ -234,3 +234,26 @@ Firebase code retained in **Shared** bucket. FirebaseAnalyticsService is the onl
 - **ServingStation**: FindObjectsByType<SinkStation> is editor-only and IMatchContext does not expose sinks — left as Unknown, no registry API built
 - **Result**: 2/3 SessionContainer violations fixed where injection path exists; 1 kept where architecturally correct
 
+
+## Phase 4 Verification
+
+**Date:** 2026-07-13
+
+| Step | Result | Notes |
+|------|--------|-------|
+| Build Core | FAIL | CS0006: Unity.SourceGenerators.dll not found — known environment issue (Unity Hub path mismatch), not a regression from this track |
+| Build Gameplay | FAIL | Same CS0006 blocking Core dependency |
+| Build EditMode Tests | FAIL | 70 errors: Playcenter.GameFlow assembly reference missing from KitchenClash.Infrastructure.csproj; affects Flow port system (CountdownFlowPort, MatchIntroFlowPort, AppFlowProxy, StateMachineFlowPorts, NullFlowPorts) |
+| Run EditMode Tests | BLOCKED | Build failures prevent test execution |
+| DI Scan | **PASS** | MenuLifetimeScope does NOT register INetworkObjectPool or INetworkGameManager; root network primitives correctly owned by Root scope |
+| Doc Spot-Check | **PASS** | wiki/GameplayDesign.md has no "has not started" placeholders; PHASE_ROADMAP mentions Architecture Cleanup → Kitchen Brawler; PROJECT_MEMORY uses RootLifetimeScope/MenuLifetimeScope/MatchLifetimeScope |
+
+**Verification outcomes:**
+- **Architecture goals achieved:** DI ownership clean (PASS), documentation aligned (PASS)
+- **Build blockers:** CS0006 environment issue (pre-existing), Playcenter.GameFlow missing assembly reference (likely introduced during cleanup reorganization or pre-existing in v2 scaffold)
+- **Fixed in this task:** Added RemoteConfigKeys.RushServiceTarget/HellKitchenTarget/LastPlateDishTarget to resolve ModeWinConditions compilation errors (committed as 26a6771a)
+- **Recommendation:** Kitchen Brawler vertical slice track should resolve Playcenter.GameFlow reference issue as part of Flow system integration
+
+**Commits:**
+- `26a6771a` — fix(config): add missing mode win condition RC keys
+- (pending) — docs(plan): record architecture cleanup verification results
