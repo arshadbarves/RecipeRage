@@ -120,3 +120,14 @@ Chronological record of wiki activity. Each entry starts with timestamp for pars
 - Scope names: RootLifetimeScope, MenuLifetimeScope, MatchLifetimeScope
 - UI navigation: UIService + UIScreenStackManager is production
 - Auth: EOS Connect is production path; Firebase may exist for analytics/config
+
+## [2026-07-13] docs | IAppFlow production cutover wiki alignment
+
+- Option B: wiki updated to match IAppFlow production architecture (Tasks 1–7 complete)
+- wiki/GameFlow-SDK.md: DI snippet now matches actual RootLifetimeScope.RegisterAppFlow (real Splash/Boot/Intro/Countdown ports, AppFlowProxy)
+- wiki/Technical.md: Added "Product Navigation Architecture" section — IAppFlow public, IGameStateManager workers internal
+- CLAUDE.md: Updated DI section — IAppFlow in Root scope, navigation section clarifies IAppFlow as public API, states as workers
+- Clarified: UI and features call IAppFlow only (RequestPlay, ReturnHome, RequestPlayAgain)
+- Clarified: IGameStateManager + states are internal phase workers, not public navigation API
+- Scope names: RootLifetimeScope (not GameLifetimeScope), MenuLifetimeScope (not SessionLifetimeScope)
+

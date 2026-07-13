@@ -23,6 +23,8 @@
 
 ```
 RootLifetimeScope (app-lifetime, DontDestroyOnLoad)
+  IAppFlow             → AppFlowController       (Singleton) — PUBLIC product navigator
+  IGameStateManager    → GameStateManager        (Singleton) — Worker engine (states use)
   IEOSManager          → EOSManager           (Singleton)
   IAuthService         → EOSAuthService        (Singleton)
   IConfigService       → FirebaseRemoteConfigSvc (Singleton)
@@ -47,6 +49,18 @@ RootLifetimeScope (app-lifetime, DontDestroyOnLoad)
       IMatchContext   → MatchContext    (Scoped)
       BotManager      → BotManager      (Scoped)
 ```
+
+## Product Navigation Architecture
+
+**Public API:** `IAppFlow` (Playcenter.GameFlow) — sole navigator for features and UI.
+
+| Component | Role |
+|-----------|------|
+| **IAppFlow** | Public product navigator. UI screens and features call `RequestPlay()`, `ReturnHome()`, `RequestPlayAgain()`. Owns legal transitions and fail-closed-to-Home policy. |
+| **IGameStateManager + IState** | Internal phase workers. States (Boot, Home, Matchmaking, Match, Results) perform scene/networking/UI work. Not for public navigation. |
+| **Flow Ports** | Adapters between GameFlow and game systems. Ports delegate scene loads, networking, and UI to domain services. |
+
+**Migration status:** GameFlow production cutover complete (Tasks 1–7). States are workers; `IAppFlow` is public API.
 
 ## SOLID Summary
 
