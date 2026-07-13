@@ -23,7 +23,7 @@ namespace KitchenClash.Application.Config
         public const string RushOrderMult = "rush_order_mult";              // 1.5
         public const string RushServiceTarget = "rush_service_target";      // 100
         public const string HellKitchenTarget = "hell_kitchen_target";      // 150
-        public const string LastPlateDishTarget = "last_plate_dish_target"; // 5
+        public const string LastPlateDishTarget = "last_plate_dish_target"; // 3
         public const string ChopTapsLettuce = "chop_taps_lettuce";          // 3
         public const string ChopTapsCarrot = "chop_taps_carrot";            // 4
         public const string ChopTapsFish = "chop_taps_fish";                // 3
@@ -82,7 +82,7 @@ namespace KitchenClash.Application.Config
             public const float RushOrderMult = 1.5f;
             public const int RushServiceTarget = 100;
             public const int HellKitchenTarget = 150;
-            public const int LastPlateDishTarget = 5;
+            public const int LastPlateDishTarget = 3;
             public const int ChopTapsLettuce = 3;
             public const int ChopTapsCarrot = 4;
             public const int ChopTapsFish = 3;

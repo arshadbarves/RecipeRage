@@ -251,9 +251,10 @@ Firebase code retained in **Shared** bucket. FirebaseAnalyticsService is the onl
 **Verification outcomes:**
 - **Architecture goals achieved:** DI ownership clean (PASS), documentation aligned (PASS)
 - **Build blockers:** CS0006 environment issue (pre-existing), Playcenter.GameFlow missing assembly reference (likely introduced during cleanup reorganization or pre-existing in v2 scaffold)
-- **Fixed in this task:** Added RemoteConfigKeys.RushServiceTarget/HellKitchenTarget/LastPlateDishTarget to resolve ModeWinConditions compilation errors (committed as 26a6771a)
+- **Fixed in this task:** Added RemoteConfigKeys.RushServiceTarget/HellKitchenTarget/LastPlateDishTarget to resolve ModeWinConditions compilation errors (committed as 26a6771a). LastPlateDishTarget default corrected to 3 per wiki/GameplayDesign.md (`last_plate_round_dish_target`).
 - **Recommendation:** Kitchen Brawler vertical slice track should resolve Playcenter.GameFlow reference issue as part of Flow system integration
 
 **Commits:**
 - `26a6771a` — fix(config): add missing mode win condition RC keys
-- (pending) — docs(plan): record architecture cleanup verification results
+- `09a222fe` — docs(plan): record architecture cleanup verification results
+- `72028ef3` — fix(config): correct LastPlateDishTarget default to 3
