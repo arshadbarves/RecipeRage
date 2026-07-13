@@ -54,6 +54,8 @@ namespace KitchenClash.Infrastructure.Network
 
         [Inject] private SessionManager _sessionManager;
         [Inject] private IEventBus _eventBus;
+        [Inject] private ICharacterService _characterService;
+        [Inject] private IPlayerNetworkManager _playerNetworkManager;
 
         #endregion
 
@@ -207,10 +209,9 @@ namespace KitchenClash.Infrastructure.Network
         {
             base.OnNetworkSpawn();
 
-            IObjectResolver sessionContainer = _sessionManager?.SessionContainer;
-            if (sessionContainer != null && NetworkObject != null && NetworkObject.IsPlayerObject)
+            if (NetworkObject != null && NetworkObject.IsPlayerObject)
             {
-                IPlayerNetworkManager playerNetworkManager = sessionContainer.Resolve<IPlayerNetworkManager>();
+                IPlayerNetworkManager playerNetworkManager = ResolvePlayerNetworkManager();
                 playerNetworkManager?.RegisterPlayer(OwnerClientId, this);
             }
 
@@ -237,10 +238,9 @@ namespace KitchenClash.Infrastructure.Network
                 _eventBus?.Publish(new LocalPlayerDespawnedEvent());
             }
 
-            IObjectResolver sessionContainer = _sessionManager?.SessionContainer;
-            if (sessionContainer != null && NetworkObject != null && NetworkObject.IsPlayerObject)
+            if (NetworkObject != null && NetworkObject.IsPlayerObject)
             {
-                IPlayerNetworkManager playerNetworkManager = sessionContainer.Resolve<IPlayerNetworkManager>();
+                IPlayerNetworkManager playerNetworkManager = ResolvePlayerNetworkManager();
                 playerNetworkManager?.UnregisterPlayer(OwnerClientId);
             }
 
@@ -401,21 +401,14 @@ namespace KitchenClash.Infrastructure.Network
 
         private void SetupCharacterClass()
         {
-            IObjectResolver sessionContainer = _sessionManager?.SessionContainer;
-            ICharacterService characterService = null;
-            if (sessionContainer != null)
-            {
-                characterService = sessionContainer.Resolve<ICharacterService>();
-            }
-
-            if (characterService == null)
+            if (_characterService == null)
             {
                 GameLogger.LogError("Character service not available");
                 return;
             }
 
             // Apply GDD chef stats from the selected ChefDefinition
-            ChefDefinition selectedChef = characterService.SelectedChef;
+            ChefDefinition selectedChef = _characterService.SelectedChef;
             if (selectedChef != null && _movementController != null)
             {
                 ChefStatBlock stats = selectedChef.Stats;
@@ -425,7 +418,7 @@ namespace KitchenClash.Infrastructure.Network
             }
 
             // Legacy SO-based character class (skins, ability prefab data)
-            CharacterClass = characterService.SelectedCharacter;
+            CharacterClass = _characterService.SelectedCharacter;
             if (CharacterClass != null)
             {
                 _characterClassId = CharacterClass.Id;
@@ -884,6 +877,11 @@ namespace KitchenClash.Infrastructure.Network
                 catch { /* Not registered in this scope */ }
             }
             return null;
+        }
+
+        private IPlayerNetworkManager ResolvePlayerNetworkManager()
+        {
+            return _playerNetworkManager;
         }
     }
 }
