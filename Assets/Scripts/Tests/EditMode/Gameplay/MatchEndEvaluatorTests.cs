@@ -11,6 +11,7 @@ using KitchenClash.Presentation.ViewModels;
 using NUnit.Framework;
 using Unity.Netcode;
 using UnityEngine;
+using Playcenter.GameFlow;
 
 namespace RecipeRage.Tests.EditMode.Gameplay
 {
@@ -101,8 +102,8 @@ namespace RecipeRage.Tests.EditMode.Gameplay
         [Test]
         public void GameplayHudViewModel_DoesNotTransitionToGameOver_WhenPhaseChangesWithoutResult()
         {
-            FakeGameStateManager stateManager = new();
-            GameplayHudViewModel viewModel = new(new FakeMatchContext(), stateManager);
+            FakeAppFlow appFlow = new();
+            GameplayHudViewModel viewModel = new(new FakeMatchContext(), appFlow);
 
             GamePhaseSync phaseSync = CreatePhaseSync(GamePhase.GameOver);
             SetPrivateField(viewModel, "_gamePhaseSync", phaseSync);
@@ -115,7 +116,7 @@ namespace RecipeRage.Tests.EditMode.Gameplay
 
             handlePhaseChanged.Invoke(viewModel, new object[] { GamePhase.Playing, GamePhase.GameOver });
 
-            Assert.AreEqual(0, stateManager.GameOverTransitions);
+            Assert.AreEqual(0, appFlow.NotifyMatchCompletedCount);
 
             Object.DestroyImmediate(phaseSync.gameObject);
         }
@@ -123,8 +124,8 @@ namespace RecipeRage.Tests.EditMode.Gameplay
         [Test]
         public void GameplayHudViewModel_TransitionsToGameOver_WhenPhaseAndResultAreReady()
         {
-            FakeGameStateManager stateManager = new();
-            GameplayHudViewModel viewModel = new(new FakeMatchContext(), stateManager);
+            FakeAppFlow appFlow = new();
+            GameplayHudViewModel viewModel = new(new FakeMatchContext(), appFlow);
             GamePhaseSync phaseSync = CreatePhaseSync(GamePhase.GameOver);
             MatchResultSync resultSync = CreateResultSync(MatchResultState.FromEvaluation(
                 MatchEndReason.TimerExpired,
@@ -147,7 +148,7 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             handleMatchResultChanged.Invoke(viewModel, new object[] { MatchResultState.None, resultSync.CurrentResult });
             handleMatchResultChanged.Invoke(viewModel, new object[] { MatchResultState.None, resultSync.CurrentResult });
 
-            Assert.AreEqual(1, stateManager.GameOverTransitions);
+            Assert.AreEqual(1, appFlow.NotifyMatchCompletedCount);
 
             Object.DestroyImmediate(phaseSync.gameObject);
             Object.DestroyImmediate(resultSync.gameObject);
@@ -156,8 +157,8 @@ namespace RecipeRage.Tests.EditMode.Gameplay
         [Test]
         public void GameplayHudViewModel_TransitionsToGameOver_WhenResultArrivesBeforePhase()
         {
-            FakeGameStateManager stateManager = new();
-            GameplayHudViewModel viewModel = new(new FakeMatchContext(), stateManager);
+            FakeAppFlow appFlow = new();
+            GameplayHudViewModel viewModel = new(new FakeMatchContext(), appFlow);
             GamePhaseSync phaseSync = CreatePhaseSync(GamePhase.Playing);
             MatchResultSync resultSync = CreateResultSync(MatchResultState.FromEvaluation(
                 MatchEndReason.ScoreLimitReached,
@@ -177,12 +178,13 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             Assert.IsNotNull(handleMatchResultChanged);
 
             handleMatchResultChanged.Invoke(viewModel, new object[] { MatchResultState.None, resultSync.CurrentResult });
-            Assert.AreEqual(0, stateManager.GameOverTransitions);
+
+            Assert.AreEqual(0, appFlow.NotifyMatchCompletedCount);
 
             SetPhaseValue(phaseSync, GamePhase.GameOver);
             handlePhaseChanged.Invoke(viewModel, new object[] { GamePhase.Playing, GamePhase.GameOver });
 
-            Assert.AreEqual(1, stateManager.GameOverTransitions);
+            Assert.AreEqual(1, appFlow.NotifyMatchCompletedCount);
 
             Object.DestroyImmediate(phaseSync.gameObject);
             Object.DestroyImmediate(resultSync.gameObject);
@@ -211,31 +213,38 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             Assert.AreEqual("MATCH COMPLETE", ResultsScreen.GetWinnerText(MatchResultState.None));
         }
 
-        private sealed class FakeGameStateManager : IGameStateManager
+        private sealed class FakeAppFlow : IAppFlow
         {
-            public int GameOverTransitions { get; private set; }
-            public IState CurrentState => null;
-            public IState PreviousState => null;
-            public event System.Action<IState, IState> OnStateChanged;
+            public int NotifyMatchCompletedCount { get; private set; }
+            public MatchResultInfo LastMatchResult { get; private set; }
 
-            public void Initialize(IState initialState)
+            public FlowPhaseId Current => FlowPhaseId.Home;
+            public FlowContext Context => null;
+
+            public void NotifyMatchCompleted(MatchResultInfo result)
             {
+                NotifyMatchCompletedCount++;
+                LastMatchResult = result;
             }
 
-            public void ChangeState(IState newState)
-            {
-            }
+            public void StartColdBoot() { }
+            public void RequestPlay(PlayRequest request = null) { }
+            public void CancelMatchmaking() { }
+            public void NotifyMatchResolved(MatchResolvedInfo info) { }
+            public void NotifyMatchIntroReady() { }
+            public void NotifyCountdownComplete() { }
+            public void NotifySplashComplete() { }
+            public void NotifyBootComplete() { }
+            public void RequestPlayAgain() { }
+            public void ReturnHome() { }
+            public void EnterSidePhase(FlowPhaseId sidePhase) { }
+            public void CompleteSidePhase() { }
+            public bool CanShowSoftPopup() => false;
 
-            public void ChangeState<T>() where T : IState
+            public event System.Action<FlowPhaseId, FlowPhaseId> PhaseChanged
             {
-                if (typeof(T) == typeof(GameOverState))
-                {
-                    GameOverTransitions++;
-                }
-            }
-
-            public void Update(float deltaTime)
-            {
+                add { }
+                remove { }
             }
 
             public void FixedUpdate(float fixedDeltaTime)

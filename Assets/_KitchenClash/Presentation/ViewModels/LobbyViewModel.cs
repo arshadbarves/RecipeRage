@@ -3,8 +3,6 @@ using KitchenClash.Application;
 using System;
 using System.Threading;
 using KitchenClash.Domain;
-using KitchenClash.Application.State;
-using KitchenClash.Infrastructure.States;
 using Cysharp.Threading.Tasks;
 using KitchenClash.Presentation;
 using KitchenClash.Presentation.Common;
@@ -13,13 +11,14 @@ using KitchenClash.Application.Services;
 using KitchenClash.Infrastructure.DI;
 using UnityEngine;
 using VContainer;
+using Playcenter.GameFlow;
 
 namespace KitchenClash.Presentation.ViewModels
 {
     public class LobbyViewModel : BaseViewModel
     {
         private readonly ISessionContext _sessionContext;
-        private readonly IGameStateManager _stateManager;
+        private readonly IAppFlow _appFlow;
         private CancellationTokenSource _cts;
 
         private IGameModeService GameModeService => _sessionContext.GameModeService;
@@ -32,10 +31,10 @@ namespace KitchenClash.Presentation.ViewModels
         public BindableProperty<string> RotationTimer { get; } = new BindableProperty<string>("");
 
         [Inject]
-        public LobbyViewModel(ISessionContext sessionContext, IGameStateManager stateManager)
+        public LobbyViewModel(ISessionContext sessionContext, IAppFlow appFlow)
         {
             _sessionContext = sessionContext;
-            _stateManager = stateManager;
+            _appFlow = appFlow;
         }
 
         public override void Initialize()
@@ -69,7 +68,13 @@ namespace KitchenClash.Presentation.ViewModels
 
         public void Play()
         {
-            _stateManager.ChangeState<MatchmakingState>();
+            string modeId = GameModeService?.SelectedGameMode?.Id;
+            int teamSize = 2; // Default team size for 2v2
+            _appFlow.RequestPlay(new PlayRequest
+            {
+                ModeId = modeId,
+                TeamSize = teamSize
+            });
         }
 
         public void StartMatchmaking()

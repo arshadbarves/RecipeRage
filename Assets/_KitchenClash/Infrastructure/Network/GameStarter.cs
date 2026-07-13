@@ -10,6 +10,7 @@ using KitchenClash.Application.State;
 using Epic.OnlineServices;
 using PlayEveryWare.EpicOnlineServices;
 using PlayEveryWare.EpicOnlineServices.Samples.Network;
+using Playcenter.GameFlow;
 
 namespace KitchenClash.Infrastructure.Network
 {
@@ -24,6 +25,7 @@ namespace KitchenClash.Infrastructure.Network
         private readonly IMatchContext _matchContext;
         private readonly IUIService _uiService;
         private readonly IGameStateManager _stateManager;
+        private readonly IAppFlow _appFlow;
 
         private bool _isGameActive;
         private SpawnManager _spawnManager;
@@ -39,7 +41,8 @@ namespace KitchenClash.Infrastructure.Network
             IBotSpawnerRegistry botSpawnerRegistry,
             IMatchContext matchContext,
             IUIService uiService,
-            IGameStateManager stateManager)
+            IGameStateManager stateManager,
+            IAppFlow appFlow = null)
         {
             _lobbyManager = lobbyManager;
             _matchmakingService = matchmakingService;
@@ -47,6 +50,7 @@ namespace KitchenClash.Infrastructure.Network
             _matchContext = matchContext;
             _uiService = uiService;
             _stateManager = stateManager;
+            _appFlow = appFlow;
         }
 
         private NetworkManager NetcodeManager => _matchContext?.NetworkManager;
@@ -271,13 +275,18 @@ namespace KitchenClash.Infrastructure.Network
 
             _lobbyManager.LeaveMatchLobby();
 
-            if (_stateManager != null)
+            // Prefer IAppFlow if available; otherwise fall back to IGameStateManager for legacy tests
+            if (_appFlow != null)
+            {
+                _appFlow.ReturnHome();
+            }
+            else if (_stateManager != null)
             {
                 _stateManager.ChangeState<MainMenuState>();
             }
             else
             {
-                GameLogger.LogError("StateManager not available - cannot return to Main Menu");
+                GameLogger.LogError("Neither AppFlow nor StateManager available - cannot return to Main Menu");
             }
         }
 

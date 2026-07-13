@@ -9,8 +9,7 @@ using KitchenClash.Infrastructure.Network.Cooking;
 using KitchenClash.Infrastructure.Network;
 using KitchenClash.Application.Services;
 using UnityEngine;
-using KitchenClash.Application.State;
-using KitchenClash.Infrastructure.States;
+using Playcenter.GameFlow;
 
 namespace KitchenClash.Presentation.ViewModels
 {
@@ -19,7 +18,7 @@ namespace KitchenClash.Presentation.ViewModels
         private const float DefaultRoundDuration = 300f;
 
         private readonly IMatchContext _matchContext;
-        private readonly IGameStateManager _stateManager;
+        private readonly IAppFlow _appFlow;
         private readonly Dictionary<int, RecipeOrderState> _orders = new();
         private NetworkScoreManager _networkScoreManager;
         private RoundTimer _roundTimer;
@@ -41,10 +40,10 @@ namespace KitchenClash.Presentation.ViewModels
         public BindableProperty<bool> MobileControlsVisible { get; } = new(false);
         public BindableProperty<int> OrdersVersion { get; } = new(0);
 
-        public GameplayHudViewModel(IMatchContext matchContext, IGameStateManager stateManager)
+        public GameplayHudViewModel(IMatchContext matchContext, IAppFlow appFlow)
         {
             _matchContext = matchContext;
-            _stateManager = stateManager;
+            _appFlow = appFlow;
         }
 
         public IReadOnlyList<GameplayHudOrderItem> GetActiveOrders()
@@ -305,7 +304,29 @@ namespace KitchenClash.Presentation.ViewModels
             if (_matchResultSync == null || !_matchResultSync.HasResult) return;
 
             _hasTriggeredGameOver = true;
-            _stateManager?.ChangeState<GameOverState>();
+            
+            // Map MatchResultState to MatchResultInfo
+            MatchResultState currentResult = _matchResultSync.CurrentResult;
+            int localTeamId = 0; // Convention: unknown local team
+            bool won = false;
+            
+            // Try to determine if local team won
+            if (_localPlayer != null)
+            {
+                localTeamId = _localPlayer.TeamId;
+                if (!currentResult.IsDraw)
+                {
+                    won = (currentResult.WinningTeamId == localTeamId);
+                }
+            }
+            
+            _appFlow?.NotifyMatchCompleted(new MatchResultInfo
+            {
+                IsDraw = currentResult.IsDraw,
+                WinningTeamId = currentResult.WinningTeamId,
+                Won = won,
+                LocalTeamId = localTeamId
+            });
         }
 
         private void HandleOrderCreated(RecipeOrderState order)

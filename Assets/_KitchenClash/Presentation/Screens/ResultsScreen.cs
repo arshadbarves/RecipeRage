@@ -7,6 +7,7 @@ using KitchenClash.Infrastructure.EOS;
 using KitchenClash.Infrastructure.Network;
 using KitchenClash.Application.Services;
 using KitchenClash.Infrastructure.DI;
+using Playcenter.GameFlow;
 
 namespace KitchenClash.Presentation.Screens
 {
@@ -16,6 +17,7 @@ namespace KitchenClash.Presentation.Screens
         [Inject] private IUIService _uiService;
         [Inject] private ISessionContext _sessionContext;
         [Inject] private IMatchContext _matchContext;
+        [Inject] private IAppFlow _appFlow;
         
         private Label _winnerLabel;
         private Label _scoreTeam0;
@@ -87,8 +89,9 @@ namespace KitchenClash.Presentation.Screens
         
         private void OnLobbyButtonClicked()
         {
-            GameLogger.Log("Returning to Lobby...");
+            GameLogger.Log("Returning to Lobby via AppFlow...");
             _sessionContext?.GameStarter?.EndGame();
+            _appFlow?.ReturnHome();
         }
     }
 }
