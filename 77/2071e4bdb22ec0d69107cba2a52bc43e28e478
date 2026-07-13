@@ -1,0 +1,23 @@
+Assets/_KitchenClash/Infrastructure/Configuration/GameConstants.cs
+  s_99229c453cd88d::t_c4225dcd745751 15-19
+Assets/Scripts/Editor/MapSceneGenerator.cs
+  s_99229c453cd88d::t_d1f9ea87e9ac53 1-91
+Assets/Scripts/Editor/MapSceneGenerator.cs.meta
+  s_99229c453cd88d::t_4e1d439f37c3b2 1-2
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.13",
+  "base_commit_sha": "772071e4bdb22ec0d69107cba2a52bc43e28e478",
+  "prompts": {},
+  "sessions": {
+    "s_99229c453cd88d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "45070b64-765f-4e79-883a-4a2e9082e950",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
