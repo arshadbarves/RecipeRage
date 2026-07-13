@@ -14,6 +14,7 @@ using Cysharp.Threading.Tasks;
 using NUnit.Framework;
 using UnityEngine;
 using Playcenter.GameFlow;
+using RecipeRage.Tests.EditMode.Gameplay.Fakes;
 
 namespace RecipeRage.Tests.EditMode.Gameplay
 {
@@ -295,51 +296,6 @@ namespace RecipeRage.Tests.EditMode.Gameplay
 
             public void Update(float deltaTime) { }
             public void FixedUpdate(float fixedDeltaTime) { }
-        }
-
-        private sealed class FakeAppFlow : IAppFlow
-        {
-            public int NotifyMatchResolvedCount { get; private set; }
-            public MatchResolvedInfo LastMatchResolved { get; private set; }
-            public int CancelMatchmakingCount { get; private set; }
-            public int ReturnHomeCount { get; private set; }
-
-            public FlowPhaseId Current => FlowPhaseId.Home;
-            public FlowContext Context => null;
-
-            public void NotifyMatchResolved(MatchResolvedInfo info)
-            {
-                NotifyMatchResolvedCount++;
-                LastMatchResolved = info;
-            }
-
-            public void CancelMatchmaking()
-            {
-                CancelMatchmakingCount++;
-            }
-
-            public void ReturnHome()
-            {
-                ReturnHomeCount++;
-            }
-
-            public void StartColdBoot() { }
-            public void RequestPlay(PlayRequest request = null) { }
-            public void NotifyMatchIntroReady() { }
-            public void NotifyCountdownComplete() { }
-            public void NotifyMatchCompleted(MatchResultInfo result) { }
-            public void NotifySplashComplete() { }
-            public void NotifyBootComplete() { }
-            public void RequestPlayAgain() { }
-            public void EnterSidePhase(FlowPhaseId sidePhase) { }
-            public void CompleteSidePhase() { }
-            public bool CanShowSoftPopup() => false;
-
-            public event System.Action<FlowPhaseId, FlowPhaseId> PhaseChanged
-            {
-                add { }
-                remove { }
-            }
         }
 
         private sealed class FakeUIService : IUIService

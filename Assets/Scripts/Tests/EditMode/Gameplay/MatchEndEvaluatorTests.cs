@@ -12,6 +12,7 @@ using NUnit.Framework;
 using Unity.Netcode;
 using UnityEngine;
 using Playcenter.GameFlow;
+using RecipeRage.Tests.EditMode.Gameplay.Fakes;
 
 namespace RecipeRage.Tests.EditMode.Gameplay
 {
@@ -211,45 +212,6 @@ namespace RecipeRage.Tests.EditMode.Gameplay
         public void ResultsScreen_GetWinnerText_UsesNeutralFallback_WhenResultIsMissing()
         {
             Assert.AreEqual("MATCH COMPLETE", ResultsScreen.GetWinnerText(MatchResultState.None));
-        }
-
-        private sealed class FakeAppFlow : IAppFlow
-        {
-            public int NotifyMatchCompletedCount { get; private set; }
-            public MatchResultInfo LastMatchResult { get; private set; }
-
-            public FlowPhaseId Current => FlowPhaseId.Home;
-            public FlowContext Context => null;
-
-            public void NotifyMatchCompleted(MatchResultInfo result)
-            {
-                NotifyMatchCompletedCount++;
-                LastMatchResult = result;
-            }
-
-            public void StartColdBoot() { }
-            public void RequestPlay(PlayRequest request = null) { }
-            public void CancelMatchmaking() { }
-            public void NotifyMatchResolved(MatchResolvedInfo info) { }
-            public void NotifyMatchIntroReady() { }
-            public void NotifyCountdownComplete() { }
-            public void NotifySplashComplete() { }
-            public void NotifyBootComplete() { }
-            public void RequestPlayAgain() { }
-            public void ReturnHome() { }
-            public void EnterSidePhase(FlowPhaseId sidePhase) { }
-            public void CompleteSidePhase() { }
-            public bool CanShowSoftPopup() => false;
-
-            public event System.Action<FlowPhaseId, FlowPhaseId> PhaseChanged
-            {
-                add { }
-                remove { }
-            }
-
-            public void FixedUpdate(float fixedDeltaTime)
-            {
-            }
         }
 
         private sealed class FakeMatchContext : IMatchContext

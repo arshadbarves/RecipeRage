@@ -3,7 +3,13 @@ using Playcenter.GameFlow;
 using KitchenClash.Presentation.ViewModels;
 using KitchenClash.Infrastructure.DI;
 using KitchenClash.Application.Services;
+using KitchenClash.Application;
 using KitchenClash.Domain;
+using KitchenClash.Infrastructure.Persistence;
+using RecipeRage.Tests.EditMode.Gameplay.Fakes;
+using Cysharp.Threading.Tasks;
+using GameMode = KitchenClash.Application.Models.GameMode;
+using UnityEngine;
 
 namespace RecipeRage.Tests.EditMode.Gameplay
 {
@@ -12,56 +18,16 @@ namespace RecipeRage.Tests.EditMode.Gameplay
     /// </summary>
     public class AppFlowMigrationTests
     {
-        private sealed class FakeAppFlow : IAppFlow
-        {
-            public int RequestPlayCount;
-            public PlayRequest LastPlayRequest;
-            public int ReturnHomeCount;
-            public int NotifyMatchCompletedCount;
-            public MatchResultInfo LastMatchResult;
-
-            public FlowPhaseId Current => FlowPhaseId.Home;
-            public FlowContext Context => null;
-
-            public void RequestPlay(PlayRequest request = null)
-            {
-                RequestPlayCount++;
-                LastPlayRequest = request;
-            }
-
-            public void ReturnHome()
-            {
-                ReturnHomeCount++;
-            }
-
-            public void NotifyMatchCompleted(MatchResultInfo result)
-            {
-                NotifyMatchCompletedCount++;
-                LastMatchResult = result;
-            }
-
-            public void StartColdBoot() { }
-            public void CancelMatchmaking() { }
-            public void NotifyMatchResolved(MatchResolvedInfo info) { }
-            public void NotifyMatchIntroReady() { }
-            public void NotifyCountdownComplete() { }
-            public void NotifySplashComplete() { }
-            public void NotifyBootComplete() { }
-            public void RequestPlayAgain() { }
-            public void EnterSidePhase(FlowPhaseId sidePhase) { }
-            public void CompleteSidePhase() { }
-            public bool CanShowSoftPopup() => false;
-
-            public event System.Action<FlowPhaseId, FlowPhaseId> PhaseChanged
-            {
-                add { }
-                remove { }
-            }
-        }
-
         private sealed class FakeGameModeService : IGameModeService
         {
             public GameMode SelectedGameMode { get; set; }
+
+            public GameMode[] GetAvailableGameModes() => null;
+            public GameMode GetGameMode(string id) => null;
+            public bool SelectGameMode(string id) => true;
+            public UniTask<bool> LoadMapAsync(string sceneName) => UniTask.FromResult(true);
+            public UniTask UnloadCurrentMapAsync() => UniTask.CompletedTask;
+
             public event System.Action<GameMode> OnGameModeChanged
             {
                 add { }
@@ -71,12 +37,18 @@ namespace RecipeRage.Tests.EditMode.Gameplay
 
         private sealed class FakeSessionContext : ISessionContext
         {
+            public bool IsSessionActive => true;
             public IGameModeService GameModeService { get; set; }
-            public ILobbyManager LobbyManager => null;
-            public IPlayerManager PlayerManager => null;
-            public IMatchmakingService MatchmakingService => null;
-            public ITeamManager TeamManager => null;
+            public ICharacterService CharacterService => null;
+            public ISkinsService SkinsService => null;
             public IGameStarter GameStarter => null;
+            public EconomyService EconomyService => null;
+            public PlayerDataService PlayerDataService => null;
+            public IFriendsService FriendsService => null;
+            public ILobbyManager LobbyManager => null;
+            public IMatchmakingService MatchmakingService => null;
+
+            public T Resolve<T>() where T : class => null;
         }
 
         [Test]
@@ -84,13 +56,15 @@ namespace RecipeRage.Tests.EditMode.Gameplay
         {
             // Arrange
             var flow = new FakeAppFlow();
+            var gameMode = ScriptableObject.CreateInstance<GameMode>();
+            typeof(GameMode).GetField("_id", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                .SetValue(gameMode, "quick_2v2");
+            typeof(GameMode).GetField("_displayName", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                .SetValue(gameMode, "Quick 2v2");
+
             var gameModeService = new FakeGameModeService
             {
-                SelectedGameMode = new GameMode
-                {
-                    Id = "quick_2v2",
-                    DisplayName = "Quick 2v2"
-                }
+                SelectedGameMode = gameMode
             };
             var sessionContext = new FakeSessionContext
             {
