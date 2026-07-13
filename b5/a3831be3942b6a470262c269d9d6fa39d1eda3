@@ -1,0 +1,37 @@
+Assets/Scripts/Tests/EditMode/Gameplay/Fakes.meta
+  s_e8f4496cdf11cf::t_68973fb03dadaf 1-8
+Assets/Scripts/Tests/EditMode/Gameplay/Fakes/FakeAppFlow.cs.meta
+  s_e8f4496cdf11cf::t_2f880305eeeb3a 1-11
+Assets/Scripts/Tests/EditMode/Gameplay/AppFlowMigrationTests.cs
+  s_99229c453cd88d::t_09df4d26f38def 6,8-12,24-30,40,42-47,50-51,59-64,67
+Assets/Scripts/Tests/EditMode/Gameplay/Fakes/FakeAppFlow.cs
+  s_99229c453cd88d::t_d4ce3caef2fd7a 1-114
+Assets/Scripts/Tests/EditMode/Gameplay/MatchEndEvaluatorTests.cs
+  s_99229c453cd88d::t_1e6c4eaba93c9b 15
+Assets/Scripts/Tests/EditMode/Gameplay/MatchmakingFlowTests.cs
+  s_99229c453cd88d::t_0022824026e4fb 17
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.13",
+  "base_commit_sha": "b5a3831be3942b6a470262c269d9d6fa39d1eda3",
+  "prompts": {},
+  "sessions": {
+    "s_99229c453cd88d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "45070b64-765f-4e79-883a-4a2e9082e950",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    },
+    "s_e8f4496cdf11cf": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call-41cadbaf-d983-4556-8c08-8aada04d5df3-36",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
