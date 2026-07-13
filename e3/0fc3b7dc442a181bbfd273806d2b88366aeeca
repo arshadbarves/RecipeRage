@@ -1,0 +1,20 @@
+Assets/_KitchenClash/Infrastructure/Network/PlayerController.cs
+  s_99229c453cd88d::t_6d71fb673d0768 57-58,212,214,241,243,404,411,421,881-884
+  s_99229c453cd88d::t_a875182bda7b53 885
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "e30fc3b7dc442a181bbfd273806d2b88366aeeca",
+  "prompts": {},
+  "sessions": {
+    "s_99229c453cd88d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "45070b64-765f-4e79-883a-4a2e9082e950",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
