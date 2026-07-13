@@ -1,0 +1,19 @@
+docs/superpowers/specs/2026-07-13-gameflow-production-migration-design.md
+  s_99229c453cd88d::t_c7cdcfe83ebf71 1-339
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.13",
+  "base_commit_sha": "c079e4555d3a55a83bd1c8e51a44a3d4001a63eb",
+  "prompts": {},
+  "sessions": {
+    "s_99229c453cd88d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "45070b64-765f-4e79-883a-4a2e9082e950",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
