@@ -19,6 +19,8 @@ namespace KitchenClash.Application.Models
         public Dictionary<string, int> AchievementProgress = new Dictionary<string, int>();
         public Dictionary<string, int> CharacterLevels = new Dictionary<string, int>();
         public bool TutorialCompleted = false;
+        /// <summary>True after the post-tutorial account-upgrade prompt was shown (link or guest).</summary>
+        public bool HasSeenAccountUpgradePrompt = false;
 
         [SerializeField] private List<string> _highScoreKeys = new List<string>();
         [SerializeField] private List<int> _highScoreValues = new List<int>();

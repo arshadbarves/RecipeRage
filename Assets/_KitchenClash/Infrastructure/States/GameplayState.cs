@@ -78,6 +78,28 @@ namespace KitchenClash.Infrastructure.States
             }
         }
 
+        /// <summary>
+        /// Called by MatchRuntimeFlowPort after countdown GO. Safe if Enter already started the game.
+        /// </summary>
+        public void RequestStartRound()
+        {
+            if (!IsStateActive)
+            {
+                return;
+            }
+
+            // Enter() already kicks InitializeGameplayAsync → StartGame.
+            // Re-invoke StartGame for Flow-driven re-entry after countdown when already in scene.
+            try
+            {
+                _sessionContext.GameStarter?.StartGame();
+            }
+            catch (Exception ex)
+            {
+                GameLogger.LogException(ex);
+            }
+        }
+
         public override void Update() { }
         public override void FixedUpdate() { }
     }

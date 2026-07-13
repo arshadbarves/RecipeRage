@@ -345,5 +345,34 @@ namespace KitchenClash.Infrastructure.Network.Spawning
             return GetAvailableSpawnPointCount(team) > 0 ||
                    (_reuseSpawnPoints && GetSpawnPointCount(team) > 0);
         }
+
+        /// <summary>
+        /// Position for KO respawn. <paramref name="teamId"/> matches PlayerController.TeamId
+        /// (0 = TeamA, 1 = TeamB). Falls back to Neutral, then any spawn, then origin.
+        /// </summary>
+        public Vector3 GetRespawnPosition(int teamId)
+        {
+            TeamCategory category = teamId switch
+            {
+                0 => TeamCategory.TeamA,
+                1 => TeamCategory.TeamB,
+                _ => TeamCategory.Neutral,
+            };
+
+            SpawnPoint point = GetAvailableSpawnPoint(category);
+            if (point == null && category != TeamCategory.Neutral)
+            {
+                point = GetAvailableSpawnPoint(TeamCategory.Neutral);
+            }
+
+            if (point == null && _allSpawnPoints.Count > 0)
+            {
+                point = _allSpawnPoints[UnityEngine.Random.Range(0, _allSpawnPoints.Count)];
+            }
+
+            return point != null
+                ? point.GetSpawnPosition(_randomizeSpawnPosition)
+                : Vector3.zero;
+        }
     }
 }

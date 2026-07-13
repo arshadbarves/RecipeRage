@@ -100,4 +100,61 @@ namespace KitchenClash.Domain
     {
         public int Amount { get; set; }
     }
+
+    /// <summary>
+    /// Published when the account-upgrade prompt finishes (linked or continue-as-guest).
+    /// AccountUpgradeState listens and routes to MainMenuState.
+    /// </summary>
+    public sealed class AccountUpgradeResultEvent
+    {
+        public bool Linked { get; }
+        public string Provider { get; }
+        public string ProductUserId { get; }
+
+        public AccountUpgradeResultEvent(bool linked, string provider, string productUserId)
+        {
+            Linked = linked;
+            Provider = provider;
+            ProductUserId = productUserId;
+        }
+    }
+
+    /// <summary>
+    /// Published when a match ends so session-scoped handlers (e.g. MatchRewardHandler)
+    /// can award economy rewards without GameOverState depending on session services.
+    /// </summary>
+    public sealed class MatchEndedEvent
+    {
+        public bool Won { get; }
+        public int LocalTeamScore { get; }
+
+        public MatchEndedEvent(bool won, int localTeamScore)
+        {
+            Won = won;
+            LocalTeamScore = localTeamScore;
+        }
+    }
+
+    /// <summary>
+    /// Published when the player taps Retry on the no-connection popup.
+    /// NoConnectionState restarts SessionLoadingState on receipt.
+    /// </summary>
+    public sealed class RetryConnectionEvent
+    {
+    }
+
+    /// <summary>
+    /// Published during long-running loads (tutorial kitchen, map load) so UI can show progress.
+    /// </summary>
+    public sealed class LoadingProgressEvent
+    {
+        public float Progress { get; }
+        public string Message { get; }
+
+        public LoadingProgressEvent(float progress, string message = null)
+        {
+            Progress = progress;
+            Message = message;
+        }
+    }
 }

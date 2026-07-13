@@ -1,6 +1,7 @@
 using KitchenClash.Application.Models;
 using KitchenClash.Application;
 using System;
+using System.Collections.Generic;
 using KitchenClash.Infrastructure.Gameplay;
 using KitchenClash.Infrastructure.DI;
 using KitchenClash.Application.Services;
@@ -9,6 +10,7 @@ using KitchenClash.Infrastructure.Input;
 using Unity.Netcode;
 using UnityEngine;
 using KitchenClash.Domain;
+using KitchenClash.Domain.Enums;
 using Unity.Collections;
 using VContainer;
 using VContainer.Unity;
@@ -78,6 +80,11 @@ namespace KitchenClash.Infrastructure.Network
         #region Character Data
 
         private GameObject _heldObject;
+        /// <summary>v2 dish carry list (logical items; visual hold still uses _heldObject).</summary>
+        private readonly List<CarriedItemData> _carriedDishes = new List<CarriedItemData>(4);
+        private bool _inputEnabled = true;
+        private bool _isVisible = true;
+
         public CharacterClass CharacterClass { get; private set; }
         public CharacterAbility PrimaryAbility { get; private set; }
         public ModifiableStat InteractionSpeed { get; } = new ModifiableStat(1f);
@@ -132,6 +139,18 @@ namespace KitchenClash.Infrastructure.Network
         {
             if (!IsLocalPlayer)
             {
+                return;
+            }
+
+            if (!_inputEnabled)
+            {
+                _inputHandler?.SetRawInput(Vector2.zero);
+                _inputHandler?.UpdateSmoothing();
+                _stateController?.UpdateState(Vector2.zero, IsHoldingObject());
+                if (PrimaryAbility != null)
+                {
+                    PrimaryAbility.Update(Time.deltaTime);
+                }
                 return;
             }
 
@@ -315,7 +334,7 @@ namespace KitchenClash.Infrastructure.Network
                 return;
             }
 
-            Vector2 input = _inputHandler.GetSmoothedInput();
+            Vector2 input = _inputEnabled ? _inputHandler.GetSmoothedInput() : Vector2.zero;
             _movementController.ApplyMovement(input, _stateController.CurrentState, Time.fixedDeltaTime);
         }
 
@@ -326,7 +345,7 @@ namespace KitchenClash.Infrastructure.Network
                 return;
             }
 
-            Vector2 input = _inputHandler.GetSmoothedInput();
+            Vector2 input = _inputEnabled ? _inputHandler.GetSmoothedInput() : Vector2.zero;
 
             PlayerInputData inputData = _networkController.CreateInputData(input);
             _movementController.ApplyMovement(input, _stateController.CurrentState, Time.fixedDeltaTime);
@@ -794,6 +813,63 @@ namespace KitchenClash.Infrastructure.Network
         public GameObject GetHeldObject() => _heldObject;
         public bool IsHoldingObject() => _heldObject != null;
 
+        /// <summary>True when carried dish slots are full (capacity from CarryingCapacity, min 1).</summary>
+        public bool IsCarryingMaxItems => _carriedDishes.Count >= GetMaxCarrySlots();
+
+        /// <summary>True when the player is holding at least one dish for delivery.</summary>
+        public bool HasCarriedDish => _carriedDishes.Count > 0;
+
+        /// <summary>
+        /// Server-side: add a collected dish to the carry list (station collect / loot / steal).
+        /// </summary>
+        public void ReceiveCollectedDish(int recipeTier, IngredientType ingredientType)
+        {
+            if (IsCarryingMaxItems)
+            {
+                return;
+            }
+
+            _carriedDishes.Add(new CarriedItemData(ingredientType, recipeTier));
+        }
+
+        /// <summary>
+        /// Consume one carried dish for delivery. Returns false if none carried.
+        /// </summary>
+        public bool TryConsumeCarriedDish(out CarriedItemData dish)
+        {
+            if (_carriedDishes.Count == 0)
+            {
+                dish = default;
+                return false;
+            }
+
+            int last = _carriedDishes.Count - 1;
+            dish = _carriedDishes[last];
+            _carriedDishes.RemoveAt(last);
+            return true;
+        }
+
+        /// <summary>
+        /// Clear and return all carried dishes (KO loot drop / Disruptor steal).
+        /// </summary>
+        public List<CarriedItemData> GetAndClearCarriedItems()
+        {
+            if (_carriedDishes.Count == 0)
+            {
+                return new List<CarriedItemData>(0);
+            }
+
+            var copy = new List<CarriedItemData>(_carriedDishes);
+            _carriedDishes.Clear();
+            return copy;
+        }
+
+        private int GetMaxCarrySlots()
+        {
+            int capacity = Mathf.RoundToInt(CarryingCapacity.CurrentValue);
+            return Mathf.Max(1, capacity);
+        }
+
         #endregion
 
         #region Public API
@@ -827,6 +903,39 @@ namespace KitchenClash.Infrastructure.Network
                 _stateController.SetState(PlayerMovementState.Idle);
             }
         }
+
+        /// <summary>
+        /// Show/hide player visuals (used on KO / respawn). Affects skin instance and fallback mesh.
+        /// </summary>
+        public void SetVisible(bool visible)
+        {
+            _isVisible = visible;
+
+            if (_skinInstance != null)
+            {
+                foreach (Renderer renderer in _skinInstance.GetComponentsInChildren<Renderer>(true))
+                {
+                    renderer.enabled = visible;
+                }
+            }
+
+            SetFallbackModelVisible(visible && _skinInstance == null);
+        }
+
+        /// <summary>
+        /// Enable/disable local movement input processing (KO lockout / countdown).
+        /// </summary>
+        public void SetInputEnabled(bool enabled)
+        {
+            _inputEnabled = enabled;
+            if (!enabled)
+            {
+                _inputHandler?.SetRawInput(Vector2.zero);
+            }
+        }
+
+        public bool IsInputEnabled => _inputEnabled;
+        public bool IsVisible => _isVisible;
 
         #endregion
 

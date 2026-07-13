@@ -63,6 +63,37 @@ namespace KitchenClash.Application.Config
         public const string BattlePassDurationDays = "battle_pass_duration_days";    // 56
         public const string DailyStreakCycleDays = "daily_streak_cycle_days";        // 60
 
+        // ── Station / cooking (v2) ──
+        public const string StationPrimeTaps = "station_prime_taps";                 // 6
+        public const string StationCookDurationSec = "station_cook_duration_sec";    // 5.0
+        public const string StationBurnGraceSec = "station_burn_grace_sec";          // 3.0
+        public const string StationSabotageLockout = "station_sabotage_lockout_sec"; // 5.0
+        public const string StationSabotageRange = "station_sabotage_range_tiles";   // 2
+
+        // ── Combat / KO (v2) ──
+        public const string KoRespawnSec = "ko_respawn_sec";                         // 3.0
+        public const string KoLootDropPct = "ko_loot_drop_pct";                       // 1.0
+        public const string KoLootDespawnSec = "ko_loot_despawn_sec";                 // 8.0
+        public const string MeleeAttackRange = "melee_attack_range_tiles";            // 1.5
+        public const string MeleeAttackCooldown = "melee_attack_cooldown_sec";        // 0.6
+        public const string MeleeAttackDamage = "melee_attack_damage";                // 25
+
+        // ── Archetype HP bases (v2 scaffold defaults) ──
+        public const string RusherHpBase = "rusher_hp_base";                         // 100
+        public const string CookHpBase = "cook_hp_base";                             // 90
+        public const string ControllerHpBase = "controller_hp_base";                 // 100
+        public const string DisruptorHpBase = "disruptor_hp_base";                   // 85
+
+        // ── Abilities (v2) ──
+        public const string RusherShoveCooldown = "rusher_shove_cooldown_sec";       // 6.0
+        public const string RusherShoveRange = "rusher_shove_range_tiles";            // 1.5
+        public const string RusherShoveKnockback = "rusher_shove_knockback_tiles";    // 2.0
+        public const string CookPrimeBuffCooldown = "cook_prime_buff_cooldown_sec";  // 8.0
+        public const string CookPrimeBuffTapReduction = "cook_prime_buff_tap_reduction"; // 2
+        public const string ControllerSabotageCooldown = "controller_sabotage_cooldown_sec"; // 10.0
+        public const string DisruptorStealCooldown = "disruptor_steal_cooldown_sec"; // 12.0
+        public const string DisruptorStealRange = "disruptor_steal_range_tiles";     // 1
+
         // ── Defaults (for fallback config) ──
         public static class Defaults
         {
@@ -118,6 +149,37 @@ namespace KitchenClash.Application.Config
             public const bool AdRewardedEnabled = true;
             public const int BattlePassDurationDays = 56;
             public const int DailyStreakCycleDays = 60;
+
+            // Station / cooking (v2)
+            public const int StationPrimeTaps = 6;
+            public const float StationCookDurationSec = 5.0f;
+            public const float StationBurnGraceSec = 3.0f;
+            public const float StationSabotageLockout = 5.0f;
+            public const float StationSabotageRange = 2f;
+
+            // Combat / KO (v2)
+            public const float KoRespawnSec = 3.0f;
+            public const float KoLootDropPct = 1.0f;
+            public const float KoLootDespawnSec = 8.0f;
+            public const float MeleeAttackRange = 1.5f;
+            public const float MeleeAttackCooldown = 0.6f;
+            public const int MeleeAttackDamage = 25;
+
+            // Archetype HP bases
+            public const int RusherHpBase = 100;
+            public const int CookHpBase = 90;
+            public const int ControllerHpBase = 100;
+            public const int DisruptorHpBase = 85;
+
+            // Abilities (v2)
+            public const float RusherShoveCooldown = 6.0f;
+            public const float RusherShoveRange = 1.5f;
+            public const float RusherShoveKnockback = 2.0f;
+            public const float CookPrimeBuffCooldown = 8.0f;
+            public const int CookPrimeBuffTapReduction = 2;
+            public const float ControllerSabotageCooldown = 10.0f;
+            public const float DisruptorStealCooldown = 12.0f;
+            public const float DisruptorStealRange = 1f;
         }
     }
 }

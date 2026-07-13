@@ -17,5 +17,11 @@ namespace KitchenClash.Domain
             RhythmBonus = rhythmBonus;
             ComboCount = comboCount;
         }
+
+        /// <summary>
+        /// Factory for a successful dish delivery at the given recipe tier (1–3).
+        /// </summary>
+        public static ScoreEvent Delivered(int recipeTier) =>
+            new ScoreEvent(ScoreEventType.DishServed, recipeTier: recipeTier);
     }
 }

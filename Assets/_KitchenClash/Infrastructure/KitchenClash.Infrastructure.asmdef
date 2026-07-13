@@ -4,6 +4,7 @@
     "references": [
         "KitchenClash.Domain",
         "KitchenClash.Application",
+        "Playcenter.GameFlow",
         "UniTask",
         "VContainer",
         "Unity.Netcode.Runtime",
