@@ -1,0 +1,25 @@
+conductor/tracks/system_registration_refactor_20260109/spec.md
+  s_7a96648aaad7b6::t_34239cf9d9e0e1 11,17,24
+  s_7a96648aaad7b6::t_b5e0b3811ca563 40-41
+conductor/tracks/system_registration_refactor_20260109/metadata.json
+  s_7a96648aaad7b6::t_82bca6e5484ebc 4,6-8
+conductor/tracks/system_registration_refactor_20260109/plan.md
+  s_7a96648aaad7b6::t_f3128589375049 25-28
+  s_7a96648aaad7b6::t_20d5ec200a13a2 3,5,8,10,12,15,17-22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "5585083fd65c9a682c277e7208ff9d137ea1265e",
+  "prompts": {},
+  "sessions": {
+    "s_7a96648aaad7b6": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call-d0319356-50b2-400f-880d-e432cf6f4fdb-39",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
