@@ -12,6 +12,11 @@ namespace KitchenClash.Infrastructure.Configuration
             public const string MainMenu = "MainMenu";
             public const string Game = "Game";
             public const string Tutorial = "Tutorial";
+
+            // v2 mode map scenes (Tools → RecipeRage → Create v2 Mode Scenes)
+            public const string RushService = "Map_RushService";
+            public const string HellsKitchen = "Map_HellsKitchen";
+            public const string LastPlateStanding = "Map_LastPlateStanding";
         }
     }
 }
