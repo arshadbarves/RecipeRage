@@ -1,0 +1,21 @@
+Assets/Scripts/Tests/EditMode/Gameplay/AppFlowControllerTests.cs
+  s_99229c453cd88d::t_3d82701451bde7 122-124,129-130,134-137,164-195
+Assets/_KitchenClash/Infrastructure/States/GameplayState.cs
+  s_99229c453cd88d::t_8bcd78d91ed8b3 20-23,35-37,76-82,104-119,123
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.13",
+  "base_commit_sha": "a3470bc4eccf60bd04b317063aed38ec9396fe3e",
+  "prompts": {},
+  "sessions": {
+    "s_99229c453cd88d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "45070b64-765f-4e79-883a-4a2e9082e950",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
