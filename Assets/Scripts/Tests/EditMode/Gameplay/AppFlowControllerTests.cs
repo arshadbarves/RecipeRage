@@ -119,15 +119,22 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             });
             Assert.AreEqual(FlowPhaseId.MatchIntro, flow.Current);
             Assert.AreEqual(1, intro.EnterCount);
+            // EnterMatch called during intro (preload); StartRound must NOT be called yet
+            Assert.GreaterOrEqual(match.EnterCount, 1, "Match should preload during intro");
+            Assert.AreEqual(0, match.StartRoundCount, "StartRound must not fire during intro");
 
             flow.NotifyMatchIntroReady();
             Assert.AreEqual(FlowPhaseId.Countdown, flow.Current);
             Assert.AreEqual(1, countdown.EnterCount);
+            // StartRound still deferred until countdown completes
+            Assert.AreEqual(0, match.StartRoundCount, "StartRound must not fire during countdown");
 
             flow.NotifyCountdownComplete();
             Assert.AreEqual(FlowPhaseId.Match, flow.Current);
-            Assert.AreEqual(1, match.EnterCount);
-            Assert.AreEqual(1, match.StartRoundCount);
+            // EnterMatch idempotent across intro/countdown/match phases, so >=1 is valid
+            Assert.GreaterOrEqual(match.EnterCount, 1);
+            // StartRound only fires AFTER countdown GO
+            Assert.AreEqual(1, match.StartRoundCount, "StartRound must fire exactly once after GO");
 
             flow.NotifyMatchCompleted(new MatchResultInfo { Won = true, LocalTeamId = 0 });
             Assert.AreEqual(FlowPhaseId.Results, flow.Current);
@@ -153,6 +160,38 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             flow.RequestPlay(new PlayRequest { ModeId = "quick_3v3", TeamSize = 3 });
             Assert.AreEqual(1, mm.EnterCount); // Still 1, second call ignored
             Assert.AreEqual(FlowPhaseId.Matchmaking, flow.Current);
+        }
+
+        [Test]
+        public void MigrationPath_NullCountdown_StartsRoundOnMatchEnter()
+        {
+            var home = new RecordingHome();
+            var mm = new RecordingMatchmaking();
+            var intro = new RecordingIntro();
+            var match = new RecordingMatch();
+            // No countdown port — migration path
+            var flow = new AppFlowController(
+                home: home,
+                matchmaking: mm,
+                matchIntro: intro,
+                countdown: null,
+                matchRuntime: match);
+
+            flow.StartColdBoot();
+            flow.ReturnHome();
+            flow.RequestPlay(new PlayRequest { ModeId = "quick_2v2", TeamSize = 2 });
+            flow.NotifyMatchResolved(new MatchResolvedInfo
+            {
+                LobbyId = "L1",
+                ModeId = "quick_2v2",
+                TeamSize = 2
+            });
+            Assert.AreEqual(FlowPhaseId.MatchIntro, flow.Current);
+            
+            flow.NotifyMatchIntroReady();
+            // Without countdown, goes straight to Match and StartRound fires immediately
+            Assert.AreEqual(FlowPhaseId.Match, flow.Current);
+            Assert.AreEqual(1, match.StartRoundCount, "Null countdown path should StartRound on Match enter");
         }
     }
 }

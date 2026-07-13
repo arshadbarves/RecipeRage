@@ -17,6 +17,10 @@ namespace KitchenClash.Infrastructure.States
         private readonly ISessionContext _sessionContext;
         private readonly IGameModeService _gameModeService;
 
+        private bool _sceneLoadComplete;
+        private bool _startRoundRequested;
+        private bool _gameStarted;
+
         public GameplayState(IUIService uiService, ISessionContext sessionContext, IEventBus eventBus, IGameModeService gameModeService)
         {
             _uiService = uiService;
@@ -28,6 +32,9 @@ namespace KitchenClash.Infrastructure.States
         public override void Enter()
         {
             base.Enter();
+            _sceneLoadComplete = false;
+            _startRoundRequested = false;
+            _gameStarted = false;
             _eventBus?.Publish(new MusicEvent(MusicTrack.Gameplay_Normal));
             InitializeGameplayAsync().Forget();
         }
@@ -66,7 +73,13 @@ namespace KitchenClash.Infrastructure.States
                     return;
                 }
 
-                _sessionContext.GameStarter?.StartGame();
+                _sceneLoadComplete = true;
+
+                // Start game only if RequestStartRound already called (queued start).
+                if (_startRoundRequested && !_gameStarted)
+                {
+                    StartGameInternal();
+                }
             }
             catch (OperationCanceledException)
             {
@@ -88,11 +101,26 @@ namespace KitchenClash.Infrastructure.States
                 return;
             }
 
-            // Enter() already kicks InitializeGameplayAsync → StartGame.
-            // Re-invoke StartGame for Flow-driven re-entry after countdown when already in scene.
+            _startRoundRequested = true;
+
+            // Start immediately if scene load is complete; otherwise queued until load finishes.
+            if (_sceneLoadComplete && !_gameStarted)
+            {
+                StartGameInternal();
+            }
+        }
+
+        private void StartGameInternal()
+        {
+            if (_gameStarted)
+            {
+                return; // Idempotent: only start once per Enter
+            }
+
             try
             {
                 _sessionContext.GameStarter?.StartGame();
+                _gameStarted = true;
             }
             catch (Exception ex)
             {
