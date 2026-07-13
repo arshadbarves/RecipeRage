@@ -257,4 +257,4 @@ Firebase code retained in **Shared** bucket. FirebaseAnalyticsService is the onl
 **Commits:**
 - `26a6771a` — fix(config): add missing mode win condition RC keys
 - `09a222fe` — docs(plan): record architecture cleanup verification results
-- `72028ef3` — fix(config): correct LastPlateDishTarget default to 3
+- `5aac2e31` — fix(config): correct LastPlateDishTarget default to 3
