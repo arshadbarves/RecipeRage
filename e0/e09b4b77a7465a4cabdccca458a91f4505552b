@@ -1,0 +1,31 @@
+Assets/Scripts/Tests/EditMode/Gameplay/AppFlowControllerTests.cs.meta
+  s_cd63c1fd3f8080::t_82371f118e75d8 1-2
+Assets/Scripts/Tests/EditMode/Gameplay/AppFlowControllerTests.cs
+  s_99229c453cd88d::t_51797a3dd75894 1-172
+Assets/Scripts/Tests/RecipeRage.Tests.EditMode.asmdef
+  s_99229c453cd88d::t_47d4c1dea200a2 13-14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.13",
+  "base_commit_sha": "e0e09b4b77a7465a4cabdccca458a91f4505552b",
+  "prompts": {},
+  "sessions": {
+    "s_99229c453cd88d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "45070b64-765f-4e79-883a-4a2e9082e950",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    },
+    "s_cd63c1fd3f8080": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call-d826f9bf-8c92-4322-add9-1a5c5f10d8af-18",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
