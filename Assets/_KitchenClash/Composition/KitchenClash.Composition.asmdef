@@ -6,6 +6,7 @@
         "KitchenClash.Application",
         "KitchenClash.Infrastructure",
         "KitchenClash.Presentation",
+        "Playcenter.GameFlow",
         "VContainer",
         "UniTask",
         "Unity.Netcode.Runtime",

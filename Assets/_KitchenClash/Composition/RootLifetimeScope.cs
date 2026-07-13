@@ -13,6 +13,7 @@ using KitchenClash.Infrastructure.Audio;
 using KitchenClash.Infrastructure.IAP;
 using KitchenClash.Infrastructure.DI;
 using KitchenClash.Infrastructure.EOS;
+using KitchenClash.Infrastructure.Flow;
 using KitchenClash.Infrastructure.Localization;
 using KitchenClash.Infrastructure.Logging;
 using KitchenClash.Infrastructure.Network;
@@ -20,6 +21,7 @@ using KitchenClash.Infrastructure.Persistence;
 using KitchenClash.Infrastructure.Services;
 using KitchenClash.Presentation.Common;
 using KitchenClash.Presentation.ViewModels;
+using Playcenter.GameFlow;
 using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;
@@ -39,6 +41,7 @@ public class RootLifetimeScope : LifetimeScope
         RegisterAudio(builder);
         RegisterUI(builder);
         RegisterInfrastructure(builder);
+        RegisterAppFlow(builder);
         RegisterViewModels(builder);
         RegisterScreens(builder);
         RegisterGameStates(builder);
@@ -124,6 +127,36 @@ public class RootLifetimeScope : LifetimeScope
         }
 
         builder.Register<AuthenticationService>(Lifetime.Singleton).As<IAuthService>();
+    }
+
+    private void RegisterAppFlow(IContainerBuilder builder)
+    {
+        builder.Register<IAppFlow>(resolver =>
+        {
+            AppFlowController flow = null;
+            IAppFlow Proxy() => flow;
+
+            var stateManager = resolver.Resolve<IGameStateManager>();
+            var stateFactory = resolver.Resolve<IStateFactory>();
+            var ui = resolver.Resolve<IUIService>();
+            var analytics = resolver.Resolve<IAnalyticsService>();
+
+            var appFlowProxy = new AppFlowProxy(Proxy);
+
+            flow = new AppFlowController(
+                splash: new SplashFlowPort(appFlowProxy),
+                boot: new BootFlowPort(stateManager, stateFactory),
+                home: new HomeFlowPort(stateManager),
+                matchmaking: new MatchmakingFlowPort(stateManager, stateFactory, ui),
+                matchIntro: new MatchIntroFlowPort(ui, appFlowProxy),
+                countdown: new CountdownFlowPort(ui, appFlowProxy),
+                matchRuntime: new MatchRuntimeFlowPort(stateManager, stateFactory),
+                results: new ResultsFlowPort(stateManager, ui),
+                popupPolicy: new SoftPopupPolicy(),
+                analytics: new AnalyticsFlowPort(analytics));
+
+            return flow;
+        }, Lifetime.Singleton);
     }
 
     private void RegisterViewModels(IContainerBuilder builder)

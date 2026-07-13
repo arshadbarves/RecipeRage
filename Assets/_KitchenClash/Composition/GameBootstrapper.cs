@@ -1,26 +1,27 @@
 using KitchenClash.Domain;
 using KitchenClash.Application.State;
 using KitchenClash.Infrastructure.States;
+using Playcenter.GameFlow;
 using VContainer.Unity;
 
 namespace KitchenClash.Composition
 {
     public class GameBootstrapper : IStartable
     {
+        private readonly IAppFlow _appFlow;
         private readonly IGameStateManager _gameStateManager;
-        private readonly IStateFactory _stateFactory;
 
-        public GameBootstrapper(IGameStateManager gameStateManager, IStateFactory stateFactory)
+        public GameBootstrapper(IAppFlow appFlow, IGameStateManager gameStateManager)
         {
+            _appFlow = appFlow;
             _gameStateManager = gameStateManager;
-            _stateFactory = stateFactory;
         }
 
         public void Start()
         {
-            GameLogger.Log("GameBootstrapper starting...");
-            BootstrapState bootstrapState = _stateFactory.Create<BootstrapState>();
-            _gameStateManager.Initialize(bootstrapState);
+            GameLogger.Log("GameBootstrapper starting AppFlow cold boot...");
+            // State machine starts empty until Boot port enters BootstrapState.
+            _appFlow.StartColdBoot();
         }
     }
 }
