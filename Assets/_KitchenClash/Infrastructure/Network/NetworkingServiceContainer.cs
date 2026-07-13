@@ -9,6 +9,7 @@ using Unity.Services.Core;
 using Unity.Services.Authentication;
 using VContainer;
 using Cysharp.Threading.Tasks;
+using Playcenter.GameFlow;
 
 namespace KitchenClash.Infrastructure.Network
 {
@@ -38,6 +39,7 @@ namespace KitchenClash.Infrastructure.Network
         private readonly IMatchmakingService _matchmakingService;
         private readonly ITeamManager _teamManager;
         private readonly EOSLobbyManager _eosLobbyManager;
+        private readonly IAppFlow _appFlow;
 
         #endregion
 
@@ -53,7 +55,8 @@ namespace KitchenClash.Infrastructure.Network
             IPlayerManager playerManager,
             IMatchmakingService matchmakingService,
             ITeamManager teamManager,
-            EOSLobbyManager eosLobbyManager)
+            EOSLobbyManager eosLobbyManager,
+            IAppFlow appFlow)
         {
             _uiService = uiService;
             _stateManager = stateManager;
@@ -64,6 +67,7 @@ namespace KitchenClash.Infrastructure.Network
             _matchmakingService = matchmakingService;
             _teamManager = teamManager;
             _eosLobbyManager = eosLobbyManager;
+            _appFlow = appFlow;
             Initialize();
         }
 
@@ -88,7 +92,7 @@ namespace KitchenClash.Infrastructure.Network
             PlayerManager = _playerManager;
             MatchmakingService = _matchmakingService;
 
-            GameStarter = new GameStarter(LobbyManager, MatchmakingService, this, _matchContext, _uiService, _stateManager);
+            GameStarter = new GameStarter(LobbyManager, MatchmakingService, this, _matchContext, _uiService, _stateManager, _appFlow);
 
             BotSpawner = null;
 

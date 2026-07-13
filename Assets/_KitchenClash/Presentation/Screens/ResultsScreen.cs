@@ -89,9 +89,8 @@ namespace KitchenClash.Presentation.Screens
         
         private void OnLobbyButtonClicked()
         {
-            GameLogger.Log("Returning to Lobby via AppFlow...");
+            GameLogger.Log("Returning to Lobby...");
             _sessionContext?.GameStarter?.EndGame();
-            _appFlow?.ReturnHome();
         }
     }
 }
