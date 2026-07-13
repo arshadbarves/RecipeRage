@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using NUnit.Framework;
 using Playcenter.GameFlow;
 
@@ -61,25 +60,6 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             public void ExitResults() { }
         }
 
-        private sealed class InstantSplash : ISplashPort
-        {
-            private readonly IAppFlow _flow;
-            public InstantSplash(IAppFlow flow) { _flow = flow; }
-            public void EnterSplash(FlowContext context)
-            {
-                // Production splash dwells; test advances immediately via controller graph.
-                // AppFlowController transitions Splash→Boot on enter completion pattern:
-                // Controller TransitionTo(StudioSplash) calls EnterSplash then stays until
-                // something advances. For unit test, use a controller helper path:
-            }
-            public void ExitSplash() { }
-        }
-
-        // Prefer testing the public API as implemented: StartColdBoot enters StudioSplash.
-        // If controller does not auto-advance splash, drive phases via a test double that
-        // the controller already supports: after StartColdBoot, manually inspect Current
-        // and use a thin TestBootPort that on EnterBoot transitions by calling nothing —
-        // read AppFlowController.TransitionTo private behavior first.
 
         [Test]
         public void RequestPlay_FromHome_EntersMatchmaking()
@@ -100,7 +80,7 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             flow.StartColdBoot();
             flow.ReturnHome(); // fail-closed to Home from any phase
             Assert.AreEqual(FlowPhaseId.Home, flow.Current);
-            Assert.GreaterOrEqual(home.EnterCount, 1);
+            Assert.AreEqual(1, home.EnterCount);
 
             flow.RequestPlay(new PlayRequest { ModeId = "quick_2v2", TeamSize = 2 });
             Assert.AreEqual(FlowPhaseId.Matchmaking, flow.Current);
@@ -158,15 +138,21 @@ namespace RecipeRage.Tests.EditMode.Gameplay
         [Test]
         public void RequestPlay_NotFromHome_IsIgnored()
         {
+            var home = new RecordingHome();
             var mm = new RecordingMatchmaking();
-            var flow = new AppFlowController(matchmaking: mm);
+            var flow = new AppFlowController(home: home, matchmaking: mm);
             flow.StartColdBoot();
-            // Stay off Home if possible; if StartColdBoot lands Splash, RequestPlay should no-op
-            if (flow.Current != FlowPhaseId.Home)
-            {
-                flow.RequestPlay(PlayRequest.Empty);
-                Assert.AreEqual(0, mm.EnterCount);
-            }
+            flow.ReturnHome(); // Current is now Home (deterministic)
+            Assert.AreEqual(FlowPhaseId.Home, flow.Current);
+
+            flow.RequestPlay(new PlayRequest { ModeId = "quick_2v2", TeamSize = 2 });
+            Assert.AreEqual(FlowPhaseId.Matchmaking, flow.Current);
+            Assert.AreEqual(1, mm.EnterCount);
+
+            // Second RequestPlay from Matchmaking should be ignored
+            flow.RequestPlay(new PlayRequest { ModeId = "quick_3v3", TeamSize = 3 });
+            Assert.AreEqual(1, mm.EnterCount); // Still 1, second call ignored
+            Assert.AreEqual(FlowPhaseId.Matchmaking, flow.Current);
         }
     }
 }
