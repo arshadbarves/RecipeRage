@@ -1,0 +1,33 @@
+Assets/Playcenter/GameFlow/Runtime/Core/AppFlowController.cs
+  s_99229c453cd88d::t_2d18ff26415349 200-219
+Assets/Playcenter/GameFlow/Runtime/Core/IAppFlow.cs
+  s_99229c453cd88d::t_f6cb4f4bf1b38d 34-39
+Assets/_KitchenClash/Infrastructure/Flow/AppFlowProxy.cs
+  s_99229c453cd88d::t_589079994ee644 37-38
+Assets/_KitchenClash/Infrastructure/Flow/BootFlowPort.cs
+  s_99229c453cd88d::t_2b33e65c0b0c60 1-32
+Assets/_KitchenClash/Infrastructure/Flow/NullFlowPorts.cs
+  s_99229c453cd88d::t_6dbd82dc937b29 7-8
+Assets/_KitchenClash/Infrastructure/Flow/SplashFlowPort.cs
+  s_99229c453cd88d::t_53b5e7f471b8c5 1-48
+Assets/_KitchenClash/Infrastructure/States/BootstrapState.cs
+  s_99229c453cd88d::t_5da6f34347eb48 8,23,33-34,45,60,70-77,122-125,141-148,162-169
+Assets/_KitchenClash/Infrastructure/States/SessionLoadingState.cs
+  s_99229c453cd88d::t_b81fe9f3a364e9 9,19,25-26,32,76-84,93-100
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.13",
+  "base_commit_sha": "85267f4ec82d0325e9b6eee46f62e9a6431e6afa",
+  "prompts": {},
+  "sessions": {
+    "s_99229c453cd88d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "45070b64-765f-4e79-883a-4a2e9082e950",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
