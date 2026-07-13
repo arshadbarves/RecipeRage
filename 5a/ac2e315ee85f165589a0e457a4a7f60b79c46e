@@ -1,0 +1,21 @@
+docs/superpowers/plans/2026-07-12-architecture-cleanup-inventory.md
+  s_99229c453cd88d::t_aaa8fee122ed24 254,259-260
+Assets/_KitchenClash/Application/Config/RemoteConfigKeys.cs
+  s_99229c453cd88d::t_d912e564f22816 26,85
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "5aac2e315ee85f165589a0e457a4a7f60b79c46e",
+  "prompts": {},
+  "sessions": {
+    "s_99229c453cd88d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "45070b64-765f-4e79-883a-4a2e9082e950",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
