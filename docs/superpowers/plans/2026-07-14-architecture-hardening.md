@@ -262,9 +262,9 @@ EOF
 
 ---
 
-## Phase 3 — Infrastructure assembly walls (in progress)
+## Phase 3 — Infrastructure assembly walls (3a + 3b ports + Persistence leaf complete)
 
-**Goal:** Split leaf Infrastructure folders into compile-time assemblies so mega Infrastructure no longer owns Logging / Localization / Animation / Configuration / Platform / Async. Defer Network↔EOS / Flow / Persistence until Application ports break cycles.
+**Goal:** Split leaf Infrastructure folders into compile-time assemblies; break Network↔EOS / Persistence→EOS / Flow→Network cycles with Application ports; extract Persistence as a leaf once port-clean.
 
 ### Leaf assemblies (3a) — complete
 
@@ -273,7 +273,7 @@ EOF
 | `KitchenClash.Infrastructure.Logging` | Logging/ | `UnityLoggingService`, `LoggingBootstrap` | Domain, VContainer |
 | `KitchenClash.Infrastructure.Localization` | Localization/ | `LocalizationManager` | Domain, Application, VContainer |
 | `KitchenClash.Infrastructure.Animation` | Animation/ | `AnimationService`, DOTween animators | Domain, Application, UniTask, DOTween |
-| `KitchenClash.Infrastructure.Configuration` | Configuration/ | `GameConstants`, `GameSettingsConfig` | Domain |
+| `KitchenClash.Infrastructure.Configuration` | Configuration/ | `GameConstants`, `GameSettingsConfig`, `UGSConfig` | Domain |
 | `KitchenClash.Infrastructure.Platform` | Platform/ | `PlatformUtils` | (Unity only) |
 | `KitchenClash.Infrastructure.Async` | Async/ | `TaskExtensions` | Domain |
 
@@ -285,16 +285,48 @@ EOF
 - [x] Register `AnimationService` + DOTween animators in `RootLifetimeScope` (was missing)
 - [x] `dotnet build` Domain → leaves → Infrastructure → Presentation → Composition → EditMode green
 
-### Deferred (3b) — blocked by cycles
+### Phase 3b — Application ports + Persistence leaf (complete)
+
+**Cycle-breaking ports (Application):**
+
+| Port | Purpose | EOS / Infra adapter |
+|------|---------|---------------------|
+| `ICloudStorageProvider` | Cloud save lifecycle + `IStorageProvider` | `EOSCloudStorageProvider` |
+| `IFriendsServiceFactory` | Create friends service without Network→EOS | `EOSFriendsServiceFactory` |
+| `ILocalNetworkIdentity` | Local user id string for host checks | `EOSLocalNetworkIdentity` |
+| `IClientTransportConfigurator` | Configure client host connection | `EOSClientTransportConfigurator` |
+| `IMatchHudPort` (Phase 1) | Results/HUD without `IMatchContext` | `MatchHudPort` |
+
+**Source-level edges fixed:**
+
+- [x] `UGSConfig` moved Network → Configuration (namespace `KitchenClash.Infrastructure.Configuration`)
+- [x] `StorageProviderFactory` injects `ICloudStorageProvider` (no `new EOS…`)
+- [x] `SaveService` uses `ICloudStorageProvider` lifecycle (no EOS cast)
+- [x] `NetworkingServiceContainer` uses `IFriendsServiceFactory` + identity/transport ports; no EOS usings
+- [x] `GameStarter` uses `ILocalNetworkIdentity` + `IClientTransportConfigurator`; no Epic/PlayEveryWare usings
+- [x] `ResultsPhase` depends on `IMatchHudPort` + `IEconomyService` only (no Network / `IMatchContext`)
+- [x] `RootLifetimeScope` registers cloud provider, friends factory, identity, transport configurator
+
+**Persistence leaf assembly:**
+
+| Assembly | Folder | Refs |
+|----------|--------|------|
+| `KitchenClash.Infrastructure.Persistence` | Persistence/ | Domain, Application, UniTask |
+
+- [x] Persistence `.asmdef` + mega Infrastructure / Composition references
+- [x] CLI csproj ProjectReferences; mega Compile excludes Persistence sources
+- [x] EditMode tests drop unused `Infrastructure.Persistence` usings
+- [x] `dotnet build` Persistence → Infrastructure → Composition → EditMode green
+
+### Still deferred (further 3b walls)
 
 | Candidate | Blocker |
 |-----------|---------|
-| Network / EOS | Network→EOS and EOS→Network cycle |
-| Persistence | Constructs `EOSCloudStorageProvider` |
+| Network / EOS separate asmdefs | Remaining concrete edges + Audio→Network; ports one-way at source but same mega assembly |
 | Flow | Uses Configuration + Network + DI + Services |
 | Audio | MusicPlayer/SFXPlayer → Network |
 
-**Next:** Application ports to break Network↔EOS / Persistence→EOS, then extract those assemblies.
+**Next:** Optional Network/EOS/Flow asmdef splits after remaining edges; Phase 5 Domain kernel; Unity smoke; PR.
 
 ---
 

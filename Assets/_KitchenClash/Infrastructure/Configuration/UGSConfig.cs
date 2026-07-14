@@ -1,7 +1,11 @@
 using UnityEngine;
 
-namespace KitchenClash.Infrastructure.Network
+namespace KitchenClash.Infrastructure.Configuration
 {
+    /// <summary>
+    /// Unity Gaming Services project settings (ScriptableObject).
+    /// Lives in Configuration leaf assembly so EOS/Network do not form a cycle over config.
+    /// </summary>
     [CreateAssetMenu(fileName = "UGSConfig", menuName = "KitchenClash/Config/UGS Config")]
     public class UGSConfig : ScriptableObject
     {

@@ -83,7 +83,7 @@ GameFlow fixed product navigation. Remaining mess is inverted deps, vendor leaks
 |-------|--------|------------------------|--------|
 | 1 | Session shell + dependency laws | Presentation must not reference Infrastructure; Application must not reference EOS packages | **Complete** |
 | 2 | UI navigation purity | Animation/localization via Application ports; shrink `UIService` | **Complete** |
-| 3 | Infrastructure assembly walls | Split Flow / EOS / Network / Persistence (minimum) | **3a leaves complete**; 3b (Network/EOS/Flow/Persistence) deferred |
+| 3 | Infrastructure assembly walls | Split Flow / EOS / Network / Persistence (minimum) | **3a + 3b ports + Persistence leaf complete**; Network/EOS/Flow still mega |
 | 4 | Match gameplay ports | Expand match ports beyond HUD; shrink `PlayerController` / stations | **Complete** (scoped criteria) |
 | 5 | Domain kernel hygiene (optional) | Shell ports vs cooking models if still noisy | Pending |
 
@@ -93,10 +93,16 @@ GameFlow fixed product navigation. Remaining mess is inverted deps, vendor leaks
 - `BotTaskPlanner` confirmed Domain-only in Application — no Infra deps, no relocation
 - Match HUD remains on `IMatchHudPort` (Phase 1); Presentation still zero Network usings
 
+**Phase 3b shipped:**
+- Application ports: `ICloudStorageProvider`, `IFriendsServiceFactory`, `ILocalNetworkIdentity`, `IClientTransportConfigurator`
+- EOS adapters only; Network/Persistence/Flow no longer construct EOS concretes
+- `UGSConfig` in Configuration; `ResultsPhase` on `IMatchHudPort` only
+- Leaf: `KitchenClash.Infrastructure.Persistence` (Domain + Application + UniTask)
+- Network / EOS / Flow remain in mega Infrastructure until remaining edges (e.g. Audio→Network) are ported
+
 **Phase 3a shipped:**
 - Leaf Infrastructure assemblies: Logging, Localization, Animation, Configuration, Platform, Async
 - Composition + Editor wired; AnimationService DI registered at Root
-- Phase 3b (Network/EOS/Flow/Persistence walls) deferred on cycles
 
 **Phase 2 shipped:**
 - `UIService` partials: core / Navigation / ScreenOps (documented responsibilities)
@@ -315,5 +321,5 @@ Compile-time walls for zero-cross-dep folders (folder-level asmdefs):
 - `KitchenClash.Infrastructure.Platform` — `PlatformUtils`
 - `KitchenClash.Infrastructure.Async` — `TaskExtensions`
 
-Mega `KitchenClash.Infrastructure` retains Network / EOS / Flow / Persistence / Gameplay / Audio until Application ports break cycles (Phase 3b). Composition references all leaves for DI. `RootLifetimeScope` registers `AnimationService` + DOTween animators as `IAnimationService`.
+Mega `KitchenClash.Infrastructure` retains Network / EOS / Flow / Gameplay / Audio. Persistence is a leaf (`KitchenClash.Infrastructure.Persistence`). Phase 3b Application ports broke Network↔EOS / Persistence→EOS / Flow→Network at source level; further Network/EOS/Flow asmdef splits remain optional. Composition references all leaves for DI. `RootLifetimeScope` registers `AnimationService` + DOTween animators as `IAnimationService`, plus cloud/friends/identity/transport ports.
 

@@ -9,7 +9,7 @@ using PlayEveryWare.EpicOnlineServices.Samples;
 
 namespace KitchenClash.Infrastructure.EOS
 {
-    public class EOSCloudStorageProvider : IStorageProvider
+    public class EOSCloudStorageProvider : ICloudStorageProvider
     {
         private readonly PlayerDataStorageService _eosStorage;
         private bool _isInitialized;

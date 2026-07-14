@@ -4,7 +4,6 @@ using KitchenClash.Presentation.ViewModels;
 using KitchenClash.Application.Services;
 using KitchenClash.Application;
 using KitchenClash.Domain;
-using KitchenClash.Infrastructure.Persistence;
 using RecipeRage.Tests.EditMode.Gameplay.Fakes;
 using Cysharp.Threading.Tasks;
 using GameMode = KitchenClash.Application.Models.GameMode;

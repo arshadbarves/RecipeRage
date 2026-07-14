@@ -2,7 +2,7 @@ using KitchenClash.Application;
 using System;
 using System.Threading.Tasks;
 using KitchenClash.Domain;
-using KitchenClash.Infrastructure.Network;
+using KitchenClash.Infrastructure.Configuration;
 using Cysharp.Threading.Tasks;
 using Epic.OnlineServices;
 using Epic.OnlineServices.Connect;

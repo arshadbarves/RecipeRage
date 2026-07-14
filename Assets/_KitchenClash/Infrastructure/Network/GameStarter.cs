@@ -5,9 +5,6 @@ using KitchenClash.Domain;
 using KitchenClash.Infrastructure.Network.Spawning;
 using Unity.Netcode;
 using UnityEngine;
-using Epic.OnlineServices;
-using PlayEveryWare.EpicOnlineServices;
-using PlayEveryWare.EpicOnlineServices.Samples.Network;
 using Playcenter.GameFlow;
 
 namespace KitchenClash.Infrastructure.Network
@@ -23,6 +20,8 @@ namespace KitchenClash.Infrastructure.Network
         private readonly IMatchContext _matchContext;
         private readonly IUIService _uiService;
         private readonly IAppFlow _appFlow;
+        private readonly ILocalNetworkIdentity _localNetworkIdentity;
+        private readonly IClientTransportConfigurator _clientTransportConfigurator;
 
         private bool _isGameActive;
         private SpawnManager _spawnManager;
@@ -38,7 +37,9 @@ namespace KitchenClash.Infrastructure.Network
             IBotSpawnerRegistry botSpawnerRegistry,
             IMatchContext matchContext,
             IUIService uiService,
-            IAppFlow appFlow)
+            IAppFlow appFlow,
+            ILocalNetworkIdentity localNetworkIdentity,
+            IClientTransportConfigurator clientTransportConfigurator)
         {
             _lobbyManager = lobbyManager;
             _matchmakingService = matchmakingService;
@@ -46,6 +47,8 @@ namespace KitchenClash.Infrastructure.Network
             _matchContext = matchContext;
             _uiService = uiService;
             _appFlow = appFlow;
+            _localNetworkIdentity = localNetworkIdentity;
+            _clientTransportConfigurator = clientTransportConfigurator;
         }
 
         private NetworkManager NetcodeManager => _matchContext?.NetworkManager;
@@ -68,8 +71,8 @@ namespace KitchenClash.Infrastructure.Network
                 return;
             }
 
-            ProductUserId localUserId = EOSManager.Instance.GetProductUserId();
-            bool isHost = matchLobby.IsOwner(localUserId?.ToString());
+            string localUserId = _localNetworkIdentity?.LocalUserId;
+            bool isHost = matchLobby.IsOwner(localUserId);
 
             GameLogger.Log($"Starting game - IsHost: {isHost}, Lobby: {matchLobby.LobbyId}");
 
@@ -213,16 +216,12 @@ namespace KitchenClash.Infrastructure.Network
 
             _spawnManager = _matchContext?.SpawnManager;
 
-            EOSTransport transport = NetcodeManager?.GetComponent<EOSTransport>();
-
-            if (transport == null)
+            if (_clientTransportConfigurator == null ||
+                !_clientTransportConfigurator.TryConfigureHostConnection(hostUserIdStr))
             {
-                GameLogger.LogError("EOSTransport component not found on NetworkManager!");
-                OnGameStartFailed("EOSTransport not configured");
+                OnGameStartFailed("Transport not configured");
                 return;
             }
-
-            transport.ServerUserIdToConnectTo = ProductUserId.FromString(hostUserIdStr);
 
             bool success = NetcodeManager.StartClient();
 

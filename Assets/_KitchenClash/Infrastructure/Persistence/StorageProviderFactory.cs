@@ -1,12 +1,21 @@
 using KitchenClash.Application;
-using KitchenClash.Infrastructure.EOS;
 
 namespace KitchenClash.Infrastructure.Persistence
 {
+    /// <summary>
+    /// Lazily supplies local + cloud storage providers.
+    /// Cloud provider is injected via DI (ICloudStorageProvider) so this
+    /// assembly never references EOS concrete types.
+    /// </summary>
     public class StorageProviderFactory
     {
+        private readonly ICloudStorageProvider _cloudProvider;
         private LocalStorageProvider _localProvider;
-        private EOSCloudStorageProvider _cloudProvider;
+
+        public StorageProviderFactory(ICloudStorageProvider cloudProvider)
+        {
+            _cloudProvider = cloudProvider;
+        }
 
         public IStorageProvider GetLocalProvider()
         {
@@ -14,16 +23,10 @@ namespace KitchenClash.Infrastructure.Persistence
             {
                 _localProvider = new LocalStorageProvider();
             }
+
             return _localProvider;
         }
 
-        public IStorageProvider GetCloudProvider()
-        {
-            if (_cloudProvider == null)
-            {
-                _cloudProvider = new EOSCloudStorageProvider();
-            }
-            return _cloudProvider;
-        }
+        public IStorageProvider GetCloudProvider() => _cloudProvider;
     }
 }

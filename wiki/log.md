@@ -2,6 +2,15 @@
 
 Chronological record of wiki activity. Each entry starts with timestamp for parseability.
 
+## [2026-07-14] implementation | Architecture hardening Phase 3b complete (ports + Persistence leaf)
+
+- Application ports: `ICloudStorageProvider`, `IFriendsServiceFactory`, `ILocalNetworkIdentity`, `IClientTransportConfigurator`
+- EOS adapters only; `StorageProviderFactory` / `SaveService` / `GameStarter` / `NetworkingServiceContainer` / `ResultsPhase` de-EOS or de-Network
+- `UGSConfig` → Configuration; Persistence leaf asmdef (`KitchenClash.Infrastructure.Persistence`)
+- CLI: Persistence → Infrastructure → Composition → EditMode build 0 errors
+- Still mega: Network / EOS / Flow / Audio (optional further walls)
+- Next: optional Network/EOS/Flow splits; Phase 5 Domain kernel; Unity smoke; PR
+
 ## [2026-07-14] implementation | Architecture hardening Phase 4 complete (scoped)
 
 - `PlayerController` split into partials; primary file ~393 lines (&lt; ~400 target)

@@ -7,7 +7,6 @@ using KitchenClash.Application.Services;
 using KitchenClash.Domain;
 using KitchenClash.Infrastructure.Flow.Handlers;
 using KitchenClash.Infrastructure.Network;
-using KitchenClash.Infrastructure.Persistence;
 using Cysharp.Threading.Tasks;
 using NUnit.Framework;
 using Playcenter.GameFlow;

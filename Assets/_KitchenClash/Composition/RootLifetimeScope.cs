@@ -7,6 +7,7 @@ using KitchenClash.Application.Services;
 using KitchenClash.Composition;
 using KitchenClash.Domain;
 using KitchenClash.Infrastructure.Animation;
+using KitchenClash.Infrastructure.Configuration;
 using KitchenClash.Infrastructure.Ads;
 using KitchenClash.Infrastructure.Analytics;
 using KitchenClash.Infrastructure.Audio;
@@ -120,8 +121,12 @@ public class RootLifetimeScope : LifetimeScope
         builder.Register<MatchmakingPhaseHost>(Lifetime.Singleton).AsSelf().As<ITickable>();
 
         builder.Register<PlayerDataService>(Lifetime.Singleton).As<IPlayerDataService>();
+        builder.Register<EOSCloudStorageProvider>(Lifetime.Singleton).As<ICloudStorageProvider>();
         builder.Register<StorageProviderFactory>(Lifetime.Singleton);
         builder.Register<SaveService>(Lifetime.Singleton).As<ISaveService>();
+        builder.Register<EOSFriendsServiceFactory>(Lifetime.Singleton).As<IFriendsServiceFactory>();
+        builder.Register<EOSLocalNetworkIdentity>(Lifetime.Singleton).As<ILocalNetworkIdentity>();
+        builder.Register<EOSClientTransportConfigurator>(Lifetime.Singleton).As<IClientTransportConfigurator>();
 
 #if FIREBASE_REMOTE_CONFIG
         builder.Register<KitchenClash.Infrastructure.Firebase.FirebaseConfigProvider>(Lifetime.Singleton).As<IConfigProvider>();
@@ -167,7 +172,7 @@ public class RootLifetimeScope : LifetimeScope
 
             // Optional services may only exist in menu/session scopes.
             resolver.TryResolve(out IEconomyService economy);
-            resolver.TryResolve(out IMatchContext matchContext);
+            resolver.TryResolve(out IMatchHudPort matchHudPort);
             resolver.TryResolve(out ITutorialService tutorial);
             resolver.TryResolve(out IMatchmakingService matchmakingService);
             resolver.TryResolve(out IGameModeService gameModeService);
@@ -184,7 +189,7 @@ public class RootLifetimeScope : LifetimeScope
             matchmakingHost.Phase = matchmakingPhase;
 
             var matchRuntimePhase = new MatchRuntimePhase(eventBus, sessionContext, gameModeService);
-            var resultsPhase = new ResultsPhase(eventBus, economy, matchContext);
+            var resultsPhase = new ResultsPhase(eventBus, economy, matchHudPort);
 
             var loginPhase = new LoginPhase(ui, eventBus, appFlowProxy, sessionLoader);
             var maintenancePhase = new MaintenancePhase(maintenance, remoteConfig, eventBus, appFlowProxy);

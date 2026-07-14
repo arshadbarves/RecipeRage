@@ -18,7 +18,8 @@
         "KitchenClash.Infrastructure.Animation",
         "KitchenClash.Infrastructure.Configuration",
         "KitchenClash.Infrastructure.Platform",
-        "KitchenClash.Infrastructure.Async"
+        "KitchenClash.Infrastructure.Async",
+        "KitchenClash.Infrastructure.Persistence"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

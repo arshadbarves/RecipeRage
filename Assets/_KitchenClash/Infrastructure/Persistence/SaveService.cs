@@ -3,7 +3,6 @@ using KitchenClash.Application;
 using System;
 using System.Collections.Generic;
 using KitchenClash.Domain;
-using KitchenClash.Infrastructure.EOS;
 using Cysharp.Threading.Tasks;
 
 namespace KitchenClash.Infrastructure.Persistence
@@ -17,7 +16,7 @@ namespace KitchenClash.Infrastructure.Persistence
         private readonly StorageProviderFactory _providerFactory;
         private readonly IEncryptionService _encryption;
         private readonly IStorageProvider _localProvider;
-        private readonly IStorageProvider _cloudProvider;
+        private readonly ICloudStorageProvider _cloudProvider;
 
         // Storage configurations per data type
         private readonly Dictionary<string, StorageConfig> _storageConfigs;
@@ -34,7 +33,8 @@ namespace KitchenClash.Infrastructure.Persistence
             _encryption = encryption;
 
             _localProvider = _providerFactory.GetLocalProvider();
-            _cloudProvider = _providerFactory.GetCloudProvider();
+            // Factory returns the injected ICloudStorageProvider as IStorageProvider.
+            _cloudProvider = (ICloudStorageProvider)_providerFactory.GetCloudProvider();
 
             // Default Storage Configs (used if key not explicitly registered)
             _storageConfigs = new Dictionary<string, StorageConfig>
@@ -66,19 +66,13 @@ namespace KitchenClash.Infrastructure.Persistence
         public void OnUserLoggedIn()
         {
             GameLogger.Log("[SaveService] User logged in - enabling cloud storage");
-            if (_cloudProvider is EOSCloudStorageProvider eosProvider)
-            {
-                eosProvider.OnUserLoggedIn();
-            }
+            _cloudProvider.OnUserLoggedIn();
         }
 
         public void OnUserLoggedOut()
         {
             GameLogger.Log("[SaveService] User logged out");
-            if (_cloudProvider is EOSCloudStorageProvider eosProvider)
-            {
-                eosProvider.OnUserLoggedOut();
-            }
+            _cloudProvider.OnUserLoggedOut();
         }
 
         public GameSettingsData GetSettings()

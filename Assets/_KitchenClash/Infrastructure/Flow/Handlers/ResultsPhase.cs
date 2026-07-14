@@ -1,38 +1,39 @@
 using KitchenClash.Application;
 using KitchenClash.Application.Services;
 using KitchenClash.Domain;
-using KitchenClash.Infrastructure.Network;
 
 namespace KitchenClash.Infrastructure.Flow.Handlers
 {
     /// <summary>
     /// Match-end: victory/defeat audio + economy reward.
+    /// Depends only on Application ports (IMatchHudPort / IEconomyService) —
+    /// never on Network MonoBehaviours.
     /// </summary>
     public sealed class ResultsPhase
     {
-        private readonly IMatchContext _matchContext;
+        private readonly IMatchHudPort _matchHud;
         private readonly IEconomyService _economyService;
         private readonly IEventBus _eventBus;
 
         public ResultsPhase(
             IEventBus eventBus,
             IEconomyService economyService = null,
-            IMatchContext matchContext = null)
+            IMatchHudPort matchHud = null)
         {
-            _matchContext = matchContext;
+            _matchHud = matchHud;
             _economyService = economyService;
             _eventBus = eventBus;
         }
 
         public void Enter()
         {
-            _matchContext?.Refresh();
+            _matchHud?.Refresh();
 
             bool won = false;
-            MatchResultSync resultSync = _matchContext?.MatchResultSync;
-            if (resultSync != null && resultSync.CurrentResult.HasResult)
+            if (_matchHud != null && _matchHud.HasMatchResult)
             {
-                won = !resultSync.CurrentResult.IsDraw && resultSync.CurrentResult.WinningTeamId == 0;
+                MatchResultSnapshot result = _matchHud.CurrentMatchResult;
+                won = !result.IsDraw && result.WinningTeamId == _matchHud.LocalTeamId;
             }
 
             _eventBus?.Publish(new MusicEvent(won ? MusicTrack.Victory : MusicTrack.Defeat));
@@ -47,25 +48,17 @@ namespace KitchenClash.Infrastructure.Flow.Handlers
 
         private void AwardMatchReward()
         {
-            if (_economyService is not EconomyService economy)
+            if (_economyService == null || _matchHud == null || !_matchHud.HasMatchResult)
             {
                 return;
             }
 
-            MatchResultSync resultSync = _matchContext?.MatchResultSync;
-            if (resultSync == null || !resultSync.CurrentResult.HasResult)
-            {
-                return;
-            }
-
-            MatchResultState result = resultSync.CurrentResult;
-            ScoreManager scoreManager = _matchContext?.ScoreManager;
-
-            int localTeamId = 0;
+            MatchResultSnapshot result = _matchHud.CurrentMatchResult;
+            int localTeamId = _matchHud.LocalTeamId;
             bool won = !result.IsDraw && result.WinningTeamId == localTeamId;
-            int score = scoreManager?.GetScore(localTeamId) ?? 0;
+            int score = _matchHud.GetTeamScore(localTeamId);
 
-            economy.AwardMatchReward(won, score);
+            _economyService.AwardMatchReward(won, score);
         }
     }
 }

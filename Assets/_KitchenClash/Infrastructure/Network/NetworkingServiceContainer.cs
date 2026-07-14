@@ -2,8 +2,7 @@ using KitchenClash.Application;
 using System;
 using KitchenClash.Application.Services;
 using KitchenClash.Domain;
-using KitchenClash.Infrastructure.EOS;
-using PlayEveryWare.EpicOnlineServices.Samples;
+using KitchenClash.Infrastructure.Configuration;
 using Unity.Services.Core;
 using Unity.Services.Authentication;
 using VContainer;
@@ -36,7 +35,9 @@ namespace KitchenClash.Infrastructure.Network
         private readonly IPlayerManager _playerManager;
         private readonly IMatchmakingService _matchmakingService;
         private readonly ITeamManager _teamManager;
-        private readonly EOSLobbyManager _eosLobbyManager;
+        private readonly IFriendsServiceFactory _friendsServiceFactory;
+        private readonly ILocalNetworkIdentity _localNetworkIdentity;
+        private readonly IClientTransportConfigurator _clientTransportConfigurator;
         private readonly IAppFlow _appFlow;
 
         #endregion
@@ -52,7 +53,9 @@ namespace KitchenClash.Infrastructure.Network
             IPlayerManager playerManager,
             IMatchmakingService matchmakingService,
             ITeamManager teamManager,
-            EOSLobbyManager eosLobbyManager,
+            IFriendsServiceFactory friendsServiceFactory,
+            ILocalNetworkIdentity localNetworkIdentity,
+            IClientTransportConfigurator clientTransportConfigurator,
             IAppFlow appFlow)
         {
             _uiService = uiService;
@@ -62,7 +65,9 @@ namespace KitchenClash.Infrastructure.Network
             _playerManager = playerManager;
             _matchmakingService = matchmakingService;
             _teamManager = teamManager;
-            _eosLobbyManager = eosLobbyManager;
+            _friendsServiceFactory = friendsServiceFactory;
+            _localNetworkIdentity = localNetworkIdentity;
+            _clientTransportConfigurator = clientTransportConfigurator;
             _appFlow = appFlow;
             Initialize();
         }
@@ -71,13 +76,12 @@ namespace KitchenClash.Infrastructure.Network
         {
             if (_isInitialized)
             {
-                GameLogger.LogWarning("Already initialized");
                 return;
             }
 
-            if (_eosLobbyManager == null)
+            if (_lobbyManager == null)
             {
-                GameLogger.LogError("EOSLobbyManager not available");
+                GameLogger.LogError("ILobbyManager not available");
                 return;
             }
 
@@ -88,7 +92,15 @@ namespace KitchenClash.Infrastructure.Network
             PlayerManager = _playerManager;
             MatchmakingService = _matchmakingService;
 
-            GameStarter = new GameStarter(LobbyManager, MatchmakingService, this, _matchContext, _uiService, _appFlow);
+            GameStarter = new GameStarter(
+                LobbyManager,
+                MatchmakingService,
+                this,
+                _matchContext,
+                _uiService,
+                _appFlow,
+                _localNetworkIdentity,
+                _clientTransportConfigurator);
 
             BotSpawner = null;
 
@@ -127,9 +139,9 @@ namespace KitchenClash.Infrastructure.Network
                     return;
                 }
 
-                if (ugsConfig.enableFriendsSystem)
+                if (ugsConfig.enableFriendsSystem && _friendsServiceFactory != null)
                 {
-                    FriendsService = new EOSFriendsService(LobbyManager, _authService);
+                    FriendsService = _friendsServiceFactory.Create(LobbyManager, _authService);
                     FriendsService.Initialize();
                     GameLogger.Log("Unity Friends Service initialized");
                 }
