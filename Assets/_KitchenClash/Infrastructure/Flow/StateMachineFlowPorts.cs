@@ -2,93 +2,62 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using KitchenClash.Application.Services;
-using KitchenClash.Application.State;
 using KitchenClash.Domain;
-using KitchenClash.Infrastructure.States;
+using KitchenClash.Infrastructure.Flow.Handlers;
 using Playcenter.GameFlow;
 
 namespace KitchenClash.Infrastructure.Flow
 {
     /// <summary>
-    /// Home hub adapter: loads menu scene via MainMenuState.
-    /// HomeScreen is shown by MainMenuState after the scene is ready (assembly-safe Type.GetType).
+    /// Home hub adapter: loads MainMenu scene via HomePhase.
     /// </summary>
     public sealed class HomeFlowPort : IHomePort
     {
-        private readonly IGameStateManager _stateManager;
+        private readonly HomePhase _home;
 
-        public HomeFlowPort(IGameStateManager stateManager)
+        public HomeFlowPort(HomePhase home)
         {
-            _stateManager = stateManager;
+            _home = home;
         }
 
         public void EnterHome(FlowContext context)
         {
-            if (_stateManager?.CurrentState is not MainMenuState)
-            {
-                _stateManager?.ChangeState<MainMenuState>();
-            }
+            _ = context;
+            _home?.Enter();
         }
 
         public void ExitHome()
         {
-            // MainMenuState / next phase owns screen hide when leaving the hub.
+            _home?.Exit();
         }
     }
 
     /// <summary>
-    /// Matchmaking adapter: drives existing MatchmakingState.
-    /// Match found / cancel report back through IAppFlow from the state.
+    /// Matchmaking adapter: drives MatchmakingPhase; hides queue UI on exit.
     /// </summary>
     public sealed class MatchmakingFlowPort : IMatchmakingPort
     {
         private const string MatchmakingScreenTypeName =
             "KitchenClash.Presentation.Screens.MatchmakingScreen, KitchenClash.Presentation";
 
-        private readonly IGameStateManager _stateManager;
-        private readonly IStateFactory _stateFactory;
+        private readonly MatchmakingPhase _matchmaking;
         private readonly IUIService _uiService;
 
-        public MatchmakingFlowPort(
-            IGameStateManager stateManager,
-            IStateFactory stateFactory,
-            IUIService uiService = null)
+        public MatchmakingFlowPort(MatchmakingPhase matchmaking, IUIService uiService = null)
         {
-            _stateManager = stateManager;
-            _stateFactory = stateFactory;
+            _matchmaking = matchmaking;
             _uiService = uiService;
         }
 
         public void EnterMatchmaking(FlowContext context, PlayRequest request)
         {
-            var state = _stateFactory?.Create<MatchmakingState>();
-            if (state != null && request != null)
-            {
-                if (!string.IsNullOrEmpty(request.ModeId) || request.TeamSize > 0)
-                {
-                    int teamSize = request.TeamSize > 0
-                        ? request.TeamSize
-                        : (context?.LastTeamSize > 0 ? context.LastTeamSize : 2);
-                    string modeId = !string.IsNullOrEmpty(request.ModeId)
-                        ? request.ModeId
-                        : context?.LastModeId;
-                    if (!string.IsNullOrEmpty(modeId))
-                    {
-                        state.SetQueueParameters(modeId, teamSize);
-                    }
-                }
-
-                _stateManager?.ChangeState(state);
-                return;
-            }
-
-            _stateManager?.ChangeState<MatchmakingState>();
+            _matchmaking?.Enter(request, context);
         }
 
         public void ExitMatchmaking()
         {
-            // Hide immediately on flow exit so intro/home never sit under the queue UI.
-            // MatchmakingState.Exit also hides (idempotent).
+            _matchmaking?.Exit();
+
             Type screenType = Type.GetType(MatchmakingScreenTypeName);
             if (screenType != null)
             {
@@ -98,106 +67,77 @@ namespace KitchenClash.Infrastructure.Flow
 
         public void Cancel()
         {
-            // MatchmakingState.Exit cancels in-flight search when we leave the state.
+            // ExitMatchmaking cancels in-flight search via MatchmakingPhase.Exit.
         }
     }
 
     /// <summary>
-    /// Match runtime adapter: GameplayState loads map on Enter; StartRound after GO.
+    /// Match runtime adapter: MatchRuntimePhase loads map; StartRound gated until load complete.
     /// EnterMatch is idempotent so intro can preload the map under the card.
     /// </summary>
     public sealed class MatchRuntimeFlowPort : IMatchRuntimePort
     {
-        private readonly IGameStateManager _stateManager;
-        private readonly IStateFactory _stateFactory;
+        private readonly MatchRuntimePhase _matchRuntime;
         private bool _pendingStartRound;
 
-        public MatchRuntimeFlowPort(IGameStateManager stateManager, IStateFactory stateFactory = null)
+        public MatchRuntimeFlowPort(MatchRuntimePhase matchRuntime)
         {
-            _stateManager = stateManager;
-            _stateFactory = stateFactory;
+            _matchRuntime = matchRuntime;
         }
 
         public void EnterMatch(FlowContext context)
         {
             _ = context;
-            if (_stateManager?.CurrentState is GameplayState existing)
-            {
-                if (_pendingStartRound)
-                {
-                    _pendingStartRound = false;
-                    existing.RequestStartRound();
-                }
+            _matchRuntime?.Enter();
 
-                return;
-            }
-
-            // Prefer factory so we can request start on the same instance if needed.
-            var state = _stateFactory?.Create<GameplayState>();
-            if (state != null)
-            {
-                _stateManager?.ChangeState(state);
-                if (_pendingStartRound)
-                {
-                    _pendingStartRound = false;
-                    state.RequestStartRound();
-                }
-
-                return;
-            }
-
-            _stateManager?.ChangeState<GameplayState>();
-            if (_pendingStartRound && _stateManager?.CurrentState is GameplayState created)
+            if (_pendingStartRound)
             {
                 _pendingStartRound = false;
-                created.RequestStartRound();
+                _matchRuntime?.RequestStartRound();
             }
         }
 
         public void StartRound(FlowContext context)
         {
             _ = context;
-            if (_stateManager?.CurrentState is GameplayState gameplay)
+            if (_matchRuntime != null && _matchRuntime.IsEntered)
             {
-                gameplay.RequestStartRound();
+                _matchRuntime.RequestStartRound();
                 return;
             }
 
-            // Map not entered yet (or still transitioning) — queue until EnterMatch.
             _pendingStartRound = true;
         }
 
         public void ExitMatch()
         {
             _pendingStartRound = false;
-            // Teardown owned by GameplayState.Exit / match scope dispose.
+            _matchRuntime?.Exit();
         }
     }
 
     /// <summary>
-    /// Results adapter: enters GameOverState worker (music/SFX via MatchEndedEvent).
-    /// Screen show uses Type.GetType — Infrastructure must not reference Presentation types.
+    /// Results adapter: ResultsPhase (audio/reward) + ResultsScreen show/hide.
     /// </summary>
     public sealed class ResultsFlowPort : IResultsPort
     {
         private const string ResultsScreenTypeName =
             "KitchenClash.Presentation.Screens.ResultsScreen, KitchenClash.Presentation";
 
-        private readonly IGameStateManager _stateManager;
+        private readonly ResultsPhase _results;
         private readonly IUIService _uiService;
 
-        public ResultsFlowPort(IGameStateManager stateManager, IUIService uiService)
+        public ResultsFlowPort(ResultsPhase results, IUIService uiService)
         {
-            _stateManager = stateManager;
+            _results = results;
             _uiService = uiService;
         }
 
         public void EnterResults(FlowContext context, MatchResultInfo result)
         {
-            if (_stateManager?.CurrentState is not GameOverState)
-            {
-                _stateManager?.ChangeState<GameOverState>();
-            }
+            _ = context;
+            _ = result;
+            _results?.Enter();
 
             Type resultsType = Type.GetType(ResultsScreenTypeName);
             if (resultsType != null)
@@ -208,6 +148,8 @@ namespace KitchenClash.Infrastructure.Flow
 
         public void ExitResults()
         {
+            _results?.Exit();
+
             Type resultsType = Type.GetType(ResultsScreenTypeName);
             if (resultsType != null)
             {
@@ -266,7 +208,7 @@ namespace KitchenClash.Infrastructure.Flow
     }
 
     /// <summary>
-    /// Helpers shared by states/view-models when building flow DTOs.
+    /// Helpers shared by handlers/view-models when building flow DTOs.
     /// </summary>
     public static class FlowMatchInfoFactory
     {

@@ -4,7 +4,6 @@ using System.Reflection;
 using KitchenClash.Application;
 using KitchenClash.Application.Models;
 using KitchenClash.Application.Services;
-using KitchenClash.Application.State;
 using KitchenClash.Composition;
 using KitchenClash.Domain;
 using KitchenClash.Infrastructure.Ads;
@@ -14,6 +13,7 @@ using KitchenClash.Infrastructure.IAP;
 using KitchenClash.Infrastructure.DI;
 using KitchenClash.Infrastructure.EOS;
 using KitchenClash.Infrastructure.Flow;
+using KitchenClash.Infrastructure.Flow.Handlers;
 using KitchenClash.Infrastructure.Localization;
 using KitchenClash.Infrastructure.Logging;
 using KitchenClash.Infrastructure.Network;
@@ -44,7 +44,6 @@ public class RootLifetimeScope : LifetimeScope
         RegisterAppFlow(builder);
         RegisterViewModels(builder);
         RegisterScreens(builder);
-        RegisterGameStates(builder);
         RegisterEntryPoints(builder);
     }
 
@@ -100,8 +99,12 @@ public class RootLifetimeScope : LifetimeScope
 
     private void RegisterInfrastructure(IContainerBuilder builder)
     {
-        builder.Register<GameStateFactory>(Lifetime.Singleton).As<IStateFactory>();
-        builder.Register<GameStateManager>(Lifetime.Singleton).As<IGameStateManager>().As<ITickable>();
+        // Session scope for cold boot (SessionLoader / BootSequence). Root owns SessionManager;
+        // MenuLifetimeScope does not re-register it (resolves parent Singleton).
+        builder.Register<SessionManager>(Lifetime.Singleton).AsSelf().As<IInitializable>();
+        builder.Register<SessionContext>(Lifetime.Singleton).As<ISessionContext>();
+        builder.Register<MatchmakingPhaseHost>(Lifetime.Singleton).AsSelf().As<ITickable>();
+
         builder.Register<PlayerDataService>(Lifetime.Singleton).As<IPlayerDataService>();
         builder.Register<StorageProviderFactory>(Lifetime.Singleton);
         builder.Register<SaveService>(Lifetime.Singleton).As<ISaveService>();
@@ -136,24 +139,59 @@ public class RootLifetimeScope : LifetimeScope
             AppFlowController flow = null;
             IAppFlow Proxy() => flow;
 
-            var stateManager = resolver.Resolve<IGameStateManager>();
-            var stateFactory = resolver.Resolve<IStateFactory>();
             var ui = resolver.Resolve<IUIService>();
             var analytics = resolver.Resolve<IAnalyticsService>();
+            var eventBus = resolver.Resolve<IEventBus>();
+            var ntp = resolver.Resolve<INTPTimeService>();
+            var remoteConfig = resolver.Resolve<IRemoteConfigService>();
+            var auth = resolver.Resolve<IAuthService>();
+            var maintenance = resolver.Resolve<IMaintenanceService>();
+            var config = resolver.Resolve<IConfigService>();
+            var sessionManager = resolver.Resolve<SessionManager>();
+            var sessionContext = resolver.Resolve<ISessionContext>();
+            var matchmakingHost = resolver.Resolve<MatchmakingPhaseHost>();
+
+            // Optional services may only exist in menu/session scopes.
+            resolver.TryResolve(out IEconomyService economy);
+            resolver.TryResolve(out IMatchContext matchContext);
+            resolver.TryResolve(out ITutorialService tutorial);
+            resolver.TryResolve(out IMatchmakingService matchmakingService);
+            resolver.TryResolve(out IGameModeService gameModeService);
 
             var appFlowProxy = new AppFlowProxy(Proxy);
 
+            var sessionLoader = new SessionLoader(sessionManager, sessionContext);
+            var bootSequence = new BootSequence(
+                ntp, remoteConfig, auth, maintenance, eventBus, appFlowProxy, sessionLoader);
+
+            var homePhase = new HomePhase(eventBus);
+            var matchmakingPhase = new MatchmakingPhase(
+                ui, sessionContext, maintenance, config, eventBus, appFlowProxy, matchmakingService);
+            matchmakingHost.Phase = matchmakingPhase;
+
+            var matchRuntimePhase = new MatchRuntimePhase(eventBus, sessionContext, gameModeService);
+            var resultsPhase = new ResultsPhase(eventBus, economy, matchContext);
+
+            var loginPhase = new LoginPhase(ui, eventBus, appFlowProxy, sessionLoader);
+            var maintenancePhase = new MaintenancePhase(maintenance, remoteConfig, eventBus, appFlowProxy);
+            var noConnectionPhase = new NoConnectionPhase(ui, eventBus, appFlowProxy, sessionLoader);
+            var tutorialPhase = new TutorialPhase(ui, eventBus, appFlowProxy, tutorial);
+            var accountUpgradePhase = new AccountUpgradePhase(ui, eventBus, appFlowProxy);
+            var sidePhases = new SidePhaseFlowPort(
+                loginPhase, maintenancePhase, noConnectionPhase, tutorialPhase, accountUpgradePhase);
+
             flow = new AppFlowController(
                 splash: new SplashFlowPort(appFlowProxy),
-                boot: new BootFlowPort(stateManager, stateFactory),
-                home: new HomeFlowPort(stateManager),
-                matchmaking: new MatchmakingFlowPort(stateManager, stateFactory, ui),
+                boot: new BootFlowPort(bootSequence),
+                home: new HomeFlowPort(homePhase),
+                matchmaking: new MatchmakingFlowPort(matchmakingPhase, ui),
                 matchIntro: new MatchIntroFlowPort(ui, appFlowProxy),
                 countdown: new CountdownFlowPort(ui, appFlowProxy),
-                matchRuntime: new MatchRuntimeFlowPort(stateManager, stateFactory),
-                results: new ResultsFlowPort(stateManager, ui),
+                matchRuntime: new MatchRuntimeFlowPort(matchRuntimePhase),
+                results: new ResultsFlowPort(resultsPhase, ui),
                 popupPolicy: new SoftPopupPolicy(),
-                analytics: new AnalyticsFlowPort(analytics));
+                analytics: new AnalyticsFlowPort(analytics),
+                sidePhases: sidePhases);
 
             return flow;
         }, Lifetime.Singleton);
@@ -178,23 +216,6 @@ public class RootLifetimeScope : LifetimeScope
         foreach (System.Type screenType in screenTypes)
         {
             builder.Register(screenType, Lifetime.Transient);
-        }
-    }
-
-    private void RegisterGameStates(IContainerBuilder builder)
-    {
-        var stateTypes = AppDomain.CurrentDomain.GetAssemblies()
-            .SelectMany(a =>
-            {
-                try { return a.GetTypes(); }
-                catch { return System.Array.Empty<System.Type>(); }
-            })
-            .Where(t => t.IsClass && !t.IsAbstract && typeof(IState).IsAssignableFrom(t))
-            .Where(t => t.Namespace?.StartsWith("KitchenClash.Infrastructure.States") == true);
-
-        foreach (System.Type stateType in stateTypes)
-        {
-            builder.Register(stateType, Lifetime.Transient);
         }
     }
 
