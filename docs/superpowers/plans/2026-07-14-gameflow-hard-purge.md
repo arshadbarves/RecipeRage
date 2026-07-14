@@ -1,6 +1,8 @@
 # GameFlow Hard Purge (Phase 2) Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
+
+**Status:** Phase 2 implementation COMPLETE (2026-07-14). Approach C shipped.
 
 **Goal:** Delete `IGameStateManager` / `IState` / all `*State` workers; ports own phase handlers; `AppFlowController` is the sole phase owner including side phases.
 
@@ -66,7 +68,7 @@
 - Produces: `ISidePhasePort` with `void EnterSidePhase(FlowPhaseId phase, FlowContext context)` and `void ExitSidePhase(FlowPhaseId phase)`
 - Produces: `AppFlowController(..., ISidePhasePort sidePhases = null)` last optional param after analytics (or before analytics — **use last param after analytics** for minimal churn)
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Append to `AppFlowControllerTests.cs`:
 
@@ -136,7 +138,7 @@ public void EnterSidePhase_Chained_PreservesReturnAndExitsPrevious()
 }
 ```
 
-- [ ] **Step 2: Run build (tests compile-check)**
+- [x] **Step 2: Run build (tests compile-check)**
 
 ```bash
 dotnet build RecipeRage.Tests.EditMode.csproj -nologo
@@ -144,7 +146,7 @@ dotnet build RecipeRage.Tests.EditMode.csproj -nologo
 
 Expected: FAIL — `ISidePhasePort` / `sidePhases` named arg missing.
 
-- [ ] **Step 3: Add interface**
+- [x] **Step 3: Add interface**
 
 In `IFlowPorts.cs` after `IFlowAnalyticsPort`:
 
@@ -157,7 +159,7 @@ public interface ISidePhasePort
 }
 ```
 
-- [ ] **Step 4: Wire AppFlowController**
+- [x] **Step 4: Wire AppFlowController**
 
 Add field `private readonly ISidePhasePort _sidePhases;`
 
@@ -190,7 +192,7 @@ case FlowPhaseId.AccountUpgrade:
     break;
 ```
 
-- [ ] **Step 5: Build green**
+- [x] **Step 5: Build green**
 
 ```bash
 dotnet build RecipeRage.Tests.EditMode.csproj -nologo
@@ -198,7 +200,7 @@ dotnet build RecipeRage.Tests.EditMode.csproj -nologo
 
 Expected: 0 errors.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add Assets/Playcenter/GameFlow/Runtime/Ports/IFlowPorts.cs \
@@ -340,7 +342,7 @@ public sealed class BootFlowPort : IBootPort
 }
 ```
 
-- [ ] **Step 1: Implement SessionLoader + BootSequence + BootFlowPort** (TDD: if pure fakes are heavy due to Unity services, implement first then add a focused test that BootSequence calls EnterSidePhase(Login) when auth empty — use hand-rolled fakes for IAuthService/IAppFlow).
+- [x] **Step 1: Implement SessionLoader + BootSequence + BootFlowPort** (TDD: if pure fakes are heavy due to Unity services, implement first then add a focused test that BootSequence calls EnterSidePhase(Login) when auth empty — use hand-rolled fakes for IAuthService/IAppFlow).
 
 Minimal test with FakeAppFlow + stub auth:
 
@@ -361,7 +363,7 @@ public UniTask RunAsync(CancellationToken ct) { ... }
 public void Start() { Cancel(); _cts = new(); RunAsync(_cts.Token).Forget(); }
 ```
 
-- [ ] **Step 2: Wire RootLifetimeScope RegisterAppFlow**
+- [x] **Step 2: Wire RootLifetimeScope RegisterAppFlow**
 
 ```csharp
 var sessionLoader = new SessionLoader(
@@ -414,7 +416,7 @@ flow = new AppFlowController(
 
 If `ForceUpdateChecker` / `INTPTimeService` resolution fails, match BootstrapState ctor exactly from DI.
 
-- [ ] **Step 3: Build**
+- [x] **Step 3: Build**
 
 ```bash
 dotnet build RecipeRage.Gameplay.csproj -nologo
@@ -423,7 +425,7 @@ dotnet build RecipeRage.Tests.EditMode.csproj -nologo
 
 Expected: 0 errors. BootstrapState may still exist unused by Boot port.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add Assets/_KitchenClash/Infrastructure/Flow/Handlers \
@@ -510,10 +512,10 @@ public sealed class SidePhaseFlowPort : ISidePhasePort
 
 Port Enter/Exit bodies from existing state files line-for-line except navigation.
 
-- [ ] **Step 1: Implement handlers + SidePhaseFlowPort**
-- [ ] **Step 2: Wire into AppFlowController construction**
-- [ ] **Step 3: Build 0 errors**
-- [ ] **Step 4: Commit**
+- [x] **Step 1: Implement handlers + SidePhaseFlowPort**
+- [x] **Step 2: Wire into AppFlowController construction**
+- [x] **Step 3: Build 0 errors**
+- [x] **Step 4: Commit**
 
 ```bash
 git commit -m "$(cat <<'EOF'
@@ -549,7 +551,7 @@ public sealed class HomeFlowPort : IHomePort
 
 Also show HomeScreen if MainMenuState did not — check Presentation: if HomeScreen shown elsewhere, keep parity. Current MainMenuState does **not** show HomeScreen in the snippet; HomeFlowPort comment said MainMenuState shows it via Type.GetType — verify and preserve whatever is real in code at implement time.
 
-- [ ] Implement, wire Root factory `home: new HomeFlowPort(homePhase)`, build, commit:
+- [x] Implement, wire Root factory `home: new HomeFlowPort(homePhase)`, build, commit:
 
 ```bash
 git commit -m "feat(gameflow): HomePhase owns menu scene enter/exit
@@ -601,7 +603,7 @@ public void ExitMatchmaking() { /* hide UI */ _phase.Exit(); }
 public void Cancel() { /* optional; Exit cancels */ }
 ```
 
-- [ ] Implement, wire, build, commit:
+- [x] Implement, wire, build, commit:
 
 ```bash
 git commit -m "feat(gameflow): MatchmakingPhase ITickable replaces MatchmakingState
@@ -659,7 +661,7 @@ public sealed class MatchRuntimeFlowPort : IMatchRuntimePort
 }
 ```
 
-- [ ] Implement, wire, build, commit:
+- [x] Implement, wire, build, commit:
 
 ```bash
 git commit -m "feat(gameflow): MatchRuntimePhase owns map load and StartRound gate
@@ -678,7 +680,7 @@ Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>"
 **ResultsPhase.Enter:** GameOverState body (Refresh, music, SFX, AwardMatchReward).  
 **ResultsFlowPort:** call phase then show ResultsScreen (already in port). Exit: hide screen + phase.Exit.
 
-- [ ] Implement, wire, build, commit:
+- [x] Implement, wire, build, commit:
 
 ```bash
 git commit -m "feat(gameflow): ResultsPhase owns match-end rewards and audio
@@ -701,9 +703,9 @@ Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>"
   - Ensure no port still needs SM
 - Modify: any remaining ctor that required SM for states still registered — if states still exist until Task 9, they may break DI scan. **Order:** either delete state registration first and leave state files unregistered (orphaned) then Task 9 deletes files, **or** combine 8+9. Prefer: Task 8 stops registering states/SM; Task 9 deletes files. Orphaned state `.cs` files still compile if they reference IGameStateManager — **keep Application.State until Task 9** OR update states to not compile... States will still compile as long as Application.State exists. Unregistered is fine.
 
-- [ ] **Step 1: Update consumers**
-- [ ] **Step 2: Update RegisterAppFlow** — zero `Resolve<IGameStateManager>()`
-- [ ] **Step 3: Build**
+- [x] **Step 1: Update consumers**
+- [x] **Step 2: Update RegisterAppFlow** — zero `Resolve<IGameStateManager>()`
+- [x] **Step 3: Build**
 
 ```bash
 dotnet build RecipeRage.Gameplay.csproj -nologo
@@ -712,7 +714,7 @@ dotnet build RecipeRage.Tests.EditMode.csproj -nologo
 
 Fix test fakes that construct GameStarter with SM.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git commit -m "refactor(gameflow): remove IGameStateManager from DI and consumers
@@ -756,7 +758,7 @@ dotnet build RecipeRage.Tests.EditMode.csproj -nologo
 
 Expected: 0 errors.
 
-- [ ] Commit:
+- [x] Commit:
 
 ```bash
 git commit -m "refactor(gameflow): delete IGameStateManager and all phase workers
@@ -777,9 +779,9 @@ Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>"
 - Modify: `.superpowers/sdd/progress.md` — Phase 2 tasks complete
 - Append: `wiki/log.md` updated note
 
-- [ ] **Step 1: Doc updates** (accurate to code)
-- [ ] **Step 2: Final grep + build**
-- [ ] **Step 3: Commit**
+- [x] **Step 1: Doc updates** (accurate to code)
+- [x] **Step 2: Final grep + build**
+- [x] **Step 3: Commit**
 
 ```bash
 git commit -m "docs(gameflow): wiki and CLAUDE for hard-purge architecture
@@ -787,7 +789,7 @@ git commit -m "docs(gameflow): wiki and CLAUDE for hard-purge architecture
 Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>"
 ```
 
-- [ ] **Step 4: Push** (if network allows)
+- [x] **Step 4: Push** (if network allows)
 
 ```bash
 git push -u origin architecture-cleanup

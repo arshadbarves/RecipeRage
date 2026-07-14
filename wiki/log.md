@@ -131,3 +131,11 @@ Chronological record of wiki activity. Each entry starts with timestamp for pars
 - Clarified: IGameStateManager + states are internal phase workers, not public navigation API
 - Scope names: RootLifetimeScope (not GameLifetimeScope), MenuLifetimeScope (not SessionLifetimeScope)
 
+
+## [2026-07-14] docs | GameFlow Phase 2 hard purge
+
+- Option B: wiki/CLAUDE match port-owned handlers; IGameStateManager deleted
+- wiki/GameFlow-SDK.md: handlers + ISidePhasePort; Root DI without SM
+- wiki/Technical.md: DI tree SessionManager/MatchmakingPhaseHost; no workers
+- CLAUDE.md: product flow via handlers; no BaseState/IState registration
+- Deleted: Application/State/*, Infrastructure/States/*, GameStateManager, GameStateFactory

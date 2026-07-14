@@ -90,14 +90,17 @@ Assets/_KitchenClash/
 Three nested scopes — never inject a child-scope service into a parent scope:
 
 **Root (`RootLifetimeScope`)** — `Assets/_KitchenClash/Composition/RootLifetimeScope.cs`
-- App-lifetime singletons: `IEventBus`, `ILoggingService`, `IAuthService`, `IUIService`, `IGameStateManager`, `IAppFlow`, `IConfigService`, `IRemoteConfigService`
+- App-lifetime singletons: `IEventBus`, `ILoggingService`, `IAuthService`, `IUIService`, `IAppFlow`, `IConfigService`, `IRemoteConfigService`
+- Session boot: `SessionManager`, `ISessionContext`, `MatchmakingPhaseHost` (ITickable)
 - Root networking primitives: `IPlayerNetworkManager`, `INetworkObjectPool`, `INetworkGameManager`
-- Player/economy/character services: `IPlayerDataService`, `IEconomyService`, `ICharacterService`
-- All `BaseUIScreen` subclasses and `IState` implementations registered as Transient via reflection
+- Player data: `IPlayerDataService` (economy/character often menu-scoped; handlers use `TryResolve`)
+- All `BaseUIScreen` subclasses registered as Transient via reflection (`[UIScreen]`)
+- **No** `IGameStateManager` / `IState` — hard-purged
 
 **Session (`MenuLifetimeScope`)** — `Assets/_KitchenClash/Composition/MenuLifetimeScope.cs`
-- Active-session services: `INetworkingServices` (via `NetworkingServiceContainer`), `ILobbyManager`, `IPlayerManager`, `IMatchmakingService`, `ITeamManager`, `IGameStarter`
+- Active-session services: `INetworkingServices` (via `NetworkingServiceContainer`), `ILobbyManager`, `IPlayerManager`, `IMatchmakingService`, `ITeamManager`, `IGameStarter`, `IEconomyService`, `ITutorialService`
 - Does NOT own root network primitives (`INetworkObjectPool`, `INetworkGameManager`)
+- Does NOT re-register `SessionManager` (Root owns cold-boot instance)
 
 **Match (`MatchLifetimeScope`)**
 - Per-match: `IScoreService`, `IOrderService`, `IAbilityService`, `IHazardService`, `IMatchContext`, `BotManager`, `BotClaimRegistry`, `BotTaskPlanner`, `RecipeCatalog`
@@ -106,17 +109,19 @@ Three nested scopes — never inject a child-scope service into a parent scope:
 
 **Public API:** `IAppFlow` (from Playcenter.GameFlow) — sole navigator for UI and features.
 - UI screens call `IAppFlow.RequestPlay()`, `IAppFlow.ReturnHome()`, `IAppFlow.RequestPlayAgain()`
-- `IGameStateManager` and states are internal phase workers — not for public navigation
+- Side phases: `IAppFlow.EnterSidePhase` / `CompleteSidePhase` via `ISidePhasePort`
+- Phase work lives in port-owned handlers under `Infrastructure/Flow/Handlers/`
 
-### State Flow (Internal Workers)
+### Product Flow (handlers)
 
 ```
-BootstrapState → LoginState → MainMenuState → MatchmakingState → GameplayState → GameOverState
+BootSequence → (Login side phase if needed) → HomePhase → MatchmakingPhase
+  → Match Intro → Countdown → MatchRuntimePhase → ResultsPhase → HomePhase
 ```
 
 - Entry: `GameBootstrapper` (registered as `IStartable`) calls `IAppFlow.StartColdBoot()`
-- States inherit from `BaseState`, implement `Enter()` / `Update()` / `Exit()`
-- States perform work (scene loads, networking, UI delegation) as directed by flow ports
+- Ports (`BootFlowPort`, `HomeFlowPort`, …) delegate Enter/Exit to handlers
+- Matchmaking timeout ticks via Root `MatchmakingPhaseHost` → `MatchmakingPhase.Tick()`
 
 ### Match Runtime Bridge
 

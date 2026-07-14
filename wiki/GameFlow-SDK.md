@@ -49,55 +49,72 @@ Assets/Playcenter/GameFlow/
 Game adapters live **outside** the module:
 
 ```
-Assets/_KitchenClash/Infrastructure/Flow/   # port adapters + AppFlowProxy
-Assets/_KitchenClash/Presentation/Screens/  # shell skins (Home / MM / Results / Intro / Countdown)
-Assets/_KitchenClash/Infrastructure/States/ # phase workers during migration
+Assets/_KitchenClash/Infrastructure/Flow/           # port adapters + AppFlowProxy + SidePhaseFlowPort
+Assets/_KitchenClash/Infrastructure/Flow/Handlers/  # port-owned phase handlers (BootSequence, *Phase)
+Assets/_KitchenClash/Presentation/Screens/          # shell skins (Home / MM / Results / Intro / Countdown)
 ```
+
+`IGameStateManager` / `IState` / `Infrastructure/States/*` were **hard-purged** (Phase 2). Ports own handlers; AppFlow is the sole phase owner.
 
 ---
 
-## GameFlow vs game states
+## GameFlow vs phase handlers
 
 | Layer | Role |
 |-------|------|
-| **`IAppFlow` / `AppFlowController`** | Public product navigator. Owns legal transitions. Fail-closed to Home. |
-| **Ports** | Scene/UI/net work. GameFlow never loads scenes itself. |
-| **`IGameStateManager` + states** | Phase **workers** during migration (Home/MM/Match/Results adapters). Not the public API. |
+| **`IAppFlow` / `AppFlowController`** | Public product navigator. Owns legal transitions (main + side phases). Fail-closed to Home. |
+| **Ports** | Thin adapters. Enter/Exit delegates to handlers. GameFlow never loads scenes itself. |
+| **Handlers (`*Phase` / `BootSequence` / `SessionLoader`)** | Port-owned work units (scene/UI/net). No state machine. |
+| **`ISidePhasePort`** | Dispatches Login / Maintenance / NoConnection / Tutorial / AccountUpgrade / ForceUpdate. |
 
-UI and features call **only** `IAppFlow` intents (`RequestPlay`, `ReturnHome`, `RequestPlayAgain`, …).
+UI and features call **only** `IAppFlow` intents (`RequestPlay`, `ReturnHome`, `RequestPlayAgain`, `EnterSidePhase`, …).
 
 ---
 
 ## DI (RootLifetimeScope)
 
 ```csharp
+builder.Register<SessionManager>(Lifetime.Singleton).AsSelf().As<IInitializable>();
+builder.Register<SessionContext>(Lifetime.Singleton).As<ISessionContext>();
+builder.Register<MatchmakingPhaseHost>(Lifetime.Singleton).AsSelf().As<ITickable>();
+
 builder.Register<IAppFlow>(resolver =>
 {
     AppFlowController flow = null;
     IAppFlow Proxy() => flow;
 
-    var stateManager = resolver.Resolve<IGameStateManager>();
-    var stateFactory = resolver.Resolve<IStateFactory>();
     var ui = resolver.Resolve<IUIService>();
     var analytics = resolver.Resolve<IAnalyticsService>();
+    // … resolve boot/session deps; TryResolve optional menu-scoped services …
 
     var appFlowProxy = new AppFlowProxy(Proxy);
+    var sessionLoader = new SessionLoader(sessionManager, sessionContext);
+    var bootSequence = new BootSequence(/* ntp, rc, auth, maintenance, eventBus, appFlowProxy, sessionLoader */);
+    var homePhase = new HomePhase(eventBus);
+    var matchmakingPhase = new MatchmakingPhase(/* … */, appFlowProxy, matchmakingService);
+    matchmakingHost.Phase = matchmakingPhase;
+    var matchRuntimePhase = new MatchRuntimePhase(/* … */);
+    var resultsPhase = new ResultsPhase(eventBus, economy, matchContext);
+    var sidePhases = new SidePhaseFlowPort(login, maintenance, noConnection, tutorial, accountUpgrade);
 
     flow = new AppFlowController(
         splash: new SplashFlowPort(appFlowProxy),
-        boot: new BootFlowPort(stateManager, stateFactory),
-        home: new HomeFlowPort(stateManager),
-        matchmaking: new MatchmakingFlowPort(stateManager, stateFactory, ui),
+        boot: new BootFlowPort(bootSequence),
+        home: new HomeFlowPort(homePhase),
+        matchmaking: new MatchmakingFlowPort(matchmakingPhase, ui),
         matchIntro: new MatchIntroFlowPort(ui, appFlowProxy),
         countdown: new CountdownFlowPort(ui, appFlowProxy),
-        matchRuntime: new MatchRuntimeFlowPort(stateManager, stateFactory),
-        results: new ResultsFlowPort(stateManager, ui),
+        matchRuntime: new MatchRuntimeFlowPort(matchRuntimePhase),
+        results: new ResultsFlowPort(resultsPhase, ui),
         popupPolicy: new SoftPopupPolicy(),
-        analytics: new AnalyticsFlowPort(analytics));
+        analytics: new AnalyticsFlowPort(analytics),
+        sidePhases: sidePhases);
 
     return flow;
 }, Lifetime.Singleton);
 ```
+
+**Boot rules:** authenticated cold boot ends with `NotifyBootComplete` only. Login success: `SessionLoader` then `CompleteSidePhase` only (never dual Complete+Notify).
 
 ---
 
@@ -109,7 +126,7 @@ builder.Register<IAppFlow>(resolver =>
 | `RememberedQueuePolicy` | Empty `PlayRequest` → last mode/team/chef from `FlowContext` |
 | `SoftPopupPolicy` | Soft offers only after `HasCompletedFirstPlay` |
 
-MatchmakingState uses `AlwaysResolveMatchPolicy` for bot-fill timeout. Soft offers query `IAppFlow.CanShowSoftPopup()`.
+`MatchmakingPhase` uses `AlwaysResolveMatchPolicy` for bot-fill timeout (ticked via Root `MatchmakingPhaseHost`). Soft offers query `IAppFlow.CanShowSoftPopup()`.
 
 ---
 

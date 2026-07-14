@@ -23,16 +23,18 @@
 
 ```
 RootLifetimeScope (app-lifetime, DontDestroyOnLoad)
-  IAppFlow             → AppFlowController       (Singleton) — PUBLIC product navigator
-  IGameStateManager    → GameStateManager        (Singleton) — Worker engine (states use)
-  IEOSManager          → EOSManager           (Singleton)
-  IAuthService         → EOSAuthService        (Singleton)
-  IConfigService       → FirebaseRemoteConfigSvc (Singleton)
-  IAnalyticsService    → FirebaseAnalyticsSvc   (Singleton)
-  IConnectivityService → NetworkConnectivitySvc (Singleton + ITickable)
-  IPlayerDataService   → EOSPlayerDataService   (Singleton)
-  IUIService           → UIService              (Singleton)
-  UIScreenStackManager → UIScreenStackManager   (Singleton)
+  IAppFlow              → AppFlowController      (Singleton) — PUBLIC product navigator
+  SessionManager        → SessionManager         (Singleton) — cold-boot session scope
+  ISessionContext       → SessionContext         (Singleton)
+  MatchmakingPhaseHost  → MatchmakingPhaseHost   (Singleton + ITickable)
+  IEOSManager           → EOSManager             (Singleton)
+  IAuthService          → AuthenticationService  (Singleton)
+  IConfigService        → CompositeRemoteConfig  (Singleton)
+  IAnalyticsService     → FirebaseAnalyticsSvc   (Singleton)
+  IConnectivityService  → NetworkConnectivitySvc (Singleton + ITickable)
+  IPlayerDataService    → PlayerDataService      (Singleton)
+  IUIService            → UIService              (Singleton)
+  UIScreenStackManager  → UIScreenStackManager   (Singleton)
 
   MenuLifetimeScope (child, active: session/menu/lobby/matchmaking)
     IMatchmakingService → EOSMatchmakingService (Scoped)
@@ -40,6 +42,8 @@ RootLifetimeScope (app-lifetime, DontDestroyOnLoad)
     ITeamManager        → TeamManager           (Scoped)
     ILobbyManager       → LobbyManager          (Scoped)
     INetworkingServices → NetworkingServiceContainer (Scoped)
+    IEconomyService     → EconomyService        (Scoped)
+    ITutorialService    → TutorialService       (Scoped)
 
     MatchLifetimeScope (child, active: during a match only)
       IScoreService   → ScoreService    (Scoped)
@@ -56,11 +60,11 @@ RootLifetimeScope (app-lifetime, DontDestroyOnLoad)
 
 | Component | Role |
 |-----------|------|
-| **IAppFlow** | Public product navigator. UI screens and features call `RequestPlay()`, `ReturnHome()`, `RequestPlayAgain()`. Owns legal transitions and fail-closed-to-Home policy. |
-| **IGameStateManager + IState** | Internal phase workers. States (Boot, Home, Matchmaking, Match, Results) perform scene/networking/UI work. Not for public navigation. |
-| **Flow Ports** | Adapters between GameFlow and game systems. Ports delegate scene loads, networking, and UI to domain services. |
+| **IAppFlow** | Public product navigator. UI/features call `RequestPlay()`, `ReturnHome()`, `RequestPlayAgain()`, `EnterSidePhase()`. Owns main + side phase transitions; fail-closed to Home. |
+| **Flow Ports** | Thin adapters (`BootFlowPort`, `HomeFlowPort`, …, `SidePhaseFlowPort`). Enter/Exit only. |
+| **Handlers** | Port-owned work: `BootSequence`, `SessionLoader`, `HomePhase`, `MatchmakingPhase`, `MatchRuntimePhase`, `ResultsPhase`, side `*Phase`. No `IGameStateManager`. |
 
-**Migration status:** GameFlow production cutover complete (Tasks 1–7). States are workers; `IAppFlow` is public API.
+**Migration status:** Phase 1 (IAppFlow public cutover) + Phase 2 hard purge complete. `Application/State` and `Infrastructure/States` deleted.
 
 ## SOLID Summary
 
