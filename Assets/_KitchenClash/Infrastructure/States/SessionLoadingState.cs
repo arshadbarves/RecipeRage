@@ -76,6 +76,11 @@ namespace KitchenClash.Infrastructure.States
                 GameLogger.Log("[SessionLoadingState] Loading complete. Transitioning to Home.");
                 if (_appFlow != null)
                 {
+                    // Two paths: (1) Login side-phase → CompleteSidePhase returns to Home
+                    //            (2) Authenticated cold boot (still Boot) → NotifyBootComplete → Home
+                    // CompleteSidePhase is no-op if not in side phase, so call it first.
+                    _appFlow.CompleteSidePhase();
+                    // If still Boot (side phase path already returned to Home), complete boot.
                     _appFlow.NotifyBootComplete();
                 }
                 else
@@ -90,14 +95,8 @@ namespace KitchenClash.Infrastructure.States
             catch (Exception ex)
             {
                 GameLogger.LogException(ex);
-                if (_appFlow != null)
-                {
-                    _appFlow.EnterSidePhase(FlowPhaseId.Login);
-                }
-                else
-                {
-                    _stateManager.ChangeState<LoginState>();
-                }
+                _appFlow?.EnterSidePhase(FlowPhaseId.Login);
+                _stateManager.ChangeState<LoginState>();
             }
         }
 

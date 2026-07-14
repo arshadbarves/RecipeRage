@@ -67,14 +67,8 @@ namespace KitchenClash.Infrastructure.States
             catch (Exception ex)
             {
                 GameLogger.LogException(ex);
-                if (_appFlow != null)
-                {
-                    _appFlow.EnterSidePhase(FlowPhaseId.Login);
-                }
-                else
-                {
-                    _stateManager.ChangeState<LoginState>();
-                }
+                _appFlow?.EnterSidePhase(FlowPhaseId.Login);
+                _stateManager.ChangeState<LoginState>();
             }
         }
 
@@ -138,14 +132,8 @@ namespace KitchenClash.Infrastructure.States
                 if (isInMaintenance)
                 {
                     GameLogger.LogInfo("[BootstrapState] Maintenance active. Transitioning to MaintenanceState.");
-                    if (_appFlow != null)
-                    {
-                        _appFlow.EnterSidePhase(FlowPhaseId.Maintenance);
-                    }
-                    else
-                    {
-                        _stateManager.ChangeState<MaintenanceState>();
-                    }
+                    _appFlow?.EnterSidePhase(FlowPhaseId.Maintenance);
+                    _stateManager.ChangeState<MaintenanceState>();
                     return;
                 }
             }
@@ -159,14 +147,8 @@ namespace KitchenClash.Infrastructure.States
 
             if (!isAuthenticated)
             {
-                if (_appFlow != null)
-                {
-                    _appFlow.EnterSidePhase(FlowPhaseId.Login);
-                }
-                else
-                {
-                    _stateManager.ChangeState<LoginState>();
-                }
+                _appFlow?.EnterSidePhase(FlowPhaseId.Login);
+                _stateManager.ChangeState<LoginState>();
                 return;
             }
 

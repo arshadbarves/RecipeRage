@@ -65,10 +65,7 @@ namespace KitchenClash.Infrastructure.States
         {
             GameLogger.Log($"[LoginState] Login success: {evt.UserId}");
             
-            // If entered as side phase, notify completion
-            _appFlow?.CompleteSidePhase();
-            
-            // Continue worker chain to load session
+            // Continue worker chain to load session — side phase completion happens in SessionLoadingState
             _stateManager.ChangeState<SessionLoadingState>();
         }
 

@@ -81,8 +81,8 @@ namespace KitchenClash.Infrastructure.States
                     {
                         GameLogger.LogInfo("[MaintenanceState] Maintenance ended, transitioning to LoginState");
                         
-                        // If entered as side phase, notify completion
-                        _appFlow?.CompleteSidePhase();
+                        // Move to Login side phase, don't return Home yet
+                        _appFlow?.EnterSidePhase(FlowPhaseId.Login);
                         
                         // Continue worker chain to login
                         _stateManager.ChangeState<LoginState>();

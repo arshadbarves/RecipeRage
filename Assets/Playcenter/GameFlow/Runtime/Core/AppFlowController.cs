@@ -247,7 +247,13 @@ namespace Playcenter.GameFlow
                 return;
             }
 
-            _sideReturnPhase = _current == FlowPhaseId.None ? FlowPhaseId.Home : _current;
+            // Preserve original return target when chaining side phases
+            // (e.g. Maintenance → Login should still return to Boot/Home, not Maintenance).
+            if (!IsSidePhase(_current))
+            {
+                _sideReturnPhase = _current == FlowPhaseId.None ? FlowPhaseId.Home : _current;
+            }
+
             ForceTransitionTo(sidePhase);
         }
 
