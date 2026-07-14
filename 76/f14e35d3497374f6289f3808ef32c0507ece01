@@ -1,0 +1,39 @@
+Assets/Scripts/Tests/EditMode/Gameplay/GameLoggerTests.cs.meta
+  s_99229c453cd88d::t_ee11ced1f8a830 1-11
+Assets/Scripts/Tests/EditMode/Gameplay/LoggingBootstrapTests.cs.meta
+  s_99229c453cd88d::t_77e3da2740c437 1-11
+Assets/Scripts/Tests/RecipeRage.Tests.EditMode.asmdef
+  s_99229c453cd88d::t_727a0e2010bf41 9
+wiki/GameFlow-SDK.md
+  s_99229c453cd88d::t_fe0fde4105bd9e 123-125,136-138,141-142
+wiki/Technical.md
+  s_99229c453cd88d::t_0987c30c5baed6 157-158
+wiki/log.md
+  s_99229c453cd88d::t_66c17169598824 221-228
+Assets/Playcenter/Shell/Runtime/Logging/GameLogger.cs
+  s_99229c453cd88d::t_5d39eea7345893 6-8,14-16,19-21,57-58
+Assets/Scripts/Tests/EditMode/Gameplay/GameLoggerTests.cs
+  s_99229c453cd88d::t_8984fc61a5f95f 1-115
+Assets/Scripts/Tests/EditMode/Gameplay/LoggingBootstrapTests.cs
+  s_99229c453cd88d::t_de05f96ad9455a 1-82
+Assets/_KitchenClash/Composition/RootLifetimeScope.cs
+  s_99229c453cd88d::t_6ab9b8e868b8a5 58-64,82-83,104-105
+Assets/_KitchenClash/Infrastructure/Logging/LoggingBootstrap.cs
+  s_99229c453cd88d::t_b832720eefd926 7-11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "76f14e35d3497374f6289f3808ef32c0507ece01",
+  "prompts": {},
+  "sessions": {
+    "s_99229c453cd88d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "45070b64-765f-4e79-883a-4a2e9082e950",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
