@@ -14,21 +14,21 @@ namespace KitchenClash.Infrastructure.EOS
     public class EOSPlayerManager : IPlayerManager
     {
         private readonly EOSLobbyManager _eosLobbyManager;
-        private Lobby _currentLobby;
+        private LobbyInfo _currentLobby;
 
         public EOSPlayerManager(EOSLobbyManager eosLobbyManager)
         {
             _eosLobbyManager = eosLobbyManager ?? throw new ArgumentNullException(nameof(eosLobbyManager));
         }
 
-        public void SetCurrentLobby(Lobby lobby)
+        public void SetCurrentLobby(LobbyInfo lobby)
         {
             _currentLobby = lobby;
         }
 
         public void SetPlayerReady(bool isReady)
         {
-            if (_currentLobby == null)
+            if (!HasActiveLobby())
             {
                 GameLogger.LogError("No current lobby");
                 return;
@@ -47,7 +47,7 @@ namespace KitchenClash.Infrastructure.EOS
 
         public void SetPlayerTeam(TeamId teamId)
         {
-            if (_currentLobby == null)
+            if (!HasActiveLobby())
             {
                 GameLogger.LogError("No current lobby");
                 return;
@@ -66,7 +66,7 @@ namespace KitchenClash.Infrastructure.EOS
 
         public void SetPlayerCharacterClass(int characterClassId)
         {
-            if (_currentLobby == null)
+            if (!HasActiveLobby())
             {
                 GameLogger.LogError("No current lobby");
                 return;
@@ -85,7 +85,7 @@ namespace KitchenClash.Infrastructure.EOS
 
         public void InviteFriend(string friendProductUserId)
         {
-            if (_currentLobby == null)
+            if (!HasActiveLobby())
             {
                 GameLogger.LogError("No current lobby to invite to");
                 return;
@@ -104,7 +104,8 @@ namespace KitchenClash.Infrastructure.EOS
 
         public void KickPlayer(string playerProductUserId)
         {
-            if (_currentLobby == null || !_currentLobby.IsOwner(EOSManager.Instance.GetProductUserId()))
+            Lobby eosLobby = _eosLobbyManager.GetCurrentLobby();
+            if (eosLobby == null || !eosLobby.IsOwner(EOSManager.Instance.GetProductUserId()))
             {
                 GameLogger.LogWarning("Only lobby owner can kick players");
                 return;
@@ -130,15 +131,46 @@ namespace KitchenClash.Infrastructure.EOS
             });
         }
 
+        private bool HasActiveLobby()
+        {
+            if (_currentLobby != null && !string.IsNullOrEmpty(_currentLobby.LobbyId))
+            {
+                return true;
+            }
+
+            Lobby eosLobby = _eosLobbyManager.GetCurrentLobby();
+            return eosLobby != null && eosLobby.IsValid();
+        }
+
         private bool IsPlayerInLobby(ProductUserId userId)
         {
-            foreach (LobbyMember member in _currentLobby.Members)
+            if (_currentLobby?.Players != null)
+            {
+                string userIdString = userId?.ToString();
+                foreach (PlayerInfo player in _currentLobby.Players)
+                {
+                    if (player != null &&
+                        (player.PlayerId == userIdString || player.ProductUserId == userIdString))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            Lobby eosLobby = _eosLobbyManager.GetCurrentLobby();
+            if (eosLobby == null)
+            {
+                return false;
+            }
+
+            foreach (LobbyMember member in eosLobby.Members)
             {
                 if (member.ProductId == userId)
                 {
                     return true;
                 }
             }
+
             return false;
         }
 

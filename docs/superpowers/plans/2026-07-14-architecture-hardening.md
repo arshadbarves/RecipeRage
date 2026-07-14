@@ -128,17 +128,17 @@ EOF
 - Modify: Infrastructure implementations + call sites
 - Test: mapping unit test if pure mapper extracted
 
-- [ ] **Step 1: Add `LobbyOpResult`** (Success bool + optional error code/message; no Epic types).
+- [x] **Step 1: Add `LobbyOpResult`** (Success bool + optional error code/message; no Epic types).
 
-- [ ] **Step 2: Change `ILobbyManager` events** from `Action<Result, LobbyInfo>` to `Action<LobbyOpResult, LobbyInfo>`.
+- [x] **Step 2: Change `ILobbyManager` events** from `Action<Result, LobbyInfo>` to `Action<LobbyOpResult, LobbyInfo>`.
 
-- [ ] **Step 3: Replace PlayEveryWare `Lobby` parameters** on `ITeamManager` / `IPlayerManager` with Domain `LobbyInfo` or a dedicated snapshot DTO already used by the game.
+- [x] **Step 3: Replace PlayEveryWare `Lobby` parameters** on `ITeamManager` / `IPlayerManager` with Domain `LobbyInfo` or a dedicated snapshot DTO already used by the game.
 
-- [ ] **Step 4: Update EOS adapters** to map `Epic.OnlineServices.Result` → `LobbyOpResult` at the boundary only.
+- [x] **Step 4: Update EOS adapters** to map `Epic.OnlineServices.Result` → `LobbyOpResult` at the boundary only.
 
-- [ ] **Step 5: Remove EOS package references** from `KitchenClash.Application.asmdef` when `rg` shows zero Epic/PlayEveryWare usings under Application.
+- [x] **Step 5: Remove EOS package references** from `KitchenClash.Application.asmdef` when `rg` shows zero Epic/PlayEveryWare usings under Application.
 
-- [ ] **Step 6: Build Application + Infrastructure + Tests; commit.**
+- [x] **Step 6: Build Application + Infrastructure + Tests; commit.**
 
 ```bash
 dotnet build RecipeRage.Core.csproj -nologo
@@ -212,8 +212,8 @@ EOF
 ## Phase 1 done when
 
 - [x] Design committed  
-- [ ] `ISessionContext` in Application, interface-only properties  
-- [ ] No Epic/PlayEveryWare in Application sources or asmdef  
+- [x] `ISessionContext` in Application, interface-only properties  
+- [x] No Epic/PlayEveryWare in Application sources or asmdef  
 - [ ] No `using KitchenClash.Infrastructure` in Presentation  
 - [ ] Presentation.asmdef does not reference Infrastructure  
 - [ ] EditMode tests green  

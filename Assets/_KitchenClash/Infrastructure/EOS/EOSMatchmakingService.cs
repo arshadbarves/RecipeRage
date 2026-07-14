@@ -377,11 +377,11 @@ namespace KitchenClash.Infrastructure.EOS
 
         #region Private Methods - Callbacks
 
-        private void OnMatchLobbyCreatedForMatchmaking(Result result, LobbyInfo lobbyInfo)
+        private void OnMatchLobbyCreatedForMatchmaking(LobbyOpResult result, LobbyInfo lobbyInfo)
         {
             _lobbyManager.OnMatchLobbyCreated -= OnMatchLobbyCreatedForMatchmaking;
 
-            if (result != Result.Success)
+            if (!result.Success)
             {
                 GameLogger.LogError($"Failed to create match lobby: {result}");
                 HandleMatchmakingFailure("Failed to create match lobby");
@@ -396,11 +396,11 @@ namespace KitchenClash.Infrastructure.EOS
             OnPlayersFound?.Invoke(PlayersFound, RequiredPlayers);
         }
 
-        private void OnMatchLobbyJoinedForMatchmaking(Result result, LobbyInfo lobbyInfo)
+        private void OnMatchLobbyJoinedForMatchmaking(LobbyOpResult result, LobbyInfo lobbyInfo)
         {
             _lobbyManager.OnMatchLobbyJoined -= OnMatchLobbyJoinedForMatchmaking;
 
-            if (result != Result.Success)
+            if (!result.Success)
             {
                 GameLogger.LogError($"Failed to join match lobby: {result}");
                 SearchForMatchLobbies(_currentGameModeId, _currentTeamSize, RequiredPlayers - _partySize);

@@ -1,4 +1,3 @@
-using Epic.OnlineServices;
 using KitchenClash.Domain;
 using System;
 
@@ -7,8 +6,8 @@ namespace KitchenClash.Application
     public interface ILobbyManager : IDisposable
     {
         // Events - Match
-        event Action<Result, LobbyInfo> OnMatchLobbyCreated;
-        event Action<Result, LobbyInfo> OnMatchLobbyJoined;
+        event Action<LobbyOpResult, LobbyInfo> OnMatchLobbyCreated;
+        event Action<LobbyOpResult, LobbyInfo> OnMatchLobbyJoined;
         event Action OnMatchLobbyLeft;
         event Action OnMatchLobbyUpdated;
 

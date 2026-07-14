@@ -8,7 +8,7 @@ namespace KitchenClash.Application
         List<PlayerInfo> TeamA { get; }
         List<PlayerInfo> TeamB { get; }
         void UpdateTeams();
-        void UpdateTeamsFromLobby(PlayEveryWare.EpicOnlineServices.Samples.Lobby lobby);
+        void UpdateTeamsFromLobby(LobbyInfo lobby);
         PlayerInfo GetPlayerInfo(string playerId);
         void Clear();
     }

@@ -1,13 +1,11 @@
 using KitchenClash.Application;
 using System.Collections.Generic;
 using KitchenClash.Domain;
-using PlayEveryWare.EpicOnlineServices;
-using PlayEveryWare.EpicOnlineServices.Samples;
 
 namespace KitchenClash.Infrastructure.EOS
 {
     /// <summary>
-    /// Manages team assignments and player info caching
+    /// Manages team assignments and player info caching from Domain LobbyInfo snapshots.
     /// </summary>
     public class EOSTeamManager : ITeamManager
     {
@@ -24,19 +22,24 @@ namespace KitchenClash.Infrastructure.EOS
             _teamB.Clear();
         }
 
-        public void UpdateTeamsFromLobby(Lobby lobby)
+        public void UpdateTeamsFromLobby(LobbyInfo lobby)
         {
             _teamA.Clear();
             _teamB.Clear();
 
-            if (lobby == null)
+            if (lobby?.Players == null)
             {
                 return;
             }
 
-            foreach (LobbyMember member in lobby.Members)
+            foreach (PlayerInfo source in lobby.Players)
             {
-                PlayerInfo playerInfo = GetOrCreatePlayerInfo(member, lobby);
+                if (source == null || string.IsNullOrEmpty(source.PlayerId))
+                {
+                    continue;
+                }
+
+                PlayerInfo playerInfo = GetOrCreatePlayerInfo(source, lobby);
 
                 if (playerInfo.Team == TeamId.TeamA)
                 {
@@ -55,69 +58,32 @@ namespace KitchenClash.Infrastructure.EOS
             return playerInfo;
         }
 
-        private PlayerInfo GetOrCreatePlayerInfo(LobbyMember member, Lobby lobby)
+        private PlayerInfo GetOrCreatePlayerInfo(PlayerInfo source, LobbyInfo lobby)
         {
-            string playerId = member.ProductId.ToString();
-
-            if (_playerInfoCache.TryGetValue(playerId, out PlayerInfo playerInfo))
+            if (_playerInfoCache.TryGetValue(source.PlayerId, out PlayerInfo playerInfo))
             {
-                UpdatePlayerInfo(playerInfo, member, lobby);
+                CopyPlayerFields(playerInfo, source, lobby);
             }
             else
             {
-                playerInfo = CreatePlayerInfo(member, lobby);
-                _playerInfoCache[playerId] = playerInfo;
+                playerInfo = new PlayerInfo();
+                CopyPlayerFields(playerInfo, source, lobby);
+                _playerInfoCache[source.PlayerId] = playerInfo;
             }
 
-            ExtractMemberAttributes(playerInfo, member);
             return playerInfo;
         }
 
-        private PlayerInfo CreatePlayerInfo(LobbyMember member, Lobby lobby)
+        private static void CopyPlayerFields(PlayerInfo target, PlayerInfo source, LobbyInfo lobby)
         {
-            return new PlayerInfo
-            {
-                PlayerId = member.ProductId.ToString(),
-                DisplayName = member.DisplayName,
-                IsHost = lobby.IsOwner(member.ProductId),
-                IsLocal = member.ProductId == EOSManager.Instance.GetProductUserId(),
-                ProductUserId = member.ProductId?.ToString()
-            };
-        }
-
-        private void UpdatePlayerInfo(PlayerInfo playerInfo, LobbyMember member, Lobby lobby)
-        {
-            playerInfo.DisplayName = member.DisplayName;
-            playerInfo.IsHost = lobby.IsOwner(member.ProductId);
-            playerInfo.IsLocal = member.ProductId == EOSManager.Instance.GetProductUserId();
-            playerInfo.ProductUserId = member.ProductId?.ToString();
-        }
-
-        private void ExtractMemberAttributes(PlayerInfo playerInfo, LobbyMember member)
-        {
-            foreach (KeyValuePair<string, LobbyAttribute> kvp in member.MemberAttributes)
-            {
-                LobbyAttribute attribute = kvp.Value;
-
-                switch (attribute.Key)
-                {
-                    case "IsReady":
-                        playerInfo.IsReady = bool.TryParse(attribute.AsString, out bool isReady) && isReady;
-                        break;
-                    case "TeamId":
-                        if (int.TryParse(attribute.AsString, out int teamId))
-                        {
-                            playerInfo.Team = (TeamId)teamId;
-                        }
-                        break;
-                    case "CharacterClass":
-                        if (int.TryParse(attribute.AsString, out int characterClass))
-                        {
-                            playerInfo.CharacterClassId = characterClass;
-                        }
-                        break;
-                }
-            }
+            target.PlayerId = source.PlayerId;
+            target.DisplayName = source.DisplayName;
+            target.IsHost = source.IsHost || lobby.IsOwner(source.PlayerId);
+            target.IsLocal = source.IsLocal;
+            target.ProductUserId = source.ProductUserId ?? source.PlayerId;
+            target.IsReady = source.IsReady;
+            target.Team = source.Team;
+            target.CharacterClassId = source.CharacterClassId;
         }
 
         public void Clear()

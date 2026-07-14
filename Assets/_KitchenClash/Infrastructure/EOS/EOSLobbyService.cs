@@ -17,8 +17,8 @@ namespace KitchenClash.Infrastructure.EOS
     {
         #region Events
 
-        public event Action<Result, LobbyInfo> OnMatchLobbyCreated;
-        public event Action<Result, LobbyInfo> OnMatchLobbyJoined;
+        public event Action<LobbyOpResult, LobbyInfo> OnMatchLobbyCreated;
+        public event Action<LobbyOpResult, LobbyInfo> OnMatchLobbyJoined;
         public event Action OnMatchLobbyLeft;
         public event Action OnMatchLobbyUpdated;
 
@@ -461,7 +461,7 @@ namespace KitchenClash.Infrastructure.EOS
 
                 if (type == LobbyType.Match)
                 {
-                    OnMatchLobbyCreated?.Invoke(data.ResultCode, null);
+                    OnMatchLobbyCreated?.Invoke(EosResultMapper.ToLobbyOpResult(data.ResultCode), null);
                 }
                 return;
             }
@@ -495,7 +495,7 @@ namespace KitchenClash.Infrastructure.EOS
             {
                 CurrentMatchLobby = lobbyInfo;
                 ChangeState(LobbyState.InMatchLobby);
-                OnMatchLobbyCreated?.Invoke(Result.Success, lobbyInfo);
+                OnMatchLobbyCreated?.Invoke(LobbyOpResult.Ok(), lobbyInfo);
             }
 
             RefreshLobbyDetails(data.LobbyId);
@@ -527,7 +527,7 @@ namespace KitchenClash.Infrastructure.EOS
 
                 if (type == LobbyType.Match)
                 {
-                    OnMatchLobbyJoined?.Invoke(result, null);
+                    OnMatchLobbyJoined?.Invoke(EosResultMapper.ToLobbyOpResult(result), null);
                 }
                 return;
             }
@@ -554,7 +554,7 @@ namespace KitchenClash.Infrastructure.EOS
 
                 if (type == LobbyType.Match)
                 {
-                    OnMatchLobbyJoined?.Invoke(data.ResultCode, null);
+                    OnMatchLobbyJoined?.Invoke(EosResultMapper.ToLobbyOpResult(data.ResultCode), null);
                 }
                 return;
             }
@@ -567,7 +567,7 @@ namespace KitchenClash.Infrastructure.EOS
                 {
                     CurrentMatchLobby = lobbyInfo;
                     ChangeState(LobbyState.InMatchLobby);
-                    OnMatchLobbyJoined?.Invoke(Result.Success, lobbyInfo);
+                    OnMatchLobbyJoined?.Invoke(LobbyOpResult.Ok(), lobbyInfo);
                 }
             });
         }
