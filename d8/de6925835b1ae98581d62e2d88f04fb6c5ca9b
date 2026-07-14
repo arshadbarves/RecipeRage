@@ -1,0 +1,19 @@
+docs/superpowers/specs/2026-07-14-playcenter-shell-extract-design.md
+  s_99229c453cd88d::t_31b30096b4ea65 1-260
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "d8de6925835b1ae98581d62e2d88f04fb6c5ca9b",
+  "prompts": {},
+  "sessions": {
+    "s_99229c453cd88d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "45070b64-765f-4e79-883a-4a2e9082e950",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
