@@ -116,6 +116,33 @@ builder.Register<IAppFlow>(resolver =>
 
 **Boot rules:** authenticated cold boot ends with `NotifyBootComplete` only. Login success: `SessionLoader` then `CompleteSidePhase` only (never dual Complete+Notify).
 
+Also at Root (core services):
+
+```csharp
+builder.Register<UnityLoggingService>(Lifetime.Singleton).As<ILoggingService>();
+builder.Register<LoggingBootstrap>(Lifetime.Singleton).As<IInitializable>(); // GameLogger.SetService
+```
+
+---
+
+## Logging (product shell)
+
+GameFlow is engine-free and does **not** call `Debug.Log`. Visibility comes from the game:
+
+| Path | What you see |
+|------|----------------|
+| `LoggingBootstrap` | Wires static `GameLogger` → `ILoggingService` / `UnityLoggingService` at Root init |
+| `GameLogger.*` in handlers / UI | Unity Console + `OnLogAdded` (DebugConsole `) |
+| `AnalyticsFlowPort.TrackPhaseChanged` | `[AppFlow] {from} → {to}` on every phase change |
+
+Without `LoggingBootstrap`, `GameLogger` falls back to `System.Console.WriteLine` (invisible in the Unity Editor Console).
+
+---
+
+## Module extract (when — not now)
+
+`Playcenter.GameFlow` is already a separate assembly with zero game refs. **Do not** extract to UPM/git until a second title needs it. Handlers stay in `KitchenClash.Infrastructure.Flow` (game-specific). See `Assets/Playcenter/GameFlow/README.md`.
+
 ---
 
 ## Policies

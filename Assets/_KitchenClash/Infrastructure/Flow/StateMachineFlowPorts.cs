@@ -172,6 +172,7 @@ namespace KitchenClash.Infrastructure.Flow
 
         public void TrackPhaseChanged(FlowPhaseId from, FlowPhaseId to, FlowContext context)
         {
+            GameLogger.Log($"[AppFlow] {from} → {to}");
             _analytics?.LogEvent("flow_phase_changed", new Dictionary<string, object>
             {
                 { "from", from.ToString() },

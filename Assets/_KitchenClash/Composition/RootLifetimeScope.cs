@@ -51,6 +51,8 @@ public class RootLifetimeScope : LifetimeScope
     {
         builder.Register<EventBus>(Lifetime.Singleton).As<IEventBus>();
         builder.Register<UnityLoggingService>(Lifetime.Singleton).As<ILoggingService>();
+        // Wire static GameLogger before any IStartable (GameBootstrapper) so product logs hit UnityEngine.Debug.
+        builder.Register<LoggingBootstrap>(Lifetime.Singleton).As<IInitializable>();
         builder.Register<EncryptionService>(Lifetime.Singleton).As<IEncryptionService>().WithParameter("passphrase", "KitchenClash_2026");
         builder.Register<NetworkConnectivityService>(Lifetime.Singleton).As<IConnectivityService>().As<ITickable>();
         builder.Register<NTPTimeService>(Lifetime.Singleton).As<INTPTimeService>().As<IInitializable>();

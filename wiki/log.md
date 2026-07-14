@@ -139,3 +139,10 @@ Chronological record of wiki activity. Each entry starts with timestamp for pars
 - wiki/Technical.md: DI tree SessionManager/MatchmakingPhaseHost; no workers
 - CLAUDE.md: product flow via handlers; no BaseState/IState registration
 - Deleted: Application/State/*, Infrastructure/States/*, GameStateManager, GameStateFactory
+
+## [2026-07-14] fix | GameLogger wiring + module boundary
+
+- Root cause: GameLogger.SetService never called → Console.WriteLine only (invisible in Unity)
+- Fix: LoggingBootstrap IInitializable wires ILoggingService; AnalyticsFlowPort logs phase transitions
+- Decision: Playcenter.GameFlow already modular; no UPM extract; adapters stay in game Infrastructure/Flow
+- Plan: docs/superpowers/plans/2026-07-14-gameflow-module-and-logging.md

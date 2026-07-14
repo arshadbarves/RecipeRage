@@ -41,7 +41,15 @@ When a second game needs this module:
 
 ## Production target
 
-See **`wiki/GameFlow-SDK.md`**: GameFlow is the public navigator; game states are phase workers/adapters only.
+See **`wiki/GameFlow-SDK.md`**. GameFlow is the public navigator; game **handlers**
+under `Assets/_KitchenClash/Infrastructure/Flow/Handlers/` perform phase work via
+ports. `IGameStateManager` / `IState` were hard-purged — do not reintroduce them.
+
+## Logging
+
+GameFlow itself does not log (engine-free assembly). The game’s `AnalyticsFlowPort`
+logs `[AppFlow] from → to` on `TrackPhaseChanged`. Product code uses `GameLogger`
+after Root `LoggingBootstrap` wires `ILoggingService` → UnityEngine.Debug + debug console.
 
 ### Policies (shipped)
 
