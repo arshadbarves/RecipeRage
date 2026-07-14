@@ -1,0 +1,19 @@
+docs/superpowers/specs/2026-07-14-gameflow-hard-purge-design.md
+  s_99229c453cd88d::t_9c4877c28bcbe7 1-315
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.13",
+  "base_commit_sha": "f37dd5b51c270f78230187c5543c9c14febe1f18",
+  "prompts": {},
+  "sessions": {
+    "s_99229c453cd88d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "45070b64-765f-4e79-883a-4a2e9082e950",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
