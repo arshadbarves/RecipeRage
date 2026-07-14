@@ -66,17 +66,41 @@ RootLifetimeScope (app-lifetime, DontDestroyOnLoad)
 
 **Migration status:** Phase 1 (IAppFlow public cutover) + Phase 2 hard purge complete. `Application/State` and `Infrastructure/States` deleted.
 
-## Playcenter modules (extract policy)
+## Architecture hardening (GameFlow-quality systems)
+
+GameFlow fixed product navigation. Remaining mess is inverted deps, vendor leaks on Application ports, mega-Infrastructure, and god files.
+
+**Program design:** `docs/superpowers/specs/2026-07-14-architecture-hardening-design.md`
+
+| Phase | Focus | Delete / compile gate |
+|-------|--------|------------------------|
+| 1 | Session shell + dependency laws | Presentation must not reference Infrastructure; Application must not reference EOS packages |
+| 2 | UI navigation purity | Animation/localization via Application ports; shrink `UIService` |
+| 3 | Infrastructure assembly walls | Split Flow / EOS / Network / Persistence (minimum) |
+| 4 | Match gameplay ports | HUD uses Application match ports only; shrink `PlayerController` / stations |
+| 5 | Domain kernel hygiene (optional) | Shell ports vs cooking models if still noisy |
+
+### Dependency laws (end state)
+
+| From → To | Allowed? |
+|-----------|----------|
+| Presentation → Application, Domain, GameFlow | Yes |
+| Presentation → Infrastructure.* | **No** |
+| Application → Domain | Yes |
+| Application → Epic / PlayEveryWare / NGO / Infrastructure | **No** |
+| Infrastructure → Application, Domain, GameFlow | Yes |
+| Composition → all | Yes |
+
+### Playcenter extract policy
 
 | Module | Status | Notes |
 |--------|--------|-------|
 | `Playcenter.GameFlow` | **Shipped** | Sole product navigator (`IAppFlow`); ports + policies; adapters in `Infrastructure/Flow` |
-| `Playcenter.Shell` / Core | **Deferred** | EventBus, Logging, Connectivity — Domain ports + Infra adapters are enough until a second title |
-| Economy / Matchmaking / Cooking | **Never as Playcenter** | Game IP; stay in KitchenClash |
+| New `Assets/Playcenter/*` | **Only if** engine-free **and** second consumer or legal-transition role | Prefer KitchenClash assembly splits + Domain/Application ports for single-title hardening |
+| EventBus / Logging / Config as Playcenter | **Not required** | Domain ports + Infra adapters; logging fixed via `LoggingBootstrap` |
+| Economy / Cooking IP | **Never Playcenter** | Stay in KitchenClash |
 
-**Rule:** Do not create a new `Assets/Playcenter/*` assembly until a second title needs it or a subsystem has two real consumers. Prefer Domain interfaces + Infrastructure adapters. GameFlow was extracted because it owns legal product transitions and had a dual-navigator problem — that does not apply to EventBus/UI/EOS.
-
-See: `docs/superpowers/plans/2026-07-14-playcenter-module-extract-candidates.md`
+See also: `docs/superpowers/plans/2026-07-14-playcenter-module-extract-candidates.md` (partially superseded by hardening design for shell systems).
 
 ## SOLID Summary
 

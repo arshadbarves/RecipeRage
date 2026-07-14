@@ -2,6 +2,14 @@
 
 Chronological record of wiki activity. Each entry starts with timestamp for parseability.
 
+## [2026-07-14] design | Architecture hardening (GameFlow-quality systems)
+
+- Product intent: more robust separate systems like GameFlow; prior YAGNI deferral insufficient for cleanliness
+- Spec: `docs/superpowers/specs/2026-07-14-architecture-hardening-design.md`
+- Approach A: dependency-law first → ports → Infrastructure assembly splits → match ports
+- Phase 1: move `ISessionContext` to Application; de-EOS Application ports; drop Presentation→Infrastructure
+- Updated Technical.md extract policy to phased hardening + dependency laws
+
 ## [2026-05-30] ingest | KitchenClash_GDD_v3_aspirational.docx
 
 - Extracted 18 sections, 34 tables, 895 text blocks from docx
