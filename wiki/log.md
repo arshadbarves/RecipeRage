@@ -198,6 +198,15 @@ Chronological record of wiki activity. Each entry starts with timestamp for pars
 - Future candidate when second Brawl title exists: Playcenter.Shell (EventBus + Logging + Connectivity contracts)
 - Plan: docs/superpowers/plans/2026-07-14-playcenter-module-extract-candidates.md
 
+## [2026-07-14] feat | Playcenter.Shell extract + hard cutover
+
+- Shipped `Assets/Playcenter/Shell` (`noEngineReferences`, zero KitchenClash refs): logging, EventBus, connectivity contracts
+- Deleted Domain/Application originals; consumers use `using Playcenter.Shell`
+- `GameLogger` fail-closed (throws if `LoggingBootstrap` not registered); no Console fallback
+- Adapters remain game-side: `UnityLoggingService`, `LoggingBootstrap`, `NetworkConnectivityService`
+- Spec/plan: `docs/superpowers/specs/2026-07-14-playcenter-shell-extract-design.md`, `docs/superpowers/plans/2026-07-14-playcenter-shell-extract.md`
+- Audio/Async/Platform/Config still deferred as Playcenter modules
+
 ## 2026-07-14 — Architecture hardening Phase 2 complete
 
 - Split `UIService` into partials (`UIService.cs`, `UIService.Navigation.cs`, `UIService.ScreenOps.cs`) with responsibility docs

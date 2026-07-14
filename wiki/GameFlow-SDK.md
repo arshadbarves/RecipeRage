@@ -127,21 +127,23 @@ builder.Register<LoggingBootstrap>(Lifetime.Singleton).As<IInitializable>(); // 
 
 ## Logging (product shell)
 
-GameFlow is engine-free and does **not** call `Debug.Log`. Visibility comes from the game:
+GameFlow is engine-free and does **not** call `Debug.Log`. Logging contracts live in **`Playcenter.Shell`** (`ILoggingService`, `GameLogger`, `LogLevel`, `LogEntry`). Unity adapters stay in `KitchenClash.Infrastructure.Logging`.
 
 | Path | What you see |
 |------|----------------|
 | `LoggingBootstrap` | Wires static `GameLogger` → `ILoggingService` / `UnityLoggingService` at Root init |
-| `GameLogger.*` in handlers / UI | Unity Console + `OnLogAdded` (DebugConsole `) |
+| `GameLogger.*` in handlers / UI | Unity Console + `OnLogAdded` (DebugConsole) |
 | `AnalyticsFlowPort.TrackPhaseChanged` | `[AppFlow] {from} → {to}` on every phase change |
 
-Without `LoggingBootstrap`, `GameLogger` falls back to `System.Console.WriteLine` (invisible in the Unity Editor Console).
+Without `LoggingBootstrap`, `GameLogger` **throws** `InvalidOperationException` (fail-closed — no Console fallback).
+
+`Playcenter.GameFlow` must **not** reference `Playcenter.Shell` (keeps zero deps). Handlers/UI use Shell via game assemblies.
 
 ---
 
-## Module extract (when — not now)
+## Module extract (UPM)
 
-`Playcenter.GameFlow` is already a separate assembly with zero game refs. **Do not** extract to UPM/git until a second title needs it. Handlers stay in `KitchenClash.Infrastructure.Flow` (game-specific). See `Assets/Playcenter/GameFlow/README.md`.
+`Playcenter.GameFlow` and `Playcenter.Shell` are in-repo assemblies with zero KitchenClash refs. **Do not** extract to UPM/git until a second title needs them. Handlers stay in `KitchenClash.Infrastructure.Flow` (game-specific). See `Assets/Playcenter/GameFlow/README.md` and `Assets/Playcenter/Shell/README.md`.
 
 ---
 

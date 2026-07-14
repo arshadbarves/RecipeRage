@@ -1,4 +1,6 @@
-> **Superseded for shell cleanliness:** For dependency laws, Presentation purity, and Infrastructure splits, follow `docs/superpowers/specs/2026-07-14-architecture-hardening-design.md` and `docs/superpowers/plans/2026-07-14-architecture-hardening.md`. This document remains the Playcenter *extract* decision record only.
+> **Superseded for shell cleanliness:** For dependency laws, Presentation purity, and Infrastructure splits, follow `docs/superpowers/specs/2026-07-14-architecture-hardening-design.md` and `docs/superpowers/plans/2026-07-14-architecture-hardening.md`.
+>
+> **Superseded for Shell timing:** `Playcenter.Shell` (EventBus + Logging + Connectivity) was extracted and hard-cutover completed — see `docs/superpowers/specs/2026-07-14-playcenter-shell-extract-design.md` and `docs/superpowers/plans/2026-07-14-playcenter-shell-extract.md`. Remaining candidates (Audio, Async, Platform, Config, UI, Auth) stay deferred until multi-title reuse is real.
 
 # Playcenter Module Extract Candidates — Decision Plan
 
@@ -161,22 +163,15 @@ Agents **must not**:
 
 When a second title is greenlit, extract **one** module first:
 
-### Future Task F1: `Playcenter.Shell`
+### Future Task F1: `Playcenter.Shell` — **SHIPPED** (2026-07-14)
 
-**Files (then):**
-- Create: `Assets/Playcenter/Shell/Runtime/Playcenter.Shell.asmdef` (`noEngineReferences: true` if pure; logging Unity adapter may stay game-side)
-- Move: `IEventBus`, `EventBus`, connectivity state + interface
-- Keep: `UnityLoggingService` in game **or** thin Unity adapter package
-- Update: KitchenClash Domain/Application references → Playcenter.Shell
-- Game #2: references same package
+Implemented early (user-directed full cutover) via:
+- Spec: `docs/superpowers/specs/2026-07-14-playcenter-shell-extract-design.md`
+- Plan: `docs/superpowers/plans/2026-07-14-playcenter-shell-extract.md`
+- Module: `Assets/Playcenter/Shell` (`noEngineReferences`, zero KitchenClash refs)
+- Hard cutover: Domain/Application originals deleted; `GameLogger` fail-closed
 
-**Acceptance:**
-
-- RecipeRage builds and boots
-- Game #2 can depend on Shell without KitchenClash
-- GameFlow still has zero game refs; may depend on Shell only if needed (prefer not)
-
-**Do not implement F1 in this session.**
+**Remaining for game #2 only:** UPM/git package extract if a second title needs the same binaries.
 
 ---
 
@@ -202,11 +197,7 @@ When a second title is greenlit, extract **one** module first:
 
 ## Summary for humans
 
-**You do not need another GameFlow-style module extraction from gameplay right now.**
-
-- **Already done right:** GameFlow module + game handlers/adapters.
-- **Already good enough:** Event bus, logging, config, analytics, UI service as Domain/Application ports with Infrastructure/Presentation adapters.
+- **Shipped Playcenter modules:** `Playcenter.GameFlow` + `Playcenter.Shell` (logging, EventBus, connectivity).
+- **Still good as game ports/leaves:** config, analytics, UI service, Audio, Async, Platform.
 - **Keep forever in game:** cooking, chefs, bots, economy tables, EOS/NGO, matchmaking service, flow handlers.
-- **Maybe later:** `Playcenter.Shell` (EventBus + Logging + Connectivity) when a second title exists.
-
-**Next action:** Task 1 docs commit only (unless you explicitly want a premature Shell extract — not recommended).
+- **Do not extract next** unless a second title needs it (Audio/Async/Platform/Config candidates remain deferred).

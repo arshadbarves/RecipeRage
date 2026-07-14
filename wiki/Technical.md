@@ -146,11 +146,14 @@ GameFlow fixed product navigation. Remaining mess is inverted deps, vendor leaks
 | Module | Status | Notes |
 |--------|--------|-------|
 | `Playcenter.GameFlow` | **Shipped** | Sole product navigator (`IAppFlow`); ports + policies; adapters in `Infrastructure/Flow` |
+| `Playcenter.Shell` | **Shipped** | Engine-free logging + event bus + connectivity contracts (`Assets/Playcenter/Shell`); Domain/Application reference Shell; adapters stay game-side (`UnityLoggingService`, `LoggingBootstrap`, `NetworkConnectivityService`) |
 | New `Assets/Playcenter/*` | **Only if** engine-free **and** second consumer or legal-transition role | Prefer KitchenClash assembly splits + Domain/Application ports for single-title hardening |
-| EventBus / Logging / Config as Playcenter | **Not required** | Domain ports + Infra adapters; logging fixed via `LoggingBootstrap` |
+| Audio / Async / Platform / Config as Playcenter | **Deferred** | Stay as KitchenClash leaf assemblies until multi-title reuse is real |
 | Economy / Cooking IP | **Never Playcenter** | Stay in KitchenClash |
 
-See also: `docs/superpowers/plans/2026-07-14-playcenter-module-extract-candidates.md` (partially superseded by hardening design for shell systems).
+**Shell hard cutover:** no Domain dual APIs, type aliases, or `GameLogger` Console fallback. Unwired `GameLogger` throws. Spec: `docs/superpowers/specs/2026-07-14-playcenter-shell-extract-design.md`.
+
+See also: `docs/superpowers/plans/2026-07-14-playcenter-module-extract-candidates.md` (Shell timing superseded; remaining candidates still deferred).
 
 ## SOLID Summary
 
