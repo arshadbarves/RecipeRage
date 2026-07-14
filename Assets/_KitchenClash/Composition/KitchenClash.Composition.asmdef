@@ -19,7 +19,9 @@
         "KitchenClash.Infrastructure.Configuration",
         "KitchenClash.Infrastructure.Platform",
         "KitchenClash.Infrastructure.Async",
-        "KitchenClash.Infrastructure.Persistence"
+        "KitchenClash.Infrastructure.Persistence",
+        "KitchenClash.Infrastructure.Audio",
+        "KitchenClash.Infrastructure.Flow"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

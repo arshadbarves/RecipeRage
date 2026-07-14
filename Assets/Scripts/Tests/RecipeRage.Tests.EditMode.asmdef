@@ -5,6 +5,7 @@
         "KitchenClash.Domain",
         "KitchenClash.Application",
         "KitchenClash.Infrastructure",
+        "KitchenClash.Infrastructure.Flow",
         "KitchenClash.Presentation",
         "Unity.Netcode.Runtime",
         "UniTask",

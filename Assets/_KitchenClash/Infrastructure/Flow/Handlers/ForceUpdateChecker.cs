@@ -1,11 +1,11 @@
 using System;
 using KitchenClash.Application.Services;
 using KitchenClash.Domain;
-using KitchenClash.Infrastructure.Configuration;
 using KitchenClash.Application.Models.RemoteConfigs;
+using KitchenClash.Infrastructure.Configuration;
 using Cysharp.Threading.Tasks;
 
-namespace KitchenClash.Infrastructure.Services
+namespace KitchenClash.Infrastructure.Flow.Handlers
 {
     public class ForceUpdateChecker
     {

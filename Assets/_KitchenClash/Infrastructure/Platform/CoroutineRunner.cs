@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-namespace KitchenClash.Infrastructure.Network
+namespace KitchenClash.Infrastructure.Platform
 {
     public class CoroutineRunner : MonoBehaviour
     {

@@ -1,0 +1,21 @@
+{
+    "name": "KitchenClash.Infrastructure.Flow",
+    "rootNamespace": "KitchenClash.Infrastructure.Flow",
+    "references": [
+        "KitchenClash.Domain",
+        "KitchenClash.Application",
+        "KitchenClash.Infrastructure.Configuration",
+        "Playcenter.GameFlow",
+        "UniTask",
+        "VContainer"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

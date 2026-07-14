@@ -83,7 +83,7 @@ GameFlow fixed product navigation. Remaining mess is inverted deps, vendor leaks
 |-------|--------|------------------------|--------|
 | 1 | Session shell + dependency laws | Presentation must not reference Infrastructure; Application must not reference EOS packages | **Complete** |
 | 2 | UI navigation purity | Animation/localization via Application ports; shrink `UIService` | **Complete** |
-| 3 | Infrastructure assembly walls | Split Flow / EOS / Network / Persistence (minimum) | **3a + 3b ports + Persistence leaf complete**; Network/EOS/Flow still mega |
+| 3 | Infrastructure assembly walls | Split Flow / EOS / Network / Persistence (minimum) | **3a + 3b + 3c complete** (Persistence/Audio/Flow leaves); Network/EOS still mega |
 | 4 | Match gameplay ports | Expand match ports beyond HUD; shrink `PlayerController` / stations | **Complete** (scoped criteria) |
 | 5 | Domain kernel hygiene (optional) | Shell ports vs cooking models if still noisy | Pending |
 
@@ -93,12 +93,20 @@ GameFlow fixed product navigation. Remaining mess is inverted deps, vendor leaks
 - `BotTaskPlanner` confirmed Domain-only in Application — no Infra deps, no relocation
 - Match HUD remains on `IMatchHudPort` (Phase 1); Presentation still zero Network usings
 
+**Phase 3c shipped (optional walls):**
+- Leaf: `KitchenClash.Infrastructure.Audio` (Domain + Application + Platform + VContainer)
+- Leaf: `KitchenClash.Infrastructure.Flow` (Domain + Application + Configuration + GameFlow + UniTask + VContainer)
+- `CoroutineRunner` moved Network → Platform (Audio no longer depends on Network)
+- Application port: `ISessionLifecycle` — Flow `SessionLoader` never references `SessionManager`
+- `ForceUpdateChecker` moved Services → Flow.Handlers (BootSequence-only consumer)
+- EditMode tests reference Flow leaf for `MatchmakingPhase`
+- Network / EOS remain in mega Infrastructure (Gameplay still couples Network types)
+
 **Phase 3b shipped:**
 - Application ports: `ICloudStorageProvider`, `IFriendsServiceFactory`, `ILocalNetworkIdentity`, `IClientTransportConfigurator`
 - EOS adapters only; Network/Persistence/Flow no longer construct EOS concretes
 - `UGSConfig` in Configuration; `ResultsPhase` on `IMatchHudPort` only
 - Leaf: `KitchenClash.Infrastructure.Persistence` (Domain + Application + UniTask)
-- Network / EOS / Flow remain in mega Infrastructure until remaining edges (e.g. Audio→Network) are ported
 
 **Phase 3a shipped:**
 - Leaf Infrastructure assemblies: Logging, Localization, Animation, Configuration, Platform, Async
@@ -318,8 +326,11 @@ Compile-time walls for zero-cross-dep folders (folder-level asmdefs):
 - `KitchenClash.Infrastructure.Localization` — `LocalizationManager`
 - `KitchenClash.Infrastructure.Animation` — `AnimationService` + DOTween animators
 - `KitchenClash.Infrastructure.Configuration` — `GameConstants`, `GameSettingsConfig`
-- `KitchenClash.Infrastructure.Platform` — `PlatformUtils`
+- `KitchenClash.Infrastructure.Platform` — `PlatformUtils`, `CoroutineRunner`
 - `KitchenClash.Infrastructure.Async` — `TaskExtensions`
+- `KitchenClash.Infrastructure.Persistence` — cloud save adapters (Domain + Application + UniTask)
+- `KitchenClash.Infrastructure.Audio` — music/SFX/pool (Domain + Application + Platform + VContainer)
+- `KitchenClash.Infrastructure.Flow` — AppFlow ports + phase handlers (Domain + Application + Configuration + GameFlow + UniTask + VContainer)
 
-Mega `KitchenClash.Infrastructure` retains Network / EOS / Flow / Gameplay / Audio. Persistence is a leaf (`KitchenClash.Infrastructure.Persistence`). Phase 3b Application ports broke Network↔EOS / Persistence→EOS / Flow→Network at source level; further Network/EOS/Flow asmdef splits remain optional. Composition references all leaves for DI. `RootLifetimeScope` registers `AnimationService` + DOTween animators as `IAnimationService`, plus cloud/friends/identity/transport ports.
+Mega `KitchenClash.Infrastructure` retains Network / EOS / Gameplay / Services / DI. Phase 3b ports broke Network↔EOS / Persistence→EOS at source level; Phase 3c extracted Audio + Flow leaves after moving `CoroutineRunner` to Platform and introducing `ISessionLifecycle`. Network/EOS asmdef splits remain deferred (Gameplay still references Network types). Composition references all leaves for DI. `RootLifetimeScope` registers `AnimationService` + DOTween animators as `IAnimationService`, plus cloud/friends/identity/transport/`ISessionLifecycle` ports.
 

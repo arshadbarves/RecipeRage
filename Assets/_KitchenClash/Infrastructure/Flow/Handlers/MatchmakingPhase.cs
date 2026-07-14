@@ -2,7 +2,6 @@ using System;
 using KitchenClash.Application;
 using KitchenClash.Application.Services;
 using KitchenClash.Domain;
-using KitchenClash.Infrastructure.DI;
 using KitchenClash.Infrastructure.Flow;
 using Playcenter.GameFlow;
 using UnityEngine;

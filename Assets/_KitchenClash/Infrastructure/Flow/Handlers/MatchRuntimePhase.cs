@@ -4,7 +4,6 @@ using Cysharp.Threading.Tasks;
 using KitchenClash.Application.Services;
 using KitchenClash.Domain;
 using KitchenClash.Infrastructure.Configuration;
-using KitchenClash.Infrastructure.DI;
 using UnityEngine.SceneManagement;
 using KitchenClash.Application;
 

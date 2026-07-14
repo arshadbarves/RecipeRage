@@ -1,4 +1,5 @@
 using System;
+using KitchenClash.Application;
 using KitchenClash.Application.Services;
 using KitchenClash.Domain;
 using VContainer;
@@ -6,7 +7,7 @@ using VContainer.Unity;
 
 namespace KitchenClash.Infrastructure.DI
 {
-    public class SessionManager : IInitializable, IDisposable
+    public class SessionManager : ISessionLifecycle, IInitializable, IDisposable
     {
         private readonly IObjectResolver _container;
         private readonly IEventBus _eventBus;

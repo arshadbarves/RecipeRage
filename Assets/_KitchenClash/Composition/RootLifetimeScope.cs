@@ -116,7 +116,10 @@ public class RootLifetimeScope : LifetimeScope
     {
         // Session scope for cold boot (SessionLoader / BootSequence). Root owns SessionManager;
         // MenuLifetimeScope does not re-register it (resolves parent Singleton).
-        builder.Register<SessionManager>(Lifetime.Singleton).AsSelf().As<IInitializable>();
+        builder.Register<SessionManager>(Lifetime.Singleton)
+            .AsSelf()
+            .As<ISessionLifecycle>()
+            .As<IInitializable>();
         builder.Register<SessionContext>(Lifetime.Singleton).As<ISessionContext>();
         builder.Register<MatchmakingPhaseHost>(Lifetime.Singleton).AsSelf().As<ITickable>();
 
@@ -166,7 +169,7 @@ public class RootLifetimeScope : LifetimeScope
             var auth = resolver.Resolve<IAuthService>();
             var maintenance = resolver.Resolve<IMaintenanceService>();
             var config = resolver.Resolve<IConfigService>();
-            var sessionManager = resolver.Resolve<SessionManager>();
+            var sessionLifecycle = resolver.Resolve<ISessionLifecycle>();
             var sessionContext = resolver.Resolve<ISessionContext>();
             var matchmakingHost = resolver.Resolve<MatchmakingPhaseHost>();
 
@@ -179,7 +182,7 @@ public class RootLifetimeScope : LifetimeScope
 
             var appFlowProxy = new AppFlowProxy(Proxy);
 
-            var sessionLoader = new SessionLoader(sessionManager, sessionContext);
+            var sessionLoader = new SessionLoader(sessionLifecycle, sessionContext);
             var bootSequence = new BootSequence(
                 ntp, remoteConfig, auth, maintenance, eventBus, appFlowProxy, sessionLoader);
 

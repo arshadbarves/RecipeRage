@@ -215,3 +215,16 @@ Split zero-cross-dep Infrastructure folders into compile-time assemblies:
 - CLI builds green for leaves → Infrastructure → Presentation → Composition → EditMode
 - Deferred 3b: Network/EOS cycle, Persistence→EOS, Flow, Audio→Network
 
+
+## 2026-07-14 — Phase 3c Audio + Flow leaf assemblies
+
+Optional Infrastructure walls after Phase 3b:
+
+- Moved `CoroutineRunner` Network → Platform (namespace `KitchenClash.Infrastructure.Platform`)
+- Leaf: `KitchenClash.Infrastructure.Audio` — no Network edge
+- Leaf: `KitchenClash.Infrastructure.Flow` — phases/ports; depends on Configuration for `GameConstants.Scenes` only
+- Application `ISessionLifecycle`; `SessionManager` implements it; `SessionLoader` uses port only
+- `ForceUpdateChecker` → Flow.Handlers; BootSequence no longer uses Infrastructure.Services
+- EditMode asmdef references Flow for MatchmakingPhase tests
+- CLI builds green: Application → Platform → Audio → Flow → Infrastructure → Composition → EditMode
+- Deferred: Network/EOS asmdef splits (Gameplay coupling); Phase 5 Domain kernel

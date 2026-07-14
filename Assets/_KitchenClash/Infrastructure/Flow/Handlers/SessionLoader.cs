@@ -2,7 +2,6 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using KitchenClash.Application;
 using KitchenClash.Domain;
-using KitchenClash.Infrastructure.DI;
 
 namespace KitchenClash.Infrastructure.Flow.Handlers
 {
@@ -12,12 +11,12 @@ namespace KitchenClash.Infrastructure.Flow.Handlers
     /// </summary>
     public sealed class SessionLoader
     {
-        private readonly SessionManager _sessionManager;
+        private readonly ISessionLifecycle _sessionLifecycle;
         private readonly ISessionContext _sessionContext;
 
-        public SessionLoader(SessionManager sessionManager, ISessionContext sessionContext)
+        public SessionLoader(ISessionLifecycle sessionLifecycle, ISessionContext sessionContext)
         {
-            _sessionManager = sessionManager;
+            _sessionLifecycle = sessionLifecycle;
             _sessionContext = sessionContext;
         }
 
@@ -25,9 +24,9 @@ namespace KitchenClash.Infrastructure.Flow.Handlers
         {
             GameLogger.Log("[SessionLoader] Loading session data...");
 
-            if (!_sessionManager.IsSessionActive)
+            if (!_sessionLifecycle.IsSessionActive)
             {
-                _sessionManager.CreateSession();
+                _sessionLifecycle.CreateSession();
             }
 
             ct.ThrowIfCancellationRequested();

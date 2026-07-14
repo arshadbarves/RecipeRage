@@ -1,0 +1,19 @@
+{
+    "name": "KitchenClash.Infrastructure.Audio",
+    "rootNamespace": "KitchenClash.Infrastructure.Audio",
+    "references": [
+        "KitchenClash.Domain",
+        "KitchenClash.Application",
+        "KitchenClash.Infrastructure.Platform",
+        "VContainer"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

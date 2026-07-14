@@ -221,8 +221,8 @@ EOF
 ## Later phases (not this plan)
 
 - Phase 2: UIService / transitions — **complete** (see below)
-- Phase 3: Infrastructure assembly split — **3a leaves complete** (see below); 3b deferred  
-- Phase 4: Match ports + god files  
+- Phase 3: Infrastructure assembly split — **3a + 3b + 3c complete** (see below); Network/EOS still mega  
+- Phase 4: Match ports + god files — **complete**
 
 ---
 
@@ -262,9 +262,9 @@ EOF
 
 ---
 
-## Phase 3 — Infrastructure assembly walls (3a + 3b ports + Persistence leaf complete)
+## Phase 3 — Infrastructure assembly walls (3a + 3b + 3c complete)
 
-**Goal:** Split leaf Infrastructure folders into compile-time assemblies; break Network↔EOS / Persistence→EOS / Flow→Network cycles with Application ports; extract Persistence as a leaf once port-clean.
+**Goal:** Split leaf Infrastructure folders into compile-time assemblies; break Network↔EOS / Persistence→EOS / Flow→Network cycles with Application ports; extract Persistence / Audio / Flow as leaves once port-clean.
 
 ### Leaf assemblies (3a) — complete
 
@@ -274,7 +274,7 @@ EOF
 | `KitchenClash.Infrastructure.Localization` | Localization/ | `LocalizationManager` | Domain, Application, VContainer |
 | `KitchenClash.Infrastructure.Animation` | Animation/ | `AnimationService`, DOTween animators | Domain, Application, UniTask, DOTween |
 | `KitchenClash.Infrastructure.Configuration` | Configuration/ | `GameConstants`, `GameSettingsConfig`, `UGSConfig` | Domain |
-| `KitchenClash.Infrastructure.Platform` | Platform/ | `PlatformUtils` | (Unity only) |
+| `KitchenClash.Infrastructure.Platform` | Platform/ | `PlatformUtils`, `CoroutineRunner` | (Unity only) |
 | `KitchenClash.Infrastructure.Async` | Async/ | `TaskExtensions` | Domain |
 
 - [x] Create leaf `.asmdef` files under each folder (folder-level asmdef auto-excludes from mega Infrastructure)
@@ -318,15 +318,37 @@ EOF
 - [x] EditMode tests drop unused `Infrastructure.Persistence` usings
 - [x] `dotnet build` Persistence → Infrastructure → Composition → EditMode green
 
-### Still deferred (further 3b walls)
+### Phase 3c — Audio + Flow leaf assemblies (complete)
+
+**Edges fixed before walls:**
+
+- [x] `CoroutineRunner` moved Network → Platform (namespace `KitchenClash.Infrastructure.Platform`)
+- [x] Application port `ISessionLifecycle` (`CreateSession` / `DestroySession` / `IsSessionActive`)
+- [x] `SessionManager` implements `ISessionLifecycle`; `SessionLoader` depends on port only
+- [x] Dead `using Infrastructure.DI` stripped from MatchmakingPhase / MatchRuntimePhase
+- [x] `ForceUpdateChecker` moved Services → Flow.Handlers; BootSequence no longer uses Infrastructure.Services
+- [x] `ForceUpdateChecker` uses Configuration `GameSettingsConfig` fallback
+
+**Leaf assemblies:**
+
+| Assembly | Folder | Refs |
+|----------|--------|------|
+| `KitchenClash.Infrastructure.Audio` | Audio/ | Domain, Application, Platform, VContainer |
+| `KitchenClash.Infrastructure.Flow` | Flow/ | Domain, Application, Configuration, GameFlow, UniTask, VContainer |
+
+- [x] Audio + Flow `.asmdef` + mega Infrastructure / Composition references
+- [x] CLI csproj ProjectReferences; mega Compile excludes Audio/Flow sources
+- [x] EditMode tests reference Flow leaf (`MatchmakingPhase`)
+- [x] `RootLifetimeScope` registers `ISessionLifecycle` + SessionLoader wiring
+- [x] `dotnet build` Application → Platform → Audio → Flow → Infrastructure → Composition → EditMode green
+
+### Still deferred (further walls)
 
 | Candidate | Blocker |
 |-----------|---------|
-| Network / EOS separate asmdefs | Remaining concrete edges + Audio→Network; ports one-way at source but same mega assembly |
-| Flow | Uses Configuration + Network + DI + Services |
-| Audio | MusicPlayer/SFXPlayer → Network |
+| Network / EOS separate asmdefs | Gameplay still couples Network types; Composition registers EOS adapters in mega |
 
-**Next:** Optional Network/EOS/Flow asmdef splits after remaining edges; Phase 5 Domain kernel; Unity smoke; PR.
+**Next:** Optional Network/EOS asmdef splits after more ports; Phase 5 Domain kernel; Unity smoke; PR.
 
 ---
 
