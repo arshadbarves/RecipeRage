@@ -55,8 +55,13 @@ public class RootLifetimeScope : LifetimeScope
     {
         builder.Register<EventBus>(Lifetime.Singleton).As<IEventBus>();
         builder.Register<UnityLoggingService>(Lifetime.Singleton).As<ILoggingService>();
-        // Wire static GameLogger before any IStartable (GameBootstrapper) so product logs hit UnityEngine.Debug.
-        builder.Register<LoggingBootstrap>(Lifetime.Singleton).As<IInitializable>();
+        // Wire GameLogger as soon as the container builds — before any IInitializable/IStartable.
+        // Configure() itself must not call GameLogger (runs pre-build); use Debug for DI misconfig.
+        builder.RegisterBuildCallback(container =>
+        {
+            GameLogger.SetService(container.Resolve<ILoggingService>());
+        });
+        builder.RegisterEntryPoint<LoggingBootstrap>();
         builder.Register<EncryptionService>(Lifetime.Singleton).As<IEncryptionService>().WithParameter("passphrase", "KitchenClash_2026");
         builder.Register<NetworkConnectivityService>(Lifetime.Singleton).As<IConnectivityService>().As<ITickable>();
         builder.Register<NTPTimeService>(Lifetime.Singleton).As<INTPTimeService>().As<IInitializable>();
@@ -74,7 +79,8 @@ public class RootLifetimeScope : LifetimeScope
         }
         else
         {
-            GameLogger.LogError("AudioSettings not assigned in RootLifetimeScope");
+            // Pre-container-build: GameLogger is not wired yet.
+            UnityEngine.Debug.LogError("[RootLifetimeScope] AudioSettings not assigned");
             return;
         }
 
@@ -95,7 +101,8 @@ public class RootLifetimeScope : LifetimeScope
         }
         else
         {
-            GameLogger.LogError("UIDocument not assigned in RootLifetimeScope");
+            // Pre-container-build: GameLogger is not wired yet.
+            UnityEngine.Debug.LogError("[RootLifetimeScope] UIDocument not assigned");
             return;
         }
 

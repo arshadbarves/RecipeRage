@@ -6,6 +6,7 @@
         "KitchenClash.Application",
         "KitchenClash.Infrastructure",
         "KitchenClash.Infrastructure.Flow",
+        "KitchenClash.Infrastructure.Logging",
         "KitchenClash.Presentation",
         "Unity.Netcode.Runtime",
         "UniTask",

@@ -4,9 +4,11 @@ using Playcenter.Shell;
 namespace KitchenClash.Infrastructure.Logging
 {
     /// <summary>
-    /// Wires the static <see cref="GameLogger"/> facade to the DI-owned
-    /// <see cref="ILoggingService"/> so product code reaches UnityEngine.Debug
-    /// and the in-game debug console (OnLogAdded).
+    /// Confirms the static <see cref="GameLogger"/> facade is wired to the
+    /// DI-owned <see cref="ILoggingService"/>. Root also wires via
+    /// <c>RegisterBuildCallback</c> so the facade is ready before any
+    /// <see cref="IInitializable"/> runs; this entry point re-applies the
+    /// wire (idempotent) and emits a visible bootstrap line.
     /// </summary>
     public sealed class LoggingBootstrap : IInitializable
     {

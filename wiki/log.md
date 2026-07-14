@@ -218,6 +218,14 @@ Chronological record of wiki activity. Each entry starts with timestamp for pars
 - Spec: `docs/superpowers/specs/2026-07-14-playcenter-services-extract-design.md`
 - Commits: `3de46c19` module, `06006678` hard cutover
 
+## [2026-07-14] fix | GameLogger early wire (logs not showing)
+
+- Symptom: product `GameLogger.*` not visible / boot broken after Shell hard cutover
+- Root cause: fail-closed `GameLogger` + `RootLifetimeScope.Configure` called `GameLogger.LogError` **before** container build / `LoggingBootstrap`; wiring only via late `IInitializable`
+- Fix: `RegisterBuildCallback` sets `GameLogger.SetService` immediately on build; `RegisterEntryPoint<LoggingBootstrap>` re-wires + bootstrap line; Configure misconfig uses `Debug.LogError`; `GameLogger.IsWired` / `ClearService` for tests
+- Tests: `GameLoggerTests`, `LoggingBootstrapTests`
+- Still fail-closed (no Console fallback)
+
 ## 2026-07-14 — Architecture hardening Phase 2 complete
 
 - Split `UIService` into partials (`UIService.cs`, `UIService.Navigation.cs`, `UIService.ScreenOps.cs`) with responsibility docs

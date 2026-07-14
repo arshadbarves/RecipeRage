@@ -3,14 +3,21 @@ using System;
 namespace Playcenter.Shell
 {
     /// <summary>
-    /// Static logging facade. Requires <see cref="SetService"/> from game
-    /// <c>LoggingBootstrap</c> before any log call. No Console fallback.
+    /// Static logging facade. Requires <see cref="SetService"/> from the game
+    /// composition root (build callback + <c>LoggingBootstrap</c>) before any log call.
+    /// Fail-closed: no Console fallback — mis-wiring surfaces immediately.
     /// </summary>
     public static class GameLogger
     {
         private static ILoggingService _service;
 
+        /// <summary>True after a non-null service has been installed.</summary>
+        public static bool IsWired => _service != null;
+
         public static void SetService(ILoggingService service) => _service = service;
+
+        /// <summary>Clears the facade (EditMode tests / domain teardown).</summary>
+        public static void ClearService() => _service = null;
 
         public static void Log(string message)
         {
@@ -47,7 +54,8 @@ namespace Playcenter.Shell
             if (_service == null)
             {
                 throw new InvalidOperationException(
-                    "GameLogger has no ILoggingService. Register LoggingBootstrap at root DI before logging.");
+                    "GameLogger has no ILoggingService. Wire via RootLifetimeScope RegisterBuildCallback " +
+                    "and LoggingBootstrap before any product log call.");
             }
         }
     }

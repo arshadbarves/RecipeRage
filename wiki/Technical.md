@@ -154,6 +154,8 @@ GameFlow fixed product navigation. Remaining mess is inverted deps, vendor leaks
 
 **Hard cutover rules (Shell + Services):** no Domain dual APIs, type aliases, obsolete stubs, or Console fallbacks. Unwired `GameLogger` throws. GameFlow and Shell do **not** reference Services (independent modules).
 
+**Logging wire order:** `RootLifetimeScope` registers `UnityLoggingService` as `ILoggingService`, then `RegisterBuildCallback` → `GameLogger.SetService` (before any entry point), then `RegisterEntryPoint<LoggingBootstrap>` (idempotent re-wire + bootstrap log). Never call `GameLogger` from `Configure()` (pre-build); use `Debug.LogError` for missing inspector refs.
+
 Specs: `docs/superpowers/specs/2026-07-14-playcenter-shell-extract-design.md`, `docs/superpowers/specs/2026-07-14-playcenter-services-extract-design.md`.
 
 See also: `docs/superpowers/plans/2026-07-14-playcenter-module-extract-candidates.md` (Shell + Services shipped; Audio/Async/Platform/UI still deferred).

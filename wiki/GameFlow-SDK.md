@@ -120,7 +120,9 @@ Also at Root (core services):
 
 ```csharp
 builder.Register<UnityLoggingService>(Lifetime.Singleton).As<ILoggingService>();
-builder.Register<LoggingBootstrap>(Lifetime.Singleton).As<IInitializable>(); // GameLogger.SetService
+// Wire before any IInitializable/IStartable (Configure itself must not call GameLogger).
+builder.RegisterBuildCallback(c => GameLogger.SetService(c.Resolve<ILoggingService>()));
+builder.RegisterEntryPoint<LoggingBootstrap>(); // re-wire + bootstrap log line
 ```
 
 ---
@@ -131,11 +133,13 @@ GameFlow is engine-free and does **not** call `Debug.Log`. Logging contracts liv
 
 | Path | What you see |
 |------|----------------|
-| `LoggingBootstrap` | Wires static `GameLogger` → `ILoggingService` / `UnityLoggingService` at Root init |
-| `GameLogger.*` in handlers / UI | Unity Console + `OnLogAdded` (DebugConsole) |
+| `RegisterBuildCallback` | Wires static `GameLogger` → `ILoggingService` as soon as the container builds |
+| `LoggingBootstrap` | Idempotent re-wire + `[Logging] LoggingBootstrap: GameLogger wired...` |
+| `GameLogger.*` in handlers / UI | Unity Console (`[category] message`) + `OnLogAdded` (DebugConsole) |
 | `AnalyticsFlowPort.TrackPhaseChanged` | `[AppFlow] {from} → {to}` on every phase change |
 
-Without `LoggingBootstrap`, `GameLogger` **throws** `InvalidOperationException` (fail-closed — no Console fallback).
+Without wiring, `GameLogger` **throws** `InvalidOperationException` (fail-closed — no Console fallback).  
+`RootLifetimeScope.Configure` runs **before** the container exists — use `UnityEngine.Debug.LogError` for missing inspector refs (AudioSettings / UIDocument), never `GameLogger` there.
 
 `Playcenter.GameFlow` must **not** reference `Playcenter.Shell` (keeps zero deps). Handlers/UI use Shell via game assemblies.
 
