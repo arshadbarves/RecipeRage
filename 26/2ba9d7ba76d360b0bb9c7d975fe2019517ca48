@@ -1,0 +1,31 @@
+Assets/Playcenter/GameFlow/Runtime/Core/AppFlowController.cs
+  s_99229c453cd88d::t_235dce14c84ae8 250-256
+Assets/Scripts/Tests/EditMode/Gameplay/AppFlowMigrationTests.cs.meta
+  s_99229c453cd88d::t_247568f817f22d 2
+Assets/Scripts/Tests/EditMode/Gameplay/Fakes/FakeAppFlow.cs.meta
+  s_99229c453cd88d::t_302852a5736f41 2
+Assets/_KitchenClash/Infrastructure/States/BootstrapState.cs
+  s_99229c453cd88d::t_1edf7eb45b363b 70-71,135-136,150-151
+Assets/_KitchenClash/Infrastructure/States/LoginState.cs
+  s_99229c453cd88d::t_b3cd3aeb7de333 68
+Assets/_KitchenClash/Infrastructure/States/MaintenanceState.cs
+  s_99229c453cd88d::t_c5517b0a990da9 84-85
+Assets/_KitchenClash/Infrastructure/States/SessionLoadingState.cs
+  s_99229c453cd88d::t_eb61a966a84901 79-83,98-99
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.13",
+  "base_commit_sha": "262ba9d7ba76d360b0bb9c7d975fe2019517ca48",
+  "prompts": {},
+  "sessions": {
+    "s_99229c453cd88d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "45070b64-765f-4e79-883a-4a2e9082e950",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
