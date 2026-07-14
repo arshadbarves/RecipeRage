@@ -1,0 +1,39 @@
+Assets/_KitchenClash/Composition/KitchenClash.Composition.asmdef
+  s_99229c453cd88d::t_d72f3495fef0aa 6,8-17,22
+Assets/_KitchenClash/Infrastructure/EOS/KitchenClash.Infrastructure.EOS.asmdef.meta
+  s_99229c453cd88d::t_5f129707a24993 1-7
+wiki/Technical.md
+  s_99229c453cd88d::t_c43b8f90450e23 86,88,96-100,108-110
+wiki/log.md
+  s_99229c453cd88d::t_4fb0f6c153fcf1 231-239
+Assets/_KitchenClash/Infrastructure/Animation/SlideDirection.cs
+  s_99229c453cd88d::t_089023dbda85e7 1-10
+docs/superpowers/plans/2026-07-14-architecture-hardening.md
+  s_99229c453cd88d::t_4e03593a0c8dfa 345-356,361-362,364
+Assets/_KitchenClash/Infrastructure/EOS/KitchenClash.Infrastructure.EOS.asmdef
+  s_99229c453cd88d::t_8426e39ac8e97a 1-28
+Assets/_KitchenClash/Infrastructure/Animation/SlideDirection.cs.meta
+  s_99229c453cd88d::t_a05ab70d9b54f1 1-11
+Assets/_KitchenClash/Infrastructure/KitchenClash.Infrastructure.asmdef
+  s_99229c453cd88d::t_d72f3495fef0aa 5,7-13,16-17,19,21,23
+Assets/_KitchenClash/Infrastructure/EOS/EOSLobbyManagerProvider.cs
+  s_99229c453cd88d::t_3990ab22bb8fcc 1-22
+Assets/_KitchenClash/Infrastructure/EOS/EOSLobbyManagerProvider.cs.meta
+  s_99229c453cd88d::t_166ffad8eab0b0 2
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "1c46994f6112a03bcc35302540372308206712ed",
+  "prompts": {},
+  "sessions": {
+    "s_99229c453cd88d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "45070b64-765f-4e79-883a-4a2e9082e950",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
