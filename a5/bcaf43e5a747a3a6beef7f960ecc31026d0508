@@ -1,0 +1,293 @@
+Assets/Playcenter/Shell.meta
+  s_99229c453cd88d::t_b32d8abbb3f69f 2-8
+Assets/Scripts/Editor/RecipeRage.Editor.asmdef
+  s_99229c453cd88d::t_9d73cd91732e7f 11-12
+Assets/Scripts/Tests/EditMode/Gameplay/MatchServiceTests.cs
+  s_99229c453cd88d::t_c55bf40a6b7b95 11
+Assets/Scripts/Tests/EditMode/Gameplay/MatchmakingFlowTests.cs
+  s_99229c453cd88d::t_174b34afb6b95b 14
+Assets/Scripts/Tests/EditMode/Gameplay/OrderServiceTests.cs
+  s_99229c453cd88d::t_ce2fdac8eb3283 8
+Assets/Scripts/Tests/EditMode/Gameplay/ScoreServiceTests.cs
+  s_99229c453cd88d::t_626a259eea647c 7
+Assets/Scripts/Tests/RecipeRage.Tests.EditMode.asmdef
+  s_99229c453cd88d::t_b9a49f06a0e952 15-16
+Assets/_KitchenClash/Application/KitchenClash.Application.asmdef
+  s_99229c453cd88d::t_232157610f70fc 7-8
+Assets/_KitchenClash/Application/Services/AbilityFactory.cs
+  s_99229c453cd88d::t_d7b0b8ffa5c0ee 3
+Assets/_KitchenClash/Application/Services/CameraShakeService.cs
+  s_99229c453cd88d::t_a4140da7e02513 2
+Assets/_KitchenClash/Application/Services/ChefRegistry.cs
+  s_99229c453cd88d::t_55d1b636eb1b63 7
+Assets/_KitchenClash/Application/Services/DailyStreakService.cs
+  s_99229c453cd88d::t_1df77edd6e2843 5
+Assets/_KitchenClash/Application/Services/EconomyService.cs
+  s_99229c453cd88d::t_e32032de75a69a 4
+Assets/_KitchenClash/Application/Services/HazardService.cs
+  s_99229c453cd88d::t_af2fdab35b24db 3
+Assets/_KitchenClash/Application/Services/MaintenanceService.cs
+  s_99229c453cd88d::t_6caaf4761fae80 6
+Assets/_KitchenClash/Application/Services/MapRegistry.cs
+  s_99229c453cd88d::t_1c3682b7125b50 7
+Assets/_KitchenClash/Application/Services/OrderService.cs
+  s_99229c453cd88d::t_060ab2875faaa9 6
+Assets/_KitchenClash/Application/Services/ScoreService.cs
+  s_99229c453cd88d::t_e5c96ef380ac95 3
+Assets/_KitchenClash/Application/Services/ShopCatalog.cs
+  s_99229c453cd88d::t_2596a0237c69d9 5
+Assets/_KitchenClash/Composition/GameBootstrapper.cs
+  s_99229c453cd88d::t_abfd8c06fef6db 4
+Assets/_KitchenClash/Composition/KitchenClash.Composition.asmdef
+  s_99229c453cd88d::t_0d2e96caeb541d 22-23
+Assets/_KitchenClash/Composition/MatchLifetimeScope.cs
+  s_99229c453cd88d::t_aca32f1752101a 8
+Assets/_KitchenClash/Composition/RootLifetimeScope.cs
+  s_99229c453cd88d::t_8c603f7d2af98f 31
+Assets/_KitchenClash/Domain/Abilities/GenericActiveAbility.cs
+  s_99229c453cd88d::t_02d5587f074c9e 1
+Assets/_KitchenClash/Domain/KitchenClash.Domain.asmdef
+  s_99229c453cd88d::t_2d0c832cc6597d 4-6
+Assets/_KitchenClash/Infrastructure/Animation/KitchenClash.Infrastructure.Animation.asmdef
+  s_99229c453cd88d::t_59d26578356712 8-9
+Assets/_KitchenClash/Infrastructure/Async/KitchenClash.Infrastructure.Async.asmdef
+  s_99229c453cd88d::t_0a6a08089a67d6 5-6
+Assets/_KitchenClash/Infrastructure/Async/TaskExtensions.cs
+  s_99229c453cd88d::t_f5fabb4f13c3f6 4
+Assets/_KitchenClash/Infrastructure/Audio/AudioEventListener.cs
+  s_99229c453cd88d::t_52caa7bd52f53b 6
+Assets/_KitchenClash/Infrastructure/Audio/AudioPoolManager.cs
+  s_99229c453cd88d::t_449c2141a9b8fb 5
+Assets/_KitchenClash/Infrastructure/Audio/AudioVolumeController.cs
+  s_99229c453cd88d::t_c7ff2d99e24ad9 7
+Assets/_KitchenClash/Infrastructure/Audio/KitchenClash.Infrastructure.Audio.asmdef
+  s_99229c453cd88d::t_d8e5e2a533de6c 8-9
+Assets/_KitchenClash/Infrastructure/Camera/CameraController.cs
+  s_99229c453cd88d::t_b0390fedefc3e9 6
+Assets/_KitchenClash/Infrastructure/Configuration/KitchenClash.Infrastructure.Configuration.asmdef
+  s_99229c453cd88d::t_e8b97a572f087c 5-6
+Assets/_KitchenClash/Infrastructure/DI/SessionManager.cs
+  s_99229c453cd88d::t_0088040f9509ac 7
+Assets/_KitchenClash/Infrastructure/EOS/AuthenticationService.cs
+  s_99229c453cd88d::t_fe9aa5837f3c48 13
+Assets/_KitchenClash/Infrastructure/EOS/EOSClientTransportConfigurator.cs
+  s_99229c453cd88d::t_fd90692bf7ab2d 6
+Assets/_KitchenClash/Infrastructure/EOS/EOSCloudStorageProvider.cs
+  s_99229c453cd88d::t_7c4380e9455905 9
+Assets/_KitchenClash/Infrastructure/EOS/EOSFriendsService.cs
+  s_99229c453cd88d::t_886e07de72e714 13
+Assets/_KitchenClash/Infrastructure/EOS/EOSLobbyService.cs
+  s_99229c453cd88d::t_4e638ee09de568 9
+Assets/_KitchenClash/Infrastructure/EOS/EOSMatchmakingService.cs
+  s_99229c453cd88d::t_98174ffdda19c3 11
+Assets/_KitchenClash/Infrastructure/EOS/EOSPlayerManager.cs
+  s_99229c453cd88d::t_f88bb02fda4f5e 8
+Assets/_KitchenClash/Infrastructure/EOS/KitchenClash.Infrastructure.EOS.asmdef
+  s_99229c453cd88d::t_4dc9540b59ee7a 17-18
+Assets/_KitchenClash/Infrastructure/Firebase/FirebaseConfigProvider.cs
+  s_99229c453cd88d::t_3bc002ebd59322 12
+Assets/_KitchenClash/Infrastructure/Flow/Handlers/AccountUpgradePhase.cs
+  s_99229c453cd88d::t_b1e1ecabf29814 5
+Assets/_KitchenClash/Infrastructure/Flow/Handlers/BootSequence.cs
+  s_99229c453cd88d::t_dd0fe1dd12f89a 8
+Assets/_KitchenClash/Infrastructure/Flow/Handlers/ForceUpdateChecker.cs
+  s_99229c453cd88d::t_7d9c4b779a2833 7
+Assets/_KitchenClash/Infrastructure/Flow/Handlers/HomePhase.cs
+  s_99229c453cd88d::t_7a47b5ada1abd2 7
+Assets/_KitchenClash/Infrastructure/Flow/Handlers/LoginPhase.cs
+  s_99229c453cd88d::t_1c22ff7c3c59e9 5
+Assets/_KitchenClash/Infrastructure/Flow/Handlers/MaintenancePhase.cs
+  s_99229c453cd88d::t_437188132af172 7
+Assets/_KitchenClash/Infrastructure/Flow/Handlers/MatchRuntimePhase.cs
+  s_99229c453cd88d::t_5f789f2ecc77f0 9
+Assets/_KitchenClash/Infrastructure/Flow/Handlers/MatchmakingPhase.cs
+  s_99229c453cd88d::t_2e2dde32f2733c 10
+Assets/_KitchenClash/Infrastructure/Flow/Handlers/NoConnectionPhase.cs
+  s_99229c453cd88d::t_a8c005d8434f30 5
+Assets/_KitchenClash/Infrastructure/Flow/Handlers/ResultsPhase.cs
+  s_99229c453cd88d::t_d43d350643dbf7 4
+Assets/_KitchenClash/Infrastructure/Flow/Handlers/SessionLoader.cs
+  s_99229c453cd88d::t_60e791b23b0b5f 5
+Assets/_KitchenClash/Infrastructure/Flow/Handlers/TutorialPhase.cs
+  s_99229c453cd88d::t_6f32aab9d7d2cf 9
+Assets/_KitchenClash/Infrastructure/Flow/KitchenClash.Infrastructure.Flow.asmdef
+  s_99229c453cd88d::t_77c0aee027b160 10-11
+Assets/_KitchenClash/Infrastructure/Flow/StateMachineFlowPorts.cs
+  s_99229c453cd88d::t_a9439b01be9317 8
+Assets/_KitchenClash/Infrastructure/Gameplay/Abilities/AbilityEffectHandler.cs
+  s_99229c453cd88d::t_a919bfbfdc6d4e 5
+Assets/_KitchenClash/Infrastructure/Gameplay/CharacterService.cs
+  s_99229c453cd88d::t_2af49b8c9d63cd 9
+Assets/_KitchenClash/Infrastructure/Gameplay/GameModeService.cs
+  s_99229c453cd88d::t_51c2242f8bc72a 11
+Assets/_KitchenClash/Infrastructure/Gameplay/SkinsService.cs
+  s_99229c453cd88d::t_64ba690d8abfde 9
+Assets/_KitchenClash/Infrastructure/IAP/StubIAPService.cs
+  s_99229c453cd88d::t_d104c2b5915c0a 5
+Assets/_KitchenClash/Infrastructure/Input/InputProviderFactory.cs
+  s_99229c453cd88d::t_24ae30191bb10b 3
+Assets/_KitchenClash/Infrastructure/Input/InputSystemProvider.cs
+  s_99229c453cd88d::t_39e0b996b7e4a7 6
+Assets/_KitchenClash/Infrastructure/KitchenClash.Infrastructure.asmdef
+  s_99229c453cd88d::t_f94f693793540e 23-24
+Assets/_KitchenClash/Infrastructure/Localization/KitchenClash.Infrastructure.Localization.asmdef
+  s_99229c453cd88d::t_23338ee5ba668b 7-8
+Assets/_KitchenClash/Infrastructure/Localization/LocalizationManager.cs
+  s_99229c453cd88d::t_7ca196e34ca0e5 9
+Assets/_KitchenClash/Infrastructure/Logging/KitchenClash.Infrastructure.Logging.asmdef
+  s_99229c453cd88d::t_45d98b08f7dd4d 5-6
+Assets/_KitchenClash/Infrastructure/Logging/LoggingBootstrap.cs
+  s_99229c453cd88d::t_1b79238262e2ac 2
+Assets/_KitchenClash/Infrastructure/Logging/UnityLoggingService.cs
+  s_99229c453cd88d::t_2e8df01159e4c8 5
+Assets/_KitchenClash/Infrastructure/Network/Bot/BotController.cs
+  s_99229c453cd88d::t_c1169668668511 9
+Assets/_KitchenClash/Infrastructure/Network/Bot/BotSpawner.cs
+  s_99229c453cd88d::t_f2afcc518c6eb9 7
+Assets/_KitchenClash/Infrastructure/Network/Cooking/IngredientItem.cs
+  s_99229c453cd88d::t_0f8f23557dad23 4
+Assets/_KitchenClash/Infrastructure/Network/Cooking/IngredientNetworkSpawner.cs
+  s_99229c453cd88d::t_993761074194ac 6
+Assets/_KitchenClash/Infrastructure/Network/Cooking/ItemBase.cs
+  s_99229c453cd88d::t_be338b4958ff7f 5
+Assets/_KitchenClash/Infrastructure/Network/Cooking/OrderManager.cs
+  s_99229c453cd88d::t_2c74bc090653df 7
+Assets/_KitchenClash/Infrastructure/Network/Cooking/PlateItem.cs
+  s_99229c453cd88d::t_14ebdc2db0decb 7
+Assets/_KitchenClash/Infrastructure/Network/GamePhaseSync.cs
+  s_99229c453cd88d::t_febfb8de74166f 3
+Assets/_KitchenClash/Infrastructure/Network/GameStarter.cs
+  s_99229c453cd88d::t_9b536a5a4d9d54 9
+Assets/_KitchenClash/Infrastructure/Network/LatencyMonitor.cs
+  s_99229c453cd88d::t_6c20d710b56469 6
+Assets/_KitchenClash/Infrastructure/Network/MatchContext.cs
+  s_99229c453cd88d::t_654c414b5342ff 8
+Assets/_KitchenClash/Infrastructure/Network/MatchEndController.cs
+  s_99229c453cd88d::t_c8a93bcb61f8cb 8
+Assets/_KitchenClash/Infrastructure/Network/MatchResultSync.cs
+  s_99229c453cd88d::t_0c150c0c9322b4 3
+Assets/_KitchenClash/Infrastructure/Network/NTPTimeService.cs
+  s_99229c453cd88d::t_a3eb310a60f7f7 8
+Assets/_KitchenClash/Infrastructure/Network/NetworkConnectivityService.cs
+  s_99229c453cd88d::t_4b542fcced5a2f 5
+Assets/_KitchenClash/Infrastructure/Network/NetworkGameManager.cs
+  s_99229c453cd88d::t_d7703e1efe725f 6
+Assets/_KitchenClash/Infrastructure/Network/NetworkObjectPool.cs
+  s_99229c453cd88d::t_4943e57960e864 5
+Assets/_KitchenClash/Infrastructure/Network/NetworkScoreManager.cs
+  s_99229c453cd88d::t_acdf670c605fab 5
+Assets/_KitchenClash/Infrastructure/Network/NetworkingServiceContainer.cs
+  s_99229c453cd88d::t_70afe68db9c51f 11
+Assets/_KitchenClash/Infrastructure/Network/PlayerController.Character.cs
+  s_99229c453cd88d::t_d51367bb4cf765 9
+Assets/_KitchenClash/Infrastructure/Network/PlayerController.InputMovement.cs
+  s_99229c453cd88d::t_31ed203f5cc9f4 5
+Assets/_KitchenClash/Infrastructure/Network/PlayerController.Skins.cs
+  s_99229c453cd88d::t_aadab9bb98004e 7
+Assets/_KitchenClash/Infrastructure/Network/PlayerController.cs
+  s_99229c453cd88d::t_bea8f9ad0f835b 14
+Assets/_KitchenClash/Infrastructure/Network/RoundTimer.cs
+  s_99229c453cd88d::t_f406d697fe5b59 6
+Assets/_KitchenClash/Infrastructure/Network/ScoreManager.cs
+  s_99229c453cd88d::t_36b5b290d7c9fc 9
+Assets/_KitchenClash/Infrastructure/Network/Spawning/SpawnManager.cs
+  s_99229c453cd88d::t_95a11b165998e7 10
+Assets/_KitchenClash/Infrastructure/Network/Stations/CookingStation.cs
+  s_99229c453cd88d::t_f60e9c3c4f46f7 7
+Assets/_KitchenClash/Infrastructure/Network/Stations/IngredientCrate.cs
+  s_99229c453cd88d::t_534406baa5ca25 7
+Assets/_KitchenClash/Infrastructure/Network/Stations/PlateDispenser.cs
+  s_99229c453cd88d::t_d80d68654cc72d 4
+Assets/_KitchenClash/Infrastructure/Network/Stations/ServingStation.cs
+  s_99229c453cd88d::t_4f5c37cbf1afaf 11
+Assets/_KitchenClash/Infrastructure/Network/Stations/SinkStation.cs
+  s_99229c453cd88d::t_88491bef603f1f 5
+Assets/_KitchenClash/Infrastructure/Network/Stations/StationBase.cs
+  s_99229c453cd88d::t_3d444904dfe014 5
+Assets/_KitchenClash/Infrastructure/Network/Stations/StationNetworkController.cs
+  s_99229c453cd88d::t_77e2d836ddc1b4 5
+Assets/_KitchenClash/Infrastructure/Persistence/KitchenClash.Infrastructure.Persistence.asmdef
+  s_99229c453cd88d::t_576f05ea1697ea 7-8
+Assets/_KitchenClash/Infrastructure/Persistence/PlayerDataServiceAdapter.cs
+  s_99229c453cd88d::t_f125a4e49e9edb 5
+Assets/_KitchenClash/Infrastructure/Persistence/SaveService.cs
+  s_99229c453cd88d::t_94a63a7a39551b 7
+Assets/_KitchenClash/Infrastructure/Platform/KitchenClash.Infrastructure.Platform.asmdef
+  s_99229c453cd88d::t_19b3e915879943 5
+Assets/_KitchenClash/Infrastructure/Services/CompositeRemoteConfigService.cs
+  s_99229c453cd88d::t_fdcbd6fd54db84 8
+Assets/_KitchenClash/Infrastructure/Services/FallbackRemoteConfigService.cs
+  s_99229c453cd88d::t_45e122d60de72e 5
+Assets/_KitchenClash/Presentation/Common/UIScreenRegistry.cs
+  s_99229c453cd88d::t_fcc1ce94107f82 6
+Assets/_KitchenClash/Presentation/Common/UIService.cs
+  s_99229c453cd88d::t_98624daa7cdfaf 10
+Assets/_KitchenClash/Presentation/Components/CharacterTabComponent.cs
+  s_99229c453cd88d::t_c57dd8d2f6538c 11
+Assets/_KitchenClash/Presentation/Components/LobbyTabComponent.cs
+  s_99229c453cd88d::t_9790761cd10d9e 14
+Assets/_KitchenClash/Presentation/Components/ShopTabComponent.cs
+  s_99229c453cd88d::t_379ebccae166f0 7
+Assets/_KitchenClash/Presentation/Components/SkinsTabComponent.cs
+  s_99229c453cd88d::t_230fef8c2b0d1a 9
+Assets/_KitchenClash/Presentation/Controls/DebugConsoleUI.cs
+  s_99229c453cd88d::t_69cc665cab0dc5 9
+Assets/_KitchenClash/Presentation/Controls/JoystickEditorUI.cs
+  s_99229c453cd88d::t_a9c69542c7f8c7 7
+Assets/_KitchenClash/Presentation/KitchenClash.Presentation.asmdef
+  s_99229c453cd88d::t_d17afba800e991 10-11
+Assets/_KitchenClash/Presentation/Overlays/ConnectivityOverlay.cs
+  s_99229c453cd88d::t_a1ff5cb64ddc10 7
+Assets/_KitchenClash/Presentation/Overlays/FriendsPopup.cs
+  s_99229c453cd88d::t_e5a555e809ee8e 10
+Assets/_KitchenClash/Presentation/Overlays/NoInternetPopup.cs
+  s_99229c453cd88d::t_096236f606f73e 7
+Assets/_KitchenClash/Presentation/Screens/CharacterDetailsScreen.cs
+  s_99229c453cd88d::t_953f748d81ebe4 10
+Assets/_KitchenClash/Presentation/Screens/ChefSelectScreen.cs
+  s_99229c453cd88d::t_b39730e23c30c7 8
+Assets/_KitchenClash/Presentation/Screens/DailyStreakScreen.cs
+  s_99229c453cd88d::t_fa18662f78f156 7
+Assets/_KitchenClash/Presentation/Screens/HomeScreen.cs
+  s_99229c453cd88d::t_ca7e8e22fccd99 11
+Assets/_KitchenClash/Presentation/Screens/MaintenanceScreen.cs
+  s_99229c453cd88d::t_01edccdc9b5e22 10
+Assets/_KitchenClash/Presentation/Screens/MapSelectionScreen.cs
+  s_99229c453cd88d::t_c4ad224f1f6597 13
+Assets/_KitchenClash/Presentation/Screens/ResultsScreen.cs
+  s_99229c453cd88d::t_5d0eb326558db5 8
+Assets/_KitchenClash/Presentation/ViewModels/AccountUpgradeViewModel.cs
+  s_99229c453cd88d::t_9ac7bfb03d2f44 8
+Assets/_KitchenClash/Presentation/ViewModels/DailyStreakViewModel.cs
+  s_99229c453cd88d::t_1b4e2a40ac7222 6
+Assets/_KitchenClash/Presentation/ViewModels/LoginViewModel.cs
+  s_99229c453cd88d::t_19606903b5b438 9
+Assets/_KitchenClash/Presentation/ViewModels/MatchHUDViewModel.cs
+  s_99229c453cd88d::t_ac0daecc6d3b18 2
+Assets/_KitchenClash/Presentation/ViewModels/ResultsViewModel.cs
+  s_99229c453cd88d::t_347e2dffb4e609 4
+Assets/_KitchenClash/Presentation/ViewModels/UsernameViewModel.cs
+  s_99229c453cd88d::t_cce7620d2e86d5 8
+Assets/_KitchenClash/Tests/PlayMode/KitchenClash.Tests.PlayMode.asmdef
+  s_99229c453cd88d::t_4779a30a87f409 10-11
+Assets/Playcenter/Shell/Runtime/Playcenter.Shell.asmdef.meta
+  s_99229c453cd88d::t_fc3e6aba040678 2
+Assets/_KitchenClash/Infrastructure/Firebase/FirebaseAnalyticsService.cs
+  s_99229c453cd88d::t_54619d6c5a735f 5,59
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "a5bcaf43e5a747a3a6beef7f960ecc31026d0508",
+  "prompts": {},
+  "sessions": {
+    "s_99229c453cd88d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "45070b64-765f-4e79-883a-4a2e9082e950",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
