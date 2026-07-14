@@ -108,7 +108,7 @@ namespace KitchenClash.Presentation.Screens
             UpdatePlayerInfo();
             SubscribeToCurrencyUpdates();
             InitializeSessionComponents();
-            _lobbyTab?.PlayIntroAnimations(null);
+            _lobbyTab?.PlayIntroAnimations();
             CheckDailyStreak();
         }
 

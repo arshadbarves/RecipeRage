@@ -165,29 +165,29 @@ Priority order:
 4. **Animation** — introduce `IUITransitionService` in Application if needed, or move transition helpers into Presentation if pure UI Toolkit.
 5. **GameplayHudViewModel / ResultsScreen** — introduce thin Application match read ports **or** temporary keep Network ref only for these files and document exception (prefer ports; if too large, split Task 3b).
 
-- [ ] **Step 1: Fix all dead EOS/DI usings** to Application; build Presentation.
+- [x] **Step 1: Fix all dead EOS/DI usings** to Application; build Presentation.
 
-- [ ] **Step 2: Fix Localization + Persistence usings.**
+- [x] **Step 2: Fix Localization + Persistence usings.**
 
-- [ ] **Step 3: Animation + Firebase** — Application ports or Presentation-local.
+- [x] **Step 3: Animation + Firebase** — Presentation-local `TweenExtensions` (DOTween→UniTask); dead Firebase usings stripped.
 
-- [ ] **Step 4: Match HUD** — if blocking asmdef drop, add `IMatchHudFacade` in Application with Infrastructure adapter (minimal surface: scores, orders list DTOs, local player ready flag). Full PlayerController split is Phase 4.
+- [x] **Step 4: Match HUD** — `IMatchHudPort` + Domain `MatchResultSnapshot`; Infra `MatchHudPort` adapter; Root `NullMatchHudPort`; Match-scoped real port. `ICharacterPreviewService` + null default + Menu register-if-present.
 
-- [ ] **Step 5: `rg -l "using KitchenClash\\.Infrastructure" Assets/_KitchenClash/Presentation` → empty.**
+- [x] **Step 5: `rg -l "using KitchenClash\\.Infrastructure" Assets/_KitchenClash/Presentation` → empty.**
 
-- [ ] **Step 6: Commit.**
+- [x] **Step 6: Commit.**
 
 ---
 
 ### Task 4: Asmdef delete gates
 
-- [ ] **Step 1:** Edit `KitchenClash.Presentation.asmdef` — remove `KitchenClash.Infrastructure` and `Unity.Netcode.Runtime` if unused.
+- [x] **Step 1:** Edit `KitchenClash.Presentation.asmdef` — remove `KitchenClash.Infrastructure` and `Unity.Netcode.Runtime` if unused.
 
-- [ ] **Step 2:** Edit `KitchenClash.Application.asmdef` — remove EOS refs.
+- [x] **Step 2:** Edit `KitchenClash.Application.asmdef` — remove EOS refs.
 
-- [ ] **Step 3:** Full `dotnet build` of affected projects + EditMode tests.
+- [x] **Step 3:** Full `dotnet build` of affected projects + EditMode tests.
 
-- [ ] **Step 4:** Commit + update plan checkboxes / session plan.md.
+- [x] **Step 4:** Commit + update plan checkboxes / session plan.md.
 
 ```bash
 git commit -m "$(cat <<'EOF'
@@ -202,10 +202,10 @@ EOF
 
 ### Task 5: Docs closeout Phase 1
 
-- [ ] Confirm `wiki/Technical.md` dependency laws match code.
-- [ ] Note Phase 1 complete in `wiki/log.md`.
-- [ ] Point extract-candidates plan at hardening design as superseding shell guidance.
-- [ ] Commit docs if not already.
+- [x] Confirm `wiki/Technical.md` dependency laws match code.
+- [x] Note Phase 1 complete in `wiki/log.md`.
+- [x] Point extract-candidates plan at hardening design as superseding shell guidance.
+- [x] Commit docs if not already.
 
 ---
 
@@ -214,9 +214,9 @@ EOF
 - [x] Design committed  
 - [x] `ISessionContext` in Application, interface-only properties  
 - [x] No Epic/PlayEveryWare in Application sources or asmdef  
-- [ ] No `using KitchenClash.Infrastructure` in Presentation  
-- [ ] Presentation.asmdef does not reference Infrastructure  
-- [ ] EditMode tests green  
+- [x] No `using KitchenClash.Infrastructure` in Presentation  
+- [x] Presentation.asmdef does not reference Infrastructure  
+- [x] EditMode tests green (CLI compile of EditMode project; Unity Test Runner for execution)
 
 ## Later phases (not this plan)
 

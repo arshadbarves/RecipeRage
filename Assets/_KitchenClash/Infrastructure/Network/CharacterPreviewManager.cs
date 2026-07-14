@@ -1,8 +1,9 @@
+using KitchenClash.Application;
 using UnityEngine;
 
 namespace KitchenClash.Infrastructure.Network
 {
-    public class CharacterPreviewManager : MonoBehaviour
+    public class CharacterPreviewManager : MonoBehaviour, ICharacterPreviewService
     {
         [SerializeField] private Transform _previewSpawnPoint;
         [SerializeField] private Transform[] _lobbySpawnPoints;

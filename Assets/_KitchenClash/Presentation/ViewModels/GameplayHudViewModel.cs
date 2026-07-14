@@ -1,15 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using KitchenClash.Domain;
-using KitchenClash.Presentation;
-using KitchenClash.Presentation.Common;
-using KitchenClash.Presentation.Controls;
-using KitchenClash.Infrastructure.Network.Cooking;
-using KitchenClash.Infrastructure.Network;
 using KitchenClash.Application.Services;
-using UnityEngine;
+using KitchenClash.Domain;
+using KitchenClash.Presentation.Common;
 using Playcenter.GameFlow;
+using UnityEngine;
 
 namespace KitchenClash.Presentation.ViewModels
 {
@@ -17,16 +12,9 @@ namespace KitchenClash.Presentation.ViewModels
     {
         private const float DefaultRoundDuration = 300f;
 
-        private readonly IMatchContext _matchContext;
+        private readonly IMatchHudPort _matchHud;
         private readonly IAppFlow _appFlow;
         private readonly Dictionary<int, RecipeOrderState> _orders = new();
-        private NetworkScoreManager _networkScoreManager;
-        private RoundTimer _roundTimer;
-        private GamePhaseSync _gamePhaseSync;
-        private MatchResultSync _matchResultSync;
-        private OrderManager _orderManager;
-        private PlayerController _localPlayer;
-        // private MobileControlsManager _mobileControlsManager; // Removed: not in IMatchContext
         private bool _isTracking;
         private bool _hasTriggeredGameOver;
         private float _localTimer = DefaultRoundDuration;
@@ -40,9 +28,9 @@ namespace KitchenClash.Presentation.ViewModels
         public BindableProperty<bool> MobileControlsVisible { get; } = new(false);
         public BindableProperty<int> OrdersVersion { get; } = new(0);
 
-        public GameplayHudViewModel(IMatchContext matchContext, IAppFlow appFlow)
+        public GameplayHudViewModel(IMatchHudPort matchHud, IAppFlow appFlow)
         {
-            _matchContext = matchContext;
+            _matchHud = matchHud;
             _appFlow = appFlow;
         }
 
@@ -50,18 +38,23 @@ namespace KitchenClash.Presentation.ViewModels
         {
             List<GameplayHudOrderItem> items = new();
 
-            foreach (RecipeOrderState order in _orders.Values.OrderBy(order => order.OrderId))
+            foreach (RecipeOrderState order in _orders.Values.OrderBy(o => o.OrderId))
             {
-                if (order.IsCompleted || order.IsExpired) continue;
+                if (order.IsCompleted || order.IsExpired)
+                {
+                    continue;
+                }
 
-                Recipe recipe = _orderManager?.GetRecipeById(order.RecipeId);
+                string displayName = _matchHud?.GetRecipeDisplayName(order.RecipeId);
                 float elapsed = Mathf.Max(0f, Time.time - order.CreationTime);
                 float remaining = Mathf.Max(0f, order.TimeLimit - elapsed);
 
                 items.Add(new GameplayHudOrderItem
                 {
                     OrderId = order.OrderId,
-                    Title = recipe?.DisplayName?.ToUpperInvariant() ?? $"ORDER {order.OrderId}",
+                    Title = !string.IsNullOrEmpty(displayName)
+                        ? displayName.ToUpperInvariant()
+                        : $"ORDER {order.OrderId}",
                     TimeRemaining = remaining,
                     PointValue = order.PointValue
                 });
@@ -72,36 +65,46 @@ namespace KitchenClash.Presentation.ViewModels
 
         public void StartTracking()
         {
-            if (_isTracking) return;
+            if (_isTracking)
+            {
+                return;
+            }
 
             _isTracking = true;
             _hasTriggeredGameOver = false;
-            TryResolveRuntimeDependencies();
+            _matchHud?.Subscribe();
             SeedState();
             SubscribeToEvents();
         }
 
         public void StopTracking()
         {
-            if (!_isTracking) return;
+            if (!_isTracking)
+            {
+                return;
+            }
 
             UnsubscribeFromEvents();
+            _matchHud?.Unsubscribe();
             _isTracking = false;
         }
 
         public void Update(float deltaTime)
         {
-            if (!_isTracking) return;
+            if (!_isTracking)
+            {
+                return;
+            }
 
-            TryResolveRuntimeDependencies();
+            _matchHud?.Refresh();
             UpdateInteractionPrompt();
             UpdateTimerFallback(deltaTime);
         }
 
-        public void TriggerJump() { /* MobileControlsManager removed */ }
-        public void TriggerAttack() { /* MobileControlsManager removed */ }
-        public void TriggerSpecial() { /* MobileControlsManager removed */ }
-        public void TriggerInteract() { /* MobileControlsManager removed */ }
+        public void TriggerJump() { }
+        public void TriggerAttack() { }
+        public void TriggerSpecial() { }
+        public void TriggerInteract() { }
 
         public override void Dispose()
         {
@@ -109,167 +112,84 @@ namespace KitchenClash.Presentation.ViewModels
             base.Dispose();
         }
 
-        private void TryResolveRuntimeDependencies()
-        {
-            bool didResolveDependency = false;
-            _matchContext.Refresh();
-
-            if (_networkScoreManager == null)
-            {
-                _networkScoreManager = _matchContext.NetworkScoreManager;
-                didResolveDependency |= _networkScoreManager != null;
-            }
-
-            if (_roundTimer == null)
-            {
-                _roundTimer = _matchContext.RoundTimer;
-                didResolveDependency |= _roundTimer != null;
-            }
-
-            if (_gamePhaseSync == null)
-            {
-                _gamePhaseSync = _matchContext.GamePhaseSync;
-                didResolveDependency |= _gamePhaseSync != null;
-            }
-
-            if (_matchResultSync == null)
-            {
-                _matchResultSync = _matchContext.MatchResultSync;
-                didResolveDependency |= _matchResultSync != null;
-            }
-
-            if (_orderManager == null)
-            {
-                _orderManager = _matchContext.OrderManager;
-                didResolveDependency |= _orderManager != null;
-            }
-
-            if (_localPlayer == null)
-            {
-                _localPlayer = _matchContext.LocalPlayer;
-                didResolveDependency |= _localPlayer != null;
-            }
-
-            MobileControlsVisible.Value = UnityEngine.Application.isMobilePlatform;
-
-            if (didResolveDependency && _isTracking)
-            {
-                SubscribeToEvents();
-                SeedState();
-            }
-        }
-
         private void SeedState()
         {
-            if (_networkScoreManager != null && _matchContext.LocalClientId.HasValue)
+            if (_matchHud == null)
             {
-                int score = _networkScoreManager.GetPlayerScore(_matchContext.LocalClientId.Value);
-                ScoreText.Value = $"Score: {score}";
+                return;
             }
 
-            if (_roundTimer != null)
+            ScoreText.Value = $"Score: {_matchHud.GetLocalPlayerScore()}";
+
+            if (_matchHud.IsTimerRunning || _matchHud.TimeRemaining > 0f)
             {
-                _localTimer = Mathf.Max(0f, _roundTimer.TimeRemaining);
-                UpdateTimerUi(_localTimer);
-            }
-            else
-            {
-                UpdateTimerUi(_localTimer);
+                _localTimer = Mathf.Max(0f, _matchHud.TimeRemaining);
             }
 
-            if (_gamePhaseSync != null)
-            {
-                HandlePhaseChanged(_gamePhaseSync.CurrentPhase, _gamePhaseSync.CurrentPhase);
-            }
-
+            UpdateTimerUi(_localTimer);
+            HandlePhaseChanged(_matchHud.CurrentPhase, _matchHud.CurrentPhase);
             TryTransitionToGameOver();
 
             _orders.Clear();
-            if (_orderManager != null)
+            foreach (RecipeOrderState order in _matchHud.GetActiveOrders())
             {
-                foreach (RecipeOrderState order in _orderManager.GetActiveOrders())
-                {
-                    _orders[order.OrderId] = order;
-                }
+                _orders[order.OrderId] = order;
             }
 
             OrdersVersion.Value++;
+            MobileControlsVisible.Value = UnityEngine.Application.isMobilePlatform;
             UpdateInteractionPrompt();
         }
 
         private void SubscribeToEvents()
         {
-            if (_networkScoreManager != null)
+            if (_matchHud == null)
             {
-                _networkScoreManager.OnPlayerScoreUpdated -= HandlePlayerScoreUpdated;
-                _networkScoreManager.OnPlayerScoreUpdated += HandlePlayerScoreUpdated;
+                return;
             }
 
-            if (_roundTimer != null)
-            {
-                _roundTimer.OnTimeUpdated -= HandleTimeUpdated;
-                _roundTimer.OnTimeUpdated += HandleTimeUpdated;
-                _roundTimer.OnTimerExpired -= HandleTimerExpired;
-                _roundTimer.OnTimerExpired += HandleTimerExpired;
-            }
-
-            if (_gamePhaseSync != null)
-            {
-                _gamePhaseSync.OnPhaseChanged -= HandlePhaseChanged;
-                _gamePhaseSync.OnPhaseChanged += HandlePhaseChanged;
-            }
-
-            if (_matchResultSync != null)
-            {
-                _matchResultSync.OnResultChanged -= HandleMatchResultChanged;
-                _matchResultSync.OnResultChanged += HandleMatchResultChanged;
-            }
-
-            if (_orderManager != null)
-            {
-                _orderManager.OnOrderCreated -= HandleOrderCreated;
-                _orderManager.OnOrderCreated += HandleOrderCreated;
-                _orderManager.OnOrderCompleted -= HandleOrderResolved;
-                _orderManager.OnOrderCompleted += HandleOrderResolved;
-                _orderManager.OnOrderExpired -= HandleOrderResolved;
-                _orderManager.OnOrderExpired += HandleOrderResolved;
-            }
+            _matchHud.PlayerScoreUpdated -= HandlePlayerScoreUpdated;
+            _matchHud.PlayerScoreUpdated += HandlePlayerScoreUpdated;
+            _matchHud.TimeUpdated -= HandleTimeUpdated;
+            _matchHud.TimeUpdated += HandleTimeUpdated;
+            _matchHud.TimerExpired -= HandleTimerExpired;
+            _matchHud.TimerExpired += HandleTimerExpired;
+            _matchHud.PhaseChanged -= HandlePhaseChanged;
+            _matchHud.PhaseChanged += HandlePhaseChanged;
+            _matchHud.MatchResultChanged -= HandleMatchResultChanged;
+            _matchHud.MatchResultChanged += HandleMatchResultChanged;
+            _matchHud.OrderCreated -= HandleOrderCreated;
+            _matchHud.OrderCreated += HandleOrderCreated;
+            _matchHud.OrderCompleted -= HandleOrderResolved;
+            _matchHud.OrderCompleted += HandleOrderResolved;
+            _matchHud.OrderExpired -= HandleOrderResolved;
+            _matchHud.OrderExpired += HandleOrderResolved;
         }
 
         private void UnsubscribeFromEvents()
         {
-            if (_networkScoreManager != null)
+            if (_matchHud == null)
             {
-                _networkScoreManager.OnPlayerScoreUpdated -= HandlePlayerScoreUpdated;
+                return;
             }
 
-            if (_roundTimer != null)
-            {
-                _roundTimer.OnTimeUpdated -= HandleTimeUpdated;
-                _roundTimer.OnTimerExpired -= HandleTimerExpired;
-            }
-
-            if (_gamePhaseSync != null)
-            {
-                _gamePhaseSync.OnPhaseChanged -= HandlePhaseChanged;
-            }
-
-            if (_matchResultSync != null)
-            {
-                _matchResultSync.OnResultChanged -= HandleMatchResultChanged;
-            }
-
-            if (_orderManager != null)
-            {
-                _orderManager.OnOrderCreated -= HandleOrderCreated;
-                _orderManager.OnOrderCompleted -= HandleOrderResolved;
-                _orderManager.OnOrderExpired -= HandleOrderResolved;
-            }
+            _matchHud.PlayerScoreUpdated -= HandlePlayerScoreUpdated;
+            _matchHud.TimeUpdated -= HandleTimeUpdated;
+            _matchHud.TimerExpired -= HandleTimerExpired;
+            _matchHud.PhaseChanged -= HandlePhaseChanged;
+            _matchHud.MatchResultChanged -= HandleMatchResultChanged;
+            _matchHud.OrderCreated -= HandleOrderCreated;
+            _matchHud.OrderCompleted -= HandleOrderResolved;
+            _matchHud.OrderExpired -= HandleOrderResolved;
         }
 
         private void HandlePlayerScoreUpdated(ulong playerId, int score)
         {
-            if (!_matchContext.LocalClientId.HasValue || playerId != _matchContext.LocalClientId.Value) return;
+            if (!_matchHud.LocalClientId.HasValue || playerId != _matchHud.LocalClientId.Value)
+            {
+                return;
+            }
+
             ScoreText.Value = $"Score: {score}";
         }
 
@@ -292,34 +212,34 @@ namespace KitchenClash.Presentation.ViewModels
             TryTransitionToGameOver();
         }
 
-        private void HandleMatchResultChanged(MatchResultState previousResult, MatchResultState newResult)
+        private void HandleMatchResultChanged(MatchResultSnapshot previousResult, MatchResultSnapshot newResult)
         {
             TryTransitionToGameOver();
         }
 
         private void TryTransitionToGameOver()
         {
-            if (_hasTriggeredGameOver) return;
-            if (_gamePhaseSync?.CurrentPhase != GamePhase.GameOver) return;
-            if (_matchResultSync == null || !_matchResultSync.HasResult) return;
+            if (_hasTriggeredGameOver || _matchHud == null)
+            {
+                return;
+            }
+
+            if (_matchHud.CurrentPhase != GamePhase.GameOver)
+            {
+                return;
+            }
+
+            if (!_matchHud.HasMatchResult)
+            {
+                return;
+            }
 
             _hasTriggeredGameOver = true;
-            
-            // Map MatchResultState to MatchResultInfo
-            MatchResultState currentResult = _matchResultSync.CurrentResult;
-            int localTeamId = 0; // Convention: unknown local team
-            bool won = false;
-            
-            // Try to determine if local team won
-            if (_localPlayer != null)
-            {
-                localTeamId = _localPlayer.TeamId;
-                if (!currentResult.IsDraw)
-                {
-                    won = (currentResult.WinningTeamId == localTeamId);
-                }
-            }
-            
+
+            MatchResultSnapshot currentResult = _matchHud.CurrentMatchResult;
+            int localTeamId = _matchHud.LocalTeamId;
+            bool won = !currentResult.IsDraw && currentResult.WinningTeamId == localTeamId;
+
             _appFlow?.NotifyMatchCompleted(new MatchResultInfo
             {
                 IsDraw = currentResult.IsDraw,
@@ -343,8 +263,15 @@ namespace KitchenClash.Presentation.ViewModels
 
         private void UpdateTimerFallback(float deltaTime)
         {
-            if (_roundTimer != null && _roundTimer.IsRunning) return;
-            if (_localTimer <= 0f) return;
+            if (_matchHud != null && _matchHud.IsTimerRunning)
+            {
+                return;
+            }
+
+            if (_localTimer <= 0f)
+            {
+                return;
+            }
 
             _localTimer = Mathf.Max(0f, _localTimer - deltaTime);
             UpdateTimerUi(_localTimer);
@@ -360,23 +287,11 @@ namespace KitchenClash.Presentation.ViewModels
 
         private void UpdateInteractionPrompt()
         {
-            if (_localPlayer == null)
+            if (_matchHud != null && _matchHud.TryGetInteractionPrompt(out string prompt))
             {
-                InteractionVisible.Value = false;
-                InteractionText.Value = string.Empty;
+                InteractionVisible.Value = true;
+                InteractionText.Value = prompt;
                 return;
-            }
-
-            Ray ray = new Ray(_localPlayer.transform.position, _localPlayer.transform.forward);
-            if (Physics.Raycast(ray, out RaycastHit hit, 2f))
-            {
-                IInteractable interactable = hit.collider.gameObject.GetComponent<IInteractable>();
-                if (interactable != null && interactable.CanInteract(_localPlayer))
-                {
-                    InteractionVisible.Value = true;
-                    InteractionText.Value = interactable.GetInteractionPrompt();
-                    return;
-                }
             }
 
             InteractionVisible.Value = false;

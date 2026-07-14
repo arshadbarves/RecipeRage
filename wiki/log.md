@@ -2,6 +2,17 @@
 
 Chronological record of wiki activity. Each entry starts with timestamp for parseability.
 
+## [2026-07-14] implementation | Architecture hardening Phase 1 complete
+
+- Tasks 1–5 done on `architecture-cleanup`
+- Presentation pure: no `using KitchenClash.Infrastructure`; asmdef drops Infrastructure + Netcode
+- Ports: `IMatchHudPort` / `MatchHudPort` / `NullMatchHudPort`; `ICharacterPreviewService` + null default
+- Domain: `MatchResultSnapshot` for Results/HUD (no NGO `MatchResultState` in Presentation)
+- Presentation-local `TweenExtensions` for DOTween→UniTask after asmdef purity
+- DI: Match registers real HUD port; Root null defaults; Menu registers preview if present
+- CLI: Domain/Application/Infrastructure/Presentation/Composition/EditMode projects build 0 errors
+- Next: Phase 2 UI navigation purity; Phase 3 Infra assembly split; expand match ports (Phase 4)
+
 ## [2026-07-14] design | Architecture hardening (GameFlow-quality systems)
 
 - Product intent: more robust separate systems like GameFlow; prior YAGNI deferral insufficient for cleanliness

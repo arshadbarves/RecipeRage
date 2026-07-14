@@ -2,7 +2,9 @@ using KitchenClash.Application;
 using KitchenClash.Application.Services;
 using KitchenClash.Domain;
 using KitchenClash.Infrastructure.Gameplay;
+using KitchenClash.Infrastructure.Network;
 using KitchenClash.Presentation.ViewModels;
+using UnityEngine;
 using VContainer;
 using VContainer.Unity;
 
@@ -23,6 +25,14 @@ public class MenuLifetimeScope : LifetimeScope
 
         // Tutorial
         builder.Register<TutorialService>(Lifetime.Scoped).As<ITutorialService>();
+
+        // Scene MonoBehaviour preview port for lobby / character details.
+        // Falls back to root NullCharacterPreviewService when the component is not in the scene.
+        CharacterPreviewManager preview = Object.FindFirstObjectByType<CharacterPreviewManager>();
+        if (preview != null)
+        {
+            builder.RegisterComponent(preview).As<ICharacterPreviewService>();
+        }
 
         // ViewModels
         builder.Register<HomeScreenViewModel>(Lifetime.Transient);

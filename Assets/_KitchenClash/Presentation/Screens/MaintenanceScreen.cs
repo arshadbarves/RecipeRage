@@ -4,7 +4,6 @@ using System.Globalization;
 using KitchenClash.Presentation;
 using Cysharp.Threading.Tasks;
 using KitchenClash.Domain;
-using KitchenClash.Infrastructure.Firebase;
 using KitchenClash.Presentation.Common;
 using UnityEngine.UIElements;
 using VContainer;

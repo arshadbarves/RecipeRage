@@ -1,5 +1,4 @@
 using KitchenClash.Domain;
-using KitchenClash.Infrastructure.Animation;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;

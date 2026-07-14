@@ -4,10 +4,10 @@
 
 | Layer | Description | Dependencies |
 |-------|-------------|--------------|
-| Presentation | UI Toolkit screens (UXML+USS), ViewModels, `UIService` + `UIScreenStackManager` | Application only |
-| Application | Use Cases / Presenters (pure C#, VContainer IStartable) | Domain interfaces only |
+| Presentation | UI Toolkit screens (UXML+USS), ViewModels, `UIService` + `UIScreenStackManager` | Application, Domain, GameFlow only (no Infrastructure / Netcode) |
+| Application | Use Cases / Presenters (pure C#, VContainer IStartable) | Domain only (no EOS / NGO / Infrastructure) |
 | Domain | Pure C# models + interfaces. NO Unity deps. | None |
-| Infrastructure | EOS, Firebase, Google/FB/Apple adapters, NGO NetworkBehaviours | Domain interfaces |
+| Infrastructure | EOS, Firebase, Google/FB/Apple adapters, NGO NetworkBehaviours | Application, Domain, GameFlow |
 
 **MonoBehaviour used ONLY in:**
 - `UIDocumentRoot.cs` — mounts UIDocument, provides root VisualElement
@@ -51,7 +51,14 @@ RootLifetimeScope (app-lifetime, DontDestroyOnLoad)
       IHazardService  → HazardService   (Scoped)
       IAbilityService → AbilityService  (Scoped)
       IMatchContext   → MatchContext    (Scoped)
+      IMatchHudPort   → MatchHudPort    (Scoped) — Presentation match surface
+      GameplayHudViewModel → Transient
       BotManager      → BotManager      (Scoped)
+
+  Root also registers null defaults for match/menu-only ports:
+    IMatchHudPort            → NullMatchHudPort
+    ICharacterPreviewService → NullCharacterPreviewService
+  MenuLifetimeScope registers CharacterPreviewManager as ICharacterPreviewService when present in scene.
 ```
 
 ## Product Navigation Architecture
@@ -72,13 +79,20 @@ GameFlow fixed product navigation. Remaining mess is inverted deps, vendor leaks
 
 **Program design:** `docs/superpowers/specs/2026-07-14-architecture-hardening-design.md`
 
-| Phase | Focus | Delete / compile gate |
-|-------|--------|------------------------|
-| 1 | Session shell + dependency laws | Presentation must not reference Infrastructure; Application must not reference EOS packages |
-| 2 | UI navigation purity | Animation/localization via Application ports; shrink `UIService` |
-| 3 | Infrastructure assembly walls | Split Flow / EOS / Network / Persistence (minimum) |
-| 4 | Match gameplay ports | HUD uses Application match ports only; shrink `PlayerController` / stations |
-| 5 | Domain kernel hygiene (optional) | Shell ports vs cooking models if still noisy |
+| Phase | Focus | Delete / compile gate | Status |
+|-------|--------|------------------------|--------|
+| 1 | Session shell + dependency laws | Presentation must not reference Infrastructure; Application must not reference EOS packages | **Complete** |
+| 2 | UI navigation purity | Animation/localization via Application ports; shrink `UIService` | Next |
+| 3 | Infrastructure assembly walls | Split Flow / EOS / Network / Persistence (minimum) | Pending |
+| 4 | Match gameplay ports | Expand match ports beyond HUD; shrink `PlayerController` / stations | Partial (HUD port shipped in Phase 1) |
+| 5 | Domain kernel hygiene (optional) | Shell ports vs cooking models if still noisy | Pending |
+
+**Phase 1 shipped contracts:**
+- `ISessionContext` in Application (interface-only facade)
+- `LobbyOpResult` — Application lobby ops free of Epic `Result`
+- `IMatchHudPort` + Domain `MatchResultSnapshot` — Presentation HUD/Results never touch `IMatchContext`
+- `ICharacterPreviewService` — menu preview without Infrastructure usings
+- Presentation-local `TweenExtensions` so DOTween→UniTask does not require Infrastructure.Animation
 
 ### Dependency laws (end state)
 

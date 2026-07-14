@@ -5,9 +5,6 @@ using KitchenClash.Presentation.Common;
 using KitchenClash.Presentation.Overlays;
 using KitchenClash.Presentation.Screens;
 using KitchenClash.Presentation.ViewModels;
-using KitchenClash.Infrastructure.Animation;
-using KitchenClash.Infrastructure.Network;
-using KitchenClash.Infrastructure.Localization;
 using KitchenClash.Domain;
 using KitchenClash.Application.Services;
 using KitchenClash.Presentation.Extensions;
@@ -24,7 +21,7 @@ namespace KitchenClash.Presentation.Components
         [Inject] private ILocalizationManager _localizationManager;
         [Inject] private ICharacterService _characterService;
         [Inject] private ISkinsService _skinsService;
-        [Inject] private CharacterPreviewManager _previewManager;
+        [Inject] private ICharacterPreviewService _previewManager;
         [Inject] private IEventBus _eventBus;
 
         private VisualElement _root;
@@ -220,7 +217,7 @@ namespace KitchenClash.Presentation.Components
 
         public void Update(float deltaTime) { }
 
-        public void PlayIntroAnimations(IUIAnimator animator) { }
+        public void PlayIntroAnimations() { }
 
         public void Dispose()
         {

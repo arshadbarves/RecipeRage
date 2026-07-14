@@ -1,16 +1,15 @@
+using System;
+using System.Collections.Generic;
 using System.Reflection;
 using KitchenClash.Application.Services;
 using KitchenClash.Domain;
 using KitchenClash.Infrastructure.Network;
-using KitchenClash.Infrastructure.Network.Cooking;
-using KitchenClash.Infrastructure.Network.Spawning;
 using KitchenClash.Presentation.Screens;
 using KitchenClash.Presentation.ViewModels;
 using NUnit.Framework;
-using Unity.Netcode;
-using UnityEngine;
 using Playcenter.GameFlow;
 using RecipeRage.Tests.EditMode.Gameplay.Fakes;
+using UnityEngine;
 
 namespace RecipeRage.Tests.EditMode.Gameplay
 {
@@ -70,7 +69,7 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             Assert.AreEqual(0f, timer.TimeRemaining);
             Assert.IsFalse(timer.IsRunning);
 
-            Object.DestroyImmediate(gameObject);
+            UnityEngine.Object.DestroyImmediate(gameObject);
         }
 
         [Test]
@@ -95,17 +94,15 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             Assert.IsFalse(resultSync.HasResult);
             Assert.IsFalse(resultSync.CurrentResult.HasResult);
 
-            Object.DestroyImmediate(gameObject);
+            UnityEngine.Object.DestroyImmediate(gameObject);
         }
 
         [Test]
         public void GameplayHudViewModel_DoesNotTransitionToGameOver_WhenPhaseChangesWithoutResult()
         {
             FakeAppFlow appFlow = new();
-            GameplayHudViewModel viewModel = new(new FakeMatchContext(), appFlow);
-
-            GamePhaseSync phaseSync = CreatePhaseSync(GamePhase.GameOver);
-            SetPrivateField(viewModel, "_gamePhaseSync", phaseSync);
+            FakeMatchHudPort hud = new() { CurrentPhase = GamePhase.GameOver, HasMatchResult = false };
+            GameplayHudViewModel viewModel = new(hud, appFlow);
 
             MethodInfo handlePhaseChanged = typeof(GameplayHudViewModel).GetMethod(
                 "HandlePhaseChanged",
@@ -116,22 +113,20 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             handlePhaseChanged.Invoke(viewModel, new object[] { GamePhase.Playing, GamePhase.GameOver });
 
             Assert.AreEqual(0, appFlow.NotifyMatchCompletedCount);
-
-            Object.DestroyImmediate(phaseSync.gameObject);
         }
 
         [Test]
         public void GameplayHudViewModel_TransitionsToGameOver_WhenPhaseAndResultAreReady()
         {
             FakeAppFlow appFlow = new();
-            GameplayHudViewModel viewModel = new(new FakeMatchContext(), appFlow);
-            GamePhaseSync phaseSync = CreatePhaseSync(GamePhase.GameOver);
-            MatchResultSync resultSync = CreateResultSync(MatchResultState.FromEvaluation(
-                MatchEndReason.TimerExpired,
-                new MatchEndEvaluation(true, -1, true, 1200)));
-
-            SetPrivateField(viewModel, "_gamePhaseSync", phaseSync);
-            SetPrivateField(viewModel, "_matchResultSync", resultSync);
+            MatchResultSnapshot result = new(true, -1, 1200, true, MatchEndReason.TimerExpired);
+            FakeMatchHudPort hud = new()
+            {
+                CurrentPhase = GamePhase.GameOver,
+                HasMatchResult = true,
+                CurrentMatchResult = result
+            };
+            GameplayHudViewModel viewModel = new(hud, appFlow);
 
             MethodInfo handlePhaseChanged = typeof(GameplayHudViewModel).GetMethod(
                 "HandlePhaseChanged",
@@ -144,27 +139,24 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             Assert.IsNotNull(handleMatchResultChanged);
 
             handlePhaseChanged.Invoke(viewModel, new object[] { GamePhase.Playing, GamePhase.GameOver });
-            handleMatchResultChanged.Invoke(viewModel, new object[] { MatchResultState.None, resultSync.CurrentResult });
-            handleMatchResultChanged.Invoke(viewModel, new object[] { MatchResultState.None, resultSync.CurrentResult });
+            handleMatchResultChanged.Invoke(viewModel, new object[] { MatchResultSnapshot.None, result });
+            handleMatchResultChanged.Invoke(viewModel, new object[] { MatchResultSnapshot.None, result });
 
             Assert.AreEqual(1, appFlow.NotifyMatchCompletedCount);
-
-            Object.DestroyImmediate(phaseSync.gameObject);
-            Object.DestroyImmediate(resultSync.gameObject);
         }
 
         [Test]
         public void GameplayHudViewModel_TransitionsToGameOver_WhenResultArrivesBeforePhase()
         {
             FakeAppFlow appFlow = new();
-            GameplayHudViewModel viewModel = new(new FakeMatchContext(), appFlow);
-            GamePhaseSync phaseSync = CreatePhaseSync(GamePhase.Playing);
-            MatchResultSync resultSync = CreateResultSync(MatchResultState.FromEvaluation(
-                MatchEndReason.ScoreLimitReached,
-                new MatchEndEvaluation(true, 0, false, 1000)));
-
-            SetPrivateField(viewModel, "_gamePhaseSync", phaseSync);
-            SetPrivateField(viewModel, "_matchResultSync", resultSync);
+            MatchResultSnapshot result = new(true, 0, 1000, false, MatchEndReason.ScoreLimitReached);
+            FakeMatchHudPort hud = new()
+            {
+                CurrentPhase = GamePhase.Playing,
+                HasMatchResult = true,
+                CurrentMatchResult = result
+            };
+            GameplayHudViewModel viewModel = new(hud, appFlow);
 
             MethodInfo handlePhaseChanged = typeof(GameplayHudViewModel).GetMethod(
                 "HandlePhaseChanged",
@@ -176,17 +168,14 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             Assert.IsNotNull(handlePhaseChanged);
             Assert.IsNotNull(handleMatchResultChanged);
 
-            handleMatchResultChanged.Invoke(viewModel, new object[] { MatchResultState.None, resultSync.CurrentResult });
+            handleMatchResultChanged.Invoke(viewModel, new object[] { MatchResultSnapshot.None, result });
 
             Assert.AreEqual(0, appFlow.NotifyMatchCompletedCount);
 
-            SetPhaseValue(phaseSync, GamePhase.GameOver);
+            hud.CurrentPhase = GamePhase.GameOver;
             handlePhaseChanged.Invoke(viewModel, new object[] { GamePhase.Playing, GamePhase.GameOver });
 
             Assert.AreEqual(1, appFlow.NotifyMatchCompletedCount);
-
-            Object.DestroyImmediate(phaseSync.gameObject);
-            Object.DestroyImmediate(resultSync.gameObject);
         }
 
         [TestCase(0, false, "TEAM 1 WINS!")]
@@ -194,14 +183,12 @@ namespace RecipeRage.Tests.EditMode.Gameplay
         [TestCase(-1, true, "DRAW!")]
         public void ResultsScreen_GetWinnerText_MapsResultToExpectedLabel(int winningTeamId, bool isDraw, string expected)
         {
-            MatchResultState result = new MatchResultState
-            {
-                HasResult = true,
-                WinningTeamId = winningTeamId,
-                WinningScore = 1000,
-                IsDraw = isDraw,
-                EndReason = MatchEndReason.TimerExpired
-            };
+            MatchResultSnapshot result = new(
+                true,
+                winningTeamId,
+                1000,
+                isDraw,
+                MatchEndReason.TimerExpired);
 
             Assert.AreEqual(expected, ResultsScreen.GetWinnerText(result));
         }
@@ -209,70 +196,49 @@ namespace RecipeRage.Tests.EditMode.Gameplay
         [Test]
         public void ResultsScreen_GetWinnerText_UsesNeutralFallback_WhenResultIsMissing()
         {
-            Assert.AreEqual("MATCH COMPLETE", ResultsScreen.GetWinnerText(MatchResultState.None));
+            Assert.AreEqual("MATCH COMPLETE", ResultsScreen.GetWinnerText(MatchResultSnapshot.None));
         }
 
-        private sealed class FakeMatchContext : IMatchContext
+        private sealed class FakeMatchHudPort : IMatchHudPort
         {
-            public NetworkManager NetworkManager => null;
-            public ulong? LocalClientId => null;
-            public int LocalTeamId => -1;
-            public PlayerController LocalPlayer => null;
-            public NetworkScoreManager NetworkScoreManager => null;
-            public RoundTimer RoundTimer => null;
-            public GamePhaseSync GamePhaseSync => null;
-            public MatchResultSync MatchResultSync => null;
-            public OrderManager OrderManager => null;
-            public ScoreManager ScoreManager => null;
-            public SpawnManager SpawnManager => null;
-            public IngredientNetworkSpawner IngredientNetworkSpawner => null;
-            public IKitchenSupportRuntime KitchenSupportRuntime => null;
-            public bool IsHost => false;
-            public bool IsServer => false;
-            public bool IsClient => false;
+            public ulong? LocalClientId { get; set; }
+            public int LocalTeamId { get; set; }
+            public float TimeRemaining { get; set; }
+            public bool IsTimerRunning { get; set; }
+            public GamePhase CurrentPhase { get; set; } = GamePhase.Waiting;
+            public bool HasMatchResult { get; set; }
+            public MatchResultSnapshot CurrentMatchResult { get; set; } = MatchResultSnapshot.None;
+
+            public event Action<ulong, int> PlayerScoreUpdated;
+            public event Action<float> TimeUpdated;
+            public event Action TimerExpired;
+            public event Action<GamePhase, GamePhase> PhaseChanged;
+            public event Action<MatchResultSnapshot, MatchResultSnapshot> MatchResultChanged;
+            public event Action<RecipeOrderState> OrderCreated;
+            public event Action<RecipeOrderState> OrderCompleted;
+            public event Action<RecipeOrderState> OrderExpired;
 
             public void Refresh()
             {
             }
 
-            public void ShutdownNetworkSession()
+            public int GetLocalPlayerScore() => 0;
+            public int GetTeamScore(int teamId) => 0;
+            public IReadOnlyList<RecipeOrderState> GetActiveOrders() => Array.Empty<RecipeOrderState>();
+            public string GetRecipeDisplayName(int recipeId) => null;
+            public bool TryGetInteractionPrompt(out string prompt)
             {
-            }
-
-            public bool TryGetSpawnedObject(ulong networkObjectId, out NetworkObject networkObject)
-            {
-                networkObject = null;
+                prompt = string.Empty;
                 return false;
             }
-        }
 
-        private static void SetPrivateField(object target, string fieldName, object value)
-        {
-            FieldInfo field = target.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
-            Assert.IsNotNull(field, $"Expected private field '{fieldName}' to exist.");
-            field.SetValue(target, value);
-        }
+            public void Subscribe()
+            {
+            }
 
-        private static GamePhaseSync CreatePhaseSync(GamePhase phase)
-        {
-            GameObject gameObject = new("GamePhaseSyncTest");
-            GamePhaseSync phaseSync = gameObject.AddComponent<GamePhaseSync>();
-            SetPhaseValue(phaseSync, phase);
-            return phaseSync;
-        }
-
-        private static void SetPhaseValue(GamePhaseSync phaseSync, GamePhase phase)
-        {
-            NetworkVariable<GamePhase> currentPhase = new(phase);
-            SetPrivateField(phaseSync, "_currentPhase", currentPhase);
-        }
-
-        private static MatchResultSync CreateResultSync(MatchResultState result)
-        {
-            GameObject gameObject = new("MatchResultSyncReadyTest");
-            MatchResultSync resultSync = gameObject.AddComponent<MatchResultSync>();
-            resultSync.SetResult(result);
-            return resultSync;
+            public void Unsubscribe()
+            {
+            }
         }
     }
 }

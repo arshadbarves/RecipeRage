@@ -4,7 +4,6 @@ using KitchenClash.Domain;
 using KitchenClash.Application.Services;
 using KitchenClash.Presentation;
 using KitchenClash.Presentation.Common;
-using KitchenClash.Infrastructure.Network; // Added
 using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;
@@ -15,12 +14,13 @@ namespace KitchenClash.Presentation.Screens
     public class CharacterDetailsScreen : BaseUIScreen
     {
         [Inject] private ISessionContext _sessionContext;
+        [Inject] private ICharacterPreviewService _previewService;
 
         private ICharacterService _characterService;
         private ISkinsService _skinsService;
         private IPlayerDataService _playerDataService;
         private IEconomyService _economyService;
-        private CharacterPreviewManager _previewManager; // New Dependency
+        private ICharacterPreviewService _previewManager;
 
         private CharacterClass _currentCharacter;
         private string _selectedSkinId;
@@ -57,7 +57,7 @@ namespace KitchenClash.Presentation.Screens
             _skinsService = _sessionContext?.SkinsService;
             _playerDataService = _sessionContext?.PlayerDataService;
             _economyService = _sessionContext?.EconomyService;
-            _previewManager = _sessionContext?.Resolve<CharacterPreviewManager>();
+            _previewManager = _previewService ?? _sessionContext?.Resolve<ICharacterPreviewService>();
         }
 
         private void QueryElements()

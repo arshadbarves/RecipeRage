@@ -25,8 +25,10 @@ public class MatchLifetimeScope : LifetimeScope
         builder.Register<AbilityService>(Lifetime.Scoped).As<IAbilityService>();
         builder.Register<HazardService>(Lifetime.Scoped).As<IHazardService>();
 
-        // Match context
+        // Match context + Presentation HUD port
         builder.Register<MatchContext>(Lifetime.Scoped).As<IMatchContext>();
+        builder.Register<MatchHudPort>(Lifetime.Scoped).As<IMatchHudPort>().AsSelf();
+        builder.Register<KitchenClash.Presentation.ViewModels.GameplayHudViewModel>(Lifetime.Transient);
 
         // Bot services
         builder.Register<BotManager>(Lifetime.Scoped);

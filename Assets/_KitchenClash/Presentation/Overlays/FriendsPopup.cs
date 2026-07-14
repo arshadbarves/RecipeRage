@@ -4,7 +4,6 @@ using KitchenClash.Application.Services;
 using KitchenClash.Presentation;
 using KitchenClash.Presentation.Common;
 using KitchenClash.Domain;
-using KitchenClash.Infrastructure.EOS;
 using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;

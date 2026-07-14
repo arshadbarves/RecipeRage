@@ -96,6 +96,12 @@ public class RootLifetimeScope : LifetimeScope
         }
 
         builder.Register<UIService>(Lifetime.Singleton).As<IUIService>().As<IStartable>().As<ITickable>();
+
+        // Presentation ports: null defaults; child scopes override with real adapters
+        builder.RegisterInstance(KitchenClash.Application.Services.NullMatchHudPort.Instance)
+            .As<KitchenClash.Application.Services.IMatchHudPort>();
+        builder.RegisterInstance(KitchenClash.Application.NullCharacterPreviewService.Instance)
+            .As<KitchenClash.Application.ICharacterPreviewService>();
         builder.Register<LocalizationManager>(Lifetime.Singleton).As<ILocalizationManager>().As<IInitializable>();
     }
 

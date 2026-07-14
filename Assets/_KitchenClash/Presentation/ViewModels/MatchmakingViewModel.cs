@@ -5,11 +5,8 @@ using KitchenClash.Application.Services;
 using System.Threading;
 using KitchenClash.Domain;
 using Cysharp.Threading.Tasks;
-using KitchenClash.Infrastructure.Localization;
-using KitchenClash.Infrastructure.Network;
 using KitchenClash.Presentation;
 using KitchenClash.Presentation.Common;
-using KitchenClash.Infrastructure.EOS;
 using UnityEngine;
 using VContainer;
 

@@ -1,8 +1,6 @@
 using KitchenClash.Application.Models;
 using KitchenClash.Application;
 using System.Collections.Generic;
-using KitchenClash.Infrastructure.EOS;
-using KitchenClash.Infrastructure.Persistence;
 using KitchenClash.Domain;
 using KitchenClash.Application.Services;
 using KitchenClash.Presentation;

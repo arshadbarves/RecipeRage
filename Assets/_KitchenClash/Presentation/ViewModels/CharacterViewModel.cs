@@ -2,7 +2,6 @@ using KitchenClash.Application;
 using KitchenClash.Domain;
 using KitchenClash.Presentation;
 using KitchenClash.Presentation.Common;
-using KitchenClash.Infrastructure.EOS;
 using VContainer;
 
 namespace KitchenClash.Presentation.ViewModels

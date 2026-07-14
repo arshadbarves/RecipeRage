@@ -2,7 +2,6 @@ using KitchenClash.Application;
 using KitchenClash.Presentation;
 using DG.Tweening;
 using KitchenClash.Presentation.Common;
-using KitchenClash.Infrastructure.Animation;
 using KitchenClash.Domain;
 using Cysharp.Threading.Tasks;
 using UnityEngine;

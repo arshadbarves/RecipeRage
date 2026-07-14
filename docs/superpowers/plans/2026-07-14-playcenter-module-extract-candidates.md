@@ -1,3 +1,5 @@
+> **Superseded for shell cleanliness:** For dependency laws, Presentation purity, and Infrastructure splits, follow `docs/superpowers/specs/2026-07-14-architecture-hardening-design.md` and `docs/superpowers/plans/2026-07-14-architecture-hardening.md`. This document remains the Playcenter *extract* decision record only.
+
 # Playcenter Module Extract Candidates — Decision Plan
 
 > **For agentic workers:** This is a **decision + deferred-extract** plan, not an implement-now plan.

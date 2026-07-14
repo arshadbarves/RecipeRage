@@ -3,7 +3,6 @@ using KitchenClash.Presentation;
 using KitchenClash.Domain;
 using DG.Tweening;
 using KitchenClash.Presentation.Common;
-using KitchenClash.Infrastructure.Animation;
 using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;

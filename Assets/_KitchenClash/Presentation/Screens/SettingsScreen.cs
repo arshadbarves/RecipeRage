@@ -5,12 +5,10 @@ using System;
 using KitchenClash.Presentation;
 using KitchenClash.Domain;
 using KitchenClash.Presentation.Extensions;
-using KitchenClash.Infrastructure.Localization;
 using KitchenClash.Presentation.ViewModels;
 using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;
-using KitchenClash.Infrastructure.EOS;
 
 using KitchenClash.Presentation.Common;
 
