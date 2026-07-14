@@ -1,0 +1,29 @@
+Assets/Scripts/Tests/EditMode/Gameplay/MatchmakingFlowTests.cs
+  s_99229c453cd88d::t_82044052c0ff6a 9,22,25,27,34,37,39,42,47,51-54,68,72-74,81,85-87,111-122
+Assets/_KitchenClash/Composition/GameBootstrapper.cs
+  s_99229c453cd88d::t_b0834476ab1c97 11
+Assets/_KitchenClash/Composition/MenuLifetimeScope.cs
+  s_99229c453cd88d::t_ff83336a6367c6 13
+Assets/_KitchenClash/Infrastructure/DI/SessionManager.cs
+  s_99229c453cd88d::t_4c99af4ef6facd 21
+Assets/_KitchenClash/Infrastructure/Network/GameStarter.cs
+  s_99229c453cd88d::t_656b41973aa431 41,279
+Assets/_KitchenClash/Infrastructure/Network/NetworkingServiceContainer.cs
+  s_99229c453cd88d::t_860445ff0c1174 91
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.13",
+  "base_commit_sha": "a50ba29d700628666e9bcfa0dc262e31ef230ddb",
+  "prompts": {},
+  "sessions": {
+    "s_99229c453cd88d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "45070b64-765f-4e79-883a-4a2e9082e950",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
