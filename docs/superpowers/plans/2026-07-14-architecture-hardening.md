@@ -294,5 +294,45 @@ EOF
 | Flow | Uses Configuration + Network + DI + Services |
 | Audio | MusicPlayer/SFXPlayer → Network |
 
-**Next:** Application ports to break Network↔EOS / Persistence→EOS, then extract those assemblies; Phase 4 match ports.
+**Next:** Application ports to break Network↔EOS / Persistence→EOS, then extract those assemblies.
+
+---
+
+## Phase 4 — Match gameplay ports + god-file shrink (complete for scoped criteria)
+
+**Goal:** Presentation stays free of Network concretes; shrink `PlayerController`; confirm `BotTaskPlanner` has no Infrastructure deps.
+
+### Inventory
+
+| Item | Finding |
+|------|---------|
+| Presentation → Network / Infrastructure | Already zero (Phase 1 gate held) |
+| Match HUD | Application `IMatchHudPort` + Domain `MatchResultSnapshot` (Phase 1) |
+| `BotTaskPlanner` | Application service; **Domain-only** usings — no move required |
+| `PlayerController` | Was ~994 lines; already had SOLID collaborators; skins/carry/class bulk remained |
+
+### Task 4.1: Split PlayerController into partials
+
+- [x] `PlayerController.cs` — fields, lifecycle, init, network spawn/despawn, public API, IInteractable (~393 lines, under ~400 target)
+- [x] `PlayerController.InputMovement.cs` — input setup, movement processing, network RPCs
+- [x] `PlayerController.Character.cs` — character class / ability registration
+- [x] `PlayerController.Skins.cs` — skin NetworkVariable + apply/cleanup
+- [x] `PlayerController.Carrying.cs` — hold point + dish carry list
+- [x] Class-level summary documents partials + collaborators
+- [x] `dotnet build KitchenClash.Infrastructure.csproj` green
+- [x] `dotnet build RecipeRage.Tests.EditMode.csproj` green
+
+### Task 4.2: BotTaskPlanner placement
+
+- [x] Confirmed Domain-only (`KitchenClash.Domain`); stays in Application as pure planner over `BotPlanningSnapshot`
+- [x] No Infrastructure / Network usings — design success criterion met without relocation
+
+### Phase 4 done when
+
+- [x] Presentation has zero Network usings
+- [x] PlayerController primary file &lt; ~400 lines (partials)
+- [x] BotTaskPlanner not in Application with Infra deps
+- [x] Match HUD remains on Application ports (no expansion needed for Presentation)
+
+**Deferred (optional follow-ups):** further collaborator extraction of skins/carry into non-partial classes; Application ports for non-HUD match consumers; Phase 3b Network/EOS walls.
 

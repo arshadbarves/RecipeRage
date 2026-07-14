@@ -2,6 +2,21 @@
 
 Chronological record of wiki activity. Each entry starts with timestamp for parseability.
 
+## [2026-07-14] implementation | Architecture hardening Phase 4 complete (scoped)
+
+- `PlayerController` split into partials; primary file ~393 lines (&lt; ~400 target)
+- Partials: InputMovement, Character, Skins, Carrying; SOLID collaborators unchanged
+- `BotTaskPlanner` Domain-only — stays in Application; no Infra deps
+- Presentation purity gate held (zero Network/Infrastructure usings)
+- CLI: Infrastructure + EditMode build 0 errors
+- Next: Phase 3b cycle-breaking ports; optional Domain kernel (Phase 5); Unity smoke; PR
+
+## [2026-07-14] implementation | Architecture hardening Phase 3a complete
+
+- Leaf Infrastructure assemblies: Logging, Localization, Animation, Configuration, Platform, Async
+- Composition/Editor refs; AnimationService DI at Root
+- Phase 3b deferred (Network↔EOS / Persistence→EOS cycles)
+
 ## [2026-07-14] implementation | Architecture hardening Phase 1 complete
 
 - Tasks 1–5 done on `architecture-cleanup`

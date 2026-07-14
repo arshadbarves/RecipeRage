@@ -84,8 +84,19 @@ GameFlow fixed product navigation. Remaining mess is inverted deps, vendor leaks
 | 1 | Session shell + dependency laws | Presentation must not reference Infrastructure; Application must not reference EOS packages | **Complete** |
 | 2 | UI navigation purity | Animation/localization via Application ports; shrink `UIService` | **Complete** |
 | 3 | Infrastructure assembly walls | Split Flow / EOS / Network / Persistence (minimum) | **3a leaves complete**; 3b (Network/EOS/Flow/Persistence) deferred |
-| 4 | Match gameplay ports | Expand match ports beyond HUD; shrink `PlayerController` / stations | Partial (HUD port shipped in Phase 1) |
+| 4 | Match gameplay ports | Expand match ports beyond HUD; shrink `PlayerController` / stations | **Complete** (scoped criteria) |
 | 5 | Domain kernel hygiene (optional) | Shell ports vs cooking models if still noisy | Pending |
+
+**Phase 4 shipped:**
+- `PlayerController` partials: core (~393 lines) / InputMovement / Character / Skins / Carrying
+- Existing SOLID collaborators retained (state, movement, input, network, interaction)
+- `BotTaskPlanner` confirmed Domain-only in Application — no Infra deps, no relocation
+- Match HUD remains on `IMatchHudPort` (Phase 1); Presentation still zero Network usings
+
+**Phase 3a shipped:**
+- Leaf Infrastructure assemblies: Logging, Localization, Animation, Configuration, Platform, Async
+- Composition + Editor wired; AnimationService DI registered at Root
+- Phase 3b (Network/EOS/Flow/Persistence walls) deferred on cycles
 
 **Phase 2 shipped:**
 - `UIService` partials: core / Navigation / ScreenOps (documented responsibilities)
