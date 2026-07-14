@@ -193,5 +193,67 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             Assert.AreEqual(FlowPhaseId.Match, flow.Current);
             Assert.AreEqual(1, match.StartRoundCount, "Null countdown path should StartRound on Match enter");
         }
+
+        private sealed class RecordingSidePhases : ISidePhasePort
+        {
+            public FlowPhaseId LastEnter = FlowPhaseId.None;
+            public FlowPhaseId LastExit = FlowPhaseId.None;
+            public int EnterCount;
+            public int ExitCount;
+
+            public void EnterSidePhase(FlowPhaseId phase, FlowContext context)
+            {
+                EnterCount++;
+                LastEnter = phase;
+            }
+
+            public void ExitSidePhase(FlowPhaseId phase)
+            {
+                ExitCount++;
+                LastExit = phase;
+            }
+        }
+
+        [Test]
+        public void EnterSidePhase_DispatchesSidePhasePort_AndCompleteReturnsHome()
+        {
+            var home = new RecordingHome();
+            var sides = new RecordingSidePhases();
+            var flow = new AppFlowController(home: home, sidePhases: sides);
+            flow.StartColdBoot();
+            flow.ReturnHome();
+            Assert.AreEqual(FlowPhaseId.Home, flow.Current);
+
+            flow.EnterSidePhase(FlowPhaseId.Login);
+            Assert.AreEqual(FlowPhaseId.Login, flow.Current);
+            Assert.AreEqual(1, sides.EnterCount);
+            Assert.AreEqual(FlowPhaseId.Login, sides.LastEnter);
+
+            flow.CompleteSidePhase();
+            Assert.AreEqual(FlowPhaseId.Home, flow.Current);
+            Assert.AreEqual(1, sides.ExitCount);
+            Assert.AreEqual(FlowPhaseId.Login, sides.LastExit);
+            Assert.GreaterOrEqual(home.EnterCount, 2);
+        }
+
+        [Test]
+        public void EnterSidePhase_Chained_PreservesReturnAndExitsPrevious()
+        {
+            var home = new RecordingHome();
+            var sides = new RecordingSidePhases();
+            var flow = new AppFlowController(home: home, sidePhases: sides);
+            flow.StartColdBoot();
+            flow.ReturnHome();
+            flow.EnterSidePhase(FlowPhaseId.Maintenance);
+            Assert.AreEqual(FlowPhaseId.Maintenance, sides.LastEnter);
+
+            flow.EnterSidePhase(FlowPhaseId.Login);
+            Assert.AreEqual(FlowPhaseId.Login, flow.Current);
+            Assert.AreEqual(FlowPhaseId.Maintenance, sides.LastExit);
+            Assert.AreEqual(FlowPhaseId.Login, sides.LastEnter);
+
+            flow.CompleteSidePhase();
+            Assert.AreEqual(FlowPhaseId.Home, flow.Current);
+        }
     }
 }

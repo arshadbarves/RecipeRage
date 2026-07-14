@@ -20,6 +20,7 @@ namespace Playcenter.GameFlow
         private readonly IResultsPort _results;
         private readonly IPopupPolicyPort _popupPolicy;
         private readonly IFlowAnalyticsPort _analytics;
+        private readonly ISidePhasePort _sidePhases;
 
         private FlowPhaseId _current = FlowPhaseId.None;
         private FlowPhaseId _sideReturnPhase = FlowPhaseId.Home;
@@ -70,7 +71,8 @@ namespace Playcenter.GameFlow
             IMatchRuntimePort matchRuntime = null,
             IResultsPort results = null,
             IPopupPolicyPort popupPolicy = null,
-            IFlowAnalyticsPort analytics = null)
+            IFlowAnalyticsPort analytics = null,
+            ISidePhasePort sidePhases = null)
         {
             _splash = splash;
             _boot = boot;
@@ -82,6 +84,7 @@ namespace Playcenter.GameFlow
             _results = results;
             _popupPolicy = popupPolicy ?? new SoftPopupPolicy();
             _analytics = analytics;
+            _sidePhases = sidePhases;
         }
 
         public FlowPhaseId Current => _current;
@@ -356,6 +359,14 @@ namespace Playcenter.GameFlow
                 case FlowPhaseId.Results:
                     _results?.EnterResults(_context, _context.LastMatchResult);
                     break;
+                case FlowPhaseId.ForceUpdate:
+                case FlowPhaseId.Maintenance:
+                case FlowPhaseId.NoConnection:
+                case FlowPhaseId.Login:
+                case FlowPhaseId.Tutorial:
+                case FlowPhaseId.AccountUpgrade:
+                    _sidePhases?.EnterSidePhase(phase, _context);
+                    break;
             }
         }
 
@@ -386,6 +397,14 @@ namespace Playcenter.GameFlow
                     break;
                 case FlowPhaseId.Results:
                     _results?.ExitResults();
+                    break;
+                case FlowPhaseId.ForceUpdate:
+                case FlowPhaseId.Maintenance:
+                case FlowPhaseId.NoConnection:
+                case FlowPhaseId.Login:
+                case FlowPhaseId.Tutorial:
+                case FlowPhaseId.AccountUpgrade:
+                    _sidePhases?.ExitSidePhase(phase);
                     break;
             }
         }

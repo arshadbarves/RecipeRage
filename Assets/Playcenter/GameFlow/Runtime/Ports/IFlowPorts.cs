@@ -73,4 +73,11 @@ namespace Playcenter.GameFlow
         void TrackMatchResolved(MatchResolvedInfo info, FlowContext context);
         void TrackMatchCompleted(MatchResultInfo result, FlowContext context);
     }
+
+    /// <summary>Side phases: Login, Maintenance, ForceUpdate, Tutorial, etc.</summary>
+    public interface ISidePhasePort
+    {
+        void EnterSidePhase(FlowPhaseId phase, FlowContext context);
+        void ExitSidePhase(FlowPhaseId phase);
+    }
 }
