@@ -2,6 +2,7 @@ using System;
 using KitchenClash.Domain;
 using Unity.Netcode;
 using UnityEngine;
+using Playcenter.Shell;
 
 namespace KitchenClash.Infrastructure.Network.Stations
 {

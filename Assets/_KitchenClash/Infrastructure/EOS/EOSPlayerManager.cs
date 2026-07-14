@@ -5,6 +5,7 @@ using Epic.OnlineServices;
 using Epic.OnlineServices.Lobby;
 using PlayEveryWare.EpicOnlineServices;
 using PlayEveryWare.EpicOnlineServices.Samples;
+using Playcenter.Shell;
 
 namespace KitchenClash.Infrastructure.EOS
 {

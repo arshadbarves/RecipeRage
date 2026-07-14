@@ -3,6 +3,7 @@ using KitchenClash.Domain;
 using DG.Tweening;
 using Unity.Cinemachine;
 using UnityEngine;
+using Playcenter.Shell;
 
 namespace KitchenClash.Infrastructure.Camera
 {

@@ -6,6 +6,7 @@ using Cysharp.Threading.Tasks;
 using Epic.OnlineServices;
 using PlayEveryWare.EpicOnlineServices;
 using PlayEveryWare.EpicOnlineServices.Samples;
+using Playcenter.Shell;
 
 namespace KitchenClash.Infrastructure.EOS
 {

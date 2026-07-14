@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using KitchenClash.Application;
 using KitchenClash.Domain;
 using NUnit.Framework;
+using Playcenter.Shell;
 
 namespace RecipeRage.Tests.EditMode.Gameplay
 {

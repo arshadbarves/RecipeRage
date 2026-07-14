@@ -8,6 +8,7 @@ using Unity.Services.Authentication;
 using VContainer;
 using Cysharp.Threading.Tasks;
 using Playcenter.GameFlow;
+using Playcenter.Shell;
 
 namespace KitchenClash.Infrastructure.Network
 {

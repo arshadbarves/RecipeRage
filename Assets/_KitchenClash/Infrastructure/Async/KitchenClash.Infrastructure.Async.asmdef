@@ -2,7 +2,8 @@
     "name": "KitchenClash.Infrastructure.Async",
     "rootNamespace": "KitchenClash.Infrastructure.Async",
     "references": [
-        "KitchenClash.Domain"
+        "KitchenClash.Domain",
+        "Playcenter.Shell"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

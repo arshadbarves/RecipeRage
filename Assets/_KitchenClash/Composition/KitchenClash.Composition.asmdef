@@ -19,7 +19,8 @@
         "Playcenter.GameFlow",
         "UniTask",
         "Unity.Netcode.Runtime",
-        "VContainer"
+        "VContainer",
+        "Playcenter.Shell"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

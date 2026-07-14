@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using KitchenClash.Domain;
 using KitchenClash.Application.Models.RemoteConfigs;
+using Playcenter.Shell;
 
 namespace KitchenClash.Application.Services
 {

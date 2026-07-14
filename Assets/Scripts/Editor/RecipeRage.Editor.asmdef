@@ -8,7 +8,8 @@
         "KitchenClash.Presentation",
         "KitchenClash.Composition",
         "VContainer",
-        "KitchenClash.Infrastructure.Configuration"
+        "KitchenClash.Infrastructure.Configuration",
+        "Playcenter.Shell"
     ],
     "includePlatforms": [
         "Editor"

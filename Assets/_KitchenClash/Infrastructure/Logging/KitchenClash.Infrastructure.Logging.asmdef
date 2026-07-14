@@ -2,8 +2,8 @@
     "name": "KitchenClash.Infrastructure.Logging",
     "rootNamespace": "KitchenClash.Infrastructure.Logging",
     "references": [
-        "KitchenClash.Domain",
-        "VContainer"
+        "VContainer",
+        "Playcenter.Shell"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

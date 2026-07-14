@@ -5,6 +5,7 @@ using KitchenClash.Infrastructure.Gameplay.Abilities;
 using KitchenClash.Infrastructure.Network;
 using VContainer;
 using VContainer.Unity;
+using Playcenter.Shell;
 
 public class MatchLifetimeScope : LifetimeScope
 {

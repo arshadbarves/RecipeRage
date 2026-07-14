@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using KitchenClash.Domain;
+using Playcenter.Shell;
 
 namespace KitchenClash.Presentation.ViewModels
 {

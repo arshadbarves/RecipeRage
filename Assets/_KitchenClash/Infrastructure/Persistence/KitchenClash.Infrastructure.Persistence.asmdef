@@ -4,7 +4,8 @@
     "references": [
         "KitchenClash.Domain",
         "KitchenClash.Application",
-        "UniTask"
+        "UniTask",
+        "Playcenter.Shell"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

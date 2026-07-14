@@ -7,7 +7,8 @@
         "KitchenClash.Infrastructure.Configuration",
         "Playcenter.GameFlow",
         "UniTask",
-        "VContainer"
+        "VContainer",
+        "Playcenter.Shell"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

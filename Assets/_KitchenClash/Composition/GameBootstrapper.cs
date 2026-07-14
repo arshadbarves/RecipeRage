@@ -1,6 +1,7 @@
 using KitchenClash.Domain;
 using Playcenter.GameFlow;
 using VContainer.Unity;
+using Playcenter.Shell;
 
 namespace KitchenClash.Composition
 {

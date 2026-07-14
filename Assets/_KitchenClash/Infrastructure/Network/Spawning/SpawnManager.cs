@@ -7,6 +7,7 @@ using Unity.Netcode;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
+using Playcenter.Shell;
 
 namespace KitchenClash.Infrastructure.Network.Spawning
 {

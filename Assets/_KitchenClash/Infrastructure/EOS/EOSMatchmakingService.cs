@@ -8,6 +8,7 @@ using Epic.OnlineServices.Lobby;
 using PlayEveryWare.EpicOnlineServices;
 using PlayEveryWare.EpicOnlineServices.Samples;
 using UnityEngine;
+using Playcenter.Shell;
 
 namespace KitchenClash.Infrastructure.EOS
 {

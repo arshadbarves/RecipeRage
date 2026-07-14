@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using KitchenClash.Domain;
+using Playcenter.Shell;
 
 namespace KitchenClash.Infrastructure.Logging
 {

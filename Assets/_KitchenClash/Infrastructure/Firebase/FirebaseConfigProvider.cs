@@ -9,6 +9,7 @@ using KitchenClash.Infrastructure.Platform;
 using Cysharp.Threading.Tasks;
 using Firebase.RemoteConfig;
 using UnityEngine;
+using Playcenter.Shell;
 
 namespace KitchenClash.Infrastructure.Firebase
 {

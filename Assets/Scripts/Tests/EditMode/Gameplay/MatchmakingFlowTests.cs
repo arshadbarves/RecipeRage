@@ -11,6 +11,7 @@ using Cysharp.Threading.Tasks;
 using NUnit.Framework;
 using Playcenter.GameFlow;
 using RecipeRage.Tests.EditMode.Gameplay.Fakes;
+using Playcenter.Shell;
 
 namespace RecipeRage.Tests.EditMode.Gameplay
 {

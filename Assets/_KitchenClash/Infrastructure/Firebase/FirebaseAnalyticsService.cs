@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using KitchenClash.Domain;
 using Firebase.Analytics;
+using Playcenter.Shell;
 
 namespace KitchenClash.Infrastructure.Firebase
 {
@@ -55,6 +56,7 @@ namespace KitchenClash.Infrastructure.Firebase
 #else
 using System.Collections.Generic;
 using KitchenClash.Domain;
+using Playcenter.Shell;
 
 namespace KitchenClash.Infrastructure.Firebase
 {

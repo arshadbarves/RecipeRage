@@ -2,7 +2,7 @@
     "name": "KitchenClash.Infrastructure.Platform",
     "rootNamespace": "KitchenClash.Infrastructure.Platform",
     "references": [
-
+        "Playcenter.Shell"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

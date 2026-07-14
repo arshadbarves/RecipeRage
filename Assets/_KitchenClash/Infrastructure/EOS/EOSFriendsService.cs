@@ -10,6 +10,7 @@ using UGSFriends = Unity.Services.Friends;
 using UGSModels = Unity.Services.Friends.Models;
 using UGSNotifications = Unity.Services.Friends.Notifications;
 using UGSExceptions = Unity.Services.Friends.Exceptions;
+using Playcenter.Shell;
 
 namespace KitchenClash.Infrastructure.EOS
 {

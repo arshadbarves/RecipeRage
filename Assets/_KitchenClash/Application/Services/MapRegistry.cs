@@ -4,6 +4,7 @@ using KitchenClash.Domain;
 using KitchenClash.Domain.Events;
 using KitchenClash.Application.Models;
 using KitchenClash.Application.Models.RemoteConfigs;
+using Playcenter.Shell;
 
 namespace KitchenClash.Application.Services
 {

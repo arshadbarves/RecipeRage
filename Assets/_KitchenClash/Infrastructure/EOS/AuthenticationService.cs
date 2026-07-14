@@ -10,6 +10,7 @@ using PlayEveryWare.EpicOnlineServices;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
 using UnityEngine;
+using Playcenter.Shell;
 
 namespace KitchenClash.Infrastructure.EOS
 {

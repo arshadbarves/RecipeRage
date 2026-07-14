@@ -5,6 +5,7 @@ using KitchenClash.Domain;
 using KitchenClash.Application.Services;
 using Cysharp.Threading.Tasks;
 using VContainer.Unity;
+using Playcenter.Shell;
 
 namespace KitchenClash.Infrastructure.Network
 {
