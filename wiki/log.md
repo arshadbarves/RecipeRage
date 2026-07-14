@@ -173,3 +173,9 @@ Chronological record of wiki activity. Each entry starts with timestamp for pars
 - Cooking, economy, matchmaking, bots, EOS/NGO never extract as Playcenter
 - Future candidate when second Brawl title exists: Playcenter.Shell (EventBus + Logging + Connectivity contracts)
 - Plan: docs/superpowers/plans/2026-07-14-playcenter-module-extract-candidates.md
+
+## 2026-07-14 — Architecture hardening Phase 2 complete
+
+- Split `UIService` into partials (`UIService.cs`, `UIService.Navigation.cs`, `UIService.ScreenOps.cs`) with responsibility docs
+- Audit: localization / maintenance / animation already port-clean; no Presentation → Infrastructure regression
+- Commit on `architecture-cleanup`

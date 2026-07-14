@@ -220,6 +220,41 @@ EOF
 
 ## Later phases (not this plan)
 
-- Phase 2: UIService / transitions  
+- Phase 2: UIService / transitions — **complete** (see below)
 - Phase 3: Infrastructure assembly split  
 - Phase 4: Match ports + god files  
+
+---
+
+## Phase 2 — UI navigation purity (complete)
+
+**Goal:** Document UIService responsibilities; shrink god-file; confirm animation/localization/maintenance already port-clean.
+
+### Audit results (no new ports required)
+
+| Area | Finding |
+|------|---------|
+| Presentation → Infrastructure | Already zero after Phase 1 |
+| Localization | Application `ILocalizationManager`; impl in Infra |
+| Maintenance | Application `IMaintenanceService` (Domain); no Firebase usings in Presentation |
+| Animation | Presentation-local `TweenExtensions` + `UITransitionHandler` — no Infra.Animation |
+| Screen open paths | All via Application `IUIService` |
+
+### Task 2.1: Document UIService responsibilities
+
+- [x] Class-level summary on `UIService`: document/layer setup, screen resolve, category navigation, toast host; stack in `IUIScreenStackManager`; transitions in controllers + `UITransitionHandler`.
+
+### Task 2.2: Split UIService into partials (god-file shrink)
+
+- [x] `UIService.cs` — fields, ctor, Start/init, layers, dispose, tick (~206 lines)
+- [x] `UIService.Navigation.cs` — public `IUIService` navigation/toast API (~208 lines)
+- [x] `UIService.ScreenOps.cs` — resolve/show/hide internals (~134 lines)
+- [x] `dotnet build KitchenClash.Presentation.csproj` green
+
+### Phase 2 done when
+
+- [x] UIService responsibilities documented
+- [x] No Presentation → Infrastructure imports (Phase 1 gate held)
+- [x] UIService primary file reduced via partials; total logic unchanged
+- [x] Animation/localization/maintenance confirmed port-clean
+
