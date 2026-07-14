@@ -146,3 +146,11 @@ Chronological record of wiki activity. Each entry starts with timestamp for pars
 - Fix: LoggingBootstrap IInitializable wires ILoggingService; AnalyticsFlowPort logs phase transitions
 - Decision: Playcenter.GameFlow already modular; no UPM extract; adapters stay in game Infrastructure/Flow
 - Plan: docs/superpowers/plans/2026-07-14-gameflow-module-and-logging.md
+
+## [2026-07-14] decision | No further Playcenter module extracts now
+
+- GameFlow remains the only Playcenter module
+- EventBus / Logging / Connectivity / UI / Auth stay Domain + Application/Infrastructure ports
+- Cooking, economy, matchmaking, bots, EOS/NGO never extract as Playcenter
+- Future candidate when second Brawl title exists: Playcenter.Shell (EventBus + Logging + Connectivity contracts)
+- Plan: docs/superpowers/plans/2026-07-14-playcenter-module-extract-candidates.md

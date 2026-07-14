@@ -66,6 +66,18 @@ RootLifetimeScope (app-lifetime, DontDestroyOnLoad)
 
 **Migration status:** Phase 1 (IAppFlow public cutover) + Phase 2 hard purge complete. `Application/State` and `Infrastructure/States` deleted.
 
+## Playcenter modules (extract policy)
+
+| Module | Status | Notes |
+|--------|--------|-------|
+| `Playcenter.GameFlow` | **Shipped** | Sole product navigator (`IAppFlow`); ports + policies; adapters in `Infrastructure/Flow` |
+| `Playcenter.Shell` / Core | **Deferred** | EventBus, Logging, Connectivity — Domain ports + Infra adapters are enough until a second title |
+| Economy / Matchmaking / Cooking | **Never as Playcenter** | Game IP; stay in KitchenClash |
+
+**Rule:** Do not create a new `Assets/Playcenter/*` assembly until a second title needs it or a subsystem has two real consumers. Prefer Domain interfaces + Infrastructure adapters. GameFlow was extracted because it owns legal product transitions and had a dual-navigator problem — that does not apply to EventBus/UI/EOS.
+
+See: `docs/superpowers/plans/2026-07-14-playcenter-module-extract-candidates.md`
+
 ## SOLID Summary
 
 | Principle | Implementation |
