@@ -221,7 +221,7 @@ EOF
 ## Later phases (not this plan)
 
 - Phase 2: UIService / transitions — **complete** (see below)
-- Phase 3: Infrastructure assembly split  
+- Phase 3: Infrastructure assembly split — **3a leaves complete** (see below); 3b deferred  
 - Phase 4: Match ports + god files  
 
 ---
@@ -257,4 +257,42 @@ EOF
 - [x] No Presentation → Infrastructure imports (Phase 1 gate held)
 - [x] UIService primary file reduced via partials; total logic unchanged
 - [x] Animation/localization/maintenance confirmed port-clean
+
+
+
+---
+
+## Phase 3 — Infrastructure assembly walls (in progress)
+
+**Goal:** Split leaf Infrastructure folders into compile-time assemblies so mega Infrastructure no longer owns Logging / Localization / Animation / Configuration / Platform / Async. Defer Network↔EOS / Flow / Persistence until Application ports break cycles.
+
+### Leaf assemblies (3a) — complete
+
+| Assembly | Folder | Key types | Refs |
+|----------|--------|-----------|------|
+| `KitchenClash.Infrastructure.Logging` | Logging/ | `UnityLoggingService`, `LoggingBootstrap` | Domain, VContainer |
+| `KitchenClash.Infrastructure.Localization` | Localization/ | `LocalizationManager` | Domain, Application, VContainer |
+| `KitchenClash.Infrastructure.Animation` | Animation/ | `AnimationService`, DOTween animators | Domain, Application, UniTask, DOTween |
+| `KitchenClash.Infrastructure.Configuration` | Configuration/ | `GameConstants`, `GameSettingsConfig` | Domain |
+| `KitchenClash.Infrastructure.Platform` | Platform/ | `PlatformUtils` | (Unity only) |
+| `KitchenClash.Infrastructure.Async` | Async/ | `TaskExtensions` | Domain |
+
+- [x] Create leaf `.asmdef` files under each folder (folder-level asmdef auto-excludes from mega Infrastructure)
+- [x] Mega `KitchenClash.Infrastructure.asmdef` references Configuration, Platform, Async (consumers of GameConstants / PlatformUtils)
+- [x] `KitchenClash.Composition.asmdef` references all six leaves (DI registration types)
+- [x] `RecipeRage.Editor.asmdef` references Configuration (`GameConstants` for MapSceneGenerator)
+- [x] CLI csproj ProjectReferences for leaves; mega Compile excludes leaf sources
+- [x] Register `AnimationService` + DOTween animators in `RootLifetimeScope` (was missing)
+- [x] `dotnet build` Domain → leaves → Infrastructure → Presentation → Composition → EditMode green
+
+### Deferred (3b) — blocked by cycles
+
+| Candidate | Blocker |
+|-----------|---------|
+| Network / EOS | Network→EOS and EOS→Network cycle |
+| Persistence | Constructs `EOSCloudStorageProvider` |
+| Flow | Uses Configuration + Network + DI + Services |
+| Audio | MusicPlayer/SFXPlayer → Network |
+
+**Next:** Application ports to break Network↔EOS / Persistence→EOS, then extract those assemblies; Phase 4 match ports.
 

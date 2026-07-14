@@ -1,0 +1,16 @@
+{
+    "name": "KitchenClash.Infrastructure.Configuration",
+    "rootNamespace": "KitchenClash.Infrastructure.Configuration",
+    "references": [
+        "KitchenClash.Domain"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

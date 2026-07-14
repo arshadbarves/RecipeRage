@@ -12,7 +12,13 @@
         "Unity.Netcode.Runtime",
         "com.playeveryware.eos",
         "com.Epic.OnlineServices",
-        "com.playeveryware.eos.core"
+        "com.playeveryware.eos.core",
+        "KitchenClash.Infrastructure.Logging",
+        "KitchenClash.Infrastructure.Localization",
+        "KitchenClash.Infrastructure.Animation",
+        "KitchenClash.Infrastructure.Configuration",
+        "KitchenClash.Infrastructure.Platform",
+        "KitchenClash.Infrastructure.Async"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

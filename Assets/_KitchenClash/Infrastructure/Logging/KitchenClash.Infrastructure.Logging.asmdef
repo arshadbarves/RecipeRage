@@ -1,0 +1,17 @@
+{
+    "name": "KitchenClash.Infrastructure.Logging",
+    "rootNamespace": "KitchenClash.Infrastructure.Logging",
+    "references": [
+        "KitchenClash.Domain",
+        "VContainer"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

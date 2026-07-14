@@ -1,18 +1,12 @@
 {
-    "name": "RecipeRage.Editor",
-    "rootNamespace": "RecipeRage.Editor",
+    "name": "KitchenClash.Infrastructure.Localization",
+    "rootNamespace": "KitchenClash.Infrastructure.Localization",
     "references": [
         "KitchenClash.Domain",
         "KitchenClash.Application",
-        "KitchenClash.Infrastructure",
-        "KitchenClash.Presentation",
-        "KitchenClash.Composition",
-        "VContainer",
-        "KitchenClash.Infrastructure.Configuration"
+        "VContainer"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

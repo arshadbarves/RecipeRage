@@ -6,6 +6,7 @@ using KitchenClash.Application.Models;
 using KitchenClash.Application.Services;
 using KitchenClash.Composition;
 using KitchenClash.Domain;
+using KitchenClash.Infrastructure.Animation;
 using KitchenClash.Infrastructure.Ads;
 using KitchenClash.Infrastructure.Analytics;
 using KitchenClash.Infrastructure.Audio;
@@ -103,6 +104,11 @@ public class RootLifetimeScope : LifetimeScope
         builder.RegisterInstance(KitchenClash.Application.NullCharacterPreviewService.Instance)
             .As<KitchenClash.Application.ICharacterPreviewService>();
         builder.Register<LocalizationManager>(Lifetime.Singleton).As<ILocalizationManager>().As<IInitializable>();
+
+        // Animation leaf assembly — DOTween-backed IAnimationService for Presentation screens
+        builder.Register<DOTweenUIAnimator>(Lifetime.Singleton).As<IUIAnimator>();
+        builder.Register<DOTweenTransformAnimator>(Lifetime.Singleton).As<ITransformAnimator>();
+        builder.Register<AnimationService>(Lifetime.Singleton).As<IAnimationService>();
     }
 
     private void RegisterInfrastructure(IContainerBuilder builder)

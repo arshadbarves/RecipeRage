@@ -179,3 +179,15 @@ Chronological record of wiki activity. Each entry starts with timestamp for pars
 - Split `UIService` into partials (`UIService.cs`, `UIService.Navigation.cs`, `UIService.ScreenOps.cs`) with responsibility docs
 - Audit: localization / maintenance / animation already port-clean; no Presentation → Infrastructure regression
 - Commit on `architecture-cleanup`
+
+## 2026-07-14 — Phase 3a Infrastructure leaf assemblies
+
+Split zero-cross-dep Infrastructure folders into compile-time assemblies:
+
+- Logging, Localization, Animation, Configuration, Platform, Async
+- Mega Infrastructure references Configuration/Platform/Async; Composition references all six
+- Editor references Configuration for GameConstants
+- Registered AnimationService + DOTween animators in RootLifetimeScope (was missing)
+- CLI builds green for leaves → Infrastructure → Presentation → Composition → EditMode
+- Deferred 3b: Network/EOS cycle, Persistence→EOS, Flow, Audio→Network
+

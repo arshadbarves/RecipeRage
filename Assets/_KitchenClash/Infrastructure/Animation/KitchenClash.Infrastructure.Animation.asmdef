@@ -1,18 +1,13 @@
 {
-    "name": "RecipeRage.Editor",
-    "rootNamespace": "RecipeRage.Editor",
+    "name": "KitchenClash.Infrastructure.Animation",
+    "rootNamespace": "KitchenClash.Infrastructure.Animation",
     "references": [
         "KitchenClash.Domain",
         "KitchenClash.Application",
-        "KitchenClash.Infrastructure",
-        "KitchenClash.Presentation",
-        "KitchenClash.Composition",
-        "VContainer",
-        "KitchenClash.Infrastructure.Configuration"
+        "UniTask",
+        "DOTween.Modules"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

@@ -20,7 +20,10 @@
         "Unity.Cinemachine",
         "Unity.TextMeshPro",
         "com.playeveryware.eos.samples.networking",
-        "Unity.Collections"
+        "Unity.Collections",
+        "KitchenClash.Infrastructure.Configuration",
+        "KitchenClash.Infrastructure.Platform",
+        "KitchenClash.Infrastructure.Async"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
