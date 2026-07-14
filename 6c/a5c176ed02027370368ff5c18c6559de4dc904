@@ -1,0 +1,82 @@
+Assets/_KitchenClash/Domain/Models/MatchResultSnapshot.cs
+  s_99229c453cd88d::t_1d0b5c27ddc675 1-31
+Assets/_KitchenClash/Application/Interfaces/ICharacterPreviewService.cs
+  s_99229c453cd88d::t_10cba82f86601f 1-16
+Assets/_KitchenClash/Presentation/Common/TweenExtensions.cs
+  s_99229c453cd88d::t_5747fae6d90490 1-20
+docs/superpowers/plans/2026-07-14-architecture-hardening.md
+  s_99229c453cd88d::t_cfe5b14ee43f90 168,170,172,174,176,178,184,186,188,190,205-208,217-219
+Assets/_KitchenClash/Application/Services/NullCharacterPreviewService.cs
+  s_99229c453cd88d::t_45d46cee68bf92 1-29
+Assets/_KitchenClash/Presentation/KitchenClash.Presentation.asmdef
+  s_99229c453cd88d::t_66a14e5487fae7 10
+Assets/_KitchenClash/Presentation/Components/LobbyTabComponent.cs
+  s_99229c453cd88d::t_6445f87e21ca7d 220
+  s_99229c453cd88d::t_9809fd4db0f818 24
+Assets/_KitchenClash/Application/Services/NullMatchHudPort.cs.meta
+  s_99229c453cd88d::t_45d46cee68bf92 1-11
+Assets/_KitchenClash/Application/Interfaces/IMatchHudPort.cs.meta
+  s_99229c453cd88d::t_87e1cc00c4fbc8 1-11
+Assets/_KitchenClash/Infrastructure/Network/MatchHudPort.cs.meta
+  s_99229c453cd88d::t_87e1cc00c4fbc8 1-11
+Assets/_KitchenClash/Composition/MenuLifetimeScope.cs
+  s_99229c453cd88d::t_4a6513eb89b1cd 7,29-35
+  s_99229c453cd88d::t_acdaabc66185c6 5
+  s_99229c453cd88d::t_63c7a93b1d8d33 36
+Assets/_KitchenClash/Application/Services/NullCharacterPreviewService.cs.meta
+  s_99229c453cd88d::t_45d46cee68bf92 1-11
+Assets/_KitchenClash/Domain/Models/MatchResultSnapshot.cs.meta
+  s_99229c453cd88d::t_87e1cc00c4fbc8 1-11
+wiki/log.md
+  s_99229c453cd88d::t_3be00da09ac5c1 5-15
+Assets/_KitchenClash/Presentation/Screens/ResultsScreen.cs
+  s_99229c453cd88d::t_66a14e5487fae7 1-2,6-7,18,23,30,45-47,49-52,54-57,65-68,79,93
+  s_99229c453cd88d::t_9809fd4db0f818 16
+Assets/_KitchenClash/Presentation/ViewModels/GameplayHudViewModel.cs
+  s_99229c453cd88d::t_66a14e5487fae7 3,7,15,31,33,41,43-46,48,55-57,68-71,75,82-85,88,94-97,99,104-107,117,119,122,124,126,129-130,134,136,140,146,148,151-166,171,173,176-183,188-192,215,222-225,227,229,231-242,266-274,290,292-293
+Assets/_KitchenClash/Application/Interfaces/ICharacterPreviewService.cs.meta
+  s_99229c453cd88d::t_87e1cc00c4fbc8 1-11
+Assets/_KitchenClash/Application/Interfaces/IMatchHudPort.cs
+  s_99229c453cd88d::t_f5762fc8c9fc2b 1-49
+Assets/_KitchenClash/Presentation/Screens/HomeScreen.cs
+  s_99229c453cd88d::t_ca4bca130d6bf1 111
+Assets/_KitchenClash/Application/Services/NullMatchHudPort.cs
+  s_99229c453cd88d::t_45d46cee68bf92 1-94
+wiki/Technical.md
+  s_99229c453cd88d::t_973ea66a9e137d 7-8,10,54-55,57-61,82-95
+Assets/_KitchenClash/Presentation/Screens/CharacterDetailsScreen.cs
+  s_99229c453cd88d::t_9809fd4db0f818 17
+  s_99229c453cd88d::t_56407db49caf49 23
+  s_99229c453cd88d::t_9125a53b9a48d8 60
+Assets/_KitchenClash/Composition/MatchLifetimeScope.cs
+  s_99229c453cd88d::t_66a14e5487fae7 28,30-31
+Assets/_KitchenClash/Composition/RootLifetimeScope.cs
+  s_99229c453cd88d::t_45d46cee68bf92 99-104
+docs/superpowers/plans/2026-07-14-playcenter-module-extract-candidates.md
+  s_99229c453cd88d::t_50d72826bb076b 1-2
+Assets/Scripts/Tests/EditMode/Gameplay/MatchEndEvaluatorTests.cs
+  s_99229c453cd88d::t_b4d71dcad17785 1-2,12,104-105,122-129,142-143,152-159,171,175,186-191,199,202,204-219,225-229,231-232,235,239-241
+  s_99229c453cd88d::t_ff7de7acd12d4f 72,97
+Assets/_KitchenClash/Infrastructure/Network/MatchHudPort.cs
+  s_99229c453cd88d::t_792d7ad8b6886d 1-257
+Assets/_KitchenClash/Infrastructure/Network/CharacterPreviewManager.cs
+  s_99229c453cd88d::t_ad4d760c70729f 1,6
+Assets/_KitchenClash/Presentation/Common/TweenExtensions.cs.meta
+  s_99229c453cd88d::t_5747fae6d90490 1-11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "6ca5c176ed02027370368ff5c18c6559de4dc904",
+  "prompts": {},
+  "sessions": {
+    "s_99229c453cd88d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "45070b64-765f-4e79-883a-4a2e9082e950",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
