@@ -1,0 +1,56 @@
+Assets/_KitchenClash/Infrastructure/Platform/CoroutineRunner.cs
+  s_99229c453cd88d::t_c0772e0d818ba5 4
+Assets/_KitchenClash/Infrastructure/Audio/MusicPlayer.cs
+  s_99229c453cd88d::t_b49e5b4fc93aad 3
+Assets/_KitchenClash/Composition/RootLifetimeScope.cs
+  s_99229c453cd88d::t_6ea9b8ddedd39b 119-122,172,185
+Assets/_KitchenClash/Infrastructure/Flow/KitchenClash.Infrastructure.Flow.asmdef
+  s_99229c453cd88d::t_3464f0d17e280e 1-21
+Assets/_KitchenClash/Infrastructure/Audio/SFXPlayer.cs
+  s_99229c453cd88d::t_cdd801b4240677 3
+wiki/Technical.md
+  s_99229c453cd88d::t_e0c1fa4d61a9c9 86,96-104,329,331-333,335
+Assets/_KitchenClash/Infrastructure/Flow/Handlers/ForceUpdateChecker.cs
+  s_99229c453cd88d::t_c1e8b2ea8da112 8
+  s_99229c453cd88d::t_457e088dc6d721 5
+Assets/Scripts/Tests/RecipeRage.Tests.EditMode.asmdef
+  s_99229c453cd88d::t_8564fb94bfc6e6 8
+docs/superpowers/plans/2026-07-14-architecture-hardening.md
+  s_99229c453cd88d::t_c8d4d921051492 224-225,265,267,277,321-345,349,351
+Assets/_KitchenClash/Infrastructure/KitchenClash.Infrastructure.asmdef
+  s_99229c453cd88d::t_cbb7aff7c407e5 27
+  s_99229c453cd88d::t_44964484018237 28-29
+Assets/_KitchenClash/Composition/KitchenClash.Composition.asmdef
+  s_99229c453cd88d::t_03dcd3f828f975 23-24
+  s_99229c453cd88d::t_cdfcd41f76b4da 22
+Assets/_KitchenClash/Infrastructure/DI/SessionManager.cs
+  s_99229c453cd88d::t_e5826932c36753 2,10
+Assets/_KitchenClash/Infrastructure/Audio/KitchenClash.Infrastructure.Audio.asmdef
+  s_99229c453cd88d::t_f8b4859883601c 1-19
+Assets/_KitchenClash/Infrastructure/Flow/KitchenClash.Infrastructure.Flow.asmdef.meta
+  s_99229c453cd88d::t_fb158f748db8b4 1-7
+Assets/_KitchenClash/Infrastructure/Flow/Handlers/SessionLoader.cs
+  s_99229c453cd88d::t_13fe304071ee15 14,17,19,27,29
+Assets/_KitchenClash/Application/Interfaces/ISessionLifecycle.cs
+  s_99229c453cd88d::t_69154a9238e84d 1-13
+Assets/_KitchenClash/Infrastructure/Audio/KitchenClash.Infrastructure.Audio.asmdef.meta
+  s_99229c453cd88d::t_ba8263a8947ddc 1-7
+wiki/log.md
+  s_99229c453cd88d::t_a90c268e9375fe 218-230
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "90f583fbc04520080d7bd5283d5a4f86493f4cf0",
+  "prompts": {},
+  "sessions": {
+    "s_99229c453cd88d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "45070b64-765f-4e79-883a-4a2e9082e950",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
