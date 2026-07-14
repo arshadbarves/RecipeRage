@@ -1,0 +1,27 @@
+Assets/_KitchenClash/Infrastructure/Flow/BootFlowPort.cs.meta
+  s_99229c453cd88d::t_478141cce70f25 1-11
+Assets/_KitchenClash/Infrastructure/Flow/SplashFlowPort.cs.meta
+  s_99229c453cd88d::t_dbf1f3fa74b660 1-11
+Assets/_KitchenClash/Infrastructure/States/AccountUpgradeState.cs.meta
+  s_99229c453cd88d::t_fed2a44291d67a 1-11
+Assets/_KitchenClash/Infrastructure/States/NoConnectionState.cs.meta
+  s_99229c453cd88d::t_4a2391487c4ad5 1-11
+Assets/_KitchenClash/Infrastructure/States/TutorialState.cs.meta
+  s_99229c453cd88d::t_d827c19d7f4271 1-11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.13",
+  "base_commit_sha": "bdaeb062e16d1a7d265157bbf3216976bee41fd4",
+  "prompts": {},
+  "sessions": {
+    "s_99229c453cd88d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "45070b64-765f-4e79-883a-4a2e9082e950",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
