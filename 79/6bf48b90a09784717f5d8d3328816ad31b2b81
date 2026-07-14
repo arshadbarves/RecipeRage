@@ -1,0 +1,25 @@
+docs/superpowers/specs/2026-07-14-architecture-hardening-design.md
+  s_99229c453cd88d::t_f3997cfad3642d 1-247
+wiki/Technical.md
+  s_99229c453cd88d::t_e6b127c8dc11ad 69-94,99-101,103
+docs/superpowers/plans/2026-07-14-architecture-hardening.md
+  s_99229c453cd88d::t_df60470e9355f1 1-225
+wiki/log.md
+  s_99229c453cd88d::t_efeca0ced6ccb2 5-12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "796bf48b90a09784717f5d8d3328816ad31b2b81",
+  "prompts": {},
+  "sessions": {
+    "s_99229c453cd88d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "45070b64-765f-4e79-883a-4a2e9082e950",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
