@@ -13,7 +13,8 @@
         "UnityEditor.TestRunner",
         "VContainer",
         "Playcenter.GameFlow",
-        "Playcenter.Shell"
+        "Playcenter.Shell",
+        "Playcenter.Services"
     ],
     "includePlatforms": [
         "Editor"

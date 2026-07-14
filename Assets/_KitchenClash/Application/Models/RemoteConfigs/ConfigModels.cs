@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using KitchenClash.Domain;
+using Playcenter.Services;
 
 namespace KitchenClash.Application.Models.RemoteConfigs
 {

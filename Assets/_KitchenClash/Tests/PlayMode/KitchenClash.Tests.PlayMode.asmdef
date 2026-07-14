@@ -8,7 +8,8 @@
         "KitchenClash.Presentation",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "Playcenter.Shell"
+        "Playcenter.Shell",
+        "Playcenter.Services"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

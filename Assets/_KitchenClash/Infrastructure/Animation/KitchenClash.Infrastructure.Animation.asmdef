@@ -6,7 +6,8 @@
         "KitchenClash.Application",
         "UniTask",
         "DOTween.Modules",
-        "Playcenter.Shell"
+        "Playcenter.Shell",
+        "Playcenter.Services"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

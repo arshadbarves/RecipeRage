@@ -9,6 +9,7 @@ using VContainer;
 using Cysharp.Threading.Tasks;
 using Playcenter.GameFlow;
 using Playcenter.Shell;
+using Playcenter.Services;
 
 namespace KitchenClash.Infrastructure.Network
 {

@@ -6,6 +6,7 @@ using KitchenClash.Application.Services;
 using KitchenClash.Domain;
 using NUnit.Framework;
 using Playcenter.Shell;
+using Playcenter.Services;
 
 namespace RecipeRage.Tests.EditMode.Gameplay
 {

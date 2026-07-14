@@ -20,7 +20,8 @@
         "UniTask",
         "Unity.Netcode.Runtime",
         "VContainer",
-        "Playcenter.Shell"
+        "Playcenter.Shell",
+        "Playcenter.Services"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

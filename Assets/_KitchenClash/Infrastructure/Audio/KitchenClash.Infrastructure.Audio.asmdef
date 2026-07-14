@@ -6,7 +6,8 @@
         "KitchenClash.Application",
         "KitchenClash.Infrastructure.Platform",
         "VContainer",
-        "Playcenter.Shell"
+        "Playcenter.Shell",
+        "Playcenter.Services"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

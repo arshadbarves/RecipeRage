@@ -4,6 +4,7 @@ using KitchenClash.Domain;
 using PlayEveryWare.EpicOnlineServices;
 using Epic.OnlineServices;
 using Epic.OnlineServices.Connect;
+using Playcenter.Services;
 
 namespace KitchenClash.Infrastructure.EOS
 {

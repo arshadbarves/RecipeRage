@@ -29,6 +29,7 @@ using UnityEngine.UIElements;
 using VContainer;
 using VContainer.Unity;
 using Playcenter.Shell;
+using Playcenter.Services;
 
 public class RootLifetimeScope : LifetimeScope
 {

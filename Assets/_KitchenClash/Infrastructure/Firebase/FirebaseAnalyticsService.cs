@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using KitchenClash.Domain;
 using Firebase.Analytics;
 using Playcenter.Shell;
+using Playcenter.Services;
 
 namespace KitchenClash.Infrastructure.Firebase
 {
@@ -57,6 +58,7 @@ namespace KitchenClash.Infrastructure.Firebase
 using System.Collections.Generic;
 using KitchenClash.Domain;
 using Playcenter.Shell;
+using Playcenter.Services;
 
 namespace KitchenClash.Infrastructure.Firebase
 {

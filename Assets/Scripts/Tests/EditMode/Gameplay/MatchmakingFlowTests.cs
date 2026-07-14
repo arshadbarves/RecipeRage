@@ -12,6 +12,7 @@ using NUnit.Framework;
 using Playcenter.GameFlow;
 using RecipeRage.Tests.EditMode.Gameplay.Fakes;
 using Playcenter.Shell;
+using Playcenter.Services;
 
 namespace RecipeRage.Tests.EditMode.Gameplay
 {

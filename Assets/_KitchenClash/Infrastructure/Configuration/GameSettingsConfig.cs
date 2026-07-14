@@ -1,5 +1,6 @@
 using System;
 using KitchenClash.Domain;
+using Playcenter.Services;
 
 namespace KitchenClash.Infrastructure.Configuration
 {

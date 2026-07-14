@@ -3,7 +3,8 @@
     "rootNamespace": "KitchenClash.Infrastructure.Configuration",
     "references": [
         "KitchenClash.Domain",
-        "Playcenter.Shell"
+        "Playcenter.Shell",
+        "Playcenter.Services"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

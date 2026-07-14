@@ -9,6 +9,7 @@ using KitchenClash.Domain;
 using NUnit.Framework;
 using UnityEngine;
 using Playcenter.Shell;
+using Playcenter.Services;
 
 namespace RecipeRage.Tests.EditMode.Gameplay
 {

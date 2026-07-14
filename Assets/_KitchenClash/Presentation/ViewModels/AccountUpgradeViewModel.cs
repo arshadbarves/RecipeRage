@@ -6,6 +6,7 @@ using KitchenClash.Domain;
 using KitchenClash.Presentation.Common;
 using VContainer;
 using Playcenter.Shell;
+using Playcenter.Services;
 
 namespace KitchenClash.Presentation.ViewModels
 {

@@ -15,7 +15,8 @@
         "com.Epic.OnlineServices",
         "com.playeveryware.eos.core",
         "com.playeveryware.eos.samples.networking",
-        "Playcenter.Shell"
+        "Playcenter.Shell",
+        "Playcenter.Services"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
