@@ -1,0 +1,23 @@
+Assets/Playcenter/GameFlow/Runtime/Core/AppFlowController.cs
+  s_99229c453cd88d::t_ef7d592e9d1e5d 23,74-75,87,362-369,401-408
+Assets/Playcenter/GameFlow/Runtime/Ports/IFlowPorts.cs
+  s_99229c453cd88d::t_fc6c505df813df 76-82
+Assets/Scripts/Tests/EditMode/Gameplay/AppFlowControllerTests.cs
+  s_99229c453cd88d::t_418ed1b391b692 196-257
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.13",
+  "base_commit_sha": "7cc96189bbe147f48d1f579a293e603397a7dccd",
+  "prompts": {},
+  "sessions": {
+    "s_99229c453cd88d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "45070b64-765f-4e79-883a-4a2e9082e950",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
