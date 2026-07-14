@@ -1,12 +1,10 @@
 using KitchenClash.Application;
 using System.Collections.Generic;
 using KitchenClash.Application.Services;
-using KitchenClash.Infrastructure.States;
 using KitchenClash.Domain;
 using KitchenClash.Infrastructure.Network.Spawning;
 using Unity.Netcode;
 using UnityEngine;
-using KitchenClash.Application.State;
 using Epic.OnlineServices;
 using PlayEveryWare.EpicOnlineServices;
 using PlayEveryWare.EpicOnlineServices.Samples.Network;
@@ -24,7 +22,6 @@ namespace KitchenClash.Infrastructure.Network
         private readonly IBotSpawnerRegistry _botSpawnerRegistry;
         private readonly IMatchContext _matchContext;
         private readonly IUIService _uiService;
-        private readonly IGameStateManager _stateManager;
         private readonly IAppFlow _appFlow;
 
         private bool _isGameActive;
@@ -41,15 +38,13 @@ namespace KitchenClash.Infrastructure.Network
             IBotSpawnerRegistry botSpawnerRegistry,
             IMatchContext matchContext,
             IUIService uiService,
-            IGameStateManager stateManager,
-            IAppFlow appFlow = null)
+            IAppFlow appFlow)
         {
             _lobbyManager = lobbyManager;
             _matchmakingService = matchmakingService;
             _botSpawnerRegistry = botSpawnerRegistry;
             _matchContext = matchContext;
             _uiService = uiService;
-            _stateManager = stateManager;
             _appFlow = appFlow;
         }
 
@@ -275,18 +270,13 @@ namespace KitchenClash.Infrastructure.Network
 
             _lobbyManager.LeaveMatchLobby();
 
-            // Prefer IAppFlow if available; otherwise fall back to IGameStateManager for legacy tests
             if (_appFlow != null)
             {
                 _appFlow.ReturnHome();
             }
-            else if (_stateManager != null)
-            {
-                _stateManager.ChangeState<MainMenuState>();
-            }
             else
             {
-                GameLogger.LogError("Neither AppFlow nor StateManager available - cannot return to Main Menu");
+                GameLogger.LogError("AppFlow not available - cannot return to Main Menu");
             }
         }
 

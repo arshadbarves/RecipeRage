@@ -1,7 +1,6 @@
 using KitchenClash.Application;
 using KitchenClash.Application.Services;
 using KitchenClash.Domain;
-using KitchenClash.Infrastructure.DI;
 using KitchenClash.Infrastructure.Gameplay;
 using KitchenClash.Presentation.ViewModels;
 using VContainer;
@@ -11,11 +10,7 @@ public class MenuLifetimeScope : LifetimeScope
 {
     protected override void Configure(IContainerBuilder builder)
     {
-        // Session management
-        builder.Register<SessionManager>(Lifetime.Scoped).As<IInitializable>();
-        builder.Register<SessionContext>(Lifetime.Scoped).As<ISessionContext>();
-
-        // Menu services
+        // Menu services (SessionManager/SessionContext live on Root for cold boot)
         builder.Register<MatchService>(Lifetime.Scoped).As<IMatchService>();
         builder.Register<EconomyService>(Lifetime.Scoped).As<IEconomyService>();
         builder.Register<DailyStreakService>(Lifetime.Scoped).As<IDailyStreakService>();

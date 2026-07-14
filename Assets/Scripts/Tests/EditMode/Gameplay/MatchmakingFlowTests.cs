@@ -4,15 +4,13 @@ using System.Threading.Tasks;
 using KitchenClash.Application;
 using KitchenClash.Application.Models;
 using KitchenClash.Application.Services;
-using KitchenClash.Application.State;
 using KitchenClash.Domain;
 using KitchenClash.Infrastructure.DI;
+using KitchenClash.Infrastructure.Flow.Handlers;
 using KitchenClash.Infrastructure.Network;
 using KitchenClash.Infrastructure.Persistence;
-using KitchenClash.Infrastructure.States;
 using Cysharp.Threading.Tasks;
 using NUnit.Framework;
-using UnityEngine;
 using Playcenter.GameFlow;
 using RecipeRage.Tests.EditMode.Gameplay.Fakes;
 
@@ -21,66 +19,39 @@ namespace RecipeRage.Tests.EditMode.Gameplay
     public class MatchmakingFlowTests
     {
         [Test]
-        public void MatchmakingState_Enter_InvokesMatchmakingService()
+        public void MatchmakingPhase_Enter_InvokesMatchmakingService()
         {
             FakeMatchmakingService matchmakingService = new();
-            MatchmakingState state = new(
-                new FakeUIService(),
-                new FakeSessionContext(matchmakingService, new FakeGameModeService()),
-                new FakeGameStateManager(),
-                new FakeMaintenanceService(false),
-                matchmakingService,
-                new FakeConfigService(),
-                new FakeEventBus(),
-                new FakeAppFlow());
+            MatchmakingPhase phase = CreatePhase(matchmakingService, new FakeAppFlow());
 
-            state.Enter();
+            phase.Enter(new PlayRequest { ModeId = "quick_2v2", TeamSize = 2 }, null);
 
-            // MatchmakingState uses default gameModeId="quick_2v2" and teamSize=2
             Assert.AreEqual("quick_2v2", matchmakingService.LastGameModeId);
             Assert.AreEqual(2, matchmakingService.LastTeamSize);
         }
 
         [Test]
-        public void MatchmakingState_Exit_CancelsMatchmaking()
+        public void MatchmakingPhase_Exit_CancelsMatchmaking()
         {
             FakeMatchmakingService matchmakingService = new();
-            MatchmakingState state = new(
-                new FakeUIService(),
-                new FakeSessionContext(matchmakingService, new FakeGameModeService()),
-                new FakeGameStateManager(),
-                new FakeMaintenanceService(false),
-                matchmakingService,
-                new FakeConfigService(),
-                new FakeEventBus(),
-                new FakeAppFlow());
+            MatchmakingPhase phase = CreatePhase(matchmakingService, new FakeAppFlow());
 
-            state.Enter();
+            phase.Enter(new PlayRequest { ModeId = "quick_2v2", TeamSize = 2 }, null);
             Assert.IsTrue(matchmakingService.IsSearching);
 
-            state.Exit();
+            phase.Exit();
             Assert.IsFalse(matchmakingService.IsSearching);
         }
 
         [Test]
-        public void MatchmakingState_OnMatchFound_NotifiesAppFlow()
+        public void MatchmakingPhase_OnMatchFound_NotifiesAppFlow()
         {
             FakeAppFlow flow = new();
             FakeMatchmakingService matchmakingService = new();
-            RecordingGameStateManager stateManager = new();
-            MatchmakingState state = new(
-                new FakeUIService(),
-                new FakeSessionContext(matchmakingService, new FakeGameModeService()),
-                stateManager,
-                new FakeMaintenanceService(false),
-                matchmakingService,
-                new FakeConfigService(),
-                new FakeEventBus(),
-                flow);
-            
-            state.SetQueueParameters("quick_2v2", 2);
-            state.Enter();
-            
+            MatchmakingPhase phase = CreatePhase(matchmakingService, flow);
+
+            phase.Enter(new PlayRequest { ModeId = "quick_2v2", TeamSize = 2 }, null);
+
             LobbyInfo lobbyInfo = new()
             {
                 LobbyId = "test-lobby-123",
@@ -91,53 +62,32 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             matchmakingService.RaiseMatchFound(lobbyInfo);
 
             Assert.AreEqual(1, flow.NotifyMatchResolvedCount, "NotifyMatchResolved should be called once");
-            Assert.IsFalse(stateManager.HasChangeStateCall<GameplayState>(), "Should not call ChangeState<GameplayState>");
         }
 
         [Test]
-        public void MatchmakingState_OnMatchmakingCancelled_CallsCancelMatchmaking()
+        public void MatchmakingPhase_OnMatchmakingCancelled_CallsCancelMatchmaking()
         {
             FakeAppFlow flow = new();
             FakeMatchmakingService matchmakingService = new();
-            RecordingGameStateManager stateManager = new();
-            MatchmakingState state = new(
-                new FakeUIService(),
-                new FakeSessionContext(matchmakingService, new FakeGameModeService()),
-                stateManager,
-                new FakeMaintenanceService(false),
-                matchmakingService,
-                new FakeConfigService(),
-                new FakeEventBus(),
-                flow);
-            
-            state.Enter();
+            MatchmakingPhase phase = CreatePhase(matchmakingService, flow);
+
+            phase.Enter(new PlayRequest { ModeId = "quick_2v2", TeamSize = 2 }, null);
             matchmakingService.RaiseCancelled();
 
             Assert.AreEqual(1, flow.CancelMatchmakingCount, "CancelMatchmaking should be called once");
-            Assert.IsFalse(stateManager.HasChangeStateCall<MainMenuState>(), "Should not call ChangeState<MainMenuState>");
         }
 
         [Test]
-        public void MatchmakingState_OnMatchmakingFailed_CallsReturnHome()
+        public void MatchmakingPhase_OnMatchmakingFailed_CallsReturnHome()
         {
             FakeAppFlow flow = new();
             FakeMatchmakingService matchmakingService = new();
-            RecordingGameStateManager stateManager = new();
-            MatchmakingState state = new(
-                new FakeUIService(),
-                new FakeSessionContext(matchmakingService, new FakeGameModeService()),
-                stateManager,
-                new FakeMaintenanceService(false),
-                matchmakingService,
-                new FakeConfigService(),
-                new FakeEventBus(),
-                flow);
-            
-            state.Enter();
+            MatchmakingPhase phase = CreatePhase(matchmakingService, flow);
+
+            phase.Enter(new PlayRequest { ModeId = "quick_2v2", TeamSize = 2 }, null);
             matchmakingService.RaiseFailed("Connection lost");
 
             Assert.AreEqual(1, flow.ReturnHomeCount, "ReturnHome should be called once");
-            Assert.IsFalse(stateManager.HasChangeStateCall<MainMenuState>(), "Should not call ChangeState<MainMenuState>");
         }
 
         [Test]
@@ -156,6 +106,18 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             Assert.IsTrue(result.ShouldEnd);
             Assert.IsTrue(result.IsDraw);
             Assert.AreEqual(-1, result.WinningTeamId);
+        }
+
+        private static MatchmakingPhase CreatePhase(IMatchmakingService matchmakingService, IAppFlow appFlow)
+        {
+            return new MatchmakingPhase(
+                new FakeUIService(),
+                new FakeSessionContext(matchmakingService, new FakeGameModeService()),
+                new FakeMaintenanceService(false),
+                new FakeConfigService(),
+                new FakeEventBus(),
+                appFlow,
+                matchmakingService);
         }
 
         private sealed class FakeMaintenanceService : IMaintenanceService
@@ -241,7 +203,6 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             public void FillMatchWithBots() { }
             public List<BotPlayer> GetActiveBots() => new();
 
-            // Test helpers to raise events without service side effects
             public void RaiseMatchFound(LobbyInfo lobbyInfo)
             {
                 IsSearching = false;
@@ -259,43 +220,6 @@ namespace RecipeRage.Tests.EditMode.Gameplay
                 IsSearching = false;
                 OnMatchmakingFailed?.Invoke(reason);
             }
-        }
-
-        private sealed class FakeGameStateManager : IGameStateManager
-        {
-            public IState CurrentState => null;
-            public IState PreviousState => null;
-            public event Action<IState, IState> OnStateChanged;
-            public void Initialize(IState initialState) { }
-            public void ChangeState(IState newState) { }
-            public void ChangeState<T>() where T : IState { }
-            public void Update(float deltaTime) { }
-            public void FixedUpdate(float fixedDeltaTime) { }
-        }
-
-        private sealed class RecordingGameStateManager : IGameStateManager
-        {
-            private readonly List<Type> _changeStateCalls = new();
-
-            public IState CurrentState => null;
-            public IState PreviousState => null;
-            public event Action<IState, IState> OnStateChanged;
-
-            public void Initialize(IState initialState) { }
-            public void ChangeState(IState newState) { }
-            
-            public void ChangeState<T>() where T : IState
-            {
-                _changeStateCalls.Add(typeof(T));
-            }
-
-            public bool HasChangeStateCall<T>() where T : IState
-            {
-                return _changeStateCalls.Contains(typeof(T));
-            }
-
-            public void Update(float deltaTime) { }
-            public void FixedUpdate(float fixedDeltaTime) { }
         }
 
         private sealed class FakeUIService : IUIService

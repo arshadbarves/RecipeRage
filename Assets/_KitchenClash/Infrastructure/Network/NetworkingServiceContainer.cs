@@ -2,7 +2,6 @@ using KitchenClash.Application;
 using System;
 using KitchenClash.Application.Services;
 using KitchenClash.Domain;
-using KitchenClash.Application.State;
 using KitchenClash.Infrastructure.EOS;
 using PlayEveryWare.EpicOnlineServices.Samples;
 using Unity.Services.Core;
@@ -31,7 +30,6 @@ namespace KitchenClash.Infrastructure.Network
 
         private bool _isInitialized;
         private readonly IUIService _uiService;
-        private readonly IGameStateManager _stateManager;
         private readonly IAuthService _authService;
         private readonly IMatchContext _matchContext;
         private readonly ILobbyManager _lobbyManager;
@@ -48,7 +46,6 @@ namespace KitchenClash.Infrastructure.Network
         [Inject]
         public NetworkingServiceContainer(
             IUIService uiService,
-            IGameStateManager stateManager,
             IAuthService authService,
             IMatchContext matchContext,
             ILobbyManager lobbyManager,
@@ -59,7 +56,6 @@ namespace KitchenClash.Infrastructure.Network
             IAppFlow appFlow)
         {
             _uiService = uiService;
-            _stateManager = stateManager;
             _authService = authService;
             _matchContext = matchContext;
             _lobbyManager = lobbyManager;
@@ -92,7 +88,7 @@ namespace KitchenClash.Infrastructure.Network
             PlayerManager = _playerManager;
             MatchmakingService = _matchmakingService;
 
-            GameStarter = new GameStarter(LobbyManager, MatchmakingService, this, _matchContext, _uiService, _stateManager, _appFlow);
+            GameStarter = new GameStarter(LobbyManager, MatchmakingService, this, _matchContext, _uiService, _appFlow);
 
             BotSpawner = null;
 

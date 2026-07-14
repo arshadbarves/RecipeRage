@@ -1,7 +1,6 @@
 using System;
 using KitchenClash.Application.Services;
 using KitchenClash.Domain;
-using KitchenClash.Application.State;
 using VContainer;
 using VContainer.Unity;
 
@@ -11,7 +10,6 @@ namespace KitchenClash.Infrastructure.DI
     {
         private readonly IObjectResolver _container;
         private readonly IEventBus _eventBus;
-        private readonly IGameStateManager _stateManager;
         private readonly IUIService _uiService;
 
         private LifetimeScope _sessionScope;
@@ -20,11 +18,10 @@ namespace KitchenClash.Infrastructure.DI
         public bool IsSessionActive => _sessionScope != null;
 
         [Inject]
-        public SessionManager(IObjectResolver container, IEventBus eventBus, IGameStateManager stateManager, IUIService uiService)
+        public SessionManager(IObjectResolver container, IEventBus eventBus, IUIService uiService)
         {
             _container = container;
             _eventBus = eventBus;
-            _stateManager = stateManager;
             _uiService = uiService;
         }
 
