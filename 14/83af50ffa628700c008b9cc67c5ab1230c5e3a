@@ -1,0 +1,59 @@
+Assets/_KitchenClash/Application/Models/PlayerProgressData.cs
+  s_99229c453cd88d::t_ead9b2216163fe 59-79
+Assets/Scripts/Tests/EditMode/SessionContextContractTests.cs
+  s_99229c453cd88d::t_659493907b86cc 1-28
+Assets/_KitchenClash/Presentation/Screens/ProfileScreen.cs
+  s_99229c453cd88d::t_1c864055665977 10
+Assets/Scripts/Tests/EditMode/Gameplay/AppFlowMigrationTests.cs
+  s_99229c453cd88d::t_1c864055665977 44-45
+  s_99229c453cd88d::t_d6cd0fbb1c7bf8 51
+Assets/Scripts/Tests/EditMode/Gameplay/MatchmakingFlowTests.cs
+  s_99229c453cd88d::t_1c864055665977 164-165
+  s_99229c453cd88d::t_d6cd0fbb1c7bf8 167
+Assets/_KitchenClash/Infrastructure/Flow/Handlers/SessionLoader.cs
+  s_99229c453cd88d::t_370dd846ebbd8d 4,35,39
+Assets/_KitchenClash/Infrastructure/DI/SessionContext.cs
+  s_99229c453cd88d::t_2904bc1e47599b 3-4,24-25
+  s_99229c453cd88d::t_0623994dc4c9dc 34-43
+Assets/_KitchenClash/Infrastructure/Persistence/PlayerDataServiceAdapter.cs
+  s_99229c453cd88d::t_8d6536c512ac62 45-66
+Assets/_KitchenClash/Application/Interfaces/ISessionContext.cs
+  s_99229c453cd88d::t_c9910a4370a158 1-23,30-31
+  s_99229c453cd88d::t_cb70e927c39fe0 24-29
+Assets/_KitchenClash/Presentation/Screens/HomeScreen.cs
+  s_99229c453cd88d::t_2157f8d8732655 26,181,186,194,202
+Assets/_KitchenClash/Application/Interfaces/IPlayerDataService.cs
+  s_99229c453cd88d::t_1894c17fb05301 14-17
+Assets/_KitchenClash/Presentation/ViewModels/StoreViewModel.cs
+  s_99229c453cd88d::t_e4aa3e0590824a 8,13
+Assets/_KitchenClash/Presentation/Screens/ResultsScreen.cs
+  s_99229c453cd88d::t_1c864055665977 10
+Assets/_KitchenClash/Application/Interfaces/ISessionContext.cs.meta
+  s_99229c453cd88d::t_ab7195ab8ce3c4 2
+Assets/_KitchenClash/Infrastructure/Network/MatchEndController.cs
+  s_99229c453cd88d::t_a0d29cbf93afa9 8
+Assets/_KitchenClash/Presentation/Screens/CharacterDetailsScreen.cs
+  s_99229c453cd88d::t_40cf9e4e8429a5 21-22
+Assets/_KitchenClash/Presentation/ViewModels/ShopViewModel.cs
+  s_99229c453cd88d::t_2e947932043b5d 15
+Assets/_KitchenClash/Presentation/ViewModels/UsernameViewModel.cs
+  s_99229c453cd88d::t_082cff6e904adc 29-30
+docs/superpowers/plans/2026-07-14-architecture-hardening.md
+  s_99229c453cd88d::t_78e43e6f416283 41,70,77,102,104,106
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "1483af50ffa628700c008b9cc67c5ab1230c5e3a",
+  "prompts": {},
+  "sessions": {
+    "s_99229c453cd88d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "45070b64-765f-4e79-883a-4a2e9082e950",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
