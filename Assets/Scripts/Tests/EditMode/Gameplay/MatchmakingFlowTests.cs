@@ -5,7 +5,6 @@ using KitchenClash.Application;
 using KitchenClash.Application.Models;
 using KitchenClash.Application.Services;
 using KitchenClash.Domain;
-using KitchenClash.Infrastructure.DI;
 using KitchenClash.Infrastructure.Flow.Handlers;
 using KitchenClash.Infrastructure.Network;
 using KitchenClash.Infrastructure.Persistence;
@@ -162,9 +161,10 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             public IGameModeService GameModeService { get; }
             public ICharacterService CharacterService => null;
             public ISkinsService SkinsService => null;
-            public EconomyService EconomyService => null;
-            public PlayerDataService PlayerDataService => null;
+            public IEconomyService EconomyService => null;
+            public IPlayerDataService PlayerDataService => null;
             public T Resolve<T>() where T : class => null;
+            public void Inject(object target) { }
         }
 
         private sealed class FakeMatchmakingService : IMatchmakingService

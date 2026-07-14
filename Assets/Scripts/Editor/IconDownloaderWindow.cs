@@ -5,7 +5,6 @@ using KitchenClash.Presentation.Common;
 using KitchenClash.Infrastructure.EOS;
 using KitchenClash.Infrastructure.Persistence;
 using KitchenClash.Infrastructure.Gameplay;
-using KitchenClash.Infrastructure.DI;
 using KitchenClash.Infrastructure.Network.Bot;
 using KitchenClash.Infrastructure.Network.Spawning;
 using KitchenClash.Infrastructure.Network.Cooking;

@@ -1,11 +1,8 @@
-using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using KitchenClash.Domain;
 using KitchenClash.Application;
-using KitchenClash.Application.Services;
+using KitchenClash.Domain;
 using KitchenClash.Infrastructure.DI;
-using KitchenClash.Infrastructure.Persistence;
 
 namespace KitchenClash.Infrastructure.Flow.Handlers
 {
@@ -35,11 +32,11 @@ namespace KitchenClash.Infrastructure.Flow.Handlers
 
             ct.ThrowIfCancellationRequested();
 
-            EconomyService economyService = _sessionContext.EconomyService;
+            IEconomyService economyService = _sessionContext.EconomyService;
             economyService?.Initialize();
             ct.ThrowIfCancellationRequested();
 
-            PlayerDataService playerDataService = _sessionContext.PlayerDataService;
+            IPlayerDataService playerDataService = _sessionContext.PlayerDataService;
             playerDataService?.Initialize();
             ct.ThrowIfCancellationRequested();
 

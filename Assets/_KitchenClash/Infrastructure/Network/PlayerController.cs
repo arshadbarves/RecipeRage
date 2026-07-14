@@ -3,7 +3,6 @@ using KitchenClash.Application;
 using System;
 using System.Collections.Generic;
 using KitchenClash.Infrastructure.Gameplay;
-using KitchenClash.Infrastructure.DI;
 using KitchenClash.Application.Services;
 using System.Linq;
 using KitchenClash.Infrastructure.Input;

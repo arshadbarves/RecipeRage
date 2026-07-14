@@ -1,7 +1,7 @@
 using KitchenClash.Application;
-using VContainer;
 using KitchenClash.Application.Services;
-using KitchenClash.Infrastructure.Persistence;
+using KitchenClash.Domain;
+using VContainer;
 
 namespace KitchenClash.Infrastructure.DI
 {
@@ -21,8 +21,8 @@ namespace KitchenClash.Infrastructure.DI
         public ICharacterService CharacterService => Resolve<ICharacterService>();
         public ISkinsService SkinsService => Resolve<ISkinsService>();
         public IGameStarter GameStarter => Resolve<IGameStarter>();
-        public EconomyService EconomyService => Resolve<EconomyService>();
-        public PlayerDataService PlayerDataService => Resolve<PlayerDataService>();
+        public IEconomyService EconomyService => Resolve<IEconomyService>();
+        public IPlayerDataService PlayerDataService => Resolve<IPlayerDataService>();
         public IFriendsService FriendsService => Resolve<IFriendsService>();
         public ILobbyManager LobbyManager => Resolve<ILobbyManager>();
         public IMatchmakingService MatchmakingService => Resolve<IMatchmakingService>();
@@ -30,6 +30,16 @@ namespace KitchenClash.Infrastructure.DI
         public T Resolve<T>() where T : class
         {
             return _sessionManager?.SessionContainer?.Resolve<T>();
+        }
+
+        public void Inject(object target)
+        {
+            if (target == null)
+            {
+                return;
+            }
+
+            _sessionManager?.SessionContainer?.Inject(target);
         }
     }
 }

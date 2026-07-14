@@ -6,8 +6,8 @@ using KitchenClash.Presentation.Common;
 using KitchenClash.Infrastructure.EOS;
 using KitchenClash.Infrastructure.Network;
 using KitchenClash.Application.Services;
-using KitchenClash.Infrastructure.DI;
 using Playcenter.GameFlow;
+using KitchenClash.Application;
 
 namespace KitchenClash.Presentation.Screens
 {

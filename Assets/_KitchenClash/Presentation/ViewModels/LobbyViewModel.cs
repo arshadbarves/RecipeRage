@@ -8,7 +8,6 @@ using KitchenClash.Presentation;
 using KitchenClash.Presentation.Common;
 using KitchenClash.Infrastructure.EOS;
 using KitchenClash.Application.Services;
-using KitchenClash.Infrastructure.DI;
 using UnityEngine;
 using VContainer;
 using Playcenter.GameFlow;

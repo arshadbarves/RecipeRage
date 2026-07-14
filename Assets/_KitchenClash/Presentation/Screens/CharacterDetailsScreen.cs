@@ -2,11 +2,8 @@ using KitchenClash.Application.Models;
 using KitchenClash.Application;
 using KitchenClash.Domain;
 using KitchenClash.Application.Services;
-using KitchenClash.Infrastructure.DI;
-using KitchenClash.Infrastructure.Persistence;
 using KitchenClash.Presentation;
 using KitchenClash.Presentation.Common;
-using KitchenClash.Infrastructure.EOS;
 using KitchenClash.Infrastructure.Network; // Added
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -21,8 +18,8 @@ namespace KitchenClash.Presentation.Screens
 
         private ICharacterService _characterService;
         private ISkinsService _skinsService;
-        private PlayerDataService _playerDataService;
-        private EconomyService _economyService;
+        private IPlayerDataService _playerDataService;
+        private IEconomyService _economyService;
         private CharacterPreviewManager _previewManager; // New Dependency
 
         private CharacterClass _currentCharacter;

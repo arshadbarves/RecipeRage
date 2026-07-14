@@ -42,6 +42,28 @@ namespace KitchenClash.Infrastructure.Persistence
             _stats.AddExperience(xp);
         }
 
+        public int GetCharacterLevel(string characterId)
+        {
+            return _progress?.GetCharacterLevel(characterId) ?? 1;
+        }
+
+        public bool UpgradeCharacter(string characterId, int cost)
+        {
+            if (_progress == null)
+            {
+                return false;
+            }
+
+            int currentLevel = GetCharacterLevel(characterId);
+            _progress.SetCharacterLevel(characterId, currentLevel + 1);
+            return true;
+        }
+
+        public void UnlockCharacter(string characterId)
+        {
+            _progress?.UnlockCharacter(characterId);
+        }
+
         public Task<string> LoadAsync(string key)
         {
             return Task.FromResult<string>(null);

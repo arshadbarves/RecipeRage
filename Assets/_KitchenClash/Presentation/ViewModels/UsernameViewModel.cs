@@ -1,12 +1,9 @@
 using System;
 using KitchenClash.Application.Services;
 using KitchenClash.Application;
-using KitchenClash.Infrastructure.DI;
-using KitchenClash.Infrastructure.Persistence;
 using KitchenClash.Domain;
 using KitchenClash.Presentation;
 using KitchenClash.Presentation.Common;
-using KitchenClash.Infrastructure.EOS;
 using VContainer;
 
 namespace KitchenClash.Presentation.ViewModels
@@ -29,8 +26,8 @@ namespace KitchenClash.Presentation.ViewModels
         private bool _isFirstTime = false;
         private Action<string> _onConfirmCallback;
 
-        private EconomyService EconomyService => _sessionContext?.EconomyService;
-        private PlayerDataService PlayerDataService => _sessionContext?.PlayerDataService;
+        private IEconomyService EconomyService => _sessionContext?.EconomyService;
+        private IPlayerDataService PlayerDataService => _sessionContext?.PlayerDataService;
 
         [Inject]
         public UsernameViewModel(ISessionContext sessionContext, IUIService uiService)

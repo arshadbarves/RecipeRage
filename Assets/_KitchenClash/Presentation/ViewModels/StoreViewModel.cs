@@ -5,12 +5,12 @@ namespace KitchenClash.Presentation.ViewModels
 {
     public sealed class StoreViewModel : ScreenViewModel
     {
-        private readonly EconomyService _economy;
+        private readonly IEconomyService _economy;
 
         public BindableProperty<int> Coins { get; } = new(0);
         public BindableProperty<int> Gems { get; } = new(0);
 
-        public StoreViewModel(EconomyService economy)
+        public StoreViewModel(IEconomyService economy)
         {
             _economy = economy;
         }

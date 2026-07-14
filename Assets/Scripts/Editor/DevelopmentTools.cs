@@ -1,7 +1,6 @@
 using KitchenClash.Domain;
 using KitchenClash.Composition;
 using KitchenClash.Application.Services;
-using KitchenClash.Infrastructure.DI;
 using UnityEditor;
 using UnityEngine;
 using VContainer;

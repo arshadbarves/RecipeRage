@@ -1,7 +1,6 @@
 using NUnit.Framework;
 using Playcenter.GameFlow;
 using KitchenClash.Presentation.ViewModels;
-using KitchenClash.Infrastructure.DI;
 using KitchenClash.Application.Services;
 using KitchenClash.Application;
 using KitchenClash.Domain;
@@ -42,13 +41,14 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             public ICharacterService CharacterService => null;
             public ISkinsService SkinsService => null;
             public IGameStarter GameStarter => null;
-            public EconomyService EconomyService => null;
-            public PlayerDataService PlayerDataService => null;
+            public IEconomyService EconomyService => null;
+            public IPlayerDataService PlayerDataService => null;
             public IFriendsService FriendsService => null;
             public ILobbyManager LobbyManager => null;
             public IMatchmakingService MatchmakingService => null;
 
             public T Resolve<T>() where T : class => null;
+            public void Inject(object target) { }
         }
 
         [Test]

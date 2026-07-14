@@ -38,7 +38,7 @@
 - Delete: `Assets/_KitchenClash/Infrastructure/DI/ISessionContext.cs` (+ .meta if present)
 - Test: `Assets/Scripts/Tests/EditMode/SessionContextContractTests.cs` (optional compile-shape test)
 
-- [ ] **Step 1: Write failing test** — assert `ISessionContext` is in `KitchenClash.Application` and exposes only interfaces (reflection on property types).
+- [x] **Step 1: Write failing test** — assert `ISessionContext` is in `KitchenClash.Application` and exposes only interfaces (reflection on property types).
 
 ```csharp
 using System.Linq;
@@ -67,14 +67,14 @@ namespace KitchenClash.Tests.EditMode
 }
 ```
 
-- [ ] **Step 2: Run test — expect fail** (type missing or wrong namespace / concrete properties).
+- [x] **Step 2: Run test — expect fail** (type missing or wrong namespace / concrete properties).
 
 ```bash
 dotnet build RecipeRage.Tests.EditMode.csproj -nologo
 dotnet test RecipeRage.Tests.EditMode.csproj --filter="SessionContextContractTests" --no-build -nologo
 ```
 
-- [ ] **Step 3: Implement Application `ISessionContext`**
+- [x] **Step 3: Implement Application `ISessionContext`**
 
 ```csharp
 using KitchenClash.Application.Services;
@@ -99,11 +99,11 @@ namespace KitchenClash.Application
 }
 ```
 
-- [ ] **Step 4: Update `SessionContext` impl** to use `IEconomyService` / `IPlayerDataService`; delete old interface file; fix all `using KitchenClash.Infrastructure.DI` → `KitchenClash.Application` for this type.
+- [x] **Step 4: Update `SessionContext` impl** to use `IEconomyService` / `IPlayerDataService`; delete old interface file; fix all `using KitchenClash.Infrastructure.DI` → `KitchenClash.Application` for this type.
 
-- [ ] **Step 5: Run test — expect pass.**
+- [x] **Step 5: Run test — expect pass.**
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add Assets/_KitchenClash/Application/Interfaces/ISessionContext.cs \

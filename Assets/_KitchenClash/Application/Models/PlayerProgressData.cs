@@ -56,6 +56,27 @@ namespace KitchenClash.Application.Models
         public void UnlockMap(string id) { if (!UnlockedMaps.Contains(id)) UnlockedMaps.Add(id); }
         public void UnlockCosmetic(string id) { if (!UnlockedCosmetics.Contains(id)) UnlockedCosmetics.Add(id); }
 
+        public int GetCharacterLevel(string characterId)
+        {
+            if (string.IsNullOrEmpty(characterId) || CharacterLevels == null)
+            {
+                return 1;
+            }
+
+            return CharacterLevels.TryGetValue(characterId, out int level) ? level : 1;
+        }
+
+        public void SetCharacterLevel(string characterId, int level)
+        {
+            if (string.IsNullOrEmpty(characterId))
+            {
+                return;
+            }
+
+            CharacterLevels ??= new Dictionary<string, int>();
+            CharacterLevels[characterId] = level;
+        }
+
         public bool UpdateHighScore(string gameModeId, int score)
         {
             if (!GameModeHighScores.ContainsKey(gameModeId) || score > GameModeHighScores[gameModeId])

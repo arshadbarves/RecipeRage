@@ -2,9 +2,7 @@ using KitchenClash.Presentation;
 using KitchenClash.Presentation.Common;
 using KitchenClash.Application.Services;
 using KitchenClash.Application;
-using KitchenClash.Infrastructure.DI;
 using KitchenClash.Domain;
-using KitchenClash.Infrastructure.EOS;
 using System.Collections.Generic;
 using VContainer;
 
@@ -14,7 +12,7 @@ namespace KitchenClash.Presentation.ViewModels
     {
         private readonly ISessionContext _sessionContext;
         private readonly ShopCatalog _shopCatalog;
-        private EconomyService EconomyService => _sessionContext.EconomyService;
+        private IEconomyService EconomyService => _sessionContext.EconomyService;
         private ICharacterService CharacterService => _sessionContext.CharacterService;
 
         public BindableProperty<string> CoinsText { get; } = new BindableProperty<string>("0");

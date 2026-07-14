@@ -1,6 +1,5 @@
 using KitchenClash.Application;
 using KitchenClash.Domain;
-using KitchenClash.Infrastructure.DI;
 using KitchenClash.Presentation;
 using KitchenClash.Presentation.Common;
 using KitchenClash.Infrastructure.EOS;

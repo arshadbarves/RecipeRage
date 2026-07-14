@@ -1,7 +1,6 @@
 using KitchenClash.Application;
 using System.Collections.Generic;
 using KitchenClash.Application.Services;
-using KitchenClash.Infrastructure.DI;
 using System;
 using KitchenClash.Presentation;
 using KitchenClash.Domain;

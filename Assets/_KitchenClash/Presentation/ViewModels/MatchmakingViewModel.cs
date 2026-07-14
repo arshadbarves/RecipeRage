@@ -2,7 +2,6 @@ using KitchenClash.Application.Models;
 using KitchenClash.Application;
 using System;
 using KitchenClash.Application.Services;
-using KitchenClash.Infrastructure.DI;
 using System.Threading;
 using KitchenClash.Domain;
 using Cysharp.Threading.Tasks;

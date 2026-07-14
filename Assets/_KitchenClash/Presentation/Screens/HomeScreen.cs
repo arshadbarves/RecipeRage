@@ -1,14 +1,11 @@
 using KitchenClash.Presentation.Components;
-using KitchenClash.Infrastructure.Persistence;
 using KitchenClash.Application.Services;
 using KitchenClash.Application;
-using KitchenClash.Infrastructure.DI;
 using UnityEngine.UIElements;
 using VContainer;
 using KitchenClash.Presentation;
 using KitchenClash.Domain;
 using KitchenClash.Presentation.Common;
-using KitchenClash.Infrastructure.EOS;
 using KitchenClash.Presentation.Extensions;
 using KitchenClash.Presentation.ViewModels;
 
@@ -18,9 +15,7 @@ namespace KitchenClash.Presentation.Screens
     public class HomeScreen : BaseUIScreen
     {
         [Inject] private MainMenuViewModel _viewModel;
-        [Inject] private IObjectResolver _container;
         [Inject] private IEventBus _eventBus;
-        [Inject] private SessionManager _sessionManager;
         [Inject] private ISessionContext _sessionContext;
         [Inject] private ILocalizationManager _localizationManager;
         [Inject] private IDailyStreakService _dailyStreakService;
@@ -28,7 +23,7 @@ namespace KitchenClash.Presentation.Screens
         private LobbyTabComponent _lobbyTab;
         private ShopTabComponent _shopTab;
         private CharacterTabComponent _characterTab;
-        private EconomyService _economyService;
+        private IEconomyService _economyService;
         private bool _dailyStreakChecked;
 
         private Label _playerLevelLabel;
@@ -183,16 +178,12 @@ namespace KitchenClash.Presentation.Screens
 
             _viewModel.Initialize();
             
-            // Note: SessionContainer is required here because tabs have [Inject] dependencies 
-            // on Menu-scoped services (ICharacterService, ISkinsService, etc.), but HomeScreen's
-            // _container is Root-scoped. Using _container.Inject() would fail to resolve Menu services.
-            var sessionContainer = _sessionManager.SessionContainer;
-
+            // Tabs need session-scoped services; inject via ISessionContext (not SessionManager).
             var lobbyRoot = GetElement<VisualElement>("lobby-root");
             if (lobbyRoot != null)
             {
                 _lobbyTab = new LobbyTabComponent(_viewModel.LobbyVM);
-                sessionContainer.Inject(_lobbyTab);
+                _sessionContext.Inject(_lobbyTab);
                 _lobbyTab.Initialize(lobbyRoot);
             }
 
@@ -200,7 +191,7 @@ namespace KitchenClash.Presentation.Screens
             if (characterRoot != null)
             {
                 _characterTab = new CharacterTabComponent(_sessionContext.CharacterService);
-                sessionContainer.Inject(_characterTab);
+                _sessionContext.Inject(_characterTab);
                 _characterTab.Initialize(characterRoot);
             }
 
@@ -208,7 +199,7 @@ namespace KitchenClash.Presentation.Screens
             if (shopRoot != null)
             {
                 _shopTab = new ShopTabComponent(_viewModel.ShopVM);
-                sessionContainer.Inject(_shopTab);
+                _sessionContext.Inject(_shopTab);
                 _shopTab.Initialize(shopRoot);
             }
         }
