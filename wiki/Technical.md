@@ -85,7 +85,7 @@ GameFlow fixed product navigation. Remaining mess is inverted deps, vendor leaks
 | 2 | UI navigation purity | Animation/localization via Application ports; shrink `UIService` | **Complete** |
 | 3 | Infrastructure assembly walls | Split Flow / EOS / Network / Persistence (minimum) | **3a–3d complete** (Persistence/Audio/Flow/EOS leaves); Network still mega |
 | 4 | Match gameplay ports | Expand match ports beyond HUD; shrink `PlayerController` / stations | **Complete** (scoped criteria) |
-| 5 | Domain kernel hygiene (optional) | Shell ports vs cooking models if still noisy | **Partial** (`SlideDirection` fixed); broader kernel deferred |
+| 5 | Domain kernel hygiene (optional) | Shell ports vs cooking models if still noisy | **Closed partial** (`SlideDirection` fixed); broader split not required for hardened shell |
 
 **Phase 4 shipped:**
 - `PlayerController` partials: core (~393 lines) / InputMovement / Character / Skins / Carrying

@@ -401,5 +401,29 @@ EOF
 - [x] BotTaskPlanner not in Application with Infra deps
 - [x] Match HUD remains on Application ports (no expansion needed for Presentation)
 
-**Deferred (optional follow-ups):** further collaborator extraction of skins/carry into non-partial classes; Application ports for non-HUD match consumers; Phase 3b Network/EOS walls.
+**Deferred (optional follow-ups):** further collaborator extraction of skins/carry into non-partial classes; Application ports for non-HUD match consumers; Network leaf after Gameplay ports.
+
+---
+
+## Phase 5 — Domain kernel hygiene (partial / closed)
+
+**Design:** optional follow-on only if Domain remains noisy after Phases 1–4. Not required to claim hardened shell.
+
+### Done
+- [x] `SlideDirection` moved Domain → Animation leaf (wrong assembly; UI tween enum)
+- [x] Domain remains `noEngineReferences: true` with zero Unity usings
+- [x] Dead Domain type `UpdateUrgency` left in place (unused; delete only if product confirms)
+
+### Explicitly deferred (not required)
+- Split Domain into shell ports vs cooking models
+- Relocate Presentation-only `UIScreenCategory` (consumers are Presentation; Domain enum is fine as shared contract)
+- Relocate Audio enums (`MusicTrack` / `SFXType`) — used by Domain events + Application services
+
+### Program status
+Required Approach A phases **1–4 + 3a–3d** are complete. Remaining optional work:
+1. Network leaf after Network↔Gameplay ports
+2. Broader Domain kernel split
+3. Unity Editor smoke (boot → login → home → play → match HUD → results)
+4. PR after `gh` auth
+
 

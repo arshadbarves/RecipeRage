@@ -237,3 +237,15 @@ Optional Infrastructure walls after Phase 3b:
 - Dead `using Infrastructure.DI` stripped from `MatchEndController`
 - CLI builds green: Domain → Animation → EOS → Infrastructure → Composition
 - Deferred: Network asmdef (Network↔Gameplay cycle); broader Phase 5 Domain kernel
+
+## 2026-07-14 — Architecture hardening program closeout (required phases)
+
+Required Approach A work complete on `architecture-cleanup`:
+
+- Phases 1–2: Presentation purity, match HUD ports, UIService partials
+- Phase 3a–3d: leaf assemblies (Animation/Async/Config/Platform/Logging/Localization/Persistence/Audio/Flow/EOS)
+- Phase 4: PlayerController partials; BotTaskPlanner Domain-only
+- Phase 5 partial: SlideDirection hygiene only
+
+Deferred by design: Network leaf (Network↔Gameplay cycle), broader Domain kernel, Unity smoke, PR.
+
