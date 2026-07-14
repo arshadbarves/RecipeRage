@@ -1,0 +1,33 @@
+Assets/Playcenter/GameFlow/README.md
+  s_99229c453cd88d::t_bb7afa8148c2fe 44-52
+Assets/_KitchenClash/Composition/RootLifetimeScope.cs
+  s_99229c453cd88d::t_73478371c94c16 54-55
+Assets/_KitchenClash/Infrastructure/Flow/StateMachineFlowPorts.cs
+  s_99229c453cd88d::t_6735397038711e 175
+Assets/_KitchenClash/Infrastructure/Logging/LoggingBootstrap.cs.meta
+  s_99229c453cd88d::t_87a0f9d2db0b14 1-11
+wiki/log.md
+  s_99229c453cd88d::t_019acd5696ecb0 142-148
+Assets/_KitchenClash/Infrastructure/Logging/LoggingBootstrap.cs
+  s_99229c453cd88d::t_24a879c6e2b32b 1-26
+docs/superpowers/plans/2026-07-14-gameflow-module-and-logging.md
+  s_99229c453cd88d::t_d2b8ae52fa656f 1-227
+wiki/GameFlow-SDK.md
+  s_99229c453cd88d::t_d250a9c279fe37 119-145
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.13",
+  "base_commit_sha": "23dcbebe0603ec0d4d5664b8179d8bb62d399d94",
+  "prompts": {},
+  "sessions": {
+    "s_99229c453cd88d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "45070b64-765f-4e79-883a-4a2e9082e950",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
