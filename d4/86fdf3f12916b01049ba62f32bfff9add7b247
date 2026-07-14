@@ -1,0 +1,65 @@
+Assets/Playcenter/Shell/README.md
+  s_99229c453cd88d::t_9a2a177be1e17d 1-35
+Assets/Playcenter/Shell/README.md.meta
+  s_99229c453cd88d::t_94b95e242f2c22 1-7
+Assets/Playcenter/Shell/Runtime.meta
+  s_99229c453cd88d::t_d39b9aedadacc5 1-8
+Assets/Playcenter/Shell/Runtime/Connectivity.meta
+  s_99229c453cd88d::t_54d8ba3b2a647b 1-8
+Assets/Playcenter/Shell/Runtime/Connectivity/ConnectivityState.cs
+  s_99229c453cd88d::t_88fd5ce0224dc0 1-13
+Assets/Playcenter/Shell/Runtime/Connectivity/ConnectivityState.cs.meta
+  s_99229c453cd88d::t_a0912be0a39926 1-7
+Assets/Playcenter/Shell/Runtime/Connectivity/IConnectivityService.cs
+  s_99229c453cd88d::t_e3c7513f5cefcc 1-23
+Assets/Playcenter/Shell/Runtime/Connectivity/IConnectivityService.cs.meta
+  s_99229c453cd88d::t_6f8d08cf1c77ab 1-7
+Assets/Playcenter/Shell/Runtime/Events.meta
+  s_99229c453cd88d::t_28e549e0706dfd 1-8
+Assets/Playcenter/Shell/Runtime/Events/EventBus.cs
+  s_99229c453cd88d::t_6833fd58d15d12 1-46
+Assets/Playcenter/Shell/Runtime/Events/EventBus.cs.meta
+  s_99229c453cd88d::t_b46d59de580c99 1-7
+Assets/Playcenter/Shell/Runtime/Events/IEventBus.cs
+  s_99229c453cd88d::t_5f0a565b02b97b 1-12
+Assets/Playcenter/Shell/Runtime/Events/IEventBus.cs.meta
+  s_99229c453cd88d::t_e0f1922e1a1bfc 1-7
+Assets/Playcenter/Shell/Runtime/Logging.meta
+  s_99229c453cd88d::t_e497ea17bc3571 1-8
+Assets/Playcenter/Shell/Runtime/Logging/GameLogger.cs
+  s_99229c453cd88d::t_20b50a11744870 1-54
+Assets/Playcenter/Shell/Runtime/Logging/GameLogger.cs.meta
+  s_99229c453cd88d::t_eba142632d0a55 1-7
+Assets/Playcenter/Shell/Runtime/Logging/ILoggingService.cs
+  s_99229c453cd88d::t_5bdf8deabdfcf5 1-17
+Assets/Playcenter/Shell/Runtime/Logging/ILoggingService.cs.meta
+  s_99229c453cd88d::t_bc7f04d68f8492 1-7
+Assets/Playcenter/Shell/Runtime/Logging/LogEntry.cs
+  s_99229c453cd88d::t_bcdd4bec64423c 1-24
+Assets/Playcenter/Shell/Runtime/Logging/LogEntry.cs.meta
+  s_99229c453cd88d::t_136fed97cc5bf5 1-7
+Assets/Playcenter/Shell/Runtime/Logging/LogLevel.cs
+  s_99229c453cd88d::t_37dc0cacd7d706 1-11
+Assets/Playcenter/Shell/Runtime/Logging/LogLevel.cs.meta
+  s_99229c453cd88d::t_b133c57bbc95c6 1-7
+Assets/Playcenter/Shell/Runtime/Playcenter.Shell.asmdef
+  s_99229c453cd88d::t_6a6591bb4d30dc 1-14
+Assets/Playcenter/Shell/Runtime/Playcenter.Shell.asmdef.meta
+  s_99229c453cd88d::t_0d145b1cd3d9f8 1-7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "d486fdf3f12916b01049ba62f32bfff9add7b247",
+  "prompts": {},
+  "sessions": {
+    "s_99229c453cd88d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "45070b64-765f-4e79-883a-4a2e9082e950",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
