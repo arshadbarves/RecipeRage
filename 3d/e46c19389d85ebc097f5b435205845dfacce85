@@ -1,0 +1,81 @@
+Assets/Playcenter/Services/README.md
+  s_99229c453cd88d::t_a9ddafb287872c 1-38
+Assets/Playcenter/Services/README.md.meta
+  s_99229c453cd88d::t_588d438d4d061b 1-7
+Assets/Playcenter/Services/Runtime.meta
+  s_99229c453cd88d::t_fa453205932c68 1-8
+Assets/Playcenter/Services/Runtime/Ads.meta
+  s_99229c453cd88d::t_a8fd28753af4b6 1-8
+Assets/Playcenter/Services/Runtime/Ads/IAdsService.cs
+  s_99229c453cd88d::t_6edd9454cc712d 1-26
+Assets/Playcenter/Services/Runtime/Ads/IAdsService.cs.meta
+  s_99229c453cd88d::t_c6b13f0fb8e39f 1-7
+Assets/Playcenter/Services/Runtime/Analytics.meta
+  s_99229c453cd88d::t_58b13bce302442 1-8
+Assets/Playcenter/Services/Runtime/Analytics/IAnalyticsService.cs
+  s_99229c453cd88d::t_447958ce459776 1-10
+Assets/Playcenter/Services/Runtime/Analytics/IAnalyticsService.cs.meta
+  s_99229c453cd88d::t_763c15fc67c085 1-7
+Assets/Playcenter/Services/Runtime/Auth.meta
+  s_99229c453cd88d::t_55097e80e5c98d 1-8
+Assets/Playcenter/Services/Runtime/Auth/AuthResult.cs
+  s_99229c453cd88d::t_584a3c0a73c0e7 1-20
+Assets/Playcenter/Services/Runtime/Auth/AuthResult.cs.meta
+  s_99229c453cd88d::t_f9873672fb0321 1-7
+Assets/Playcenter/Services/Runtime/Auth/IAuthService.cs
+  s_99229c453cd88d::t_635c5199777c3e 1-19
+Assets/Playcenter/Services/Runtime/Auth/IAuthService.cs.meta
+  s_99229c453cd88d::t_cf88e02ab34e35 1-7
+Assets/Playcenter/Services/Runtime/Config.meta
+  s_99229c453cd88d::t_82b4ffadc31bd8 1-8
+Assets/Playcenter/Services/Runtime/Config/ConfigHealthStatus.cs
+  s_99229c453cd88d::t_e1ab8a296c7cda 1-9
+Assets/Playcenter/Services/Runtime/Config/ConfigHealthStatus.cs.meta
+  s_99229c453cd88d::t_990294c5e398dc 1-7
+Assets/Playcenter/Services/Runtime/Config/IConfigModel.cs
+  s_99229c453cd88d::t_8a92348a34447d 1-8
+Assets/Playcenter/Services/Runtime/Config/IConfigModel.cs.meta
+  s_99229c453cd88d::t_bf180499a39c3d 1-7
+Assets/Playcenter/Services/Runtime/Config/IConfigService.cs
+  s_99229c453cd88d::t_cb57472a571d21 1-10
+Assets/Playcenter/Services/Runtime/Config/IConfigService.cs.meta
+  s_99229c453cd88d::t_ece0dd28676a1a 1-7
+Assets/Playcenter/Services/Runtime/Encryption.meta
+  s_99229c453cd88d::t_507510741bf15d 1-8
+Assets/Playcenter/Services/Runtime/Encryption/IEncryptionService.cs
+  s_99229c453cd88d::t_09b01fa3997425 1-8
+Assets/Playcenter/Services/Runtime/Encryption/IEncryptionService.cs.meta
+  s_99229c453cd88d::t_a775d9bc122555 1-7
+Assets/Playcenter/Services/Runtime/IAP.meta
+  s_99229c453cd88d::t_e7d173d89167a6 1-8
+Assets/Playcenter/Services/Runtime/IAP/IIAPService.cs
+  s_99229c453cd88d::t_0901810e58c0e3 1-24
+Assets/Playcenter/Services/Runtime/IAP/IIAPService.cs.meta
+  s_99229c453cd88d::t_e0fbd0fa42e38a 1-7
+Assets/Playcenter/Services/Runtime/Maintenance.meta
+  s_99229c453cd88d::t_abc1ca15aed62f 1-8
+Assets/Playcenter/Services/Runtime/Maintenance/IMaintenanceService.cs
+  s_99229c453cd88d::t_83c3c7f3f60854 1-13
+Assets/Playcenter/Services/Runtime/Maintenance/IMaintenanceService.cs.meta
+  s_99229c453cd88d::t_10be0a756334ee 1-7
+Assets/Playcenter/Services/Runtime/Playcenter.Services.asmdef
+  s_99229c453cd88d::t_9a334153109beb 1-14
+Assets/Playcenter/Services/Runtime/Playcenter.Services.asmdef.meta
+  s_99229c453cd88d::t_9c8a6babe3cdc1 1-7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "3de46c19389d85ebc097f5b435205845dfacce85",
+  "prompts": {},
+  "sessions": {
+    "s_99229c453cd88d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "45070b64-765f-4e79-883a-4a2e9082e950",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
