@@ -1,6 +1,5 @@
 using KitchenClash.Application.Models;
 using KitchenClash.Domain;
-using KitchenClash.Infrastructure.DI;
 using Unity.Netcode;
 using UnityEngine;
 using VContainer;

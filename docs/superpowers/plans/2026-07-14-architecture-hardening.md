@@ -342,13 +342,26 @@ EOF
 - [x] `RootLifetimeScope` registers `ISessionLifecycle` + SessionLoader wiring
 - [x] `dotnet build` Application → Platform → Audio → Flow → Infrastructure → Composition → EditMode green
 
+### Phase 3d — EOS leaf assembly (complete)
+
+| Assembly | Folder | Refs |
+|----------|--------|------|
+| `KitchenClash.Infrastructure.EOS` | EOS/ | Domain, Application, Configuration, UniTask, Netcode, EOS/UGS packages |
+
+- [x] EOS `.asmdef` + Composition reference (mega does **not** reference EOS)
+- [x] CLI csproj; mega Compile excludes EOS sources; drop PlayEveryWare/Epic/Friends from mega
+- [x] `SlideDirection` Domain → Animation (Phase 5 hygiene)
+- [x] Dead `using Infrastructure.DI` stripped from `MatchEndController`
+- [x] `dotnet build` Domain → Animation → EOS → Infrastructure → Composition green
+
 ### Still deferred (further walls)
 
 | Candidate | Blocker |
 |-----------|---------|
-| Network / EOS separate asmdefs | Gameplay still couples Network types; Composition registers EOS adapters in mega |
+| Network separate asmdef | Network↔Gameplay cycle (`PlayerController` / stations ↔ abilities / validators) |
+| Broader Phase 5 Domain kernel | Optional; only `SlideDirection` fixed |
 
-**Next:** Optional Network/EOS asmdef splits after more ports; Phase 5 Domain kernel; Unity smoke; PR.
+**Next:** Network ports if Network leaf is required; Unity smoke; PR after gh auth.
 
 ---
 

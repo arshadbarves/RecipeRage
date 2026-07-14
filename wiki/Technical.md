@@ -83,15 +83,20 @@ GameFlow fixed product navigation. Remaining mess is inverted deps, vendor leaks
 |-------|--------|------------------------|--------|
 | 1 | Session shell + dependency laws | Presentation must not reference Infrastructure; Application must not reference EOS packages | **Complete** |
 | 2 | UI navigation purity | Animation/localization via Application ports; shrink `UIService` | **Complete** |
-| 3 | Infrastructure assembly walls | Split Flow / EOS / Network / Persistence (minimum) | **3a + 3b + 3c complete** (Persistence/Audio/Flow leaves); Network/EOS still mega |
+| 3 | Infrastructure assembly walls | Split Flow / EOS / Network / Persistence (minimum) | **3a–3d complete** (Persistence/Audio/Flow/EOS leaves); Network still mega |
 | 4 | Match gameplay ports | Expand match ports beyond HUD; shrink `PlayerController` / stations | **Complete** (scoped criteria) |
-| 5 | Domain kernel hygiene (optional) | Shell ports vs cooking models if still noisy | Pending |
+| 5 | Domain kernel hygiene (optional) | Shell ports vs cooking models if still noisy | **Partial** (`SlideDirection` fixed); broader kernel deferred |
 
 **Phase 4 shipped:**
 - `PlayerController` partials: core (~393 lines) / InputMovement / Character / Skins / Carrying
 - Existing SOLID collaborators retained (state, movement, input, network, interaction)
 - `BotTaskPlanner` confirmed Domain-only in Application — no Infra deps, no relocation
 - Match HUD remains on `IMatchHudPort` (Phase 1); Presentation still zero Network usings
+
+**Phase 3d shipped (EOS leaf):**
+- Leaf: `KitchenClash.Infrastructure.EOS` (Domain + Application + Configuration + UniTask + Netcode + EOS/UGS packages)
+- Composition registers EOS adapters from the leaf; mega Infrastructure no longer compiles EOS sources or references PlayEveryWare/Epic/Friends packages
+- Network remains mega (Network↔Gameplay cycle: `PlayerController` / stations ↔ abilities / validators)
 
 **Phase 3c shipped (optional walls):**
 - Leaf: `KitchenClash.Infrastructure.Audio` (Domain + Application + Platform + VContainer)
@@ -100,7 +105,9 @@ GameFlow fixed product navigation. Remaining mess is inverted deps, vendor leaks
 - Application port: `ISessionLifecycle` — Flow `SessionLoader` never references `SessionManager`
 - `ForceUpdateChecker` moved Services → Flow.Handlers (BootSequence-only consumer)
 - EditMode tests reference Flow leaf for `MatchmakingPhase`
-- Network / EOS remain in mega Infrastructure (Gameplay still couples Network types)
+
+**Phase 5 partial:**
+- `SlideDirection` moved Domain → Animation leaf (was wrong namespace under Domain with `noEngineReferences`)
 
 **Phase 3b shipped:**
 - Application ports: `ICloudStorageProvider`, `IFriendsServiceFactory`, `ILocalNetworkIdentity`, `IClientTransportConfigurator`

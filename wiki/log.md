@@ -228,3 +228,12 @@ Optional Infrastructure walls after Phase 3b:
 - EditMode asmdef references Flow for MatchmakingPhase tests
 - CLI builds green: Application → Platform → Audio → Flow → Infrastructure → Composition → EditMode
 - Deferred: Network/EOS asmdef splits (Gameplay coupling); Phase 5 Domain kernel
+
+## 2026-07-14 — Phase 3d EOS leaf + Phase 5 SlideDirection
+
+- Leaf: `KitchenClash.Infrastructure.EOS` — 14 EOS adapters; Composition-only consumer
+- Mega Infrastructure stripped of EOS compiles and PlayEveryWare/Epic/Friends package refs
+- `SlideDirection` moved Domain → Animation (namespace already `KitchenClash.Infrastructure.Animation`)
+- Dead `using Infrastructure.DI` stripped from `MatchEndController`
+- CLI builds green: Domain → Animation → EOS → Infrastructure → Composition
+- Deferred: Network asmdef (Network↔Gameplay cycle); broader Phase 5 Domain kernel

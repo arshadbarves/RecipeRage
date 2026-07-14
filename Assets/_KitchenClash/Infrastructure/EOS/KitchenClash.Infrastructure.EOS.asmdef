@@ -1,0 +1,28 @@
+{
+    "name": "KitchenClash.Infrastructure.EOS",
+    "rootNamespace": "KitchenClash.Infrastructure.EOS",
+    "references": [
+        "KitchenClash.Domain",
+        "KitchenClash.Application",
+        "KitchenClash.Infrastructure.Configuration",
+        "UniTask",
+        "Unity.Netcode.Runtime",
+        "Unity.Services.Core",
+        "Unity.Services.Authentication",
+        "Unity.Services.Friends",
+        "com.playeveryware.eos",
+        "com.playeveryware.eos.samples",
+        "com.Epic.OnlineServices",
+        "com.playeveryware.eos.core",
+        "com.playeveryware.eos.samples.networking"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
