@@ -1,6 +1,8 @@
 > **Superseded for shell cleanliness:** For dependency laws, Presentation purity, and Infrastructure splits, follow `docs/superpowers/specs/2026-07-14-architecture-hardening-design.md` and `docs/superpowers/plans/2026-07-14-architecture-hardening.md`.
 >
-> **Superseded for Shell timing:** `Playcenter.Shell` (EventBus + Logging + Connectivity) was extracted and hard-cutover completed — see `docs/superpowers/specs/2026-07-14-playcenter-shell-extract-design.md` and `docs/superpowers/plans/2026-07-14-playcenter-shell-extract.md`. Remaining candidates (Audio, Async, Platform, Config, UI, Auth) stay deferred until multi-title reuse is real.
+> **Superseded for Shell timing:** `Playcenter.Shell` (EventBus + Logging + Connectivity) was extracted and hard-cutover completed — see `docs/superpowers/specs/2026-07-14-playcenter-shell-extract-design.md` and `docs/superpowers/plans/2026-07-14-playcenter-shell-extract.md`.
+>
+> **Superseded for Services timing:** `Playcenter.Services` (config/analytics/ads/IAP/auth/encryption/maintenance contracts) was extracted and hard-cutover completed — see `docs/superpowers/specs/2026-07-14-playcenter-services-extract-design.md`. Remaining candidates (Audio, Async, Platform, UI) stay deferred (Unity-bound).
 
 # Playcenter Module Extract Candidates — Decision Plan
 
@@ -47,12 +49,14 @@
 
 ```
 Assets/Playcenter/
-  GameFlow/          ✅ ONLY module today (IAppFlow, ports, policies)
+  GameFlow/          ✅ Shipped (IAppFlow, ports, policies)
+  Shell/             ✅ Shipped (logging, EventBus, connectivity)
+  Services/          ✅ Shipped (config, analytics, ads, IAP, auth, encryption, maintenance)
 
 Assets/_KitchenClash/
-  Domain/            Shared kernel MIX: generic ports + cooking domain
-  Application/       Use-case interfaces + pure services (EventBus, Economy, …)
-  Infrastructure/    EOS/Firebase/NGO/Flow handlers/adapters
+  Domain/            Cooking domain + game events (shell/services ports moved to Playcenter)
+  Application/       Use-case interfaces + pure services (economy, match, remote-config orchestration)
+  Infrastructure/    EOS/Firebase/NGO/Flow handlers/adapters implementing Playcenter ports
   Presentation/      UI Toolkit screens (game skins)
   Composition/       Root/Menu/Match DI
 ```
@@ -171,33 +175,42 @@ Implemented early (user-directed full cutover) via:
 - Module: `Assets/Playcenter/Shell` (`noEngineReferences`, zero KitchenClash refs)
 - Hard cutover: Domain/Application originals deleted; `GameLogger` fail-closed
 
+### Future Task F2: `Playcenter.Services` — **SHIPPED** (2026-07-14)
+
+User-directed multi-title service contracts extract + hard cutover:
+- Spec: `docs/superpowers/specs/2026-07-14-playcenter-services-extract-design.md`
+- Module: `Assets/Playcenter/Services` (`noEngineReferences`, zero KitchenClash refs)
+- Hard cutover: Domain/Application originals deleted; consumers use `Playcenter.Services`
+- Commits: `3de46c19` (module), `06006678` (cutover)
+
 **Remaining for game #2 only:** UPM/git package extract if a second title needs the same binaries.
 
 ---
 
-## Verification (for Task 1 docs)
+## Verification (post Services cutover)
 
 | Check | Expected |
 |-------|----------|
-| `Assets/Playcenter/*` | Only `GameFlow` |
+| `Assets/Playcenter/*` | `GameFlow` + `Shell` + `Services` |
 | Product navigation | Still `IAppFlow` only |
-| New asmdef | None |
-| Builds | Unchanged |
+| GameFlow/Shell → Services | No references |
+| Domain originals for moved ports | Deleted |
+| Builds | Domain → Application → Infrastructure → Composition green |
 
 ---
 
 ## Self-review
 
-1. **Spec coverage:** User asked “any other logic to extract like GameFlow?” → decision No + candidate table + when/how.
-2. **Placeholders:** None for “do now”; deferred F1 is explicitly not implemented.
-3. **YAGNI:** No forced extract of EventBus/UI/Session.
-4. **Consistency:** Aligns with GameFlow README “extract when second game needs it”.
+1. **Spec coverage:** User asked multi-title reuse extracts → GameFlow + Shell + Services shipped; Unity-bound leaves deferred.
+2. **Placeholders:** None for shipped modules; Audio/UI/Platform remain deferred by design.
+3. **YAGNI:** Did not extract cooking/economy/EOS concrete.
+4. **Consistency:** Same hard-cutover rules as Shell (no dual APIs).
 
 ---
 
 ## Summary for humans
 
-- **Shipped Playcenter modules:** `Playcenter.GameFlow` + `Playcenter.Shell` (logging, EventBus, connectivity).
-- **Still good as game ports/leaves:** config, analytics, UI service, Audio, Async, Platform.
-- **Keep forever in game:** cooking, chefs, bots, economy tables, EOS/NGO, matchmaking service, flow handlers.
-- **Do not extract next** unless a second title needs it (Audio/Async/Platform/Config candidates remain deferred).
+- **Shipped Playcenter modules:** `GameFlow` + `Shell` + `Services`.
+- **Still game ports/leaves (Unity-bound):** UI service, Audio, Async, Platform; remote-config UniTask orchestration.
+- **Keep forever in game:** cooking, chefs, bots, economy tables, EOS/NGO adapters, matchmaking service, flow handlers.
+- **Do not extract next** unless a second title needs Unity-bound leaves as packages.

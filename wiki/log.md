@@ -207,6 +207,17 @@ Chronological record of wiki activity. Each entry starts with timestamp for pars
 - Spec/plan: `docs/superpowers/specs/2026-07-14-playcenter-shell-extract-design.md`, `docs/superpowers/plans/2026-07-14-playcenter-shell-extract.md`
 - Audio/Async/Platform/Config still deferred as Playcenter modules
 
+## [2026-07-14] feat | Playcenter.Services extract + hard cutover
+
+- Shipped `Assets/Playcenter/Services` (`noEngineReferences`, zero KitchenClash refs): `IConfigService`/`IConfigModel`/`ConfigHealthStatus`, `IAnalyticsService`, `IAdsService`/`AdRewardResult`, `IIAPService`/`IAPResult`, `IAuthService`/`AuthResult`, `IEncryptionService`, `IMaintenanceService`
+- Deleted Domain/Application originals; consumers use `using Playcenter.Services`
+- Asmdefs: Domain, Application, Infrastructure (+ leaves), Composition, Presentation, Editor, EditMode/PlayMode tests reference Services
+- GameFlow + Shell remain zero Services refs (independent modules)
+- Adapters stay game-side (Firebase analytics/config, EOS auth, StubAds/IAP, EncryptionService, MaintenanceService)
+- Not extracted: Audio, UI, Save/storage DTOs, Platform/Async, UniTask remote-config orchestration (`IRemoteConfigService`/`IConfigProvider` stay Application)
+- Spec: `docs/superpowers/specs/2026-07-14-playcenter-services-extract-design.md`
+- Commits: `3de46c19` module, `06006678` hard cutover
+
 ## 2026-07-14 — Architecture hardening Phase 2 complete
 
 - Split `UIService` into partials (`UIService.cs`, `UIService.Navigation.cs`, `UIService.ScreenOps.cs`) with responsibility docs

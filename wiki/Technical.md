@@ -147,13 +147,16 @@ GameFlow fixed product navigation. Remaining mess is inverted deps, vendor leaks
 |--------|--------|-------|
 | `Playcenter.GameFlow` | **Shipped** | Sole product navigator (`IAppFlow`); ports + policies; adapters in `Infrastructure/Flow` |
 | `Playcenter.Shell` | **Shipped** | Engine-free logging + event bus + connectivity contracts (`Assets/Playcenter/Shell`); Domain/Application reference Shell; adapters stay game-side (`UnityLoggingService`, `LoggingBootstrap`, `NetworkConnectivityService`) |
+| `Playcenter.Services` | **Shipped** | Engine-free multi-title service contracts (`Assets/Playcenter/Services`): config, analytics, ads, IAP, auth, encryption, maintenance. Domain/Application originals deleted; adapters stay game-side (Firebase, EOS, stubs) |
 | New `Assets/Playcenter/*` | **Only if** engine-free **and** second consumer or legal-transition role | Prefer KitchenClash assembly splits + Domain/Application ports for single-title hardening |
-| Audio / Async / Platform / Config as Playcenter | **Deferred** | Stay as KitchenClash leaf assemblies until multi-title reuse is real |
+| Audio / Async / Platform / UI as Playcenter | **Deferred** | Stay as KitchenClash leaf assemblies (Unity-bound) until multi-title reuse is real |
 | Economy / Cooking IP | **Never Playcenter** | Stay in KitchenClash |
 
-**Shell hard cutover:** no Domain dual APIs, type aliases, or `GameLogger` Console fallback. Unwired `GameLogger` throws. Spec: `docs/superpowers/specs/2026-07-14-playcenter-shell-extract-design.md`.
+**Hard cutover rules (Shell + Services):** no Domain dual APIs, type aliases, obsolete stubs, or Console fallbacks. Unwired `GameLogger` throws. GameFlow and Shell do **not** reference Services (independent modules).
 
-See also: `docs/superpowers/plans/2026-07-14-playcenter-module-extract-candidates.md` (Shell timing superseded; remaining candidates still deferred).
+Specs: `docs/superpowers/specs/2026-07-14-playcenter-shell-extract-design.md`, `docs/superpowers/specs/2026-07-14-playcenter-services-extract-design.md`.
+
+See also: `docs/superpowers/plans/2026-07-14-playcenter-module-extract-candidates.md` (Shell + Services shipped; Audio/Async/Platform/UI still deferred).
 
 ## SOLID Summary
 
