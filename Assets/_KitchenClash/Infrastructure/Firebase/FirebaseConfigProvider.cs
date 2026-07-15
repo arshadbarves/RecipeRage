@@ -1,16 +1,14 @@
 #if FIREBASE_REMOTE_CONFIG
 using System;
-using KitchenClash.Application.Models.RemoteConfigs;
-using KitchenClash.Application.Services;
 using System.Collections.Generic;
-using KitchenClash.Domain;
+using System.Threading.Tasks;
+using KitchenClash.Application.Models.RemoteConfigs;
 using KitchenClash.Infrastructure.Configuration;
 using KitchenClash.Infrastructure.Platform;
-using Cysharp.Threading.Tasks;
 using Firebase.RemoteConfig;
 using UnityEngine;
-using Playcenter.Shell;
 using Playcenter.Services;
+using Playcenter.Shell;
 
 namespace KitchenClash.Infrastructure.Firebase
 {
@@ -25,7 +23,7 @@ namespace KitchenClash.Infrastructure.Firebase
             return _isInitialized;
         }
 
-        public async UniTask<bool> Initialize()
+        public async Task<bool> Initialize()
         {
             try
             {
@@ -61,7 +59,7 @@ namespace KitchenClash.Infrastructure.Firebase
             }
         }
 
-        public async UniTask<T> FetchConfig<T>(string key) where T : IConfigModel
+        public async Task<T> FetchConfig<T>(string key) where T : IConfigModel
         {
             if (!_isInitialized)
             {
@@ -84,7 +82,7 @@ namespace KitchenClash.Infrastructure.Firebase
             }
         }
 
-        public async UniTask<Dictionary<string, IConfigModel>> FetchAllConfigs()
+        public async Task<Dictionary<string, IConfigModel>> FetchAllConfigs()
         {
             if (!_isInitialized)
             {

@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using KitchenClash.Application.Services;
 using KitchenClash.Domain;
 using KitchenClash.Domain.Events;
-using Cysharp.Threading.Tasks;
-using Playcenter.Shell;
 using Playcenter.Services;
+using Playcenter.Shell;
 
 namespace KitchenClash.Infrastructure.Services
 {
@@ -42,7 +40,7 @@ namespace KitchenClash.Infrastructure.Services
         }
 #endif
 
-        public async UniTask<bool> Initialize()
+        public async Task<bool> Initialize()
         {
             if (_isInitialized)
             {
@@ -91,7 +89,7 @@ namespace KitchenClash.Infrastructure.Services
             return config != null;
         }
 
-        public async UniTask<bool> RefreshConfig()
+        public async Task<bool> RefreshConfig()
         {
             if (!_isInitialized)
             {
@@ -129,7 +127,7 @@ namespace KitchenClash.Infrastructure.Services
             return await _fallback.RefreshConfig();
         }
 
-        public async UniTask<bool> RefreshConfig<T>() where T : class, IConfigModel
+        public async Task<bool> RefreshConfig<T>() where T : class, IConfigModel
         {
             if (!_isInitialized)
             {
@@ -169,7 +167,7 @@ namespace KitchenClash.Infrastructure.Services
             return fallback;
         }
 
-        public Task FetchAsync() => RefreshConfig().AsTask();
+        public Task FetchAsync() => RefreshConfig();
 
         private void UpdateHealthStatus(ConfigHealthStatus newStatus)
         {

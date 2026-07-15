@@ -1,6 +1,6 @@
-using KitchenClash.Application;
 using System.IO;
-using Cysharp.Threading.Tasks;
+using System.Threading.Tasks;
+using Playcenter.Services;
 
 namespace KitchenClash.Infrastructure.Persistence
 {
@@ -33,7 +33,7 @@ namespace KitchenClash.Infrastructure.Persistence
             File.WriteAllText(path, content);
         }
 
-        public async UniTask<string> ReadAsync(string key)
+        public async Task<string> ReadAsync(string key)
         {
             string path = GetPath(key);
             if (!File.Exists(path))
@@ -44,7 +44,7 @@ namespace KitchenClash.Infrastructure.Persistence
             return await File.ReadAllTextAsync(path);
         }
 
-        public async UniTask WriteAsync(string key, string content)
+        public async Task WriteAsync(string key, string content)
         {
             string path = GetPath(key);
             string dir = Path.GetDirectoryName(path);

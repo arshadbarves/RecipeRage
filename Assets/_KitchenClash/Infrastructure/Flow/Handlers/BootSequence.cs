@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using KitchenClash.Application.Services;
 using KitchenClash.Domain;
@@ -76,7 +77,16 @@ namespace KitchenClash.Infrastructure.Flow.Handlers
                 {
                     using var ntpCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
                     ntpCts.CancelAfter(TimeSpan.FromSeconds(5.0f));
-                    await _ntpTimeService.SyncTime().AttachExternalCancellation(ntpCts.Token).SuppressCancellationThrow();
+                    Task<bool> syncTask = _ntpTimeService.SyncTime();
+                    Task completed = await Task.WhenAny(syncTask, Task.Delay(Timeout.Infinite, ntpCts.Token));
+                    if (completed == syncTask)
+                    {
+                        await syncTask;
+                    }
+                }
+                catch (OperationCanceledException)
+                {
+                    // best-effort timeout
                 }
                 catch
                 {

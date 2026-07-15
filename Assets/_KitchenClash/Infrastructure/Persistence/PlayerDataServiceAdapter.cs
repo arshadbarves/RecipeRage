@@ -3,6 +3,7 @@ using KitchenClash.Application;
 using System.Threading.Tasks;
 using KitchenClash.Domain;
 using Playcenter.Shell;
+using Playcenter.Services;
 
 namespace KitchenClash.Infrastructure.Persistence
 {
@@ -11,12 +12,12 @@ namespace KitchenClash.Infrastructure.Persistence
         private const string ProgressKey = "player_progress.json";
         private const string StatsKey = "player_stats.json";
 
-        private readonly Application.IStorageProvider _storageProvider;
+        private readonly IStorageProvider _storageProvider;
 
         private PlayerProgressData _progress;
         private PlayerStatsData _stats;
 
-        public PlayerDataServiceAdapter(Application.IStorageProvider storageProvider)
+        public PlayerDataServiceAdapter(IStorageProvider storageProvider)
         {
             _storageProvider = storageProvider;
         }

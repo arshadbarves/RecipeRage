@@ -12,6 +12,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;
 using Playcenter.Shell;
+using Playcenter.Services;
 
 namespace KitchenClash.Presentation.Components
 {

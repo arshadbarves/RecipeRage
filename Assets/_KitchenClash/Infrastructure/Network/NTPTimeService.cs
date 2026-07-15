@@ -1,10 +1,11 @@
 using System;
 using System.Net;
 using System.Net.Sockets;
-using KitchenClash.Domain;
+using System.Threading.Tasks;
 using KitchenClash.Application.Services;
 using Cysharp.Threading.Tasks;
 using VContainer.Unity;
+using Playcenter.Services;
 using Playcenter.Shell;
 
 namespace KitchenClash.Infrastructure.Network
@@ -31,7 +32,7 @@ namespace KitchenClash.Infrastructure.Network
             NTPTime.SetInstance(this);
         }
 
-        public async UniTask<bool> SyncTime()
+        public async Task<bool> SyncTime()
         {
             for (int i = 0; i < NTP_SERVERS.Length; i++)
             {

@@ -1,9 +1,7 @@
 using System;
-using KitchenClash.Application.Services;
-using KitchenClash.Domain;
-using Cysharp.Threading.Tasks;
-using Playcenter.Shell;
+using System.Threading.Tasks;
 using Playcenter.Services;
+using Playcenter.Shell;
 
 namespace KitchenClash.Infrastructure.Services
 {
@@ -15,10 +13,10 @@ namespace KitchenClash.Infrastructure.Services
         public ConfigHealthStatus HealthStatus => ConfigHealthStatus.Healthy;
         public DateTime LastUpdateTime => DateTime.MinValue;
 
-        public UniTask<bool> Initialize()
+        public Task<bool> Initialize()
         {
             GameLogger.Log("[FallbackRemoteConfigService] Initialized with defaults");
-            return UniTask.FromResult(true);
+            return Task.FromResult(true);
         }
 
         public T GetConfig<T>() where T : class, IConfigModel => default;
@@ -29,8 +27,8 @@ namespace KitchenClash.Infrastructure.Services
             return false;
         }
 
-        public UniTask<bool> RefreshConfig() => UniTask.FromResult(true);
+        public Task<bool> RefreshConfig() => Task.FromResult(true);
 
-        public UniTask<bool> RefreshConfig<T>() where T : class, IConfigModel => UniTask.FromResult(true);
+        public Task<bool> RefreshConfig<T>() where T : class, IConfigModel => Task.FromResult(true);
     }
 }

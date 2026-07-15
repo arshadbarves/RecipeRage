@@ -1,11 +1,11 @@
-using KitchenClash.Application;
 using System;
 using System.Collections.Generic;
-using KitchenClash.Domain;
+using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Epic.OnlineServices;
 using PlayEveryWare.EpicOnlineServices;
 using PlayEveryWare.EpicOnlineServices.Samples;
+using Playcenter.Services;
 using Playcenter.Shell;
 
 namespace KitchenClash.Infrastructure.EOS
@@ -56,10 +56,10 @@ namespace KitchenClash.Infrastructure.EOS
             }
 
             GameLogger.LogWarning($"Synchronous write for {key} - use WriteAsync instead");
-            WriteAsync(key, content).Forget();
+            _ = WriteAsync(key, content);
         }
 
-        public async UniTask<string> ReadAsync(string key)
+        public async Task<string> ReadAsync(string key)
         {
             if (!IsAvailable)
             {
@@ -98,7 +98,7 @@ namespace KitchenClash.Infrastructure.EOS
             }
         }
 
-        public async UniTask WriteAsync(string key, string content)
+        public async Task WriteAsync(string key, string content)
         {
             if (!IsAvailable)
             {

@@ -80,18 +80,18 @@ namespace RecipeRage.Tests.EditMode.Gameplay
         {
             public ConfigHealthStatus HealthStatus => ConfigHealthStatus.Healthy;
             public DateTime LastUpdateTime => DateTime.UtcNow;
-            public UniTask<bool> Initialize() => UniTask.FromResult(true);
+            public Task<bool> Initialize() => Task.FromResult(true);
             public T GetConfig<T>() where T : class, IConfigModel => default;
             public bool TryGetConfig<T>(out T config) where T : class, IConfigModel { config = default; return false; }
-            public UniTask<bool> RefreshConfig() => UniTask.FromResult(true);
-            public UniTask<bool> RefreshConfig<T>() where T : class, IConfigModel => UniTask.FromResult(true);
+            public Task<bool> RefreshConfig() => Task.FromResult(true);
+            public Task<bool> RefreshConfig<T>() where T : class, IConfigModel => Task.FromResult(true);
         }
 
         private sealed class StubNTPTimeService : INTPTimeService
         {
             public bool IsSynced => true;
             public DateTime LastSyncTime => DateTime.UtcNow;
-            public UniTask<bool> SyncTime() => UniTask.FromResult(true);
+            public Task<bool> SyncTime() => Task.FromResult(true);
             public DateTime GetServerTime() => DateTime.UtcNow;
             public TimeSpan GetTimeOffset() => TimeSpan.Zero;
         }
