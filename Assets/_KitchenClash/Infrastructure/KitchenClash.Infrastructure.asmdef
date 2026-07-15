@@ -22,7 +22,8 @@
         "Unity.TextMeshPro",
         "VContainer",
         "Playcenter.Shell",
-        "Playcenter.Services"
+        "Playcenter.Services",
+        "Playcenter.UI"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

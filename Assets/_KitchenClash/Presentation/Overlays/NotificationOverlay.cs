@@ -1,12 +1,11 @@
 using System;
-using KitchenClash.Application.Services;
-using KitchenClash.Domain;
 using System.Collections.Generic;
 using KitchenClash.Presentation;
 using KitchenClash.Presentation.Common;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Playcenter.UI;
 
 namespace KitchenClash.Presentation.Overlays
 {

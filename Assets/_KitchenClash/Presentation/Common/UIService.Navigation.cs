@@ -1,8 +1,7 @@
 using System;
 using System.Linq;
-using Cysharp.Threading.Tasks;
-using KitchenClash.Application.Services;
-using KitchenClash.Domain;
+using System.Threading.Tasks;
+using Playcenter.UI;
 
 namespace KitchenClash.Presentation.Common
 {
@@ -79,7 +78,7 @@ namespace KitchenClash.Presentation.Common
             return false;
         }
 
-        public async UniTask ShowToast(string message, NotificationType type = NotificationType.Info, float duration = 3f)
+        public async Task ShowToast(string message, NotificationType type = NotificationType.Info, float duration = 3f)
         {
             INotificationScreen notificationScreen = GetScreen<INotificationScreen>();
             if (notificationScreen == null) return;
@@ -87,7 +86,7 @@ namespace KitchenClash.Presentation.Common
             await notificationScreen.Show(message, type, duration);
         }
 
-        public async UniTask ShowToast(string title, string message, NotificationType type = NotificationType.Info, float duration = 3f)
+        public async Task ShowToast(string title, string message, NotificationType type = NotificationType.Info, float duration = 3f)
         {
             INotificationScreen notificationScreen = GetScreen<INotificationScreen>();
             if (notificationScreen == null) return;
@@ -195,12 +194,12 @@ namespace KitchenClash.Presentation.Common
             _stackManager.ClearAll();
         }
 
-        public async UniTask ShowNotification(string message, NotificationType type = NotificationType.Info, float duration = 3f)
+        public async Task ShowNotification(string message, NotificationType type = NotificationType.Info, float duration = 3f)
         {
             await ShowToast(message, type, duration);
         }
 
-        public async UniTask ShowNotification(string title, string message, NotificationType type = NotificationType.Info, float duration = 3f)
+        public async Task ShowNotification(string title, string message, NotificationType type = NotificationType.Info, float duration = 3f)
         {
             await ShowToast(title, message, type, duration);
         }

@@ -7,6 +7,7 @@ using Unity.Netcode;
 using UnityEngine;
 using Playcenter.GameFlow;
 using Playcenter.Shell;
+using Playcenter.UI;
 
 namespace KitchenClash.Infrastructure.Network
 {

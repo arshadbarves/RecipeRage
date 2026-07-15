@@ -9,7 +9,8 @@
         "UniTask",
         "DOTween.Modules",
         "Playcenter.Shell",
-        "Playcenter.Services"
+        "Playcenter.Services",
+        "Playcenter.UI"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

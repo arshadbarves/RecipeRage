@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-using KitchenClash.Domain;
+using Playcenter.UI;
 
 namespace KitchenClash.Presentation.Common
 {

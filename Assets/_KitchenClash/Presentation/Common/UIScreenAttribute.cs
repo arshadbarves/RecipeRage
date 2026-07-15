@@ -1,6 +1,5 @@
 using System;
-using KitchenClash.Application.Services;
-using KitchenClash.Domain;
+using Playcenter.UI;
 
 namespace KitchenClash.Presentation.Common
 {

@@ -1,13 +1,12 @@
 using System;
-using KitchenClash.Application.Services;
 using System.Collections.Generic;
 using System.Linq;
-using KitchenClash.Domain;
 using Cysharp.Threading.Tasks;
+using Playcenter.Shell;
+using Playcenter.UI;
 using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer.Unity;
-using Playcenter.Shell;
 
 namespace KitchenClash.Presentation.Common
 {
@@ -56,9 +55,9 @@ namespace KitchenClash.Presentation.Common
 
         public bool IsInitialized => _isInitialized && _root != null;
 
-        public void SetCurrentScope(VContainer.IObjectResolver scope)
+        public void SetCurrentScope(object scope)
         {
-            _currentScope = scope;
+            _currentScope = scope as VContainer.IObjectResolver;
         }
 
         public void Start()

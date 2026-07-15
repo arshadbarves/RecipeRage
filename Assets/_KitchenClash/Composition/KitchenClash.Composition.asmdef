@@ -21,7 +21,8 @@
         "Unity.Netcode.Runtime",
         "VContainer",
         "Playcenter.Shell",
-        "Playcenter.Services"
+        "Playcenter.Services",
+        "Playcenter.UI"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

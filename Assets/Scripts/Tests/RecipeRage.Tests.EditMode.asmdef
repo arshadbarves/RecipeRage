@@ -15,7 +15,8 @@
         "VContainer",
         "Playcenter.GameFlow",
         "Playcenter.Shell",
-        "Playcenter.Services"
+        "Playcenter.Services",
+        "Playcenter.UI"
     ],
     "includePlatforms": [
         "Editor"

@@ -13,6 +13,7 @@ using Playcenter.GameFlow;
 using RecipeRage.Tests.EditMode.Gameplay.Fakes;
 using Playcenter.Shell;
 using Playcenter.Services;
+using Playcenter.UI;
 
 namespace RecipeRage.Tests.EditMode.Gameplay
 {
@@ -252,8 +253,8 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             public void HideHud<T>(bool animate = true) where T : class { }
             public void HideHud(Type screenType, bool animate = true) { }
             public bool Back(bool animate = true) => false;
-            public UniTask ShowToast(string message, NotificationType type = NotificationType.Info, float duration = 3f) => UniTask.CompletedTask;
-            public UniTask ShowToast(string title, string message, NotificationType type = NotificationType.Info, float duration = 3f) => UniTask.CompletedTask;
+            public Task ShowToast(string message, NotificationType type = NotificationType.Info, float duration = 3f) => Task.CompletedTask;
+            public Task ShowToast(string title, string message, NotificationType type = NotificationType.Info, float duration = 3f) => Task.CompletedTask;
             public void Show<T>(bool animate = true, bool addToHistory = true) where T : class { }
             public void Show(Type screenType, bool animate = true, bool addToHistory = true) { }
             public void Hide<T>(bool animate = true) where T : class { }
@@ -267,10 +268,10 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             public bool IsScreenVisible(Type screenType) => false;
             public bool GoBack(bool animate = true) => false;
             public void ClearHistory() { }
-            public UniTask ShowNotification(string message, NotificationType type = NotificationType.Info, float duration = 3f) => UniTask.CompletedTask;
-            public UniTask ShowNotification(string title, string message, NotificationType type = NotificationType.Info, float duration = 3f) => UniTask.CompletedTask;
+            public Task ShowNotification(string message, NotificationType type = NotificationType.Info, float duration = 3f) => Task.CompletedTask;
+            public Task ShowNotification(string title, string message, NotificationType type = NotificationType.Info, float duration = 3f) => Task.CompletedTask;
             public void Update(float deltaTime) { }
-            public void SetCurrentScope(VContainer.IObjectResolver scope) { }
+            public void SetCurrentScope(object scope) { }
         }
 
         private sealed class FakeConfigService : IConfigService

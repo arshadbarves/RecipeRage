@@ -5,6 +5,7 @@ using KitchenClash.Domain;
 using VContainer;
 using VContainer.Unity;
 using Playcenter.Shell;
+using Playcenter.UI;
 
 namespace KitchenClash.Infrastructure.DI
 {
