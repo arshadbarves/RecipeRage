@@ -4,7 +4,7 @@ In-repo portable **service contracts** for multi-title Brawl-class games.
 
 ## Purpose
 
-- Own engine-free ports shared across titles: config, analytics, ads, IAP, auth, encryption, maintenance.
+- Own engine-free ports shared across titles: config, analytics, ads, IAP, auth, encryption, maintenance, localization, storage, time, audio volume, remote-config.
 - Zero KitchenClash / Unity / EOS / NGO references (`noEngineReferences`).
 - Game adapters implement these interfaces (Firebase, EOS, stubs, etc.).
 
@@ -13,13 +13,18 @@ In-repo portable **service contracts** for multi-title Brawl-class games.
 ```
 Runtime/
   Playcenter.Services.asmdef
-  Config/       IConfigService, IConfigModel, ConfigHealthStatus
-  Analytics/    IAnalyticsService
-  Ads/          IAdsService, AdRewardResult
-  IAP/          IIAPService, IAPResult
-  Auth/         IAuthService, AuthResult
-  Encryption/   IEncryptionService
-  Maintenance/  IMaintenanceService
+  Config/        IConfigService, IConfigModel, ConfigHealthStatus
+  Analytics/     IAnalyticsService
+  Ads/           IAdsService, AdRewardResult
+  IAP/           IIAPService, IAPResult
+  Auth/          IAuthService, AuthResult
+  Encryption/    IEncryptionService
+  Maintenance/   IMaintenanceService
+  Localization/  ILocalizationManager
+  Storage/       IStorageProvider, ICloudStorageProvider, StorageConfig, StorageStrategy
+  Time/          INTPTimeService
+  Audio/         IAudioVolumeController
+  RemoteConfig/  IRemoteConfigService, IConfigProvider
 ```
 
 ## Rules
@@ -31,8 +36,7 @@ Runtime/
 
 ## Not here (stay game or Unity-bound leaves)
 
-- Audio (`AudioClip` / `AudioSource`)
-- UI stack (`IUIService` + UI Toolkit)
-- Save/storage with game DTOs
+- Clip-based audio (`AudioClip` / `AudioSource` playback)
+- UI stack (`IUIService` + UI Toolkit) — see Playcenter.UI
+- Save DTOs (game-specific persistence models)
 - Platform / Async Unity helpers
-- Remote-config orchestration that uses UniTask (game Application ports may compose Services types)
