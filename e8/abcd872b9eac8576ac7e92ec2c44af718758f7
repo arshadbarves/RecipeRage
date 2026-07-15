@@ -1,0 +1,134 @@
+Assets/_KitchenClash/Presentation/Screens/LoginScreen.cs
+  s_99229c453cd88d::t_85e342edc41a85 8
+Assets/_KitchenClash/Presentation/Screens/ProfileScreen.cs
+  s_99229c453cd88d::t_85e342edc41a85 9
+Assets/_KitchenClash/Presentation/Common/UIService.Navigation.cs
+  s_99229c453cd88d::t_fbb5b63e2460bc 3-4,81,89,197,202
+Assets/_KitchenClash/Presentation/Common/INotificationScreen.cs
+  s_99229c453cd88d::t_85e342edc41a85 2
+Assets/_KitchenClash/Presentation/Screens/HomeScreen.cs
+  s_99229c453cd88d::t_85e342edc41a85 13
+Assets/_KitchenClash/Infrastructure/Flow/StateMachineFlowPorts.cs
+  s_99229c453cd88d::t_85e342edc41a85 10
+Assets/_KitchenClash/Presentation/Common/UIScreenStackManager.cs
+  s_99229c453cd88d::t_85e342edc41a85 3
+Assets/_KitchenClash/Presentation/Overlays/UsernamePopup.cs
+  s_99229c453cd88d::t_85e342edc41a85 10
+Assets/_KitchenClash/Composition/KitchenClash.Composition.asmdef
+  s_99229c453cd88d::t_1981ab36b75ddb 24-25
+Assets/_KitchenClash/Application/KitchenClash.Application.asmdef
+  s_99229c453cd88d::t_1981ab36b75ddb 9-10
+Assets/_KitchenClash/Presentation/Screens/ChefSelectScreen.cs
+  s_99229c453cd88d::t_85e342edc41a85 9
+Assets/_KitchenClash/Presentation/Screens/MatchHUDScreen.cs
+  s_99229c453cd88d::t_85e342edc41a85 8
+Assets/_KitchenClash/Infrastructure/DI/SessionManager.cs
+  s_99229c453cd88d::t_85e342edc41a85 8
+Assets/_KitchenClash/Infrastructure/Flow/Handlers/MatchmakingPhase.cs
+  s_99229c453cd88d::t_85e342edc41a85 12
+Assets/_KitchenClash/Presentation/Common/UIService.cs
+  s_99229c453cd88d::t_6da5c79102fe6b 5-6,58,60
+Assets/_KitchenClash/Presentation/Components/CharacterTabComponent.cs
+  s_99229c453cd88d::t_85e342edc41a85 12
+Assets/_KitchenClash/Presentation/Screens/MatchIntroScreen.cs
+  s_99229c453cd88d::t_85e342edc41a85 6
+Assets/_KitchenClash/Presentation/Controls/JoystickEditorUI.cs
+  s_99229c453cd88d::t_85e342edc41a85 8
+Assets/_KitchenClash/Infrastructure/KitchenClash.Infrastructure.asmdef
+  s_99229c453cd88d::t_1981ab36b75ddb 25-26
+Assets/_KitchenClash/Presentation/Common/BaseUIScreen.cs
+  s_99229c453cd88d::t_85e342edc41a85 4
+Assets/_KitchenClash/Infrastructure/Flow/CountdownFlowPort.cs
+  s_99229c453cd88d::t_85e342edc41a85 6
+Assets/_KitchenClash/Infrastructure/Network/GameStarter.cs
+  s_99229c453cd88d::t_85e342edc41a85 10
+Assets/_KitchenClash/Presentation/Screens/MaintenanceScreen.cs
+  s_99229c453cd88d::t_85e342edc41a85 12
+Assets/_KitchenClash/Presentation/Screens/MatchmakingScreen.cs
+  s_99229c453cd88d::t_85e342edc41a85 13
+Assets/_KitchenClash/Presentation/Common/UIService.ScreenOps.cs
+  s_99229c453cd88d::t_85e342edc41a85 3
+Assets/_KitchenClash/Presentation/Screens/SplashScreen.cs
+  s_99229c453cd88d::t_85e342edc41a85 10
+Assets/_KitchenClash/Presentation/Components/LobbyTabComponent.cs
+  s_99229c453cd88d::t_85e342edc41a85 16
+Assets/_KitchenClash/Presentation/ViewModels/UsernameViewModel.cs
+  s_99229c453cd88d::t_85e342edc41a85 9
+Assets/_KitchenClash/Infrastructure/Flow/Handlers/AccountUpgradePhase.cs
+  s_99229c453cd88d::t_85e342edc41a85 6
+Assets/_KitchenClash/Infrastructure/Network/NetworkingServiceContainer.cs
+  s_99229c453cd88d::t_85e342edc41a85 13
+Assets/_KitchenClash/Presentation/Overlays/NotificationOverlay.cs
+  s_99229c453cd88d::t_85e342edc41a85 8
+Assets/_KitchenClash/Presentation/Overlays/NoInternetPopup.cs
+  s_99229c453cd88d::t_85e342edc41a85 8
+Assets/_KitchenClash/Presentation/Screens/StoreScreen.cs
+  s_99229c453cd88d::t_85e342edc41a85 5
+Assets/_KitchenClash/Presentation/Common/UIScreenController.cs
+  s_99229c453cd88d::t_85e342edc41a85 3
+Assets/_KitchenClash/Presentation/Screens/SeasonPassScreen.cs
+  s_99229c453cd88d::t_85e342edc41a85 4
+Assets/_KitchenClash/Presentation/Screens/CountdownOverlayScreen.cs
+  s_99229c453cd88d::t_85e342edc41a85 4
+Assets/_KitchenClash/Infrastructure/Flow/MatchIntroFlowPort.cs
+  s_99229c453cd88d::t_85e342edc41a85 6
+Assets/_KitchenClash/Presentation/Screens/MapSelectionScreen.cs
+  s_99229c453cd88d::t_85e342edc41a85 15
+Assets/Scripts/Tests/EditMode/Gameplay/MatchmakingFlowTests.cs
+  s_99229c453cd88d::t_85e342edc41a85 16
+  s_99229c453cd88d::t_d97f9228cdd563 256-257,271-272,274
+Assets/_KitchenClash/Presentation/Screens/AccountUpgradeScreen.cs
+  s_99229c453cd88d::t_85e342edc41a85 6
+Assets/_KitchenClash/Presentation/Screens/DailyStreakScreen.cs
+  s_99229c453cd88d::t_85e342edc41a85 8
+Assets/_KitchenClash/Presentation/Common/UIScreenRegistry.cs
+  s_99229c453cd88d::t_85e342edc41a85 7
+Assets/_KitchenClash/Composition/RootLifetimeScope.cs
+  s_99229c453cd88d::t_85e342edc41a85 33
+Assets/_KitchenClash/Presentation/Overlays/ConnectivityOverlay.cs
+  s_99229c453cd88d::t_85e342edc41a85 8
+Assets/Scripts/Tests/RecipeRage.Tests.EditMode.asmdef
+  s_99229c453cd88d::t_1981ab36b75ddb 18-19
+Assets/_KitchenClash/Presentation/KitchenClash.Presentation.asmdef
+  s_99229c453cd88d::t_1981ab36b75ddb 12-13
+Assets/_KitchenClash/Presentation/Overlays/FriendsPopup.cs
+  s_99229c453cd88d::t_85e342edc41a85 11
+Assets/_KitchenClash/Presentation/Screens/MatchLobbyScreen.cs
+  s_99229c453cd88d::t_85e342edc41a85 4
+Assets/_KitchenClash/Infrastructure/Flow/Handlers/TutorialPhase.cs
+  s_99229c453cd88d::t_85e342edc41a85 10
+Assets/_KitchenClash/Infrastructure/Flow/KitchenClash.Infrastructure.Flow.asmdef
+  s_99229c453cd88d::t_1981ab36b75ddb 12-13
+Assets/_KitchenClash/Infrastructure/Flow/Handlers/NoConnectionPhase.cs
+  s_99229c453cd88d::t_85e342edc41a85 6
+Assets/_KitchenClash/Presentation/Screens/SettingsScreen.cs
+  s_99229c453cd88d::t_85e342edc41a85 15
+Assets/_KitchenClash/Presentation/Screens/CharacterDetailsScreen.cs
+  s_99229c453cd88d::t_85e342edc41a85 11
+Assets/_KitchenClash/Presentation/Screens/ResultsScreen.cs
+  s_99229c453cd88d::t_85e342edc41a85 9
+Assets/_KitchenClash/Presentation/Common/IUIScreenStackManager.cs
+  s_99229c453cd88d::t_85e342edc41a85 2
+Assets/_KitchenClash/Presentation/Screens/LoadingScreen.cs
+  s_99229c453cd88d::t_85e342edc41a85 12
+Assets/_KitchenClash/Presentation/Common/UIScreenAttribute.cs
+  s_99229c453cd88d::t_85e342edc41a85 2
+Assets/_KitchenClash/Infrastructure/Flow/Handlers/LoginPhase.cs
+  s_99229c453cd88d::t_85e342edc41a85 6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "e8abcd872b9eac8576ac7e92ec2c44af718758f7",
+  "prompts": {},
+  "sessions": {
+    "s_99229c453cd88d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "45070b64-765f-4e79-883a-4a2e9082e950",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
