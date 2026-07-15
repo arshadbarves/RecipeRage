@@ -147,18 +147,19 @@ GameFlow fixed product navigation. Remaining mess is inverted deps, vendor leaks
 |--------|--------|-------|
 | `Playcenter.GameFlow` | **Shipped** | Sole product navigator (`IAppFlow`); ports + policies; adapters in `Infrastructure/Flow` |
 | `Playcenter.Shell` | **Shipped** | Engine-free logging + event bus + connectivity contracts (`Assets/Playcenter/Shell`); Domain/Application reference Shell; adapters stay game-side (`UnityLoggingService`, `LoggingBootstrap`, `NetworkConnectivityService`) |
-| `Playcenter.Services` | **Shipped** | Engine-free multi-title service contracts (`Assets/Playcenter/Services`): config, analytics, ads, IAP, auth, encryption, maintenance. Domain/Application originals deleted; adapters stay game-side (Firebase, EOS, stubs) |
+| `Playcenter.Services` | **Shipped** | Engine-free multi-title service contracts (`Assets/Playcenter/Services`): config, analytics, ads, IAP, auth, encryption, maintenance, **localization, storage, time, audio volume, remote-config**. Domain/Application originals deleted; adapters stay game-side (Firebase, EOS, stubs) |
+| `Playcenter.UI` | **Shipped** | Engine-free screen stack contracts (`IUIService`, `NotificationType`, `UIScreenCategory`); `Task`-based toasts; `SetCurrentScope(object)`. Adapter: Presentation `UIService` (UI Toolkit). KitchenClash Application/Domain originals deleted |
 | New `Assets/Playcenter/*` | **Only if** engine-free **and** second consumer or legal-transition role | Prefer KitchenClash assembly splits + Domain/Application ports for single-title hardening |
-| Audio / Async / Platform / UI as Playcenter | **Deferred** | Stay as KitchenClash leaf assemblies (Unity-bound) until multi-title reuse is real |
+| Clip audio / Platform / Async leaves | **Stay KitchenClash** | Unity-bound helpers (`AudioClip` playback, coroutines, platform glue) — not Playcenter |
 | Economy / Cooking IP | **Never Playcenter** | Stay in KitchenClash |
 
-**Hard cutover rules (Shell + Services):** no Domain dual APIs, type aliases, obsolete stubs, or Console fallbacks. Unwired `GameLogger` throws. GameFlow and Shell do **not** reference Services (independent modules).
+**Hard cutover rules (Shell + Services + UI):** no Domain dual APIs, type aliases, obsolete stubs, or Console fallbacks. Unwired `GameLogger` throws. GameFlow and Shell do **not** reference Services or UI (independent modules). UI and Services do not reference each other.
 
 **Logging wire order:** `RootLifetimeScope` registers `UnityLoggingService` as `ILoggingService`, then `RegisterBuildCallback` → `GameLogger.SetService` (before any entry point), then `RegisterEntryPoint<LoggingBootstrap>` (idempotent re-wire + bootstrap log). Never call `GameLogger` from `Configure()` (pre-build); use `Debug.LogError` for missing inspector refs.
 
-Specs: `docs/superpowers/specs/2026-07-14-playcenter-shell-extract-design.md`, `docs/superpowers/specs/2026-07-14-playcenter-services-extract-design.md`.
+Specs: `docs/superpowers/specs/2026-07-14-playcenter-shell-extract-design.md`, `docs/superpowers/specs/2026-07-14-playcenter-services-extract-design.md`, `docs/superpowers/specs/2026-07-15-playcenter-foundation-extract-design.md`.
 
-See also: `docs/superpowers/plans/2026-07-14-playcenter-module-extract-candidates.md` (Shell + Services shipped; Audio/Async/Platform/UI still deferred).
+See also: `docs/superpowers/plans/2026-07-14-playcenter-module-extract-candidates.md` (foundation ports + UI shipped; clip-audio/Platform/Async still deferred).
 
 ## SOLID Summary
 

@@ -2,7 +2,9 @@
 >
 > **Superseded for Shell timing:** `Playcenter.Shell` (EventBus + Logging + Connectivity) was extracted and hard-cutover completed — see `docs/superpowers/specs/2026-07-14-playcenter-shell-extract-design.md` and `docs/superpowers/plans/2026-07-14-playcenter-shell-extract.md`.
 >
-> **Superseded for Services timing:** `Playcenter.Services` (config/analytics/ads/IAP/auth/encryption/maintenance contracts) was extracted and hard-cutover completed — see `docs/superpowers/specs/2026-07-14-playcenter-services-extract-design.md`. Remaining candidates (Audio, Async, Platform, UI) stay deferred (Unity-bound).
+> **Superseded for Services timing:** `Playcenter.Services` (config/analytics/ads/IAP/auth/encryption/maintenance contracts) was extracted and hard-cutover completed — see `docs/superpowers/specs/2026-07-14-playcenter-services-extract-design.md`.
+>
+> **Superseded for foundation ports (2026-07-15):** Localization, Storage, Time, Audio volume, RemoteConfig → Services expansion; UI stack → `Playcenter.UI`. See `docs/superpowers/specs/2026-07-15-playcenter-foundation-extract-design.md` and `docs/superpowers/plans/2026-07-15-playcenter-foundation-extract.md`. Still deferred: clip-based audio, Platform/Async Unity leaves, save DTOs, cooking IP.
 
 # Playcenter Module Extract Candidates — Decision Plan
 

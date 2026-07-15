@@ -63,7 +63,7 @@
 - Consumes: existing `IConfigModel`, `ConfigHealthStatus` in `Playcenter.Services`
 - Produces: all new types in namespace `Playcenter.Services`
 
-- [ ] **Step 1: Add Localization**
+- [x] **Step 1: Add Localization**
 
 ```csharp
 // Assets/Playcenter/Services/Runtime/Localization/ILocalizationManager.cs
@@ -88,7 +88,7 @@ namespace Playcenter.Services
 }
 ```
 
-- [ ] **Step 2: Add Storage**
+- [x] **Step 2: Add Storage**
 
 ```csharp
 // StorageStrategy.cs
@@ -148,7 +148,7 @@ namespace Playcenter.Services
 }
 ```
 
-- [ ] **Step 3: Add Time + Audio volume**
+- [x] **Step 3: Add Time + Audio volume**
 
 ```csharp
 // INTPTimeService.cs
@@ -183,7 +183,7 @@ namespace Playcenter.Services
 }
 ```
 
-- [ ] **Step 4: Add RemoteConfig ports**
+- [x] **Step 4: Add RemoteConfig ports**
 
 ```csharp
 // IRemoteConfigService.cs
@@ -221,7 +221,7 @@ namespace Playcenter.Services
 }
 ```
 
-- [ ] **Step 5: Update Services README layout section**
+- [x] **Step 5: Update Services README layout section**
 
 Replace “Not here” bullets that claim Localization/Storage/Time/Audio volume/RemoteConfig stay game-side. New layout:
 
@@ -237,16 +237,16 @@ Runtime/
 
 Still not here: clip-based audio, UI stack (`Playcenter.UI`), save DTOs, Platform/Async Unity helpers, cooking IP.
 
-- [ ] **Step 6: Add Compile includes to `Playcenter.Services.csproj`**
+- [x] **Step 6: Add Compile includes to `Playcenter.Services.csproj`**
 
 Add one `<Compile Include="Assets/Playcenter/Services/Runtime/..."/>` per new `.cs` file next to existing Services Compile items.
 
-- [ ] **Step 7: Build Services**
+- [x] **Step 7: Build Services**
 
 Run: `dotnet build Playcenter.Services.csproj -nologo -v q`  
 Expected: 0 errors
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add Assets/Playcenter/Services Playcenter.Services.csproj
@@ -290,7 +290,7 @@ EOF
 - Consumes: Task 1 ports
 - Produces: game adapters implementing `Playcenter.Services` contracts
 
-- [ ] **Step 1: Convert storage adapters to Task**
+- [x] **Step 1: Convert storage adapters to Task**
 
 In `LocalStorageProvider` and `EOSCloudStorageProvider`, change:
 
@@ -317,7 +317,7 @@ _ = WriteAsync(key, content);
 
 Add `using System.Threading.Tasks;` and `using Playcenter.Services;`. Remove Application interface usings for deleted types.
 
-- [ ] **Step 2: Convert NTP + RemoteConfig adapters to Task**
+- [x] **Step 2: Convert NTP + RemoteConfig adapters to Task**
 
 ```csharp
 // NTPTimeService
@@ -333,7 +333,7 @@ public Task<bool> RefreshConfig<T>() where T : class, IConfigModel => Task.FromR
 // After:    public Task FetchAsync() => RefreshConfig();
 ```
 
-- [ ] **Step 3: Fix BootSequence cancellation on Task**
+- [x] **Step 3: Fix BootSequence cancellation on Task**
 
 `Assets/_KitchenClash/Infrastructure/Flow/Handlers/BootSequence.cs` currently:
 
@@ -360,7 +360,7 @@ catch (OperationCanceledException)
 
 Prefer preserving existing timeout behavior with `Task.WhenAny` + existing timeout ms constant if present in file.
 
-- [ ] **Step 4: Update all usings + delete originals**
+- [x] **Step 4: Update all usings + delete originals**
 
 ```bash
 # Find remaining old type homes (must be empty after delete)
@@ -386,7 +386,7 @@ namespace KitchenClash.Application.Services
 }
 ```
 
-- [ ] **Step 5: Build chain**
+- [x] **Step 5: Build chain**
 
 ```bash
 dotnet build Playcenter.Services.csproj -nologo -v q
@@ -404,7 +404,7 @@ dotnet build RecipeRage.Tests.EditMode.csproj -nologo -v q
 
 Expected: 0 errors. If Unity-generated csproj missing Compile entries for new Services files, add them the same way as Task 1 (or ensure asmdef auto-includes under `Assets/Playcenter/Services/Runtime/**`).
 
-- [ ] **Step 6: Grep gates**
+- [x] **Step 6: Grep gates**
 
 ```bash
 # No dual aliases
@@ -416,7 +416,7 @@ test ! -f Assets/_KitchenClash/Domain/Enums/StorageStrategy.cs
 rg -n "Playcenter\.Services" Assets/Playcenter/GameFlow Assets/Playcenter/Shell && exit 1 || true
 ```
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add -A Assets/_KitchenClash Assets/Scripts/Tests Assets/Playcenter/Services
@@ -444,7 +444,7 @@ EOF
 **Interfaces:**
 - Produces: `Playcenter.UI.IUIService`, `NotificationType`, `UIScreenCategory`
 
-- [ ] **Step 1: Create asmdef**
+- [x] **Step 1: Create asmdef**
 
 ```json
 {
@@ -463,7 +463,7 @@ EOF
 }
 ```
 
-- [ ] **Step 2: Add enums**
+- [x] **Step 2: Add enums**
 
 ```csharp
 // NotificationType.cs
@@ -494,7 +494,7 @@ namespace Playcenter.UI
 }
 ```
 
-- [ ] **Step 3: Add IUIService (Task-based, object scope)**
+- [x] **Step 3: Add IUIService (Task-based, object scope)**
 
 Copy method surface from `Assets/_KitchenClash/Application/Services/IUIService.cs` with these **required** changes:
 
@@ -567,7 +567,7 @@ namespace Playcenter.UI
 
 Do **not** include Application’s `UIScreenPriority` enum in Playcenter.UI.
 
-- [ ] **Step 4: README**
+- [x] **Step 4: README**
 
 ```markdown
 # Playcenter.UI
@@ -599,16 +599,16 @@ Runtime/
 ```
 ```
 
-- [ ] **Step 5: CLI csproj**
+- [x] **Step 5: CLI csproj**
 
 Clone `Playcenter.Services.csproj` → `Playcenter.UI.csproj`: change `RootNamespace`, `AssemblyName`, `ProjectGuid` (new GUID), `OutputPath`, and Compile includes to the three Runtime `.cs` files only.
 
-- [ ] **Step 6: Build UI**
+- [x] **Step 6: Build UI**
 
 Run: `dotnet build Playcenter.UI.csproj -nologo -v q`  
 Expected: 0 errors
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add Assets/Playcenter/UI Playcenter.UI.csproj
@@ -645,11 +645,11 @@ EOF
 - Consumes: Task 3 contracts
 - Produces: working game UI host on Playcenter.UI
 
-- [ ] **Step 1: Wire asmdefs**
+- [x] **Step 1: Wire asmdefs**
 
 Add `"Playcenter.UI"` to Application, Presentation, Infrastructure (main + Flow + Network as needed), Composition, EditMode tests. Do **not** add to GameFlow/Shell/Services.
 
-- [ ] **Step 2: Update UIService implementation**
+- [x] **Step 2: Update UIService implementation**
 
 ```csharp
 // UIService.cs
@@ -686,7 +686,7 @@ using Playcenter.UI;
 // remove KitchenClash.Application.Services if only used for IUIService/NotificationType
 ```
 
-- [ ] **Step 3: Update FakeUIService in tests**
+- [x] **Step 3: Update FakeUIService in tests**
 
 `Assets/Scripts/Tests/EditMode/Gameplay/MatchmakingFlowTests.cs`:
 
@@ -698,7 +698,7 @@ public Task ShowNotification(...) => Task.CompletedTask;
 public void SetCurrentScope(object scope) { }
 ```
 
-- [ ] **Step 4: Bulk consumer using fix**
+- [x] **Step 4: Bulk consumer using fix**
 
 For each file from:
 
@@ -708,11 +708,11 @@ rg -l "IUIService|NotificationType|UIScreenCategory" --glob '*.cs' -g '!Assets/P
 
 Ensure types resolve from `Playcenter.UI`. Presentation stack types (`IUIScreenStackManager`, attributes) keep using `UIScreenCategory` from Playcenter.UI.
 
-- [ ] **Step 5: Delete originals**
+- [x] **Step 5: Delete originals**
 
 Delete Application `IUIService.cs` and Domain `UIScreenCategory.cs` (+ metas).
 
-- [ ] **Step 6: Build chain**
+- [x] **Step 6: Build chain**
 
 ```bash
 dotnet build Playcenter.UI.csproj -nologo -v q
@@ -727,7 +727,7 @@ dotnet build RecipeRage.Editor.csproj -nologo -v q
 
 Expected: 0 errors. Fix any missing asmdef ProjectReference / Compile include for Playcenter.UI in Unity-generated csprojs if CLI fails to resolve the assembly (add ProjectReference to `Playcenter.UI.csproj` mirroring Services).
 
-- [ ] **Step 7: Grep gates**
+- [x] **Step 7: Grep gates**
 
 ```bash
 test ! -f Assets/_KitchenClash/Application/Services/IUIService.cs
@@ -737,7 +737,7 @@ rg -n "Playcenter\.UI" Assets/Playcenter/GameFlow Assets/Playcenter/Shell Assets
 rg -n "UniTask ShowToast|UniTask ShowNotification|SetCurrentScope\(VContainer" --glob '*.cs' && exit 1 || true
 ```
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add Assets/Playcenter/UI Assets/_KitchenClash Assets/Scripts/Tests Playcenter.UI.csproj
@@ -760,7 +760,7 @@ EOF
 - Modify: `Assets/Playcenter/Services/README.md` if any leftover “not here” lies
 - Optional: short note in `wiki/GameFlow-SDK.md` only if it lists module inventory
 
-- [ ] **Step 1: Update Technical.md Playcenter table**
+- [x] **Step 1: Update Technical.md Playcenter table**
 
 ```markdown
 | `Playcenter.Services` | **Shipped** | … + Localization, Storage, Time, Audio volume, RemoteConfig ports |
@@ -770,7 +770,7 @@ EOF
 
 Hard cutover rules: include UI. Logging wire order paragraph unchanged.
 
-- [ ] **Step 2: Candidates plan banner**
+- [x] **Step 2: Candidates plan banner**
 
 At top of candidates plan, add:
 
@@ -778,11 +778,11 @@ At top of candidates plan, add:
 > **Superseded for foundation ports (2026-07-15):** Localization, Storage, Time, Audio volume, RemoteConfig → Services expansion; UI stack → `Playcenter.UI`. See `docs/superpowers/specs/2026-07-15-playcenter-foundation-extract-design.md` and `docs/superpowers/plans/2026-07-15-playcenter-foundation-extract.md`. Still deferred: clip-based audio, Platform/Async Unity leaves, save DTOs, cooking IP.
 ```
 
-- [ ] **Step 3: wiki/log.md entry**
+- [x] **Step 3: wiki/log.md entry**
 
 One line: foundation extract Services expand + Playcenter.UI hard cutover; Task-based ports; no dual APIs.
 
-- [ ] **Step 4: Final gates + commit**
+- [x] **Step 4: Final gates + commit**
 
 ```bash
 dotnet build Playcenter.Services.csproj -nologo -v q

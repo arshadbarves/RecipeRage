@@ -37,6 +37,6 @@ Runtime/
 ## Not here (stay game or Unity-bound leaves)
 
 - Clip-based audio (`AudioClip` / `AudioSource` playback)
-- UI stack (`IUIService` + UI Toolkit) — see Playcenter.UI
+- UI stack contracts — live in `Playcenter.UI` (not this assembly); UI Toolkit adapter stays game-side
 - Save DTOs (game-specific persistence models)
 - Platform / Async Unity helpers

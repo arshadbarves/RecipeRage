@@ -277,3 +277,13 @@ Required Approach A work complete on `architecture-cleanup`:
 
 Deferred by design: Network leaf (Network↔Gameplay cycle), broader Domain kernel, Unity smoke, PR.
 
+
+## 2026-07-15 — Playcenter foundation extract (Services expand + UI)
+
+Multi-title foundation ports hard-cutover on `architecture-cleanup`:
+
+- **Services expand:** Localization, Storage, Time, Audio volume, RemoteConfig ports in `Playcenter.Services`; KitchenClash originals deleted; adapters Task-based
+- **Playcenter.UI:** `IUIService` + `NotificationType` + `UIScreenCategory`; toast/notification return `Task`; `SetCurrentScope(object)`; Presentation `UIService` adapter; Application/Domain originals deleted
+- Hard cutover: no dual namespaces, type aliases, or legacy fallbacks; GameFlow/Shell independent of Services/UI; UI ⟂ Services
+- Commits: ports `b7780514`, Services cutover `52f11174`, UI module `c84a4ceb`, UI cutover `e8abcd87`
+- Still deferred: clip-based audio, Platform/Async Unity leaves, save DTOs, cooking IP
