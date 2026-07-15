@@ -1,0 +1,37 @@
+Assets/Playcenter/Services/README.md
+  s_99229c453cd88d::t_16f31bb3cafa5e 7,16-27,39-41
+Assets/Playcenter/Services/Runtime/Audio/IAudioVolumeController.cs
+  s_99229c453cd88d::t_dca9d36ba24cb7 1-13
+Assets/Playcenter/Services/Runtime/Localization/ILocalizationManager.cs
+  s_99229c453cd88d::t_4cab8677c1061c 1-19
+Assets/Playcenter/Services/Runtime/RemoteConfig/IConfigProvider.cs
+  s_99229c453cd88d::t_3f448d93cab36d 1-14
+Assets/Playcenter/Services/Runtime/RemoteConfig/IRemoteConfigService.cs
+  s_99229c453cd88d::t_5b1f15a603abb3 1-16
+Assets/Playcenter/Services/Runtime/Storage/ICloudStorageProvider.cs
+  s_99229c453cd88d::t_55572882162c57 1-8
+Assets/Playcenter/Services/Runtime/Storage/IStorageProvider.cs
+  s_99229c453cd88d::t_a490cf7a9472e0 1-15
+Assets/Playcenter/Services/Runtime/Storage/StorageConfig.cs
+  s_99229c453cd88d::t_4f7ce8453c3454 1-16
+Assets/Playcenter/Services/Runtime/Storage/StorageStrategy.cs
+  s_99229c453cd88d::t_96a3d21fdf5e38 1-9
+Assets/Playcenter/Services/Runtime/Time/INTPTimeService.cs
+  s_99229c453cd88d::t_3a730fa806a8ac 1-14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "b77805149f40fbcfad01c7634ce909b93733ea8e",
+  "prompts": {},
+  "sessions": {
+    "s_99229c453cd88d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "45070b64-765f-4e79-883a-4a2e9082e950",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
