@@ -1,0 +1,41 @@
+Assets/Playcenter/UI/Runtime/NotificationType.cs.meta
+  s_99229c453cd88d::t_87a7f5b1a51d2e 1-11
+Assets/Playcenter/UI/Runtime/UIScreenCategory.cs.meta
+  s_99229c453cd88d::t_ee9f0afac6fbab 1-11
+Assets/Playcenter/UI/README.md
+  s_99229c453cd88d::t_c72c359fe33f02 1-27
+Assets/Playcenter/UI/Runtime/IUIService.cs.meta
+  s_99229c453cd88d::t_a8225664f668f0 1-11
+Assets/Playcenter/UI/Runtime/Playcenter.UI.asmdef.meta
+  s_99229c453cd88d::t_2b771ab667877f 1-7
+Assets/Playcenter/UI/Runtime/IUIService.cs
+  s_99229c453cd88d::t_fb120b51f66685 1-71
+Assets/Playcenter/UI/Runtime.meta
+  s_99229c453cd88d::t_4ce4ca3a6e30ad 1-8
+Assets/Playcenter/UI.meta
+  s_99229c453cd88d::t_cb0c9932ff6ea1 1-8
+Assets/Playcenter/UI/Runtime/NotificationType.cs
+  s_99229c453cd88d::t_d3b96eafd1e2d7 1-10
+Assets/Playcenter/UI/Runtime/UIScreenCategory.cs
+  s_99229c453cd88d::t_e510fe531cbf79 1-13
+Assets/Playcenter/UI/Runtime/Playcenter.UI.asmdef
+  s_99229c453cd88d::t_706a78134eb975 1-14
+Assets/Playcenter/UI/README.md.meta
+  s_99229c453cd88d::t_c722a1a33a1b78 1-7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "c84a4ceb1bcf61e896e96718f6000a8315848293",
+  "prompts": {},
+  "sessions": {
+    "s_99229c453cd88d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "45070b64-765f-4e79-883a-4a2e9082e950",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
