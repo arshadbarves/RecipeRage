@@ -1,0 +1,31 @@
+Assets/Playcenter/UI/README.md
+  s_698e3070263a23::t_a0fd7f17258ff9 27-28
+Assets/Playcenter/UI/Runtime/IUIScreenStackManager.cs
+  s_698e3070263a23::t_63e8bd73b7a037 3,6
+Assets/Playcenter/UI/Runtime/UIScreenStackManager.cs
+  s_698e3070263a23::t_a40a67e67881b1 4,7
+Assets/Scripts/Tests/EditMode/Playcenter/UIScreenStackManagerTests.cs
+  s_698e3070263a23::t_b88b7def0c1599 1-77
+Playcenter.UI.csproj
+  s_698e3070263a23::t_61cdcb8f87382d 1-536
+RecipeRage.Tests.EditMode.csproj
+  s_698e3070263a23::t_40a03c7964d9ab 1-957
+KitchenClash.Presentation.csproj
+  s_698e3070263a23::t_5439da63cc5c2e 1-1044
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "c39041cf4defbbd4ab5399a8a9579710e01b92b1",
+  "prompts": {},
+  "sessions": {
+    "s_698e3070263a23": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "62c29c09-d120-4544-95ea-7f6230fe44f1",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
