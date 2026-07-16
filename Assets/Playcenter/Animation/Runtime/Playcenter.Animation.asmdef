@@ -1,13 +1,10 @@
 {
-    "name": "KitchenClash.Infrastructure.Animation",
-    "rootNamespace": "KitchenClash.Infrastructure.Animation",
+    "name": "Playcenter.Animation",
+    "rootNamespace": "Playcenter.Animation",
     "references": [
-        "KitchenClash.Domain",
-        "KitchenClash.Application",
-        "UniTask",
-        "DOTween.Modules",
         "Playcenter.Shell",
-        "Playcenter.Services"
+        "DOTween.Modules",
+        "UniTask"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

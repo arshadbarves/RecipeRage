@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;
 using Playcenter.UI;
+using Playcenter.Animation;
 
 namespace KitchenClash.Presentation.Screens
 {

@@ -5,7 +5,6 @@
         "KitchenClash.Application",
         "KitchenClash.Domain",
         "KitchenClash.Infrastructure",
-        "KitchenClash.Infrastructure.Animation",
         "KitchenClash.Infrastructure.Async",
         "KitchenClash.Infrastructure.Audio",
         "KitchenClash.Infrastructure.Configuration",
@@ -22,7 +21,8 @@
         "VContainer",
         "Playcenter.Shell",
         "Playcenter.Services",
-        "Playcenter.UI"
+        "Playcenter.UI",
+        "Playcenter.Animation"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

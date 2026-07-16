@@ -3,7 +3,7 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
 
-namespace KitchenClash.Infrastructure.Animation
+namespace Playcenter.Animation
 {
     public class DOTweenTransformAnimator : ITransformAnimator
     {

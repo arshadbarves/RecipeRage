@@ -6,7 +6,6 @@ using KitchenClash.Application.Models;
 using KitchenClash.Application.Services;
 using KitchenClash.Composition;
 using KitchenClash.Domain;
-using KitchenClash.Infrastructure.Animation;
 using KitchenClash.Infrastructure.Configuration;
 using KitchenClash.Infrastructure.Ads;
 using KitchenClash.Infrastructure.Analytics;
@@ -31,6 +30,7 @@ using VContainer.Unity;
 using Playcenter.Shell;
 using Playcenter.Services;
 using Playcenter.UI;
+using Playcenter.Animation;
 
 public class RootLifetimeScope : LifetimeScope
 {

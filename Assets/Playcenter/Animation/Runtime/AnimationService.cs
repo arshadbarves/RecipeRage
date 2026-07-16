@@ -1,4 +1,3 @@
-using KitchenClash.Application;
 using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
@@ -6,7 +5,7 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace KitchenClash.Infrastructure.Animation
+namespace Playcenter.Animation
 {
     /// <summary>
     /// Main animation service - facade for UI and Transform animators

@@ -1,7 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 
-namespace KitchenClash.Infrastructure.Animation
+namespace Playcenter.Animation
 {
     public static class TweenExtensions
     {

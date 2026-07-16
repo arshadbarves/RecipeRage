@@ -4,7 +4,7 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace KitchenClash.Infrastructure.Animation
+namespace Playcenter.Animation
 {
     public class DOTweenUIAnimator : IUIAnimator
     {

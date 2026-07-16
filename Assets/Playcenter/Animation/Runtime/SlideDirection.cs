@@ -1,4 +1,4 @@
-namespace KitchenClash.Infrastructure.Animation
+namespace Playcenter.Animation
 {
     public enum SlideDirection
     {

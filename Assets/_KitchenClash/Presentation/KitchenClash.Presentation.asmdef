@@ -10,7 +10,8 @@
         "DOTween.Modules",
         "Playcenter.Shell",
         "Playcenter.Services",
-        "Playcenter.UI"
+        "Playcenter.UI",
+        "Playcenter.Animation"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

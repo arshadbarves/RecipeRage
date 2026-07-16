@@ -10,6 +10,7 @@ using KitchenClash.Application.Services;
 using KitchenClash.Presentation.ViewModels;
 using Playcenter.Services;
 using Playcenter.UI;
+using Playcenter.Animation;
 
 namespace KitchenClash.Presentation.Screens
 {

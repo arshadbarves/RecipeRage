@@ -14,6 +14,7 @@ using VContainer;
 using Playcenter.Shell;
 using Playcenter.Services;
 using Playcenter.UI;
+using Playcenter.Animation;
 
 namespace KitchenClash.Presentation.Components
 {

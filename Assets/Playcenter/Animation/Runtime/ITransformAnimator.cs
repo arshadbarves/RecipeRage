@@ -2,7 +2,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-namespace KitchenClash.Infrastructure.Animation
+namespace Playcenter.Animation
 {
     public interface ITransformAnimator
     {
