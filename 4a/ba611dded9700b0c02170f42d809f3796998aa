@@ -1,0 +1,21 @@
+docs/superpowers/specs/2026-07-16-playcenter-shared-stack-design.md
+  s_99229c453cd88d::t_a608a23ef33d9c 449-452,454-455,497-499,516-517,519,525,527-528,532-554
+  s_99229c453cd88d::t_c74e002e47432a 6,112-113,120-121,162-163,177-178,309-348,352-360,362,408-418,421,481,486
+  s_99229c453cd88d::t_234265dd71c660 293
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "4aba611dded9700b0c02170f42d809f3796998aa",
+  "prompts": {},
+  "sessions": {
+    "s_99229c453cd88d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "45070b64-765f-4e79-883a-4a2e9082e950",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
