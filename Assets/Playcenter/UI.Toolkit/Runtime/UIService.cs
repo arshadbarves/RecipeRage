@@ -6,16 +6,16 @@ using Playcenter.Shell;
 using Playcenter.UI;
 using UnityEngine;
 using UnityEngine.UIElements;
-using VContainer.Unity;
 
-namespace KitchenClash.Presentation.Common
+namespace Playcenter.UI.Toolkit
 {
     /// <summary>
     /// UI Toolkit screen host implementing <see cref="IUIService"/>.
     /// Responsibilities: document/layer setup, screen resolve, category navigation, toast host.
     /// Stack history lives in <see cref="IUIScreenStackManager"/>; transitions in screen controllers + <see cref="UITransitionHandler"/>.
+    /// VContainer is kept out of this type — the game supplies an <see cref="IScreenInstanceFactory"/>.
     /// </summary>
-    public partial class UIService : IUIService, IStartable, ITickable, IDisposable
+    public partial class UIService : IUIService, IDisposable
     {
         private static readonly UIScreenCategory[] LayerOrder =
         {
@@ -34,8 +34,7 @@ namespace KitchenClash.Presentation.Common
         private readonly Dictionary<Type, UIScreenController> _controllers = new();
         private readonly Dictionary<Type, BaseUIScreen> _screens = new();
         private readonly IUIScreenStackManager _stackManager;
-        private readonly VContainer.IObjectResolver _container;
-        private VContainer.IObjectResolver _currentScope;
+        private readonly IScreenInstanceFactory _screenFactory;
 
         public event Action<Type> OnScreenShown;
         public event Action<Type> OnScreenHidden;
@@ -44,11 +43,11 @@ namespace KitchenClash.Presentation.Common
         private bool _isInitialized;
 
         public UIService(
-            VContainer.IObjectResolver container,
+            IScreenInstanceFactory screenFactory,
             UIDocument uiDocument,
             IUIScreenStackManager stackManager)
         {
-            _container = container ?? throw new ArgumentNullException(nameof(container));
+            _screenFactory = screenFactory ?? throw new ArgumentNullException(nameof(screenFactory));
             _uiDocument = uiDocument;
             _stackManager = stackManager ?? throw new ArgumentNullException(nameof(stackManager));
         }
@@ -57,7 +56,7 @@ namespace KitchenClash.Presentation.Common
 
         public void SetCurrentScope(object scope)
         {
-            _currentScope = scope as VContainer.IObjectResolver;
+            (_screenFactory as IScopeAwareScreenFactory)?.SetScope(scope);
         }
 
         public void Start()

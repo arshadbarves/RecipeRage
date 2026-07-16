@@ -1,12 +1,11 @@
 using System;
 using Playcenter.UI;
 
-namespace KitchenClash.Presentation.Common
+namespace Playcenter.UI.Toolkit
 {
     /// <summary>
-    /// Attribute to mark and configure UI screen classes for auto-registration
-    /// Uses category-based placement - categories auto-determine priority
-    /// TYPE-BASED: No longer requires UIScreenType enum
+    /// Attribute to mark and configure UI screen classes for auto-registration.
+    /// Uses category-based placement — categories auto-determine priority.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class UIScreenAttribute : Attribute

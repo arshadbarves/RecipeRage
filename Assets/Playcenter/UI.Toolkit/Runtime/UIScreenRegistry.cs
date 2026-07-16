@@ -1,16 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using KitchenClash.Domain;
 using Playcenter.Shell;
 using Playcenter.UI;
 
-namespace KitchenClash.Presentation.Common
+namespace Playcenter.UI.Toolkit
 {
     /// <summary>
-    /// Registry system for managing UI screen classes
-    /// TYPE-BASED: Uses Type as key instead of UIScreenType enum
+    /// Registry system for managing UI screen classes.
+    /// TYPE-BASED: Uses Type as key instead of UIScreenType enum.
     /// </summary>
     public static class UIScreenRegistry
     {
@@ -36,9 +34,10 @@ namespace KitchenClash.Presentation.Common
             {
                 try
                 {
-                    IEnumerable<Type> types = assembly.GetTypes()
-                        .Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(BaseUIScreen)))
-                        .Where(t => t.GetCustomAttribute<UIScreenAttribute>() != null);
+                    IEnumerable<Type> types = System.Linq.Enumerable.Where(
+                        System.Linq.Enumerable.Where(assembly.GetTypes(),
+                            t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(BaseUIScreen))),
+                        t => t.GetCustomAttribute<UIScreenAttribute>() != null);
 
                     foreach (Type type in types)
                     {

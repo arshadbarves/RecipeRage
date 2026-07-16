@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using Playcenter.UI;
 
-namespace KitchenClash.Presentation.Common
+namespace Playcenter.UI.Toolkit
 {
     public partial class UIService
     {
@@ -15,10 +15,10 @@ namespace KitchenClash.Presentation.Common
             if (attribute == null) return null;
             if (!_controllers.TryGetValue(screenType, out UIScreenController controller)) return null;
 
-            VContainer.IObjectResolver resolver = _currentScope ?? _container;
-            var screen = (BaseUIScreen)resolver.Resolve(screenType);
+            var screen = (BaseUIScreen)_screenFactory.Create(screenType);
             if (screen == null) return null;
 
+            screen.SetUIService(this);
             screen.Initialize(attribute.Priority, attribute.Category, controller);
             _screens[screenType] = screen;
             return screen;

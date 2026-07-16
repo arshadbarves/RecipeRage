@@ -22,6 +22,7 @@ using KitchenClash.Infrastructure.Persistence;
 using KitchenClash.Infrastructure.Services;
 using KitchenClash.Presentation.Common;
 using KitchenClash.Presentation.ViewModels;
+using Playcenter.UI.Toolkit;
 using Playcenter.GameFlow;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -107,7 +108,11 @@ public class RootLifetimeScope : LifetimeScope
             return;
         }
 
-        builder.Register<UIService>(Lifetime.Singleton).As<IUIService>().As<IStartable>().As<ITickable>();
+        builder.Register<VContainerScreenInstanceFactory>(Lifetime.Singleton)
+            .As<IScreenInstanceFactory>()
+            .As<IScopeAwareScreenFactory>();
+        builder.Register<UIService>(Lifetime.Singleton).As<IUIService>().AsSelf();
+        builder.RegisterEntryPoint<UIServiceEntryPoint>();
 
         // Presentation ports: null defaults; child scopes override with real adapters
         builder.RegisterInstance(KitchenClash.Application.Services.NullMatchHudPort.Instance)

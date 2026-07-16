@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using KitchenClash.Presentation;
-using KitchenClash.Presentation.Common;
+using Playcenter.UI.Toolkit;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -13,7 +13,7 @@ namespace KitchenClash.Presentation.Overlays
     /// Toast host for queued notifications and transient system messages
     /// </summary>
     [UIScreen(UIScreenCategory.Toast, "Popups/NotificationTemplate")]
-    public class NotificationOverlay : BaseUIScreen, Presentation.Common.INotificationScreen
+    public class NotificationOverlay : BaseUIScreen, Playcenter.UI.Toolkit.INotificationScreen
     {
         private VisualElement _hostRoot;
         private VisualElement _notificationContainer;

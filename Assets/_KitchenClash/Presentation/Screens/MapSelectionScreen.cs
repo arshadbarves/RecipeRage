@@ -6,7 +6,7 @@ using System.Linq;
 using KitchenClash.Application.Services;
 using KitchenClash.Domain;
 using KitchenClash.Presentation;
-using KitchenClash.Presentation.Common;
+using Playcenter.UI.Toolkit;
 using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;

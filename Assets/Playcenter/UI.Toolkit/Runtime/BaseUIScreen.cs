@@ -1,13 +1,13 @@
 using System;
 using UnityEngine.UIElements;
-using VContainer;
 using Playcenter.UI;
 
-namespace KitchenClash.Presentation.Common
+namespace Playcenter.UI.Toolkit
 {
     /// <summary>
-    /// Pure C# base class for all UI screens - no MonoBehaviour dependency
-    /// TYPE-BASED: Identified by class Type, not enum
+    /// Pure C# base class for all UI screens — no MonoBehaviour dependency.
+    /// TYPE-BASED: Identified by class Type, not enum.
+    /// IUIService is set after factory creation via <see cref="SetUIService"/>.
     /// </summary>
     public abstract class BaseUIScreen
     {
@@ -23,8 +23,7 @@ namespace KitchenClash.Presentation.Common
         public VisualElement Container => Controller?.Container;
         public TemplateContainer TemplateContainer => Controller?.TemplateContainer;
 
-        [Inject]
-        protected IUIService UIService { get; set; }
+        protected IUIService UIService { get; private set; }
 
         #endregion
 
@@ -38,6 +37,11 @@ namespace KitchenClash.Presentation.Common
         #endregion
 
         #region Lifecycle
+
+        internal void SetUIService(IUIService uiService)
+        {
+            UIService = uiService;
+        }
 
         public void Initialize(UIScreenPriority priority, UIScreenCategory category, UIScreenController controller)
         {
@@ -59,7 +63,7 @@ namespace KitchenClash.Presentation.Common
         protected virtual void OnInitialize() { }
         protected virtual void OnShow() { }
         protected virtual void OnHide() { }
-        
+
         public virtual void ResetState() { }
 
         public virtual void Update(float deltaTime) { }

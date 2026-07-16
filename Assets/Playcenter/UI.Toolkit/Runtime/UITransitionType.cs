@@ -1,4 +1,4 @@
-namespace KitchenClash.Presentation.Common
+namespace Playcenter.UI.Toolkit
 {
     public enum UITransitionType
     {

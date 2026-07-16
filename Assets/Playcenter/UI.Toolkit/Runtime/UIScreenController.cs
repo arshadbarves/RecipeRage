@@ -2,10 +2,10 @@ using System;
 using UnityEngine.UIElements;
 using Playcenter.UI;
 
-namespace KitchenClash.Presentation.Common
+namespace Playcenter.UI.Toolkit
 {
     /// <summary>
-    /// Controller for a single UI screen - manages the visual element lifecycle
+    /// Controller for a single UI screen — manages the visual element lifecycle.
     /// </summary>
     public class UIScreenController
     {

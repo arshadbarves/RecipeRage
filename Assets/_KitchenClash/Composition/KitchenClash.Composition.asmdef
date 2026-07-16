@@ -22,7 +22,8 @@
         "Playcenter.Shell",
         "Playcenter.Services",
         "Playcenter.UI",
-        "Playcenter.Animation"
+        "Playcenter.Animation",
+        "Playcenter.UI.Toolkit"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

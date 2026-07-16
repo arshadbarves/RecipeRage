@@ -1,11 +1,11 @@
-using KitchenClash.Domain;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Playcenter.Animation;
+using Playcenter.Shell;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace KitchenClash.Presentation.Common
+namespace Playcenter.UI.Toolkit
 {
     /// <summary>
     /// Standardized transition handler for UI Toolkit using DOTween.

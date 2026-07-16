@@ -1,10 +1,10 @@
 using Cysharp.Threading.Tasks;
 using Playcenter.UI;
 
-namespace KitchenClash.Presentation.Common
+namespace Playcenter.UI.Toolkit
 {
     /// <summary>
-    /// Interface for notification/toast screen
+    /// Interface for notification/toast screen.
     /// </summary>
     public interface INotificationScreen
     {

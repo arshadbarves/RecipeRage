@@ -1,18 +1,12 @@
 {
-    "name": "KitchenClash.Presentation",
-    "rootNamespace": "KitchenClash.Presentation",
+    "name": "Playcenter.UI.Toolkit",
+    "rootNamespace": "Playcenter.UI.Toolkit",
     "references": [
-        "KitchenClash.Domain",
-        "KitchenClash.Application",
-        "Playcenter.GameFlow",
-        "VContainer",
-        "UniTask",
-        "DOTween.Modules",
-        "Playcenter.Shell",
-        "Playcenter.Services",
         "Playcenter.UI",
+        "Playcenter.Shell",
         "Playcenter.Animation",
-        "Playcenter.UI.Toolkit"
+        "DOTween.Modules",
+        "UniTask"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Playcenter.UI;
 
-namespace KitchenClash.Presentation.Common
+namespace Playcenter.UI.Toolkit
 {
     public partial class UIService
     {
