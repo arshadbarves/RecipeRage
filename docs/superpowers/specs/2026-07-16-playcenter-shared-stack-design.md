@@ -3,6 +3,7 @@
 **Date:** 2026-07-16  
 **Branch:** `architecture-cleanup`  
 **Status:** Proposed (awaiting user review of this written spec)  
+**Scope revision:** Wave 1 (UI.Toolkit + Animation + EOS) + Wave 2 High-only (session/social ports, Persistence gated, NetworkObjectPool). Med/Low backlog in §15.  
 **Supersedes (partially):** `2026-07-15-playcenter-foundation-extract-design.md` §2.2 engine-free-only rule for *implementation* modules; ports-only UI/Services remain valid for pure contracts  
 **Related:** GameFlow / Shell / Services / UI already shipped under `Assets/Playcenter/`
 
@@ -108,14 +109,16 @@ Keep pure modules (GameFlow, Shell, Services ports, UI ports). Add **optional Un
 │  Playcenter.UI.Toolkit   — stack host, BaseUIScreen core    │
 │  Playcenter.Animation    — DOTween UI/Transform adapters    │
 │  Playcenter.EOS          — shared EOS adapters for ports    │
+│  Playcenter.Persistence  — generic save orchestration (W2)  │
+│  Playcenter.Networking   — NetworkObjectPool first (W2)     │
 │  (future) Playcenter.Unity.Logging — optional; today game   │
 └─────────────────────────────────────────────────────────────┘
                               ▲
                               │
 ┌─────────────────────────────────────────────────────────────┐
 │  GAME — KitchenClash (and future titles)                    │
-│  Composition, Flow handlers, screens, cooking IP, NGO,      │
-│  title UXML/USS, title config, match rules                  │
+│  Composition, Flow handlers, screens, cooking IP, NGO match,│
+│  title UXML/USS, title config, lobby/MM impl, match rules   │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -156,6 +159,8 @@ Keep pure modules (GameFlow, Shell, Services ports, UI ports). Add **optional Un
 | UI.Toolkit → Services / GameFlow / EOS | Toolkit host is presentation infrastructure only |
 | Animation → GameFlow / Services / EOS | Animation is a leaf utility |
 | EOS → UI / UI.Toolkit / Animation / GameFlow | EOS implements Services ports + game session ports; not UI |
+| Persistence → UI / GameFlow / EOS / Networking | Save layer is storage-only |
+| Networking → UI / GameFlow / EOS / Persistence | Pool is networking utility only |
 | Any Playcenter → KitchenClash | Portability wall |
 | Cycles of any kind | Asmdef + review gate |
 
@@ -169,6 +174,8 @@ Keep pure modules (GameFlow, Shell, Services ports, UI ports). Add **optional Un
 | UI.Toolkit | Shell, UI (ports), Animation | Host logs via Shell; implements UI ports; transitions may use Animation |
 | Animation | Shell only (plus DOTween/UniTask/Unity) | No Playcenter.UI / Services / GameFlow / EOS refs |
 | EOS | Shell, Services (ports) | Implements auth/storage ports; logs via Shell |
+| Persistence | Shell, Services (storage ports) | Generic save orchestration; no UI/GameFlow/EOS |
+| Networking | Shell (+ NGO as needed) | Object pool only this program; no UI/GameFlow/EOS |
 | KitchenClash.* | Any Playcenter module it needs | Composition wires everything |
 
 **Summary policy in one line:**  
@@ -283,7 +290,7 @@ Update DAG: **UI.Toolkit → Animation** is allowed; Animation does **not** refe
 |------|-----|
 | `EOSLobbyService`, `EOSMatchmakingService` | Queue/team/format rules are product-specific (2v2/3v3 cooking) |
 | `EOSTeamManager`, `EOSPlayerManager` | Match session shape |
-| `EOSFriendsService` (+ factory) | Evaluate: if API is generic friends list, **promote**; if tied to KitchenClash social UX, keep. **Default:** promote **generic friends port adapter** only if an `IFriendsService` port exists or is added under Services; else keep game-side this program. |
+| `EOSFriendsService` (+ factory) | **Wave 2:** port `IFriendsService` → Services; **impl stays game** unless proven title-agnostic (default: keep impl game-side). |
 | `EOSClientTransportConfigurator`, NGO glue | Netcode transport is game networking |
 | `EOSPlayerDataService` | Title save DTO shape |
 | Obsolete `EOSAuthService` | **Delete** |
@@ -299,16 +306,60 @@ Playcenter.EOS
 
 **Config:** EOS product/sandbox/deployment IDs injected via constructor or `IEOSConfig` interface defined in Playcenter.EOS; game supplies values from ScriptableObject / env.
 
-### 5.5 Explicitly out of scope (this program)
+### 5.5 Wave 2 — additional high-value extracts (same program)
+
+Autopilot default for “what else can be extracted”: include **High-only** extras so multi-title online shells are complete without boiling the ocean. Medium/Low stay deferred (§5.6).
+
+#### 5.5.1 Expand `Playcenter.Services` — session/social ports (pure)
+
+Promote **contracts only** from `KitchenClash.Application` / Interfaces:
+
+| Port | Notes |
+|------|-------|
+| `IFriendsService` (+ factory if generic) | Friends list / presence; no UX. Domain DTOs (`FriendInfo`, etc.) move with the port or become Playcenter.Services models |
+| `ILobbyManager` | Lobby lifecycle contract — **not** EOS lobby implementation |
+| `IMatchmakingService` | Queue/resolve contract — game still owns format (2v2/3v3) and bot fill |
+| `ITeamManager` | Team assignment contract |
+
+**Rules:** pure `Task`/event-based APIs; no NGO/EOS types in signatures; hard cutover Application → `Playcenter.Services`. Implementations stay KitchenClash (or Playcenter.EOS only when truly generic).
+
+**Coupling note:** `IMatchmakingService` currently surfaces `LobbyInfo` / `BotPlayer` domain types — promote only if those models are generic enough; otherwise keep matchmaking port game-side and only promote friends/lobby/team. Plan phase must resolve this before cutover.
+
+#### 5.5.2 NEW: `Playcenter.Persistence` (Unity-thin) — DTO-gated
+
+| Promote | Condition |
+|---------|-----------|
+| `SaveService` orchestration, `LocalStorageProvider`, `StorageProviderFactory` | Must not embed KitchenClash economy/player progress DTOs as required types |
+| Title DTOs / `IPlayerDataService` shape | **Stay game** |
+
+**Current code note:** `SaveService` is largely key/strategy-based and already claims “Does NOT hold game-specific data,” but caches `GameSettingsData`. Phase 6 must either (a) move a generic settings DTO into Playcenter.Services/Persistence, or (b) inject settings via game callback / generic `T`. Gate: if review fails cleanliness, **skip** Persistence this program.
+
+**Asmdef:** `Playcenter.Persistence` → Shell, Services (storage ports); no UI/GameFlow/EOS required.
+
+#### 5.5.3 NEW: `Playcenter.Networking` (Unity-thin) — pool first
+
+| Promote | Stay game |
+|---------|-----------|
+| `NetworkObjectPool` / `INetworkObjectPool` | `NetworkGameManager`, transport configurator, match spawn rules |
+| Optional later: latency monitor | Session lifecycle, player network manager game rules |
+
+**Asmdef:** may reference NGO + Shell; **not** KitchenClash, UI, GameFlow, EOS, Persistence.
+
+### 5.6 Explicitly deferred (not this program)
 
 | Item | Why |
 |------|-----|
-| Clip-based audio (`IAudioService`, SFX tables) | Title content + AudioClip |
-| NGO / Netcode session stack | Game networking topology |
-| Full lobby/matchmaking extract | Product rules differ per title; ports already on GameFlow |
+| Clip-based audio tables / full `IAudioService` content | Title AudioClip catalogs — Audio **plumbing** deferred to Wave 3 / backlog §15 |
+| Firebase adapters | Optional backend; extract when second title confirms Firebase |
+| Input System module | Action maps are title-specific; wrappers deferred |
+| LocalizationManager impl | Port exists; impl extract after string-table decoupling review |
+| Config composite/fallback pure helpers | Small; fold later if duplicated |
+| Camera follow helpers | Likely title-tuned |
+| CoroutineRunner / TaskExtensions / Debug console | Low value vs UniTask stack |
+| NGO full session stack / transport | Game networking topology |
+| Full lobby/MM **implementations** in Playcenter | Product rules differ; **ports** are Wave 2, EOS lobby/MM stay game |
 | VContainer Playcenter module | Composition stays per-game |
-| Firebase / alternate backends | Not shared stack |
-| Cooking, chefs, bots, maps, economy DTOs | Game IP |
+| Cooking, chefs, bots, maps, economy DTOs, title screens | Game IP |
 | Free-for-all module mesh | Forbidden by §4.3 |
 | Re-opening pure Services/UI to hold Unity types | Ports stay pure |
 
@@ -354,9 +405,20 @@ Assets/Playcenter/
       EOSCloudStorageProvider.cs
       EosResultMapper.cs
       IEOSConfig.cs
+  Persistence/           # NEW Unity-thin (Wave 2, gated)
+    Runtime/
+      Playcenter.Persistence.asmdef
+      SaveService.cs
+      LocalStorageProvider.cs
+      StorageProviderFactory.cs
+  Networking/            # NEW Unity-thin (Wave 2)
+    Runtime/
+      Playcenter.Networking.asmdef
+      INetworkObjectPool.cs
+      NetworkObjectPool.cs
 ```
 
-KitchenClash keeps: screens, flow handlers, composition, cooking, NGO, lobby/matchmaking EOS, title assets.
+KitchenClash keeps: screens, flow handlers, composition, cooking, NGO match/session, lobby/matchmaking EOS **impls**, title assets, player data DTOs.
 
 ---
 
@@ -384,9 +446,13 @@ KitchenClash keeps: screens, flow handlers, composition, cooking, NGO, lobby/mat
 | **2** | `Playcenter.Animation` module + cutover | All `IAnimationService` consumers on Playcenter.Animation; old asmdef deleted or emptied |
 | **3** | `Playcenter.UI.Toolkit` module + cutover | UIService/BaseUIScreen moved; screens compile; no VContainer types in Toolkit public API |
 | **4** | `Playcenter.EOS` shared slice + cutover | Auth + cloud storage + mapper moved; obsolete EOSAuthService deleted; lobby/MM stay game |
-| **5** | Docs / wiki / candidates supersession | `wiki/Technical.md`, module READMEs, dependency diagram |
+| **5** | Services session/social ports + cutover | Friends/lobby/MM/team ports in Playcenter.Services; Application originals deleted |
+| **6** | `Playcenter.Persistence` (if DTO-clean) + cutover | Generic save orchestration shared; title DTOs remain game |
+| **7** | `Playcenter.Networking` pool + cutover | `INetworkObjectPool` / pool impl shared; match spawn stays game |
+| **8** | Docs / wiki / candidates supersession | `wiki/Technical.md`, module READMEs, dependency diagram |
 
-Phases 2 and 3 may swap if Toolkit transitions need Animation first — **plan should do Animation before Toolkit transitions wire-up**.
+Phases 2 and 3: **Animation before Toolkit** transition wire-up.  
+Phases 5–7 (Wave 2) after Wave 1 green; skip Persistence phase if DTO review fails cleanliness bar.
 
 ---
 
@@ -412,11 +478,12 @@ Phases 2 and 3 may swap if Toolkit transitions need Animation first — **plan s
 
 ## 11. Success criteria
 
-1. A second game could reference `Playcenter.*` modules and get: flow controller, logging/events, service ports, UI stack **implementation**, DOTween animation service, EOS auth/storage adapters — without copying KitchenClash.
+1. A second game could reference `Playcenter.*` modules and get: flow controller, logging/events, service ports (incl. session/social), UI stack **implementation**, DOTween animation service, EOS auth/storage adapters, optional Persistence + NetworkObjectPool — without copying KitchenClash.
 2. Dependency graph matches §4.2–4.3 (verifiable by asmdef inspection).
 3. Zero dual APIs / legacy shims after each phase cutover.
 4. KitchenClash game IP unchanged in behavior (screens, match, lobby).
 5. Builds: Presentation, Infrastructure, Composition, EditMode green.
+6. Wave 2 Persistence either ships DTO-clean or is explicitly skipped with a note in wiki (no half-coupled extract).
 
 ---
 
@@ -427,7 +494,9 @@ Phases 2 and 3 may swap if Toolkit transitions need Animation first — **plan s
 | VContainer baked into UIService | Introduce `IScreenInstanceFactory` before move |
 | BaseUIScreen `[Inject]` couples to VContainer | Replace with factory-set properties or optional inject adapter in game |
 | EOS lobby accidentally promoted | Explicit stay-game list in §5.4 |
-| Scope explosion (friends, NGO, audio) | Out-of-scope table; YAGNI |
+| Scope explosion (audio/Firebase/input) | Wave 2 = High-only; Med/Low deferred §5.6 |
+| SaveService DTO coupling | Gate Phase 6 on DTO-agnostic review; skip if dirty |
+| Network pool pulls match spawn | Promote pool only; NetworkGameManager stays game |
 | UniTask in Animation blocks pure tests | Animation is T1 only; pure modules never reference it |
 | Large PR / broken mid-cutover | Phase per module; hard cutover per phase, not big-bang all three T1 modules in one commit series without green builds |
 
@@ -444,17 +513,42 @@ Phases 2 and 3 may swap if Toolkit transitions need Animation first — **plan s
 | UI host implementation | `Playcenter.UI.Toolkit` |
 | Animation | `Playcenter.Animation` with UniTask + DOTween |
 | EOS shared | Auth + cloud storage + mapper only |
+| Wave 2 extras | Session/social **ports** + Persistence (if clean) + NetworkObjectPool |
+| Deferred | Firebase, Input, Audio content, LocalizationManager impl, camera, debug, platform utils |
 | Hard cutover | Yes, always |
-| Ports-only Services/UI contracts | Retained |
+| Ports-only Services/UI contracts | Retained for pure tier |
 
 ---
 
 ## 14. What this does *not* claim
 
-- Does not make KitchenClash “done” architecture-wide (network mega-split, audio clips, etc. remain deferred).
+- Does not make KitchenClash “done” architecture-wide (audio clips, Firebase, full NGO split remain deferred).
 - Does not extract GameFlow ports’ game handlers into Playcenter.
-- Does not require every title to take EOS or Animation references.
+- Does not require every title to take EOS, Animation, Persistence, or Networking references.
+- Does not promote lobby/matchmaking **implementations** — only ports in Wave 2.
 
 ---
 
-**Next step after approval of this file:** invoke `writing-plans` to produce `docs/superpowers/plans/2026-07-16-playcenter-shared-stack.md` with bite-sized tasks (Animation → UI pure stack → UI.Toolkit → EOS → docs).
+## 15. Candidate backlog (for later programs)
+
+Documented so “what else?” is answered without expanding this program:
+
+| Priority | Candidate | Suggested module | Notes |
+|----------|-----------|------------------|-------|
+| Med | Firebase analytics/config adapters | `Playcenter.Firebase` | Only if studio-standard |
+| Med | Input provider wrappers | `Playcenter.Input` | Action maps stay game |
+| Med | Audio playback plumbing | `Playcenter.Audio` | No clip tables |
+| Med | LocalizationManager impl | Unity-thin loc | After table decoupling |
+| Med | Config composite/fallback | Services helpers | Small pure logic |
+| Low | LatencyMonitor, connectivity impl | Networking / Shell adapter | |
+| Low | CoroutineRunner, TaskExtensions | Platform | Prefer UniTask |
+| Low | DebugConsoleUI | Debug | Dev-only |
+| Low | CameraController | Camera | Often title-tuned |
+| Never | Cooking, bots, chefs, maps, economy, title UI, flow handlers | — | Game IP |
+
+---
+
+**Next step after approval of this file:** invoke `writing-plans` to produce `docs/superpowers/plans/2026-07-16-playcenter-shared-stack.md` with bite-sized tasks:
+
+Wave 1: Animation → UI pure stack → UI.Toolkit → EOS  
+Wave 2: Services session ports → Persistence (gated) → Networking pool → docs
