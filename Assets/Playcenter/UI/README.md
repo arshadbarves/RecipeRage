@@ -24,4 +24,6 @@ Runtime/
   IUIService.cs
   NotificationType.cs
   UIScreenCategory.cs
+  IUIScreenStackManager.cs
+  UIScreenStackManager.cs
 ```

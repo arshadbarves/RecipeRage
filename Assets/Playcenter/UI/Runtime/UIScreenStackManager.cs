@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
-using Playcenter.UI;
 
-namespace KitchenClash.Presentation.Common
+namespace Playcenter.UI
 {
     /// <summary>
-    /// Manages UI screen stacks per category.
+    /// Engine-free implementation of <see cref="IUIScreenStackManager"/>.
     /// </summary>
     public class UIScreenStackManager : IUIScreenStackManager
     {

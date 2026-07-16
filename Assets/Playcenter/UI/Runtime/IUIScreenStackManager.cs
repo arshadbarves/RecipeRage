@@ -1,10 +1,9 @@
 using System;
-using Playcenter.UI;
 
-namespace KitchenClash.Presentation.Common
+namespace Playcenter.UI
 {
     /// <summary>
-    /// Interface for managing UI screen stacks per category
+    /// Engine-free per-category screen stack history.
     /// </summary>
     public interface IUIScreenStackManager
     {
