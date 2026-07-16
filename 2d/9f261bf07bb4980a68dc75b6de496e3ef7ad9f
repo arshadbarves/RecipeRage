@@ -1,0 +1,19 @@
+Assets/_KitchenClash/Presentation/Common/UITransitionHandler.cs
+  s_698e3070263a23::t_be3ceb8f8cfc15 4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "2d9f261bf07bb4980a68dc75b6de496e3ef7ad9f",
+  "prompts": {},
+  "sessions": {
+    "s_698e3070263a23": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "62c29c09-d120-4544-95ea-7f6230fe44f1",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
