@@ -8,8 +8,11 @@ using PlayEveryWare.EpicOnlineServices.Samples;
 using Playcenter.Services;
 using Playcenter.Shell;
 
-namespace KitchenClash.Infrastructure.EOS
+namespace Playcenter.EOS
 {
+    /// <summary>
+    /// EOS Player Data Storage backed <see cref="ICloudStorageProvider"/>.
+    /// </summary>
     public class EOSCloudStorageProvider : ICloudStorageProvider
     {
         private readonly PlayerDataStorageService _eosStorage;

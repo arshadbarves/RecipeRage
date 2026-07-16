@@ -1,61 +1,60 @@
-using KitchenClash.Application;
 using System;
 using System.Threading.Tasks;
-using KitchenClash.Domain;
-using KitchenClash.Infrastructure.Configuration;
 using Cysharp.Threading.Tasks;
 using Epic.OnlineServices;
 using Epic.OnlineServices.Connect;
 using PlayEveryWare.EpicOnlineServices;
+using Playcenter.Services;
+using Playcenter.Shell;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
 using UnityEngine;
-using Playcenter.Shell;
-using Playcenter.Services;
 
-namespace KitchenClash.Infrastructure.EOS
+namespace Playcenter.EOS
 {
+    /// <summary>
+    /// Shared EOS Connect + optional UGS bridge auth. Title side effects via <see cref="IAuthLifecycleHooks"/>.
+    /// </summary>
     public class AuthenticationService : IAuthService, IDisposable
     {
-        private const int TIMEOUT_SECONDS = 15;
+        private const int TimeoutSeconds = 15;
 
-        private readonly IEventBus _eventBus;
-        private readonly ISaveService _saveService;
-        private readonly UGSConfig _ugsConfig;
+        private readonly IEOSConfig _eosConfig;
+        private readonly IAuthLifecycleHooks _lifecycleHooks;
 
         public string ProductUserId => EOSManager.Instance?.GetProductUserId()?.ToString();
         public bool IsGuest { get; private set; }
 
-        public AuthenticationService(IEventBus eventBus, ISaveService saveService, UGSConfig ugsConfig)
+        public AuthenticationService(IEOSConfig eosConfig, IAuthLifecycleHooks lifecycleHooks = null)
         {
-            _eventBus = eventBus;
-            _saveService = saveService;
-            _ugsConfig = ugsConfig;
+            _eosConfig = eosConfig ?? throw new ArgumentNullException(nameof(eosConfig));
+            _lifecycleHooks = lifecycleHooks;
         }
-
-        // ══════════════════════════════════════════════
-        // GDD v3 contract
-        // ══════════════════════════════════════════════
 
         public async Task<AuthResult> LoginAsGuestAsync()
         {
             try
             {
-                await InitializeUgsAsync();
+                if (_eosConfig.EnableUgsBridge)
+                {
+                    await InitializeUgsAsync();
+                }
+
                 bool success = await LoginWithEosDeviceIdAsync();
                 if (!success)
                 {
                     return AuthResult.Failed("EOS Device ID login failed");
                 }
 
-                await LoginToUgsWithEosAsync();
+                if (_eosConfig.EnableUgsBridge)
+                {
+                    await LoginToUgsWithEosAsync();
+                }
 
                 IsGuest = true;
-                _saveService.UpdateSettings(s => s.LastLoginMethod = "DeviceID");
-
-                var result = new AuthResult(true, ProductUserId, isGuest: true);
-                _eventBus?.Publish(new LoginSuccessEvent { UserId = ProductUserId, DisplayName = "User" });
-                return result;
+                string puid = ProductUserId;
+                _lifecycleHooks?.OnLoginSucceeded(puid, "User", isGuest: true, loginMethod: "DeviceID");
+                return new AuthResult(true, puid, isGuest: true);
             }
             catch (Exception ex)
             {
@@ -106,7 +105,7 @@ namespace KitchenClash.Infrastructure.EOS
         {
             GameLogger.LogInfo("Logging out from all services...");
 
-            _saveService.UpdateSettings(s => s.LastLoginMethod = "");
+            string puid = ProductUserId ?? "unknown";
             IsGuest = false;
 
             if (UnityServices.State == ServicesInitializationState.Initialized &&
@@ -117,20 +116,16 @@ namespace KitchenClash.Infrastructure.EOS
 
             if (EOSManager.Instance != null)
             {
-                ProductUserId puid = EOSManager.Instance.GetProductUserId();
-                if (puid != null && puid.IsValid())
+                Epic.OnlineServices.ProductUserId productUserId = EOSManager.Instance.GetProductUserId();
+                if (productUserId != null && productUserId.IsValid())
                 {
-                    EOSManager.Instance.ClearConnectId(puid);
+                    EOSManager.Instance.ClearConnectId(productUserId);
                 }
             }
 
-            _eventBus?.Publish(new LogoutEvent { UserId = ProductUserId ?? "unknown" });
+            _lifecycleHooks?.OnLogout(puid);
             await Task.CompletedTask;
         }
-
-        // ══════════════════════════════════════════════
-        // Internal helpers
-        // ══════════════════════════════════════════════
 
         private async Task InitializeUgsAsync()
         {
@@ -142,23 +137,24 @@ namespace KitchenClash.Infrastructure.EOS
             GameLogger.Log("Initializing Unity Services...");
 
             var options = new InitializationOptions();
-            if (_ugsConfig != null && !string.IsNullOrEmpty(_ugsConfig.authenticationProfile))
+            if (!string.IsNullOrEmpty(_eosConfig.AuthenticationProfile))
             {
-                options.SetProfile(_ugsConfig.authenticationProfile);
+                options.SetProfile(_eosConfig.AuthenticationProfile);
             }
+
             await UnityServices.InitializeAsync(options);
 
             Unity.Services.Authentication.AuthenticationService.Instance.SignedIn += () =>
                 GameLogger.Log($"UGS signed in - PlayerId: {PlayerId}");
             Unity.Services.Authentication.AuthenticationService.Instance.SignedOut += () =>
                 GameLogger.Log("UGS signed out");
-            Unity.Services.Authentication.AuthenticationService.Instance.SignInFailed += (ex) =>
+            Unity.Services.Authentication.AuthenticationService.Instance.SignInFailed += ex =>
                 GameLogger.LogError($"UGS sign-in failed: {ex.Message}");
 
             GameLogger.Log("Unity Services initialized");
         }
 
-        private string PlayerId => (UnityServices.State == ServicesInitializationState.Initialized)
+        private string PlayerId => UnityServices.State == ServicesInitializationState.Initialized
             ? Unity.Services.Authentication.AuthenticationService.Instance?.PlayerId
             : "NOT_INITIALIZED";
 
@@ -194,7 +190,7 @@ namespace KitchenClash.Infrastructure.EOS
                 }
             );
 
-            return await tcs.Task.Timeout(TimeSpan.FromSeconds(TIMEOUT_SECONDS));
+            return await tcs.Task.Timeout(TimeSpan.FromSeconds(TimeoutSeconds));
         }
 
         private async UniTask<bool> LoginToUgsWithEosAsync()
@@ -237,12 +233,12 @@ namespace KitchenClash.Infrastructure.EOS
                 return false;
             }
 
-            const int MAX_RETRIES = 3;
+            const int maxRetries = 3;
             int attempt = 0;
 
-            while (attempt < MAX_RETRIES)
+            while (attempt < maxRetries)
             {
-                var createOptions = new CreateDeviceIdOptions() { DeviceModel = SystemInfo.deviceModel };
+                var createOptions = new CreateDeviceIdOptions { DeviceModel = SystemInfo.deviceModel };
                 var tcs = new UniTaskCompletionSource<bool>();
 
                 connectInterface.CreateDeviceId(ref createOptions, null, (ref CreateDeviceIdCallbackInfo info) =>
@@ -257,7 +253,7 @@ namespace KitchenClash.Infrastructure.EOS
                     }
                 });
 
-                bool success = await tcs.Task.Timeout(TimeSpan.FromSeconds(TIMEOUT_SECONDS));
+                bool success = await tcs.Task.Timeout(TimeSpan.FromSeconds(TimeoutSeconds));
 
                 if (success)
                 {
@@ -265,7 +261,7 @@ namespace KitchenClash.Infrastructure.EOS
                 }
 
                 attempt++;
-                if (attempt < MAX_RETRIES)
+                if (attempt < maxRetries)
                 {
                     int delayMs = (int)Math.Pow(2, attempt) * 500;
                     GameLogger.LogWarning($"[AuthenticationService] Device ID creation attempt {attempt} failed, retrying in {delayMs}ms...");
@@ -273,19 +269,12 @@ namespace KitchenClash.Infrastructure.EOS
                 }
             }
 
-            GameLogger.LogError($"[AuthenticationService] Failed to create EOS Device ID after {MAX_RETRIES} attempts");
+            GameLogger.LogError($"[AuthenticationService] Failed to create EOS Device ID after {maxRetries} attempts");
             return false;
         }
 
         public void Dispose()
         {
-            if (UnityServices.State == ServicesInitializationState.Initialized)
-            {
-                IAuthenticationService authService = Unity.Services.Authentication.AuthenticationService.Instance;
-                if (authService != null)
-                {
-                }
-            }
         }
     }
 }

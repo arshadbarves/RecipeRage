@@ -7,6 +7,7 @@ using Epic.OnlineServices.Lobby;
 using PlayEveryWare.EpicOnlineServices;
 using PlayEveryWare.EpicOnlineServices.Samples;
 using Playcenter.Shell;
+using Playcenter.EOS;
 
 namespace KitchenClash.Infrastructure.EOS
 {
@@ -462,7 +463,7 @@ namespace KitchenClash.Infrastructure.EOS
 
                 if (type == LobbyType.Match)
                 {
-                    OnMatchLobbyCreated?.Invoke(EosResultMapper.ToLobbyOpResult(data.ResultCode), null);
+                    OnMatchLobbyCreated?.Invoke(MapEosResult(data.ResultCode), null);
                 }
                 return;
             }
@@ -528,7 +529,7 @@ namespace KitchenClash.Infrastructure.EOS
 
                 if (type == LobbyType.Match)
                 {
-                    OnMatchLobbyJoined?.Invoke(EosResultMapper.ToLobbyOpResult(result), null);
+                    OnMatchLobbyJoined?.Invoke(MapEosResult(result), null);
                 }
                 return;
             }
@@ -555,7 +556,7 @@ namespace KitchenClash.Infrastructure.EOS
 
                 if (type == LobbyType.Match)
                 {
-                    OnMatchLobbyJoined?.Invoke(EosResultMapper.ToLobbyOpResult(data.ResultCode), null);
+                    OnMatchLobbyJoined?.Invoke(MapEosResult(data.ResultCode), null);
                 }
                 return;
             }
@@ -871,6 +872,16 @@ namespace KitchenClash.Infrastructure.EOS
 
             GameLogger.Log($"State changed: {oldState} -> {newState}");
             OnLobbyStateChanged?.Invoke(newState);
+        }
+
+        private static LobbyOpResult MapEosResult(Result result)
+        {
+            if (EosResultMapper.IsSuccess(result))
+            {
+                return LobbyOpResult.Ok();
+            }
+
+            return LobbyOpResult.Fail(EosResultMapper.ToErrorCode(result), result.ToString());
         }
 
         #endregion

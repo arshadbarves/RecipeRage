@@ -1,23 +1,17 @@
 {
-    "name": "KitchenClash.Infrastructure.EOS",
-    "rootNamespace": "KitchenClash.Infrastructure.EOS",
+    "name": "Playcenter.EOS",
+    "rootNamespace": "Playcenter.EOS",
     "references": [
-        "KitchenClash.Domain",
-        "KitchenClash.Application",
-        "KitchenClash.Infrastructure.Configuration",
+        "Playcenter.Shell",
+        "Playcenter.Services",
         "UniTask",
-        "Unity.Netcode.Runtime",
         "Unity.Services.Core",
         "Unity.Services.Authentication",
-        "Unity.Services.Friends",
         "com.playeveryware.eos",
         "com.playeveryware.eos.samples",
         "com.Epic.OnlineServices",
         "com.playeveryware.eos.core",
-        "com.playeveryware.eos.samples.networking",
-        "Playcenter.Shell",
-        "Playcenter.Services",
-        "Playcenter.EOS"
+        "com.playeveryware.eos.samples.networking"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

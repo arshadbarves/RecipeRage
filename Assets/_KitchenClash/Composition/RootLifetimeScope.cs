@@ -30,6 +30,7 @@ using VContainer;
 using VContainer.Unity;
 using Playcenter.Shell;
 using Playcenter.Services;
+using Playcenter.EOS;
 using Playcenter.UI;
 using Playcenter.Animation;
 
@@ -139,7 +140,7 @@ public class RootLifetimeScope : LifetimeScope
         builder.Register<MatchmakingPhaseHost>(Lifetime.Singleton).AsSelf().As<ITickable>();
 
         builder.Register<PlayerDataService>(Lifetime.Singleton).As<IPlayerDataService>();
-        builder.Register<EOSCloudStorageProvider>(Lifetime.Singleton).As<ICloudStorageProvider>();
+        builder.Register<Playcenter.EOS.EOSCloudStorageProvider>(Lifetime.Singleton).As<ICloudStorageProvider>();
         builder.Register<StorageProviderFactory>(Lifetime.Singleton);
         builder.Register<SaveService>(Lifetime.Singleton).As<ISaveService>();
         builder.Register<EOSFriendsServiceFactory>(Lifetime.Singleton).As<IFriendsServiceFactory>();
@@ -166,7 +167,9 @@ public class RootLifetimeScope : LifetimeScope
             Debug.LogError("UGSConfig not assigned in RootLifetimeScope");
         }
 
-        builder.Register<AuthenticationService>(Lifetime.Singleton).As<IAuthService>();
+        builder.Register<UgsEosConfigAdapter>(Lifetime.Singleton).As<IEOSConfig>();
+        builder.Register<KitchenClashAuthLifecycleHooks>(Lifetime.Singleton).As<IAuthLifecycleHooks>();
+        builder.Register<Playcenter.EOS.AuthenticationService>(Lifetime.Singleton).As<IAuthService>();
     }
 
     private void RegisterAppFlow(IContainerBuilder builder)
