@@ -2,7 +2,7 @@
 
 **Date:** 2026-07-16  
 **Branch:** `architecture-cleanup`  
-**Status:** Proposed (awaiting user review of this written spec)  
+**Status:** Approved — implementation plan: `docs/superpowers/plans/2026-07-16-playcenter-shared-stack.md`  
 **Scope revision:** Wave 1 (UI.Toolkit + Animation + EOS) + Wave 2 High-only (session/social ports, Persistence gated, NetworkObjectPool). Med/Low backlog in §15.  
 **Supersedes (partially):** `2026-07-15-playcenter-foundation-extract-design.md` §2.2 engine-free-only rule for *implementation* modules; ports-only UI/Services remain valid for pure contracts  
 **Related:** GameFlow / Shell / Services / UI already shipped under `Assets/Playcenter/`
