@@ -1,0 +1,20 @@
+Assets/_KitchenClash/Infrastructure/EOS/EOSLobbyService.cs
+  s_310d1036f5ad04::t_3b0d778bb24bf0 98-111,179-180,194-195,198,306-308,312,929-1029
+  s_310d1036f5ad04::t_514d861cbbd380 1030
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "e7b76f8f6652d69f40953db31ddcd09359a9359c",
+  "prompts": {},
+  "sessions": {
+    "s_310d1036f5ad04": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "5b19384d-458f-4e59-8cf5-d0604c36eaf6",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
