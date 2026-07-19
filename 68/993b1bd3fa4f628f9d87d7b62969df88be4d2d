@@ -1,0 +1,41 @@
+Assets/_KitchenClash/UI/Components.meta
+  s_d7c10630049ebd::t_c5158530205620 1-8
+Assets/_KitchenClash/UI/Screens/HomeScreen.uxml
+  s_d7c10630049ebd::t_15472f47624e6a 2,11,32,41-45,48-51,61,75,77-78,81-82,95,120-121
+Assets/_KitchenClash/UI/Components/PcPanel.uxml
+  s_d7c10630049ebd::t_c5158530205620 1-5
+Assets/_KitchenClash/UI/Components/PcCurrencyChip.uxml.meta
+  s_d7c10630049ebd::t_c5158530205620 1-10
+Assets/_KitchenClash/UI/Components/PcPartySlot.uxml
+  s_d7c10630049ebd::t_c5158530205620 1-5
+Assets/_KitchenClash/UI/Styles/DesignSystem.uss
+  s_d7c10630049ebd::t_c5158530205620 653-754
+Assets/_KitchenClash/UI/Components/PcButton.uxml.meta
+  s_d7c10630049ebd::t_c5158530205620 1-10
+Assets/_KitchenClash/UI/Components/PcPanel.uxml.meta
+  s_d7c10630049ebd::t_c5158530205620 1-10
+Assets/_KitchenClash/UI/Styles/home.uss
+  s_d7c10630049ebd::t_4c0b619c7edce7 1-2
+Assets/_KitchenClash/UI/Components/PcButton.uxml
+  s_d7c10630049ebd::t_c5158530205620 1-5
+Assets/_KitchenClash/UI/Components/PcCurrencyChip.uxml
+  s_d7c10630049ebd::t_c5158530205620 1-6
+Assets/_KitchenClash/UI/Components/PcPartySlot.uxml.meta
+  s_d7c10630049ebd::t_c5158530205620 1-10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "68993b1bd3fa4f628f9d87d7b62969df88be4d2d",
+  "prompts": {},
+  "sessions": {
+    "s_d7c10630049ebd": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call-efba938e-6c2f-4ac7-b600-0a563882ef76-35",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
