@@ -1,9 +1,9 @@
 # Playcenter Client OS — Production Multi-Game Shell Design
 
 **Date:** 2026-07-19  
-**Status:** Design locked (brainstorm §1–§3 approved) — awaiting user review of this written spec  
+**Status:** Design locked — implementation plan ready  
 **Branch:** current working branch  
-**Implementation plan:** *(to be written after user approves this file)*  
+**Implementation plan:** `docs/superpowers/plans/2026-07-19-playcenter-client-os.md`  
 **Related:**
 - `docs/superpowers/specs/2026-07-16-playcenter-shared-stack-design.md` (Approach C pure + Unity-thin DAG — still valid)
 - `docs/superpowers/specs/2026-07-14-architecture-hardening-design.md` (dependency laws)
