@@ -1,0 +1,47 @@
+wiki/UI-UX.md
+  s_269c9c2277e6d9::t_3ae723c373a4fa 70-71
+wiki/LLM-Rules.md
+  s_269c9c2277e6d9::t_642e059d580722 46,52-53,79-113,154
+docs/superpowers/plans/2026-07-19-playcenter-client-os.md
+  s_310d1036f5ad04::t_c933a7b8d5ac91 449,474,476,510,519,529
+  s_310d1036f5ad04::t_217c9023a77b46 93,192,201,219,235,244
+  s_310d1036f5ad04::t_fa2d8dfe60df17 682
+  s_310d1036f5ad04::t_e408c863d1e99a 603,620,627,631,638
+  s_269c9c2277e6d9::t_4be008c1f929dd 765-769,780-783,836-837,856-858,869-871
+  s_310d1036f5ad04::t_62be8f83173f78 321,395,404,410,420
+  s_310d1036f5ad04::t_25a63ab87fe7aa 700,732,736,740
+  s_310d1036f5ad04::t_7abf61a7904d08 559,570,578
+Documentation/Architecture/PROJECT_MEMORY.md
+  s_269c9c2277e6d9::t_2bdece7ed5acf0 28-39,51,54,59,66,69,74-76,80,86
+wiki/Technical.md
+  s_269c9c2277e6d9::t_aeb0fa7e91d92e 29,39-42,45,49,51-56,68,232,249-333
+  s_269c9c2277e6d9::t_9581ff63b5a789 334
+docs/superpowers/specs/2026-07-19-playcenter-client-os-design.md
+  s_269c9c2277e6d9::t_283f3ceef57ecf 4-5,7,20-35
+wiki/log.md
+  s_269c9c2277e6d9::t_8ff9e10f88c958 290-299
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "31a3231a9006dbc90a5b2f892ec0947849f51178",
+  "prompts": {},
+  "sessions": {
+    "s_269c9c2277e6d9": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call-021a850c-4d7f-4874-8f72-c082fe690fd9-19",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    },
+    "s_310d1036f5ad04": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "5b19384d-458f-4e59-8cf5-d0604c36eaf6",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
