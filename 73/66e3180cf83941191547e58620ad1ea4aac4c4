@@ -1,0 +1,27 @@
+Assets/Scripts/Tests/EditMode/Gameplay/BootSequenceConnectivityTests.cs
+  s_99524759999e67::t_fbd64904d76a94 5-7
+  s_99524759999e67::t_9d8e761e4c416b 68-102
+  s_99524759999e67::t_6cfcc409984881 137-153
+  s_99524759999e67::t_7fb1f4e8247b99 200-229
+Assets/_KitchenClash/Infrastructure/Flow/Handlers/BootSequence.cs
+  s_99524759999e67::t_310c96e086b105 16-17
+  s_99524759999e67::t_205595eb73b6bc 154-157,162-168
+Assets/Scripts/Tests/EditMode/Gameplay/Fakes/FakeAppFlow.cs
+  s_99524759999e67::t_c36e2a5763d28b 34
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "7366e3180cf83941191547e58620ad1ea4aac4c4",
+  "prompts": {},
+  "sessions": {
+    "s_99524759999e67": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call-42b4d235-947a-4c08-a67e-a1ccafaee36e-25",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
