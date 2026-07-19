@@ -50,6 +50,7 @@
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/Persistence/PlayerProgressDataTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/AppFlowControllerTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Playcenter/Wallet/WalletPortContractTests.cs" />
+    <Compile Include="Assets/Scripts/Tests/EditMode/Playcenter/Net/NetSessionPortTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/Persistence/PlayerStatsDataTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Core/Auth/AuthenticationServiceTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/Fakes/FakeAppFlow.cs" />
