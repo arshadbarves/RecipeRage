@@ -1,0 +1,25 @@
+docs/superpowers/specs/2026-07-19-playcenter-client-os-design.md
+  s_310d1036f5ad04::t_be437d22ff5e00 273-274,306,349-350
+  s_310d1036f5ad04::t_72703994a12be5 241-242
+  s_310d1036f5ad04::t_078b85ae599bc1 228
+  s_310d1036f5ad04::t_61a5166a53f7d7 235-238
+  s_310d1036f5ad04::t_b6ae7839341acc 247
+  s_310d1036f5ad04::t_154227d7bc71b5 249
+  s_310d1036f5ad04::t_5c3931afe70514 1-227,229-234,239-240,243-246,248,250-272,275-305,307-348,351-735
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "80d917cd962278d145562a8b2a16a328b1b9ae8f",
+  "prompts": {},
+  "sessions": {
+    "s_310d1036f5ad04": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "5b19384d-458f-4e59-8cf5-d0604c36eaf6",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
