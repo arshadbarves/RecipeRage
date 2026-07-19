@@ -2,6 +2,9 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
+using KitchenClash.Application;
+using KitchenClash.Application.Services;
+using KitchenClash.Domain;
 using KitchenClash.Infrastructure.Flow.Handlers;
 using NUnit.Framework;
 using Playcenter.GameFlow;
@@ -62,6 +65,41 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             public Task LogoutAsync() => Task.CompletedTask;
         }
 
+        private sealed class StubAuthAuthenticated : IAuthService
+        {
+            public string ProductUserId => "test-puid";
+            public bool IsGuest => false;
+            public Task<AuthResult> LoginAsGuestAsync() => Task.FromResult(new AuthResult());
+            public Task<AuthResult> LoginWithGoogleAsync() => Task.FromResult(new AuthResult());
+            public Task<AuthResult> LoginWithFacebookAsync() => Task.FromResult(new AuthResult());
+            public Task<AuthResult> LoginWithAppleAsync() => Task.FromResult(new AuthResult());
+            public Task LinkToGoogleAsync() => Task.CompletedTask;
+            public Task LogoutAsync() => Task.CompletedTask;
+        }
+
+        private sealed class StubSessionLifecycle : ISessionLifecycle
+        {
+            public bool IsSessionActive => true;
+            public void CreateSession() { }
+            public void DestroySession() { }
+        }
+
+        private sealed class StubSessionContext : ISessionContext
+        {
+            public bool IsSessionActive => true;
+            public IGameModeService GameModeService => null;
+            public ICharacterService CharacterService => null;
+            public ISkinsService SkinsService => null;
+            public IGameStarter GameStarter => null;
+            public IEconomyService EconomyService => null;
+            public IPlayerDataService PlayerDataService => null;
+            public IFriendsService FriendsService => null;
+            public ILobbyManager LobbyManager => null;
+            public IMatchmakingService MatchmakingService => null;
+            public T Resolve<T>() where T : class => null;
+            public void Inject(object target) { }
+        }
+
         private sealed class StubMaintenance : IMaintenanceService
         {
             public bool IsInMaintenance => false;
@@ -94,6 +132,23 @@ namespace RecipeRage.Tests.EditMode.Gameplay
                 new StubEventBus(),
                 appFlow,
                 sessionLoader: null);
+        }
+
+        private static BootSequence CreateBootAuthenticated(
+            IConnectivityService connectivity,
+            INTPTimeService ntp,
+            IAppFlow appFlow)
+        {
+            var sessionLoader = new SessionLoader(new StubSessionLifecycle(), new StubSessionContext());
+            return new BootSequence(
+                connectivity,
+                ntp,
+                new StubRemoteConfig(),
+                new StubAuthAuthenticated(),
+                new StubMaintenance(),
+                new StubEventBus(),
+                appFlow,
+                sessionLoader);
         }
 
         // ── Tests ────────────────────────────────────────────────────────────────
@@ -141,6 +196,36 @@ namespace RecipeRage.Tests.EditMode.Gameplay
 
             Assert.AreEqual(0, appFlow.NotifyBootCompleteCount,
                 "Boot must not complete when device is offline");
+        }
+
+        [Test]
+        public async Task RunAsync_WhenOnlineAuthenticated_AndCurrentIsBoot_NotifiesBootComplete()
+        {
+            var connectivity = new FakeConnectivity { IsOnline = true };
+            var appFlow = new FakeAppFlow { Current = FlowPhaseId.Boot };
+
+            BootSequence boot = CreateBootAuthenticated(connectivity, new CountingNtp(), appFlow);
+            await boot.RunAsync(CancellationToken.None).AsTask();
+
+            Assert.AreEqual(1, appFlow.NotifyBootCompleteCount,
+                "Authenticated cold boot from Boot phase must call NotifyBootComplete");
+            Assert.AreEqual(0, appFlow.CompleteSidePhaseCount,
+                "Authenticated cold boot from Boot phase must not call CompleteSidePhase");
+        }
+
+        [Test]
+        public async Task RunAsync_WhenOnlineAuthenticated_AndCurrentIsNoConnection_CompletesSidePhase()
+        {
+            var connectivity = new FakeConnectivity { IsOnline = true };
+            var appFlow = new FakeAppFlow { Current = FlowPhaseId.NoConnection };
+
+            BootSequence boot = CreateBootAuthenticated(connectivity, new CountingNtp(), appFlow);
+            await boot.RunAsync(CancellationToken.None).AsTask();
+
+            Assert.AreEqual(1, appFlow.CompleteSidePhaseCount,
+                "Retry from NoConnection must call CompleteSidePhase so flow returns to Home");
+            Assert.AreEqual(0, appFlow.NotifyBootCompleteCount,
+                "Retry from NoConnection must not call NotifyBootComplete");
         }
     }
 }

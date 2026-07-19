@@ -31,7 +31,7 @@ namespace RecipeRage.Tests.EditMode.Gameplay.Fakes
 
         public int CompleteSidePhaseCount { get; private set; }
 
-        public FlowPhaseId Current => FlowPhaseId.Home;
+        public FlowPhaseId Current { get; set; } = FlowPhaseId.Home;
         public FlowContext Context => null;
 
         public void RequestPlay(PlayRequest request = null)

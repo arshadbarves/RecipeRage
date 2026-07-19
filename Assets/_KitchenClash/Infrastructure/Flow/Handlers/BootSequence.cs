@@ -13,7 +13,8 @@ namespace KitchenClash.Infrastructure.Flow.Handlers
 {
     /// <summary>
     /// Cold-boot pipeline: NTP → remote config → force update → maintenance → auth → session.
-    /// Authenticated success ends with NotifyBootComplete only (never dual CompleteSidePhase).
+    /// Authenticated success calls NotifyBootComplete when arriving from Boot phase, or
+    /// CompleteSidePhase when retrying from a side phase (e.g. NoConnection).
     /// </summary>
     public sealed class BootSequence
     {
@@ -150,12 +151,21 @@ namespace KitchenClash.Infrastructure.Flow.Handlers
                     return;
                 }
 
-                // 7. Session load then complete boot (authenticated cold boot only)
+                // 7. Session load then complete boot.
+                // From Boot phase → NotifyBootComplete transitions to Home.
+                // From a side-phase retry (e.g. NoConnection) → CompleteSidePhase; the
+                // Boot return-target mapping in AppFlowController will route to Home.
                 GameLogger.Log("[BootSequence] Auth OK — loading session.");
                 await _sessionLoader.LoadAsync(ct);
                 ct.ThrowIfCancellationRequested();
 
-                _appFlow?.NotifyBootComplete();
+                if (_appFlow != null)
+                {
+                    if (_appFlow.Current == FlowPhaseId.Boot)
+                        _appFlow.NotifyBootComplete();
+                    else
+                        _appFlow.CompleteSidePhase();
+                }
             }
             catch (OperationCanceledException)
             {
