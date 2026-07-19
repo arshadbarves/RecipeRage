@@ -1,0 +1,50 @@
+Assets/_KitchenClash/Infrastructure/Network/NetSessionConnectivityBridge.cs.meta
+  s_1c9229ef7ae12e::t_dc588e4812ec4a 1-11
+Assets/_KitchenClash/Infrastructure/Network/NetSessionConnectivityBridge.cs
+  s_1c9229ef7ae12e::t_b91ce6cf730737 1-78
+  s_1c9229ef7ae12e::t_577d39170ee55d 79
+Assets/_KitchenClash/Infrastructure/Network/NgoEosNetSession.cs
+  s_1c9229ef7ae12e::t_b91ce6cf730737 1-107
+Assets/_KitchenClash/Composition/MenuSessionRegistrations.cs
+  s_1c9229ef7ae12e::t_b6b4ebeeabaa03 45-50
+Assets/_KitchenClash/Composition/RootLifetimeScope.cs
+  s_1c9229ef7ae12e::t_8d3cd5557b1cd4 69-73
+  s_1c9229ef7ae12e::t_a7f6d242ec2e2f 155-157
+Assets/Scripts/Tests/EditMode/Gameplay/NetSessionDelegationTests.cs
+  s_1c9229ef7ae12e::t_77ac9217942fb4 1-233
+Assets/_KitchenClash/Infrastructure/Network/NetworkingServiceContainer.cs
+  s_1c9229ef7ae12e::t_5c66aa476c6359 43-44,47-49,65-67,78,80-100,132
+Assets/_KitchenClash/Infrastructure/EOS/EOSClientTransportConfigurator.cs
+  s_1c9229ef7ae12e::t_b91ce6cf730737 1,7,13-14,16,19-40,48-77,79
+Assets/_KitchenClash/Infrastructure/Network/NgoEosNetSession.cs.meta
+  s_1c9229ef7ae12e::t_c5d3335b7cb499 1-11
+Assets/_KitchenClash/Infrastructure/Network/GameStarter.cs
+  s_698e3070263a23::t_71611267ff8455 11
+  s_1c9229ef7ae12e::t_ba0389ee9e5c6a 27,45,54,84,92,102,104-114,116-119,123,125-134,226,228-231,233,235,237,239-241,259-268,270
+RecipeRage.Tests.EditMode.csproj
+  s_1c9229ef7ae12e::t_c900524910b4e9 54
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "8c1a69c980efb9267b98f8edcfb6804a1e2695cf",
+  "prompts": {},
+  "sessions": {
+    "s_1c9229ef7ae12e": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call-a8993a9f-c7b1-46e1-b382-11ebf0e3c805-27",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    },
+    "s_698e3070263a23": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "62c29c09-d120-4544-95ea-7f6230fe44f1",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
