@@ -1,0 +1,93 @@
+Assets/Playcenter/Services/Runtime/Session/LobbyInfo.cs.meta
+  s_698e3070263a23::t_ee795bad3dcdf1 1-11
+Assets/Playcenter/Services/Runtime/Session/PlayerInfo.cs
+  s_698e3070263a23::t_dcdc735c4fc39f 3-16
+  s_698e3070263a23::t_11ac8d6bf2e939 1-2
+  s_698e3070263a23::t_29595470cade32 17-19
+  s_698e3070263a23::t_8bd4e0850bcb5d 20
+Assets/Playcenter/Services/Runtime/Session/LobbyInfo.cs
+  s_698e3070263a23::t_0941738ab929fb 3-20
+  s_698e3070263a23::t_8ae4943b457c7d 1-2
+  s_698e3070263a23::t_f3451f5601d686 21-23
+  s_698e3070263a23::t_c054318565b64d 24-33
+Assets/Playcenter/Services/Runtime/Session/TeamId.cs
+  s_698e3070263a23::t_d0e6bddb45c6b7 1-3
+  s_698e3070263a23::t_9496992cc32df6 4-6
+  s_698e3070263a23::t_1ab16f1cd2193c 7-9
+Assets/Playcenter/Services/Runtime/Session/TeamId.cs.meta
+  s_698e3070263a23::t_1e3115dcc6acab 1-11
+Assets/Playcenter/Services/Runtime/Session/ILobbyManager.cs.meta
+  s_698e3070263a23::t_1f625647c54a53 1-11
+Assets/Playcenter/Services/Runtime/Session/LobbyType.cs.meta
+  s_698e3070263a23::t_60e012a1bc0e50 1-11
+Assets/_KitchenClash/Infrastructure/EOS/EOSLobbyService.cs
+  s_186735f05eb04b::t_93628e1b0ddb20 15-21,108,124-128,133,142,171,188-189,220,230-240,244,254,282,297,315,355,515,593,600-603
+  s_698e3070263a23::t_64927b6a900447 10
+  s_186735f05eb04b::t_0622ee9fbd7156 604
+Assets/Playcenter/Services/Runtime/Session/LobbyConfig.cs
+  s_698e3070263a23::t_3d07c764d303ae 3
+  s_698e3070263a23::t_346247b8fcc66b 1-2
+  s_698e3070263a23::t_37337650aa7e01 4-6
+  s_698e3070263a23::t_6f578c8615f370 7-19
+Assets/Scripts/Tests/EditMode/Gameplay/LobbyRoleTests.cs.meta
+  s_186735f05eb04b::t_9a827d391a6633 1-11
+Assets/Playcenter/Services/Runtime/Session/PlayerInfo.cs.meta
+  s_698e3070263a23::t_62316de7a05280 1-11
+Assets/Scripts/Tests/EditMode/Gameplay/LobbyRoleTests.cs
+  s_186735f05eb04b::t_a59b06e2abedb6 1-194
+Assets/Playcenter/Services/Runtime/Session.meta
+  s_698e3070263a23::t_16b9f9ed587d8e 2
+  s_698e3070263a23::t_392e3c3196d8b5 1
+  s_698e3070263a23::t_738ad15c4b6fde 3-5
+  s_698e3070263a23::t_6ac47242053a80 6-8
+RecipeRage.Tests.EditMode.csproj
+  s_186735f05eb04b::t_3d10d95034d22a 70
+  s_698e3070263a23::t_55143caab1b01d 68
+Assets/Playcenter/Services/Runtime/Session/LobbyConfig.cs.meta
+  s_698e3070263a23::t_138c8df8f54a92 1-11
+Assets/Playcenter/Services/Runtime/Session/LobbyState.cs
+  s_698e3070263a23::t_18ab7fd0057ed1 1
+  s_698e3070263a23::t_06b547f1087e1e 2-4
+  s_698e3070263a23::t_db920c791d2757 5-13
+Assets/Playcenter/Services/Runtime/Session/LobbyState.cs.meta
+  s_698e3070263a23::t_10ff7fe5fff09b 1-11
+Assets/Playcenter/Services/Runtime/Session/ILobbyManager.cs
+  s_698e3070263a23::t_b21845a9f116da 3
+  s_698e3070263a23::t_3e09ee69521541 1-2
+  s_698e3070263a23::t_45ffa1df79376a 4-6
+  s_698e3070263a23::t_2be621acc991f7 7-40
+Assets/Playcenter/Services/Runtime/Session/LobbyType.cs
+  s_698e3070263a23::t_d063db1763d15e 1
+  s_698e3070263a23::t_0180ef97711a77 2-4
+  s_698e3070263a23::t_16acb6db023d83 5-8
+Assets/Playcenter/Services/Runtime/Session/LobbyOpResult.cs.meta
+  s_698e3070263a23::t_3062e79d354197 1-11
+Assets/Playcenter/Services/Runtime/Session/LobbyOpResult.cs
+  s_698e3070263a23::t_2a5b30eaacb0d9 1-5
+  s_698e3070263a23::t_aa5dadec44909c 6-8
+  s_698e3070263a23::t_ad469156370c99 9-28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "c75b4fe6f6b888cdc7419eda0f610e6ed23f5a5c",
+  "prompts": {},
+  "sessions": {
+    "s_186735f05eb04b": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call-732bc609-024a-4203-bca5-37aaef803933-12",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    },
+    "s_698e3070263a23": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "62c29c09-d120-4544-95ea-7f6230fe44f1",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
