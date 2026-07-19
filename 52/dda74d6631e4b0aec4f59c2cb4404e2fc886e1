@@ -1,0 +1,37 @@
+Assets/_KitchenClash/Composition/RootLifetimeScope.cs
+  s_216dc79834e559::t_6d104e46d6c2ea 207,209
+  s_216dc79834e559::t_1f0d86b384c7e3 221
+  s_310d1036f5ad04::t_217129c5d70ff0 135-137
+Assets/_KitchenClash/Infrastructure/Flow/Handlers/NoConnectionPhase.cs
+  s_216dc79834e559::t_244d9b9ac74811 71,78,80-82
+  s_216dc79834e559::t_25cd13545c0ded 11,20,29,33
+Assets/Scripts/Tests/EditMode/Gameplay/BootSequenceConnectivityTests.cs
+  s_216dc79834e559::t_2854ea39ed7c22 1-146
+Assets/_KitchenClash/Infrastructure/Flow/Handlers/BootSequence.cs
+  s_216dc79834e559::t_98aba3455275d3 20,33,42
+  s_216dc79834e559::t_4fc6d3d0a22950 78-85
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "52dda74d6631e4b0aec4f59c2cb4404e2fc886e1",
+  "prompts": {},
+  "sessions": {
+    "s_216dc79834e559": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call-e4fb6332-7452-4647-a86b-cdc5ecc6b38b-20",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    },
+    "s_310d1036f5ad04": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "5b19384d-458f-4e59-8cf5-d0604c36eaf6",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
