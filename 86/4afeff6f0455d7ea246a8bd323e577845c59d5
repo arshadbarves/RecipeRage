@@ -1,0 +1,101 @@
+Assets/_KitchenClash/Infrastructure/Input/GameplayInputMapper.cs
+  s_bcec70f87bb0d7::t_ad3193b85cb991 1-82
+Assets/_KitchenClash/Infrastructure/Settings/PlayerPrefsSettingsService.cs
+  s_bcec70f87bb0d7::t_c50edc3b1193fe 1-96
+Assets/Playcenter/Services/Runtime/Input/IGameplayInput.cs
+  s_bcec70f87bb0d7::t_e971b046b17cea 1-14
+Assets/_KitchenClash/Infrastructure/Network/PlayerController.InputMovement.cs
+  s_bcec70f87bb0d7::t_2719a95c52caa7 62,64-65,67,69-72,74-75
+  s_bcec70f87bb0d7::t_2fb94eb1bcb3ca 63,66,68,73,76-77
+  s_bcec70f87bb0d7::t_fca2617dc4dec8 6
+  s_bcec70f87bb0d7::t_7bdcdbf4c2df84 78-79
+Assets/_KitchenClash/Infrastructure/Input/GameplayInputService.cs
+  s_bcec70f87bb0d7::t_deca81deb3b07b 1-32
+Assets/_KitchenClash/Infrastructure/Settings/PlayerPrefsSettingsStore.cs
+  s_bcec70f87bb0d7::t_27c83504b8a8c9 1-25
+Assets/_KitchenClash/Composition/RootLifetimeScope.cs
+  s_bcec70f87bb0d7::t_0ff90bd4281288 23-24,161-167
+  s_bcec70f87bb0d7::t_3f551e4514152c 168
+Assets/Scripts/Tests/EditMode/Playcenter/Settings/SettingsServiceTests.cs
+  s_bcec70f87bb0d7::t_21f17e66049891 1-91
+Assets/Playcenter/Services/Runtime/Input/IGameplayInputPublisher.cs
+  s_bcec70f87bb0d7::t_1f71c55faafde6 1-10
+Assets/Playcenter/Services/Runtime/Settings/ISettingsService.cs
+  s_bcec70f87bb0d7::t_9c42c4d7aae83a 1-19
+Assets/Scripts/Tests/EditMode/Playcenter/Input/GameplayInputMapperTests.cs
+  s_bcec70f87bb0d7::t_b21a8bcd41463e 1-86
+Assets/_KitchenClash/Infrastructure/Settings/DictionarySettingsStore.cs
+  s_bcec70f87bb0d7::t_c66f6dfcaac404 1-34
+Assets/Playcenter/Services/Runtime/Settings/GameSettings.cs
+  s_bcec70f87bb0d7::t_a2c2eb711da81b 1-40
+Assets/Playcenter/Services/Runtime/Input/InputAxis2.cs
+  s_bcec70f87bb0d7::t_5f799fe1310a86 1-52
+Assets/_KitchenClash/Infrastructure/Network/PlayerController.cs
+  s_698e3070263a23::t_9e48c8525dcf9b 15
+  s_bcec70f87bb0d7::t_a2c6545f249ee0 168
+  s_bcec70f87bb0d7::t_535b0fb94b0dbf 63-67
+Assets/Playcenter/Services/Runtime/Settings/ISettingsStore.cs
+  s_bcec70f87bb0d7::t_e63ed45863e884 1-23
+Assets/Playcenter/Services/Runtime/Input.meta
+  s_bcec70f87bb0d7::t_c6a9311d0e1e39 1-8
+Assets/Playcenter/Services/Runtime/Input/IGameplayInput.cs.meta
+  s_bcec70f87bb0d7::t_2709aaa47d8a00 1-2
+Assets/Playcenter/Services/Runtime/Input/IGameplayInputPublisher.cs.meta
+  s_bcec70f87bb0d7::t_d8fd2a293aebbc 1-2
+Assets/Playcenter/Services/Runtime/Input/InputAxis2.cs.meta
+  s_bcec70f87bb0d7::t_8ca670d50b93a7 1-2
+Assets/Playcenter/Services/Runtime/Settings.meta
+  s_bcec70f87bb0d7::t_fcd80213575ede 1-8
+Assets/Playcenter/Services/Runtime/Settings/GameSettings.cs.meta
+  s_bcec70f87bb0d7::t_07b582a9b96a0a 1-2
+Assets/Playcenter/Services/Runtime/Settings/ISettingsService.cs.meta
+  s_bcec70f87bb0d7::t_59263a4d90f8bc 1-2
+Assets/Playcenter/Services/Runtime/Settings/ISettingsStore.cs.meta
+  s_bcec70f87bb0d7::t_692460994a153e 1-2
+Assets/Scripts/Tests/EditMode/Playcenter/Input.meta
+  s_bcec70f87bb0d7::t_b09d613083592c 1-8
+Assets/Scripts/Tests/EditMode/Playcenter/Input/GameplayInputMapperTests.cs.meta
+  s_bcec70f87bb0d7::t_0579627f06d841 1-2
+Assets/Scripts/Tests/EditMode/Playcenter/Settings.meta
+  s_bcec70f87bb0d7::t_fff9642b7d90fd 1-8
+Assets/Scripts/Tests/EditMode/Playcenter/Settings/SettingsServiceTests.cs.meta
+  s_bcec70f87bb0d7::t_19322f2b57c8f7 1-2
+Assets/_KitchenClash/Infrastructure/Input/GameplayInputMapper.cs.meta
+  s_bcec70f87bb0d7::t_b76a6a544587cb 1-2
+Assets/_KitchenClash/Infrastructure/Input/GameplayInputService.cs.meta
+  s_bcec70f87bb0d7::t_553c6af3402876 1-2
+Assets/_KitchenClash/Infrastructure/Settings.meta
+  s_bcec70f87bb0d7::t_ad3dd39d1fb68e 1-8
+Assets/_KitchenClash/Infrastructure/Settings/DictionarySettingsStore.cs.meta
+  s_bcec70f87bb0d7::t_369ac282425f2e 1-2
+Assets/_KitchenClash/Infrastructure/Settings/PlayerPrefsSettingsService.cs.meta
+  s_bcec70f87bb0d7::t_f4b6d0dc5ca794 1-2
+Assets/_KitchenClash/Infrastructure/Settings/PlayerPrefsSettingsStore.cs.meta
+  s_bcec70f87bb0d7::t_75794c930d05bb 1-2
+RecipeRage.Tests.EditMode.csproj
+  s_bcec70f87bb0d7::t_240fa8a6794d40 53-54
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "864afeff6f0455d7ea246a8bd323e577845c59d5",
+  "prompts": {},
+  "sessions": {
+    "s_698e3070263a23": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "62c29c09-d120-4544-95ea-7f6230fe44f1",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    },
+    "s_bcec70f87bb0d7": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call-7f756710-8b17-4e46-95af-489a2d3dc156-10",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
