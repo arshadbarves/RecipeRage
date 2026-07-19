@@ -1,6 +1,7 @@
 using KitchenClash.Application;
 using KitchenClash.Application.Services;
 using KitchenClash.Domain;
+using KitchenClash.Infrastructure.EOS;
 using KitchenClash.Infrastructure.Gameplay;
 using KitchenClash.Infrastructure.Network;
 using KitchenClash.Infrastructure.Services;
@@ -42,11 +43,28 @@ namespace KitchenClash.Composition
             // Tutorial
             builder.Register<TutorialService>(Lifetime.Scoped).As<ITutorialService>();
 
+            // Dual-track EOS lobby stack (party ≠ match). Explicit LobbyInterface ids —
+            // never sample EOSLobbyManager.CurrentLobby.
+            builder.Register<EOSTeamManager>(Lifetime.Scoped).As<ITeamManager>();
+            builder.Register<EOSLobbyService>(Lifetime.Scoped).As<ILobbyManager>();
+            builder.Register<EOSPlayerManager>(Lifetime.Scoped).As<IPlayerManager>();
+            builder.Register<EOSMatchmakingService>(Lifetime.Scoped).As<IMatchmakingService>();
+
             // Playcenter net session (NGO+EOS). IMatchContext is match-scoped; adapter
             // falls back to NetworkManager.Singleton until SetMatchContext is called
             // (e.g. from NetworkingServiceContainer when match context is available).
             builder.Register<NgoEosNetSession>(Lifetime.Scoped).AsSelf().As<INetSession>();
             builder.RegisterEntryPoint<NetSessionConnectivityBridge>();
+
+            // Session networking facade (lobby/player/mm + GameStarter). IMatchContext
+            // is match-scoped only — force null here; bridge sets it later.
+            builder.Register<NetworkingServiceContainer>(Lifetime.Scoped)
+                .AsSelf()
+                .As<INetworkingServices>()
+                .WithParameter(typeof(IMatchContext), (IMatchContext)null);
+            builder.Register<IGameStarter>(
+                c => c.Resolve<NetworkingServiceContainer>().GameStarter,
+                Lifetime.Scoped);
 
             // Scene MonoBehaviour preview port for lobby / character details.
             // Falls back to root NullCharacterPreviewService when the component is not in the scene.

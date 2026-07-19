@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Playcenter.Services;
 using Unity.Netcode;
+using VContainer;
 
 namespace KitchenClash.Infrastructure.Network
 {
@@ -16,6 +17,11 @@ namespace KitchenClash.Infrastructure.Network
         private readonly INetTransportConfigurator _transport;
         private IMatchContext _matchContext;
 
+        /// <summary>
+        /// Session-scoped construction: match context is supplied later via
+        /// <see cref="SetMatchContext"/> when the match scope is created.
+        /// </summary>
+        [Inject]
         public NgoEosNetSession(INetTransportConfigurator transport)
         {
             _transport = transport ?? throw new ArgumentNullException(nameof(transport));

@@ -56,7 +56,6 @@ namespace KitchenClash.Infrastructure.Network
         public NetworkingServiceContainer(
             IUIService uiService,
             IAuthService authService,
-            IMatchContext matchContext,
             ILobbyManager lobbyManager,
             IPlayerManager playerManager,
             IMatchmakingService matchmakingService,
@@ -65,6 +64,7 @@ namespace KitchenClash.Infrastructure.Network
             ILocalNetworkIdentity localNetworkIdentity,
             INetTransportConfigurator netTransportConfigurator,
             IAppFlow appFlow,
+            IMatchContext matchContext = null,
             INetSession netSession = null,
             IAnalyticsService analytics = null)
         {

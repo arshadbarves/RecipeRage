@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using Epic.OnlineServices;
 using Epic.OnlineServices.Lobby;
 using PlayEveryWare.EpicOnlineServices;
-using PlayEveryWare.EpicOnlineServices.Samples;
 using Playcenter.Shell;
 using Playcenter.EOS;
 using Playcenter.Services;
@@ -48,7 +47,6 @@ namespace KitchenClash.Infrastructure.EOS
 
         #region Private Fields
 
-        private EOSLobbyManager _eosLobbyManager;
         private ITeamManager _teamManager;
         private bool _isInitialized;
 
@@ -62,11 +60,11 @@ namespace KitchenClash.Infrastructure.EOS
         #region Initialization
 
         /// <summary>
-        /// Constructor
+        /// Constructor — dual-track lobbies use <see cref="LobbyInterface"/> only
+        /// (sample EOSLobbyManager.CurrentLobby is never populated by create/join).
         /// </summary>
-        public EOSLobbyService(EOSLobbyManager eosLobbyManager, ITeamManager teamManager)
+        public EOSLobbyService(ITeamManager teamManager)
         {
-            _eosLobbyManager = eosLobbyManager ?? throw new ArgumentNullException(nameof(eosLobbyManager));
             _teamManager = teamManager ?? throw new ArgumentNullException(nameof(teamManager));
         }
 

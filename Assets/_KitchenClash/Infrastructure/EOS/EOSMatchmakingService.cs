@@ -6,9 +6,9 @@ using KitchenClash.Domain;
 using Epic.OnlineServices;
 using Epic.OnlineServices.Lobby;
 using PlayEveryWare.EpicOnlineServices;
-using PlayEveryWare.EpicOnlineServices.Samples;
 using UnityEngine;
 using Playcenter.Shell;
+using Playcenter.Services;
 
 namespace KitchenClash.Infrastructure.EOS
 {
@@ -39,7 +39,6 @@ namespace KitchenClash.Infrastructure.EOS
         #region Private Fields
 
         private ILobbyManager _lobbyManager;
-        private EOSLobbyManager _eosLobbyManager;
         private BotManager _botManager;
         private bool _isInitialized;
 
@@ -57,10 +56,9 @@ namespace KitchenClash.Infrastructure.EOS
 
         #region Initialization
 
-        public EOSMatchmakingService(ILobbyManager lobbyManager, EOSLobbyManager eosLobbyManager)
+        public EOSMatchmakingService(ILobbyManager lobbyManager)
         {
             _lobbyManager = lobbyManager ?? throw new ArgumentNullException(nameof(lobbyManager));
-            _eosLobbyManager = eosLobbyManager ?? throw new ArgumentNullException(nameof(eosLobbyManager));
             _botManager = new BotManager();
         }
 
