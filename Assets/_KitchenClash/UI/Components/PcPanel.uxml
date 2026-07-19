@@ -1,0 +1,5 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+  <ui:VisualElement name="pc-panel" class="pc-panel">
+    <ui:VisualElement name="pc-panel-content" class="pc-panel__content" />
+  </ui:VisualElement>
+</ui:UXML>

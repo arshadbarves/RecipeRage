@@ -1,0 +1,5 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+  <ui:Button name="pc-party-slot" class="pc-party-slot">
+    <ui:Label name="pc-party-slot-plus" text="+" class="pc-party-slot__plus" />
+  </ui:Button>
+</ui:UXML>

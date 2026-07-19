@@ -1,14 +1,14 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <Style src="project://database/Assets/_KitchenClash/UI/Styles/HomeScreen.uss"/>
+    <Style src="project://database/Assets/_KitchenClash/UI/Styles/home.uss"/>
 
     <ui:VisualElement name="home-root" class="home-root">
 
         <!-- ── Hidden compatibility elements for presenter queries ── -->
         <ui:Label name="gold-amount"   text="0"  style="display: none;" />
-        <ui:Label name="gems-amount"   text="0"  style="display: none;" />
         <ui:Label name="player-nick"   text=""   style="display: none;" />
         <ui:VisualElement name="main-tabs"   style="display: none;" />
         <ui:VisualElement name="lobby-root"  style="display: none;" />
+        <ui:VisualElement name="character-root" style="display: none;" />
         <ui:VisualElement name="shop-root"   style="display: none;" />
 
         <!-- ── Top Bar ───────────────────────────────────────────── -->
@@ -29,7 +29,7 @@
                 style="flex-direction: row; align-items: center;">
 
                 <ui:Button name="btn-streak" class="btn-icon-round"
-                    style="margin-right: var(--sp-6);">
+                    style="margin-right: var(--sp-8);">
                     <ui:Label text="🔥" class="btn-icon-round__label" />
                 </ui:Button>
 
@@ -38,17 +38,17 @@
                     <ui:Label text="👥" class="btn-icon-round__label" />
                 </ui:Button>
 
-                <!-- Gold badge (hidden compat — keeps gold-amount accessible) -->
-                <ui:VisualElement class="currency-badge currency-badge--gold"
-                    style="margin-right: var(--sp-6); display: none;">
-                    <ui:Label text="🪙" class="currency-badge__icon" />
-                    <ui:Label name="gold-amount-display" text="0" class="currency-badge__value" />
+                <!-- Gold badge (hidden compat — gold-amount Label is above) -->
+                <ui:VisualElement class="currency-badge currency-badge--gold pc-chip"
+                    style="margin-right: var(--sp-8); display: none;">
+                    <ui:Label text="🪙" class="currency-badge__icon pc-chip__icon" />
+                    <ui:Label name="gold-amount-display" text="0" class="currency-badge__value pc-chip__value" />
                 </ui:VisualElement>
 
-                <!-- Gems badge -->
-                <ui:VisualElement class="currency-badge currency-badge--gems">
-                    <ui:Label text="💎" class="currency-badge__icon" />
-                    <ui:Label name="gems-amount" text="250" class="currency-badge__value" />
+                <!-- Gems badge — sole gems-amount for C# currency updates -->
+                <ui:VisualElement class="currency-badge currency-badge--gems pc-chip">
+                    <ui:Label text="💎" class="currency-badge__icon pc-chip__icon" />
+                    <ui:Label name="gems-amount" text="250" class="currency-badge__value pc-chip__value" />
                 </ui:VisualElement>
 
             </ui:VisualElement>
@@ -58,7 +58,7 @@
         <ui:VisualElement class="home-hero">
 
             <!-- Chef card -->
-            <ui:VisualElement class="home-chef-card">
+            <ui:VisualElement class="home-chef-card pc-panel">
 
                 <ui:Label name="player-name-main" text="Chef Rosa"
                     class="home-chef-card__name" />
@@ -72,14 +72,14 @@
             </ui:VisualElement>
 
             <!-- Party panel -->
-            <ui:VisualElement class="home-party-panel">
+            <ui:VisualElement class="home-party-panel pc-panel">
 
-                <ui:Button name="btn-party-slot-1" class="home-party-slot">
-                    <ui:Label text="+" class="home-party-slot__plus" />
+                <ui:Button name="btn-party-slot-1" class="home-party-slot pc-party-slot">
+                    <ui:Label text="+" class="home-party-slot__plus pc-party-slot__plus" />
                 </ui:Button>
 
-                <ui:Button name="btn-party-slot-2" class="home-party-slot">
-                    <ui:Label text="+" class="home-party-slot__plus" />
+                <ui:Button name="btn-party-slot-2" class="home-party-slot pc-party-slot">
+                    <ui:Label text="+" class="home-party-slot__plus pc-party-slot__plus" />
                 </ui:Button>
 
             </ui:VisualElement>
@@ -92,7 +92,7 @@
                 <ui:Label text="‹" class="home-carousel__arrow__icon" />
             </ui:Button>
 
-            <ui:VisualElement class="home-carousel__info">
+            <ui:VisualElement class="home-carousel__info pc-panel">
                 <ui:Label name="lbl-map-name" text="SUSHI SHUFFLE"
                     class="home-carousel__map-name" />
                 <ui:Label name="lbl-map-mode" text="2v2 — Quick Match"
@@ -117,8 +117,8 @@
         </ui:VisualElement>
 
         <!-- ── Play CTA ──────────────────────────────────────────── -->
-        <ui:Button name="btn-play" class="btn-play">
-            <ui:Label text="PLAY" class="btn-play__label" />
+        <ui:Button name="btn-play" class="btn-play pc-btn pc-btn--primary">
+            <ui:Label text="PLAY" class="btn-play__label pc-btn__label" />
         </ui:Button>
 
         <!-- ── Quick Action Buttons Row ──────────────────────────── -->

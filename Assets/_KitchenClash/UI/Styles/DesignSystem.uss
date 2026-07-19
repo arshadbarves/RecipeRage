@@ -650,3 +650,105 @@ Button:disabled, .btn:disabled {
     align-self: center;
     margin-bottom: var(--sp-20);
 }
+
+/* ── Playcenter shell components (pc-*) ───────────────────────── */
+.pc-btn {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    border-width: var(--bw-normal);
+    border-color: var(--clr-ink);
+    border-radius: var(--r-md);
+    padding: var(--sp-12) var(--sp-24);
+    background-color: var(--clr-surface);
+    transition-property: scale, background-color;
+    transition-duration: 0.12s, 0.12s;
+}
+
+.pc-btn--primary {
+    background-color: var(--clr-primary);
+}
+
+.pc-btn--primary:active {
+    background-color: var(--clr-primary-dark);
+    scale: 0.95;
+}
+
+.pc-btn__label {
+    -unity-font-definition: var(--font-anton);
+    -unity-font-style: bold;
+    color: var(--clr-primary-text);
+    font-size: var(--fs-ui);
+    letter-spacing: 2px;
+    -unity-text-align: middle-center;
+}
+
+.pc-panel {
+    background-color: var(--clr-card);
+    border-width: var(--bw-normal);
+    border-color: var(--clr-ink);
+    border-radius: var(--r-md);
+    padding: var(--sp-12);
+}
+
+.pc-panel__content {
+    flex-grow: 1;
+}
+
+.pc-chip {
+    flex-direction: row;
+    align-items: center;
+    background-color: var(--clr-surface);
+    border-width: var(--bw-thin);
+    border-color: var(--clr-ink);
+    border-radius: var(--r-xl);
+    padding: var(--sp-4) var(--sp-12);
+    min-height: 36px;
+}
+
+.pc-chip__icon {
+    margin-right: var(--sp-4);
+    font-size: 16px;
+}
+
+.pc-chip__value {
+    -unity-font-definition: var(--font-rajdhani);
+    -unity-font-style: bold;
+    color: var(--clr-text);
+    font-size: var(--fs-sm);
+}
+
+.pc-party-slot {
+    width: 72px;
+    height: 72px;
+    border-width: var(--bw-normal);
+    border-color: var(--clr-ink);
+    border-radius: var(--r-md);
+    background-color: var(--clr-surface);
+    align-items: center;
+    justify-content: center;
+    transition-property: scale;
+    transition-duration: 0.12s;
+}
+
+.pc-party-slot:active {
+    scale: 0.93;
+}
+
+.pc-party-slot__plus {
+    font-size: 28px;
+    color: var(--clr-text-muted);
+    -unity-text-align: middle-center;
+}
+
+/* Map existing home play CTA onto pc primary */
+.btn-play.pc-btn--primary {
+    background-color: var(--clr-primary);
+    border-width: var(--bw-normal);
+    border-color: var(--clr-ink);
+}
+
+.btn-play.pc-btn--primary:active {
+    background-color: var(--clr-primary-dark);
+    scale: 0.95;
+}

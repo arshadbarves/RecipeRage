@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+  <ui:VisualElement name="pc-currency-chip" class="pc-chip">
+    <ui:Label name="pc-chip-icon" text="💎" class="pc-chip__icon" />
+    <ui:Label name="pc-chip-value" text="0" class="pc-chip__value" />
+  </ui:VisualElement>
+</ui:UXML>

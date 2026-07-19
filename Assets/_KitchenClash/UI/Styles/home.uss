@@ -1,3 +1,5 @@
+@import url("project://database/Assets/_KitchenClash/UI/Styles/DesignSystem.uss");
+
 /* ═══════════════════════════════════════════════════════════════════════
    KITCHEN CLASH — Home Screen  v2.0
    ═══════════════════════════════════════════════════════════════════════ */
