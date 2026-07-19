@@ -3,6 +3,7 @@ using Unity.Netcode;
 using UnityEngine;
 using KitchenClash.Domain;
 using Playcenter.Shell;
+using Playcenter.Services;
 
 
 namespace KitchenClash.Infrastructure.Network
@@ -56,6 +57,24 @@ namespace KitchenClash.Infrastructure.Network
             {
                 UseAbilityServerRpc();
             }
+        }
+
+        /// <summary>
+        /// Mirrors local IInputProvider state into the root IGameplayInput snapshot each frame.
+        /// Non-breaking: movement still flows exclusively through IInputProvider events.
+        /// </summary>
+        private void PublishGameplayInputFromProvider()
+        {
+            if (_gameplayInputPublisher == null || _inputProvider == null || !IsLocalPlayer)
+            {
+                return;
+            }
+
+            Vector2 move = _inputProvider.GetMovementInput();
+            _gameplayInputPublisher.Publish(
+                new InputAxis2(move.x, move.y),
+                _inputProvider.IsInteractionActive(),
+                _inputProvider.IsSpecialAbilityActive());
         }
 
         #endregion

@@ -20,6 +20,8 @@ using KitchenClash.Infrastructure.Logging;
 using KitchenClash.Infrastructure.Network;
 using KitchenClash.Infrastructure.Persistence;
 using KitchenClash.Infrastructure.Services;
+using KitchenClash.Infrastructure.Settings;
+using KitchenClash.Infrastructure.Input;
 using KitchenClash.Presentation.Common;
 using KitchenClash.Presentation.ViewModels;
 using Playcenter.UI.Toolkit;
@@ -155,6 +157,14 @@ public class RootLifetimeScope : LifetimeScope
         builder.Register<EOSClientTransportConfigurator>(Lifetime.Singleton)
             .As<IClientTransportConfigurator>()
             .As<INetTransportConfigurator>();
+
+        // Local device settings + gameplay input ports (root-owned; not match-scoped).
+        builder.Register<PlayerPrefsSettingsStore>(Lifetime.Singleton).As<ISettingsStore>();
+        builder.Register<PlayerPrefsSettingsService>(Lifetime.Singleton).As<ISettingsService>();
+        builder.Register<GameplayInputService>(Lifetime.Singleton)
+            .AsSelf()
+            .As<IGameplayInput>()
+            .As<IGameplayInputPublisher>();
 
 #if FIREBASE_REMOTE_CONFIG
         builder.Register<KitchenClash.Infrastructure.Firebase.FirebaseConfigProvider>(Lifetime.Singleton).As<IConfigProvider>();
