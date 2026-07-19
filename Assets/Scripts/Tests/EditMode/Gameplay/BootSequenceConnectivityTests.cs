@@ -57,10 +57,10 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             // Empty ProductUserId → boot exits to Login without needing SessionLoader.
             public string ProductUserId => string.Empty;
             public bool IsGuest => true;
-            public Task<AuthResult> LoginAsGuestAsync() => Task.FromResult(new AuthResult());
-            public Task<AuthResult> LoginWithGoogleAsync() => Task.FromResult(new AuthResult());
-            public Task<AuthResult> LoginWithFacebookAsync() => Task.FromResult(new AuthResult());
-            public Task<AuthResult> LoginWithAppleAsync() => Task.FromResult(new AuthResult());
+            public Task<AuthResult> LoginAsGuestAsync() => Task.FromResult(new AuthResult(false));
+            public Task<AuthResult> LoginWithGoogleAsync() => Task.FromResult(new AuthResult(false));
+            public Task<AuthResult> LoginWithFacebookAsync() => Task.FromResult(new AuthResult(false));
+            public Task<AuthResult> LoginWithAppleAsync() => Task.FromResult(new AuthResult(false));
             public Task LinkToGoogleAsync() => Task.CompletedTask;
             public Task LogoutAsync() => Task.CompletedTask;
         }
@@ -69,10 +69,10 @@ namespace RecipeRage.Tests.EditMode.Gameplay
         {
             public string ProductUserId => "test-puid";
             public bool IsGuest => false;
-            public Task<AuthResult> LoginAsGuestAsync() => Task.FromResult(new AuthResult());
-            public Task<AuthResult> LoginWithGoogleAsync() => Task.FromResult(new AuthResult());
-            public Task<AuthResult> LoginWithFacebookAsync() => Task.FromResult(new AuthResult());
-            public Task<AuthResult> LoginWithAppleAsync() => Task.FromResult(new AuthResult());
+            public Task<AuthResult> LoginAsGuestAsync() => Task.FromResult(new AuthResult(false));
+            public Task<AuthResult> LoginWithGoogleAsync() => Task.FromResult(new AuthResult(false));
+            public Task<AuthResult> LoginWithFacebookAsync() => Task.FromResult(new AuthResult(false));
+            public Task<AuthResult> LoginWithAppleAsync() => Task.FromResult(new AuthResult(false));
             public Task LinkToGoogleAsync() => Task.CompletedTask;
             public Task LogoutAsync() => Task.CompletedTask;
         }

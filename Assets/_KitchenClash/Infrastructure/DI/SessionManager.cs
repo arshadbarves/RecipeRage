@@ -14,6 +14,7 @@ namespace KitchenClash.Infrastructure.DI
         private readonly IObjectResolver _container;
         private readonly IEventBus _eventBus;
         private readonly IUIService _uiService;
+        private readonly ISessionScopeInstaller _sessionScopeInstaller;
 
         private LifetimeScope _sessionScope;
 
@@ -21,11 +22,16 @@ namespace KitchenClash.Infrastructure.DI
         public bool IsSessionActive => _sessionScope != null;
 
         [Inject]
-        public SessionManager(IObjectResolver container, IEventBus eventBus, IUIService uiService)
+        public SessionManager(
+            IObjectResolver container,
+            IEventBus eventBus,
+            IUIService uiService,
+            ISessionScopeInstaller sessionScopeInstaller = null)
         {
             _container = container;
             _eventBus = eventBus;
             _uiService = uiService;
+            _sessionScopeInstaller = sessionScopeInstaller;
         }
 
         public void Initialize()
@@ -34,13 +40,22 @@ namespace KitchenClash.Infrastructure.DI
 
         public void CreateSession()
         {
+            if (_sessionScopeInstaller == null)
+            {
+                throw new InvalidOperationException(
+                    "ISessionScopeInstaller is required. Register MenuSessionScopeInstaller at root.");
+            }
+
             if (_sessionScope != null)
             {
                 DestroySession();
             }
 
+            // Install menu/session registrations (IEconomyService, IWallet, …). A bare child
+            // LifetimeScope has no Configure() and cannot resolve session-scoped services.
             LifetimeScope parentScope = _container.Resolve<LifetimeScope>();
-            _sessionScope = parentScope.CreateChild<LifetimeScope>();
+            _sessionScope = parentScope.CreateChild(builder => _sessionScopeInstaller.Install(builder));
+
             _uiService.SetCurrentScope(_sessionScope.Container);
             GameLogger.LogInfo("SessionLifetimeScope created.");
         }
