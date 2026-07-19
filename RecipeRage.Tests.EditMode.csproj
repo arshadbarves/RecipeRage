@@ -49,14 +49,15 @@
   <ItemGroup>
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/Persistence/PlayerProgressDataTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/AppFlowControllerTests.cs" />
-    <Compile Include="Assets/Scripts/Tests/EditMode/LobbyOpResultTests.cs" />
-    <Compile Include="Assets/Scripts/Tests/EditMode/SessionContextContractTests.cs" />
+    <Compile Include="Assets/Scripts/Tests/EditMode/Playcenter/Wallet/WalletPortContractTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/Persistence/PlayerStatsDataTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Core/Auth/AuthenticationServiceTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/Fakes/FakeAppFlow.cs" />
+    <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/BootSequenceConnectivityTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/AppFlowMigrationTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/LoggingBootstrapTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/GameLoggerTests.cs" />
+    <Compile Include="Assets/Scripts/Tests/EditMode/Playcenter/UIScreenStackManagerTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/MatchServiceTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/BotClaimRegistryTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/MatchEndEvaluatorTests.cs" />
@@ -64,7 +65,6 @@
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/MatchmakingFlowTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/OrderServiceTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/BotTaskPlannerTests.cs" />
-    <Compile Include="Assets/Scripts/Tests/EditMode/Playcenter/UIScreenStackManagerTests.cs" />
     <None Include="Assets/Scripts/Tests/RecipeRage.Tests.EditMode.asmdef" />
     <Reference Include="UnityEngine">
       <HintPath>/Applications/Unity/Hub/Editor/6000.3.15f1/Unity.app/Contents/Resources/Scripting/Managed/UnityEngine/UnityEngine.dll</HintPath>
@@ -897,11 +897,11 @@
     <Reference Include="VContainer">
       <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/ScriptAssemblies/VContainer.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
-    </Reference>
     <Reference Include="UnityEditor.UI">
       <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -941,11 +941,15 @@
       <Project>{3e37d887-f38e-b750-f7cd-a87ad6e0c91c}</Project>
       <Name>Playcenter.Services</Name>
     </ProjectReference>
-      <ProjectReference Include="Playcenter.UI.csproj">
-      <Project>{d425a496-7b06-4a5f-8e46-4f84c05e3171}</Project>
+    <ProjectReference Include="Playcenter.UI.csproj">
+      <Project>{3dbb196d-e7c7-e427-2578-b4a506397670}</Project>
       <Name>Playcenter.UI</Name>
     </ProjectReference>
-</ItemGroup>
+    <ProjectReference Include="Playcenter.UI.Toolkit.csproj">
+      <Project>{8d213293-ea21-a929-6b6a-46fefa48db01}</Project>
+      <Name>Playcenter.UI.Toolkit</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
