@@ -95,6 +95,20 @@ namespace KitchenClash.Infrastructure.EOS
             {
                 concreteTeamManager.Clear();
             }
+
+            // Leave real EOS memberships by explicit id (sample EOSLobbyManager.CurrentLobby is unused).
+            string matchId = CurrentMatchLobby?.LobbyId;
+            string partyId = CurrentPartyLobby?.LobbyId;
+            if (!string.IsNullOrEmpty(matchId))
+            {
+                LeaveLobbyById(matchId, "match");
+            }
+
+            if (!string.IsNullOrEmpty(partyId))
+            {
+                LeaveLobbyById(partyId, "party");
+            }
+
             CurrentPartyLobby = null;
             CurrentMatchLobby = null;
             _isInitialized = false;
@@ -162,9 +176,8 @@ namespace KitchenClash.Infrastructure.EOS
 
             GameLogger.Log($"Inviting friend to party: {friendProductUserId}");
 
-            // Send invite via EOS
-            var friendId = ProductUserId.FromString(friendProductUserId);
-            _eosLobbyManager.SendInvite(friendId);
+            // Invite against the dual-tracked party lobby id — not sample EOSLobbyManager.CurrentLobby.
+            SendInviteToLobby(CurrentPartyLobby.LobbyId, friendProductUserId);
         }
 
         /// <summary>
@@ -178,12 +191,11 @@ namespace KitchenClash.Infrastructure.EOS
                 return;
             }
 
-            GameLogger.Log("Leaving party");
+            string lobbyId = CurrentPartyLobby.LobbyId;
+            GameLogger.Log($"Leaving party lobby: {lobbyId}");
 
             CurrentPartyLobby = null;
-
-            // Leave via EOS
-            _eosLobbyManager.LeaveLobby(null);
+            LeaveLobbyById(lobbyId, "party");
 
             // Preserve match lobby membership if still in a match
             ChangeState(IsInMatchLobby ? LobbyState.InMatchLobby : LobbyState.Idle);
@@ -289,16 +301,15 @@ namespace KitchenClash.Infrastructure.EOS
                 return;
             }
 
-            GameLogger.Log("Leaving match lobby");
-
             bool wasOwner = IsMatchLobbyOwner;
             bool wasLastPlayer = CurrentMatchLobby.CurrentPlayers <= 1;
+            string lobbyId = CurrentMatchLobby.LobbyId;
+
+            GameLogger.Log($"Leaving match lobby: {lobbyId}");
 
             // Clear match only — party survives match end / return home
             CurrentMatchLobby = null;
-
-            // Leave via EOS
-            _eosLobbyManager.LeaveLobby(null);
+            LeaveLobbyById(lobbyId, "match");
 
             if (wasOwner || wasLastPlayer)
             {
@@ -913,6 +924,108 @@ namespace KitchenClash.Infrastructure.EOS
             }
 
             return LobbyOpResult.Fail(EosResultMapper.ToErrorCode(result), result.ToString());
+        }
+
+        /// <summary>
+        /// Leave a specific EOS lobby by id. Dual-track create/join never populate
+        /// sample <c>EOSLobbyManager.CurrentLobby</c>, so leave must not route through it.
+        /// </summary>
+        private void LeaveLobbyById(string lobbyId, string roleLabel)
+        {
+            if (string.IsNullOrEmpty(lobbyId))
+            {
+                GameLogger.LogWarning($"LeaveLobbyById ({roleLabel}): empty lobby id");
+                return;
+            }
+
+            if (EOSManager.Instance == null)
+            {
+                GameLogger.LogError($"LeaveLobbyById ({roleLabel}): EOSManager unavailable for {lobbyId}");
+                return;
+            }
+
+            ProductUserId localUserId = EOSManager.Instance.GetProductUserId();
+            if (localUserId == null || !localUserId.IsValid())
+            {
+                GameLogger.LogError($"LeaveLobbyById ({roleLabel}): local user invalid for {lobbyId}");
+                return;
+            }
+
+            LobbyInterface lobbyInterface = EOSManager.Instance.GetEOSLobbyInterface();
+            if (lobbyInterface == null)
+            {
+                GameLogger.LogError($"LeaveLobbyById ({roleLabel}): LobbyInterface unavailable for {lobbyId}");
+                return;
+            }
+
+            var options = new LeaveLobbyOptions
+            {
+                LobbyId = lobbyId,
+                LocalUserId = localUserId
+            };
+
+            GameLogger.Log($"LeaveLobbyById ({roleLabel}): leaving {lobbyId}");
+            lobbyInterface.LeaveLobby(ref options, null, (ref LeaveLobbyCallbackInfo data) =>
+            {
+                if (data.ResultCode == Result.Success)
+                {
+                    GameLogger.Log($"LeaveLobbyById ({roleLabel}): left {lobbyId}");
+                }
+                else
+                {
+                    GameLogger.LogError($"LeaveLobbyById ({roleLabel}): failed {lobbyId}: {data.ResultCode}");
+                }
+            });
+        }
+
+        private void SendInviteToLobby(string lobbyId, string friendProductUserId)
+        {
+            if (string.IsNullOrEmpty(lobbyId))
+            {
+                OnError?.Invoke("No party lobby id for invite");
+                return;
+            }
+
+            if (EOSManager.Instance == null)
+            {
+                OnError?.Invoke("EOSManager unavailable");
+                return;
+            }
+
+            ProductUserId localUserId = EOSManager.Instance.GetProductUserId();
+            ProductUserId targetUserId = ProductUserId.FromString(friendProductUserId);
+            if (localUserId == null || !localUserId.IsValid() || targetUserId == null || !targetUserId.IsValid())
+            {
+                OnError?.Invoke("Invalid user id for party invite");
+                return;
+            }
+
+            LobbyInterface lobbyInterface = EOSManager.Instance.GetEOSLobbyInterface();
+            if (lobbyInterface == null)
+            {
+                OnError?.Invoke("LobbyInterface unavailable");
+                return;
+            }
+
+            var options = new SendInviteOptions
+            {
+                LobbyId = lobbyId,
+                LocalUserId = localUserId,
+                TargetUserId = targetUserId
+            };
+
+            lobbyInterface.SendInvite(ref options, null, (ref SendInviteCallbackInfo data) =>
+            {
+                if (data.ResultCode == Result.Success)
+                {
+                    GameLogger.Log($"Party invite sent to {friendProductUserId} for lobby {lobbyId}");
+                }
+                else
+                {
+                    GameLogger.LogError($"Party invite failed: {data.ResultCode}");
+                    OnError?.Invoke($"Invite failed: {data.ResultCode}");
+                }
+            });
         }
 
         #endregion
