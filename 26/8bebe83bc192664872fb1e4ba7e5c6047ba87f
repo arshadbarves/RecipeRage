@@ -1,0 +1,49 @@
+Assets/Playcenter/Services/Runtime/Wallet/IWalletStore.cs
+  s_1f1c811a4235be::t_3cae63361d8667 1-8
+Assets/Playcenter/Services/Runtime/Wallet/CurrencyId.cs
+  s_1f1c811a4235be::t_d3f22d67a276b8 1-16
+Assets/Scripts/Tests/EditMode/Playcenter/Wallet/WalletPortContractTests.cs
+  s_1f1c811a4235be::t_cec9fe02d2fd83 1-69
+Assets/Playcenter/Services/Runtime/Wallet/WalletSnapshot.cs
+  s_1f1c811a4235be::t_d815b3a13a479f 1-9
+RecipeRage.Tests.EditMode.csproj
+  s_cc4d742fbfde3c::t_6046b2cddd6266 903-905,944-945,948-951
+  s_cc4d742fbfde3c::t_d27b5c9d1f0b57 952
+  s_310d1036f5ad04::t_047d60e7ddc957 52,56,60
+Assets/Playcenter/Services/Runtime/Wallet/IWalletLedger.cs
+  s_1f1c811a4235be::t_38259241c70594 1-9
+Assets/Playcenter/Services/Runtime/Wallet/IWallet.cs
+  s_1f1c811a4235be::t_45d1e3e68c8465 1-8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "268bebe83bc192664872fb1e4ba7e5c6047ba87f",
+  "prompts": {},
+  "sessions": {
+    "s_1f1c811a4235be": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call-7a96d74a-52ea-4d77-ac6c-8df19de34621-7",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    },
+    "s_310d1036f5ad04": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "5b19384d-458f-4e59-8cf5-d0604c36eaf6",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    },
+    "s_cc4d742fbfde3c": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "b329fed5-298d-4517-8af9-c584f1404b25",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
