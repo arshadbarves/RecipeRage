@@ -1,0 +1,39 @@
+Assets/Playcenter/Services/Runtime/Net.meta
+  s_22d59aa43c7984::t_495fbefac100b4 1-8
+Assets/Playcenter/Services/Runtime/Net/NetRole.cs
+  s_22d59aa43c7984::t_f9d59a42e801b3 1-8
+Assets/Playcenter/Services/Runtime/Net/INetTransportConfigurator.cs
+  s_22d59aa43c7984::t_d3404213d0f88c 1-7
+Assets/Playcenter/Services/Runtime/Net/INetTransportConfigurator.cs.meta
+  s_22d59aa43c7984::t_e4a668f855f629 1-7
+Assets/Playcenter/Services/Runtime/Net/NetRole.cs.meta
+  s_22d59aa43c7984::t_e117829491b847 1-7
+RecipeRage.Tests.EditMode.csproj
+  s_22d59aa43c7984::t_5433b498a141c0 53
+Assets/Scripts/Tests/EditMode/Playcenter/Net.meta
+  s_22d59aa43c7984::t_2d25c9cf7fbd9a 1-8
+Assets/Scripts/Tests/EditMode/Playcenter/Net/NetSessionPortTests.cs.meta
+  s_22d59aa43c7984::t_133a17489a3e82 1-7
+Assets/Playcenter/Services/Runtime/Net/INetSession.cs.meta
+  s_22d59aa43c7984::t_9660c10b53fada 1-7
+Assets/Playcenter/Services/Runtime/Net/INetSession.cs
+  s_22d59aa43c7984::t_d3368e592bce93 1-10
+Assets/Scripts/Tests/EditMode/Playcenter/Net/NetSessionPortTests.cs
+  s_22d59aa43c7984::t_a7224a96ff5890 1-76
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "5dfb2beb1d264c354cb29f82057086d185944c7e",
+  "prompts": {},
+  "sessions": {
+    "s_22d59aa43c7984": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call-dbdd0a90-e4a9-4f54-b1b2-a621b77886b8-16",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
