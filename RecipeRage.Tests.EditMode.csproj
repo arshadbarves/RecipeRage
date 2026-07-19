@@ -65,7 +65,9 @@
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/MatchmakingFlowTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/OrderServiceTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/EconomyWalletBridgeTests.cs" />
+    <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/SessionManagerInstallerTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/BotTaskPlannerTests.cs" />
+    <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/LobbyRoleTests.cs" />
     <None Include="Assets/Scripts/Tests/RecipeRage.Tests.EditMode.asmdef" />
     <Reference Include="UnityEngine">
       <HintPath>/Applications/Unity/Hub/Editor/6000.3.15f1/Unity.app/Contents/Resources/Scripting/Managed/UnityEngine/UnityEngine.dll</HintPath>

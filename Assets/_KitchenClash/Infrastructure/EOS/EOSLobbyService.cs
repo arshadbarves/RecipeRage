@@ -1,19 +1,24 @@
 using KitchenClash.Application;
 using System;
 using System.Collections.Generic;
-using KitchenClash.Domain;
 using Epic.OnlineServices;
 using Epic.OnlineServices.Lobby;
 using PlayEveryWare.EpicOnlineServices;
 using PlayEveryWare.EpicOnlineServices.Samples;
 using Playcenter.Shell;
 using Playcenter.EOS;
+using Playcenter.Services;
 
 namespace KitchenClash.Infrastructure.EOS
 {
     /// <summary>
-    /// Service for managing lobbies (Party and Match)
-    /// Implements PUBG-style lobby system with persistent party lobbies
+    /// EOS-backed lobby manager with dual tracking (Brawl/PUBG style).
+    /// <para>
+    /// Party lobby id and match lobby id are independent. Creating or leaving a match
+    /// lobby must never overwrite or clear <see cref="CurrentPartyLobby"/>. Match end /
+    /// return-home paths should call <see cref="LeaveMatchLobby"/> or
+    /// <see cref="DestroyMatchLobby"/> only — not <see cref="LeaveParty"/>.
+    /// </para>
     /// </summary>
     public class EOSLobbyService : ILobbyManager
     {
@@ -100,7 +105,7 @@ namespace KitchenClash.Infrastructure.EOS
         #region Party Lobby Methods
 
         /// <summary>
-        /// Create a new party lobby
+        /// Create a new party lobby. Does not touch <see cref="CurrentMatchLobby"/>.
         /// </summary>
         public void CreatePartyLobby(LobbyConfig config)
         {
@@ -116,10 +121,16 @@ namespace KitchenClash.Infrastructure.EOS
                 return;
             }
 
+            if (config == null)
+            {
+                config = new LobbyConfig();
+            }
+
             // Set defaults for party lobby
             config.Type = LobbyType.Party;
             config.IsPrivate = true; // Party lobbies are always private
             config.AllowInvites = true;
+            config.CustomAttributes ??= new Dictionary<string, string>();
 
             // Add party-specific attributes
             config.CustomAttributes["Type"] = "Party";
@@ -128,7 +139,7 @@ namespace KitchenClash.Infrastructure.EOS
 
             GameLogger.Log($"Creating party lobby: {config.LobbyName}");
 
-            // Create lobby via EOS
+            // Create lobby via EOS — assigns CurrentPartyLobby only on success
             CreateLobbyInternal(config, LobbyType.Party);
         }
 
@@ -157,7 +168,7 @@ namespace KitchenClash.Infrastructure.EOS
         }
 
         /// <summary>
-        /// Leave the current party
+        /// Leave the current party. Does not clear <see cref="CurrentMatchLobby"/>.
         /// </summary>
         public void LeaveParty()
         {
@@ -169,13 +180,13 @@ namespace KitchenClash.Infrastructure.EOS
 
             GameLogger.Log("Leaving party");
 
-            string lobbyId = CurrentPartyLobby.LobbyId;
             CurrentPartyLobby = null;
 
             // Leave via EOS
             _eosLobbyManager.LeaveLobby(null);
 
-            ChangeState(LobbyState.Idle);
+            // Preserve match lobby membership if still in a match
+            ChangeState(IsInMatchLobby ? LobbyState.InMatchLobby : LobbyState.Idle);
         }
 
         /// <summary>
@@ -206,7 +217,7 @@ namespace KitchenClash.Infrastructure.EOS
         #region Match Lobby Methods
 
         /// <summary>
-        /// Create a new match lobby
+        /// Create a new match lobby. Does not overwrite <see cref="CurrentPartyLobby"/>.
         /// </summary>
         public void CreateMatchLobby(LobbyConfig config)
         {
@@ -216,9 +227,21 @@ namespace KitchenClash.Infrastructure.EOS
                 return;
             }
 
+            if (IsInMatchLobby)
+            {
+                OnError?.Invoke("Already in a match lobby. Leave or destroy it first.");
+                return;
+            }
+
+            if (config == null)
+            {
+                config = new LobbyConfig();
+            }
+
             // Set defaults for match lobby
             config.Type = LobbyType.Match;
             config.IsPrivate = false; // Match lobbies are public for matchmaking
+            config.CustomAttributes ??= new Dictionary<string, string>();
 
             // Add match-specific attributes
             config.CustomAttributes["Type"] = "Match";
@@ -228,7 +251,7 @@ namespace KitchenClash.Infrastructure.EOS
 
             GameLogger.Log($"Creating match lobby: {config.LobbyName}");
 
-            // Create lobby via EOS
+            // Create lobby via EOS — assigns CurrentMatchLobby only on success
             CreateLobbyInternal(config, LobbyType.Match);
         }
 
@@ -256,7 +279,7 @@ namespace KitchenClash.Infrastructure.EOS
         }
 
         /// <summary>
-        /// Leave the current match lobby
+        /// Leave the current match lobby. Never nulls <see cref="CurrentPartyLobby"/>.
         /// </summary>
         public void LeaveMatchLobby()
         {
@@ -268,10 +291,10 @@ namespace KitchenClash.Infrastructure.EOS
 
             GameLogger.Log("Leaving match lobby");
 
-            string lobbyId = CurrentMatchLobby.LobbyId;
             bool wasOwner = IsMatchLobbyOwner;
             bool wasLastPlayer = CurrentMatchLobby.CurrentPlayers <= 1;
 
+            // Clear match only — party survives match end / return home
             CurrentMatchLobby = null;
 
             // Leave via EOS
@@ -289,7 +312,7 @@ namespace KitchenClash.Infrastructure.EOS
         }
 
         /// <summary>
-        /// Destroy the current match lobby (owner only)
+        /// Destroy the current match lobby (owner only). Never nulls <see cref="CurrentPartyLobby"/>.
         /// </summary>
         public void DestroyMatchLobby()
         {
@@ -329,6 +352,7 @@ namespace KitchenClash.Infrastructure.EOS
                 }
             });
 
+            // Clear match only — party survives
             CurrentMatchLobby = null;
             OnMatchLobbyLeft?.Invoke();
 
@@ -488,6 +512,7 @@ namespace KitchenClash.Infrastructure.EOS
 
             SetLobbyAttributes(data.LobbyId, config);
 
+            // Dual tracking: party and match ids are independent — never cross-assign
             if (type == LobbyType.Party)
             {
                 CurrentPartyLobby = lobbyInfo;
@@ -565,11 +590,17 @@ namespace KitchenClash.Infrastructure.EOS
 
             RefreshLobbyDetails(data.LobbyId, (lobbyInfo) =>
             {
+                // Dual tracking: assign only the lobby role that was joined
                 if (type == LobbyType.Match)
                 {
                     CurrentMatchLobby = lobbyInfo;
                     ChangeState(LobbyState.InMatchLobby);
                     OnMatchLobbyJoined?.Invoke(LobbyOpResult.Ok(), lobbyInfo);
+                }
+                else
+                {
+                    CurrentPartyLobby = lobbyInfo;
+                    ChangeState(LobbyState.InParty);
                 }
             });
         }
