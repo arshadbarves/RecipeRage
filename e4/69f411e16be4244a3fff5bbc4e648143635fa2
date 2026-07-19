@@ -1,0 +1,40 @@
+Assets/_KitchenClash/Infrastructure/EOS/EOSMatchmakingService.cs
+  s_698e3070263a23::t_864dac1eed1b21 11
+  s_310d1036f5ad04::t_de1d6909803eeb 59
+Assets/_KitchenClash/Composition/MenuSessionRegistrations.cs
+  s_310d1036f5ad04::t_9665678eeb5de7 4,46-52,59,61-62,65-67
+  s_310d1036f5ad04::t_e782640ea0a746 60,63-64
+  s_310d1036f5ad04::t_345c36eecb942f 68
+Assets/_KitchenClash/Infrastructure/Network/NetworkingServiceContainer.cs
+  s_310d1036f5ad04::t_8bdce0207816f6 67
+Assets/_KitchenClash/Infrastructure/EOS/EOSLobbyService.cs
+  s_310d1036f5ad04::t_cee50f29e718d9 63-64,66
+Assets/_KitchenClash/Infrastructure/Network/NgoEosNetSession.cs
+  s_310d1036f5ad04::t_3e724b709868d6 6,20-24
+Assets/_KitchenClash/Infrastructure/EOS/EOSPlayerManager.cs
+  s_310d1036f5ad04::t_95d70af6bec3cb 7,12-14,18,21,23,33-34,41,47-48,53-54,61,67-68,73-74,81,87-88,93,95,99-100,102-103,107-115,120-128,140-162,164,166,170,175-178,182-194,197,200,202,204-210,213-214,219,221-222,231,233-272,275-280,284-338
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "e469f411e16be4244a3fff5bbc4e648143635fa2",
+  "prompts": {},
+  "sessions": {
+    "s_310d1036f5ad04": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "5b19384d-458f-4e59-8cf5-d0604c36eaf6",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    },
+    "s_698e3070263a23": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "62c29c09-d120-4544-95ea-7f6230fe44f1",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
