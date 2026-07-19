@@ -1,0 +1,33 @@
+Assets/_KitchenClash/Composition/RootLifetimeScope.cs
+  s_310d1036f5ad04::t_da5c3afc01b906 232-233
+Assets/_KitchenClash/Presentation/ViewModels/GameplayHudViewModel.cs
+  s_310d1036f5ad04::t_35ca92e538f290 248-249
+wiki/Technical.md
+  s_310d1036f5ad04::t_f0dba947d70df8 279-280
+Assets/_KitchenClash/Infrastructure/Services/MatchRewardHandler.cs
+  s_310d1036f5ad04::t_c98e29b7c2cd5d 13-15
+Assets/Scripts/Tests/EditMode/Gameplay/EconomyWalletBridgeTests.cs
+  s_310d1036f5ad04::t_c01e30eaca33f1 223-295
+Assets/_KitchenClash/Infrastructure/Flow/StateMachineFlowPorts.cs
+  s_310d1036f5ad04::t_b4f9848bf75ee0 141-142
+Assets/_KitchenClash/Infrastructure/Flow/Handlers/ResultsPhase.cs
+  s_310d1036f5ad04::t_4726be0ce7bd10 3,9-11,17,19,22,25,30-31,36-41,46,49,51,53-54,58-65,67-68
+wiki/log.md
+  s_310d1036f5ad04::t_e9ad6033906216 300-305
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "4b1feae1c23d14e45e7fa8eb3f7ce24c77cb00a8",
+  "prompts": {},
+  "sessions": {
+    "s_310d1036f5ad04": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "5b19384d-458f-4e59-8cf5-d0604c36eaf6",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
