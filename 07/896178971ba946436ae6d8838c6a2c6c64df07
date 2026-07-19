@@ -1,0 +1,27 @@
+Assets/_KitchenClash/Infrastructure/DI/SessionManager.cs
+  s_310d1036f5ad04::t_e134fe24b82ef6 43-48,54-55,57
+  s_310d1036f5ad04::t_5ae9fccc54fcb7 17,25-29,34,58
+Assets/_KitchenClash/Application/Interfaces/ISessionScopeInstaller.cs
+  s_310d1036f5ad04::t_ccd304e9cb24d3 7-17
+  s_310d1036f5ad04::t_af42416346c38d 1-6,18-22
+Assets/Scripts/Tests/EditMode/Gameplay/SessionManagerInstallerTests.cs
+  s_310d1036f5ad04::t_c1d2780f69b208 1-32
+Assets/Scripts/Tests/EditMode/Gameplay/BootSequenceConnectivityTests.cs
+  s_310d1036f5ad04::t_517e33e0155075 60-63,72-75
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "07896178971ba946436ae6d8838c6a2c6c64df07",
+  "prompts": {},
+  "sessions": {
+    "s_310d1036f5ad04": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "5b19384d-458f-4e59-8cf5-d0604c36eaf6",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
