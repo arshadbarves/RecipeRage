@@ -287,3 +287,13 @@ Multi-title foundation ports hard-cutover on `architecture-cleanup`:
 - Hard cutover: no dual namespaces, type aliases, or legacy fallbacks; GameFlow/Shell independent of Services/UI; UI ⟂ Services
 - Commits: ports `b7780514`, Services cutover `52f11174`, UI module `c84a4ceb`, UI cutover `e8abcd87`
 - Still deferred: clip-based audio, Platform/Async Unity leaves, save DTOs, cooking IP
+
+## 2026-07-19 — Playcenter Client OS runtime laws (Tasks 1–12)
+
+Client OS program implemented on `architecture-cleanup`; wiki laws updated to match shipped code.
+
+- **Spec:** `docs/superpowers/specs/2026-07-19-playcenter-client-os-design.md` (status → Implemented Tasks 1–11; wiki Task 12)
+- **Plan:** `docs/superpowers/plans/2026-07-19-playcenter-client-os.md`
+- **Laws:** `wiki/Technical.md` § Playcenter Client OS; `wiki/LLM-Rules.md` REQUIRED/FORBIDDEN
+- **Shipped surface:** connectivity-first boot + CompleteSidePhase; wallet ports + Economy dual-impl + MatchRewardHandler ledger; CreateSession installer; party vs match lobby; INetSession + NgoEosNetSession + forfeit bridge; DesignSystem `pc-*` shell; IGameplayInput/ISettingsService; analytics hooks + presentation purity
+- **Commits (1–11):** `52dda74d`/`7366e318`, `268bebe8`, `9162a3e0`, `07896178`, `c75b4fe6`, `5dfb2beb`, `8c1a69c9`, `68993b1b`, `61277f65`, `864afeff`, `70e45110`

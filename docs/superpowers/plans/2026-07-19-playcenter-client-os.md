@@ -90,7 +90,7 @@
 - Consumes: `Playcenter.Shell.IConnectivityService` (`bool IsOnline`), `IAppFlow.EnterSidePhase(FlowPhaseId.NoConnection)`, existing BootSequence deps
 - Produces: Boot halts on offline before NTP; online path unchanged order after gate
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `Assets/Scripts/Tests/EditMode/Gameplay/BootSequenceConnectivityTests.cs`:
 
@@ -189,7 +189,7 @@ namespace KitchenClash.Tests.EditMode.Gameplay
 
 **Note:** Open `IAppFlow`, `INTPTimeService`, `IConnectivityService`, and current `BootSequence` ctor and complete fakes so the test compiles. Prefer existing fakes in `Assets/Scripts/Tests/EditMode/Gameplay/Fakes/` if present.
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 ```bash
 dotnet build RecipeRage.Tests.EditMode.csproj -nologo
@@ -198,7 +198,7 @@ dotnet test RecipeRage.Tests.EditMode.csproj --filter="FullyQualifiedName~BootSe
 
 Expected: FAIL (BootSequence has no connectivity gate / CreateBoot not wired) or compile error on missing ctor param.
 
-- [ ] **Step 3: Implement connectivity gate in BootSequence**
+- [x] **Step 3: Implement connectivity gate in BootSequence**
 
 Update ctor to take `IConnectivityService connectivity` (required). At start of `RunAsync`:
 
@@ -216,7 +216,7 @@ Then keep existing steps renumbered in comments: 1 NTP, 2 RC init, 3 RC refresh,
 
 Wire in `RootLifetimeScope` where `new BootSequence(...)` is constructed — pass the already-registered `IConnectivityService` instance.
 
-- [ ] **Step 4: Fix NoConnectionPhase boot retry**
+- [x] **Step 4: Fix NoConnectionPhase boot retry**
 
 When offline at cold boot, Retry must not only `SessionLoader.LoadAsync` (session may never have been created). Options (pick one, document in code):
 
@@ -232,7 +232,7 @@ await _bootSequence.RunAsync(CancellationToken.None);
 
 Avoid double-Enter of NoConnection without Exit — BootSequence should call EnterSidePhase only when still offline; phase host should be re-entrant safe (Exit then Enter already in `Enter()`).
 
-- [ ] **Step 5: Complete CreateBoot fakes and run tests**
+- [x] **Step 5: Complete CreateBoot fakes and run tests**
 
 ```bash
 dotnet build RecipeRage.Tests.EditMode.csproj -nologo
@@ -241,7 +241,7 @@ dotnet test RecipeRage.Tests.EditMode.csproj --filter="FullyQualifiedName~BootSe
 
 Expected: PASS
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add Assets/_KitchenClash/Infrastructure/Flow/Handlers/BootSequence.cs \
@@ -318,7 +318,7 @@ namespace Playcenter.Services
 }
 ```
 
-- [ ] **Step 1: Write contract test (compiles against ports)**
+- [x] **Step 1: Write contract test (compiles against ports)**
 
 ```csharp
 using NUnit.Framework;
@@ -392,7 +392,7 @@ namespace KitchenClash.Tests.EditMode.Playcenter.Wallet
 }
 ```
 
-- [ ] **Step 2: Run test — expect compile fail (types missing)**
+- [x] **Step 2: Run test — expect compile fail (types missing)**
 
 ```bash
 dotnet build Playcenter.Services.csproj -nologo
@@ -401,13 +401,13 @@ dotnet build RecipeRage.Tests.EditMode.csproj -nologo
 
 Expected: CS0246 on `IWallet` / `CurrencyId`.
 
-- [ ] **Step 3: Add port files under `Assets/Playcenter/Services/Runtime/Wallet/`**
+- [x] **Step 3: Add port files under `Assets/Playcenter/Services/Runtime/Wallet/`**
 
 Use exact signatures from Interfaces block. No UnityEngine. No UniTask.
 
 Unity regenerates csproj Compile includes — if build misses new files, open Unity once or ensure asmdef folder inclusion (`Playcenter.Services.asmdef` already covers Runtime/**).
 
-- [ ] **Step 4: Build + test pass**
+- [x] **Step 4: Build + test pass**
 
 ```bash
 dotnet build Playcenter.Services.csproj -nologo
@@ -417,7 +417,7 @@ dotnet test RecipeRage.Tests.EditMode.csproj --filter="FullyQualifiedName~Wallet
 
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add Assets/Playcenter/Services/Runtime/Wallet/ \
@@ -446,7 +446,7 @@ EOF
 - Consumes: Task 2 ports; existing `IEconomyService`, `ISaveService`, `EconomyKeys`
 - Produces: SESSION resolves `IWallet`/`IWalletLedger`/`IEconomyService` as one object; match rewards credit via ledger
 
-- [ ] **Step 1: Failing tests for EconomyService as ledger**
+- [x] **Step 1: Failing tests for EconomyService as ledger**
 
 ```csharp
 [Test]
@@ -471,9 +471,9 @@ public void Credit_MatchReward_DoesNotTouchMatchScope()
 
 Use existing `SpyEventBus` / save fakes from EditMode tests.
 
-- [ ] **Step 2: Run — fail (EconomyService does not implement IWalletLedger)**
+- [x] **Step 2: Run — fail (EconomyService does not implement IWalletLedger)**
 
-- [ ] **Step 3: Implement on EconomyService**
+- [x] **Step 3: Implement on EconomyService**
 
 ```csharp
 public sealed class EconomyService : IEconomyService, IWallet, IWalletLedger
@@ -507,7 +507,7 @@ builder.Register<EconomyService>(Lifetime.Singleton)
     .As<IWalletLedger>();
 ```
 
-- [ ] **Step 4: MatchRewardHandler uses IWalletLedger**
+- [x] **Step 4: MatchRewardHandler uses IWalletLedger**
 
 ```csharp
 // Inject IWalletLedger _ledger
@@ -516,7 +516,7 @@ _ledger.Credit(CurrencyId.Coins, reward, won ? "match_win" : "match_loss");
 
 Do **not** resolve economy from match scope. Handler must be session-scoped or receive ledger from session parent.
 
-- [ ] **Step 5: Build + test**
+- [x] **Step 5: Build + test**
 
 ```bash
 dotnet build RecipeRage.Gameplay.csproj -nologo
@@ -526,7 +526,7 @@ dotnet test RecipeRage.Tests.EditMode.csproj --filter="FullyQualifiedName~Econom
 
 Expected: PASS. Manual smoke: login path no longer throws missing `IEconomyService` (session installer already registers economy).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add Assets/_KitchenClash/Application/Services/EconomyService.cs \
@@ -556,7 +556,7 @@ EOF
 - Consumes: `ISessionScopeInstaller.Install(IContainerBuilder)`
 - Produces: `CreateSession` never builds empty child scope
 
-- [ ] **Step 1: Test**
+- [x] **Step 1: Test**
 
 ```csharp
 [Test]
@@ -567,7 +567,7 @@ public void CreateSession_WhenInstallerMissing_ThrowsInvalidOperationException()
 }
 ```
 
-- [ ] **Step 2: Implement guard in SessionManager.CreateSession**
+- [x] **Step 2: Implement guard in SessionManager.CreateSession**
 
 ```csharp
 if (_sessionScopeInstaller == null)
@@ -575,7 +575,7 @@ if (_sessionScopeInstaller == null)
         "ISessionScopeInstaller is required. Register MenuSessionScopeInstaller at root.");
 ```
 
-- [ ] **Step 3: Build + test + commit**
+- [x] **Step 3: Build + test + commit**
 
 ```bash
 git commit -m "$(cat <<'EOF'
@@ -600,7 +600,7 @@ EOF
 - Consumes: `ILobbyManager`, `LobbyType` (Party vs Match), `LobbyOpResult`
 - Produces: Party lobby survives match end; match lobby destroyed on return Home; all public methods return `LobbyOpResult` or Task\<LobbyOpResult\> (no raw EOS `Result` in Application/Presentation)
 
-- [ ] **Step 1: Document current dual-use in test of fake**
+- [x] **Step 1: Document current dual-use in test of fake**
 
 ```csharp
 public enum LobbyRole { None, Party, Match }
@@ -617,25 +617,25 @@ public void DestroyMatchLobby_KeepsParty()
 }
 ```
 
-- [ ] **Step 2: Implement dual-lobby tracking in EOSLobbyService**
+- [x] **Step 2: Implement dual-lobby tracking in EOSLobbyService**
 
 - Keep separate lobby ids: `_partyLobbyId`, `_matchLobbyId`
 - Map EOS callbacks → `LobbyOpResult.Ok()` / `Fail(code, message)` at boundary only
 - On `ReturnHome` / results exit: leave/destroy match lobby only
 - Invite/join party uses party lobby (Brawl Home party panel)
 
-- [ ] **Step 3: Align Home PLAY path**
+- [x] **Step 3: Align Home PLAY path**
 
 Party exists on Home → PLAY starts matchmaking → on match found create/join **match** lobby → VS/intro → net start. Do not replace party lobby id with match lobby id.
 
-- [ ] **Step 4: Manual checklist (EditMode cannot fully cover EOS)**
+- [x] **Step 4: Manual checklist (EditMode cannot fully cover EOS)**
 
 1. Solo boot → Home  
 2. Create party (or implicit solo party)  
 3. PLAY → MM → match → results → Home  
 4. Assert party still valid / can re-queue without full re-login  
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git commit -m "$(cat <<'EOF'
@@ -679,7 +679,7 @@ namespace Playcenter.Services
 }
 ```
 
-- [ ] **Step 1–4:** Same TDD pattern as Task 2 (fake in-memory session: Start sets IsActive, Stop clears). Commit `feat(services): add INetSession ports`.
+- [x] **Step 1–4:** Same TDD pattern as Task 2 (fake in-memory session: Start sets IsActive, Stop clears). Commit `feat(services): add INetSession ports`.
 
 ---
 
@@ -697,7 +697,7 @@ namespace Playcenter.Services
 - Consumes: Task 6 ports; NGO `NetworkManager`; EOS transport
 - Produces: `StartAsync(Host)` ≡ former `StartHost` path; `StartAsync(Client)` ≡ `StartClient`; `StopAsync` shuts down NGO
 
-- [ ] **Step 1: Extract start/stop into NgoEosNetSession**
+- [x] **Step 1: Extract start/stop into NgoEosNetSession**
 
 ```csharp
 public sealed class NgoEosNetSession : INetSession
@@ -729,15 +729,15 @@ public sealed class NgoEosNetSession : INetSession
 
 Wire `NetworkManager` when match scene binder runs (setter or `IMatchContext`).
 
-- [ ] **Step 2: GameStarter calls `_netSession.StartAsync` instead of direct StartHost/StartClient**
+- [x] **Step 2: GameStarter calls `_netSession.StartAsync` instead of direct StartHost/StartClient**
 
 Keep spawn/approval/bot logic in GameStarter after successful start.
 
-- [ ] **Step 3: Reconnect v1**
+- [x] **Step 3: Reconnect v1**
 
 On `IConnectivityService.OnMatchForfeit` / host dropped timeout: `StopAsync` + flow to results/forfeit. No host migration.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git commit -m "$(cat <<'EOF'
@@ -762,11 +762,11 @@ EOF
 - Consumes: existing `BaseUIScreen` / UI Toolkit
 - Produces: reusable UXML templates referenced by screens
 
-- [ ] **Step 1: Inventory HomeScreen structure** — party row, PLAY CTA, currency chips
-- [ ] **Step 2: Extract components** with DesignSystem classes (`pc-btn`, `pc-panel`, `pc-chip`, …)
-- [ ] **Step 3: Rebuild HomeScreen.uxml** using components; keep binding names screens already query (`Q<Button>("play-button")` etc.) **or** update C# queries in same commit
-- [ ] **Step 4: Visual check in Editor Game view (manual)
-- [ ] **Step 5: Commit** `feat(ui): DesignSystem shell components and Home redesign`
+- [x] **Step 1: Inventory HomeScreen structure** — party row, PLAY CTA, currency chips
+- [x] **Step 2: Extract components** with DesignSystem classes (`pc-btn`, `pc-panel`, `pc-chip`, …)
+- [x] **Step 3: Rebuild HomeScreen.uxml** using components; keep binding names screens already query (`Q<Button>("play-button")` etc.) **or** update C# queries in same commit
+- [x] **Step 4: Visual check in Editor Game view (manual)
+- [x] **Step 5: Commit** `feat(ui): DesignSystem shell components and Home redesign` (`68993b1b`)
 
 ---
 
@@ -777,10 +777,10 @@ EOF
 - Modify corresponding `BaseUIScreen` subclasses for new element names
 - Flow handlers already drive phase order — only presentation
 
-- [ ] **Step 1:** Match lobby shows teams from match lobby members (not party-only)
-- [ ] **Step 2:** VS splash uses DesignSystem motion-safe layout
-- [ ] **Step 3:** Results shows rewards from session wallet balances after ledger credit
-- [ ] **Step 4:** Commit `feat(ui): match lobby VS results on DesignSystem`
+- [x] **Step 1:** Match lobby shows teams from match lobby members (not party-only)
+- [x] **Step 2:** VS splash uses DesignSystem motion-safe layout
+- [x] **Step 3:** Results shows rewards from session wallet balances after ledger credit
+- [x] **Step 4:** Commit `feat(ui): match lobby VS results on DesignSystem` (`61277f65`)
 
 ---
 
@@ -833,8 +833,8 @@ public interface IGameplayInput
 }
 ```
 
-- [ ] TDD ports → adapters → wire player controller read path to `IGameplayInput` where local player moves
-- [ ] Commit `feat(input-settings): gameplay input and settings ports`
+- [x] TDD ports → adapters → wire player controller read path to `IGameplayInput` where local player moves
+- [x] Commit `feat(input-settings): gameplay input and settings ports` (`864afeff`)
 
 ---
 
@@ -853,9 +853,9 @@ rg -n "Epic\.|NetworkManager|EOSManager" Assets/_KitchenClash/Presentation --glo
 
 Any hits → move to Infrastructure handlers/viewmodels already injected.
 
-- [ ] **Step 1:** Grep purge list + fix
-- [ ] **Step 2:** Analytics event name constants in Playcenter or KC Application
-- [ ] **Step 3:** Commit `refactor(liveops): analytics hooks and presentation purity`
+- [x] **Step 1:** Grep purge list + fix
+- [x] **Step 2:** Analytics event name constants in Playcenter or KC Application
+- [x] **Step 3:** Commit `refactor(liveops): analytics hooks and presentation purity` (`70e45110`)
 
 ---
 
@@ -866,9 +866,9 @@ Any hits → move to Infrastructure handlers/viewmodels already injected.
 - Modify: `docs/superpowers/specs/2026-07-19-playcenter-client-os-design.md` status → implemented / plan linked
 - Modify: `Documentation/Architecture/PROJECT_MEMORY.md` if present and still used
 
-- [ ] **Step 1:** Document connectivity-first boot, wallet ports, party/match lobby, INetSession, DesignSystem-only UI rule
-- [ ] **Step 2:** Append `wiki/log.md` entry with date and summary
-- [ ] **Step 3:** Commit `docs(wiki): Playcenter Client OS runtime laws`
+- [x] **Step 1:** Document connectivity-first boot, wallet ports, party/match lobby, INetSession, DesignSystem-only UI rule
+- [x] **Step 2:** Append `wiki/log.md` entry with date and summary
+- [x] **Step 3:** Commit `docs(wiki): Playcenter Client OS runtime laws`
 
 ---
 

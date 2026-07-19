@@ -43,11 +43,13 @@ Infrastructure → Unity + EOS + Firebase + NGO implementations
 
 ```
 RootLifetimeScope (app-lifetime, DontDestroyOnLoad) → app-lifetime singletons
-  MenuLifetimeScope (session/menu child: lobby, matchmaking, team, economy, networking container)
+  MenuLifetimeScope (session/menu child: lobby, matchmaking, team, economy/wallet, INetSession)
     MatchLifetimeScope (match: score, orders, abilities, hazards, bots, match context)
 ```
 
 **Rule:** Never inject a child-scope service into a parent scope.
+
+**Session installer rule:** `SessionManager.CreateSession` requires `ISessionScopeInstaller` (`MenuSessionScopeInstaller` → `MenuSessionRegistrations`). Never bare-create a child with empty `Configure`.
 
 ### Remote Config Rule
 
@@ -74,6 +76,41 @@ RC key namespaces: `score_*` | `chop_taps_*` | `match_*` | `ability_*` | `order_
 | Interstitials for Battle Pass owners | Disabled for BP subscribers |
 | `NetworkManager.Singleton` | Use injected NetworkManager instance |
 | `FindObjectOfType` | Use MatchRuntimeSceneBinder / IMatchContext |
+| MATCH-scope economy/wallet mutation | Wallet writes only SESSION via `IWalletLedger` |
+| Presentation → EOS / NGO / `EOSManager` direct | Ports + Application/Infrastructure only |
+| UnityEngine types in `Playcenter.Services` | Use `InputAxis2`, not `Vector2` |
+| Bare `SessionManager` child without installer | Missing economy/wallet/net registrations |
+| `LeaveParty` when only ending a match | Use `LeaveMatchLobby`; party survives match |
+| Shell UI classes on `theme.uss` | Shell components belong on `DesignSystem.uss` (`pc-*`) |
+| Ad-hoc NGO host/client start in new code | Use `INetSession.StartAsync` / `StopAsync` |
+| Boot NTP/RC before connectivity gate | Step 0 is `IConnectivityService.IsOnline` |
+
+---
+
+## Playcenter Client OS — Required / Forbidden
+
+Authoritative detail: `wiki/Technical.md` § Playcenter Client OS — Runtime Laws.  
+Spec: `docs/superpowers/specs/2026-07-19-playcenter-client-os-design.md`.
+
+### REQUIRED
+
+- Connectivity gate (`IConnectivityService`) **before** network boot services (NTP, RC, force-update, maintenance, auth)
+- `ISessionScopeInstaller` when `SessionManager.CreateSession` (shared `MenuSessionRegistrations`)
+- Wallet writes only at **SESSION** via `IWalletLedger` (`EconomyService` dual-impl)
+- Party lobby ≠ match lobby (`CurrentPartyLobby` / `CurrentMatchLobby`; `LeaveMatchLobby` ≠ `LeaveParty`)
+- Net start/stop via `INetSession` in new code (`NgoEosNetSession` adapter)
+- Shell UI classes on **`DesignSystem.uss`** (`pc-btn`, `pc-panel`, `pc-chip`, `pc-party-slot`) — not `theme.uss`
+- `NotifyBootComplete` only if `IAppFlow.Current == Boot`; side-phase success → `CompleteSidePhase`
+- Settings at ROOT (`ISettingsService` / `GameSettings`); gameplay input via `IGameplayInput` + `InputAxis2`
+
+### FORBIDDEN (Client OS)
+
+- MATCH-scope economy/wallet mutation
+- Presentation referencing Epic / `NetworkManager` / `EOSManager`
+- UnityEngine types in `Playcenter.Services` (no `Vector2` — use `InputAxis2`)
+- Bare SessionManager child without installer
+- `LeaveParty` when only ending a match
+- Host migration assumptions in v1 reconnect (stop on forfeit/host-drop only)
 
 ---
 
@@ -114,7 +151,7 @@ RC key namespaces: `score_*` | `chop_taps_*` | `match_*` | `ability_*` | `order_
 | Online | Nothing | Normal |
 | Offline — Menu | Full-screen blocking overlay | Retries every 3s, auto-dismisses on restore |
 | Offline — In Match | Semi-transparent overlay + countdown | 3 reconnect attempts × 5s each. Fail = forfeit + return to menu |
-| Host dropped | 'Reconnecting...' overlay | EOS host migration. 3s timeout then end match early |
+| Host dropped (v1) | 'Reconnecting...' overlay | **No host migration.** Reconnect window then forfeit/end; `NetSessionConnectivityBridge` → `INetSession.StopAsync` |
 
 ---
 

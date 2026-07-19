@@ -67,6 +67,8 @@ Splash → Login → Home → ChefSelect
 
 ## Home Screen Layout
 
+Shell chrome uses **DesignSystem.uss** component classes (`pc-btn`, `pc-panel`, `pc-chip`, `pc-party-slot`) — not `theme.uss` dual-brand tokens. Home, match lobby, VS, and results share these `pc-*` building blocks (Client OS Tasks 8–9).
+
 ```
 +------------------------------------------------------------------+
 | [Settings]  KITCHEN CLASH  [Streak Fire]  [Friends]  [Gems:250] |

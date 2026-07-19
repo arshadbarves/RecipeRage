@@ -26,6 +26,7 @@ RootLifetimeScope (app-lifetime, DontDestroyOnLoad)
   IAppFlow              → AppFlowController      (Singleton) — PUBLIC product navigator
   SessionManager        → SessionManager         (Singleton) — cold-boot session scope
   ISessionContext       → SessionContext         (Singleton)
+  ISessionScopeInstaller→ MenuSessionScopeInstaller (Singleton) — REQUIRED for CreateSession
   MatchmakingPhaseHost  → MatchmakingPhaseHost   (Singleton + ITickable)
   IEOSManager           → EOSManager             (Singleton)
   IAuthService          → AuthenticationService  (Singleton)
@@ -35,14 +36,24 @@ RootLifetimeScope (app-lifetime, DontDestroyOnLoad)
   IPlayerDataService    → PlayerDataService      (Singleton)
   IUIService            → UIService              (Singleton)
   UIScreenStackManager  → UIScreenStackManager   (Singleton)
+  ISettingsService      → PlayerPrefsSettingsService (Singleton) — GameSettings at ROOT
+  ISettingsStore        → PlayerPrefsSettingsStore   (Singleton)
+  IGameplayInput        → GameplayInputService   (Singleton) — dual-reg publisher
+  IGameplayInputPublisher → GameplayInputService (Singleton)
 
   MenuLifetimeScope (child, active: session/menu/lobby/matchmaking)
+    // Shared path: MenuSessionRegistrations.Install (also used by MenuSessionScopeInstaller)
     IMatchmakingService → EOSMatchmakingService (Scoped)
     IFriendsService     → EOSFriendsService     (Scoped)
     ITeamManager        → TeamManager           (Scoped)
-    ILobbyManager       → LobbyManager          (Scoped)
+    ILobbyManager       → EOSLobbyService       (Scoped) — party + match dual lobby
     INetworkingServices → NetworkingServiceContainer (Scoped)
-    IEconomyService     → EconomyService        (Scoped)
+    IEconomyService     → EconomyService        (Scoped) — dual IWallet + IWalletLedger
+    IWallet             → EconomyService        (Scoped)
+    IWalletLedger       → EconomyService        (Scoped)
+    INetSession         → NgoEosNetSession      (Scoped)
+    NetSessionConnectivityBridge → entry point (forfeit/host-drop → StopAsync)
+    MatchRewardHandler  → entry point (credits via IWalletLedger only)
     ITutorialService    → TutorialService       (Scoped)
 
     MatchLifetimeScope (child, active: during a match only)
@@ -54,13 +65,13 @@ RootLifetimeScope (app-lifetime, DontDestroyOnLoad)
       IMatchHudPort   → MatchHudPort    (Scoped) — Presentation match surface
       GameplayHudViewModel → Transient
       BotManager      → BotManager      (Scoped)
+      // MATCH never owns wallet writes
 
   Root also registers null defaults for match/menu-only ports:
     IMatchHudPort            → NullMatchHudPort
     ICharacterPreviewService → NullCharacterPreviewService
   MenuLifetimeScope registers CharacterPreviewManager as ICharacterPreviewService when present in scene.
 ```
-
 ## Product Navigation Architecture
 
 **Public API:** `IAppFlow` (Playcenter.GameFlow) — sole navigator for features and UI.
@@ -218,7 +229,7 @@ public interface IConfigService {
 | Online | Nothing | Normal |
 | Offline — Menu | Full-screen overlay, blocks all input | Retries every 3s, auto-dismisses on restore |
 | Offline — In Match | Semi-transparent overlay + countdown | 3 reconnect attempts (5s each). Fail = forfeit + return menu |
-| Host dropped | 'Reconnecting...' overlay | EOS host migration. 3s timeout then end match early |
+| Host dropped (v1) | 'Reconnecting...' overlay | **No host migration in v1.** Reconnect window then forfeit/end; `NetSessionConnectivityBridge` stops `INetSession` |
 
 ```csharp
 public sealed class NetworkConnectivityService : IConnectivityService, ITickable {
@@ -234,6 +245,92 @@ public sealed class NetworkConnectivityService : IConnectivityService, ITickable
     }
 }
 ```
+
+## Playcenter Client OS — Runtime Laws
+
+**Program:** Tasks 1–11 implemented on `architecture-cleanup` (2026-07-19).  
+**Spec:** `docs/superpowers/specs/2026-07-19-playcenter-client-os-design.md`  
+**Plan:** `docs/superpowers/plans/2026-07-19-playcenter-client-os.md`
+
+These laws match **shipped code**. Do not invent features beyond this surface.
+
+### Boot law
+
+1. **Step 0 connectivity gate** — `BootSequence` checks `IConnectivityService.IsOnline` **before** NTP / Remote Config / force-update / maintenance / auth.
+2. Offline → `IAppFlow.EnterSidePhase(FlowPhaseId.NoConnection)` (do not continue boot services).
+3. Authenticated success completion:
+   - If `IAppFlow.Current == FlowPhaseId.Boot` → `NotifyBootComplete()` (main path → Home).
+   - Else (retry from side phase, e.g. NoConnection / Login) → `CompleteSidePhase()` so return target stays Home.
+4. Analytics: `boot_gate_offline` when the gate fires offline.
+
+### Session DI law
+
+1. `SessionManager.CreateSession` **requires** `ISessionScopeInstaller` (throws if null). Root registers `MenuSessionScopeInstaller`.
+2. Shared install path: `MenuSessionRegistrations.Install(builder)` used by both:
+   - `MenuLifetimeScope.Configure`
+   - `MenuSessionScopeInstaller` (cold-boot child from `SessionManager`)
+3. Bare `CreateChild` with empty `Configure` is a **bug** — missing `IEconomyService` / wallet / net session (the failure mode Task 4 fixed).
+
+### Wallet law
+
+1. Ports in **engine-free** `Playcenter.Services`: `IWallet`, `IWalletLedger`, `IWalletStore`, `CurrencyId`, `WalletSnapshot`.
+2. `EconomyService` dual-implements `IEconomyService` + `IWallet` + `IWalletLedger` at **SESSION** (`MenuSessionRegistrations`).
+3. **MATCH never owns wallet writes.** `MatchRewardHandler` (session entry point) credits only via `IWalletLedger`.
+4. Analytics: `wallet_credit`, `purchase_success` / `purchase_fail`.
+
+### Lobby law
+
+1. `ILobbyManager` in `Playcenter.Services` exposes `CurrentPartyLobby` and `CurrentMatchLobby`.
+2. **Party survives match end.** `LeaveMatchLobby()` ≠ `LeaveParty()`.
+3. `EOSLobbyService` dual-tracks party vs match lobbies (EOS sample-style).
+4. Brawl shell flow: party on Home → PLAY → MM → match lobby/VS → match → results → Home **with party intact**.
+
+### Net law
+
+1. Ports: `INetSession.StartAsync` / `StopAsync`, `INetTransportConfigurator`, `NetRole` (`Host` | `Client`) in `Playcenter.Services`.
+2. Adapter: `NgoEosNetSession` (SESSION). `GameStarter` delegates start/stop to `INetSession` — not ad-hoc NGO host/client calls in new code.
+3. Reconnect **v1**: stop session on forfeit / host-drop timeout via `NetSessionConnectivityBridge`; **no host migration**.
+4. `NetworkManager` from match context / injected instance — **not** casual `NetworkManager.Singleton` (existing project rule).
+
+### UI law
+
+1. Shell components live on **`DesignSystem.uss`**: `pc-btn`, `pc-panel`, `pc-chip`, `pc-party-slot` (and match-shell helpers).
+2. Do **not** edit `theme.uss` dual-brand tokens for shell work — DesignSystem is the locked shell theme.
+3. Presentation must **not** reference Epic / `NetworkManager` / `EOSManager` (ports + Application only).
+
+### Input / Settings law
+
+1. `ISettingsService` + `GameSettings` at **ROOT** (`PlayerPrefsSettingsService` + `ISettingsStore`).
+2. `IGameplayInput` + `InputAxis2` (no `Vector2` in `Playcenter.Services`). `GameplayInputService` dual-implements publisher; local `PlayerController` publishes each frame.
+
+### Live-ops law
+
+`AnalyticsEvents` constants (Application) with hooks:
+
+| Constant | Event name |
+|----------|------------|
+| `BootGateOffline` | `boot_gate_offline` |
+| `LoginSuccess` | `login_success` |
+| `MatchStart` | `match_start` |
+| `MatchEnd` | `match_end` |
+| `WalletCredit` | `wallet_credit` |
+| `PurchaseSuccess` / `PurchaseFail` | `purchase_success` / `purchase_fail` |
+
+### Client OS commit map (Tasks 1–11)
+
+| Task | Commit | Summary |
+|------|--------|---------|
+| 1 | `52dda74d`, `7366e318` | Connectivity-first boot + CompleteSidePhase from NoConnection |
+| 2 | `268bebe8` | IWallet / IWalletLedger / IWalletStore ports |
+| 3 | `9162a3e0` | EconomyService dual wallet; MatchRewardHandler via ledger |
+| 4 | `07896178` | CreateSession requires ISessionScopeInstaller |
+| 5 | `c75b4fe6` | Party vs match dual lobby |
+| 6 | `5dfb2beb` | INetSession ports |
+| 7 | `8c1a69c9` | NgoEosNetSession + GameStarter + forfeit bridge |
+| 8 | `68993b1b` | DesignSystem shell components + Home |
+| 9 | `61277f65` | Match lobby / VS / results DesignSystem |
+| 10 | `864afeff` | IGameplayInput + ISettingsService |
+| 11 | `70e45110` | Analytics hooks + presentation purity |
 
 ## Firebase Remote Config
 

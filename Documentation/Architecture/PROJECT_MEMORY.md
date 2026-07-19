@@ -25,6 +25,18 @@ GDD rule:
 - `Documentation/Architecture/PHASE_ROADMAP.md` is the practical roadmap that maps current code and GDD drift into execution phases.
 - If they disagree, implementation work follows current code plus `KitchenClash_GDD_v3.md`.
 
+## Playcenter Client OS (2026-07-19)
+
+Product shell runtime laws are documented as wiki law (not re-derived here):
+
+- **Laws:** `wiki/Technical.md` § Playcenter Client OS — Runtime Laws
+- **Agent rules:** `wiki/LLM-Rules.md` § Playcenter Client OS — Required / Forbidden
+- **Spec / plan:** `docs/superpowers/specs/2026-07-19-playcenter-client-os-design.md`, `docs/superpowers/plans/2026-07-19-playcenter-client-os.md`
+
+Shipped surface (Tasks 1–11): connectivity-first boot; session installer; wallet ledger at SESSION; party vs match lobby; `INetSession` + NGO/EOS adapter; DesignSystem `pc-*` shell; ROOT settings + `IGameplayInput`/`InputAxis2`; analytics funnel hooks. MATCH never mutates wallet. Presentation does not touch EOS/NGO.
+
+Product navigation remains `IAppFlow` (Playcenter.GameFlow) — sole navigator. Prefer wiki + current code over older state-machine wording below if they disagree.
+
 ## Current Architecture Anchors
 
 ### Root application scope
@@ -36,47 +48,42 @@ Root DI is configured in:
 This scope owns app-level services, including:
 
 - logging, event bus, localization, UI service
-- session manager and session context
+- session manager, session context, `ISessionScopeInstaller` (`MenuSessionScopeInstaller`)
 - match context / match runtime registry
 - auth, maintenance, connectivity, remote config
-- game state manager and game states
+- `ISettingsService` / `ISettingsStore`, `IGameplayInput` / `IGameplayInputPublisher`
 - root networking primitives:
   - `IPlayerNetworkManager`
   - `INetworkObjectPool`
   - `INetworkGameManager`
-
+  - (product flow via `IAppFlow` — not legacy `IGameStateManager`)
 ### Menu scope
 
 Menu-scoped DI is configured in:
 
 - `Assets/_KitchenClash/Composition/MenuLifetimeScope.cs`
 
-This scope owns active-session services, including:
+This scope owns active-session services via `MenuSessionRegistrations.Install` (shared with cold-boot `MenuSessionScopeInstaller`), including:
 
 - `INetworkingServices` via `NetworkingServiceContainer`
-- `ILobbyManager`
+- `ILobbyManager` (party + match dual lobby)
 - `IPlayerManager`
 - `IMatchmakingService`
 - `ITeamManager`
 - `IGameStarter`
+- `EconomyService` as `IEconomyService` + `IWallet` + `IWalletLedger`
+- `INetSession` → `NgoEosNetSession` (+ `NetSessionConnectivityBridge`)
+- `MatchRewardHandler` (credits via ledger only)
 
 Menu networking ownership rule:
 
-- `MenuLifetimeScope` creates `TeamManager`, `LobbyService`, `PlayerManager`, and `MatchmakingService` directly through DI.
+- `MenuLifetimeScope` creates `TeamManager`, lobby, `PlayerManager`, and `MatchmakingService` through DI.
 - `NetworkingServiceContainer` composes and exposes those session/menu services, but should not manually `new` them.
-
-Current ownership rule:
-
-- `CharacterService`
-- `EconomyService`
-- `PlayerDataService`
-
-are root-owned services exposed through `SessionContext`.
 
 Important constraint:
 
 - Menu/session must **not** own `INetworkObjectPool` / `INetworkGameManager` — Root owns those network primitives.
-
+- MATCH must **not** own wallet writes — session ledger only.
 ### Match scope
 
 Match DI is configured in:

@@ -1,9 +1,10 @@
 # Playcenter Client OS — Production Multi-Game Shell Design
 
 **Date:** 2026-07-19  
-**Status:** Design locked — implementation plan ready  
-**Branch:** current working branch  
+**Status:** Implemented (Tasks 1–11); wiki laws updated (Task 12)  
+**Branch:** `architecture-cleanup`  
 **Implementation plan:** `docs/superpowers/plans/2026-07-19-playcenter-client-os.md`  
+**Runtime laws:** `wiki/Technical.md` § Playcenter Client OS; `wiki/LLM-Rules.md` REQUIRED/FORBIDDEN  
 **Related:**
 - `docs/superpowers/specs/2026-07-16-playcenter-shared-stack-design.md` (Approach C pure + Unity-thin DAG — still valid)
 - `docs/superpowers/specs/2026-07-14-architecture-hardening-design.md` (dependency laws)
@@ -16,6 +17,22 @@
 - Does **not** reopen GameFlow navigation (`IAppFlow` remains sole product navigator)
 - Does **not** move cooking IP, chefs, recipes, maps, or NGO match rules into Playcenter
 
+### Implementation status (Tasks 1–11)
+
+| Task | Commit | Summary |
+|------|--------|---------|
+| 1 Boot | `52dda74d`, `7366e318` | Connectivity-first BootSequence + CompleteSidePhase from NoConnection |
+| 2 Wallet ports | `268bebe8` | IWallet / IWalletLedger / IWalletStore |
+| 3 Economy bridge | `9162a3e0` | EconomyService dual-impl; MatchRewardHandler via ledger |
+| 4 Session installer | `07896178` | CreateSession requires ISessionScopeInstaller |
+| 5 Dual lobby | `c75b4fe6` | Party vs match lobby |
+| 6 Net ports | `5dfb2beb` | INetSession ports |
+| 7 Net adapter | `8c1a69c9` | NgoEosNetSession + GameStarter + forfeit bridge |
+| 8 Shell UI | `68993b1b` | DesignSystem shell + Home |
+| 9 Match shell | `61277f65` | Match lobby / VS / results DesignSystem |
+| 10 Input/Settings | `864afeff` | IGameplayInput + ISettingsService |
+| 11 Live-ops | `70e45110` | Analytics hooks + presentation purity |
+| 12 Wiki laws | (this program) | Technical + LLM-Rules + log + memory |
 ---
 
 ## 1. Problem
