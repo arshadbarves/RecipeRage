@@ -1,0 +1,54 @@
+Assets/_KitchenClash/Presentation/Screens/ResultsScreen.cs
+  s_4c5659757262b1::t_967ab538b0e4c4 5,8-10,14-18,26,32-37,45-47,53-63,70-84,123-198
+  s_4c5659757262b1::t_856534f913c6a1 199
+Assets/_KitchenClash/UI/Screens/MatchIntroScreen.uxml
+  s_4c5659757262b1::t_99df9055da0c7d 1-31
+Assets/Resources/UI/Templates/Screens/GameOverScreenTemplate.uxml
+  s_4c5659757262b1::t_389a4cf1ac2ace 1-4,6-39
+Assets/_KitchenClash/UI/Screens/MatchLobbyScreen.uxml
+  s_4c5659757262b1::t_389a4cf1ac2ace 1-6,9-17,19-31,35-37,39-46,48-60,65-68
+Assets/_KitchenClash/Presentation/Screens/MatchLobbyScreen.cs
+  s_4c5659757262b1::t_967ab538b0e4c4 1-5,8,12-15,19-22,25-38,44-56,59-60,65-309,314-319,321,323-325,328,330-354
+Assets/_KitchenClash/UI/Styles/DesignSystem.uss
+  s_4c5659757262b1::t_b3987f11f1aa64 677-695,726-740,816,832,953
+  s_4c5659757262b1::t_fa83f9f032998d 789-815,817-831,833-952,954-1104
+Assets/_KitchenClash/UI/Screens/MatchIntroScreen.uxml.meta
+  s_4c5659757262b1::t_967ab538b0e4c4 1-10
+Assets/_KitchenClash/UI/Screens/ResultsScreen.uxml
+  s_4c5659757262b1::t_389a4cf1ac2ace 1-9,11-12,14-16,20-24,26-31,35-36
+Assets/_KitchenClash/Presentation/Screens/MatchIntroScreen.cs
+  s_4c5659757262b1::t_967ab538b0e4c4 1-3,5-7,14,16,22,29-30,39-40,48,66-71,108-170
+  s_4c5659757262b1::t_d321b9f282f719 171
+Assets/Resources/UI/Templates/Screens/MatchLobbyViewTemplate.uxml
+  s_4c5659757262b1::t_389a4cf1ac2ace 1-71
+Assets/Resources/UI/Templates/Screens/MatchIntroScreenTemplate.uxml.meta
+  s_512cb384791b2b::t_965af79db17026 1-10
+Assets/_KitchenClash/UI/Screens/MatchmakingScreen.uxml
+  s_4c5659757262b1::t_967ab538b0e4c4 2,40-41
+Assets/Resources/UI/Templates/Screens/MatchIntroScreenTemplate.uxml
+  s_4c5659757262b1::t_389a4cf1ac2ace 1-31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "61277f655264b4aa9add5612f3ff7ef9456bbd2c",
+  "prompts": {},
+  "sessions": {
+    "s_4c5659757262b1": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call-93b93f49-1cb7-45ba-aa82-68e4456c962c-6",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    },
+    "s_512cb384791b2b": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "84207e0d-688a-458e-89af-20c6b0662936",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
