@@ -66,7 +66,11 @@ public class RootLifetimeScope : LifetimeScope
         });
         builder.RegisterEntryPoint<LoggingBootstrap>();
         builder.Register<EncryptionService>(Lifetime.Singleton).As<IEncryptionService>().WithParameter("passphrase", "KitchenClash_2026");
-        builder.Register<NetworkConnectivityService>(Lifetime.Singleton).As<IConnectivityService>().As<ITickable>();
+        // AsSelf so NetSessionConnectivityBridge can cast/resolve concrete forfeit events.
+        builder.Register<NetworkConnectivityService>(Lifetime.Singleton)
+            .AsSelf()
+            .As<IConnectivityService>()
+            .As<ITickable>();
         builder.Register<NTPTimeService>(Lifetime.Singleton).As<INTPTimeService>().As<IInitializable>();
         builder.RegisterInstance(_chefDatabase);
         builder.RegisterInstance(_mapDatabase);
@@ -148,7 +152,9 @@ public class RootLifetimeScope : LifetimeScope
         builder.Register<SaveService>(Lifetime.Singleton).As<ISaveService>();
         builder.Register<EOSFriendsServiceFactory>(Lifetime.Singleton).As<IFriendsServiceFactory>();
         builder.Register<EOSLocalNetworkIdentity>(Lifetime.Singleton).As<ILocalNetworkIdentity>();
-        builder.Register<EOSClientTransportConfigurator>(Lifetime.Singleton).As<IClientTransportConfigurator>();
+        builder.Register<EOSClientTransportConfigurator>(Lifetime.Singleton)
+            .As<IClientTransportConfigurator>()
+            .As<INetTransportConfigurator>();
 
 #if FIREBASE_REMOTE_CONFIG
         builder.Register<KitchenClash.Infrastructure.Firebase.FirebaseConfigProvider>(Lifetime.Singleton).As<IConfigProvider>();

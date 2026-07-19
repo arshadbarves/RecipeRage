@@ -40,8 +40,12 @@ namespace KitchenClash.Infrastructure.Network
         private readonly ITeamManager _teamManager;
         private readonly IFriendsServiceFactory _friendsServiceFactory;
         private readonly ILocalNetworkIdentity _localNetworkIdentity;
-        private readonly IClientTransportConfigurator _clientTransportConfigurator;
+        private readonly INetTransportConfigurator _netTransportConfigurator;
+        private readonly INetSession _netSession;
         private readonly IAppFlow _appFlow;
+
+        /// <summary>Playcenter net session used by <see cref="GameStarter"/> (also exposed for bridges).</summary>
+        public INetSession NetSession => _netSession;
 
         #endregion
 
@@ -58,8 +62,9 @@ namespace KitchenClash.Infrastructure.Network
             ITeamManager teamManager,
             IFriendsServiceFactory friendsServiceFactory,
             ILocalNetworkIdentity localNetworkIdentity,
-            IClientTransportConfigurator clientTransportConfigurator,
-            IAppFlow appFlow)
+            INetTransportConfigurator netTransportConfigurator,
+            IAppFlow appFlow,
+            INetSession netSession = null)
         {
             _uiService = uiService;
             _authService = authService;
@@ -70,8 +75,29 @@ namespace KitchenClash.Infrastructure.Network
             _teamManager = teamManager;
             _friendsServiceFactory = friendsServiceFactory;
             _localNetworkIdentity = localNetworkIdentity;
-            _clientTransportConfigurator = clientTransportConfigurator;
+            _netTransportConfigurator = netTransportConfigurator;
             _appFlow = appFlow;
+
+            // Prefer DI-registered INetSession; otherwise construct adapter with shared match context.
+            if (netSession != null)
+            {
+                _netSession = netSession;
+                if (_netSession is NgoEosNetSession ngoSession && matchContext != null)
+                {
+                    ngoSession.SetMatchContext(matchContext);
+                }
+            }
+            else if (netTransportConfigurator != null)
+            {
+                _netSession = new NgoEosNetSession(netTransportConfigurator, matchContext);
+            }
+            else
+            {
+                throw new ArgumentNullException(
+                    nameof(netTransportConfigurator),
+                    "INetSession or INetTransportConfigurator is required to construct GameStarter.");
+            }
+
             Initialize();
         }
 
@@ -103,7 +129,7 @@ namespace KitchenClash.Infrastructure.Network
                 _uiService,
                 _appFlow,
                 _localNetworkIdentity,
-                _clientTransportConfigurator);
+                _netSession);
 
             BotSpawner = null;
 

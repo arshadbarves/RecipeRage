@@ -8,6 +8,7 @@ using UnityEngine;
 using Playcenter.GameFlow;
 using Playcenter.Shell;
 using Playcenter.UI;
+using Playcenter.Services;
 
 namespace KitchenClash.Infrastructure.Network
 {
@@ -23,7 +24,7 @@ namespace KitchenClash.Infrastructure.Network
         private readonly IUIService _uiService;
         private readonly IAppFlow _appFlow;
         private readonly ILocalNetworkIdentity _localNetworkIdentity;
-        private readonly IClientTransportConfigurator _clientTransportConfigurator;
+        private readonly INetSession _netSession;
 
         private bool _isGameActive;
         private SpawnManager _spawnManager;
@@ -41,7 +42,7 @@ namespace KitchenClash.Infrastructure.Network
             IUIService uiService,
             IAppFlow appFlow,
             ILocalNetworkIdentity localNetworkIdentity,
-            IClientTransportConfigurator clientTransportConfigurator)
+            INetSession netSession)
         {
             _lobbyManager = lobbyManager;
             _matchmakingService = matchmakingService;
@@ -50,7 +51,7 @@ namespace KitchenClash.Infrastructure.Network
             _uiService = uiService;
             _appFlow = appFlow;
             _localNetworkIdentity = localNetworkIdentity;
-            _clientTransportConfigurator = clientTransportConfigurator;
+            _netSession = netSession ?? throw new System.ArgumentNullException(nameof(netSession));
         }
 
         private NetworkManager NetcodeManager => _matchContext?.NetworkManager;
@@ -80,7 +81,7 @@ namespace KitchenClash.Infrastructure.Network
 
             if (isHost)
             {
-                StartAsHost();
+                StartAsHost(matchLobby.LobbyId ?? string.Empty);
             }
             else
             {
@@ -88,7 +89,7 @@ namespace KitchenClash.Infrastructure.Network
             }
         }
 
-        private void StartAsHost()
+        private void StartAsHost(string sessionToken)
         {
             GameLogger.Log("Starting as host...");
 
@@ -98,35 +99,39 @@ namespace KitchenClash.Infrastructure.Network
 
             NetcodeManager.ConnectionApprovalCallback = ApprovalCheck;
 
-            bool success = NetcodeManager.StartHost();
-
-            if (success)
+            try
             {
-                GameLogger.Log("Successfully started as host");
-                if (_matchContext?.KitchenSupportRuntime != null)
-                {
-                    _matchContext.KitchenSupportRuntime.EnsureKitchenSupportStations();
-                }
-                else
-                {
-                    GameLogger.LogWarning("Kitchen support runtime not available. Skipping support station bootstrap.");
-                }
+                // IGameStarter.StartGame is sync; NGO StartHost underneath is sync.
+                _netSession.StartAsync(NetRole.Host, sessionToken ?? string.Empty)
+                    .GetAwaiter()
+                    .GetResult();
+            }
+            catch (System.Exception ex)
+            {
+                GameLogger.LogError($"Failed to start as host: {ex.Message}");
+                OnGameStartFailed("Failed to start host");
+                return;
+            }
 
-                ulong hostClientId = NetworkManager.ServerClientId;
-                GameLogger.Log($"Spawning host player (client ID: {hostClientId})");
-                SpawnPlayerForClient(hostClientId);
-
-                SpawnBotsIfNeeded();
-
-                SpawnLatencyMonitor();
-
-                OnGameStarted(true);
+            GameLogger.Log("Successfully started as host");
+            if (_matchContext?.KitchenSupportRuntime != null)
+            {
+                _matchContext.KitchenSupportRuntime.EnsureKitchenSupportStations();
             }
             else
             {
-                GameLogger.LogError("Failed to start as host");
-                OnGameStartFailed("Failed to start host");
+                GameLogger.LogWarning("Kitchen support runtime not available. Skipping support station bootstrap.");
             }
+
+            ulong hostClientId = NetworkManager.ServerClientId;
+            GameLogger.Log($"Spawning host player (client ID: {hostClientId})");
+            SpawnPlayerForClient(hostClientId);
+
+            SpawnBotsIfNeeded();
+
+            SpawnLatencyMonitor();
+
+            OnGameStarted(true);
         }
 
         private void ApprovalCheck(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
@@ -218,25 +223,22 @@ namespace KitchenClash.Infrastructure.Network
 
             _spawnManager = _matchContext?.SpawnManager;
 
-            if (_clientTransportConfigurator == null ||
-                !_clientTransportConfigurator.TryConfigureHostConnection(hostUserIdStr))
+            try
             {
-                OnGameStartFailed("Transport not configured");
+                // sessionToken = host product user id; transport + StartClient owned by INetSession.
+                _netSession.StartAsync(NetRole.Client, hostUserIdStr ?? string.Empty)
+                    .GetAwaiter()
+                    .GetResult();
+            }
+            catch (System.Exception ex)
+            {
+                GameLogger.LogError($"Failed to start as client: {ex.Message}");
+                OnGameStartFailed("Failed to start client");
                 return;
             }
 
-            bool success = NetcodeManager.StartClient();
-
-            if (success)
-            {
-                GameLogger.Log("Successfully started as client");
-                OnGameStarted(false);
-            }
-            else
-            {
-                GameLogger.LogError("Failed to start as client");
-                OnGameStartFailed("Failed to start client");
-            }
+            GameLogger.Log("Successfully started as client");
+            OnGameStarted(false);
         }
 
         public void EndGame()
@@ -254,10 +256,18 @@ namespace KitchenClash.Infrastructure.Network
                 _latencyMonitor = null;
             }
 
-            if (NetcodeManager != null)
+            // INetSession owns NGO shutdown (via MatchContext.ShutdownNetworkSession when available).
+            try
             {
-                _matchContext.ShutdownNetworkSession();
-                GameLogger.Log("NetworkManager shutdown");
+                if (_netSession.IsActive || NetcodeManager != null)
+                {
+                    _netSession.StopAsync().GetAwaiter().GetResult();
+                    GameLogger.Log("Network session stopped via INetSession");
+                }
+            }
+            catch (System.Exception ex)
+            {
+                GameLogger.LogError($"INetSession.StopAsync failed: {ex.Message}");
             }
 
             RestoreAutomaticPlayerSpawning();

@@ -42,6 +42,12 @@ namespace KitchenClash.Composition
             // Tutorial
             builder.Register<TutorialService>(Lifetime.Scoped).As<ITutorialService>();
 
+            // Playcenter net session (NGO+EOS). IMatchContext is match-scoped; adapter
+            // falls back to NetworkManager.Singleton until SetMatchContext is called
+            // (e.g. from NetworkingServiceContainer when match context is available).
+            builder.Register<NgoEosNetSession>(Lifetime.Scoped).AsSelf().As<INetSession>();
+            builder.RegisterEntryPoint<NetSessionConnectivityBridge>();
+
             // Scene MonoBehaviour preview port for lobby / character details.
             // Falls back to root NullCharacterPreviewService when the component is not in the scene.
             CharacterPreviewManager preview = Object.FindFirstObjectByType<CharacterPreviewManager>();
