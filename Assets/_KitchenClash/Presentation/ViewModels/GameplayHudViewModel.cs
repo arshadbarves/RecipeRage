@@ -245,7 +245,8 @@ namespace KitchenClash.Presentation.ViewModels
                 IsDraw = currentResult.IsDraw,
                 WinningTeamId = currentResult.WinningTeamId,
                 Won = won,
-                LocalTeamId = localTeamId
+                LocalTeamId = localTeamId,
+                LocalTeamScore = _matchHud.GetTeamScore(localTeamId)
             });
         }
 

@@ -138,9 +138,8 @@ namespace KitchenClash.Infrastructure.Flow
 
         public void EnterResults(FlowContext context, MatchResultInfo result)
         {
-            _ = context;
-            _ = result;
-            _results?.Enter();
+            MatchResultInfo resolved = result ?? context?.LastMatchResult;
+            _results?.Enter(resolved);
 
             Type resultsType = Type.GetType(ResultsScreenTypeName);
             if (resultsType != null)

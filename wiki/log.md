@@ -297,3 +297,9 @@ Client OS program implemented on `architecture-cleanup`; wiki laws updated to ma
 - **Laws:** `wiki/Technical.md` § Playcenter Client OS; `wiki/LLM-Rules.md` REQUIRED/FORBIDDEN
 - **Shipped surface:** connectivity-first boot + CompleteSidePhase; wallet ports + Economy dual-impl + MatchRewardHandler ledger; CreateSession installer; party vs match lobby; INetSession + NgoEosNetSession + forfeit bridge; DesignSystem `pc-*` shell; IGameplayInput/ISettingsService; analytics hooks + presentation purity
 - **Commits (1–11):** `52dda74d`/`7366e318`, `268bebe8`, `9162a3e0`, `07896178`, `c75b4fe6`, `5dfb2beb`, `8c1a69c9`, `68993b1b`, `61277f65`, `864afeff`, `70e45110`
+
+## 2026-07-19 — Single SESSION ledger path for match rewards
+
+- **Bug:** `ResultsPhase` minted via `IEconomyService.AwardMatchReward` while SESSION `MatchRewardHandler` was the intended sole credit path; `MatchEndedEvent` was never published in production (handler dead). Root also captured null economy at cold boot.
+- **Fix:** `ResultsPhase` publishes `MatchEndedEvent` from `MatchResultInfo` (flow) or HUD fallback; never mutates wallet. Removed `AwardMatchReward` from `IEconomyService`/`EconomyService`. `GameplayHudViewModel` fills `LocalTeamScore`. Once-per-entry guard on Results.
+- **Law:** wiki/Technical.md wallet law item 4 — Results → MatchEndedEvent → MatchRewardHandler → IWalletLedger only.

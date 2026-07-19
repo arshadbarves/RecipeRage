@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using KitchenClash.Domain;
-using UnityEngine;
 using Playcenter.Shell;
 using Playcenter.Services;
 
@@ -92,16 +91,6 @@ namespace KitchenClash.Application
             {
                 AddCoins(amount);
             }
-        }
-
-        /// <summary>
-        /// Award coins based on match result. Win = 50 + score bonus, Loss = 20.
-        /// </summary>
-        public void AwardMatchReward(bool won, int score)
-        {
-            int reward = won ? MatchWinReward + Mathf.FloorToInt(score * ScoreBonusCoinRate) : MatchLossReward;
-            AddCoins(reward);
-            _eventBus.Publish(new MatchRewardEvent { CoinsAwarded = reward, Won = won, Score = score });
         }
 
         private void NotifyAndSave()

@@ -10,11 +10,9 @@ using VContainer.Unity;
 namespace KitchenClash.Infrastructure.Services
 {
     /// <summary>
-    /// Session-scoped handler that awards economy rewards when a match ends.
-    ///
-    /// Depends on IWalletLedger (session-scoped via EconomyService) so that
-    /// the reward path goes through the Playcenter wallet contract.
-    /// Keeps GameOverState free of session-scoped dependencies.
+    /// SESSION sole wallet credit path for match rewards.
+    /// Listens for <see cref="MatchEndedEvent"/> (published by ResultsPhase) and
+    /// credits only via <see cref="IWalletLedger"/>. MATCH never mutates wallet.
     /// </summary>
     public sealed class MatchRewardHandler : IInitializable, System.IDisposable
     {

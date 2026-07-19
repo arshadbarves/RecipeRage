@@ -220,5 +220,78 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             Assert.AreEqual(EconomyService.MatchWinReward, analytics.Parameters[0][AnalyticsEvents.Params.Amount]);
             Assert.AreEqual("match_win", analytics.Parameters[0][AnalyticsEvents.Params.Reason]);
         }
+
+        [Test]
+        public void ResultsPhase_PublishesMatchEndedEvent_FromMatchResultInfo()
+        {
+            var bus = new RecordingEventBus();
+            var phase = new KitchenClash.Infrastructure.Flow.Handlers.ResultsPhase(bus);
+
+            phase.Enter(new Playcenter.GameFlow.MatchResultInfo
+            {
+                Won = true,
+                LocalTeamScore = 80,
+                LocalTeamId = 0
+            });
+
+            MatchEndedEvent ended = null;
+            foreach (object evt in bus.Published)
+            {
+                if (evt is MatchEndedEvent m)
+                    ended = m;
+            }
+
+            Assert.IsNotNull(ended, "Expected MatchEndedEvent");
+            Assert.IsTrue(ended.Won);
+            Assert.AreEqual(80, ended.LocalTeamScore);
+        }
+
+        [Test]
+        public void ResultsPhase_Enter_DoesNotDoublePublishMatchEnded()
+        {
+            var bus = new RecordingEventBus();
+            var phase = new KitchenClash.Infrastructure.Flow.Handlers.ResultsPhase(bus);
+            var info = new Playcenter.GameFlow.MatchResultInfo { Won = false, LocalTeamScore = 10 };
+
+            phase.Enter(info);
+            phase.Enter(info); // re-enter without Exit should not double-fire
+
+            int count = 0;
+            foreach (object evt in bus.Published)
+                if (evt is MatchEndedEvent)
+                    count++;
+
+            Assert.AreEqual(1, count);
+        }
+
+        [Test]
+        public void ResultsPhase_PlusHandler_CreditsOnceViaLedger()
+        {
+            var bus = new RecordingEventBus();
+            var economy = new EconomyService(bus, new NullSaveService());
+            economy.Initialize();
+
+            var handler = new KitchenClash.Infrastructure.Services.MatchRewardHandler(
+                (IWalletLedger)economy, bus);
+            handler.Initialize();
+
+            var phase = new KitchenClash.Infrastructure.Flow.Handlers.ResultsPhase(bus);
+            phase.Enter(new Playcenter.GameFlow.MatchResultInfo
+            {
+                Won = true,
+                LocalTeamScore = 100
+            });
+
+            int expected = EconomyService.StarterCoins
+                + EconomyService.MatchWinReward
+                + Mathf.FloorToInt(100 * EconomyService.ScoreBonusCoinRate);
+            Assert.AreEqual(expected, economy.Coins);
+
+            int rewardEvents = 0;
+            foreach (object evt in bus.Published)
+                if (evt is MatchRewardEvent)
+                    rewardEvents++;
+            Assert.AreEqual(1, rewardEvents, "Exactly one MatchRewardEvent via ledger path");
+        }
     }
 }

@@ -211,7 +211,6 @@ public class RootLifetimeScope : LifetimeScope
             var matchmakingHost = resolver.Resolve<MatchmakingPhaseHost>();
 
             // Optional services may only exist in menu/session scopes.
-            resolver.TryResolve(out IEconomyService economy);
             resolver.TryResolve(out IMatchHudPort matchHudPort);
             resolver.TryResolve(out ITutorialService tutorial);
             resolver.TryResolve(out IMatchmakingService matchmakingService);
@@ -230,7 +229,8 @@ public class RootLifetimeScope : LifetimeScope
             matchmakingHost.Phase = matchmakingPhase;
 
             var matchRuntimePhase = new MatchRuntimePhase(eventBus, sessionContext, gameModeService);
-            var resultsPhase = new ResultsPhase(eventBus, economy, matchHudPort);
+            // Results never mints wallet — publishes MatchEndedEvent for SESSION MatchRewardHandler.
+            var resultsPhase = new ResultsPhase(eventBus, matchHudPort);
 
             var loginPhase = new LoginPhase(ui, eventBus, appFlowProxy, sessionLoader, analytics);
             var maintenancePhase = new MaintenancePhase(maintenance, remoteConfig, eventBus, appFlowProxy);

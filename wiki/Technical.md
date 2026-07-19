@@ -276,7 +276,8 @@ These laws match **shipped code**. Do not invent features beyond this surface.
 1. Ports in **engine-free** `Playcenter.Services`: `IWallet`, `IWalletLedger`, `IWalletStore`, `CurrencyId`, `WalletSnapshot`.
 2. `EconomyService` dual-implements `IEconomyService` + `IWallet` + `IWalletLedger` at **SESSION** (`MenuSessionRegistrations`).
 3. **MATCH never owns wallet writes.** `MatchRewardHandler` (session entry point) credits only via `IWalletLedger`.
-4. Analytics: `wallet_credit`, `purchase_success` / `purchase_fail`.
+4. Reward path: `ResultsPhase` publishes `MatchEndedEvent` (from `MatchResultInfo` / HUD) → SESSION `MatchRewardHandler` → `IWalletLedger.Credit` + `MatchRewardEvent` + analytics. No `AwardMatchReward` mint API.
+5. Analytics: `wallet_credit`, `purchase_success` / `purchase_fail`.
 
 ### Lobby law
 
