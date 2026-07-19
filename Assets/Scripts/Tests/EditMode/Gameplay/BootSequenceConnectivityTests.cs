@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using KitchenClash.Application;
+using KitchenClash.Application.Config;
 using KitchenClash.Application.Services;
 using KitchenClash.Domain;
 using KitchenClash.Infrastructure.Flow.Handlers;
@@ -121,7 +122,8 @@ namespace RecipeRage.Tests.EditMode.Gameplay
         private static BootSequence CreateBoot(
             IConnectivityService connectivity,
             INTPTimeService ntp,
-            IAppFlow appFlow)
+            IAppFlow appFlow,
+            IAnalyticsService analytics = null)
         {
             return new BootSequence(
                 connectivity,
@@ -131,13 +133,15 @@ namespace RecipeRage.Tests.EditMode.Gameplay
                 new StubMaintenance(),
                 new StubEventBus(),
                 appFlow,
-                sessionLoader: null);
+                sessionLoader: null,
+                analytics);
         }
 
         private static BootSequence CreateBootAuthenticated(
             IConnectivityService connectivity,
             INTPTimeService ntp,
-            IAppFlow appFlow)
+            IAppFlow appFlow,
+            IAnalyticsService analytics = null)
         {
             var sessionLoader = new SessionLoader(new StubSessionLifecycle(), new StubSessionContext());
             return new BootSequence(
@@ -148,7 +152,8 @@ namespace RecipeRage.Tests.EditMode.Gameplay
                 new StubMaintenance(),
                 new StubEventBus(),
                 appFlow,
-                sessionLoader);
+                sessionLoader,
+                analytics);
         }
 
         // ── Tests ────────────────────────────────────────────────────────────────
@@ -226,6 +231,32 @@ namespace RecipeRage.Tests.EditMode.Gameplay
                 "Retry from NoConnection must call CompleteSidePhase so flow returns to Home");
             Assert.AreEqual(0, appFlow.NotifyBootCompleteCount,
                 "Retry from NoConnection must not call NotifyBootComplete");
+        }
+
+        [Test]
+        public async Task RunAsync_WhenOffline_EmitsBootGateOfflineAnalytics()
+        {
+            var connectivity = new FakeConnectivity { IsOnline = false };
+            var appFlow = new FakeAppFlow();
+            var analytics = new SpyAnalytics();
+
+            BootSequence boot = CreateBoot(connectivity, new CountingNtp(), appFlow, analytics);
+            await boot.RunAsync(CancellationToken.None).AsTask();
+
+            Assert.Contains(AnalyticsEvents.BootGateOffline, analytics.Events);
+        }
+
+        [Test]
+        public async Task RunAsync_WhenOnlineAuthenticated_EmitsLoginSuccessAnalytics()
+        {
+            var connectivity = new FakeConnectivity { IsOnline = true };
+            var appFlow = new FakeAppFlow { Current = FlowPhaseId.Boot };
+            var analytics = new SpyAnalytics();
+
+            BootSequence boot = CreateBootAuthenticated(connectivity, new CountingNtp(), appFlow, analytics);
+            await boot.RunAsync(CancellationToken.None).AsTask();
+
+            Assert.Contains(AnalyticsEvents.LoginSuccess, analytics.Events);
         }
     }
 }

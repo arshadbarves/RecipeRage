@@ -1,5 +1,6 @@
 using KitchenClash.Application;
 using System.Collections.Generic;
+using KitchenClash.Application.Config;
 using KitchenClash.Application.Services;
 using KitchenClash.Domain;
 using KitchenClash.Infrastructure.Network.Spawning;
@@ -25,6 +26,7 @@ namespace KitchenClash.Infrastructure.Network
         private readonly IAppFlow _appFlow;
         private readonly ILocalNetworkIdentity _localNetworkIdentity;
         private readonly INetSession _netSession;
+        private readonly IAnalyticsService _analytics;
 
         private bool _isGameActive;
         private SpawnManager _spawnManager;
@@ -42,7 +44,8 @@ namespace KitchenClash.Infrastructure.Network
             IUIService uiService,
             IAppFlow appFlow,
             ILocalNetworkIdentity localNetworkIdentity,
-            INetSession netSession)
+            INetSession netSession,
+            IAnalyticsService analytics = null)
         {
             _lobbyManager = lobbyManager;
             _matchmakingService = matchmakingService;
@@ -52,6 +55,7 @@ namespace KitchenClash.Infrastructure.Network
             _appFlow = appFlow;
             _localNetworkIdentity = localNetworkIdentity;
             _netSession = netSession ?? throw new System.ArgumentNullException(nameof(netSession));
+            _analytics = analytics;
         }
 
         private NetworkManager NetcodeManager => _matchContext?.NetworkManager;
@@ -245,6 +249,7 @@ namespace KitchenClash.Infrastructure.Network
         {
             GameLogger.Log("Ending game...");
 
+            bool wasActive = _isGameActive;
             _isGameActive = false;
             ResetBotRuntimeState();
 
@@ -271,6 +276,16 @@ namespace KitchenClash.Infrastructure.Network
             }
 
             RestoreAutomaticPlayerSpawning();
+
+            if (wasActive)
+            {
+                var endParams = new Dictionary<string, object>
+                {
+                    { AnalyticsEvents.Params.Reason, "end_game" }
+                };
+                _analytics?.LogEvent(AnalyticsEvents.MatchEnd, endParams);
+                _analytics?.LogEvent(AnalyticsEvents.MatchComplete, endParams);
+            }
 
             ReturnToLobby();
         }
@@ -303,6 +318,11 @@ namespace KitchenClash.Infrastructure.Network
             {
                 SpawnLatencyMonitor();
             }
+
+            _analytics?.LogEvent(AnalyticsEvents.MatchStart, new Dictionary<string, object>
+            {
+                { AnalyticsEvents.Params.IsHost, isHost }
+            });
         }
 
         private int ReserveNextHumanTeam()

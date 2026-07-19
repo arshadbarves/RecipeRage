@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using KitchenClash.Application;
+using KitchenClash.Application.Config;
 using KitchenClash.Application.Models;
 using KitchenClash.Domain;
 using Cysharp.Threading.Tasks;
 using NUnit.Framework;
 using Playcenter.Services;
 using Playcenter.Shell;
+using RecipeRage.Tests.EditMode.Gameplay.Fakes;
 using UnityEngine;
 
 namespace RecipeRage.Tests.EditMode.Gameplay
@@ -197,6 +199,26 @@ namespace RecipeRage.Tests.EditMode.Gameplay
                 + EconomyService.MatchWinReward
                 + Mathf.FloorToInt(score * EconomyService.ScoreBonusCoinRate);
             Assert.AreEqual(expected, economy.Coins);
+        }
+
+        [Test]
+        public void MatchRewardHandler_EmitsWalletCreditAnalytics()
+        {
+            var bus = new RecordingEventBus();
+            var economy = new EconomyService(bus, new NullSaveService());
+            economy.Initialize();
+            var analytics = new SpyAnalytics();
+
+            var handler = new KitchenClash.Infrastructure.Services.MatchRewardHandler(
+                (IWalletLedger)economy, bus, analytics);
+            handler.Initialize();
+
+            bus.Publish(new MatchEndedEvent(won: true, localTeamScore: 0));
+
+            Assert.Contains(AnalyticsEvents.WalletCredit, analytics.Events);
+            Assert.AreEqual(1, analytics.Events.Count);
+            Assert.AreEqual(EconomyService.MatchWinReward, analytics.Parameters[0][AnalyticsEvents.Params.Amount]);
+            Assert.AreEqual("match_win", analytics.Parameters[0][AnalyticsEvents.Params.Reason]);
         }
     }
 }

@@ -57,6 +57,8 @@
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/Persistence/PlayerStatsDataTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Core/Auth/AuthenticationServiceTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/Fakes/FakeAppFlow.cs" />
+    <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/Fakes/SpyAnalytics.cs" />
+    <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/AnalyticsEventsTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/BootSequenceConnectivityTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/AppFlowMigrationTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/LoggingBootstrapTests.cs" />

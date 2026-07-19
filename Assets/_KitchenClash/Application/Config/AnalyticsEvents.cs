@@ -1,12 +1,21 @@
 namespace KitchenClash.Application.Config
 {
     /// <summary>
-    /// GDD v3 analytics event name constants.
+    /// GDD v3 / live-ops funnel analytics event name constants.
     /// </summary>
     public static class AnalyticsEvents
     {
+        // ── Funnel / live-ops ──
+        public const string BootGateOffline = "boot_gate_offline";
+        public const string LoginSuccess = "login_success";
         public const string MatchStart = "match_start";
-        public const string MatchComplete = "match_complete";
+        public const string MatchEnd = "match_end";
+        public const string MatchComplete = "match_complete"; // backward-compat alias of match end
+        public const string WalletCredit = "wallet_credit";
+        public const string PurchaseSuccess = "purchase_success";
+        public const string PurchaseFail = "purchase_fail";
+
+        // ── Existing product events ──
         public const string DishServed = "dish_served";
         public const string IapCompleted = "iap_completed";
         public const string AdShown = "ad_shown";
@@ -36,6 +45,13 @@ namespace KitchenClash.Application.Config
             public const string Context = "context";
             public const string Method = "method";
             public const string WasGuest = "was_guest";
+            public const string Reason = "reason";
+            public const string Amount = "amount";
+            public const string Currency = "currency";
+            public const string ProductId = "product_id";
+            public const string Success = "success";
+            public const string Phase = "phase";
+            public const string IsHost = "is_host";
         }
     }
 }

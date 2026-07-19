@@ -43,6 +43,7 @@ namespace KitchenClash.Infrastructure.Network
         private readonly INetTransportConfigurator _netTransportConfigurator;
         private readonly INetSession _netSession;
         private readonly IAppFlow _appFlow;
+        private readonly IAnalyticsService _analytics;
 
         /// <summary>Playcenter net session used by <see cref="GameStarter"/> (also exposed for bridges).</summary>
         public INetSession NetSession => _netSession;
@@ -64,7 +65,8 @@ namespace KitchenClash.Infrastructure.Network
             ILocalNetworkIdentity localNetworkIdentity,
             INetTransportConfigurator netTransportConfigurator,
             IAppFlow appFlow,
-            INetSession netSession = null)
+            INetSession netSession = null,
+            IAnalyticsService analytics = null)
         {
             _uiService = uiService;
             _authService = authService;
@@ -77,6 +79,7 @@ namespace KitchenClash.Infrastructure.Network
             _localNetworkIdentity = localNetworkIdentity;
             _netTransportConfigurator = netTransportConfigurator;
             _appFlow = appFlow;
+            _analytics = analytics;
 
             // Prefer DI-registered INetSession; otherwise construct adapter with shared match context.
             if (netSession != null)
@@ -129,7 +132,8 @@ namespace KitchenClash.Infrastructure.Network
                 _uiService,
                 _appFlow,
                 _localNetworkIdentity,
-                _netSession);
+                _netSession,
+                _analytics);
 
             BotSpawner = null;
 

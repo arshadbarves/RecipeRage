@@ -222,7 +222,7 @@ public class RootLifetimeScope : LifetimeScope
             var sessionLoader = new SessionLoader(sessionLifecycle, sessionContext);
             var connectivity = resolver.Resolve<IConnectivityService>();
             var bootSequence = new BootSequence(
-                connectivity, ntp, remoteConfig, auth, maintenance, eventBus, appFlowProxy, sessionLoader);
+                connectivity, ntp, remoteConfig, auth, maintenance, eventBus, appFlowProxy, sessionLoader, analytics);
 
             var homePhase = new HomePhase(eventBus);
             var matchmakingPhase = new MatchmakingPhase(
@@ -232,7 +232,7 @@ public class RootLifetimeScope : LifetimeScope
             var matchRuntimePhase = new MatchRuntimePhase(eventBus, sessionContext, gameModeService);
             var resultsPhase = new ResultsPhase(eventBus, economy, matchHudPort);
 
-            var loginPhase = new LoginPhase(ui, eventBus, appFlowProxy, sessionLoader);
+            var loginPhase = new LoginPhase(ui, eventBus, appFlowProxy, sessionLoader, analytics);
             var maintenancePhase = new MaintenancePhase(maintenance, remoteConfig, eventBus, appFlowProxy);
             var noConnectionPhase = new NoConnectionPhase(ui, eventBus, appFlowProxy, bootSequence);
             var tutorialPhase = new TutorialPhase(ui, eventBus, appFlowProxy, tutorial);

@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
+using KitchenClash.Application.Config;
 using KitchenClash.Application.Services;
 using KitchenClash.Domain;
 using Playcenter.GameFlow;
@@ -27,6 +29,7 @@ namespace KitchenClash.Infrastructure.Flow.Handlers
         private readonly IAppFlow _appFlow;
         private readonly SessionLoader _sessionLoader;
         private readonly ForceUpdateChecker _forceUpdateChecker;
+        private readonly IAnalyticsService _analytics;
 
         private CancellationTokenSource _cts;
 
@@ -38,7 +41,8 @@ namespace KitchenClash.Infrastructure.Flow.Handlers
             IMaintenanceService maintenanceService,
             IEventBus eventBus,
             IAppFlow appFlow,
-            SessionLoader sessionLoader)
+            SessionLoader sessionLoader,
+            IAnalyticsService analytics = null)
         {
             _connectivity = connectivity;
             _ntpTimeService = ntpTimeService;
@@ -48,6 +52,7 @@ namespace KitchenClash.Infrastructure.Flow.Handlers
             _eventBus = eventBus;
             _appFlow = appFlow;
             _sessionLoader = sessionLoader;
+            _analytics = analytics;
             _forceUpdateChecker = new ForceUpdateChecker(remoteConfigService, eventBus);
         }
 
@@ -80,6 +85,11 @@ namespace KitchenClash.Infrastructure.Flow.Handlers
                 if (_connectivity == null || !_connectivity.IsOnline)
                 {
                     GameLogger.LogInfo("[BootSequence] Offline — entering NoConnection.");
+                    _analytics?.LogEvent(AnalyticsEvents.BootGateOffline, new Dictionary<string, object>
+                    {
+                        { AnalyticsEvents.Params.Reason, "offline" },
+                        { AnalyticsEvents.Params.Phase, FlowPhaseId.Boot.ToString() }
+                    });
                     _appFlow?.EnterSidePhase(FlowPhaseId.NoConnection);
                     return;
                 }
@@ -158,6 +168,13 @@ namespace KitchenClash.Infrastructure.Flow.Handlers
                 GameLogger.Log("[BootSequence] Auth OK — loading session.");
                 await _sessionLoader.LoadAsync(ct);
                 ct.ThrowIfCancellationRequested();
+
+                // Already-authenticated cold boot (or retry) counts as login funnel success.
+                _analytics?.LogEvent(AnalyticsEvents.LoginSuccess, new Dictionary<string, object>
+                {
+                    { AnalyticsEvents.Params.Method, "existing_session" },
+                    { AnalyticsEvents.Params.Phase, _appFlow?.Current.ToString() ?? FlowPhaseId.Boot.ToString() }
+                });
 
                 if (_appFlow != null)
                 {

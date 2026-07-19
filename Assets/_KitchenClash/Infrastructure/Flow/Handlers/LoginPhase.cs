@@ -1,7 +1,10 @@
 using System;
+using System.Collections.Generic;
+using KitchenClash.Application.Config;
 using KitchenClash.Application.Services;
 using KitchenClash.Domain;
 using Playcenter.GameFlow;
+using Playcenter.Services;
 using Playcenter.Shell;
 using Playcenter.UI;
 
@@ -19,6 +22,7 @@ namespace KitchenClash.Infrastructure.Flow.Handlers
         private readonly IEventBus _eventBus;
         private readonly IAppFlow _appFlow;
         private readonly SessionLoader _sessionLoader;
+        private readonly IAnalyticsService _analytics;
 
         private Type _loginScreenType;
         private bool _active;
@@ -27,12 +31,14 @@ namespace KitchenClash.Infrastructure.Flow.Handlers
             IUIService uiService,
             IEventBus eventBus,
             IAppFlow appFlow,
-            SessionLoader sessionLoader)
+            SessionLoader sessionLoader,
+            IAnalyticsService analytics = null)
         {
             _uiService = uiService;
             _eventBus = eventBus;
             _appFlow = appFlow;
             _sessionLoader = sessionLoader;
+            _analytics = analytics;
         }
 
         public void Enter()
@@ -90,6 +96,12 @@ namespace KitchenClash.Infrastructure.Flow.Handlers
                 {
                     return;
                 }
+
+                _analytics?.LogEvent(AnalyticsEvents.LoginSuccess, new Dictionary<string, object>
+                {
+                    { AnalyticsEvents.Params.Method, "login_phase" },
+                    { AnalyticsEvents.Params.Context, evt?.UserId ?? string.Empty }
+                });
 
                 _appFlow?.CompleteSidePhase();
             }
