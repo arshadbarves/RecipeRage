@@ -1,31 +1,71 @@
-<UXML xmlns="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <VisualElement name="match-lobby-root" class="screen-root">
-        <Label text="MATCH LOBBY" class="screen-title" />
-        <Label name="lbl-lobby-timer" text="Starting in 0:30" class="lobby-timer" />
-        <VisualElement class="lobby-teams">
-            <VisualElement class="lobby-team">
-                <Label text="TEAM A" class="lobby-team-title" />
-                <VisualElement name="team-a-slot-1" class="lobby-player-slot">
-                    <Label text="Waiting..." class="lobby-player-slot-name" />
-                </VisualElement>
-                <VisualElement name="team-a-slot-2" class="lobby-player-slot">
-                    <Label text="Waiting..." class="lobby-player-slot-name" />
-                </VisualElement>
-            </VisualElement>
-            <Label text="VS" class="lobby-vs" />
-            <VisualElement class="lobby-team">
-                <Label text="TEAM B" class="lobby-team-title" />
-                <VisualElement name="team-b-slot-1" class="lobby-player-slot">
-                    <Label text="Waiting..." class="lobby-player-slot-name" />
-                </VisualElement>
-                <VisualElement name="team-b-slot-2" class="lobby-player-slot">
-                    <Label text="Waiting..." class="lobby-player-slot-name" />
-                </VisualElement>
-            </VisualElement>
-        </VisualElement>
-        <VisualElement name="map-preview" class="lobby-map-preview">
-            <Label name="lbl-map-name" text="Sushi Shuffle" class="lobby-map-preview-name" />
-        </VisualElement>
-        <Button name="btn-ready" text="READY" class="lobby-ready-btn" />
-    </VisualElement>
-</UXML>
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/_KitchenClash/UI/Styles/DesignSystem.uss" />
+    <ui:VisualElement name="match-lobby-root" class="pc-match-shell">
+        <ui:VisualElement class="pc-match-header">
+            <ui:Label text="MATCH LOBBY" class="pc-match-header__title" />
+            <ui:Label name="lbl-lobby-timer" text="0:30" class="pc-chip pc-chip--soft" />
+        </ui:VisualElement>
+
+        <ui:VisualElement class="pc-team-row">
+            <ui:VisualElement name="team-a-column" class="pc-panel pc-team-column pc-team-column--a">
+                <ui:Label text="TEAM A" class="pc-team-title pc-team-title--a" />
+                <ui:VisualElement name="team-a-slot-1" class="pc-player-slot pc-player-slot--empty">
+                    <ui:VisualElement class="pc-player-slot__avatar" />
+                    <ui:VisualElement class="pc-player-slot__meta">
+                        <ui:Label name="team-a-slot-1-name" text="Waiting..." class="pc-player-slot__name" />
+                        <ui:Label name="team-a-slot-1-status" text="OPEN" class="pc-player-slot__status" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement name="team-a-slot-2" class="pc-player-slot pc-player-slot--empty">
+                    <ui:VisualElement class="pc-player-slot__avatar" />
+                    <ui:VisualElement class="pc-player-slot__meta">
+                        <ui:Label name="team-a-slot-2-name" text="Waiting..." class="pc-player-slot__name" />
+                        <ui:Label name="team-a-slot-2-status" text="OPEN" class="pc-player-slot__status" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement name="team-a-slot-3" class="pc-player-slot pc-player-slot--empty" style="display: none;">
+                    <ui:VisualElement class="pc-player-slot__avatar" />
+                    <ui:VisualElement class="pc-player-slot__meta">
+                        <ui:Label name="team-a-slot-3-name" text="Waiting..." class="pc-player-slot__name" />
+                        <ui:Label name="team-a-slot-3-status" text="OPEN" class="pc-player-slot__status" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:VisualElement class="pc-vs">
+                <ui:Label text="VS" class="pc-vs__mark" />
+            </ui:VisualElement>
+
+            <ui:VisualElement name="team-b-column" class="pc-panel pc-team-column pc-team-column--b">
+                <ui:Label text="TEAM B" class="pc-team-title pc-team-title--b" />
+                <ui:VisualElement name="team-b-slot-1" class="pc-player-slot pc-player-slot--empty">
+                    <ui:VisualElement class="pc-player-slot__avatar" />
+                    <ui:VisualElement class="pc-player-slot__meta">
+                        <ui:Label name="team-b-slot-1-name" text="Waiting..." class="pc-player-slot__name" />
+                        <ui:Label name="team-b-slot-1-status" text="OPEN" class="pc-player-slot__status" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement name="team-b-slot-2" class="pc-player-slot pc-player-slot--empty">
+                    <ui:VisualElement class="pc-player-slot__avatar" />
+                    <ui:VisualElement class="pc-player-slot__meta">
+                        <ui:Label name="team-b-slot-2-name" text="Waiting..." class="pc-player-slot__name" />
+                        <ui:Label name="team-b-slot-2-status" text="OPEN" class="pc-player-slot__status" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement name="team-b-slot-3" class="pc-player-slot pc-player-slot--empty" style="display: none;">
+                    <ui:VisualElement class="pc-player-slot__avatar" />
+                    <ui:VisualElement class="pc-player-slot__meta">
+                        <ui:Label name="team-b-slot-3-name" text="Waiting..." class="pc-player-slot__name" />
+                        <ui:Label name="team-b-slot-3-status" text="OPEN" class="pc-player-slot__status" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement class="pc-match-footer">
+            <ui:Button name="btn-leave" text="LEAVE" class="pc-btn pc-btn--ghost" />
+            <ui:Button name="btn-ready" text="READY" class="pc-btn pc-btn--primary" />
+            <ui:Button name="btn-start" text="START" class="pc-btn pc-btn--secondary" style="display: none;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

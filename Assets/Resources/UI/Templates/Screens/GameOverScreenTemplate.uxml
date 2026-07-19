@@ -1,25 +1,39 @@
-<UXML xmlns="UnityEngine.UIElements">
-    <Style src="project://database/Assets/Resources/UI/Styles/Screens/GameOver.uss?fileID=7433441132597879392&amp;guid=0dc93b02b55854976be67fbd874f44ac&amp;type=3#GameOver"/>
-    <VisualElement name="game-over-root" class="game-over-root">
-        <VisualElement name="content-panel" class="content-panel">
-            <Label name="title-label" text="GAME OVER" class="title-label"/>
-            <Label name="winner-label" text="MATCH COMPLETE" class="winner-label"/>
-            
-            <VisualElement name="score-container" class="score-container">
-                <VisualElement class="team-score-box team-blue">
-                    <Label text="TEAM 1" class="team-name"/>
-                    <Label name="score-team-0" text="0" class="team-score"/>
-                </VisualElement>
-                
-                <Label text="-" class="score-divider"/>
-                
-                <VisualElement class="team-score-box team-red">
-                    <Label text="TEAM 2" class="team-name"/>
-                    <Label name="score-team-1" text="0" class="team-score"/>
-                </VisualElement>
-            </VisualElement>
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/_KitchenClash/UI/Styles/DesignSystem.uss" />
+    <ui:VisualElement name="results-root" class="pc-match-shell" style="align-items: center; justify-content: center;">
+        <ui:Label name="winner-label" text="VICTORY" class="pc-results-verdict" />
 
-            <Button name="lobby-btn" text="RETURN TO LOBBY" class="primary-button"/>
-        </VisualElement>
-    </VisualElement>
-</UXML>
+        <ui:VisualElement class="pc-results-score-row">
+            <ui:VisualElement class="pc-panel pc-results-score-box">
+                <ui:Label text="TEAM A" class="pc-results-score-box__team" />
+                <ui:Label name="score-team-0" text="0" class="pc-results-score-box__score" />
+            </ui:VisualElement>
+            <ui:VisualElement class="pc-vs">
+                <ui:Label text="VS" class="pc-vs__mark" style="font-size: 48px;" />
+            </ui:VisualElement>
+            <ui:VisualElement class="pc-panel pc-results-score-box">
+                <ui:Label text="TEAM B" class="pc-results-score-box__team" />
+                <ui:Label name="score-team-1" text="0" class="pc-results-score-box__score" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement name="reward-panel" class="pc-panel pc-results-reward">
+            <ui:Label text="REWARDS" class="pc-results-reward__title" />
+            <ui:VisualElement class="pc-results-reward__row">
+                <ui:Label text="Match payout" class="pc-player-slot__status" />
+                <ui:Label name="reward-delta-coins" text="+0" class="pc-chip pc-chip--soft" />
+            </ui:VisualElement>
+            <ui:VisualElement class="pc-results-reward__row">
+                <ui:Label text="Wallet" class="pc-player-slot__status" />
+                <ui:VisualElement style="flex-direction: row;">
+                    <ui:Label name="wallet-coins" text="0" class="pc-chip pc-chip--soft" style="margin-right: 8px;" />
+                    <ui:Label name="wallet-gems" text="0" class="pc-chip pc-chip--hard" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement class="pc-match-footer" style="margin-top: 24px;">
+            <ui:Button name="lobby-btn" text="RETURN HOME" class="pc-btn pc-btn--primary" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,66 +1,39 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
-    <Style src="project://database/Assets/_KitchenClash/UI/Styles/ResultsScreen.uss"/>
-    <ui:VisualElement name="screen-container" class="screen-root results-screen">
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="../Styles/DesignSystem.uss" />
+    <ui:VisualElement name="results-root" class="pc-match-shell" style="align-items: center; justify-content: center;">
+        <ui:Label name="winner-label" text="VICTORY" class="pc-results-verdict" />
 
-        <!-- Header -->
-        <ui:VisualElement class="results-header">
-            <ui:Label text="RESULTS" class="results-title"/>
-        </ui:VisualElement>
-
-        <!-- Verdict -->
-        <ui:Label name="lbl-result" text="VICTORY!" class="results-verdict results-verdict--win"/>
-
-        <!-- Score Boxes -->
-        <ui:VisualElement class="results-scores-row">
-            <ui:VisualElement class="results-score-box">
-                <ui:Label name="lbl-final-score-a" text="5" class="results-score-box__score"/>
-                <ui:Label text="TEAM A" class="results-score-box__team"/>
+        <ui:VisualElement class="pc-results-score-row">
+            <ui:VisualElement class="pc-panel pc-results-score-box">
+                <ui:Label text="TEAM A" class="pc-results-score-box__team" />
+                <ui:Label name="score-team-0" text="0" class="pc-results-score-box__score" />
             </ui:VisualElement>
-            <ui:VisualElement class="results-score-box">
-                <ui:Label name="lbl-final-score-b" text="3" class="results-score-box__score"/>
-                <ui:Label text="TEAM B" class="results-score-box__team"/>
+            <ui:VisualElement class="pc-vs">
+                <ui:Label text="VS" class="pc-vs__mark" style="font-size: 48px;" />
+            </ui:VisualElement>
+            <ui:VisualElement class="pc-panel pc-results-score-box">
+                <ui:Label text="TEAM B" class="pc-results-score-box__team" />
+                <ui:Label name="score-team-1" text="0" class="pc-results-score-box__score" />
             </ui:VisualElement>
         </ui:VisualElement>
 
-        <!-- MVP Card -->
-        <ui:VisualElement class="results-mvp-card">
-            <ui:VisualElement name="mvp-portrait" class="results-mvp-portrait"/>
-            <ui:VisualElement>
-                <ui:Label text="👑 MVP" class="section-label"/>
-                <ui:Label name="lbl-mvp-name" text="CHEF ROSA" class="results-mvp-name"/>
-                <ui:Label name="lbl-mvp-stat" text="BEST CHEF" class="results-mvp-stat"/>
+        <ui:VisualElement name="reward-panel" class="pc-panel pc-results-reward">
+            <ui:Label text="REWARDS" class="pc-results-reward__title" />
+            <ui:VisualElement class="pc-results-reward__row">
+                <ui:Label text="Match payout" class="pc-player-slot__status" />
+                <ui:Label name="reward-delta-coins" text="+0" class="pc-chip pc-chip--soft" />
+            </ui:VisualElement>
+            <ui:VisualElement class="pc-results-reward__row">
+                <ui:Label text="Wallet" class="pc-player-slot__status" />
+                <ui:VisualElement style="flex-direction: row;">
+                    <ui:Label name="wallet-coins" text="0" class="pc-chip pc-chip--soft" style="margin-right: 8px;" />
+                    <ui:Label name="wallet-gems" text="0" class="pc-chip pc-chip--hard" />
+                </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
 
-        <!-- Rewards Card -->
-        <ui:VisualElement class="results-rewards-card">
-            <ui:Label text="REWARDS" class="section-label" style="margin-bottom:8px;"/>
-
-            <ui:VisualElement class="results-reward-row">
-                <ui:Label text="GEMS" class="results-reward-label"/>
-                <ui:Label name="lbl-reward-gems" text="+3 💎" class="results-reward-value"/>
-            </ui:VisualElement>
-
-            <ui:VisualElement class="results-reward-row">
-                <ui:Label text="TROPHIES" class="results-reward-label"/>
-                <ui:Label name="lbl-reward-trophies" text="+25" class="results-reward-value"/>
-            </ui:VisualElement>
-
-            <ui:VisualElement class="results-reward-row">
-                <ui:Label text="XP" class="results-reward-label"/>
-                <ui:Label name="lbl-reward-xp" text="+120" class="results-reward-value"/>
-            </ui:VisualElement>
+        <ui:VisualElement class="pc-match-footer" style="margin-top: 24px;">
+            <ui:Button name="lobby-btn" text="RETURN HOME" class="pc-btn pc-btn--primary" />
         </ui:VisualElement>
-
-        <!-- Bottom Bar -->
-        <ui:VisualElement class="results-bottom-bar">
-            <ui:Button name="btn-watch-ad" class="btn-secondary">
-                <ui:Label text="WATCH AD +3 💎" class="btn-secondary__label"/>
-            </ui:Button>
-            <ui:Button name="btn-continue" class="btn-primary">
-                <ui:Label text="CONTINUE" class="btn-primary__label"/>
-            </ui:Button>
-        </ui:VisualElement>
-
     </ui:VisualElement>
 </ui:UXML>

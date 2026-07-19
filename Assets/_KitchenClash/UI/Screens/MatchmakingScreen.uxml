@@ -1,4 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="../Styles/DesignSystem.uss"/>
     <Style src="project://database/Assets/_KitchenClash/UI/Styles/MatchmakingScreen.uss"/>
     <ui:VisualElement name="screen-container" class="screen-root matchmaking-screen">
 
@@ -36,8 +37,8 @@
 
         <!-- Footer -->
         <ui:VisualElement class="matchmaking-footer">
-            <ui:Button name="btn-cancel" class="btn-ghost">
-                <ui:Label text="CANCEL SEARCH" class="btn-ghost__label"/>
+            <ui:Button name="btn-cancel" class="pc-btn pc-btn--ghost">
+                <ui:Label text="CANCEL SEARCH" class="pc-btn__label"/>
             </ui:Button>
         </ui:VisualElement>
 

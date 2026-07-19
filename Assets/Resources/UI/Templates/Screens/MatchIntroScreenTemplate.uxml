@@ -1,0 +1,31 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/_KitchenClash/UI/Styles/DesignSystem.uss" />
+    <ui:VisualElement name="match-intro-root" class="pc-intro-root">
+        <ui:VisualElement class="pc-panel pc-intro-card">
+            <ui:Label name="status-label" text="MATCH FOUND" class="pc-intro-status" />
+            <ui:Label name="mode-label" text="2v2 RANKED" class="pc-intro-mode" />
+            <ui:Label name="map-label" text="Kitchen Arena" class="pc-intro-map" />
+
+            <ui:VisualElement class="pc-team-row">
+                <ui:VisualElement name="team-a-column" class="pc-panel pc-team-column pc-team-column--a">
+                    <ui:Label name="team-a-title" text="TEAM A" class="pc-team-title pc-team-title--a" />
+                    <ui:Label name="team-a-names" text="—" class="pc-player-slot__name" style="-unity-text-align: middle-center;" />
+                </ui:VisualElement>
+
+                <ui:VisualElement class="pc-vs">
+                    <ui:Label text="VS" class="pc-vs__mark" />
+                </ui:VisualElement>
+
+                <ui:VisualElement name="team-b-column" class="pc-panel pc-team-column pc-team-column--b">
+                    <ui:Label name="team-b-title" text="TEAM B" class="pc-team-title pc-team-title--b" />
+                    <ui:Label name="team-b-names" text="—" class="pc-player-slot__name" style="-unity-text-align: middle-center;" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:VisualElement class="pc-intro-load-track">
+                <ui:VisualElement name="load-fill" class="pc-intro-load-fill" />
+            </ui:VisualElement>
+            <ui:Label name="hint-label" text="GET READY" class="pc-intro-hint" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
