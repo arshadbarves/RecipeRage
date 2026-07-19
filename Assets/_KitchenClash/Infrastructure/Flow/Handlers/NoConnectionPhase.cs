@@ -8,7 +8,7 @@ using Playcenter.UI;
 namespace KitchenClash.Infrastructure.Flow.Handlers
 {
     /// <summary>
-    /// No-connection side phase: show NoInternetPopup; Retry → SessionLoader → CompleteSidePhase.
+    /// No-connection side phase: show NoInternetPopup; Retry → re-runs full BootSequence.
     /// </summary>
     public sealed class NoConnectionPhase
     {
@@ -17,8 +17,7 @@ namespace KitchenClash.Infrastructure.Flow.Handlers
 
         private readonly IUIService _uiService;
         private readonly IEventBus _eventBus;
-        private readonly IAppFlow _appFlow;
-        private readonly SessionLoader _sessionLoader;
+        private readonly BootSequence _bootSequence;
 
         private Type _noInternetPopupType;
         private bool _active;
@@ -27,12 +26,11 @@ namespace KitchenClash.Infrastructure.Flow.Handlers
             IUIService uiService,
             IEventBus eventBus,
             IAppFlow appFlow,
-            SessionLoader sessionLoader)
+            BootSequence bootSequence)
         {
             _uiService = uiService;
             _eventBus = eventBus;
-            _appFlow = appFlow;
-            _sessionLoader = sessionLoader;
+            _bootSequence = bootSequence;
         }
 
         public void Enter()
@@ -70,29 +68,18 @@ namespace KitchenClash.Infrastructure.Flow.Handlers
             }
         }
 
-        private async void OnRetry(RetryConnectionEvent _)
+        private void OnRetry(RetryConnectionEvent _)
         {
             if (!_active)
             {
                 return;
             }
 
-            GameLogger.Log("[NoConnectionPhase] Retry tapped → reloading session");
+            GameLogger.Log("[NoConnectionPhase] Retry tapped → re-running boot sequence");
 
-            try
-            {
-                await _sessionLoader.LoadAsync();
-                if (!_active)
-                {
-                    return;
-                }
-
-                _appFlow?.CompleteSidePhase();
-            }
-            catch (Exception ex)
-            {
-                GameLogger.LogException(ex);
-            }
+            // Exit first to avoid re-entrancy if boot immediately re-enters NoConnection.
+            Exit();
+            _bootSequence?.Start();
         }
     }
 }

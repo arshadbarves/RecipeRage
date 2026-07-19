@@ -132,6 +132,9 @@ public class RootLifetimeScope : LifetimeScope
     {
         // Session scope for cold boot (SessionLoader / BootSequence). Root owns SessionManager;
         // MenuLifetimeScope does not re-register it (resolves parent Singleton).
+        // MenuSessionScopeInstaller supplies IEconomyService and other menu registrations into
+        // the CreateSession child — a bare LifetimeScope child has no Configure().
+        builder.Register<MenuSessionScopeInstaller>(Lifetime.Singleton).As<ISessionScopeInstaller>();
         builder.Register<SessionManager>(Lifetime.Singleton)
             .AsSelf()
             .As<ISessionLifecycle>()
@@ -201,8 +204,9 @@ public class RootLifetimeScope : LifetimeScope
             var appFlowProxy = new AppFlowProxy(Proxy);
 
             var sessionLoader = new SessionLoader(sessionLifecycle, sessionContext);
+            var connectivity = resolver.Resolve<IConnectivityService>();
             var bootSequence = new BootSequence(
-                ntp, remoteConfig, auth, maintenance, eventBus, appFlowProxy, sessionLoader);
+                connectivity, ntp, remoteConfig, auth, maintenance, eventBus, appFlowProxy, sessionLoader);
 
             var homePhase = new HomePhase(eventBus);
             var matchmakingPhase = new MatchmakingPhase(
@@ -214,7 +218,7 @@ public class RootLifetimeScope : LifetimeScope
 
             var loginPhase = new LoginPhase(ui, eventBus, appFlowProxy, sessionLoader);
             var maintenancePhase = new MaintenancePhase(maintenance, remoteConfig, eventBus, appFlowProxy);
-            var noConnectionPhase = new NoConnectionPhase(ui, eventBus, appFlowProxy, sessionLoader);
+            var noConnectionPhase = new NoConnectionPhase(ui, eventBus, appFlowProxy, bootSequence);
             var tutorialPhase = new TutorialPhase(ui, eventBus, appFlowProxy, tutorial);
             var accountUpgradePhase = new AccountUpgradePhase(ui, eventBus, appFlowProxy);
             var sidePhases = new SidePhaseFlowPort(

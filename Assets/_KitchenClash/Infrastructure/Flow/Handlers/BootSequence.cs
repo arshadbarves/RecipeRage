@@ -17,6 +17,7 @@ namespace KitchenClash.Infrastructure.Flow.Handlers
     /// </summary>
     public sealed class BootSequence
     {
+        private readonly IConnectivityService _connectivity;
         private readonly INTPTimeService _ntpTimeService;
         private readonly IRemoteConfigService _remoteConfigService;
         private readonly IAuthService _authService;
@@ -29,6 +30,7 @@ namespace KitchenClash.Infrastructure.Flow.Handlers
         private CancellationTokenSource _cts;
 
         public BootSequence(
+            IConnectivityService connectivity,
             INTPTimeService ntpTimeService,
             IRemoteConfigService remoteConfigService,
             IAuthService authService,
@@ -37,6 +39,7 @@ namespace KitchenClash.Infrastructure.Flow.Handlers
             IAppFlow appFlow,
             SessionLoader sessionLoader)
         {
+            _connectivity = connectivity;
             _ntpTimeService = ntpTimeService;
             _remoteConfigService = remoteConfigService;
             _authService = authService;
@@ -72,6 +75,14 @@ namespace KitchenClash.Infrastructure.Flow.Handlers
 
             try
             {
+                // 0. Connectivity gate — must be online before any network service call.
+                if (_connectivity == null || !_connectivity.IsOnline)
+                {
+                    GameLogger.LogInfo("[BootSequence] Offline — entering NoConnection.");
+                    _appFlow?.EnterSidePhase(FlowPhaseId.NoConnection);
+                    return;
+                }
+
                 // 1. NTP time sync (best-effort, timeout 5s)
                 try
                 {
