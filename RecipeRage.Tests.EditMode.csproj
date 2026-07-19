@@ -64,6 +64,7 @@
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/ScoreServiceTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/MatchmakingFlowTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/OrderServiceTests.cs" />
+    <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/EconomyWalletBridgeTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/BotTaskPlannerTests.cs" />
     <None Include="Assets/Scripts/Tests/RecipeRage.Tests.EditMode.asmdef" />
     <Reference Include="UnityEngine">

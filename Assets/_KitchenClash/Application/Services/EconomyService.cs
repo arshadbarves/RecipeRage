@@ -2,10 +2,11 @@ using System.Collections.Generic;
 using KitchenClash.Domain;
 using UnityEngine;
 using Playcenter.Shell;
+using Playcenter.Services;
 
 namespace KitchenClash.Application
 {
-    public sealed class EconomyService : IEconomyService
+    public sealed class EconomyService : IEconomyService, IWallet, IWalletLedger
     {
         public const int StarterCoins = 100;
         public const int StarterGems = 0;
@@ -145,6 +146,26 @@ namespace KitchenClash.Application
 
             return spent;
         }
+
+        // IWallet
+        int IWallet.GetBalance(CurrencyId currency) =>
+            currency.Equals(CurrencyId.Gems) ? _gems : _coins;
+
+        // IWallet.HasItem is satisfied by the public HasItem(string) method below.
+
+        // IWalletLedger
+        bool IWalletLedger.TryDebit(CurrencyId currency, int amount, string reason) =>
+            currency.Equals(CurrencyId.Gems) ? TrySpendGems(amount) : TrySpendCoins(amount);
+
+        void IWalletLedger.Credit(CurrencyId currency, int amount, string reason)
+        {
+            if (amount <= 0) return;
+            if (currency.Equals(CurrencyId.Gems)) AddGems(amount);
+            else AddCoins(amount);
+        }
+
+        bool IWalletLedger.TryPurchase(string itemId, CurrencyId currency, int cost, string reason) =>
+            Purchase(itemId, cost, currency.Equals(CurrencyId.Gems) ? EconomyKeys.CurrencyGems : EconomyKeys.CurrencyCoins);
 
         /// <summary>
         /// Initialize the economy service — loads persisted data or sets starter values.
