@@ -1,7 +1,7 @@
 # Playcenter Studio SDK — Design
 
 **Date:** 2026-07-20  
-**Status:** Approved design (not implemented)  
+**Status:** Implemented (tasks 1–9 complete; see commit table below)  
 **Branch:** `architecture-cleanup`  
 **Codename / folder:** `Assets/Playcenter/**`  
 **Public product name:** Playcenter Studio SDK  
@@ -20,6 +20,20 @@
 - **Adds** facade SDK, SDK-owned DI (no VContainer), module host + loading shell, vendor firewall, SDK common screens, AI skill
 
 **Cutover policy:** AAA complete replacement. No dual-path boot, no obsolete shims, no feature flags that keep legacy boot alive after its wave delete gate.
+
+**Implementation (branch `architecture-cleanup`):**
+
+| Task | Scope | Commits |
+|------|-------|---------|
+| 1 | ServiceRegistry Builder DI | `a97f2b4f..754f4d5e` |
+| 2 | ModuleHost + weights + BootFailure | `4858abfb..e2ed1ff0` |
+| 3 | PlaycenterClient + IGameEntry | `43e5e742..d19d6336` |
+| 4 | Unity shell Splash/Loading | `78e15394..65866ece` |
+| 5 | Default module pack | `68b7036b..b8023876` |
+| 6 | BootSequence delete + bootstrap cutover | `b8023876..4812f559` |
+| 7 | Gate screens + Settings in SDK; delete dupes | `4812f559..1561552c` |
+| 8 | Zero VContainer in Playcenter | `32868eaa` |
+| 9 | Vendor firewall + AI skill + wiki | `bde793db` |
 
 ---
 
