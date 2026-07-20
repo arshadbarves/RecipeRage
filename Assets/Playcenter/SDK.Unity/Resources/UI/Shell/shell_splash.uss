@@ -1,0 +1,5 @@
+/* Splash shell companion styles */
+.pc-splash__logo-placeholder {
+    align-items: center;
+    justify-content: center;
+}

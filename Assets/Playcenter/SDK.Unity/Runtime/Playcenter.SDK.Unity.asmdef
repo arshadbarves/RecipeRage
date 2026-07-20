@@ -1,0 +1,19 @@
+{
+    "name": "Playcenter.SDK.Unity",
+    "rootNamespace": "Playcenter.SDK.Unity",
+    "references": [
+        "Playcenter.SDK",
+        "Playcenter.Shell",
+        "UniTask",
+        "Unity.InputSystem"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

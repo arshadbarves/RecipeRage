@@ -1,0 +1,78 @@
+/* Default shell styles for Playcenter SDK */
+* {
+    cursor: arrow;
+}
+
+.pc-shell-root {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgb(10, 10, 18);
+    align-items: center;
+    justify-content: center;
+}
+
+.pc-loading {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgb(10, 10, 18);
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.pc-loading__title {
+    font-size: 24px;
+    color: rgb(220, 220, 220);
+    margin-bottom: 32px;
+    -unity-font-style: bold;
+}
+
+.pc-loading__status {
+    font-size: 14px;
+    color: rgb(160, 160, 160);
+    margin-top: 16px;
+    margin-bottom: 8px;
+}
+
+.pc-loading__progress-bar {
+    width: 320px;
+    height: 8px;
+}
+
+.pc-splash {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgb(10, 10, 18);
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.pc-splash__logo-placeholder {
+    width: 120px;
+    height: 120px;
+    background-color: rgb(40, 100, 200);
+    border-radius: 24px;
+    margin-bottom: 24px;
+}
+
+.pc-splash__title {
+    font-size: 32px;
+    color: rgb(240, 240, 240);
+    -unity-font-style: bold;
+    margin-bottom: 8px;
+}
+
+.pc-splash__subtitle {
+    font-size: 16px;
+    color: rgb(140, 140, 160);
+}

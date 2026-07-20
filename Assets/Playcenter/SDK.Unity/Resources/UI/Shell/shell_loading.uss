@@ -1,0 +1,10 @@
+/* Loading shell companion styles */
+.pc-loading__progress-bar > .unity-progress-bar__background {
+    background-color: rgb(40, 40, 60);
+    border-radius: 4px;
+}
+
+.pc-loading__progress-bar > .unity-progress-bar__progress {
+    background-color: rgb(60, 140, 255);
+    border-radius: 4px;
+}
