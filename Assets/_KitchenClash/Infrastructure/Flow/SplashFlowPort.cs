@@ -41,7 +41,9 @@ namespace KitchenClash.Infrastructure.Flow
 
             if (id == _runId)
             {
-                _appFlow.NotifySplashComplete();
+                // SDK now owns the Splash/Loading screens; this port is a no-op legacy adapter.
+                // If somehow invoked, fail-close to Home rather than calling the removed NotifySplashComplete.
+                _appFlow.ReturnHome();
             }
         }
     }

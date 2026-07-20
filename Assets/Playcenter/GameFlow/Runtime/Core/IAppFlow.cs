@@ -11,9 +11,6 @@ namespace Playcenter.GameFlow
         FlowPhaseId Current { get; }
         FlowContext Context { get; }
 
-        /// <summary>Cold start: Splash → Boot → (gates) → Home.</summary>
-        void StartColdBoot();
-
         /// <summary>Home PLAY (or equivalent). Always-resolve matchmaking policy applies.</summary>
         void RequestPlay(PlayRequest request = null);
 
@@ -31,16 +28,10 @@ namespace Playcenter.GameFlow
         /// <summary>Match runtime reports end of match.</summary>
         void NotifyMatchCompleted(MatchResultInfo result);
 
-        /// <summary>Splash port finished dwell; advance to Boot.</summary>
-        void NotifySplashComplete();
-
-        /// <summary>Boot sequence finished; advance to Home.</summary>
-        void NotifyBootComplete();
-
         /// <summary>Results → re-queue same mode.</summary>
         void RequestPlayAgain();
 
-        /// <summary>Any phase → Home (fail-closed safe).</summary>
+        /// <summary>Any phase → Home (fail-closed safe). Also used by PlaycenterClient game-entry handoff.</summary>
         void ReturnHome();
 
         /// <summary>Optional gate: force update / maintenance / login / tutorial.</summary>
@@ -58,3 +49,4 @@ namespace Playcenter.GameFlow
         event Action<FlowPhaseId, FlowPhaseId> PhaseChanged;
     }
 }
+

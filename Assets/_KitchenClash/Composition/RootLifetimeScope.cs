@@ -139,7 +139,7 @@ public class RootLifetimeScope : LifetimeScope
 
     private void RegisterInfrastructure(IContainerBuilder builder)
     {
-        // Session scope for cold boot (SessionLoader / BootSequence). Root owns SessionManager;
+        // Session scope for SDK ready path (SessionLoader / RecipeRageGameEntry). Root owns SessionManager;
         // scene MenuLifetimeScope does not install session services (empty Configure).
         // MenuSessionScopeInstaller is the sole CreateSession install path for economy/lobby/MM.
         builder.Register<MenuSessionScopeInstaller>(Lifetime.Singleton).As<ISessionScopeInstaller>();
@@ -203,9 +203,7 @@ public class RootLifetimeScope : LifetimeScope
             var ui = resolver.Resolve<IUIService>();
             var analytics = resolver.Resolve<IAnalyticsService>();
             var eventBus = resolver.Resolve<IEventBus>();
-            var ntp = resolver.Resolve<INTPTimeService>();
             var remoteConfig = resolver.Resolve<IRemoteConfigService>();
-            var auth = resolver.Resolve<IAuthService>();
             var maintenance = resolver.Resolve<IMaintenanceService>();
             var config = resolver.Resolve<IConfigService>();
             var sessionLifecycle = resolver.Resolve<ISessionLifecycle>();
@@ -221,9 +219,6 @@ public class RootLifetimeScope : LifetimeScope
             var appFlowProxy = new AppFlowProxy(Proxy);
 
             var sessionLoader = new SessionLoader(sessionLifecycle, sessionContext);
-            var connectivity = resolver.Resolve<IConnectivityService>();
-            var bootSequence = new BootSequence(
-                connectivity, ntp, remoteConfig, auth, maintenance, eventBus, appFlowProxy, sessionLoader, analytics);
 
             var homePhase = new HomePhase(eventBus);
             var matchmakingPhase = new MatchmakingPhase(
@@ -236,15 +231,20 @@ public class RootLifetimeScope : LifetimeScope
 
             var loginPhase = new LoginPhase(ui, eventBus, appFlowProxy, sessionLoader, analytics);
             var maintenancePhase = new MaintenancePhase(maintenance, remoteConfig, eventBus, appFlowProxy);
-            var noConnectionPhase = new NoConnectionPhase(ui, eventBus, appFlowProxy, bootSequence);
+
+            // BootRetryRef breaks the cycle: AppFlow factory → IPlaycenterBootRetry ← PlaycenterSdkBootstrap.
+            var bootRetry = resolver.Resolve<IPlaycenterBootRetry>();
+            var noConnectionPhase = new NoConnectionPhase(ui, eventBus, appFlowProxy, bootRetry);
+
             var tutorialPhase = new TutorialPhase(ui, eventBus, appFlowProxy, tutorial);
             var accountUpgradePhase = new AccountUpgradePhase(ui, eventBus, appFlowProxy);
             var sidePhases = new SidePhaseFlowPort(
                 loginPhase, maintenancePhase, noConnectionPhase, tutorialPhase, accountUpgradePhase);
 
+            // SDK owns Splash/Boot — pass null ports so AppFlowController skips those phases.
             flow = new AppFlowController(
-                splash: new SplashFlowPort(appFlowProxy),
-                boot: new BootFlowPort(bootSequence),
+                splash: null,
+                boot: null,
                 home: new HomeFlowPort(homePhase),
                 matchmaking: new MatchmakingFlowPort(matchmakingPhase, ui),
                 matchIntro: new MatchIntroFlowPort(ui, appFlowProxy),
@@ -284,6 +284,9 @@ public class RootLifetimeScope : LifetimeScope
     private void RegisterEntryPoints(IContainerBuilder builder)
     {
         builder.RegisterEntryPoint<KitchenClash.Presentation.Overlays.ConnectivityOverlayPresenter>();
-        builder.RegisterEntryPoint<GameBootstrapper>();
+        // Mutable holder resolved by AppFlow factory; bound by PlaycenterSdkBootstrap.Start().
+        builder.Register<BootRetryRef>(Lifetime.Singleton).AsSelf().As<IPlaycenterBootRetry>();
+        // PlaycenterSdkBootstrap replaces GameBootstrapper cold-boot path.
+        builder.RegisterEntryPoint<PlaycenterSdkBootstrap>();
     }
 }

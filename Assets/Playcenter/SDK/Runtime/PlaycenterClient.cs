@@ -81,6 +81,45 @@ namespace Playcenter.SDK
             }
         }
 
+        /// <summary>
+        /// Re-runs the full module pipeline after a transient failure (e.g. connectivity restored).
+        /// Requires <see cref="RunAsync"/> to have been called at least once so that the service
+        /// registry is already built. Shell gate screens stay visible until modules pass, then
+        /// <see cref="IShellUi.HideAll"/> is called and <see cref="IGameEntry.OnPlaycenterReadyAsync"/>
+        /// fires again.
+        /// </summary>
+        /// <remarks>
+        /// Services are intentionally reused from the first run (built once, reused forever).
+        /// Modules are re-executed in full so connectivity/NTP/RC modules get a second chance.
+        /// </remarks>
+        public async Task RetryBootAsync(CancellationToken ct)
+        {
+            if (_services == null)
+                throw new InvalidOperationException("RetryBootAsync called before RunAsync has completed service construction.");
+
+            var moduleWeights = new List<(string id, float weight)>();
+            foreach (var m in _options.Modules)
+                moduleWeights.Add((m.Id, m.Weight));
+            var progress = new BootProgress(moduleWeights);
+
+            _options.Shell.Show(ShellScreenId.Loading);
+            progress.Changed += (overall01, status) => _options.Shell.SetProgress(overall01, status);
+
+            var context = new ModuleContext(_services, progress);
+            var host = new ModuleHost();
+            var failure = await host.RunAsync(_options.Modules, context, ct);
+
+            if (failure == null)
+            {
+                _options.Shell.HideAll();
+                await _options.GameEntry.OnPlaycenterReadyAsync(this, ct);
+            }
+            else
+            {
+                _options.Shell.Show(MapFailureToScreen(failure.Code));
+            }
+        }
+
         private static ShellScreenId MapFailureToScreen(BootFailureCode code)
         {
             switch (code)

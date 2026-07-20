@@ -92,11 +92,6 @@ namespace Playcenter.GameFlow
 
         public event Action<FlowPhaseId, FlowPhaseId> PhaseChanged;
 
-        public void StartColdBoot()
-        {
-            TransitionTo(FlowPhaseId.StudioSplash);
-        }
-
         public void RequestPlay(PlayRequest request = null)
         {
             if (_current != FlowPhaseId.Home && _current != FlowPhaseId.Results)
@@ -198,26 +193,6 @@ namespace Playcenter.GameFlow
             _context.HasCompletedFirstPlay = true;
             _analytics?.TrackMatchCompleted(result, _context);
             TransitionTo(FlowPhaseId.Results);
-        }
-
-        public void NotifySplashComplete()
-        {
-            if (_current != FlowPhaseId.StudioSplash)
-            {
-                return;
-            }
-
-            TransitionTo(FlowPhaseId.Boot);
-        }
-
-        public void NotifyBootComplete()
-        {
-            if (_current != FlowPhaseId.Boot)
-            {
-                return;
-            }
-
-            TransitionTo(FlowPhaseId.Home);
         }
 
         public void RequestPlayAgain()

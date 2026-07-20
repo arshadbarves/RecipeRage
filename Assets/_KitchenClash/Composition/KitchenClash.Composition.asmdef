@@ -24,7 +24,9 @@
         "Playcenter.UI",
         "Playcenter.Animation",
         "Playcenter.UI.Toolkit",
-        "Playcenter.EOS"
+        "Playcenter.EOS",
+        "Playcenter.SDK",
+        "Playcenter.SDK.Unity"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -67,18 +67,9 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             var home = new RecordingHome();
             var mm = new RecordingMatchmaking();
             var flow = new AppFlowController(home: home, matchmaking: mm);
-            // Force Home: StartColdBoot may stop at Splash if splash/boot null.
-            // When splash/boot are null, StartColdBoot still TransitionTo(StudioSplash).
-            // Use reflection-free approach: EnterSidePhase is wrong.
-            // Implementation note for engineer: if Current after StartColdBoot is StudioSplash
-            // with null splash port, TransitionTo still sets Current and calls null-safe enter.
-            // Read AppFlowController.TransitionTo — if null ports skip work, Current is Splash.
-            // Then we need a way to reach Home. Options:
-            // 1) Add internal test hook (avoid)
-            // 2) Provide boot port that is not auto
-            // 3) Call ReturnHome from Splash if ForceTransition allows — ReturnHome ForceTransitionTo Home.
-            flow.StartColdBoot();
-            flow.ReturnHome(); // fail-closed to Home from any phase
+            // SDK owns cold boot now — game entry calls ReturnHome() after OnPlaycenterReadyAsync.
+            // From FlowPhaseId.None, ReturnHome() uses ForceTransitionTo which bypasses legal checks.
+            flow.ReturnHome();
             Assert.AreEqual(FlowPhaseId.Home, flow.Current);
             Assert.AreEqual(1, home.EnterCount);
 
@@ -105,7 +96,6 @@ namespace RecipeRage.Tests.EditMode.Gameplay
                 matchRuntime: match,
                 results: results);
 
-            flow.StartColdBoot();
             flow.ReturnHome();
             flow.RequestPlay(new PlayRequest { ModeId = "quick_2v2", TeamSize = 2 });
             flow.NotifyMatchResolved(new MatchResolvedInfo
@@ -148,8 +138,7 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             var home = new RecordingHome();
             var mm = new RecordingMatchmaking();
             var flow = new AppFlowController(home: home, matchmaking: mm);
-            flow.StartColdBoot();
-            flow.ReturnHome(); // Current is now Home (deterministic)
+            flow.ReturnHome(); // SDK entry calls ReturnHome() after ready; current is now Home.
             Assert.AreEqual(FlowPhaseId.Home, flow.Current);
 
             flow.RequestPlay(new PlayRequest { ModeId = "quick_2v2", TeamSize = 2 });
@@ -177,7 +166,6 @@ namespace RecipeRage.Tests.EditMode.Gameplay
                 countdown: null,
                 matchRuntime: match);
 
-            flow.StartColdBoot();
             flow.ReturnHome();
             flow.RequestPlay(new PlayRequest { ModeId = "quick_2v2", TeamSize = 2 });
             flow.NotifyMatchResolved(new MatchResolvedInfo
@@ -220,7 +208,6 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             var home = new RecordingHome();
             var sides = new RecordingSidePhases();
             var flow = new AppFlowController(home: home, sidePhases: sides);
-            flow.StartColdBoot();
             flow.ReturnHome();
             Assert.AreEqual(FlowPhaseId.Home, flow.Current);
 
@@ -242,7 +229,6 @@ namespace RecipeRage.Tests.EditMode.Gameplay
             var home = new RecordingHome();
             var sides = new RecordingSidePhases();
             var flow = new AppFlowController(home: home, sidePhases: sides);
-            flow.StartColdBoot();
             flow.ReturnHome();
             flow.EnterSidePhase(FlowPhaseId.Maintenance);
             Assert.AreEqual(FlowPhaseId.Maintenance, sides.LastEnter);

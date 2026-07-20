@@ -1,6 +1,7 @@
 using System;
 using KitchenClash.Application.Services;
 using KitchenClash.Domain;
+using KitchenClash.Infrastructure.Flow;
 using Playcenter.GameFlow;
 using Playcenter.Shell;
 using Playcenter.UI;
@@ -8,7 +9,8 @@ using Playcenter.UI;
 namespace KitchenClash.Infrastructure.Flow.Handlers
 {
     /// <summary>
-    /// No-connection side phase: show NoInternetPopup; Retry → re-runs full BootSequence.
+    /// No-connection side phase: show NoInternetPopup; Retry → re-runs full SDK boot via
+    /// <see cref="IPlaycenterBootRetry"/>.
     /// </summary>
     public sealed class NoConnectionPhase
     {
@@ -17,7 +19,7 @@ namespace KitchenClash.Infrastructure.Flow.Handlers
 
         private readonly IUIService _uiService;
         private readonly IEventBus _eventBus;
-        private readonly BootSequence _bootSequence;
+        private readonly IPlaycenterBootRetry _bootRetry;
 
         private Type _noInternetPopupType;
         private bool _active;
@@ -26,11 +28,11 @@ namespace KitchenClash.Infrastructure.Flow.Handlers
             IUIService uiService,
             IEventBus eventBus,
             IAppFlow appFlow,
-            BootSequence bootSequence)
+            IPlaycenterBootRetry bootRetry)
         {
             _uiService = uiService;
             _eventBus = eventBus;
-            _bootSequence = bootSequence;
+            _bootRetry = bootRetry;
         }
 
         public void Enter()
@@ -75,11 +77,12 @@ namespace KitchenClash.Infrastructure.Flow.Handlers
                 return;
             }
 
-            GameLogger.Log("[NoConnectionPhase] Retry tapped → re-running boot sequence");
+            GameLogger.Log("[NoConnectionPhase] Retry tapped → re-running SDK boot");
 
             // Exit first to avoid re-entrancy if boot immediately re-enters NoConnection.
             Exit();
-            _bootSequence?.Start();
+            _bootRetry?.Retry();
         }
     }
 }
+

@@ -22,8 +22,6 @@ namespace RecipeRage.Tests.EditMode.Gameplay.Fakes
 
         public int NotifyMatchIntroReadyCount { get; private set; }
         public int NotifyCountdownCompleteCount { get; private set; }
-        public int NotifySplashCompleteCount { get; private set; }
-        public int NotifyBootCompleteCount { get; private set; }
         public int RequestPlayAgainCount { get; private set; }
 
         public int EnterSidePhaseCount { get; private set; }
@@ -72,16 +70,6 @@ namespace RecipeRage.Tests.EditMode.Gameplay.Fakes
             NotifyCountdownCompleteCount++;
         }
 
-        public void NotifySplashComplete()
-        {
-            NotifySplashCompleteCount++;
-        }
-
-        public void NotifyBootComplete()
-        {
-            NotifyBootCompleteCount++;
-        }
-
         public void RequestPlayAgain()
         {
             RequestPlayAgainCount++;
@@ -98,8 +86,6 @@ namespace RecipeRage.Tests.EditMode.Gameplay.Fakes
             CompleteSidePhaseCount++;
         }
 
-        public void StartColdBoot() { }
-
         public bool CanShowSoftPopup() => false;
 
         public event System.Action<FlowPhaseId, FlowPhaseId> PhaseChanged
@@ -107,8 +93,5 @@ namespace RecipeRage.Tests.EditMode.Gameplay.Fakes
             add { }
             remove { }
         }
-
-        public void Update(float deltaTime) { }
-        public void FixedUpdate(float fixedDeltaTime) { }
     }
 }

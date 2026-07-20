@@ -8,7 +8,7 @@ namespace KitchenClash.Infrastructure.Flow.Handlers
 {
     /// <summary>
     /// Creates the session scope and initializes economy/player data.
-    /// Callers decide navigation (NotifyBootComplete vs CompleteSidePhase).
+    /// Callers decide navigation (ReturnHome vs CompleteSidePhase / EnterSidePhase).
     /// </summary>
     public sealed class SessionLoader
     {
