@@ -19,6 +19,14 @@ namespace KitchenClash.Composition
     ///   1. If auth ProductUserId is empty → enter Login side phase via IAppFlow.
     ///   2. Else → SessionLoader.LoadAsync then IAppFlow.ReturnHome().
     /// </para>
+    /// <para>
+    /// Bridge note: SDK services are the SAME instances as the game's VContainer singletons —
+    /// <c>PlaycenterSdkBootstrap</c> registers the live resolved objects into the SDK
+    /// <c>ServiceRegistry</c> (<c>o.Services.AddSingleton&lt;T&gt;(instance)</c>), so modules and game
+    /// systems share one object graph. Any port a game system needs that is NOT already in
+    /// VContainer should be resolved here via <c>client.Services.Get&lt;T&gt;()</c> — this entry point
+    /// is the single sanctioned bridge between the SDK service registry and game systems.
+    /// </para>
     /// No BootSequence logic is recreated here — NTP, RC, force-update, and maintenance are owned
     /// by the SDK module pipeline that ran before this method is invoked.
     /// </summary>

@@ -4,7 +4,7 @@ namespace Playcenter.UI.Toolkit
 {
     /// <summary>
     /// Creates screen instances without exposing a DI container type.
-    /// Game supplies a VContainer-backed implementation.
+    /// Game supplies a DI-backed implementation.
     /// </summary>
     public interface IScreenInstanceFactory
     {
