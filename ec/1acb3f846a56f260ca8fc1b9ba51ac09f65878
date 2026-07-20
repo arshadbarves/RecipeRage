@@ -1,0 +1,363 @@
+Assets/_KitchenClash/Infrastructure/Network/Bot/BotController.cs
+  s_698e3070263a23::t_da145664e4afec 10
+Assets/Playcenter/Services/Runtime/Wallet.meta
+  s_1f1c811a4235be::t_57ba3b862ebca0 1-8
+Assets/Playcenter/Services/Runtime/Social/FriendInfo.cs
+  s_698e3070263a23::t_9d90b0dd8b6b03 3-12
+Assets/_KitchenClash/Infrastructure/Network/LootPickup.cs
+  s_698e3070263a23::t_084e448ed21bae 1-230
+ProjectSettings/VirtualProjectsConfig.json
+  s_512cb384791b2b::t_f940b00b4839ec 3
+Assets/_KitchenClash/Domain/Interfaces/IScoreService.cs
+  s_698e3070263a23::t_679f723bd099ec 1-2
+Assets/_KitchenClash/Application/Services/ModeWinConditions.cs
+  s_698e3070263a23::t_78f3e4f2b7bdae 1-188
+Assets/_KitchenClash/Infrastructure/Network/Stations/DeliveryZone.cs.meta
+  s_512cb384791b2b::t_632e0c21e4822e 1-11
+Assets/_KitchenClash/Prefabs/Stations/AutonomousCookingStation_T1.prefab
+  s_512cb384791b2b::t_c3b757e7e3dc6c 1-99
+Assets/Scripts/Tests/EditMode/Gameplay/AppFlowMigrationTests.cs
+  s_698e3070263a23::t_6f59e855c7f696 11
+Assets/Resources/UI/Styles/Screens/CountdownOverlay.uss
+  s_512cb384791b2b::t_762c0d069fb24d 1-34
+Assets/_KitchenClash/Infrastructure/Network/LootPickup.cs.meta
+  s_512cb384791b2b::t_87e1c061e7f897 1-2
+Assets/Playcenter/Services/Runtime/Social/IFriendsService.cs.meta
+  s_698e3070263a23::t_bf33b98c911e5c 1-11
+Assets/_KitchenClash/Application/Services/ModeWinConditions.cs.meta
+  s_512cb384791b2b::t_e86de9dfa253a7 2
+  s_512cb384791b2b::t_730bcdf1df6534 1
+Assets/Resources/UI/Templates/Screens/CountdownOverlayTemplate.uxml
+  s_512cb384791b2b::t_a65ffcecd47e3c 1-7
+Assets/_KitchenClash/Infrastructure/Network/PlayerCombatController.cs.meta
+  s_512cb384791b2b::t_bfbb53130feaec 1-2
+Assets/_KitchenClash/Infrastructure/Gameplay/Abilities/ArchetypeAbilities.cs.meta
+  s_512cb384791b2b::t_8bda86c5f65cd5 1-2
+Assets/_KitchenClash/Presentation/Components/LobbyTabComponent.cs
+  s_698e3070263a23::t_ecfe4c6adaf91b 4
+Assets/_KitchenClash/Infrastructure/Network/Stations/AutonomousCookingStation.cs.meta
+  s_512cb384791b2b::t_6d3b560bbe7c8f 1-2
+Assets/Playcenter/Services/README.md
+  s_698e3070263a23::t_e7d59ec04739b9 7,28-29
+Assets/_KitchenClash/Prefabs/Stations/AutonomousCookingStation_T2.prefab
+  s_512cb384791b2b::t_59b0f0f0f00987 1-99
+Assets/_KitchenClash/Infrastructure/Network/IMatchContextReceiver.cs.meta
+  s_512cb384791b2b::t_96b6c3b10f1c82 1-2
+Assets/Playcenter/Services/Runtime/Session/IMatchmakingService.cs.meta
+  s_698e3070263a23::t_4d240953dfd4c2 1-11
+Assets/_KitchenClash/Infrastructure/Gameplay/Abilities/ArchetypeAbilities.cs
+  s_698e3070263a23::t_af620a54138fee 1-283
+Assets/Playcenter/Services/Runtime/Social/FriendInfo.cs.meta
+  s_698e3070263a23::t_27bcd065b066b5 1-11
+Assets/Playcenter/Services/Runtime/Session/ITeamManager.cs
+  s_698e3070263a23::t_4291c4b01171fe 3
+Assets/_KitchenClash/Infrastructure/Input/TouchInputProvider.cs
+  s_512cb384791b2b::t_8a99d8a473d68f 1-98
+Assets/_KitchenClash/Domain/Events/CombatEvents.cs.meta
+  s_512cb384791b2b::t_0ee18489ba07ae 1-2
+Assets/_KitchenClash/Infrastructure/Network/MatchWinConditionCoordinator.cs
+  s_698e3070263a23::t_c2a564b6496d5c 1-150
+Assets/_KitchenClash/Application/Input/GameplayInputBridge.cs.meta
+  s_512cb384791b2b::t_6218ebd298d375 2
+  s_512cb384791b2b::t_c8aba1b3957f47 1
+Assets/_KitchenClash/Domain/Enums/StationPhase.cs.meta
+  s_512cb384791b2b::t_1cc2c0e194c932 1-2
+Assets/Scenes/Map_RushService.unity.meta
+  s_512cb384791b2b::t_fed6aacab10e5c 1-7
+Assets/_KitchenClash/Infrastructure/Network/Bot/BotSpawner.cs
+  s_698e3070263a23::t_e4d7a0b916c646 8
+Assets/_KitchenClash/Prefabs.meta
+  s_512cb384791b2b::t_c73fad038d5e93 1-8
+"Assets/Fonts/FontAssets/Anton-Regular SDF.asset"
+  s_512cb384791b2b::t_3cefe1fd0a18aa 63-64,75,79,5123-5125,5150-5151
+Assets/Resources/Prefabs/Gameplay/LootPickup.prefab
+  s_512cb384791b2b::t_168c66fad97b89 1-414
+Assets/Scenes/Map_RushService.unity
+  s_512cb384791b2b::t_f9785b20e4ef2e 1-1458
+Assets/Playcenter/Services/Runtime/Session/BotPlayer.cs
+  s_698e3070263a23::t_e3ead3262bc8ac 1
+Assets/Resources/UI/Styles/Screens/MatchIntro.uss
+  s_512cb384791b2b::t_7f473eed1ba539 1-69
+Assets/Textures/Arts/logo-2.png.meta
+  s_512cb384791b2b::t_5ac5e2ab7e7fcb 1-143
+Assets/Scenes/Map_HellsKitchen.unity
+  s_512cb384791b2b::t_75be3c4dcc11cf 1-1458
+.gitignore
+  s_cc4d742fbfde3c::t_e9ad0d4120baa4 76-79
+"Assets/Fonts/FontAssets/SpaceGrotesk-Bold SDF.asset.meta"
+  s_512cb384791b2b::t_4290b46d508b15 1-8
+Assets/Playcenter/Services/Runtime/Social/FriendRequest.cs
+  s_698e3070263a23::t_47e6eb8d4a4851 3
+Assets/Playcenter/Services/Runtime/Social/IFriendsServiceFactory.cs.meta
+  s_698e3070263a23::t_0cb2dfecc2158f 2
+docs/superpowers/plans/2026-07-14-gameflow-module-and-logging.md
+  s_698e3070263a23::t_a1daf8679a5d98 189
+Assets/Playcenter/Services/Runtime/Session/IMatchmakingService.cs
+  s_698e3070263a23::t_4ea9fd1d472268 4
+Assets/_KitchenClash/Domain/Enums/ChefArchetype.cs
+  s_512cb384791b2b::t_adb31cb29cdcfb 1-21
+Assets/Playcenter/Services/Runtime/Social/FriendRequest.cs.meta
+  s_698e3070263a23::t_013485e5490e02 1-11
+Assets/Resources/Prefabs/Gameplay/LootPickup.prefab.meta
+  s_512cb384791b2b::t_2fc82782751823 2-3
+  s_512cb384791b2b::t_8b5aafd9f3b4e9 1
+  s_512cb384791b2b::t_101d4c72ab6d5d 4-6
+  s_512cb384791b2b::t_ac33c0070b1c5d 7
+Assets/Scenes/Map_HellsKitchen.unity.meta
+  s_512cb384791b2b::t_029a24d1909813 1-7
+"Assets/Fonts/FontAssets/SpaceGrotesk-Bold SDF.asset"
+  s_512cb384791b2b::t_8a4704450cd876 1-86153
+Assets/_KitchenClash/Infrastructure/DI/SessionContext.cs
+  s_310d1036f5ad04::t_e294a668abfab0 5
+  s_310d1036f5ad04::t_45bb6ef51b384b 33-45,55-62
+Assets/_KitchenClash/Application/Interfaces/ISessionContext.cs
+  s_698e3070263a23::t_8a054cbf6da8ab 4
+Assets/_KitchenClash/Presentation/Screens/HomeScreen.cs
+  s_698e3070263a23::t_3ba4a901d39a8d 2
+Assets/_KitchenClash/Infrastructure/Services/MatchRewardHandler.cs.meta
+  s_512cb384791b2b::t_1be62759f1d317 1-2
+Assets/_KitchenClash/Prefabs/Stations/AutonomousCookingStation_T2.prefab.meta
+  s_512cb384791b2b::t_efa381c45b2653 1-7
+Assets/Scenes/Map_LastPlateStanding.unity
+  s_512cb384791b2b::t_7cba8cc3c2c283 1-1458
+Assets/_KitchenClash/Prefabs/Stations.meta
+  s_512cb384791b2b::t_bad9ce2e9fd7f9 1-8
+Assets/_KitchenClash/Application/Services/IBotSpawner.cs
+  s_698e3070263a23::t_54a4e868a0669f 3
+Assets/_KitchenClash/Infrastructure/Network/Stations/CookingStation.cs
+  s_698e3070263a23::t_32f2bedb046ae3 8
+Assets/_KitchenClash/Infrastructure/Network/PlayerCombatController.cs
+  s_698e3070263a23::t_76dce1e7f6b55b 1-499
+Assets/_KitchenClash/Prefabs/Stations/AutonomousCookingStation_T1.prefab.meta
+  s_512cb384791b2b::t_9211aff58b81f0 1-7
+Assets/_KitchenClash/Domain/Enums/ChefArchetype.cs.meta
+  s_512cb384791b2b::t_e0049a37efc13b 1-2
+Assets/Textures/Arts/bg-1.jpg.meta
+  s_512cb384791b2b::t_f01af19db59db9 1-143
+Assets/_KitchenClash/Infrastructure/Network/Stations/SinkStation.cs
+  s_698e3070263a23::t_17e077467b7b5a 6
+Assets/_KitchenClash/Infrastructure/Network/Stations/AutonomousCookingStation.cs
+  s_698e3070263a23::t_88c7546f348884 1-285
+Documentation/LevelDesign/LEVEL_DESIGN_SPEC.md
+  s_512cb384791b2b::t_25091eeb343ce7 1-899
+Assets/_KitchenClash/Infrastructure/Network/Stations/ServingStation.cs
+  s_698e3070263a23::t_e1650ceb489b8a 12
+Assets/_KitchenClash/Application/Services/BotManager.cs
+  s_698e3070263a23::t_70ff37513797ba 2
+Assets/_KitchenClash/Infrastructure/Network/Stations/PlateDispenser.cs
+  s_698e3070263a23::t_df2e5a86112a5e 5
+Assets/_KitchenClash/Application/Input.meta
+  s_512cb384791b2b::t_ee74c527f84466 1-8
+Assets/_KitchenClash/Infrastructure/Network/Stations/DeliveryZone.cs
+  s_698e3070263a23::t_81516bcb0a0c62 1-133
+Assets/_KitchenClash/Infrastructure/EOS/EOSTeamManager.cs
+  s_698e3070263a23::t_7ab4370bf04091 4
+Assets/_KitchenClash/Infrastructure/Network/IPlayerController.cs
+  s_698e3070263a23::t_8fca08dcf1d1c5 2
+Assets/Textures/Arts/logo-1.png.meta
+  s_512cb384791b2b::t_8fe0f45c162c92 1-143
+Packages/packages-lock.json
+  s_512cb384791b2b::t_434c706725472f 79,112,119,123,126,151,182,206,230,254,258,303,320,360,387,408,428,440
+  s_512cb384791b2b::t_ab5dea9596992f 27,37,70,460
+Assets/Resources/UI/Styles/Screens/CountdownOverlay.uss.meta
+  s_512cb384791b2b::t_ec5cfd7d86a738 1-12
+Assets/_KitchenClash/Application/Interfaces/ISessionLifecycle.cs.meta
+  s_512cb384791b2b::t_4bec7af4bc2c08 2
+  s_512cb384791b2b::t_8c794b7158345e 1
+Assets/_KitchenClash/Domain/Events/CombatEvents.cs
+  s_698e3070263a23::t_b5dc68d6da3df2 1-47
+Assets/_KitchenClash/Application/Input/GameplayInputBridge.cs
+  s_512cb384791b2b::t_f507d08233cef9 1-20
+Assets/_KitchenClash/Application/Services/IModeWinCondition.cs.meta
+  s_512cb384791b2b::t_7ed031c16469ae 2
+  s_512cb384791b2b::t_2835894567d373 1
+Assets/Scenes/Map_LastPlateStanding.unity.meta
+  s_512cb384791b2b::t_22e67ea6d548bc 1-7
+Assets/_KitchenClash/Infrastructure/Network/Spawning/SpawnManager.cs
+  s_698e3070263a23::t_fedaf75042e10b 11
+Assets/_KitchenClash/Infrastructure/Network/IMatchContextReceiver.cs
+  s_512cb384791b2b::t_2f82c5500f7fee 1-20
+Assets/Resources/UI/Templates/Screens/CountdownOverlayTemplate.uxml.meta
+  s_512cb384791b2b::t_63c7e66a7de035 1-10
+Assets/_KitchenClash/Prefabs/Stations/AutonomousCookingStation_T3.prefab
+  s_512cb384791b2b::t_82167553b6cbb2 1-99
+Assets/_KitchenClash/Prefabs/Stations/AutonomousCookingStation_T3.prefab.meta
+  s_512cb384791b2b::t_172218467674b0 1-7
+Assets/Playcenter/Services/Runtime/Social/IFriendsService.cs
+  s_698e3070263a23::t_3fa2c38c76333f 5
+Assets/Playcenter/Services/Runtime/Social/IFriendsServiceFactory.cs
+  s_698e3070263a23::t_549622d7bba713 1
+Assets/Resources/UI/Styles/Screens/MatchIntro.uss.meta
+  s_512cb384791b2b::t_5b464b4f9a5805 1-12
+Assets/_KitchenClash/Application/Services/IModeWinCondition.cs
+  s_698e3070263a23::t_9142017e002575 1-35
+Assets/_KitchenClash/Infrastructure/Input/TouchInputProvider.cs.meta
+  s_512cb384791b2b::t_9af441a16669c1 1-2
+Assets/_KitchenClash/Domain/Models/ScoreChangedEvent.cs
+  s_698e3070263a23::t_67a0a7f3845fd0 1-2
+Assets/_KitchenClash/Infrastructure/Network/MatchContext.cs
+  s_698e3070263a23::t_f0bde0b9bf2d84 9
+Assets/_KitchenClash/Presentation/Overlays/FriendsPopup.cs
+  s_698e3070263a23::t_da2153f0795f35 12
+Assets/_KitchenClash/Application/Interfaces/IPlayerManager.cs
+  s_698e3070263a23::t_501bdf2852c231 2
+Assets/_KitchenClash/Infrastructure/Network/ScoreManager.cs
+  s_698e3070263a23::t_7a4a1e0a4976f7 10
+Assets/Fonts/SpaceGrotesk-Bold.ttf.meta
+  s_512cb384791b2b::t_c7a1b43499f1d4 1-21
+Assets/_KitchenClash/Infrastructure/Network/PlayerTeamVisuals.cs
+  s_698e3070263a23::t_6afef5bb2298c7 5
+Assets/Playcenter/Services/Runtime/Social.meta
+  s_698e3070263a23::t_b1db16c15b5d63 2
+  s_698e3070263a23::t_545bda32fb658c 1
+  s_698e3070263a23::t_46cd23d75e13da 3-5
+  s_698e3070263a23::t_bb9c62eeade696 6-8
+Assets/Scripts/Tests/EditMode/Playcenter/Wallet.meta
+  s_1f1c811a4235be::t_57ba3b862ebca0 1-8
+Assets/Playcenter/Services/Runtime/Session/BotPlayer.cs.meta
+  s_698e3070263a23::t_7b95dbe1c94d2e 2
+Assets/Playcenter/Services/Runtime/Session/ITeamManager.cs.meta
+  s_698e3070263a23::t_885baede1f1310 1-11
+Assets/_KitchenClash/Domain/Enums/StationPhase.cs
+  s_512cb384791b2b::t_de5e1e2ff70694 1-39
+Assets/_KitchenClash/Infrastructure/Network/MatchWinConditionCoordinator.cs.meta
+  s_512cb384791b2b::t_21a89ca3dfdc4a 1-2
+Assets/_KitchenClash/Application/Interfaces/ISessionScopeInstaller.cs.meta
+  s_cc4d742fbfde3c::t_96eb4cb5ee4c7b 1-2
+Assets/Playcenter/Services/Runtime/Wallet/CurrencyId.cs.meta
+  s_310d1036f5ad04::t_12859e119cc344 1-2
+Assets/Playcenter/Services/Runtime/Wallet/IWallet.cs.meta
+  s_310d1036f5ad04::t_4b0f3e546bb10a 1-2
+Assets/Playcenter/Services/Runtime/Wallet/IWalletLedger.cs.meta
+  s_310d1036f5ad04::t_3f11cb6fa5cf93 1-2
+Assets/Playcenter/Services/Runtime/Wallet/IWalletStore.cs.meta
+  s_310d1036f5ad04::t_6cd2246e0d7220 1-2
+Assets/Playcenter/Services/Runtime/Wallet/WalletSnapshot.cs.meta
+  s_310d1036f5ad04::t_001593d9bb9dde 1-2
+Assets/Scripts/Tests/EditMode/Gameplay/BootSequenceConnectivityTests.cs.meta
+  s_310d1036f5ad04::t_b9d861e4a239e0 1-2
+Assets/Scripts/Tests/EditMode/Playcenter/Wallet/WalletPortContractTests.cs.meta
+  s_310d1036f5ad04::t_b5dcc22be01606 1-2
+Assets/Scripts/Tests/RecipeRage.Tests.EditMode.asmdef
+  s_310d1036f5ad04::t_bdcff570ace69c 19-20
+Assets/Playcenter/Animation.meta
+  s_512cb384791b2b::t_d91c29f4c28af7 2
+Assets/Playcenter/Animation/README.md.meta
+  s_512cb384791b2b::t_609efcdb20ff8c 1-7
+Assets/Playcenter/Animation/Runtime.meta
+  s_512cb384791b2b::t_386fbc599b3faa 2
+Assets/Playcenter/Animation/Runtime/AnimationService.cs.meta
+  s_512cb384791b2b::t_07eb78021f26c2 2
+Assets/Playcenter/Animation/Runtime/DOTweenTransformAnimator.cs.meta
+  s_512cb384791b2b::t_9e8b6c84b1c39b 2
+Assets/Playcenter/Animation/Runtime/DOTweenUIAnimator.cs.meta
+  s_512cb384791b2b::t_143db5ce98d173 2
+Assets/Playcenter/Animation/Runtime/IAnimationService.cs.meta
+  s_512cb384791b2b::t_7138590cdf83e0 2
+Assets/Playcenter/Animation/Runtime/ITransformAnimator.cs.meta
+  s_512cb384791b2b::t_fcb954c7765be0 1-2
+Assets/Playcenter/Animation/Runtime/IUIAnimator.cs.meta
+  s_512cb384791b2b::t_0aedc35dc9bc93 1-2
+Assets/Playcenter/Animation/Runtime/Playcenter.Animation.asmdef.meta
+  s_512cb384791b2b::t_d331a787b0a7a1 2
+Assets/Playcenter/Animation/Runtime/SlideDirection.cs.meta
+  s_512cb384791b2b::t_ea3855ee680c37 1-2
+Assets/Playcenter/Animation/Runtime/TweenExtensions.cs.meta
+  s_512cb384791b2b::t_cc948e5417b66f 1-2
+Assets/Playcenter/Services/Runtime/Audio.meta
+  s_512cb384791b2b::t_0b179d2acd8447 1-8
+Assets/Playcenter/Services/Runtime/Audio/IAudioVolumeController.cs.meta
+  s_512cb384791b2b::t_331045dec07db5 1-2
+Assets/Playcenter/Services/Runtime/Localization.meta
+  s_512cb384791b2b::t_5f7da272eaf0b8 1-8
+Assets/Playcenter/Services/Runtime/Localization/ILocalizationManager.cs.meta
+  s_512cb384791b2b::t_8d46735f19480c 1-2
+Assets/Playcenter/Services/Runtime/RemoteConfig.meta
+  s_512cb384791b2b::t_16420cdc7cc881 1-8
+Assets/Playcenter/Services/Runtime/RemoteConfig/IConfigProvider.cs.meta
+  s_512cb384791b2b::t_47418b13cf1d1d 1-2
+Assets/Playcenter/Services/Runtime/RemoteConfig/IRemoteConfigService.cs.meta
+  s_512cb384791b2b::t_a808d9dfa9bcd2 1-2
+Assets/Playcenter/Services/Runtime/Storage.meta
+  s_512cb384791b2b::t_d8702f54d38811 1-8
+Assets/Playcenter/Services/Runtime/Storage/ICloudStorageProvider.cs.meta
+  s_512cb384791b2b::t_ae362924e72f29 1-2
+Assets/Playcenter/Services/Runtime/Storage/IStorageProvider.cs.meta
+  s_512cb384791b2b::t_f6b93d50095e37 1-2
+Assets/Playcenter/Services/Runtime/Storage/StorageConfig.cs.meta
+  s_512cb384791b2b::t_843cdb37b03b2f 1-2
+Assets/Playcenter/Services/Runtime/Storage/StorageStrategy.cs.meta
+  s_512cb384791b2b::t_698257d4cb712e 1-2
+Assets/Playcenter/Services/Runtime/Time.meta
+  s_512cb384791b2b::t_e48e6168a6b60d 1-8
+Assets/Playcenter/Services/Runtime/Time/INTPTimeService.cs.meta
+  s_512cb384791b2b::t_177bdf1b8b3a05 1-2
+Assets/Scripts/Tests/EditMode/Gameplay/AnalyticsEventsTests.cs.meta
+  s_512cb384791b2b::t_5724d310edb7da 1-2
+Assets/Scripts/Tests/EditMode/Gameplay/EconomyWalletBridgeTests.cs.meta
+  s_512cb384791b2b::t_0d9982045e9342 1-2
+Assets/Scripts/Tests/EditMode/Gameplay/Fakes/SpyAnalytics.cs.meta
+  s_512cb384791b2b::t_336808880000ac 1-2
+Assets/Scripts/Tests/EditMode/Gameplay/NetSessionDelegationTests.cs.meta
+  s_512cb384791b2b::t_35906b9ae431ba 1-2
+Assets/Scripts/Tests/EditMode/Gameplay/SessionManagerInstallerTests.cs.meta
+  s_512cb384791b2b::t_bc92928721782b 1-2
+Assets/Scripts/Tests/EditMode/Playcenter.meta
+  s_512cb384791b2b::t_635d646c7927e5 1-8
+Assets/Scripts/Tests/EditMode/Playcenter/UIScreenStackManagerTests.cs.meta
+  s_512cb384791b2b::t_e2c95bc43686bc 1-2
+Assets/_KitchenClash/Infrastructure/Network/NgoEosNetSession.cs.meta
+  s_512cb384791b2b::t_27be37b90bcf12 2
+Packages/manifest.json
+  s_512cb384791b2b::t_b31c1bf0f4c9f7 5,8,10,14,16,18-19,21,26,28
+ProjectSettings/ProjectVersion.txt
+  s_512cb384791b2b::t_9a206459d363ca 1-2
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "ec1acb3f846a56f260ca8fc1b9ba51ac09f65878",
+  "prompts": {},
+  "sessions": {
+    "s_1f1c811a4235be": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call-7a96d74a-52ea-4d77-ac6c-8df19de34621-7",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    },
+    "s_310d1036f5ad04": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "5b19384d-458f-4e59-8cf5-d0604c36eaf6",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    },
+    "s_512cb384791b2b": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "84207e0d-688a-458e-89af-20c6b0662936",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    },
+    "s_698e3070263a23": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "62c29c09-d120-4544-95ea-7f6230fe44f1",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    },
+    "s_cc4d742fbfde3c": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "b329fed5-298d-4517-8af9-c584f1404b25",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
