@@ -35,7 +35,11 @@ namespace Playcenter.SDK
             Theme = theme;
         }
 
-        /// <summary>No-op stub until Task 5 provides default module implementations.</summary>
-        public void UseDefaultModules() { }
+        /// <summary>Registers the standard nine-module boot pack in spec order.</summary>
+        public void UseDefaultModules()
+        {
+            foreach (var module in DefaultModulePack.Create())
+                AddModule(module);
+        }
     }
 }
