@@ -119,6 +119,36 @@ Spec: `docs/superpowers/specs/2026-07-19-playcenter-client-os-design.md`.
 
 ---
 
+## Playcenter Studio SDK — Required / Forbidden
+
+Authoritative detail: `wiki/Technical.md` § Playcenter Studio SDK.  
+Spec: `docs/superpowers/specs/2026-07-20-playcenter-studio-sdk-design.md`.  
+Skill: `.github/skills/playcenter-sdk/SKILL.md`.
+
+### REQUIRED
+
+- `PlaycenterClient.RunAsync` as **sole** app init path after W2 (replaces `BootSequence` + `IAppFlow.StartColdBoot()`)
+- `IGameEntry.OnPlaycenterReady(client)` for post-SDK game wiring (auth → CreateSession → IAppFlow → Home)
+- SDK DI = **Builder + IServiceRegistry** inside `Assets/Playcenter/**`; game bridges via `client.Services.Get<T>()`
+- Vendor adapters (`Playcenter.EOS`, NGO adapters) only in adapter assemblies — game Presentation/Application see ports only
+- `ShellRef` / `BootRetryRef` holders in `RootLifetimeScope` to break AppFlow↔bootstrap DI cycle
+- Session DI law unchanged: `CreateSession` + `ISessionScopeInstaller` (S9 unmodified)
+- SDK shell UXML themed via tokens + USS override; never fork per-title UXML
+
+### FORBIDDEN (Studio SDK)
+
+| Pattern | Why |
+|---------|-----|
+| `using VContainer` in `Assets/Playcenter/**` | S2 — SDK DI is Builder + ServiceRegistry |
+| `Epic.*` / `EOS.*` in game **Presentation** or **Application** | S4 vendor firewall (grep gate W5) |
+| `BootSequence` class or `IAppFlow.StartColdBoot()` after W2 | S8/S13 hard cutover; no dual boot |
+| Interactive login inside a module | Login only after `OnPlaycenterReady`; modules warm-only |
+| Copying SDK UXML into game | Theme via tokens/USS override; one implementation per screen |
+| Re-registering SDK singletons in VContainer | Bridge via `client.Services` (S3) |
+| Orphan session DI inside SDK boot | Session DI law (S9) unchanged |
+
+---
+
 ## Controls (Brawl Stars Fixed Dual-Joystick)
 
 | Input | Action |

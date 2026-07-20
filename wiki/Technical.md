@@ -451,3 +451,69 @@ Compile-time walls for zero-cross-dep folders (folder-level asmdefs):
 
 Mega `KitchenClash.Infrastructure` retains Network / EOS / Gameplay / Services / DI. Phase 3b ports broke Network↔EOS / Persistence→EOS at source level; Phase 3c extracted Audio + Flow leaves after moving `CoroutineRunner` to Platform and introducing `ISessionLifecycle`. Network/EOS asmdef splits remain deferred (Gameplay still references Network types). Composition references all leaves for DI. `RootLifetimeScope` registers `AnimationService` + DOTween animators as `IAnimationService`, plus cloud/friends/identity/transport/`ISessionLifecycle` ports.
 
+---
+
+## Playcenter Studio SDK
+
+**Program:** Wave W0 spec committed 2026-07-20; skill + wiki completed 2026-07-20. Waves W1–W6 pending.  
+**Spec:** `docs/superpowers/specs/2026-07-20-playcenter-studio-sdk-design.md`  
+**Skill:** `.github/skills/playcenter-sdk/SKILL.md` (mirrored to `.claude/skills/playcenter-sdk/SKILL.md`)
+
+### Purpose
+
+Studio-grade multi-game client SDK. Replaces `BootSequence` / `IAppFlow.StartColdBoot()` as the init path. Games implement `IGameEntry`; SDK owns shell, loading bar, gate screens, and vendor isolation.
+
+### Laws (S1–S14 summary)
+
+| # | Law |
+|---|-----|
+| S1 | Games reference **`Playcenter.SDK` only** for shell. Internal asmdefs are not public API. |
+| S2 | **No VContainer in SDK** — DI = Builder + `IServiceRegistry`. |
+| S3 | Game may keep VContainer for **game services only**; bridge SDK ports via `client.Services`. |
+| S4 | **Vendor firewall** — `Epic.*`, raw NGO shell setup, store SDKs only in adapter assemblies. |
+| S5 | **Ordered modules** — `IPlaycenterModule.InitializeAsync` + weighted loading bar. No interactive login mid-bar. |
+| S6 | **Handoff** — `IGameEntry.OnPlaycenterReady(client)` (success) or `OnPlaycenterFailed(error)` (fail). |
+| S7 | **Shell screens in SDK** — Splash, Loading, Settings, NoConnection, ForceUpdate, Maintenance. |
+| S8 | **Full boot cutover** — `BootSequence` deleted; no dual boot. |
+| S9 | **Session ownership unchanged** — `CreateSession` + installer; Menu/Match parent Root. |
+| S10 | Multi-game: swap `IGameEntry` + Composition + theme per title. |
+| S11 | Stack: Unity 6 + UniTask + UI Toolkit + NGO + EOS adapters; VContainer for game IP outside Playcenter. |
+| S12 | **`IAppFlow` is sole post-ready navigator** — SDK never calls it internally. |
+| S13 | **Hard cutover** — no legacy shims or parallel old-boot flags after each wave's delete gate. |
+| S14 | DesignSystem tokens/USS = RecipeRage theme input into SDK theming (one brand per title). |
+
+### Boot timeline (happy path)
+
+1. Unity starts → `PlaycenterSdkBootstrap` (IStartable) constructs `PlaycenterClient` via builder.
+2. SDK shows Splash (brief) → Loading.
+3. Modules run in order (`logging → connectivity → ntp → remote_config → force_update → maintenance → auth_warmup → analytics → shell_ready`); progress bar advances by weight.
+4. Ready → hide Loading → `IGameEntry.OnPlaycenterReadyAsync(client)`.
+5. Game: auth UI if needed → `CreateSession` + installer → `IAppFlow` → Home.
+
+**Failure path:** module failure → map to `BootFailureCode` → `IShellUi` shows gate screen → retry or `OnPlaycenterFailed`.
+
+### Public facade types (`Playcenter.SDK`)
+
+`PlaycenterClient`, `ClientOptions`, `IServiceRegistry`, `IPlaycenterModule`, `ModuleContext`, `IBootProgress`, `IGameEntry`, `BootFailure`, `BootFailureCode`, `IShellUi`, `ShellScreenId`, `IShellTheme`
+
+### Delete list (normative after cutover)
+
+| Remove | Replacement |
+|--------|-------------|
+| `BootSequence` + boot-only tests | Default modules + ModuleHost |
+| `GameBootstrapper` → `IAppFlow.StartColdBoot()` | `PlaycenterClient.RunAsync` |
+| Dual SDK service registrations in VContainer | `client.Services.Get<T>()` |
+| Any `VContainer` ref under `Assets/Playcenter/**` | ServiceRegistry |
+| Game duplicate Splash/Loading/NoInternet/Maintenance/Settings | SDK shell pack |
+
+### Migration waves
+
+| Wave | Key deliverable | Delete gate |
+|------|----------------|-------------|
+| W1 | `Playcenter.SDK` facade, `ServiceRegistry`, `ModuleHost`, progress | — |
+| W2 | Default modules; `RunAsync` bootstrap | Delete `BootSequence`; no `StartColdBoot` init |
+| W3 | Gate screens + Settings in SDK; theme tokens | Delete game duplicate shell screens |
+| W4 | Strip VContainer from `Assets/Playcenter/**`; game bridges ports | `rg "using VContainer" Assets/Playcenter --glob '*.cs'` → 0 |
+| W5 | Vendor firewall audit; wiki + skill final | `rg "Epic\." Assets/_KitchenClash/Presentation Assets/_KitchenClash/Application` → 0 |
+| W6 | `IGameEntry` polish; auth/session after ready stable | Zero legacy boot symbols |
+

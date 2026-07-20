@@ -2,7 +2,19 @@
 
 Chronological record of wiki activity. Each entry starts with timestamp for parseability.
 
-## [2026-07-14] implementation | Architecture hardening Phase 3b complete (ports + Persistence leaf)
+## [2026-07-20] design+docs | Playcenter Studio SDK — spec, skill, and wiki laws
+
+- Spec committed: `docs/superpowers/specs/2026-07-20-playcenter-studio-sdk-design.md`
+- SDK laws S1–S14 locked: facade `Playcenter.SDK`, Builder+ServiceRegistry DI (no VContainer), ordered modules, `IGameEntry` handoff, SDK shell screens, vendor firewall, hard cutover
+- Boot cutover: `PlaycenterClient.RunAsync` replaces `BootSequence` / `IAppFlow.StartColdBoot()` after Wave W2
+- Shell screens (Splash/Loading/NoConnection/ForceUpdate/Maintenance/Settings) owned by SDK; game duplicates deleted at W3
+- Vendor firewall grep gate (W5): zero `Epic.` usings in game Presentation/Application — currently clean (0 hits)
+- `BootSequence` grep: 2 comment-only hits in `PlaycenterSdkBootstrap.cs` + `RecipeRageGameEntry.cs` (no code refs — compliant)
+- AI skill written: `.github/skills/playcenter-sdk/SKILL.md` (mirrored to `.claude/skills/playcenter-sdk/SKILL.md`)
+- Wiki updated: `wiki/Technical.md` § Playcenter Studio SDK; `wiki/LLM-Rules.md` § Playcenter Studio SDK
+- Waves W1–W6 pending implementation
+
+
 
 - Application ports: `ICloudStorageProvider`, `IFriendsServiceFactory`, `ILocalNetworkIdentity`, `IClientTransportConfigurator`
 - EOS adapters only; `StorageProviderFactory` / `SaveService` / `GameStarter` / `NetworkingServiceContainer` / `ResultsPhase` de-EOS or de-Network
