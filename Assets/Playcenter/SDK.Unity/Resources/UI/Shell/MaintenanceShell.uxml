@@ -1,0 +1,13 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="root" class="pc-gate">
+        <ui:VisualElement name="content" class="pc-gate__content">
+            <ui:Label name="icon-label" text="🔧" class="pc-gate__icon" />
+            <ui:Label name="title-label" text="Maintenance" class="pc-gate__title" />
+            <ui:Label name="message-label" text="We're currently performing maintenance. Please check back soon." class="pc-gate__message" />
+            <ui:VisualElement name="button-row" class="pc-gate__button-row">
+                <ui:Button name="retry-button" text="Retry" class="pc-gate__button pc-gate__button--primary" />
+                <ui:Button name="quit-button" text="Quit" class="pc-gate__button pc-gate__button--secondary" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

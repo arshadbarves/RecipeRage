@@ -9,7 +9,11 @@ using Playcenter.SDK;
 using Playcenter.SDK.Unity;
 using Playcenter.Services;
 using Playcenter.Shell;
+using UnityEngine;
 using VContainer.Unity;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace KitchenClash.Composition
 {
@@ -39,9 +43,13 @@ namespace KitchenClash.Composition
         private readonly IAnalyticsService _analytics;
         private readonly IEventBus _eventBus;
         private readonly BootRetryRef _bootRetryRef;
+        private readonly ISettingsService _settingsService;
 
         private PlaycenterClient _client;
         private CancellationTokenSource _cts;
+        private ToolkitShellUi _shellUi;
+
+        public IShellUi Shell => _shellUi;
 
         public PlaycenterSdkBootstrap(
             IAuthService authService,
@@ -54,7 +62,8 @@ namespace KitchenClash.Composition
             IMaintenanceService maintenanceService,
             IAnalyticsService analytics,
             IEventBus eventBus,
-            BootRetryRef bootRetryRef)
+            BootRetryRef bootRetryRef,
+            ISettingsService settingsService)
         {
             _authService = authService;
             _sessionLifecycle = sessionLifecycle;
@@ -67,6 +76,7 @@ namespace KitchenClash.Composition
             _analytics = analytics;
             _eventBus = eventBus;
             _bootRetryRef = bootRetryRef;
+            _settingsService = settingsService;
         }
 
         /// <summary>VContainer entry point: fires SDK boot asynchronously.</summary>
@@ -97,10 +107,12 @@ namespace KitchenClash.Composition
             var entry = new RecipeRageGameEntry(
                 _authService, _sessionLifecycle, _sessionContext, _appFlow, _analytics);
 
+            _shellUi = new ToolkitShellUi();
+
             _client = PlaycenterClient.Create(o =>
             {
                 o.UseDefaultModules();
-                o.UseShell(new ToolkitShellUi());
+                o.UseShell(_shellUi);
                 o.UseTheme(new ShellTheme("UI/Themes/DesignSystem"));
                 o.SetGameEntry(entry);
 
@@ -110,12 +122,42 @@ namespace KitchenClash.Composition
                 o.Services.AddSingleton<IRemoteConfigService>(_remoteConfigService);
                 o.Services.AddSingleton<IMaintenanceService>(_maintenanceService);
                 o.Services.AddSingleton<IAnalyticsService>(_analytics);
+                o.Services.AddSingleton<ISettingsService>(_settingsService);
                 o.Services.AddSingleton<IForceUpdatePolicy>(
                     new KitchenClashForceUpdatePolicy(_remoteConfigService, _eventBus));
                 o.Services.AddSingleton<IAppVersion>(new AppVersionAdapter());
             });
 
+            // Wire shell callbacks after client created so we have access to it
+            _shellUi.SetServices(_client.Services);
+            _shellUi.OnRetryRequested = Retry;
+            _shellUi.OnQuitRequested = OnQuit;
+            _shellUi.OnUpdateRequested = OnUpdate;
+
             await _client.RunAsync(ct).AsUniTask();
+        }
+
+        private void OnQuit()
+        {
+#if UNITY_EDITOR
+            EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
+        }
+
+        private void OnUpdate()
+        {
+            // Get store URL from RC; fallback to platform default
+            string storeUrl = "https://reciperage.game/download";
+            if (_remoteConfigService != null)
+            {
+                var rcUrl = _remoteConfigService.GetString("force_update_url", "");
+                if (!string.IsNullOrEmpty(rcUrl))
+                    storeUrl = rcUrl;
+            }
+
+            Application.OpenURL(storeUrl);
         }
     }
 }

@@ -1,0 +1,78 @@
+/* pc-settings: Settings screen styles */
+
+.pc-settings {
+    flex-grow: 1;
+    background-color: rgba(0, 0, 0, 0.9);
+}
+
+.pc-settings__header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: rgba(30, 30, 30, 0.95);
+    border-bottom-width: 1px;
+    border-bottom-color: rgb(60, 60, 60);
+}
+
+.pc-settings__title {
+    font-size: 24px;
+    color: rgb(255, 255, 255);
+    -unity-font-style: bold;
+}
+
+.pc-settings__close-button {
+    width: 40px;
+    height: 40px;
+    font-size: 32px;
+    background-color: transparent;
+    border-width: 0;
+    color: rgb(200, 200, 200);
+    cursor: arrow;
+}
+
+.pc-settings__close-button:hover {
+    color: rgb(255, 255, 255);
+}
+
+.pc-settings__content {
+    flex-grow: 1;
+    padding: 20px;
+}
+
+.pc-settings__section {
+    margin-bottom: 32px;
+}
+
+.pc-settings__section-title {
+    font-size: 18px;
+    color: rgb(150, 150, 150);
+    margin-bottom: 16px;
+    -unity-font-style: bold;
+}
+
+.pc-settings__option-row {
+    flex-direction: row;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(60, 60, 60, 0.5);
+}
+
+.pc-settings__option-label {
+    flex-grow: 1;
+    font-size: 16px;
+    color: rgb(220, 220, 220);
+}
+
+.pc-settings__slider {
+    width: 200px;
+    margin-right: 12px;
+}
+
+.pc-settings__value-label {
+    min-width: 60px;
+    font-size: 14px;
+    color: rgb(180, 180, 180);
+    -unity-text-align: middle-right;
+}

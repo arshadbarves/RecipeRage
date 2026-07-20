@@ -50,25 +50,22 @@
     <Compile Include="Assets/_KitchenClash/Presentation/Screens/StoreScreen.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/Extensions/LocalizationUIExtensions.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/Extensions/UIExtensions.cs" />
-    <Compile Include="Assets/_KitchenClash/Presentation/Common/UIScreenController.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/Controls/DebugConsoleUI.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/Controls/RadialGradientElement.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/ViewModels/LoadingViewModel.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/Overlays/ConnectivityOverlay.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/ViewModels/DailyStreakViewModel.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/Controls/SkewedBoxElement.cs" />
+    <Compile Include="Assets/_KitchenClash/Presentation/Common/UIServiceEntryPoint.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/Screens/DailyStreakScreen.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/ViewModels/MatchHUDViewModel.cs" />
-    <Compile Include="Assets/_KitchenClash/Presentation/Common/UIService.ScreenOps.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/ViewModels/SettingsViewModel.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/Controls/JoystickEditorUI.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/Components/SkinsTabComponent.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/Screens/MapSelectionScreen.cs" />
-    <Compile Include="Assets/_KitchenClash/Presentation/Common/UIService.Navigation.cs" />
-    <Compile Include="Assets/_KitchenClash/Presentation/Screens/SplashScreen.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/ViewModels/HomeScreenViewModel.cs" />
-    <Compile Include="Assets/_KitchenClash/Presentation/Common/UITransitionHandler.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/Screens/ChefSelectScreen.cs" />
+    <Compile Include="Assets/_KitchenClash/Presentation/Common/VContainerScreenInstanceFactory.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/Common/BaseViewModel.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/Controls/MobileJoystick.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/Controls/MobileControlsManager.cs" />
@@ -80,38 +77,26 @@
     <Compile Include="Assets/_KitchenClash/Presentation/Screens/CharacterDetailsScreen.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/Components/ShopTabComponent.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/ViewModels/CharacterViewModel.cs" />
-    <Compile Include="Assets/_KitchenClash/Presentation/Common/UIScreenPriority.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/ViewModels/ChefSelectViewModel.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/ViewModels/MainMenuViewModel.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/Components/LobbyTabComponent.cs" />
-    <Compile Include="Assets/_KitchenClash/Presentation/Screens/LoadingScreen.cs" />
-    <Compile Include="Assets/_KitchenClash/Presentation/Common/UIScreenAttribute.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/Screens/MatchLobbyScreen.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/ViewModels/ResultsViewModel.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/ViewModels/AccountUpgradeViewModel.cs" />
-    <Compile Include="Assets/_KitchenClash/Presentation/Common/UITransitionType.cs" />
-    <Compile Include="Assets/_KitchenClash/Presentation/Common/INotificationScreen.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/Overlays/UsernamePopup.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/Screens/ProfileScreen.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/Components/CharacterTabComponent.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/Overlays/NotificationOverlay.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/ViewModels/ScreenViewModel.cs" />
-    <Compile Include="Assets/_KitchenClash/Presentation/Overlays/NoInternetPopup.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/ViewModels/MatchmakingViewModel.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/ViewModels/LoginViewModel.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/Screens/AccountUpgradeScreen.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/Screens/CountdownOverlayScreen.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/Common/LocKeys.cs" />
-    <Compile Include="Assets/_KitchenClash/Presentation/Screens/MaintenanceScreen.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/Screens/LoginScreen.cs" />
-    <Compile Include="Assets/_KitchenClash/Presentation/Common/BaseUIScreen.cs" />
-    <Compile Include="Assets/_KitchenClash/Presentation/Screens/SettingsScreen.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/ViewModels/LobbyViewModel.cs" />
-    <Compile Include="Assets/_KitchenClash/Presentation/Common/TweenExtensions.cs" />
-    <Compile Include="Assets/_KitchenClash/Presentation/Common/UIScreenRegistry.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/ViewModels/StoreViewModel.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/ViewModels/GameplayHudViewModel.cs" />
-    <Compile Include="Assets/_KitchenClash/Presentation/Common/UIService.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/Screens/MatchHUDScreen.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/Screens/ResultsScreen.cs" />
     <Compile Include="Assets/_KitchenClash/Presentation/Screens/MatchmakingScreen.cs" />
@@ -522,8 +507,14 @@
     <Reference Include="websocket-sharp">
       <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.services.wire@3619c710c17e/Plugins/websocket-sharp.dll</HintPath>
     </Reference>
+    <Reference Include="TextMateSharpPlastic">
+      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.collab-proxy@0b1559bcd34e/Lib/Editor/TextMateSharp/TextMateSharpPlastic.dll</HintPath>
+    </Reference>
+    <Reference Include="TextMateSharpPlastic.Grammars">
+      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.collab-proxy@0b1559bcd34e/Lib/Editor/TextMateSharp/TextMateSharpPlastic.Grammars.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.VisualScripting.YamlDotNet">
-      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.visualscripting@191c0d7e3b69/Editor/VisualScripting.Core/Dependencies/YamlDotNet/Unity.VisualScripting.YamlDotNet.dll</HintPath>
+      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.visualscripting@8bed5ad90189/Editor/VisualScripting.Core/Dependencies/YamlDotNet/Unity.VisualScripting.YamlDotNet.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Collections.LowLevel.ILSupport">
       <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.collections@12999e356c23/Unity.Collections.LowLevel.ILSupport/Unity.Collections.LowLevel.ILSupport.dll</HintPath>
@@ -544,22 +535,25 @@
       <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Assets/Firebase/Plugins/Firebase.App.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Plastic.Antlr3.Runtime">
-      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.collab-proxy@e566cd3e7623/Lib/Editor/Unity.Plastic.Antlr3.Runtime.dll</HintPath>
+      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.collab-proxy@0b1559bcd34e/Lib/Editor/Unity.Plastic.Antlr3.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="Firebase.RemoteConfig">
       <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Assets/Firebase/Plugins/Firebase.RemoteConfig.dll</HintPath>
     </Reference>
+    <Reference Include="OnigwrapPlastic">
+      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.collab-proxy@0b1559bcd34e/Lib/Editor/TextMateSharp/Onigwrap/OnigwrapPlastic.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.Plastic.Newtonsoft.Json">
-      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.collab-proxy@e566cd3e7623/Lib/Editor/Unity.Plastic.Newtonsoft.Json.dll</HintPath>
+      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.collab-proxy@0b1559bcd34e/Lib/Editor/Unity.Plastic.Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Firebase.TaskExtension">
       <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Assets/Firebase/Plugins/Firebase.TaskExtension.dll</HintPath>
     </Reference>
     <Reference Include="log4netPlastic">
-      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.collab-proxy@e566cd3e7623/Lib/Editor/log4netPlastic.dll</HintPath>
+      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.collab-proxy@0b1559bcd34e/Lib/Editor/log4netPlastic.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VisualScripting.IonicZip">
-      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.visualscripting@191c0d7e3b69/Editor/VisualScripting.Core/Dependencies/DotNetZip/Unity.VisualScripting.IonicZip.dll</HintPath>
+      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.visualscripting@8bed5ad90189/Editor/VisualScripting.Core/Dependencies/DotNetZip/Unity.VisualScripting.IonicZip.dll</HintPath>
     </Reference>
     <Reference Include="System.IO.Hashing">
       <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.collections@12999e356c23/Unity.Collections.Tests/System.IO.Hashing/System.IO.Hashing.dll</HintPath>
@@ -568,7 +562,7 @@
       <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Assets/ExternalDependencyManager/Editor/Google.VersionHandler.dll</HintPath>
     </Reference>
     <Reference Include="unityplastic">
-      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.collab-proxy@e566cd3e7623/Lib/Editor/unityplastic.dll</HintPath>
+      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.collab-proxy@0b1559bcd34e/Lib/Editor/unityplastic.dll</HintPath>
     </Reference>
     <Reference Include="Google.PackageManagerResolver">
       <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Assets/ExternalDependencyManager/Editor/1.2.186/Google.PackageManagerResolver.dll</HintPath>
@@ -577,7 +571,7 @@
       <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Assets/ExternalDependencyManager/Editor/1.2.186/Google.VersionHandlerImpl.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VisualScripting.Antlr3.Runtime">
-      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.visualscripting@191c0d7e3b69/Runtime/VisualScripting.Flow/Dependencies/NCalc/Unity.VisualScripting.Antlr3.Runtime.dll</HintPath>
+      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.visualscripting@8bed5ad90189/Runtime/VisualScripting.Flow/Dependencies/NCalc/Unity.VisualScripting.Antlr3.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="Google.JarResolver">
       <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Assets/ExternalDependencyManager/Editor/1.2.186/Google.JarResolver.dll</HintPath>
@@ -589,7 +583,7 @@
       <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.ai.assistant@84e99ed7b906/Modules/Unity.AI.Toolkit.Sdk/Editor/AiEditorToolsSdk.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VisualScripting.TextureAssets">
-      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.visualscripting@191c0d7e3b69/Editor/VisualScripting.Core/EditorAssetResources/Unity.VisualScripting.TextureAssets.dll</HintPath>
+      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.visualscripting@8bed5ad90189/Editor/VisualScripting.Core/EditorAssetResources/Unity.VisualScripting.TextureAssets.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cecil">
       <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.nuget.mono-cecil@ecb9724e46ff/Mono.Cecil.dll</HintPath>
@@ -996,11 +990,11 @@
     <Reference Include="UniTask">
       <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/ScriptAssemblies/UniTask.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
-    </Reference>
     <Reference Include="UnityEditor.UI">
       <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -1028,11 +1022,19 @@
       <Project>{3e37d887-f38e-b750-f7cd-a87ad6e0c91c}</Project>
       <Name>Playcenter.Services</Name>
     </ProjectReference>
-      <ProjectReference Include="Playcenter.UI.csproj">
-      <Project>{d425a496-7b06-4a5f-8e46-4f84c05e3171}</Project>
+    <ProjectReference Include="Playcenter.UI.csproj">
+      <Project>{3dbb196d-e7c7-e427-2578-b4a506397670}</Project>
       <Name>Playcenter.UI</Name>
     </ProjectReference>
-</ItemGroup>
+    <ProjectReference Include="Playcenter.Animation.csproj">
+      <Project>{e54b64bc-7e92-d025-aa12-9b39651dc7a7}</Project>
+      <Name>Playcenter.Animation</Name>
+    </ProjectReference>
+    <ProjectReference Include="Playcenter.UI.Toolkit.csproj">
+      <Project>{8d213293-ea21-a929-6b6a-46fefa48db01}</Project>
+      <Name>Playcenter.UI.Toolkit</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.

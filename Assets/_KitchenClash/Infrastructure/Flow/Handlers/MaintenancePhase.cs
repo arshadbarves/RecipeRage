@@ -4,13 +4,13 @@ using Cysharp.Threading.Tasks;
 using KitchenClash.Application.Services;
 using KitchenClash.Domain;
 using Playcenter.GameFlow;
-using Playcenter.Shell;
+using Playcenter.SDK;
 using Playcenter.Services;
 
 namespace KitchenClash.Infrastructure.Flow.Handlers
 {
     /// <summary>
-    /// Maintenance side phase: publish maintenance UI event and poll until clear → Login.
+    /// Maintenance side phase: show SDK Maintenance shell and poll until clear → Login.
     /// </summary>
     public sealed class MaintenancePhase
     {
@@ -18,8 +18,8 @@ namespace KitchenClash.Infrastructure.Flow.Handlers
 
         private readonly IMaintenanceService _maintenanceService;
         private readonly IRemoteConfigService _remoteConfigService;
-        private readonly IEventBus _eventBus;
         private readonly IAppFlow _appFlow;
+        private readonly IShellUi _shellUi;
 
         private CancellationTokenSource _cts;
         private bool _active;
@@ -27,13 +27,13 @@ namespace KitchenClash.Infrastructure.Flow.Handlers
         public MaintenancePhase(
             IMaintenanceService maintenanceService,
             IRemoteConfigService remoteConfigService,
-            IEventBus eventBus,
-            IAppFlow appFlow)
+            IAppFlow appFlow,
+            IShellUi shellUi)
         {
             _maintenanceService = maintenanceService;
             _remoteConfigService = remoteConfigService;
-            _eventBus = eventBus;
             _appFlow = appFlow;
+            _shellUi = shellUi;
         }
 
         public void Enter()
@@ -42,6 +42,7 @@ namespace KitchenClash.Infrastructure.Flow.Handlers
             _active = true;
             _cts = new CancellationTokenSource();
             GameLogger.LogInfo("[MaintenancePhase] Entered maintenance phase");
+            _shellUi?.Show(ShellScreenId.Maintenance);
             RunAsync(_cts.Token).Forget();
         }
 
@@ -55,6 +56,7 @@ namespace KitchenClash.Infrastructure.Flow.Handlers
                 _cts = null;
             }
 
+            _shellUi?.HideAll();
             GameLogger.LogInfo("[MaintenancePhase] Exited maintenance phase");
         }
 
@@ -62,14 +64,6 @@ namespace KitchenClash.Infrastructure.Flow.Handlers
         {
             try
             {
-                _eventBus?.Publish(new MaintenanceModeEvent
-                {
-                    IsMaintenanceMode = true,
-                    Message = _maintenanceService?.MaintenanceMessage,
-                    EstimatedEndTime = _maintenanceService?.EstimatedEndTime?.ToString("o") ?? "",
-                    AllowRetry = true
-                });
-
                 while (_active && !ct.IsCancellationRequested)
                 {
                     await UniTask.Delay(TimeSpan.FromSeconds(RetryIntervalSeconds), cancellationToken: ct);

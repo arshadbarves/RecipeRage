@@ -3,36 +3,32 @@ using KitchenClash.Application.Services;
 using KitchenClash.Domain;
 using KitchenClash.Infrastructure.Flow;
 using Playcenter.GameFlow;
+using Playcenter.SDK;
 using Playcenter.Shell;
-using Playcenter.UI;
 
 namespace KitchenClash.Infrastructure.Flow.Handlers
 {
     /// <summary>
-    /// No-connection side phase: show NoInternetPopup; Retry → re-runs full SDK boot via
+    /// No-connection side phase: show SDK NoConnection shell; Retry → re-runs full SDK boot via
     /// <see cref="IPlaycenterBootRetry"/>.
     /// </summary>
     public sealed class NoConnectionPhase
     {
-        private const string NoInternetPopupTypeName =
-            "KitchenClash.Presentation.Overlays.NoInternetPopup, KitchenClash.Presentation";
-
-        private readonly IUIService _uiService;
         private readonly IEventBus _eventBus;
         private readonly IPlaycenterBootRetry _bootRetry;
+        private readonly IShellUi _shellUi;
 
-        private Type _noInternetPopupType;
         private bool _active;
 
         public NoConnectionPhase(
-            IUIService uiService,
             IEventBus eventBus,
             IAppFlow appFlow,
-            IPlaycenterBootRetry bootRetry)
+            IPlaycenterBootRetry bootRetry,
+            IShellUi shellUi)
         {
-            _uiService = uiService;
             _eventBus = eventBus;
             _bootRetry = bootRetry;
+            _shellUi = shellUi;
         }
 
         public void Enter()
@@ -41,16 +37,7 @@ namespace KitchenClash.Infrastructure.Flow.Handlers
             _active = true;
 
             _eventBus?.Subscribe<RetryConnectionEvent>(OnRetry);
-
-            _noInternetPopupType ??= Type.GetType(NoInternetPopupTypeName);
-            if (_noInternetPopupType != null)
-            {
-                _uiService?.Show(_noInternetPopupType);
-            }
-            else
-            {
-                GameLogger.LogError("[NoConnectionPhase] NoInternetPopup type not found");
-            }
+            _shellUi?.Show(ShellScreenId.NoConnection);
 
             GameLogger.Log("[NoConnectionPhase] Waiting for player to retry connection");
         }
@@ -64,10 +51,7 @@ namespace KitchenClash.Infrastructure.Flow.Handlers
 
             _active = false;
             _eventBus?.Unsubscribe<RetryConnectionEvent>(OnRetry);
-            if (_noInternetPopupType != null)
-            {
-                _uiService?.Hide(_noInternetPopupType);
-            }
+            _shellUi?.HideAll();
         }
 
         private void OnRetry(RetryConnectionEvent _)

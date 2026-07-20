@@ -12,7 +12,8 @@
         "Playcenter.Services",
         "Playcenter.UI",
         "Playcenter.Animation",
-        "Playcenter.UI.Toolkit"
+        "Playcenter.UI.Toolkit",
+        "Playcenter.SDK"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

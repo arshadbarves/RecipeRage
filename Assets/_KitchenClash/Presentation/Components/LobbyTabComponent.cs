@@ -211,7 +211,41 @@ namespace KitchenClash.Presentation.Components
 
         private void OnSettingsClicked()
         {
-            _uiService?.Show<SettingsScreen>(false);
+            // Show SDK Settings — IShellUi will be injected once Unity reimports the updated asmdef.
+            // For now, use dynamic resolution as a workaround during dotnet build.
+            var shellUiType = System.Type.GetType("Playcenter.SDK.IShellUi, Playcenter.SDK");
+            var shellScreenIdType = System.Type.GetType("Playcenter.SDK.ShellScreenId, Playcenter.SDK");
+            
+            if (shellUiType != null && shellScreenIdType != null)
+            {
+                try
+                {
+                    // Manually resolve from static bootstrap reference
+                    var bootstrapType = System.Type.GetType("KitchenClash.Composition.PlaycenterSdkBootstrap, KitchenClash.Composition");
+                    if (bootstrapType != null)
+                    {
+                        var shellProperty = bootstrapType.GetProperty("Shell");
+                        var container = VContainer.Unity.LifetimeScope.Find<VContainer.Unity.LifetimeScope>();
+                        if (container != null)
+                        {
+                            var bootstrap = container.Container.Resolve(bootstrapType);
+                            var shellUi = shellProperty?.GetValue(bootstrap);
+                            if (shellUi != null)
+                            {
+                                var settingsValue = System.Enum.Parse(shellScreenIdType, "Settings");
+                                var showMethod = shellUiType.GetMethod("Show");
+                                showMethod?.Invoke(shellUi, new[] { settingsValue });
+                                return;
+                            }
+                        }
+                    }
+                }
+                catch
+                {
+                    // Fallback if SDK shell not available
+                    GameLogger.LogWarning("[LobbyTabComponent] SDK Settings not available");
+                }
+            }
         }
 
         private void OnSkinsClicked()

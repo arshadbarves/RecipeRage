@@ -1,4 +1,5 @@
 using Playcenter.SDK;
+using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -7,26 +8,45 @@ namespace Playcenter.SDK.Unity
     /// <summary>
     /// UI Toolkit implementation of IShellUi.
     /// Creates a DDOL GameObject with UIDocument if none is provided, then manages
-    /// Splash/Loading UXML panels loaded from Resources.
+    /// Splash/Loading/Gates/Settings UXML panels loaded from Resources.
     /// </summary>
     public sealed class ToolkitShellUi : IShellUi
     {
-        const string LoadingUxmlPath  = "UI/Shell/LoadingShell";
-        const string SplashUxmlPath   = "UI/Shell/SplashShell";
+        const string LoadingUxmlPath       = "UI/Shell/LoadingShell";
+        const string SplashUxmlPath        = "UI/Shell/SplashShell";
+        const string NoConnectionUxmlPath  = "UI/Shell/NoConnectionShell";
+        const string ForceUpdateUxmlPath   = "UI/Shell/ForceUpdateShell";
+        const string MaintenanceUxmlPath   = "UI/Shell/MaintenanceShell";
+        const string SettingsUxmlPath      = "UI/Shell/SettingsShell";
+
         const string DefaultUssPath   = "UI/Shell/DefaultShell";
         const string LoadingUssPath   = "UI/Shell/shell_loading";
         const string SplashUssPath    = "UI/Shell/shell_splash";
+        const string GateUssPath      = "UI/Shell/shell_gate";
+        const string SettingsUssPath  = "UI/Shell/shell_settings";
 
         readonly UIDocument _document;
         IShellTheme _theme;
+        IPlaycenterServices _services;
 
         VisualTreeAsset _loadingAsset;
         VisualTreeAsset _splashAsset;
-        StyleSheet      _defaultStyle;
-        StyleSheet      _loadingStyle;
-        StyleSheet      _splashStyle;
+        VisualTreeAsset _noConnectionAsset;
+        VisualTreeAsset _forceUpdateAsset;
+        VisualTreeAsset _maintenanceAsset;
+        VisualTreeAsset _settingsAsset;
+
+        StyleSheet _defaultStyle;
+        StyleSheet _loadingStyle;
+        StyleSheet _splashStyle;
+        StyleSheet _gateStyle;
+        StyleSheet _settingsStyle;
 
         ShellScreenId? _current;
+
+        public Action OnRetryRequested;
+        public Action OnQuitRequested;
+        public Action OnUpdateRequested;
 
         /// <summary>Creates ToolkitShellUi and builds a DDOL UIDocument if none supplied.</summary>
         public ToolkitShellUi(UIDocument document = null)
@@ -38,7 +58,7 @@ namespace Playcenter.SDK.Unity
             else
             {
                 var go = new GameObject("[Playcenter Shell]");
-                Object.DontDestroyOnLoad(go);
+                UnityEngine.Object.DontDestroyOnLoad(go);
                 _document = go.AddComponent<UIDocument>();
                 // Sort order above game UI so shell always renders on top
                 _document.sortingOrder = 1000;
@@ -63,6 +83,7 @@ namespace Playcenter.SDK.Unity
             if (tree != null)
             {
                 tree.CloneTree(root);
+                WireButtons(id, root);
             }
             else
             {
@@ -113,22 +134,38 @@ namespace Playcenter.SDK.Unity
 
         // ── Private helpers ───────────────────────────────────────────────────
 
+        public void SetServices(IPlaycenterServices services)
+        {
+            _services = services;
+        }
+
         void PreloadAssets()
         {
-            _loadingAsset = Resources.Load<VisualTreeAsset>(LoadingUxmlPath);
-            _splashAsset  = Resources.Load<VisualTreeAsset>(SplashUxmlPath);
-            _defaultStyle = Resources.Load<StyleSheet>(DefaultUssPath);
-            _loadingStyle = Resources.Load<StyleSheet>(LoadingUssPath);
-            _splashStyle  = Resources.Load<StyleSheet>(SplashUssPath);
+            _loadingAsset       = Resources.Load<VisualTreeAsset>(LoadingUxmlPath);
+            _splashAsset        = Resources.Load<VisualTreeAsset>(SplashUxmlPath);
+            _noConnectionAsset  = Resources.Load<VisualTreeAsset>(NoConnectionUxmlPath);
+            _forceUpdateAsset   = Resources.Load<VisualTreeAsset>(ForceUpdateUxmlPath);
+            _maintenanceAsset   = Resources.Load<VisualTreeAsset>(MaintenanceUxmlPath);
+            _settingsAsset      = Resources.Load<VisualTreeAsset>(SettingsUxmlPath);
+
+            _defaultStyle   = Resources.Load<StyleSheet>(DefaultUssPath);
+            _loadingStyle   = Resources.Load<StyleSheet>(LoadingUssPath);
+            _splashStyle    = Resources.Load<StyleSheet>(SplashUssPath);
+            _gateStyle      = Resources.Load<StyleSheet>(GateUssPath);
+            _settingsStyle  = Resources.Load<StyleSheet>(SettingsUssPath);
         }
 
         VisualTreeAsset ResolveTreeAsset(ShellScreenId id)
         {
             return id switch
             {
-                ShellScreenId.Loading => _loadingAsset,
-                ShellScreenId.Splash  => _splashAsset,
-                _                     => null
+                ShellScreenId.Loading       => _loadingAsset,
+                ShellScreenId.Splash        => _splashAsset,
+                ShellScreenId.NoConnection  => _noConnectionAsset,
+                ShellScreenId.ForceUpdate   => _forceUpdateAsset,
+                ShellScreenId.Maintenance   => _maintenanceAsset,
+                ShellScreenId.Settings      => _settingsAsset,
+                _                           => null
             };
         }
 
@@ -140,9 +177,13 @@ namespace Playcenter.SDK.Unity
             // Apply companion screen-specific USS after default
             var companion = _current switch
             {
-                ShellScreenId.Loading => _loadingStyle,
-                ShellScreenId.Splash  => _splashStyle,
-                _                     => null
+                ShellScreenId.Loading       => _loadingStyle,
+                ShellScreenId.Splash        => _splashStyle,
+                ShellScreenId.NoConnection  => _gateStyle,
+                ShellScreenId.ForceUpdate   => _gateStyle,
+                ShellScreenId.Maintenance   => _gateStyle,
+                ShellScreenId.Settings      => _settingsStyle,
+                _                           => null
             };
             if (companion != null && !root.styleSheets.Contains(companion))
                 root.styleSheets.Add(companion);
@@ -158,6 +199,139 @@ namespace Playcenter.SDK.Unity
         void ClearRoot()
         {
             _document.rootVisualElement?.Clear();
+        }
+
+        void WireButtons(ShellScreenId id, VisualElement root)
+        {
+            switch (id)
+            {
+                case ShellScreenId.NoConnection:
+                case ShellScreenId.Maintenance:
+                    root.Q<Button>("retry-button")?.RegisterCallback<ClickEvent>(_ => OnRetryRequested?.Invoke());
+                    root.Q<Button>("quit-button")?.RegisterCallback<ClickEvent>(_ => OnQuitRequested?.Invoke());
+                    break;
+
+                case ShellScreenId.ForceUpdate:
+                    root.Q<Button>("update-button")?.RegisterCallback<ClickEvent>(_ => OnUpdateRequested?.Invoke());
+                    root.Q<Button>("quit-button")?.RegisterCallback<ClickEvent>(_ => OnQuitRequested?.Invoke());
+                    break;
+
+                case ShellScreenId.Settings:
+                    WireSettings(root);
+                    break;
+            }
+        }
+
+        void WireSettings(VisualElement root)
+        {
+            root.Q<Button>("close-button")?.RegisterCallback<ClickEvent>(_ => HideAll());
+
+            // ISettingsService lives in Playcenter.Services which SDK.Unity doesn't reference.
+            // Use object + reflection to access it without direct dependency.
+            if (_services == null)
+            {
+                return;
+            }
+
+            // Try to get ISettingsService dynamically
+            var settingsServiceType = System.Type.GetType("Playcenter.Services.ISettingsService, Playcenter.Services");
+            if (settingsServiceType == null)
+            {
+                return;
+            }
+
+            var tryGetMethod = typeof(IPlaycenterServices).GetMethod("TryGet")?.MakeGenericMethod(settingsServiceType);
+            if (tryGetMethod == null)
+            {
+                return;
+            }
+
+            var parameters = new System.Object[] { null };
+            var hasSettings = (bool)tryGetMethod.Invoke(_services, parameters);
+            if (!hasSettings)
+            {
+                return;
+            }
+
+            var settingsService = parameters[0];
+            if (settingsService == null)
+            {
+                return;
+            }
+
+            // Get Current property via reflection
+            var currentProperty = settingsServiceType.GetProperty("Current");
+            if (currentProperty == null)
+            {
+                return;
+            }
+
+            var current = currentProperty.GetValue(settingsService);
+            if (current == null)
+            {
+                return;
+            }
+
+            var musicSlider = root.Q<Slider>("music-volume-slider");
+            var sfxSlider = root.Q<Slider>("sfx-volume-slider");
+            var musicValueLabel = root.Q<Label>("music-volume-value");
+            var sfxValueLabel = root.Q<Label>("sfx-volume-value");
+
+            var settingsType = current.GetType();
+            var musicVolumeProp = settingsType.GetProperty("MusicVolume");
+            var sfxVolumeProp = settingsType.GetProperty("SfxVolume");
+            var cloneMethod = settingsType.GetMethod("Clone");
+            var applyMethod = settingsServiceType.GetMethod("Apply");
+            var saveAsyncMethod = settingsServiceType.GetMethod("SaveAsync");
+
+            if (musicSlider != null && musicVolumeProp != null)
+            {
+                float musicVol = (float)musicVolumeProp.GetValue(current);
+                musicSlider.value = musicVol;
+                musicSlider.RegisterValueChangedCallback(evt =>
+                {
+                    var cloned = cloneMethod?.Invoke(current, null);
+                    if (cloned != null)
+                    {
+                        musicVolumeProp.SetValue(cloned, evt.newValue);
+                        applyMethod?.Invoke(settingsService, new[] { cloned });
+                        saveAsyncMethod?.Invoke(settingsService, new System.Object[] { System.Threading.CancellationToken.None });
+                    }
+                    if (musicValueLabel != null)
+                        musicValueLabel.text = $"{Mathf.RoundToInt(evt.newValue * 100)}%";
+                });
+                if (musicValueLabel != null)
+                    musicValueLabel.text = $"{Mathf.RoundToInt(musicVol * 100)}%";
+            }
+
+            if (sfxSlider != null && sfxVolumeProp != null)
+            {
+                float sfxVol = (float)sfxVolumeProp.GetValue(current);
+                sfxSlider.value = sfxVol;
+                sfxSlider.RegisterValueChangedCallback(evt =>
+                {
+                    var cloned = cloneMethod?.Invoke(current, null);
+                    if (cloned != null)
+                    {
+                        sfxVolumeProp.SetValue(cloned, evt.newValue);
+                        applyMethod?.Invoke(settingsService, new[] { cloned });
+                        saveAsyncMethod?.Invoke(settingsService, new System.Object[] { System.Threading.CancellationToken.None });
+                    }
+                    if (sfxValueLabel != null)
+                        sfxValueLabel.text = $"{Mathf.RoundToInt(evt.newValue * 100)}%";
+                });
+                if (sfxValueLabel != null)
+                    sfxValueLabel.text = $"{Mathf.RoundToInt(sfxVol * 100)}%";
+            }
+
+            var versionLabel = root.Q<Label>("version-label");
+            if (versionLabel != null)
+            {
+                string version = Application.version;
+                if (_services.TryGet<IAppVersion>(out var appVersion))
+                    version = appVersion.Current;
+                versionLabel.text = version;
+            }
         }
     }
 }

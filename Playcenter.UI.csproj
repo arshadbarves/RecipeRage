@@ -13,7 +13,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace>Playcenter.UI</RootNamespace>
-    <ProjectGuid>{d425a496-7b06-4a5f-8e46-4f84c05e3171}</ProjectGuid>
+    <ProjectGuid>{3dbb196d-e7c7-e427-2578-b4a506397670}</ProjectGuid>
     <ProjectTypeGuids>{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -47,17 +47,23 @@
     <Analyzer Include="/Applications/Unity/Hub/Editor/6000.3.15f1/Unity.app/Contents/Resources/BuildPipeline/Unity.SourceGenerators/Unity.UIToolkit.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets/Playcenter/UI/Runtime/IUIService.cs" />
     <Compile Include="Assets/Playcenter/UI/Runtime/NotificationType.cs" />
-    <Compile Include="Assets/Playcenter/UI/Runtime/UIScreenCategory.cs" />
-    <Compile Include="Assets/Playcenter/UI/Runtime/IUIScreenStackManager.cs" />
     <Compile Include="Assets/Playcenter/UI/Runtime/UIScreenStackManager.cs" />
+    <Compile Include="Assets/Playcenter/UI/Runtime/UIScreenCategory.cs" />
+    <Compile Include="Assets/Playcenter/UI/Runtime/IUIService.cs" />
+    <Compile Include="Assets/Playcenter/UI/Runtime/IUIScreenStackManager.cs" />
     <None Include="Assets/Playcenter/UI/Runtime/Playcenter.UI.asmdef" />
     <Reference Include="websocket-sharp">
       <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.services.wire@3619c710c17e/Plugins/websocket-sharp.dll</HintPath>
     </Reference>
+    <Reference Include="TextMateSharpPlastic">
+      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.collab-proxy@0b1559bcd34e/Lib/Editor/TextMateSharp/TextMateSharpPlastic.dll</HintPath>
+    </Reference>
+    <Reference Include="TextMateSharpPlastic.Grammars">
+      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.collab-proxy@0b1559bcd34e/Lib/Editor/TextMateSharp/TextMateSharpPlastic.Grammars.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.VisualScripting.YamlDotNet">
-      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.visualscripting@191c0d7e3b69/Editor/VisualScripting.Core/Dependencies/YamlDotNet/Unity.VisualScripting.YamlDotNet.dll</HintPath>
+      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.visualscripting@8bed5ad90189/Editor/VisualScripting.Core/Dependencies/YamlDotNet/Unity.VisualScripting.YamlDotNet.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Collections.LowLevel.ILSupport">
       <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.collections@12999e356c23/Unity.Collections.LowLevel.ILSupport/Unity.Collections.LowLevel.ILSupport.dll</HintPath>
@@ -78,22 +84,25 @@
       <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Assets/Firebase/Plugins/Firebase.App.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Plastic.Antlr3.Runtime">
-      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.collab-proxy@e566cd3e7623/Lib/Editor/Unity.Plastic.Antlr3.Runtime.dll</HintPath>
+      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.collab-proxy@0b1559bcd34e/Lib/Editor/Unity.Plastic.Antlr3.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="Firebase.RemoteConfig">
       <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Assets/Firebase/Plugins/Firebase.RemoteConfig.dll</HintPath>
     </Reference>
+    <Reference Include="OnigwrapPlastic">
+      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.collab-proxy@0b1559bcd34e/Lib/Editor/TextMateSharp/Onigwrap/OnigwrapPlastic.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.Plastic.Newtonsoft.Json">
-      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.collab-proxy@e566cd3e7623/Lib/Editor/Unity.Plastic.Newtonsoft.Json.dll</HintPath>
+      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.collab-proxy@0b1559bcd34e/Lib/Editor/Unity.Plastic.Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Firebase.TaskExtension">
       <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Assets/Firebase/Plugins/Firebase.TaskExtension.dll</HintPath>
     </Reference>
     <Reference Include="log4netPlastic">
-      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.collab-proxy@e566cd3e7623/Lib/Editor/log4netPlastic.dll</HintPath>
+      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.collab-proxy@0b1559bcd34e/Lib/Editor/log4netPlastic.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VisualScripting.IonicZip">
-      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.visualscripting@191c0d7e3b69/Editor/VisualScripting.Core/Dependencies/DotNetZip/Unity.VisualScripting.IonicZip.dll</HintPath>
+      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.visualscripting@8bed5ad90189/Editor/VisualScripting.Core/Dependencies/DotNetZip/Unity.VisualScripting.IonicZip.dll</HintPath>
     </Reference>
     <Reference Include="System.IO.Hashing">
       <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.collections@12999e356c23/Unity.Collections.Tests/System.IO.Hashing/System.IO.Hashing.dll</HintPath>
@@ -102,7 +111,7 @@
       <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Assets/ExternalDependencyManager/Editor/Google.VersionHandler.dll</HintPath>
     </Reference>
     <Reference Include="unityplastic">
-      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.collab-proxy@e566cd3e7623/Lib/Editor/unityplastic.dll</HintPath>
+      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.collab-proxy@0b1559bcd34e/Lib/Editor/unityplastic.dll</HintPath>
     </Reference>
     <Reference Include="Google.PackageManagerResolver">
       <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Assets/ExternalDependencyManager/Editor/1.2.186/Google.PackageManagerResolver.dll</HintPath>
@@ -111,7 +120,7 @@
       <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Assets/ExternalDependencyManager/Editor/1.2.186/Google.VersionHandlerImpl.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VisualScripting.Antlr3.Runtime">
-      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.visualscripting@191c0d7e3b69/Runtime/VisualScripting.Flow/Dependencies/NCalc/Unity.VisualScripting.Antlr3.Runtime.dll</HintPath>
+      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.visualscripting@8bed5ad90189/Runtime/VisualScripting.Flow/Dependencies/NCalc/Unity.VisualScripting.Antlr3.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="Google.JarResolver">
       <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Assets/ExternalDependencyManager/Editor/1.2.186/Google.JarResolver.dll</HintPath>
@@ -123,7 +132,7 @@
       <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.ai.assistant@84e99ed7b906/Modules/Unity.AI.Toolkit.Sdk/Editor/AiEditorToolsSdk.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VisualScripting.TextureAssets">
-      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.visualscripting@191c0d7e3b69/Editor/VisualScripting.Core/EditorAssetResources/Unity.VisualScripting.TextureAssets.dll</HintPath>
+      <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.visualscripting@8bed5ad90189/Editor/VisualScripting.Core/EditorAssetResources/Unity.VisualScripting.TextureAssets.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cecil">
       <HintPath>/Users/arshadbarves/MyProject/Projects/RecipeRage/Library/PackageCache/com.unity.nuget.mono-cecil@ecb9724e46ff/Mono.Cecil.dll</HintPath>

@@ -47,6 +47,8 @@
     <Analyzer Include="/Applications/Unity/Hub/Editor/6000.3.15f1/Unity.app/Contents/Resources/BuildPipeline/Unity.SourceGenerators/Unity.UIToolkit.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets/Scripts/Tests/EditMode/StudioSdk/PlaycenterClientTests.cs" />
+    <Compile Include="Assets/Scripts/Tests/EditMode/StudioSdk/DefaultModulesTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/StudioSdk/ServiceRegistryTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/Persistence/PlayerProgressDataTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/SessionManagerInstallerTests.cs" />
@@ -58,7 +60,6 @@
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/Persistence/PlayerStatsDataTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Core/Auth/AuthenticationServiceTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/Fakes/FakeAppFlow.cs" />
-    <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/BootSequenceConnectivityTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/AppFlowMigrationTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/LoggingBootstrapTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/GameLoggerTests.cs" />
@@ -69,13 +70,13 @@
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/BotClaimRegistryTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/MatchEndEvaluatorTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/StudioSdk/BootProgressTests.cs" />
-    <Compile Include="Assets/Scripts/Tests/EditMode/StudioSdk/PlaycenterClientTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Playcenter/Settings/SettingsServiceTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/LobbyRoleTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/ScoreServiceTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Playcenter/Input/GameplayInputMapperTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Playcenter/Net/NetSessionPortTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/MatchmakingFlowTests.cs" />
+    <Compile Include="Assets/Scripts/Tests/EditMode/StudioSdk/ForceUpdateEvaluatorTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/OrderServiceTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/BotTaskPlannerTests.cs" />
     <None Include="Assets/Scripts/Tests/RecipeRage.Tests.EditMode.asmdef" />

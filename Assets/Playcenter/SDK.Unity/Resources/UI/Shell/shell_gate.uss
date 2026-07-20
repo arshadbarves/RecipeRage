@@ -1,0 +1,74 @@
+/* pc-gate: Common gate screen styles (NoConnection, ForceUpdate, Maintenance) */
+
+.pc-gate {
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.9);
+}
+
+.pc-gate__content {
+    width: 400px;
+    padding: 40px;
+    background-color: rgba(30, 30, 30, 0.95);
+    border-radius: 12px;
+    align-items: center;
+    justify-content: center;
+}
+
+.pc-gate__icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+    -unity-text-align: middle-center;
+}
+
+.pc-gate__title {
+    font-size: 28px;
+    margin-bottom: 16px;
+    -unity-text-align: middle-center;
+    color: rgb(255, 255, 255);
+    -unity-font-style: bold;
+}
+
+.pc-gate__message {
+    font-size: 16px;
+    margin-bottom: 32px;
+    -unity-text-align: middle-center;
+    color: rgb(200, 200, 200);
+    white-space: normal;
+}
+
+.pc-gate__button-row {
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+}
+
+.pc-gate__button {
+    min-width: 120px;
+    height: 44px;
+    margin-left: 8px;
+    margin-right: 8px;
+    border-radius: 8px;
+    font-size: 16px;
+    border-width: 0;
+    cursor: arrow;
+}
+
+.pc-gate__button--primary {
+    background-color: rgb(76, 175, 80);
+    color: rgb(255, 255, 255);
+}
+
+.pc-gate__button--primary:hover {
+    background-color: rgb(67, 160, 71);
+}
+
+.pc-gate__button--secondary {
+    background-color: rgb(100, 100, 100);
+    color: rgb(255, 255, 255);
+}
+
+.pc-gate__button--secondary:hover {
+    background-color: rgb(80, 80, 80);
+}

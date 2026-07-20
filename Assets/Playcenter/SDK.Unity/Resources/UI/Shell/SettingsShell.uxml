@@ -1,0 +1,30 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="root" class="pc-settings">
+        <ui:VisualElement name="header" class="pc-settings__header">
+            <ui:Label name="title-label" text="Settings" class="pc-settings__title" />
+            <ui:Button name="close-button" text="×" class="pc-settings__close-button" />
+        </ui:VisualElement>
+        <ui:ScrollView name="content" class="pc-settings__content">
+            <ui:VisualElement name="audio-section" class="pc-settings__section">
+                <ui:Label text="Audio" class="pc-settings__section-title" />
+                <ui:VisualElement name="music-row" class="pc-settings__option-row">
+                    <ui:Label text="Music Volume" class="pc-settings__option-label" />
+                    <ui:Slider name="music-volume-slider" low-value="0" high-value="1" value="1" class="pc-settings__slider" />
+                    <ui:Label name="music-volume-value" text="100%" class="pc-settings__value-label" />
+                </ui:VisualElement>
+                <ui:VisualElement name="sfx-row" class="pc-settings__option-row">
+                    <ui:Label text="SFX Volume" class="pc-settings__option-label" />
+                    <ui:Slider name="sfx-volume-slider" low-value="0" high-value="1" value="1" class="pc-settings__slider" />
+                    <ui:Label name="sfx-volume-value" text="100%" class="pc-settings__value-label" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="info-section" class="pc-settings__section">
+                <ui:Label text="Information" class="pc-settings__section-title" />
+                <ui:VisualElement name="version-row" class="pc-settings__option-row">
+                    <ui:Label text="Version" class="pc-settings__option-label" />
+                    <ui:Label name="version-label" text="1.0.0" class="pc-settings__value-label" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:ScrollView>
+    </ui:VisualElement>
+</ui:UXML>

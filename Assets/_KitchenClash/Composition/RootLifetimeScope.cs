@@ -230,11 +230,14 @@ public class RootLifetimeScope : LifetimeScope
             var resultsPhase = new ResultsPhase(eventBus, matchHudPort);
 
             var loginPhase = new LoginPhase(ui, eventBus, appFlowProxy, sessionLoader, analytics);
-            var maintenancePhase = new MaintenancePhase(maintenance, remoteConfig, eventBus, appFlowProxy);
+
+            // Resolve SDK shell from PlaycenterSdkBootstrap — phases use it for gates.
+            var bootstrap = resolver.Resolve<PlaycenterSdkBootstrap>();
+            var maintenancePhase = new MaintenancePhase(maintenance, remoteConfig, appFlowProxy, bootstrap.Shell);
 
             // BootRetryRef breaks the cycle: AppFlow factory → IPlaycenterBootRetry ← PlaycenterSdkBootstrap.
             var bootRetry = resolver.Resolve<IPlaycenterBootRetry>();
-            var noConnectionPhase = new NoConnectionPhase(ui, eventBus, appFlowProxy, bootRetry);
+            var noConnectionPhase = new NoConnectionPhase(eventBus, appFlowProxy, bootRetry, bootstrap.Shell);
 
             var tutorialPhase = new TutorialPhase(ui, eventBus, appFlowProxy, tutorial);
             var accountUpgradePhase = new AccountUpgradePhase(ui, eventBus, appFlowProxy);
@@ -287,6 +290,8 @@ public class RootLifetimeScope : LifetimeScope
         // Mutable holder resolved by AppFlow factory; bound by PlaycenterSdkBootstrap.Start().
         builder.Register<BootRetryRef>(Lifetime.Singleton).AsSelf().As<IPlaycenterBootRetry>();
         // PlaycenterSdkBootstrap replaces GameBootstrapper cold-boot path.
-        builder.RegisterEntryPoint<PlaycenterSdkBootstrap>();
+        builder.RegisterEntryPoint<PlaycenterSdkBootstrap>().AsSelf();
+        // Register IShellUi from PlaycenterSdkBootstrap so it can be injected into components.
+        builder.Register<Playcenter.SDK.IShellUi>(c => c.Resolve<PlaycenterSdkBootstrap>().Shell, Lifetime.Singleton);
     }
 }
