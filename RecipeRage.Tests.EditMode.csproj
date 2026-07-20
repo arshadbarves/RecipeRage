@@ -47,33 +47,36 @@
     <Analyzer Include="/Applications/Unity/Hub/Editor/6000.3.15f1/Unity.app/Contents/Resources/BuildPipeline/Unity.SourceGenerators/Unity.UIToolkit.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets/Scripts/Tests/EditMode/StudioSdk/ServiceRegistryTests.cs" />
+    <Compile Include="Assets/Scripts/Tests/EditMode/StudioSdk/BootProgressTests.cs" />
+    <Compile Include="Assets/Scripts/Tests/EditMode/StudioSdk/ModuleHostTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/Persistence/PlayerProgressDataTests.cs" />
+    <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/SessionManagerInstallerTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/AppFlowControllerTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Playcenter/Wallet/WalletPortContractTests.cs" />
-    <Compile Include="Assets/Scripts/Tests/EditMode/Playcenter/Settings/SettingsServiceTests.cs" />
-    <Compile Include="Assets/Scripts/Tests/EditMode/Playcenter/Input/GameplayInputMapperTests.cs" />
-    <Compile Include="Assets/Scripts/Tests/EditMode/Playcenter/Net/NetSessionPortTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/NetSessionDelegationTests.cs" />
+    <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/Fakes/SpyAnalytics.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/Persistence/PlayerStatsDataTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Core/Auth/AuthenticationServiceTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/Fakes/FakeAppFlow.cs" />
-    <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/Fakes/SpyAnalytics.cs" />
-    <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/AnalyticsEventsTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/BootSequenceConnectivityTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/AppFlowMigrationTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/LoggingBootstrapTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/GameLoggerTests.cs" />
+    <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/AnalyticsEventsTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Playcenter/UIScreenStackManagerTests.cs" />
+    <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/EconomyWalletBridgeTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/MatchServiceTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/BotClaimRegistryTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/MatchEndEvaluatorTests.cs" />
+    <Compile Include="Assets/Scripts/Tests/EditMode/Playcenter/Settings/SettingsServiceTests.cs" />
+    <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/LobbyRoleTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/ScoreServiceTests.cs" />
+    <Compile Include="Assets/Scripts/Tests/EditMode/Playcenter/Input/GameplayInputMapperTests.cs" />
+    <Compile Include="Assets/Scripts/Tests/EditMode/Playcenter/Net/NetSessionPortTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/MatchmakingFlowTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/OrderServiceTests.cs" />
-    <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/EconomyWalletBridgeTests.cs" />
-    <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/SessionManagerInstallerTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/BotTaskPlannerTests.cs" />
-    <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/LobbyRoleTests.cs" />
     <None Include="Assets/Scripts/Tests/RecipeRage.Tests.EditMode.asmdef" />
     <Reference Include="UnityEngine">
       <HintPath>/Applications/Unity/Hub/Editor/6000.3.15f1/Unity.app/Contents/Resources/Scripting/Managed/UnityEngine/UnityEngine.dll</HintPath>
@@ -945,6 +948,10 @@
     <ProjectReference Include="Playcenter.Shell.csproj">
       <Project>{a51e5033-9964-6f66-2a0d-75189a4fd860}</Project>
       <Name>Playcenter.Shell</Name>
+    </ProjectReference>
+    <ProjectReference Include="Playcenter.SDK.csproj">
+      <Project>{0eef4f24-ef2a-3d6a-0dbf-36c595447f53}</Project>
+      <Name>Playcenter.SDK</Name>
     </ProjectReference>
     <ProjectReference Include="Playcenter.Services.csproj">
       <Project>{3e37d887-f38e-b750-f7cd-a87ad6e0c91c}</Project>
