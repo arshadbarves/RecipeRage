@@ -16,7 +16,8 @@
         "Playcenter.GameFlow",
         "Playcenter.Shell",
         "Playcenter.Services",
-        "Playcenter.UI"
+        "Playcenter.UI",
+        "Playcenter.UI.Toolkit"
     ],
     "includePlatforms": [
         "Editor"

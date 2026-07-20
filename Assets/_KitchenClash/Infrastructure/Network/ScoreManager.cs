@@ -7,6 +7,7 @@ using UnityEngine;
 using VContainer;
 using VContainer.Unity;
 using Playcenter.Shell;
+using Playcenter.Services;
 
 namespace KitchenClash.Infrastructure.Network
 {

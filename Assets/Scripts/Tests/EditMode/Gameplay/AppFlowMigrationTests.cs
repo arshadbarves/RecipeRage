@@ -8,6 +8,7 @@ using RecipeRage.Tests.EditMode.Gameplay.Fakes;
 using Cysharp.Threading.Tasks;
 using GameMode = KitchenClash.Application.Models.GameMode;
 using UnityEngine;
+using Playcenter.Services;
 
 namespace RecipeRage.Tests.EditMode.Gameplay
 {

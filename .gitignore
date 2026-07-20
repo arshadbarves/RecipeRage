@@ -73,3 +73,7 @@ crashlytics-build.properties
 Assets/_Recovery/
 
 Assets/_Recovery.meta
+
+# Local build output
+/[Bb]in/
+/[Oo]bj/

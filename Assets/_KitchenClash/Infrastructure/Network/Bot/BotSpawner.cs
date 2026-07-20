@@ -5,6 +5,7 @@ using KitchenClash.Infrastructure.Network.Spawning;
 using Unity.Netcode;
 using UnityEngine;
 using Playcenter.Shell;
+using Playcenter.Services;
 
 namespace KitchenClash.Infrastructure.Network.Bot
 {

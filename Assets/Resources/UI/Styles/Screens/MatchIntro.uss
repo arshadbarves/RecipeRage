@@ -1,0 +1,69 @@
+/* Match Intro — Playcenter matte card (Brawl-style beat, own brand) */
+
+.match-intro-root {
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(8, 9, 12, 0.92);
+}
+
+.intro-card {
+    width: 78%;
+    max-width: 720px;
+    padding: 40px 36px;
+    align-items: center;
+    background-color: rgb(14, 16, 20);
+    border-radius: 20px;
+    border-width: 1px;
+    border-color: rgba(248, 250, 252, 0.12);
+}
+
+.status-label {
+    font-size: 18px;
+    letter-spacing: 6px;
+    color: rgb(0, 240, 153);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    margin-bottom: 18px;
+}
+
+.mode-label {
+    font-size: 42px;
+    color: rgb(248, 250, 252);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    margin-bottom: 8px;
+}
+
+.map-label {
+    font-size: 18px;
+    color: rgba(248, 250, 252, 0.55);
+    -unity-text-align: middle-center;
+    margin-bottom: 28px;
+}
+
+.load-track {
+    width: 100%;
+    height: 8px;
+    background-color: rgba(248, 250, 252, 0.08);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 18px;
+}
+
+.load-fill {
+    width: 8%;
+    height: 100%;
+    background-color: rgb(0, 240, 153);
+    border-radius: 4px;
+}
+
+.hint-label {
+    font-size: 14px;
+    letter-spacing: 4px;
+    color: rgba(248, 250, 252, 0.45);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+}

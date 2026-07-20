@@ -186,7 +186,7 @@ dotnet build KitchenClash.Infrastructure.csproj -nologo
 
 - [x] **Step 1: README production target** — updated (handlers + logging section)
 - [x] **Step 2: wiki/log entry** + GameFlow-SDK Logging / extract sections
-- [ ] **Step 3: Commit docs** (with Task 1–2 code)
+- [x] **Step 3: Commit docs** (with Task 1–2 code) @ 23dcbebe
 ---
 
 ### Task 4: Optional hygiene (same PR if cheap)

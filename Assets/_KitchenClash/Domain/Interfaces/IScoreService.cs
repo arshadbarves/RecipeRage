@@ -1,3 +1,5 @@
+using Playcenter.Services;
+
 namespace KitchenClash.Domain
 {
     public interface IScoreService

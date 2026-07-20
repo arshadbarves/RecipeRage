@@ -1,0 +1,7 @@
+<UXML xmlns="UnityEngine.UIElements">
+    <Style src="project://database/Assets/Resources/UI/Styles/Screens/CountdownOverlay.uss"/>
+    <VisualElement name="countdown-root" class="countdown-root">
+        <Label name="countdown-label" text="3" class="countdown-label"/>
+        <Label name="countdown-sub" text="" class="countdown-sub"/>
+    </VisualElement>
+</UXML>

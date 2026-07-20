@@ -2,6 +2,7 @@ using KitchenClash.Application;
 using KitchenClash.Application.Services;
 using KitchenClash.Domain;
 using VContainer;
+using Playcenter.Services;
 
 namespace KitchenClash.Infrastructure.DI
 {
@@ -29,7 +30,19 @@ namespace KitchenClash.Infrastructure.DI
 
         public T Resolve<T>() where T : class
         {
-            return _sessionManager?.SessionContainer?.Resolve<T>();
+            IObjectResolver session = _sessionManager?.SessionContainer;
+            if (session != null && session.TryResolve(out T fromSession))
+            {
+                return fromSession;
+            }
+
+            // Root-owned services (e.g. IPlayerDataService) remain available when session is inactive.
+            if (_rootContainer != null && _rootContainer.TryResolve(out T fromRoot))
+            {
+                return fromRoot;
+            }
+
+            return null;
         }
 
         public void Inject(object target)
@@ -39,7 +52,14 @@ namespace KitchenClash.Infrastructure.DI
                 return;
             }
 
-            _sessionManager?.SessionContainer?.Inject(target);
+            IObjectResolver session = _sessionManager?.SessionContainer;
+            if (session != null)
+            {
+                session.Inject(target);
+                return;
+            }
+
+            _rootContainer?.Inject(target);
         }
     }
 }

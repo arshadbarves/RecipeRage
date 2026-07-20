@@ -4,7 +4,7 @@ In-repo portable **service contracts** for multi-title Brawl-class games.
 
 ## Purpose
 
-- Own engine-free ports shared across titles: config, analytics, ads, IAP, auth, encryption, maintenance, localization, storage, time, audio volume, remote-config.
+- Own engine-free ports shared across titles: config, analytics, ads, IAP, auth, encryption, maintenance, localization, storage, time, audio volume, remote-config, session (lobby/MM/team), social (friends).
 - Zero KitchenClash / Unity / EOS / NGO references (`noEngineReferences`).
 - Game adapters implement these interfaces (Firebase, EOS, stubs, etc.).
 
@@ -25,6 +25,8 @@ Runtime/
   Time/          INTPTimeService
   Audio/         IAudioVolumeController
   RemoteConfig/  IRemoteConfigService, IConfigProvider
+  Session/       ILobbyManager, IMatchmakingService, ITeamManager, Lobby*, PlayerInfo, BotPlayer, TeamId
+  Social/        IFriendsService, IFriendsServiceFactory, FriendInfo, FriendRequest
 ```
 
 ## Rules
