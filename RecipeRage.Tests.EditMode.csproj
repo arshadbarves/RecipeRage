@@ -48,12 +48,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets/Scripts/Tests/EditMode/StudioSdk/ServiceRegistryTests.cs" />
-    <Compile Include="Assets/Scripts/Tests/EditMode/StudioSdk/BootProgressTests.cs" />
-    <Compile Include="Assets/Scripts/Tests/EditMode/StudioSdk/ModuleHostTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/Persistence/PlayerProgressDataTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/SessionManagerInstallerTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/AppFlowControllerTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Playcenter/Wallet/WalletPortContractTests.cs" />
+    <Compile Include="Assets/Scripts/Tests/EditMode/StudioSdk/ModuleHostTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/NetSessionDelegationTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/Fakes/SpyAnalytics.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/Persistence/PlayerStatsDataTests.cs" />
@@ -69,6 +68,8 @@
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/MatchServiceTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/BotClaimRegistryTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/MatchEndEvaluatorTests.cs" />
+    <Compile Include="Assets/Scripts/Tests/EditMode/StudioSdk/BootProgressTests.cs" />
+    <Compile Include="Assets/Scripts/Tests/EditMode/StudioSdk/PlaycenterClientTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Playcenter/Settings/SettingsServiceTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/LobbyRoleTests.cs" />
     <Compile Include="Assets/Scripts/Tests/EditMode/Gameplay/ScoreServiceTests.cs" />
