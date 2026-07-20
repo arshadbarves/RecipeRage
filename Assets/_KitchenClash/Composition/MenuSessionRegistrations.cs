@@ -7,16 +7,17 @@ using KitchenClash.Infrastructure.Network;
 using KitchenClash.Infrastructure.Services;
 using KitchenClash.Presentation.ViewModels;
 using Playcenter.Services;
-using UnityEngine;
 using VContainer;
 using VContainer.Unity;
 
 namespace KitchenClash.Composition
 {
     /// <summary>
-    /// Shared menu/session DI registrations used by both:
-    /// - <see cref="MenuLifetimeScope"/> (scene-owned scope on MainMenu)
-    /// - <see cref="MenuSessionScopeInstaller"/> (cold-boot SessionManager.CreateSession child)
+    /// Sole menu/session DI install path for cold-boot
+    /// <see cref="MenuSessionScopeInstaller"/> → <c>SessionManager.CreateSession</c> child.
+    /// Do not call from scene <c>MenuLifetimeScope</c> — that scope must stay empty.
+    /// Double-install causes orphan entry points (missing parent IEventBus) and double wallet credit.
+    /// Character preview is Root <see cref="CharacterPreviewGateway"/> + <c>MenuSceneBinder</c>, not here.
     /// </summary>
     public static class MenuSessionRegistrations
     {
@@ -65,14 +66,6 @@ namespace KitchenClash.Composition
             builder.Register<IGameStarter>(
                 c => c.Resolve<NetworkingServiceContainer>().GameStarter,
                 Lifetime.Scoped);
-
-            // Scene MonoBehaviour preview port for lobby / character details.
-            // Falls back to root NullCharacterPreviewService when the component is not in the scene.
-            CharacterPreviewManager preview = Object.FindFirstObjectByType<CharacterPreviewManager>();
-            if (preview != null)
-            {
-                builder.RegisterComponent(preview).As<ICharacterPreviewService>();
-            }
 
             // ViewModels
             builder.Register<HomeScreenViewModel>(Lifetime.Transient);

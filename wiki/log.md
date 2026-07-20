@@ -303,3 +303,13 @@ Client OS program implemented on `architecture-cleanup`; wiki laws updated to ma
 - **Bug:** `ResultsPhase` minted via `IEconomyService.AwardMatchReward` while SESSION `MatchRewardHandler` was the intended sole credit path; `MatchEndedEvent` was never published in production (handler dead). Root also captured null economy at cold boot.
 - **Fix:** `ResultsPhase` publishes `MatchEndedEvent` from `MatchResultInfo` (flow) or HUD fallback; never mutates wallet. Removed `AwardMatchReward` from `IEconomyService`/`EconomyService`. `GameplayHudViewModel` fills `LocalTeamScore`. Once-per-entry guard on Results.
 - **Law:** wiki/Technical.md wallet law item 4 — Results → MatchEndedEvent → MatchRewardHandler → IWalletLedger only.
+
+## 2026-07-20 — Session DI ownership lock (no dual install)
+
+- **Bug:** Scene `MenuLifetimeScope` / orphan parent could install session services as a second root → `MatchRewardHandler`/`EconomyService` without parent `IEventBus`. Preview FOFT at CreateSession was racy (MainMenu not loaded).
+- **Fix (professional ownership, not redesign):**
+  - Sole session install: `CreateSession` → `MenuSessionScopeInstaller` → `MenuSessionRegistrations` only.
+  - Scene `MenuLifetimeScope` empty Configure; `FindParent` → Root; YAML `parentReference.TypeName = RootLifetimeScope`.
+  - Root `CharacterPreviewGateway` + MainMenu `MenuSceneBinder` bind-in (no child re-register of `ICharacterPreviewService`).
+  - USS: `cursor: arrow` (not `auto`/`default`) in DesignSystem + Maintenance.
+- **Wiki:** Technical Session DI law + LLM-Rules forbidden dual-install / orphan root.

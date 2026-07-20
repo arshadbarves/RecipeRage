@@ -145,7 +145,8 @@ Button, .btn {
     transition-duration: var(--dur-press);
     transition-timing-function: ease-out;
     transition-property: scale;
-    cursor: auto;
+    /* UI Toolkit Cursor enum: Arrow|Link|... — CSS keyword "auto" throws Enum-vs-Keyword */
+    cursor: arrow;
 }
 Button:active, .btn:active {
     scale: 0.95;

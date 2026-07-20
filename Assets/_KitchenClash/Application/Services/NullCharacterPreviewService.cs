@@ -3,8 +3,9 @@ using UnityEngine;
 namespace KitchenClash.Application
 {
     /// <summary>
-    /// No-op character preview when no scene preview manager is registered.
-    /// MenuLifetimeScope overrides with CharacterPreviewManager from hierarchy.
+    /// No-op character preview when no scene preview manager is bound.
+    /// Used by <see cref="CharacterPreviewGateway"/> until <c>MenuSceneBinder</c> attaches
+    /// a scene <c>CharacterPreviewManager</c>.
     /// </summary>
     public sealed class NullCharacterPreviewService : ICharacterPreviewService
     {

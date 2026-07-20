@@ -3952,7 +3952,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: KitchenClash.Composition::MatchLifetimeScope
   parentReference:
-    TypeName: 
+    TypeName: RootLifetimeScope
   autoRun: 1
   autoInjectGameObjects: []
 --- !u!4 &1748119376

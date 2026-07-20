@@ -9,6 +9,13 @@ using Playcenter.Shell;
 
 public class MatchLifetimeScope : LifetimeScope
 {
+    /// <summary>
+    /// Match is a Root child (not session child) so it survives session teardown
+    /// edge cases and still resolves IEventBus / IConfigService from Root.
+    /// Scene YAML parentReference.TypeName = RootLifetimeScope as backup.
+    /// </summary>
+    protected override LifetimeScope FindParent() => Find<RootLifetimeScope>();
+
     protected override void Configure(IContainerBuilder builder)
     {
         // Recipe catalog

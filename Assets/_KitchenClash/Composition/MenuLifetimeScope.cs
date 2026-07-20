@@ -1,42 +1,24 @@
-using KitchenClash.Application;
-using KitchenClash.Application.Services;
-using KitchenClash.Domain;
-using KitchenClash.Infrastructure.Gameplay;
-using KitchenClash.Infrastructure.Network;
-using KitchenClash.Presentation.ViewModels;
-using UnityEngine;
 using VContainer;
 using VContainer.Unity;
 
+/// <summary>
+/// Scene-owned child of <see cref="RootLifetimeScope"/> on MainMenu.
+/// Does <b>not</b> install session services. Those are installed once by
+/// <c>SessionManager.CreateSession</c> via <see cref="MenuSessionScopeInstaller"/> /
+/// <see cref="MenuSessionRegistrations"/>.
+/// Scene presentation ports bind through <see cref="MenuSceneBinder"/> into Root gateways.
+/// Keeping this scope empty avoids a second root/orphan container and double wallet credit.
+/// </summary>
 public class MenuLifetimeScope : LifetimeScope
 {
+    /// <summary>
+    /// Prefer live Root instance (DontDestroyOnLoad) over TypeName-only lookup.
+    /// Scene YAML still sets parentReference.TypeName = RootLifetimeScope as backup.
+    /// </summary>
+    protected override LifetimeScope FindParent() => Find<RootLifetimeScope>();
+
     protected override void Configure(IContainerBuilder builder)
     {
-        // Menu services (SessionManager/SessionContext live on Root for cold boot)
-        builder.Register<MatchService>(Lifetime.Scoped).As<IMatchService>();
-        builder.Register<EconomyService>(Lifetime.Scoped).As<IEconomyService>();
-        builder.Register<DailyStreakService>(Lifetime.Scoped).As<IDailyStreakService>();
-        builder.Register<TrophyService>(Lifetime.Scoped).As<ITrophyService>();
-        builder.Register<MapRotationCalculator>(Lifetime.Scoped);
-        builder.Register<ShopCatalog>(Lifetime.Scoped);
-
-        // Character service (uses ChefRegistry singleton from root)
-        builder.Register<CharacterService>(Lifetime.Scoped).As<ICharacterService>();
-
-        // Tutorial
-        builder.Register<TutorialService>(Lifetime.Scoped).As<ITutorialService>();
-
-        // Scene MonoBehaviour preview port for lobby / character details.
-        // Falls back to root NullCharacterPreviewService when the component is not in the scene.
-        CharacterPreviewManager preview = Object.FindFirstObjectByType<CharacterPreviewManager>();
-        if (preview != null)
-        {
-            builder.RegisterComponent(preview).As<ICharacterPreviewService>();
-        }
-
-        // ViewModels
-        builder.Register<HomeScreenViewModel>(Lifetime.Transient);
-        builder.Register<DailyStreakViewModel>(Lifetime.Transient);
-        builder.Register<MatchmakingViewModel>(Lifetime.Transient);
+        // Intentionally empty — session DI is CreateSession-only; scene bind-in is MenuSceneBinder.
     }
 }

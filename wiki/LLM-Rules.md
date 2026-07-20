@@ -42,14 +42,15 @@ Infrastructure → Unity + EOS + Firebase + NGO implementations
 ### VContainer Scope Hierarchy
 
 ```
-RootLifetimeScope (app-lifetime, DontDestroyOnLoad) → app-lifetime singletons
-  MenuLifetimeScope (session/menu child: lobby, matchmaking, team, economy/wallet, INetSession)
-    MatchLifetimeScope (match: score, orders, abilities, hazards, bots, match context)
+RootLifetimeScope (app-lifetime, DontDestroyOnLoad) → app-lifetime singletons + gateways
+  Session child (CreateSession only: lobby, MM, team, economy/wallet, INetSession, MatchRewardHandler)
+  MenuLifetimeScope (MainMenu scene, empty Configure; MenuSceneBinder → Root gateways)
+  MatchLifetimeScope (Game scene child of Root: score, orders, abilities, hazards, bots)
 ```
 
 **Rule:** Never inject a child-scope service into a parent scope.
 
-**Session installer rule:** `SessionManager.CreateSession` requires `ISessionScopeInstaller` (`MenuSessionScopeInstaller` → `MenuSessionRegistrations`). Never bare-create a child with empty `Configure`.
+**Session installer rule:** `SessionManager.CreateSession` requires `ISessionScopeInstaller` (`MenuSessionScopeInstaller` → `MenuSessionRegistrations`). Never bare-create the **session** child with empty `Configure`. Scene Menu must **not** re-run `MenuSessionRegistrations` (orphan / double-credit). Scene scopes parent to Root (`FindParent` + TypeName).
 
 ### Remote Config Rule
 
@@ -80,6 +81,9 @@ RC key namespaces: `score_*` | `chop_taps_*` | `match_*` | `ability_*` | `order_
 | Presentation → EOS / NGO / `EOSManager` direct | Ports + Application/Infrastructure only |
 | UnityEngine types in `Playcenter.Services` | Use `InputAxis2`, not `Vector2` |
 | Bare `SessionManager` child without installer | Missing economy/wallet/net registrations |
+| `MenuSessionRegistrations` from scene `MenuLifetimeScope` | Second install / orphan entry points / double wallet credit |
+| Scene LifetimeScope with empty parent (orphan root) | Missing parent `IEventBus` / root services |
+| FOFT-register MainMenu components inside `CreateSession` | MainMenu not loaded at login; use `MenuSceneBinder` + Root gateway |
 | `LeaveParty` when only ending a match | Use `LeaveMatchLobby`; party survives match |
 | Shell UI classes on `theme.uss` | Shell components belong on `DesignSystem.uss` (`pc-*`) |
 | Ad-hoc NGO host/client start in new code | Use `INetSession.StartAsync` / `StopAsync` |
@@ -95,7 +99,8 @@ Spec: `docs/superpowers/specs/2026-07-19-playcenter-client-os-design.md`.
 ### REQUIRED
 
 - Connectivity gate (`IConnectivityService`) **before** network boot services (NTP, RC, force-update, maintenance, auth)
-- `ISessionScopeInstaller` when `SessionManager.CreateSession` (shared `MenuSessionRegistrations`)
+- `ISessionScopeInstaller` when `SessionManager.CreateSession` (**sole** `MenuSessionRegistrations` path)
+- Scene Menu/Match parent to Root; scene bind-in via binders/gateways (not dual session install)
 - Wallet writes only at **SESSION** via `IWalletLedger` (`EconomyService` dual-impl)
 - Party lobby ≠ match lobby (`CurrentPartyLobby` / `CurrentMatchLobby`; `LeaveMatchLobby` ≠ `LeaveParty`)
 - Net start/stop via `INetSession` in new code (`NgoEosNetSession` adapter)

@@ -121,10 +121,13 @@ public class RootLifetimeScope : LifetimeScope
         builder.Register<UIService>(Lifetime.Singleton).As<IUIService>().AsSelf();
         builder.RegisterEntryPoint<UIServiceEntryPoint>();
 
-        // Presentation ports: null defaults; child scopes override with real adapters
+        // Presentation ports: null defaults; scene binders attach real adapters to gateways.
         builder.RegisterInstance(KitchenClash.Application.Services.NullMatchHudPort.Instance)
             .As<KitchenClash.Application.Services.IMatchHudPort>();
-        builder.RegisterInstance(KitchenClash.Application.NullCharacterPreviewService.Instance)
+        // Root-owned gateway — MenuSceneBinder binds CharacterPreviewManager after MainMenu loads.
+        // Session/UI always resolve this singleton; never re-register ICharacterPreviewService in children.
+        builder.Register<KitchenClash.Application.CharacterPreviewGateway>(Lifetime.Singleton)
+            .AsSelf()
             .As<KitchenClash.Application.ICharacterPreviewService>();
         builder.Register<LocalizationManager>(Lifetime.Singleton).As<ILocalizationManager>().As<IInitializable>();
 
@@ -137,9 +140,8 @@ public class RootLifetimeScope : LifetimeScope
     private void RegisterInfrastructure(IContainerBuilder builder)
     {
         // Session scope for cold boot (SessionLoader / BootSequence). Root owns SessionManager;
-        // MenuLifetimeScope does not re-register it (resolves parent Singleton).
-        // MenuSessionScopeInstaller supplies IEconomyService and other menu registrations into
-        // the CreateSession child — a bare LifetimeScope child has no Configure().
+        // scene MenuLifetimeScope does not install session services (empty Configure).
+        // MenuSessionScopeInstaller is the sole CreateSession install path for economy/lobby/MM.
         builder.Register<MenuSessionScopeInstaller>(Lifetime.Singleton).As<ISessionScopeInstaller>();
         builder.Register<SessionManager>(Lifetime.Singleton)
             .AsSelf()

@@ -112,7 +112,7 @@
 
 .retry-button:disabled {
     opacity: 0.5;
-    cursor: default;
+    cursor: arrow;
     scale: 1;
 }
 

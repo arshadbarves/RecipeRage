@@ -202,6 +202,11 @@ TextField,
     -unity-font-definition: var(--font-anton-sdf);
 }
 
+/* UI Toolkit Cursor enum: Arrow|Link|... — CSS keyword "auto"/"default" throws Enum-vs-Keyword */
+Button, .btn, .unity-button {
+    cursor: arrow;
+}
+
 /* Global Button Polish */
 Button, .unity-button {
     transition-duration: 0.1s;

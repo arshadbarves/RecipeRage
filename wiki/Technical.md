@@ -40,9 +40,10 @@ RootLifetimeScope (app-lifetime, DontDestroyOnLoad)
   ISettingsStore        → PlayerPrefsSettingsStore   (Singleton)
   IGameplayInput        → GameplayInputService   (Singleton) — dual-reg publisher
   IGameplayInputPublisher → GameplayInputService (Singleton)
+  ICharacterPreviewService → CharacterPreviewGateway (Singleton) — scene binds via MenuSceneBinder
+  IMatchHudPort            → NullMatchHudPort (match overrides)
 
-  MenuLifetimeScope (child, active: session/menu/lobby/matchmaking)
-    // Shared path: MenuSessionRegistrations.Install (also used by MenuSessionScopeInstaller)
+  Session child (CreateSession ONLY — MenuSessionRegistrations; NOT scene MenuLifetimeScope)
     IMatchmakingService → EOSMatchmakingService (Scoped)
     IFriendsService     → EOSFriendsService     (Scoped)
     ITeamManager        → TeamManager           (Scoped)
@@ -55,22 +56,23 @@ RootLifetimeScope (app-lifetime, DontDestroyOnLoad)
     NetSessionConnectivityBridge → entry point (forfeit/host-drop → StopAsync)
     MatchRewardHandler  → entry point (credits via IWalletLedger only)
     ITutorialService    → TutorialService       (Scoped)
+    // UIService.SetCurrentScope(SessionContainer) — screens resolve here (parent = Root)
 
-    MatchLifetimeScope (child, active: during a match only)
-      IScoreService   → ScoreService    (Scoped)
-      IOrderService   → OrderService    (Scoped)
-      IHazardService  → HazardService   (Scoped)
-      IAbilityService → AbilityService  (Scoped)
-      IMatchContext   → MatchContext    (Scoped)
-      IMatchHudPort   → MatchHudPort    (Scoped) — Presentation match surface
-      GameplayHudViewModel → Transient
-      BotManager      → BotManager      (Scoped)
-      // MATCH never owns wallet writes
+  MenuLifetimeScope (MainMenu scene child of Root — EMPTY Configure)
+    // parentReference / FindParent → RootLifetimeScope (never orphan root)
+    // MenuSceneBinder binds CharacterPreviewManager → Root CharacterPreviewGateway
+    // MUST NOT call MenuSessionRegistrations
 
-  Root also registers null defaults for match/menu-only ports:
-    IMatchHudPort            → NullMatchHudPort
-    ICharacterPreviewService → NullCharacterPreviewService
-  MenuLifetimeScope registers CharacterPreviewManager as ICharacterPreviewService when present in scene.
+  MatchLifetimeScope (Game scene child of Root — match services only)
+    IScoreService   → ScoreService    (Scoped)
+    IOrderService   → OrderService    (Scoped)
+    IHazardService  → HazardService   (Scoped)
+    IAbilityService → AbilityService  (Scoped)
+    IMatchContext   → MatchContext    (Scoped)
+    IMatchHudPort   → MatchHudPort    (Scoped) — Presentation match surface
+    GameplayHudViewModel → Transient
+    BotManager      → BotManager      (Scoped)
+    // MATCH never owns wallet writes; cross-session via ISessionContext
 ```
 ## Product Navigation Architecture
 
@@ -266,10 +268,11 @@ These laws match **shipped code**. Do not invent features beyond this surface.
 ### Session DI law
 
 1. `SessionManager.CreateSession` **requires** `ISessionScopeInstaller` (throws if null). Root registers `MenuSessionScopeInstaller`.
-2. Shared install path: `MenuSessionRegistrations.Install(builder)` used by both:
-   - `MenuLifetimeScope.Configure`
-   - `MenuSessionScopeInstaller` (cold-boot child from `SessionManager`)
-3. Bare `CreateChild` with empty `Configure` is a **bug** — missing `IEconomyService` / wallet / net session (the failure mode Task 4 fixed).
+2. **Sole install path:** `MenuSessionRegistrations.Install(builder)` runs **only** from `MenuSessionScopeInstaller` during `CreateSession`. Scene `MenuLifetimeScope.Configure` is **empty** and must never call it.
+3. Bare `CreateChild` with empty `Configure` for the **session** child is a **bug** — missing `IEconomyService` / wallet / net session. Scene Menu/Match scopes may be empty of session services; they parent to Root via `FindParent()` + `parentReference.TypeName = RootLifetimeScope`.
+4. **Orphan law:** Scene LifetimeScopes must never become a second root (empty parent). Orphan roots double-install entry points (`MatchRewardHandler`) without parent `IEventBus` → VContainerException.
+5. **Scene bind-in:** Presentation MonoBehaviours attach to Root gateways after load (`MenuSceneBinder` → `CharacterPreviewGateway`; match uses `MatchRuntimeSceneBinder` / `IMatchContext`). Do not FOFT-register scene components inside `CreateSession` (MainMenu is not loaded yet at login).
+6. UI resolves from `SessionManager.SessionContainer` (`UIService.SetCurrentScope`); session inherits Root ports (gateway preview, event bus, config).
 
 ### Wallet law
 
