@@ -25,6 +25,9 @@ namespace Playcenter.SDK.Unity
         const string GateUssPath      = "UI/Shell/shell_gate";
         const string SettingsUssPath  = "UI/Shell/shell_settings";
 
+        // Debounce window for coalescing per-tick slider SaveAsync calls into one save at drag end.
+        const float SettingsSaveDebounceSeconds = 0.5f;
+
         readonly UIDocument _document;
         IShellTheme _theme;
         IPlaycenterServices _services;
@@ -41,6 +44,10 @@ namespace Playcenter.SDK.Unity
         StyleSheet _splashStyle;
         StyleSheet _gateStyle;
         StyleSheet _settingsStyle;
+
+        VisualElement _settingsRoot;
+        IVisualElementScheduledItem _pendingSettingsSave;
+        Action _pendingSaveAction;
 
         ShellScreenId? _current;
 
@@ -233,6 +240,8 @@ namespace Playcenter.SDK.Unity
                 return;
             }
 
+            _settingsRoot = root;
+
             // Try to get ISettingsService dynamically
             var settingsServiceType = System.Type.GetType("Playcenter.Services.ISettingsService, Playcenter.Services");
             if (settingsServiceType == null)
@@ -296,7 +305,7 @@ namespace Playcenter.SDK.Unity
                     {
                         musicVolumeProp.SetValue(cloned, evt.newValue);
                         applyMethod?.Invoke(settingsService, new[] { cloned });
-                        saveAsyncMethod?.Invoke(settingsService, new System.Object[] { System.Threading.CancellationToken.None });
+                        ScheduleSettingsSave(() => saveAsyncMethod?.Invoke(settingsService, new System.Object[] { System.Threading.CancellationToken.None }));
                     }
                     if (musicValueLabel != null)
                         musicValueLabel.text = $"{Mathf.RoundToInt(evt.newValue * 100)}%";
@@ -317,7 +326,7 @@ namespace Playcenter.SDK.Unity
                     {
                         sfxVolumeProp.SetValue(cloned, evt.newValue);
                         applyMethod?.Invoke(settingsService, new[] { cloned });
-                        saveAsyncMethod?.Invoke(settingsService, new System.Object[] { System.Threading.CancellationToken.None });
+                        ScheduleSettingsSave(() => saveAsyncMethod?.Invoke(settingsService, new System.Object[] { System.Threading.CancellationToken.None }));
                     }
                     if (sfxValueLabel != null)
                         sfxValueLabel.text = $"{Mathf.RoundToInt(evt.newValue * 100)}%";
@@ -333,6 +342,37 @@ namespace Playcenter.SDK.Unity
                 if (_services.TryGet<IAppVersion>(out var appVersion))
                     version = appVersion.Current;
                 versionLabel.text = version;
+            }
+        }
+
+        // Coalesce rapid slider ticks into a single SaveAsync shortly after the last change,
+        // so a drag doesn't spawn dozens of concurrent untracked save operations.
+        void ScheduleSettingsSave(Action saveAction)
+        {
+            _pendingSaveAction = saveAction;
+            _pendingSettingsSave?.Pause();
+            _pendingSettingsSave = _settingsRoot != null
+                ? _settingsRoot.schedule.Execute(FlushSettingsSave).StartingIn((long)(SettingsSaveDebounceSeconds * 1000))
+                : null;
+            if (_pendingSettingsSave == null)
+            {
+                // No scheduler available (settings closed) — save immediately.
+                FlushSettingsSave();
+            }
+        }
+
+        void FlushSettingsSave()
+        {
+            _pendingSettingsSave = null;
+            var action = _pendingSaveAction;
+            _pendingSaveAction = null;
+            try
+            {
+                action?.Invoke();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"[ToolkitShellUi] Settings save failed: {ex.Message}");
             }
         }
     }
