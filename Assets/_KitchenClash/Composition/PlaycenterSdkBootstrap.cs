@@ -45,6 +45,7 @@ namespace KitchenClash.Composition
         private readonly IEventBus _eventBus;
         private readonly BootRetryRef _bootRetryRef;
         private readonly ISettingsService _settingsService;
+        private readonly ShellRef _shellRef;
 
         private PlaycenterClient _client;
         private CancellationTokenSource _cts;
@@ -64,7 +65,8 @@ namespace KitchenClash.Composition
             IAnalyticsService analytics,
             IEventBus eventBus,
             BootRetryRef bootRetryRef,
-            ISettingsService settingsService)
+            ISettingsService settingsService,
+            ShellRef shellRef)
         {
             _authService = authService;
             _sessionLifecycle = sessionLifecycle;
@@ -78,16 +80,18 @@ namespace KitchenClash.Composition
             _eventBus = eventBus;
             _bootRetryRef = bootRetryRef;
             _settingsService = settingsService;
-            // Eager shell so IShellUi / AppFlow factory never see a null Shell before Start().
+            _shellRef = shellRef;
+            // Eager shell so it exists before Start() binds it into ShellRef.
             _shellUi = new ToolkitShellUi();
         }
 
         /// <summary>VContainer entry point: fires SDK boot asynchronously.</summary>
         public void Start()
         {
-            // Bind after construction so AppFlow factory can resolve IPlaycenterBootRetry
-            // without a circular dependency on this entry point.
+            // Bind after construction so consumers (ShellRef / IPlaycenterBootRetry) reach the
+            // live shell and retry without a circular dependency on this entry point.
             _bootRetryRef.Bind(this);
+            _shellRef.Bind(_shellUi);
             _cts = new CancellationTokenSource();
             Run(_cts.Token).Forget();
         }

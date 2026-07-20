@@ -231,15 +231,17 @@ public class RootLifetimeScope : LifetimeScope
 
             var loginPhase = new LoginPhase(ui, eventBus, appFlowProxy, sessionLoader, analytics);
 
-            // Resolve SDK shell from PlaycenterSdkBootstrap — phases use it for gates.
-            var bootstrap = resolver.Resolve<PlaycenterSdkBootstrap>();
-            var maintenancePhase = new MaintenancePhase(maintenance, remoteConfig, appFlowProxy, bootstrap.Shell);
+            // Resolve the lazily-bound SDK shell (ShellRef) — never resolve PlaycenterSdkBootstrap
+            // here: it is an IStartable entry point resolved at container build and depends on
+            // IAppFlow, so resolving it inside this factory would be a hard circular dependency.
+            var shell = resolver.Resolve<Playcenter.SDK.IShellUi>();
+            var maintenancePhase = new MaintenancePhase(maintenance, remoteConfig, appFlowProxy, shell);
 
             // BootRetryRef breaks the cycle: AppFlow factory → IPlaycenterBootRetry ← PlaycenterSdkBootstrap.
             var bootRetry = resolver.Resolve<IPlaycenterBootRetry>();
-            var noConnectionPhase = new NoConnectionPhase(eventBus, bootRetry, bootstrap.Shell);
+            var noConnectionPhase = new NoConnectionPhase(eventBus, bootRetry, shell);
 
-            var tutorialPhase = new TutorialPhase(eventBus, appFlowProxy, bootstrap.Shell, tutorial);
+            var tutorialPhase = new TutorialPhase(eventBus, appFlowProxy, shell, tutorial);
             var accountUpgradePhase = new AccountUpgradePhase(ui, eventBus, appFlowProxy);
             var sidePhases = new SidePhaseFlowPort(
                 loginPhase, maintenancePhase, noConnectionPhase, tutorialPhase, accountUpgradePhase);
@@ -289,7 +291,11 @@ public class RootLifetimeScope : LifetimeScope
         builder.RegisterEntryPoint<KitchenClash.Presentation.Overlays.ConnectivityOverlayPresenter>();
         // Mutable holder resolved by AppFlow factory; bound by PlaycenterSdkBootstrap.Start().
         builder.Register<BootRetryRef>(Lifetime.Singleton).AsSelf().As<IPlaycenterBootRetry>();
-        // PlaycenterSdkBootstrap replaces GameBootstrapper cold-boot path.
-        builder.RegisterEntryPoint<PlaycenterSdkBootstrap>();
+        // PlaycenterSdkBootstrap replaces GameBootstrapper cold-boot path. AsSelf() so the shell
+        // and entry point share one instance; do NOT resolve it inside the AppFlow factory.
+        builder.RegisterEntryPoint<PlaycenterSdkBootstrap>().AsSelf();
+        // ShellRef is the IShellUi consumers inject. The bootstrap binds the real ToolkitShellUi
+        // into it in Start() — post-build — breaking the AppFlow-factory ↔ bootstrap cycle.
+        builder.Register<ShellRef>(Lifetime.Singleton).AsSelf().As<Playcenter.SDK.IShellUi>();
     }
 }
