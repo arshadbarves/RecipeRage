@@ -1,6 +1,7 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using KitchenClash.Application;
+using KitchenClash.Application.Models.RemoteConfigs;
 using KitchenClash.Domain;
 using KitchenClash.Infrastructure.Boot;
 using KitchenClash.Infrastructure.Flow;
@@ -77,6 +78,8 @@ namespace KitchenClash.Composition
             _eventBus = eventBus;
             _bootRetryRef = bootRetryRef;
             _settingsService = settingsService;
+            // Eager shell so IShellUi / AppFlow factory never see a null Shell before Start().
+            _shellUi = new ToolkitShellUi();
         }
 
         /// <summary>VContainer entry point: fires SDK boot asynchronously.</summary>
@@ -106,8 +109,6 @@ namespace KitchenClash.Composition
         {
             var entry = new RecipeRageGameEntry(
                 _authService, _sessionLifecycle, _sessionContext, _appFlow, _analytics);
-
-            _shellUi = new ToolkitShellUi();
 
             _client = PlaycenterClient.Create(o =>
             {
@@ -142,22 +143,22 @@ namespace KitchenClash.Composition
 #if UNITY_EDITOR
             EditorApplication.isPlaying = false;
 #else
-            Application.Quit();
+            UnityEngine.Application.Quit();
 #endif
         }
 
         private void OnUpdate()
         {
-            // Get store URL from RC; fallback to platform default
+            // Get store URL from typed RC config; fallback to platform default
             string storeUrl = "https://reciperage.game/download";
-            if (_remoteConfigService != null)
+            if (_remoteConfigService != null
+                && _remoteConfigService.TryGetConfig<ForceUpdateConfig>(out var cfg)
+                && !string.IsNullOrEmpty(cfg.UpdateUrl))
             {
-                var rcUrl = _remoteConfigService.GetString("force_update_url", "");
-                if (!string.IsNullOrEmpty(rcUrl))
-                    storeUrl = rcUrl;
+                storeUrl = cfg.UpdateUrl;
             }
 
-            Application.OpenURL(storeUrl);
+            UnityEngine.Application.OpenURL(storeUrl);
         }
     }
 }

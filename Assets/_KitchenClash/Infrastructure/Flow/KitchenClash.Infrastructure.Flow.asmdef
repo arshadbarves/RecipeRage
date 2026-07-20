@@ -10,7 +10,8 @@
         "VContainer",
         "Playcenter.Shell",
         "Playcenter.Services",
-        "Playcenter.UI"
+        "Playcenter.UI",
+        "Playcenter.SDK"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -239,7 +239,7 @@ public class RootLifetimeScope : LifetimeScope
             var bootRetry = resolver.Resolve<IPlaycenterBootRetry>();
             var noConnectionPhase = new NoConnectionPhase(eventBus, appFlowProxy, bootRetry, bootstrap.Shell);
 
-            var tutorialPhase = new TutorialPhase(ui, eventBus, appFlowProxy, tutorial);
+            var tutorialPhase = new TutorialPhase(eventBus, appFlowProxy, bootstrap.Shell, tutorial);
             var accountUpgradePhase = new AccountUpgradePhase(ui, eventBus, appFlowProxy);
             var sidePhases = new SidePhaseFlowPort(
                 loginPhase, maintenancePhase, noConnectionPhase, tutorialPhase, accountUpgradePhase);
@@ -290,8 +290,6 @@ public class RootLifetimeScope : LifetimeScope
         // Mutable holder resolved by AppFlow factory; bound by PlaycenterSdkBootstrap.Start().
         builder.Register<BootRetryRef>(Lifetime.Singleton).AsSelf().As<IPlaycenterBootRetry>();
         // PlaycenterSdkBootstrap replaces GameBootstrapper cold-boot path.
-        builder.RegisterEntryPoint<PlaycenterSdkBootstrap>().AsSelf();
-        // Register IShellUi from PlaycenterSdkBootstrap so it can be injected into components.
-        builder.Register<Playcenter.SDK.IShellUi>(c => c.Resolve<PlaycenterSdkBootstrap>().Shell, Lifetime.Singleton);
+        builder.RegisterEntryPoint<PlaycenterSdkBootstrap>();
     }
 }

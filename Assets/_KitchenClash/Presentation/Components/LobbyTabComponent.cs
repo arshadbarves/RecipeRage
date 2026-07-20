@@ -12,6 +12,7 @@ using KitchenClash.Presentation.Extensions;
 using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;
+using Playcenter.SDK;
 using Playcenter.Shell;
 using Playcenter.Services;
 using Playcenter.UI;
@@ -28,6 +29,7 @@ namespace KitchenClash.Presentation.Components
         [Inject] private ISkinsService _skinsService;
         [Inject] private ICharacterPreviewService _previewManager;
         [Inject] private IEventBus _eventBus;
+        [Inject] private IShellUi _shellUi;
 
         private VisualElement _root;
         private readonly LobbyViewModel _viewModel;
@@ -211,41 +213,13 @@ namespace KitchenClash.Presentation.Components
 
         private void OnSettingsClicked()
         {
-            // Show SDK Settings — IShellUi will be injected once Unity reimports the updated asmdef.
-            // For now, use dynamic resolution as a workaround during dotnet build.
-            var shellUiType = System.Type.GetType("Playcenter.SDK.IShellUi, Playcenter.SDK");
-            var shellScreenIdType = System.Type.GetType("Playcenter.SDK.ShellScreenId, Playcenter.SDK");
-            
-            if (shellUiType != null && shellScreenIdType != null)
+            if (_shellUi == null)
             {
-                try
-                {
-                    // Manually resolve from static bootstrap reference
-                    var bootstrapType = System.Type.GetType("KitchenClash.Composition.PlaycenterSdkBootstrap, KitchenClash.Composition");
-                    if (bootstrapType != null)
-                    {
-                        var shellProperty = bootstrapType.GetProperty("Shell");
-                        var container = VContainer.Unity.LifetimeScope.Find<VContainer.Unity.LifetimeScope>();
-                        if (container != null)
-                        {
-                            var bootstrap = container.Container.Resolve(bootstrapType);
-                            var shellUi = shellProperty?.GetValue(bootstrap);
-                            if (shellUi != null)
-                            {
-                                var settingsValue = System.Enum.Parse(shellScreenIdType, "Settings");
-                                var showMethod = shellUiType.GetMethod("Show");
-                                showMethod?.Invoke(shellUi, new[] { settingsValue });
-                                return;
-                            }
-                        }
-                    }
-                }
-                catch
-                {
-                    // Fallback if SDK shell not available
-                    GameLogger.LogWarning("[LobbyTabComponent] SDK Settings not available");
-                }
+                GameLogger.LogWarning("[LobbyTabComponent] SDK Settings not available (IShellUi null)");
+                return;
             }
+
+            _shellUi.Show(ShellScreenId.Settings);
         }
 
         private void OnSkinsClicked()

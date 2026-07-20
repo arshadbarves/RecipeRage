@@ -5,39 +5,36 @@ using KitchenClash.Application.Services;
 using KitchenClash.Domain;
 using KitchenClash.Infrastructure.Configuration;
 using Playcenter.GameFlow;
-using UnityEngine.SceneManagement;
+using Playcenter.SDK;
 using Playcenter.Shell;
-using Playcenter.UI;
+using UnityEngine.SceneManagement;
 
 namespace KitchenClash.Infrastructure.Flow.Handlers
 {
     /// <summary>
     /// Tutorial side phase: load Tutorial scene, run ITutorialService, CompleteSidePhase on done.
+    /// Uses SDK shell Loading during scene transition (game LoadingScreen removed in Task 7).
     /// </summary>
     public sealed class TutorialPhase
     {
-        private const string LoadingScreenTypeName =
-            "KitchenClash.Presentation.Screens.LoadingScreen, KitchenClash.Presentation";
-
-        private readonly IUIService _uiService;
         private readonly IEventBus _eventBus;
         private readonly ITutorialService _tutorialService;
         private readonly IAppFlow _appFlow;
+        private readonly IShellUi _shellUi;
 
         private CancellationTokenSource _cts;
-        private Type _loadingScreenType;
         private bool _active;
 
         public TutorialPhase(
-            IUIService uiService,
             IEventBus eventBus,
             IAppFlow appFlow,
+            IShellUi shellUi,
             ITutorialService tutorialService = null)
         {
-            _uiService = uiService;
             _eventBus = eventBus;
             _tutorialService = tutorialService;
             _appFlow = appFlow;
+            _shellUi = shellUi;
         }
 
         public void Enter()
@@ -69,18 +66,16 @@ namespace KitchenClash.Infrastructure.Flow.Handlers
                 _cts.Dispose();
                 _cts = null;
             }
+
+            _shellUi?.Hide(ShellScreenId.Loading);
         }
 
         private async UniTaskVoid EnterAsync(CancellationToken ct)
         {
             try
             {
-                _loadingScreenType ??= Type.GetType(LoadingScreenTypeName);
-                if (_loadingScreenType != null)
-                {
-                    _uiService?.Show(_loadingScreenType);
-                }
-
+                _shellUi?.Show(ShellScreenId.Loading);
+                _shellUi?.SetProgress(0.1f, "Preparing tutorial kitchen...");
                 _eventBus?.Publish(new LoadingProgressEvent(0.1f, "Preparing tutorial kitchen..."));
 
                 if (SceneManager.GetActiveScene().name != GameConstants.Scenes.Tutorial)
@@ -93,6 +88,7 @@ namespace KitchenClash.Infrastructure.Flow.Handlers
                     return;
                 }
 
+                _shellUi?.SetProgress(1.0f, "Ready!");
                 _eventBus?.Publish(new LoadingProgressEvent(1.0f, "Ready!"));
                 await UniTask.Delay(300, cancellationToken: ct);
                 if (!_active || ct.IsCancellationRequested)
@@ -100,10 +96,7 @@ namespace KitchenClash.Infrastructure.Flow.Handlers
                     return;
                 }
 
-                if (_loadingScreenType != null)
-                {
-                    _uiService?.Hide(_loadingScreenType);
-                }
+                _shellUi?.Hide(ShellScreenId.Loading);
 
                 _tutorialService?.StartTutorial();
                 GameLogger.Log("[TutorialPhase] Tutorial scene loaded — tutorial started");
@@ -115,6 +108,7 @@ namespace KitchenClash.Infrastructure.Flow.Handlers
             catch (Exception ex)
             {
                 GameLogger.LogError($"[TutorialPhase] Failed to load tutorial scene: {ex.Message}");
+                _shellUi?.Hide(ShellScreenId.Loading);
                 _tutorialService?.SkipTutorial();
             }
         }
