@@ -1,0 +1,67 @@
+Assets/_KitchenClash/Composition/MenuLifetimeScope.cs
+  s_310d1036f5ad04::t_297961dbef6c50 4-5,10-11,14-19,22
+  s_310d1036f5ad04::t_87509878e466bf 6-9
+Assets/_KitchenClash/Application/Services/CharacterPreviewGateway.cs
+  s_310d1036f5ad04::t_06bf97795eb7cd 14-67
+  s_310d1036f5ad04::t_946b500fe7adfc 1-13,68-69
+wiki/LLM-Rules.md
+  s_310d1036f5ad04::t_60e3dd40c44899 45-48,53,84-86,102-103
+Assets/Resources/UI/Themes/DesignSystem.uss
+  s_310d1036f5ad04::t_28ef2d157c0bf5 205-209
+Assets/Scenes/MainMenu.unity
+  s_310d1036f5ad04::t_86eb1ad94e49d8 437,458,461-473
+Assets/_KitchenClash/Application/Services/CharacterPreviewGateway.cs.meta
+  s_310d1036f5ad04::t_caf6edf02d9e23 1-11
+Assets/_KitchenClash/Composition/MatchLifetimeScope.cs
+  s_310d1036f5ad04::t_7592e0dd96d50d 12-18
+Assets/_KitchenClash/Composition/MenuSceneBinder.cs
+  s_310d1036f5ad04::t_c289f5f9400ee5 1-51
+Assets/_KitchenClash/Composition/MenuSceneBinder.cs.meta
+  s_310d1036f5ad04::t_b0206e08f31f31 1-11
+Assets/_KitchenClash/Composition/MenuSessionRegistrations.cs
+  s_310d1036f5ad04::t_117662c341211e 16-20
+Assets/_KitchenClash/Composition/MenuSessionRegistrations.cs.meta
+  s_cc4d742fbfde3c::t_c6d294f9b07bb8 1-2
+Assets/_KitchenClash/Composition/MenuSessionScopeInstaller.cs.meta
+  s_cc4d742fbfde3c::t_e1f35856ea4ab5 1-2
+Assets/_KitchenClash/Composition/RootLifetimeScope.cs
+  s_310d1036f5ad04::t_efd972e5b25086 124,127-130,143-144
+wiki/Technical.md
+  s_310d1036f5ad04::t_91ff87b55563b9 43-44,46,59-75,271-275
+wiki/log.md
+  s_310d1036f5ad04::t_6d0ea47c653f24 306-315
+Assets/Resources/UI/Styles/Screens/Maintenance.uss
+  s_310d1036f5ad04::t_e74b57959ef52d 115
+Assets/Scenes/Game.unity
+  s_310d1036f5ad04::t_31c9c8c1f76dbf 3955
+Assets/_KitchenClash/Application/Services/NullCharacterPreviewService.cs
+  s_310d1036f5ad04::t_11b904e7c6916d 6-8
+Assets/_KitchenClash/Composition/MenuSessionScopeInstaller.cs
+  s_310d1036f5ad04::t_6c0784a7564c19 1-17
+Assets/_KitchenClash/UI/Styles/DesignSystem.uss
+  s_310d1036f5ad04::t_2a46d2690e0eeb 148-149
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "4e5da6473f637bf0d82a7e5a4f003ed2afdcf58e",
+  "prompts": {},
+  "sessions": {
+    "s_310d1036f5ad04": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "5b19384d-458f-4e59-8cf5-d0604c36eaf6",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    },
+    "s_cc4d742fbfde3c": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "b329fed5-298d-4517-8af9-c584f1404b25",
+        "model": "unknown"
+      },
+      "human_author": "Arshad Barves <arshad.barves@kwalee.com>"
+    }
+  }
+}
