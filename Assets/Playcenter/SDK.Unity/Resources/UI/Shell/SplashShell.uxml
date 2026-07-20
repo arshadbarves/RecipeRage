@@ -1,5 +1,4 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/Playcenter/SDK.Unity/Resources/UI/Shell/DefaultShell.uss?fileID=7433441132597879392&amp;guid=placeholder&amp;type=3#DefaultShell" />
     <ui:VisualElement name="root" class="pc-splash">
         <ui:VisualElement name="logo-placeholder" class="pc-splash__logo-placeholder" />
         <ui:Label name="title-label" text="Playcenter" class="pc-splash__title" />

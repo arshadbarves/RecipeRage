@@ -1,5 +1,4 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/Playcenter/SDK.Unity/Resources/UI/Shell/DefaultShell.uss?fileID=7433441132597879392&amp;guid=placeholder&amp;type=3#DefaultShell" />
     <ui:VisualElement name="root" class="pc-loading">
         <ui:Label name="title-label" text="Loading..." class="pc-loading__title" />
         <ui:ProgressBar name="progress-bar" value="0" class="pc-loading__progress-bar" />

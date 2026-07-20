@@ -11,9 +11,11 @@ namespace Playcenter.SDK.Unity
     /// </summary>
     public sealed class ToolkitShellUi : IShellUi
     {
-        const string LoadingUxmlPath = "UI/Shell/LoadingShell";
-        const string SplashUxmlPath  = "UI/Shell/SplashShell";
-        const string DefaultUssPath  = "UI/Shell/DefaultShell";
+        const string LoadingUxmlPath  = "UI/Shell/LoadingShell";
+        const string SplashUxmlPath   = "UI/Shell/SplashShell";
+        const string DefaultUssPath   = "UI/Shell/DefaultShell";
+        const string LoadingUssPath   = "UI/Shell/shell_loading";
+        const string SplashUssPath    = "UI/Shell/shell_splash";
 
         readonly UIDocument _document;
         IShellTheme _theme;
@@ -21,6 +23,8 @@ namespace Playcenter.SDK.Unity
         VisualTreeAsset _loadingAsset;
         VisualTreeAsset _splashAsset;
         StyleSheet      _defaultStyle;
+        StyleSheet      _loadingStyle;
+        StyleSheet      _splashStyle;
 
         ShellScreenId? _current;
 
@@ -114,6 +118,8 @@ namespace Playcenter.SDK.Unity
             _loadingAsset = Resources.Load<VisualTreeAsset>(LoadingUxmlPath);
             _splashAsset  = Resources.Load<VisualTreeAsset>(SplashUxmlPath);
             _defaultStyle = Resources.Load<StyleSheet>(DefaultUssPath);
+            _loadingStyle = Resources.Load<StyleSheet>(LoadingUssPath);
+            _splashStyle  = Resources.Load<StyleSheet>(SplashUssPath);
         }
 
         VisualTreeAsset ResolveTreeAsset(ShellScreenId id)
@@ -130,6 +136,16 @@ namespace Playcenter.SDK.Unity
         {
             if (_defaultStyle != null && !root.styleSheets.Contains(_defaultStyle))
                 root.styleSheets.Add(_defaultStyle);
+
+            // Apply companion screen-specific USS after default
+            var companion = _current switch
+            {
+                ShellScreenId.Loading => _loadingStyle,
+                ShellScreenId.Splash  => _splashStyle,
+                _                     => null
+            };
+            if (companion != null && !root.styleSheets.Contains(companion))
+                root.styleSheets.Add(companion);
 
             if (_theme?.OverrideUssResourcesPath != null)
             {
