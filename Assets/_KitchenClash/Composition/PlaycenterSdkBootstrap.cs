@@ -133,8 +133,10 @@ namespace KitchenClash.Composition
                 o.Services.AddSingleton<IAppVersion>(new AppVersionAdapter());
             });
 
-            // Wire shell callbacks after client created so we have access to it
-            _shellUi.SetServices(_client.Services);
+            // Wire shell callbacks after client created. BuildServices() ensures the registry
+            // exists before RunAsync so SetServices does not throw (registry is built once and
+            // reused across RunAsync/RetryBootAsync).
+            _shellUi.SetServices(_client.BuildServices());
             _shellUi.OnRetryRequested = Retry;
             _shellUi.OnQuitRequested = OnQuit;
             _shellUi.OnUpdateRequested = OnUpdate;

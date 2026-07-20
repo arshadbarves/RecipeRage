@@ -29,6 +29,16 @@ namespace Playcenter.SDK
         }
         public IShellUi Shell => _options.Shell;
 
+        /// <summary>
+        /// Builds the service registry if not already built and returns it. Safe to call before
+        /// <see cref="RunAsync"/> so hosts can wire the shell (e.g. Settings) against services.
+        /// Registry is built once and reused across <see cref="RunAsync"/>/<see cref="RetryBootAsync"/>.
+        /// </summary>
+        public IPlaycenterServices BuildServices()
+        {
+            return _services ??= _options.Services.Build();
+        }
+
         public static PlaycenterClient Create(Action<ClientOptions> configure)
         {
             if (configure == null) throw new ArgumentNullException(nameof(configure));
@@ -42,8 +52,8 @@ namespace Playcenter.SDK
             if (_options.GameEntry == null)
                 throw new InvalidOperationException("No IGameEntry configured. Call options.SetGameEntry() before RunAsync.");
 
-            // 1. Build service registry
-            _services = _options.Services.Build();
+            // 1. Build service registry (reuses one built earlier via BuildServices).
+            BuildServices();
 
             // 2. Build BootProgress from module weights
             var moduleWeights = new List<(string id, float weight)>();

@@ -88,5 +88,40 @@ namespace RecipeRage.Tests.EditMode.StudioSdk
             var client = PlaycenterClient.Create(o => o.AddModule(new OkModule()));
             Assert.ThrowsAsync<System.InvalidOperationException>(async () => await client.RunAsync(CancellationToken.None));
         }
+
+        [Test]
+        public void BuildServices_BeforeRunAsync_ReturnsRegistryWithoutThrowing()
+        {
+            var client = PlaycenterClient.Create(o =>
+            {
+                o.SetGameEntry(new SpyEntry());
+                o.AddModule(new OkModule());
+                o.UseShell(new NullShellUi());
+            });
+
+            // Regression: hosts wire the shell against services before RunAsync; accessing the
+            // registry pre-run must not throw (previously Services threw until RunAsync built it).
+            IPlaycenterServices services = null;
+            Assert.DoesNotThrow(() => services = client.BuildServices());
+            Assert.IsNotNull(services);
+            Assert.AreSame(services, client.Services, "BuildServices must build once so Services is valid pre-run.");
+        }
+
+        [Test]
+        public async Task RunAsync_AfterBuildServices_ReusesSameRegistry()
+        {
+            var entry = new SpyEntry();
+            var client = PlaycenterClient.Create(o =>
+            {
+                o.SetGameEntry(entry);
+                o.AddModule(new OkModule());
+                o.UseShell(new NullShellUi());
+            });
+
+            var early = client.BuildServices();
+            await client.RunAsync(CancellationToken.None);
+
+            Assert.AreSame(early, client.Services, "RunAsync must reuse the registry built before run, not rebuild.");
+        }
     }
 }
