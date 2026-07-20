@@ -237,7 +237,7 @@ public class RootLifetimeScope : LifetimeScope
 
             // BootRetryRef breaks the cycle: AppFlow factory → IPlaycenterBootRetry ← PlaycenterSdkBootstrap.
             var bootRetry = resolver.Resolve<IPlaycenterBootRetry>();
-            var noConnectionPhase = new NoConnectionPhase(eventBus, appFlowProxy, bootRetry, bootstrap.Shell);
+            var noConnectionPhase = new NoConnectionPhase(eventBus, bootRetry, bootstrap.Shell);
 
             var tutorialPhase = new TutorialPhase(eventBus, appFlowProxy, bootstrap.Shell, tutorial);
             var accountUpgradePhase = new AccountUpgradePhase(ui, eventBus, appFlowProxy);

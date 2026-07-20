@@ -22,7 +22,6 @@ namespace KitchenClash.Infrastructure.Flow.Handlers
 
         public NoConnectionPhase(
             IEventBus eventBus,
-            IAppFlow appFlow,
             IPlaycenterBootRetry bootRetry,
             IShellUi shellUi)
         {

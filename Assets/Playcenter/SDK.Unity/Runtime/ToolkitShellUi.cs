@@ -290,7 +290,8 @@ namespace Playcenter.SDK.Unity
                 musicSlider.value = musicVol;
                 musicSlider.RegisterValueChangedCallback(evt =>
                 {
-                    var cloned = cloneMethod?.Invoke(current, null);
+                    var live = currentProperty.GetValue(settingsService);
+                    var cloned = live != null ? cloneMethod?.Invoke(live, null) : null;
                     if (cloned != null)
                     {
                         musicVolumeProp.SetValue(cloned, evt.newValue);
@@ -310,7 +311,8 @@ namespace Playcenter.SDK.Unity
                 sfxSlider.value = sfxVol;
                 sfxSlider.RegisterValueChangedCallback(evt =>
                 {
-                    var cloned = cloneMethod?.Invoke(current, null);
+                    var live = currentProperty.GetValue(settingsService);
+                    var cloned = live != null ? cloneMethod?.Invoke(live, null) : null;
                     if (cloned != null)
                     {
                         sfxVolumeProp.SetValue(cloned, evt.newValue);
