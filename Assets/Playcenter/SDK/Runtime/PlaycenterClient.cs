@@ -15,7 +15,18 @@ namespace Playcenter.SDK
             _options = options;
         }
 
-        public IPlaycenterServices Services => _services;
+        /// <summary>
+        /// The built service container. Throws <see cref="InvalidOperationException"/> if accessed before <see cref="RunAsync"/> completes service construction.
+        /// </summary>
+        public IPlaycenterServices Services
+        {
+            get
+            {
+                if (_services == null)
+                    throw new InvalidOperationException("Services are not available until RunAsync has built the registry.");
+                return _services;
+            }
+        }
         public IShellUi Shell => _options.Shell;
 
         public static PlaycenterClient Create(Action<ClientOptions> configure)
@@ -32,7 +43,7 @@ namespace Playcenter.SDK
                 throw new InvalidOperationException("No IGameEntry configured. Call options.SetGameEntry() before RunAsync.");
 
             // 1. Build service registry
-            _services = ((ServiceRegistry)_options.Services).Build();
+            _services = _options.Services.Build();
 
             // 2. Build BootProgress from module weights
             var moduleWeights = new List<(string id, float weight)>();
