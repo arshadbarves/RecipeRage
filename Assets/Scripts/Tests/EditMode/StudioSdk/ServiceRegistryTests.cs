@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using Playcenter.SDK;
 
-namespace RecipeRage.Tests.EditMode.Playcenter.SDK
+namespace RecipeRage.Tests.EditMode.StudioSdk
 {
     public sealed class ServiceRegistryTests
     {
