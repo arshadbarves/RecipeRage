@@ -15,6 +15,7 @@
         "VContainer",
         "Playcenter.GameFlow",
         "Playcenter.Shell",
+        "Playcenter.SDK",
         "Playcenter.Services",
         "Playcenter.UI",
         "Playcenter.UI.Toolkit"
