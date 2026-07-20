@@ -7,6 +7,8 @@ namespace Playcenter.SDK
         // Populated when Success is false; FailedModuleId is filled in by ModuleHost.
         public BootFailure Failure { get; private set; }
 
+        ModuleResult() { }
+
         public static ModuleResult Ok() => new ModuleResult { Success = true };
 
         public static ModuleResult Fail(BootFailureCode code, string message) =>
