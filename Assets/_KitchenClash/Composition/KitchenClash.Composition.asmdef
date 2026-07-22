@@ -21,6 +21,7 @@
         "VContainer",
         "Playcenter.Shell",
         "Playcenter.Services",
+        "Playcenter.Services.Unity",
         "Playcenter.UI",
         "Playcenter.Animation",
         "Playcenter.UI.Toolkit",

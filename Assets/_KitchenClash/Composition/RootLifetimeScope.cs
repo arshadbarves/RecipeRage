@@ -7,10 +7,7 @@ using KitchenClash.Application.Services;
 using KitchenClash.Composition;
 using KitchenClash.Domain;
 using KitchenClash.Infrastructure.Configuration;
-using KitchenClash.Infrastructure.Ads;
-using KitchenClash.Infrastructure.Analytics;
 using KitchenClash.Infrastructure.Audio;
-using KitchenClash.Infrastructure.IAP;
 using KitchenClash.Infrastructure.DI;
 using KitchenClash.Infrastructure.EOS;
 using KitchenClash.Infrastructure.Flow;
@@ -170,14 +167,41 @@ public class RootLifetimeScope : LifetimeScope
 
 #if FIREBASE_REMOTE_CONFIG
         builder.Register<KitchenClash.Infrastructure.Firebase.FirebaseConfigProvider>(Lifetime.Singleton).As<IConfigProvider>();
-        builder.Register(c => new CompositeRemoteConfigService(c.Resolve<IConfigProvider>(), c.Resolve<IEventBus>()), Lifetime.Singleton).As<IConfigService>().As<IRemoteConfigService>();
 #else
-        builder.Register(c => new CompositeRemoteConfigService(c.Resolve<IEventBus>()), Lifetime.Singleton).As<IConfigService>().As<IRemoteConfigService>();
+        builder.Register<FallbackConfigProvider>(Lifetime.Singleton).As<IConfigProvider>();
 #endif
+        builder.Register<RemoteConfigService>(Lifetime.Singleton).AsSelf().As<IConfigService>().As<IRemoteConfigService>();
+        builder.Register(c =>
+        {
+            var bridge = new KitchenClash.Infrastructure.RemoteConfig.RemoteConfigEventBridge(
+                c.Resolve<RemoteConfigService>(), c.Resolve<IEventBus>());
+            bridge.Attach();
+            return bridge;
+        }, Lifetime.Singleton).AsSelf();
+
         builder.Register<MaintenanceService>(Lifetime.Singleton).As<IMaintenanceService>();
-        builder.Register<FirebaseAnalyticsService>(Lifetime.Singleton).As<IAnalyticsService>();
-        builder.Register<StubAdsService>(Lifetime.Singleton).As<IAdsService>();
-        builder.Register<StubIAPService>(Lifetime.Singleton).As<IIAPService>();
+
+#if FIREBASE_ANALYTICS
+        builder.Register<Playcenter.Services.Unity.FirebaseAnalyticsSink>(Lifetime.Singleton).As<IAnalyticsSink>();
+#else
+        builder.Register<DebugAnalyticsSink>(Lifetime.Singleton).As<IAnalyticsSink>();
+#endif
+        builder.Register<AnalyticsService>(Lifetime.Singleton).As<IAnalyticsService>();
+
+#if APPLOVIN_MAX
+        builder.Register<Playcenter.Services.Unity.MaxAdNetwork>(Lifetime.Singleton).As<IAdNetwork>();
+#else
+        builder.Register<NullAdNetwork>(Lifetime.Singleton).As<IAdNetwork>();
+#endif
+        builder.Register<AdsService>(Lifetime.Singleton).As<IAdsService>();
+
+#if UNITY_IAP
+        builder.Register<Playcenter.Services.Unity.UnityIapStoreBackend>(Lifetime.Singleton).As<IStoreBackend>();
+#else
+        builder.Register<Playcenter.Services.Unity.EditorFakeStoreBackend>(Lifetime.Singleton).As<IStoreBackend>();
+#endif
+        builder.Register<KitchenClash.Infrastructure.Services.RecipeRageIapRewardGrantor>(Lifetime.Singleton).As<IIapRewardGrantor>();
+        builder.Register<IAPService>(Lifetime.Singleton).As<IIAPService>();
 
         if (_ugsConfig != null)
         {
