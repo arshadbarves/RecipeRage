@@ -1,0 +1,16 @@
+{
+    "name": "Playcenter.Services.Unity",
+    "rootNamespace": "Playcenter.Services.Unity",
+    "references": [
+        "Playcenter.Services"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
