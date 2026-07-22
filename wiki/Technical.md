@@ -30,8 +30,11 @@ RootLifetimeScope (app-lifetime, DontDestroyOnLoad)
   MatchmakingPhaseHost  → MatchmakingPhaseHost   (Singleton + ITickable)
   IEOSManager           → EOSManager             (Singleton)
   IAuthService          → AuthenticationService  (Singleton)
-  IConfigService        → CompositeRemoteConfig  (Singleton)
-  IAnalyticsService     → FirebaseAnalyticsSvc   (Singleton)
+  IConfigService / IRemoteConfigService → RemoteConfigService (Singleton; Playcenter.Services)
+  IConfigProvider       → FirebaseConfigProvider | FallbackConfigProvider
+  IAnalyticsService     → AnalyticsService + IAnalyticsSink (Singleton; Playcenter.Services)
+  IAdsService           → AdsService + IAdNetwork (Singleton; Playcenter.Services)
+  IIAPService           → IAPService + IStoreBackend + IIapRewardGrantor (Singleton)
   IConnectivityService  → NetworkConnectivitySvc (Singleton + ITickable)
   IPlayerDataService    → PlayerDataService      (Singleton)
   IUIService            → UIService              (Singleton)
@@ -160,11 +163,12 @@ GameFlow fixed product navigation. Remaining mess is inverted deps, vendor leaks
 |--------|--------|-------|
 | `Playcenter.GameFlow` | **Shipped** | Sole product navigator (`IAppFlow`); ports + policies; adapters in `Infrastructure/Flow` |
 | `Playcenter.Shell` | **Shipped** | Engine-free logging + event bus + connectivity contracts (`Assets/Playcenter/Shell`); Domain/Application reference Shell; adapters stay game-side (`UnityLoggingService`, `LoggingBootstrap`, `NetworkConnectivityService`) |
-| `Playcenter.Services` | **Shipped** | Engine-free multi-title service contracts (`Assets/Playcenter/Services`): config, analytics, ads, IAP, auth, encryption, maintenance, **localization, storage, time, audio volume, remote-config**. Domain/Application originals deleted; adapters stay game-side (Firebase, EOS, stubs) |
+| `Playcenter.Services` | **Shipped** | Engine-free multi-title service **contracts + shared implementations** (`Assets/Playcenter/Services`): config, analytics, ads, IAP, auth, encryption, maintenance, localization, storage, time, audio volume, remote-config. No VContainer, UnityEngine, or vendor SDKs |
+| `Playcenter.Services.Unity` | **Shipped** | Vendor adapters only: `FirebaseAnalyticsSink`, `MaxAdNetwork`, `UnityIapStoreBackend`, `EditorFakeStoreBackend`. Behind `#if FIREBASE_ANALYTICS` / `APPLOVIN_MAX` / `UNITY_IAP` |
 | `Playcenter.UI` | **Shipped** | Engine-free screen stack contracts (`IUIService`, `NotificationType`, `UIScreenCategory`); `Task`-based toasts; `SetCurrentScope(object)`. Adapter: Presentation `UIService` (UI Toolkit). KitchenClash Application/Domain originals deleted |
 | New `Assets/Playcenter/*` | **Only if** engine-free **and** second consumer or legal-transition role | Prefer KitchenClash assembly splits + Domain/Application ports for single-title hardening |
 | Clip audio / Platform / Async leaves | **Stay KitchenClash** | Unity-bound helpers (`AudioClip` playback, coroutines, platform glue) — not Playcenter |
-| Economy / Cooking IP | **Never Playcenter** | Stay in KitchenClash |
+| Economy / Cooking IP | **Never Playcenter** | Stay in KitchenClash (including `IIapRewardGrantor` + `IAPCatalog`) |
 
 **Hard cutover rules (Shell + Services + UI):** no Domain dual APIs, type aliases, obsolete stubs, or Console fallbacks. Unwired `GameLogger` throws. GameFlow and Shell do **not** reference Services or UI (independent modules). UI and Services do not reference each other.
 
@@ -173,6 +177,40 @@ GameFlow fixed product navigation. Remaining mess is inverted deps, vendor leaks
 Specs: `docs/superpowers/specs/2026-07-14-playcenter-shell-extract-design.md`, `docs/superpowers/specs/2026-07-14-playcenter-services-extract-design.md`, `docs/superpowers/specs/2026-07-15-playcenter-foundation-extract-design.md`.
 
 See also: `docs/superpowers/plans/2026-07-14-playcenter-module-extract-candidates.md` (foundation ports + UI shipped; clip-audio/Platform/Async still deferred).
+
+## Playcenter Shared Services (Ads / Analytics / IAP / RemoteConfig)
+
+**Spec:** `docs/superpowers/specs/2026-07-22-playcenter-shared-services-design.md`  
+**Plan:** `docs/superpowers/plans/2026-07-22-playcenter-shared-services.md`
+
+Common monetization/live-ops **logic** lives in the SDK so every title shares one implementation. Games keep only title-specific seams and Composition wiring.
+
+| Layer | Assembly | Owns |
+|-------|----------|------|
+| Facades + flow | `Playcenter.Services` | `AnalyticsService`, `AdsService`, `IAPService`, `RemoteConfigService`, `FallbackConfigProvider`, ports |
+| Vendor adapters | `Playcenter.Services.Unity` | Firebase Analytics sink, AppLovin MAX network, Unity IAP + editor fake store |
+| Game seams | KitchenClash Infrastructure | `FirebaseConfigProvider`, `RecipeRageIapRewardGrantor`, `RemoteConfigEventBridge`, `AnalyticsEvents`, `IAPCatalog` |
+| DI wire | Composition `RootLifetimeScope` | Register facade + port under `#if` vendor defines |
+
+**Ports (SDK):** `IAnalyticsSink`, `IAdNetwork`, `IStoreBackend` (+ `StorePurchaseResult`), `IIapRewardGrantor`, `IConfigProvider`.  
+**Public facades (unchanged contracts):** `IAnalyticsService`, `IAdsService`, `IIAPService`, `IRemoteConfigService`, `IConfigService`.
+
+**IAP flow:** lazy store init once → purchase → grant via `IIapRewardGrantor` → analytics `iap_purchase_success` / `iap_purchase_fail` (`product_id`, `success`, `reason`). Grantor and analytics are null-safe.
+
+**Remote config:** `RemoteConfigService` implements both `IRemoteConfigService` and `IConfigService`. Change notification is plain C# events (`OnConfigUpdated`, `OnHealthChanged`) — **not** `IEventBus`. Games attach `RemoteConfigEventBridge` to publish `ConfigUpdatedEvent` / `ConfigHealthStatusChangedEvent`.
+
+**Root wiring pattern:**
+```
+#if FIREBASE_REMOTE_CONFIG → FirebaseConfigProvider #else FallbackConfigProvider
+RemoteConfigService AsSelf + IConfigService + IRemoteConfigService
+RemoteConfigEventBridge.Attach() Singleton
+#if FIREBASE_ANALYTICS → FirebaseAnalyticsSink #else DebugAnalyticsSink → AnalyticsService
+#if APPLOVIN_MAX → MaxAdNetwork #else NullAdNetwork → AdsService
+#if UNITY_IAP → UnityIapStoreBackend #else EditorFakeStoreBackend
+RecipeRageIapRewardGrantor (ISessionContext → EconomyService) → IAPService
+```
+
+**Deleted game stubs (hard cutover):** `StubAdsService`, `StubIAPService`, `FirebaseAnalyticsService` (Infrastructure + Firebase copies), `CompositeRemoteConfigService`, `FallbackRemoteConfigService`.
 
 ## SOLID Summary
 
@@ -405,9 +443,14 @@ Assets/_KitchenClash/
 │   └── ViewModels/   HomeScreenVM, MatchHUDVM, StoreVM
 ├── Infrastructure/   ← Unity + external SDK implementations
 │   ├── EOS/          EOSManager, EOSAuthService, EOSTransport
-│   ├── Firebase/     FirebaseRemoteConfigSvc, FirebaseAnalyticsSvc
+│   ├── Firebase/     FirebaseConfigProvider (RC provider seam only)
+│   ├── RemoteConfig/ RemoteConfigEventBridge (SDK events → IEventBus)
+│   ├── Services/     RecipeRageIapRewardGrantor (IAPCatalog → economy)
 │   ├── Network/      KitchenNetworkState, ChefNetController
 │   └── Platform/     GoogleSignInAdapter, FacebookAdapter
+Assets/Playcenter/
+├── Services/         ← pure C# facades + ports (Analytics/Ads/IAP/RC)
+└── Services.Unity/   ← vendor adapters (Firebase/MAX/UnityIAP)
 ├── Presentation/     ← UI Toolkit presentation
 │   ├── Screens/      HomeScreen, StoreScreen, MatchHUD (BaseUIScreen subclasses)
 │   ├── Overlays/     ConnectivityOverlay, DailyStreakPopup

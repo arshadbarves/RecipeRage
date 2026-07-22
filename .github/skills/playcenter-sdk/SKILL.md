@@ -39,6 +39,9 @@ Do **not** invoke for post-ready product navigation (Home, Matchmaking, Match) �
 | **ShellRef / BootRetryRef** | Thin holder registered in `RootLifetimeScope` that breaks the AppFlow↔bootstrap DI cycle. |
 | **Vendor firewall** | Adapters isolate `Epic.*`, NGO setup, store SDKs from game Presentation / Application. |
 | **IAppFlow** | Post-ready navigator only. SDK never calls it internally. |
+| **Shared Services** | Multi-title Ads/Analytics/IAP/RemoteConfig **logic** in `Playcenter.Services`; vendor adapters in `Playcenter.Services.Unity`. |
+| **IAnalyticsSink / IAdNetwork / IStoreBackend / IIapRewardGrantor** | Ports games (or Unity pack) implement; facades own the flow. |
+| **RemoteConfigEventBridge** | Game seam: SDK C# RC events → game `IEventBus` domain events. |
 
 ---
 
@@ -172,6 +175,9 @@ Insert before `shell_ready`. Interactive login happens **after** `OnPlaycenterRe
 | `IAppFlow.StartColdBoot()` as init path | Replaced by `PlaycenterClient.RunAsync`. |
 | Interactive login inside a module | Login occurs **after** `OnPlaycenterReady`; modules only warm auth SDK. |
 | Re-registering SDK singletons in VContainer | Bridge via `client.Services.Get<T>()` only. |
+| Game-side Ads/Analytics/IAP/RC **service** classes (`StubAds*`, `StubIAP*`, game analytics/RC composites) | Shared logic is `Playcenter.Services` + `Playcenter.Services.Unity`. |
+| Vendor SDKs (`Firebase.`, `MaxSdk`, `UnityEngine.Purchasing`) outside `Playcenter.Services.Unity` (except game `FirebaseConfigProvider`) | Vendor firewall for shared services. |
+| `VContainer` / `UnityEngine` / vendor SDKs in `Playcenter.Services` Runtime | Pure C# facades only. |
 
 ---
 
@@ -184,6 +190,7 @@ Insert before `shell_ready`. Interactive login happens **after** `OnPlaycenterRe
 | W4 | All `using VContainer` in `Assets/Playcenter/**` | `rg -n "using VContainer" Assets/Playcenter --glob '*.cs'` → 0 |
 | W5 | Any `Epic.` / `EOS.` usings in `Assets/_KitchenClash/Presentation` or `.../Application` | `rg -n "using Epic\.\|Epic\.OnlineServices" Assets/_KitchenClash/Presentation Assets/_KitchenClash/Application --glob '*.cs'` → 0 |
 | W6 | Confirm zero legacy boot symbols; `ShellRef.Value != null` at app start | Compile + manual smoke |
+| Shared services | `StubAdsService`, `StubIAPService`, game `FirebaseAnalyticsService`, `CompositeRemoteConfigService`, `FallbackRemoteConfigService` | `rg -n "StubAdsService\|StubIAPService\|CompositeRemoteConfigService\|FallbackRemoteConfigService" Assets --glob '*.cs'` → 0 |
 
 ---
 
@@ -191,6 +198,7 @@ Insert before `shell_ready`. Interactive login happens **after** `OnPlaycenterRe
 
 - Spec: `docs/superpowers/specs/2026-07-20-playcenter-studio-sdk-design.md`
 - Client OS spec: `docs/superpowers/specs/2026-07-19-playcenter-client-os-design.md`
-- `wiki/Technical.md` § Playcenter Studio SDK
-- `wiki/LLM-Rules.md` § Playcenter Studio SDK
+- Shared services spec: `docs/superpowers/specs/2026-07-22-playcenter-shared-services-design.md`
+- `wiki/Technical.md` § Playcenter Studio SDK · § Playcenter Shared Services
+- `wiki/LLM-Rules.md` § Playcenter Studio SDK · § Playcenter Shared Services
 - `wiki/GameFlow-SDK.md` — post-ready `IAppFlow` navigator

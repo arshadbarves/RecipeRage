@@ -80,6 +80,8 @@ RC key namespaces: `score_*` | `chop_taps_*` | `match_*` | `ability_*` | `order_
 | MATCH-scope economy/wallet mutation | Wallet writes only SESSION via `IWalletLedger` |
 | Presentation → EOS / NGO / `EOSManager` direct | Ports + Application/Infrastructure only |
 | UnityEngine types in `Playcenter.Services` | Use `InputAxis2`, not `Vector2` |
+| Game-side Ads/Analytics/IAP/RC **service** implementations | Shared logic is `Playcenter.Services`; game keeps seams only |
+| Vendor SDK refs (`Firebase.`, `MaxSdk`, `UnityEngine.Purchasing`) outside `Playcenter.Services.Unity` (and game `FirebaseConfigProvider`) | Vendor firewall — adapters only |
 | Bare `SessionManager` child without installer | Missing economy/wallet/net registrations |
 | `MenuSessionRegistrations` from scene `MenuLifetimeScope` | Second install / orphan entry points / double wallet credit |
 | Scene LifetimeScope with empty parent (orphan root) | Missing parent `IEventBus` / root services |
@@ -146,6 +148,31 @@ Skill: `.github/skills/playcenter-sdk/SKILL.md`.
 | Copying SDK UXML into game | Theme via tokens/USS override; one implementation per screen |
 | Re-registering SDK singletons in VContainer | Bridge via `client.Services` (S3) |
 | Orphan session DI inside SDK boot | Session DI law (S9) unchanged |
+
+---
+
+## Playcenter Shared Services — Required / Forbidden
+
+Authoritative detail: `wiki/Technical.md` § Playcenter Shared Services.  
+Spec: `docs/superpowers/specs/2026-07-22-playcenter-shared-services-design.md`.
+
+### REQUIRED
+
+- Ads / Analytics / IAP / RemoteConfig **flow** in `Playcenter.Services` (engine-free)
+- Vendor adapters only in `Playcenter.Services.Unity` behind `#if` defines
+- Game Composition wires facades + ports; game seams = grantor, RC provider, event bridge, catalogs/constants
+- RC change notification via SDK C# events; bridge to `IEventBus` in game Infrastructure
+- IAP grantor resolves economy lazily (session-scoped) — never assume root `IEconomyService`
+
+### FORBIDDEN (Shared Services)
+
+| Pattern | Why |
+|---------|-----|
+| `StubAdsService` / `StubIAPService` / game `*AnalyticsService` / `CompositeRemoteConfigService` / `FallbackRemoteConfigService` | Hard cutover — deleted; use SDK facades |
+| Re-implementing Ads/Analytics/IAP/RC service classes in KitchenClash | Common logic is multi-title SDK |
+| `VContainer` / `UnityEngine` / vendor SDKs inside `Playcenter.Services` Runtime | Pure C# only |
+| Vendor SDK usings in Presentation / Application | Firewall — adapters + Infrastructure seams only |
+| Dual-path feature flags keeping old stubs alive | AAA cutover; one implementation |
 
 ---
 

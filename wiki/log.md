@@ -316,6 +316,17 @@ Client OS program implemented on `architecture-cleanup`; wiki laws updated to ma
 - **Fix:** `ResultsPhase` publishes `MatchEndedEvent` from `MatchResultInfo` (flow) or HUD fallback; never mutates wallet. Removed `AwardMatchReward` from `IEconomyService`/`EconomyService`. `GameplayHudViewModel` fills `LocalTeamScore`. Once-per-entry guard on Results.
 - **Law:** wiki/Technical.md wallet law item 4 — Results → MatchEndedEvent → MatchRewardHandler → IWalletLedger only.
 
+## 2026-07-22 — Playcenter Shared Services (Ads/Analytics/IAP/RemoteConfig)
+
+Multi-title shared service **implementations** moved into the SDK on `architecture-cleanup`:
+
+- **`Playcenter.Services`:** `AnalyticsService` + `IAnalyticsSink`, `AdsService` + `IAdNetwork`, `IAPService` + `IStoreBackend`/`IIapRewardGrantor`, `RemoteConfigService` + `FallbackConfigProvider` (pure C#)
+- **`Playcenter.Services.Unity`:** `FirebaseAnalyticsSink`, `MaxAdNetwork`, `UnityIapStoreBackend`, `EditorFakeStoreBackend` (vendor `#if` guards)
+- **Game seams:** `RecipeRageIapRewardGrantor` (via `ISessionContext.EconomyService`), `RemoteConfigEventBridge`, existing `FirebaseConfigProvider` / `AnalyticsEvents` / `IAPCatalog`
+- **Composition:** `RootLifetimeScope` wires SDK facades; deleted stubs (`StubAdsService`, `StubIAPService`, dual `FirebaseAnalyticsService`, `CompositeRemoteConfigService`, `FallbackRemoteConfigService`)
+- **Spec/Plan:** `docs/superpowers/specs/2026-07-22-playcenter-shared-services-design.md`, `docs/superpowers/plans/2026-07-22-playcenter-shared-services.md`
+- **Commits:** Analytics `2f482db6`, Ads `739d261e`, IAP `f643eaf6`, RC `63e71e0e`, Unity pack `944f94e5`, seams `18b802c6`, rewire `d828f820`
+
 ## 2026-07-20 — Session DI ownership lock (no dual install)
 
 - **Bug:** Scene `MenuLifetimeScope` / orphan parent could install session services as a second root → `MatchRewardHandler`/`EconomyService` without parent `IEventBus`. Preview FOFT at CreateSession was racy (MainMenu not loaded).
