@@ -336,3 +336,4 @@ Multi-title shared service **implementations** moved into the SDK on `architectu
   - Root `CharacterPreviewGateway` + MainMenu `MenuSceneBinder` bind-in (no child re-register of `ICharacterPreviewService`).
   - USS: `cursor: arrow` (not `auto`/`default`) in DesignSystem + Maintenance.
 - **Wiki:** Technical Session DI law + LLM-Rules forbidden dual-install / orphan root.
+- 2026-07-24: Soft-launch scope locked → `docs/release/SOFT_LAUNCH_SCOPE.md`
