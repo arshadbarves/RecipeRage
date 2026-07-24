@@ -41,7 +41,9 @@ namespace KitchenClash.Infrastructure.Persistence
             // Default Storage Configs (used if key not explicitly registered)
             _storageConfigs = new Dictionary<string, StorageConfig>
             {
-                { "settings.json", new StorageConfig("settings.json", StorageStrategy.LocalOnly, false) }
+                { "settings.json", new StorageConfig("settings.json", StorageStrategy.LocalOnly, false) },
+                { "player_progress.json", new StorageConfig("player_progress.json", StorageStrategy.CloudWithCache, false) },
+                { "player_stats.json", new StorageConfig("player_stats.json", StorageStrategy.CloudWithCache, false) }
             };
 
             _syncStatus = new Dictionary<string, SyncStatus>();

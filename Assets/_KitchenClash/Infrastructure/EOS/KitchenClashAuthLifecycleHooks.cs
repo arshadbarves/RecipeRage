@@ -21,6 +21,7 @@ namespace KitchenClash.Infrastructure.EOS
 
         public void OnLoginSucceeded(string productUserId, string displayName, bool isGuest, string loginMethod)
         {
+            _saveService?.OnUserLoggedIn();
             _saveService?.UpdateSettings(s => s.LastLoginMethod = loginMethod);
             _eventBus?.Publish(new LoginSuccessEvent
             {
@@ -31,6 +32,7 @@ namespace KitchenClash.Infrastructure.EOS
 
         public void OnLogout(string productUserId)
         {
+            _saveService?.OnUserLoggedOut();
             _eventBus?.Publish(new LogoutEvent { UserId = productUserId ?? "unknown" });
         }
     }
