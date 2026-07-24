@@ -560,3 +560,13 @@ Studio-grade multi-game client SDK. Replaces `BootSequence` / `IAppFlow.StartCol
 | W5 | Vendor firewall audit; wiki + skill final | `rg "Epic\." Assets/_KitchenClash/Presentation Assets/_KitchenClash/Application` → 0 |
 | W6 | `IGameEntry` polish; auth/session after ready stable | Zero legacy boot symbols |
 
+
+## Soft-launch release state (2026-07-24)
+
+Guest-only soft launch tracked in `docs/release/` (branch `release-soft-launch`):
+
+- **EOS environments:** all platform `eos_*_config.json` aligned to Dev sandbox for internal builds; promotion procedure + Stage/Live ids in `docs/release/EOS_ENVIRONMENTS.md`. `EpicOnlineServicesConfig.json` filled (deploymentID + clientID non-null). Versions: Unity `0.1.0-soft`, EOS ProductVersion `0.1.0`.
+- **Persistence:** `PlayerDataService` round-trips `player_progress.json` / `player_stats.json` through `SaveService` (`CloudWithCache` → EOS Player Data Storage when logged in). `KitchenClashAuthLifecycleHooks` calls `ISaveService.OnUserLoggedIn/Out`.
+- **Match runtime:** `MatchRuntimeBootstrap` (server-only, spawned by `MatchContext.TryWireWinCondition`) creates `MatchWinConditionCoordinator` per match and hands it the selected mode id (`rush_service` → `TugOfWarWinCondition`). `Map_RushService.unity` is in build settings.
+- **Monetization:** ship without IAP/MAX for soft launch (`docs/release/MONETIZATION_DECISION.md`). No UI consumes `IIAPService`; rewarded CTA self-hides on `NullAdNetwork`.
+- **Gate:** `docs/release/SOFT_LAUNCH_GATE.md` — human sign-off required before any store upload. Live cutover runbook only, gated (`docs/release/LIVE_PROMOTION_RUNBOOK.md`).

@@ -337,3 +337,4 @@ Multi-title shared service **implementations** moved into the SDK on `architectu
   - USS: `cursor: arrow` (not `auto`/`default`) in DesignSystem + Maintenance.
 - **Wiki:** Technical Session DI law + LLM-Rules forbidden dual-install / orphan root.
 - 2026-07-24: Soft-launch scope locked → `docs/release/SOFT_LAUNCH_SCOPE.md`
+- 2026-07-24: Soft-launch release track: EOS Dev aligned, cloud save, win-condition wiring, gate docs on `release-soft-launch` → `docs/release/`

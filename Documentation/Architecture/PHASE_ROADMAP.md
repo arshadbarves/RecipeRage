@@ -25,6 +25,7 @@ Primary targets (in order):
    - DI ownership: Root / Menu / Match
    - Green `dotnet build` + EditMode tests
 2. **Follow-on (separate track):** Kitchen Brawler vertical slice — recommended first: Rush Service 2v2 to playable
+3. **Soft-launch release track** (branch `release-soft-launch`, `docs/release/`): guest-only soft launch — EOS Dev alignment done, cloud save, Rush win-condition wiring, monetization decision (ship without IAP/MAX), device QA + go/no-go gate pending Unity runs
 
 Exit criteria for cleanup:
 
