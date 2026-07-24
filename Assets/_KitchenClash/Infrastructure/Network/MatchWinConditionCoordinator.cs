@@ -22,6 +22,17 @@ namespace KitchenClash.Infrastructure.Network
         [Inject] private IConfigService _cfg;
         [Inject] private IMatchContext  _matchContext;
 
+        /// <summary>
+        /// Manual injection for dynamic (non-scene) spawns where the lifetime scope
+        /// cannot inject before Spawn(). MatchRuntimeBootstrap calls this.
+        /// </summary>
+        public void InjectDeps(IEventBus eventBus, IConfigService cfg, IMatchContext matchContext)
+        {
+            _eventBus = eventBus;
+            _cfg = cfg;
+            _matchContext = matchContext;
+        }
+
         // ── State ──
         private KitchenClash.Application.IModeWinCondition _winCondition;
         private string _activeModeId;

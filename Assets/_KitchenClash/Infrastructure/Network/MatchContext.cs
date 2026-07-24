@@ -13,6 +13,8 @@ namespace KitchenClash.Infrastructure.Network
     public class MatchContext : IMatchContext, IMatchRuntimeRegistry, System.IDisposable
     {
         private readonly IEventBus _eventBus;
+        private readonly KitchenClash.Application.ISessionContext _sessionContext;
+        private bool _winConditionWired;
 
         public bool IsHost => Unity.Netcode.NetworkManager.Singleton != null && Unity.Netcode.NetworkManager.Singleton.IsHost;
         public bool IsServer => Unity.Netcode.NetworkManager.Singleton != null && Unity.Netcode.NetworkManager.Singleton.IsServer;
@@ -33,9 +35,10 @@ namespace KitchenClash.Infrastructure.Network
         public IngredientNetworkSpawner IngredientNetworkSpawner { get; private set; }
         public int LocalTeamId => LocalPlayer != null ? LocalPlayer.TeamId : 0;
 
-        public MatchContext(IEventBus eventBus)
+        public MatchContext(IEventBus eventBus, KitchenClash.Application.ISessionContext sessionContext = null)
         {
             _eventBus = eventBus;
+            _sessionContext = sessionContext;
         }
 
         public void Refresh()
@@ -99,6 +102,35 @@ namespace KitchenClash.Infrastructure.Network
                     }
                 }
             }
+
+            TryWireWinCondition();
+        }
+
+        /// <summary>
+        /// Server-only, once per match: spawn the win-condition coordinator with the
+        /// selected mode id after scene runtime objects exist. Called from Refresh()
+        /// which every match scene NetworkBehaviour triggers on spawn.
+        /// </summary>
+        private void TryWireWinCondition()
+        {
+            if (_winConditionWired || !IsServer)
+            {
+                return;
+            }
+
+            string modeId = _sessionContext?.GameModeService?.SelectedGameMode?.Id;
+            if (string.IsNullOrEmpty(modeId))
+            {
+                return;
+            }
+
+            _winConditionWired = true;
+
+            var go = new GameObject("MatchRuntimeBootstrap");
+            go.AddComponent<NetworkObject>();
+            var bootstrap = go.AddComponent<MatchRuntimeBootstrap>();
+            bootstrap.ModeId = modeId;
+            go.GetComponent<NetworkObject>().Spawn();
         }
 
         public bool TryGetSpawnedObject(ulong networkObjectId, out NetworkObject networkObject)
@@ -120,6 +152,7 @@ namespace KitchenClash.Infrastructure.Network
 
         public void ClearSceneRuntime()
         {
+            _winConditionWired = false;
             ScoreManager = null;
             NetworkScoreManager = null;
             OrderManager = null;
