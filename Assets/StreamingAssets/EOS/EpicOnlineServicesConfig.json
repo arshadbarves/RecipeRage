@@ -1,6 +1,6 @@
 {
-  "deploymentID": null,
-  "clientID": null,
+  "deploymentID": "146b53cc89584a8d9586e9dd1f0caf91",
+  "clientID": "xyza7891a4duvFnuVg7ZJzUGcaf7vgHF",
   "tickBudgetInMilliseconds": 0,
   "taskNetworkTimeoutSeconds": 0.0,
   "platformOptionsFlags": "None",

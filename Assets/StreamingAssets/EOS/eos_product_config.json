@@ -1,7 +1,7 @@
 {
   "ProductName": "Recipe rage",
   "ProductId": "1fbb10d0979749e2a3eddf74edfb1745",
-  "ProductVersion": "0.0.1",
+  "ProductVersion": "0.1.0",
   "imported": true,
   "Clients": [
     {
