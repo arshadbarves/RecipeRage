@@ -41,6 +41,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Maps/clash_kitchen.unity
     guid: 43c13eaceedb440f48744f491dff7b11
+  - enabled: 1
+    path: Assets/Scenes/Map_RushService.unity
+    guid: 0459e120c2a934a498df1ee516524321
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: acadb39dda0c644fd8624425e21e877f,
       type: 2}
