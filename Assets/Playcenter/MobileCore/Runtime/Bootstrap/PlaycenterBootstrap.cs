@@ -15,6 +15,8 @@ namespace Playcenter.MobileCore
         public IPlaycenterServices Services { get; private set; }
         public MobileCoreContext Core { get; private set; }
 
+        private UnityGameClock _clock;
+
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -26,6 +28,13 @@ namespace Playcenter.MobileCore
             Instance = this;
             DontDestroyOnLoad(gameObject);
             Core = new MobileCoreContext();
+            _clock = new UnityGameClock();
+            Core.Clock = _clock;
+        }
+
+        private void Update()
+        {
+            _clock?.Tick(Time.deltaTime);
         }
 
         private void OnDestroy()

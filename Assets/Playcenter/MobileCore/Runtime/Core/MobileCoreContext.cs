@@ -6,5 +6,6 @@ namespace Playcenter.MobileCore
     /// </summary>
     public sealed class MobileCoreContext
     {
+        public IGameClock Clock { get; set; }
     }
 }
