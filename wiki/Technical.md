@@ -466,6 +466,11 @@ Assets/Playcenter/
 └── Tests/
 ```
 
+> **Testing amendment (2026-07-24):** Playcenter.MobileCore uses money-path testing —
+> core state machines and planners only; adapters/DTOs/bootstrap verified by inspection.
+> Approved by project owner. The blanket >80% rule still applies to all other new code.
+> See `wiki/MobileCore.md`.
+
 ## Forbidden
 
 - Hardcoded balance (all = IConfigService.Get with RC key + fallback)

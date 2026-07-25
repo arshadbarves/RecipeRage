@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Playcenter.MobileCore;
 using Playcenter.Services;
 using Playcenter.Shell;
 using VContainer.Unity;
@@ -7,25 +8,26 @@ using VContainer.Unity;
 namespace KitchenClash.Infrastructure.Network
 {
     /// <summary>
-    /// Session-scoped bridge: when connectivity declares match forfeit or host-drop timeout,
-    /// stop the active <see cref="INetSession"/> so NGO shuts down through the Playcenter port.
+    /// Session-scoped bridge: feeds connectivity signals into the module's
+    /// ReconnectStateMachine and stops the session via NetSessionOrchestrator on
+    /// terminal failure (forfeit / host-drop timeout — no host migration in v1).
     /// </summary>
     /// <remarks>
     /// Subscribes to concrete <see cref="NetworkConnectivityService"/> events (not on
     /// <see cref="IConnectivityService"/>). If the concrete service is unavailable at
-    /// construction, the bridge is a no-op; EndGame still stops via <see cref="INetSession"/>.
+    /// construction, the bridge is a no-op; EndGame still stops via the orchestrator.
     /// </remarks>
     public sealed class NetSessionConnectivityBridge : IStartable, IDisposable
     {
-        private readonly INetSession _netSession;
+        private readonly NetSessionOrchestrator _orchestrator;
         private readonly NetworkConnectivityService _connectivity;
         private bool _started;
 
         public NetSessionConnectivityBridge(
-            INetSession netSession,
+            NetSessionOrchestrator orchestrator,
             IConnectivityService connectivity = null)
         {
-            _netSession = netSession ?? throw new ArgumentNullException(nameof(netSession));
+            _orchestrator = orchestrator ?? throw new ArgumentNullException(nameof(orchestrator));
             _connectivity = connectivity as NetworkConnectivityService;
         }
 
@@ -53,9 +55,19 @@ namespace KitchenClash.Infrastructure.Network
             _started = false;
         }
 
+        public void NotifyDisconnected()
+        {
+            _orchestrator.NotifyDisconnected();
+        }
+
+        public void NotifyConnected()
+        {
+            _orchestrator.Reconnect.OnConnected();
+        }
+
         private void OnConnectivityStopRequested()
         {
-            if (_netSession == null || !_netSession.IsActive)
+            if (!_orchestrator.IsActive)
             {
                 return;
             }
@@ -68,7 +80,7 @@ namespace KitchenClash.Infrastructure.Network
         {
             try
             {
-                await _netSession.StopAsync().ConfigureAwait(false);
+                await _orchestrator.StopAsync().ConfigureAwait(false);
             }
             catch (Exception)
             {

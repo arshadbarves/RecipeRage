@@ -338,3 +338,4 @@ Multi-title shared service **implementations** moved into the SDK on `architectu
 - **Wiki:** Technical Session DI law + LLM-Rules forbidden dual-install / orphan root.
 - 2026-07-24: Soft-launch scope locked → `docs/release/SOFT_LAUNCH_SCOPE.md`
 - 2026-07-24: Soft-launch release track: EOS Dev aligned, cloud save, win-condition wiring, gate docs on `release-soft-launch` → `docs/release/`
+- 2026-07-24: Added `MobileCore.md` (new module: input/session/bots/net + unified bootstrap). LLM-Rules gained MobileCore Required/Forbidden. Testing amendment recorded for the module (money-path only). Spec: docs/superpowers/specs/2026-07-24-playcenter-mobile-core-design.md. Cutover complete on `feature/mobile-core`.

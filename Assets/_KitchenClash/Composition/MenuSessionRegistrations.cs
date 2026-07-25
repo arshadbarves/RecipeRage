@@ -55,6 +55,32 @@ namespace KitchenClash.Composition
             // falls back to NetworkManager.Singleton until SetMatchContext is called
             // (e.g. from NetworkingServiceContainer when match context is available).
             builder.Register<NgoEosNetSession>(Lifetime.Scoped).AsSelf().As<INetSession>();
+
+            // MobileCore net glue: reconnect FSM (match-mode defaults; mc_reconnect_* RC keys)
+            // + orchestrator as the sole start/stop path (wiki law).
+            builder.Register<Playcenter.MobileCore.ReconnectStateMachine>(resolver =>
+            {
+                var config = resolver.Resolve<IConfigService>();
+                var clock = Playcenter.MobileCore.PlaycenterBootstrap.Instance != null
+                    ? Playcenter.MobileCore.PlaycenterBootstrap.Instance.Core.Clock
+                    : new Playcenter.MobileCore.ManualClock();
+                return new Playcenter.MobileCore.ReconnectStateMachine(
+                    new Playcenter.MobileCore.ReconnectConfig(
+                        maxAttempts: config.Get("mc_reconnect_match_attempts", 3),
+                        attemptIntervalSeconds: config.Get("mc_reconnect_match_interval_ms", 5000) / 1000f,
+                        backoffBaseSeconds: config.Get("mc_reconnect_backoff_base_ms", 1000) / 1000f),
+                    clock,
+                    seed: System.Environment.TickCount);
+            }, Lifetime.Scoped);
+            builder.Register<Playcenter.MobileCore.NetSessionOrchestrator>(Lifetime.Scoped);
+            builder.Register<Playcenter.MobileCore.ConnectionQualityTracker>(resolver =>
+            {
+                var config = resolver.Resolve<IConfigService>();
+                return new Playcenter.MobileCore.ConnectionQualityTracker(
+                    degradedMs: config.Get("mc_reconnect_degraded_ms", 150f),
+                    poorMs: config.Get("mc_reconnect_poor_ms", 400f));
+            }, Lifetime.Scoped);
+
             builder.RegisterEntryPoint<NetSessionConnectivityBridge>();
 
             // Session networking facade (lobby/player/mm + GameStarter). IMatchContext

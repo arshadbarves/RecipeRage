@@ -176,6 +176,35 @@ Spec: `docs/superpowers/specs/2026-07-22-playcenter-shared-services-design.md`.
 
 ---
 
+## Playcenter MobileCore — Required / Forbidden
+
+Authoritative detail: `wiki/MobileCore.md`.
+Spec: `docs/superpowers/specs/2026-07-24-playcenter-mobile-core-design.md`.
+
+### REQUIRED
+
+- `PlaycenterBootstrap` as the sole scene entry for the Playcenter stack; one prefab
+- `IGameClock` for all time in Core — no `Time.`/`DateTime.` in Core logic
+- Bot planning under `IBotBudget` time-slice — never unbounded scans per tick
+- Reconnect via `ReconnectStateMachine` — no ad-hoc retry loops in game code
+- Net start/stop via `NetSessionOrchestrator` — no direct `INetSession` in new code
+- Seeded `Random` in `BotBrain` — deterministic bot behavior per match seed
+- `InputFrame` version byte bumped on any wire-format change
+- Session scope factory implemented game-side (`ISessionScopeFactory`) — module stays DI-neutral
+
+### FORBIDDEN (MobileCore)
+
+| Pattern | Why |
+|---------|-----|
+| `UnityEngine`/`VContainer`/`Netcode`/`Epic`/`Firebase`/`Cysharp` usings in `Core/` | Vendor firewall — CI grep gate |
+| Second bootstrap MonoBehaviour for Playcenter stack | One entry point |
+| Game-side reimplementation of dual-stick/gesture/reconnect/claim logic | Common logic lives in the module |
+| Hardcoded timing/tuning in Core | Option structs + `mc_*` RC keys |
+| Dual-path old/new subsystems | Hard cutover — delete in same commit |
+| DI-container reference inside the module | Session factory is a game-side seam |
+
+---
+
 ## Controls (Brawl Stars Fixed Dual-Joystick)
 
 | Input | Action |

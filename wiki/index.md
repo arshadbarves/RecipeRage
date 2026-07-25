@@ -17,6 +17,7 @@ Content-oriented catalog of all wiki pages. Updated on every ingest/query.
 | [Audio](Audio.md) | Audio | Audio architecture, services, pooling | 2026-05-30 |
 | [Art-Direction](Art-Direction.md) | Visual | Visual style, 3D models, animations | 2026-05-30 |
 | [LLM-Rules](LLM-Rules.md) | **Protocol** | LLM dev agent rule sheet — forbidden patterns, arch laws, checklists | 2026-06-02 |
+| [MobileCore](MobileCore.md) | Architecture | Playcenter.MobileCore: input/session/bots/net core + unified bootstrap | 2026-07-24 |
 | [DRIFT-PROTOCOL](DRIFT-PROTOCOL.md) | **Protocol** | Drift warning format, severity levels, update procedure | 2026-06-02 |
 
 ## Key Entities

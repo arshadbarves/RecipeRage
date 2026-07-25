@@ -25,7 +25,7 @@ namespace KitchenClash.Infrastructure.Network
         private readonly IUIService _uiService;
         private readonly IAppFlow _appFlow;
         private readonly ILocalNetworkIdentity _localNetworkIdentity;
-        private readonly INetSession _netSession;
+        private readonly Playcenter.MobileCore.NetSessionOrchestrator _netSession;
         private readonly IAnalyticsService _analytics;
 
         private bool _isGameActive;
@@ -44,7 +44,7 @@ namespace KitchenClash.Infrastructure.Network
             IUIService uiService,
             IAppFlow appFlow,
             ILocalNetworkIdentity localNetworkIdentity,
-            INetSession netSession,
+            Playcenter.MobileCore.NetSessionOrchestrator netSession,
             IAnalyticsService analytics = null)
         {
             _lobbyManager = lobbyManager;
@@ -229,7 +229,7 @@ namespace KitchenClash.Infrastructure.Network
 
             try
             {
-                // sessionToken = host product user id; transport + StartClient owned by INetSession.
+                // sessionToken = host product user id; transport + StartClient owned by the orchestrator.
                 _netSession.StartAsync(NetRole.Client, hostUserIdStr ?? string.Empty)
                     .GetAwaiter()
                     .GetResult();
@@ -261,18 +261,18 @@ namespace KitchenClash.Infrastructure.Network
                 _latencyMonitor = null;
             }
 
-            // INetSession owns NGO shutdown (via MatchContext.ShutdownNetworkSession when available).
+            // Orchestrator owns NGO shutdown (via MatchContext.ShutdownNetworkSession when available).
             try
             {
                 if (_netSession.IsActive || NetcodeManager != null)
                 {
                     _netSession.StopAsync().GetAwaiter().GetResult();
-                    GameLogger.Log("Network session stopped via INetSession");
+                    GameLogger.Log("Network session stopped via orchestrator");
                 }
             }
             catch (System.Exception ex)
             {
-                GameLogger.LogError($"INetSession.StopAsync failed: {ex.Message}");
+                GameLogger.LogError($"Orchestrator StopAsync failed: {ex.Message}");
             }
 
             RestoreAutomaticPlayerSpawning();
