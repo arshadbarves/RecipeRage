@@ -28,14 +28,18 @@
 **Core Pillars:**
 1. **Fast-paced cooking** — 5-minute matches, always moving, never idle
 2. **Skill-based gameplay** — Chop speed is pure tapping skill; no pay-to-win
-3. **Fair competition** — Mirrored kitchens, same recipe list, utility-only upgrades
+3. **Fair competition** — Mirrored kitchens, same recipe list, personal utility abilities only
 4. **Mobile-first** — Dual-stick controls, landscape UI, 2-5 minute sessions
+5. **Visual variety** — 4-5 themed maps at launch (Beach, Forest, Boat, etc.), Overcooked-style layouts
+6. **Premium polish** — Bright colorful palette, soft shadows, smooth animations, 3D character showcase
 
 **Target Audience:** Casual to mid-core mobile gamers (Brawl Stars, Overcooked fans)
 
 **Platform:** iOS/Android (mobile now, PC later)
 
 **Monetization:** IAP (chefs, coins, cosmetics) + Ads (rewarded videos, interstitials)
+
+**Trophy System:** Win +15 trophies, Loss -8 trophies (Brawl Stars-style, encourages playing)
 
 ---
 
@@ -68,10 +72,22 @@ FETCH (instant) → CHOP (tap-burst, fixed count) → COOK (autonomous timer) �
 - First team to complete all recipes wins immediately, OR
 - Team with most recipes completed when timer expires wins
 
+**Trophy Rewards:**
+- Win: +15 trophies
+- Loss: -8 trophies
+- Coins: 50 (win) / 20 (loss) + 5 per recipe completed
+
+**Match Start Sequence:**
+1. Matchmaking completes → Show team compositions (5 seconds)
+2. 3-2-1 countdown (3 seconds)
+3. Match starts
+
 **Recipe Difficulty:**
-- **Easy (T1):** 2 ingredients, 8 taps chop, 12s cook, 5s burn grace → 50 points
-- **Medium (T2):** 3 ingredients, 10 taps chop, 15s cook, 4s burn grace → 150 points
-- **Hard (T3):** 3 ingredients, 12 taps chop, 18s cook, 3s burn grace → 300 points
+- **Easy (T1):** 2 ingredients, 8 taps chop, 12s cook, 5s burn grace
+- **Medium (T2):** 3 ingredients, 10 taps chop, 15s cook, 4s burn grace
+- **Hard (T3):** 3 ingredients, 12 taps chop, 18s cook, 3s burn grace
+
+**Note:** Points are tracked internally for progression (XP, coins) but NOT shown during match. Focus is purely on completing recipes fast.
 
 ### Cooking Mechanics
 
@@ -91,55 +107,147 @@ FETCH (instant) → CHOP (tap-burst, fixed count) → COOK (autonomous timer) �
 - **Validation:** Checks all ingredients match recipe (correct type, chopped, cooked)
 - **Reward:** Points awarded, recipe marked complete
 
-### Station Layout (Per Team)
+### Plate System
 
+**How it works:**
+1. Player fetches ingredients from crate → ingredients go into inventory
+2. Player chops ingredients at cutting board → chopped ingredients go into inventory
+3. Player cooks ingredients at stove → cooked ingredients go into inventory
+4. Player walks to **Plate Station** → taps Interact → takes a plate
+5. Player arranges ingredients on plate (tap to place each ingredient)
+6. Player carries plate to **Serving Counter** → taps Interact → recipe validated and served
+
+**Plate Mechanics:**
+- Plates are physical objects you carry (like ingredients)
+- Each plate can hold up to 4 ingredients
+- Ingredients must be arranged on plate before serving
+- Plate is consumed when recipe is served
+- Empty plates can be returned to Plate Station for reuse
+
+**Why plates:**
+- Adds physicality to cooking (feels more like real cooking)
+- Creates interesting routing decisions (fetch plate before or after cooking?)
+- Prevents "ingredient soup" (all ingredients in one inventory slot)
+- Visual clarity (see exactly what's on the plate)
+
+### Station Layout (Map-Based, Overcooked-Style)
+
+**Maps are themed and have different station counts/placements.**
+
+**Example Maps:**
+
+#### Map 1: Beach BBQ
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│ TEAM KITCHEN (Top-Down View)                               │
+│ BEACH BBQ (Top-Down View)                                  │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
 │  [Ingredient Crate 1]  [Ingredient Crate 2]                │
 │                                                             │
 │  [Cutting Board 1]     [Cutting Board 2]                   │
 │                                                             │
-│  [Counter/Prep Table]  (holds 2 items, temporary storage)  │
+│  [Plate Station]       [Counter/Prep Table]                │
+│                                                             │
+│  [BBQ Grill 1]         [BBQ Grill 2]                       │
+│                                                             │
+│  [Serving Counter]                                          │
+│                                                             │
+│  Dynamic Element: Moving platform (rotates slowly)         │
+└─────────────────────────────────────────────────────────────┘
+```
+
+#### Map 2: Forest Campfire
+```
+┌─────────────────────────────────────────────────────────────┐
+│ FOREST CAMPFIRE (Top-Down View)                            │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  [Ingredient Crate 1]  [Ingredient Crate 2]  [Crate 3]     │
+│                                                             │
+│  [Cutting Board 1]     [Cutting Board 2]                   │
+│                                                             │
+│  [Plate Station]                                            │
+│                                                             │
+│  [Campfire 1]          [Campfire 2]          [Campfire 3]  │
+│                                                             │
+│  [Serving Counter 1]   [Serving Counter 2]                 │
+│                                                             │
+│  Dynamic Element: Falling leaves (obscure vision)          │
+└─────────────────────────────────────────────────────────────┘
+```
+
+#### Map 3: Pirate Ship
+```
+┌─────────────────────────────────────────────────────────────┐
+│ PIRATE SHIP (Top-Down View)                                │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  [Ingredient Crate 1]  [Ingredient Crate 2]                │
+│                                                             │
+│  [Cutting Board 1]     [Cutting Board 2]                   │
+│                                                             │
+│  [Plate Station]       [Counter/Prep Table]                │
 │                                                             │
 │  [Stove 1]             [Stove 2]                           │
 │                                                             │
 │  [Serving Counter]                                          │
 │                                                             │
+│  Dynamic Element: Ship tilts (stations slide slightly)     │
 └─────────────────────────────────────────────────────────────┘
 ```
 
+**Map Features:**
+- **4-5 maps at launch** (Beach, Forest, Boat, plus 1-2 more)
+- **Different station counts** (some maps have 3 stoves, some have 2)
+- **Dynamic elements** (moving platforms, falling leaves, ship tilting)
+- **Bright colorful palette** (high saturation, Overcooked-style)
+- **Daily/weekly rotation** (like Brawl Stars)
+
 **Station Types:**
-- **Ingredient Crate (2x):** Spawn raw ingredients (instant pickup)
-- **Cutting Board (2x):** Chop ingredients (tap-burst minigame)
-- **Counter/Prep Table (1x):** Temporary storage (holds 2 items, no processing)
-- **Stove (2x):** Cook ingredients (autonomous, burn risk)
-- **Serving Counter (1x):** Deliver completed recipes (instant)
+- **Ingredient Crate:** Spawn raw ingredients (instant pickup)
+- **Cutting Board:** Chop ingredients (tap-burst minigame)
+- **Plate Station:** Take empty plate, arrange ingredients
+- **Counter/Prep Table:** Temporary storage (holds 2 items)
+- **Stove/Grill/Campfire:** Cook ingredients (autonomous, burn risk)
+- **Serving Counter:** Deliver completed recipes (instant)
 
 ### Chef System
 
-**6 Chefs** with rarity tiers and utility-only stats:
+**6 Chefs** with rarity tiers and **personal utility abilities** (fair for multiplayer):
 
-| Chef | Rarity | Unlock Cost | Passive Bonus |
-|------|--------|-------------|---------------|
-| **Gordon** | Common | Starter | +5% movement speed |
-| **Julia** | Common | Starter | +5% interaction range |
-| **Marco** | Rare | 500 coins | +10% carry capacity |
-| **Yuki** | Rare | 500 coins | +10% burn grace |
-| **Gustavo** | Epic | 2,000 coins | +15% movement when carrying |
-| **Remy** | Legendary | 5,000 coins | +20% interaction range |
+| Chef | Rarity | Unlock Cost | Ability | Ability Type |
+|------|--------|-------------|---------|--------------|
+| **Gordon** | Common | Starter | +10% movement speed | Passive |
+| **Julia** | Common | Starter | +15% pickup/drop speed | Passive |
+| **Marco** | Rare | 500 coins | +1 carry capacity | Passive |
+| **Yuki** | Rare | 500 coins | +2s burn grace on YOUR plates | Passive |
+| **Gustavo** | Epic | 2,000 coins | Dash forward 3m (30s cooldown) | Active (1x per match) |
+| **Remy** | Legendary | 5,000 coins | See recipe timers above stoves | Passive |
 
-**Upgradeable Stats (Level 1 → 10):**
-- **Movement Speed:** 5.0 m/s → 6.5 m/s (+30%, +0.15 per level)
-- **Interaction Range:** 2.0m → 2.6m (+30%, +0.06m per level)
-- **Carry Capacity:** 2 items → 3 items (+1 at L5, +1 at L10)
-- **Burn Grace Window:** 5.0s → 6.5s (+30%, +0.15s per level)
+**Why these abilities are fair:**
+- ✅ **Personal only** — Abilities affect YOU, not shared stations
+- ✅ **No pay-to-win** — Abilities are convenience (movement, pickup speed), not power (chop/cook speed)
+- ✅ **Skill expression** — Faster movement = better routing (skill-based)
+- ✅ **Team-friendly** — Doesn't create "carry" dynamic
+
+**Upgradeable Stats (L1→L10):**
+- **Gordon:** +1% movement speed per level (max +10%)
+- **Julia:** +1.5% pickup/drop speed per level (max +15%)
+- **Marco:** +1 carry capacity at L5, +1 at L10 (max 4 items)
+- **Yuki:** +0.2s burn grace per level (max +2s)
+- **Gustavo:** -2s dash cooldown per level (max -20s, min 10s cooldown)
+- **Remy:** Unlock at L1, no upgrades (binary ability)
 
 **NOT Upgradeable (Skill-Based):**
 - Chop speed (pure tapping skill)
 - Cook time (station property, not chef)
+- Recipe completion (team effort)
+
+**Chef Selection (Brawl Stars-Style):**
+- Select chef in **Lobby** (before matchmaking)
+- Team can see each other's chef selections
+- Once you click **Play**, goes directly to **Matchmaking**
+- **No pre-match chef select screen** — chef is locked in when you queue
 
 ### Controls (Mobile, Landscape)
 
@@ -177,102 +285,90 @@ FETCH (instant) → CHOP (tap-burst, fixed count) → COOK (autonomous timer) �
 **Hybrid (Foundation + Vertical Slices)**
 
 **Phase 0: Foundation (Week 1)**
-- Core services (DI, EventBus, Audio, Save, Config, Logging, Time, SceneLoading, Input, StateMachine)
+- Playcenter SDK core services (DI, EventBus, Audio, Save, Config, Logging, Time, SceneLoading, Input, StateMachine)
+- Separate composition roots (PlaycenterCompositionRoot → GameplayCompositionRoot)
 
 **Slice 1: Core Gameplay Loop (Week 2-3)**
 - Player, Stations, Recipes, Cooking, Match (single-player, no networking)
 
 **Slice 2: Multiplayer (Week 4)**
 - NGO + EOS integration, network sync, lobby/matchmaking
+- EOS Cloud Storage for save data
 
 **Slice 3: Bots (Week 5)**
 - BotController, task evaluators, adaptive difficulty
 
 **Slice 4: Progression (Week 6)**
 - Chef unlock/upgrade, wallet, persistence
+- Trophy system (win +15, loss -8)
 
 **Slice 5: Monetization (Week 7)**
 - IAP, ads, cosmetics
 
 **Polish (Week 8+)**
 - UI animations, audio mixing, VFX, optimization
+- 4-5 themed maps (Beach, Forest, Boat, etc.)
 
 ### Folder Structure
 
 ```
 Assets/
-├── Game/                           # RecipeRage game code
-│   ├── Core/                       # Foundation (Phase 0)
-│   │   ├── DI/                     # CompositionRoot, ServiceLocator
-│   │   ├── Events/                 # IEventBus, EventBus (custom pub/sub)
-│   │   ├── Audio/                  # IAudioService, UnityAudioService
-│   │   ├── Save/                   # ISaveService, LocalSaveService
-│   │   ├── Config/                 # IConfigService, FirebaseConfigService
-│   │   ├── Time/                   # ITimeService, UnityTimeService
-│   │   ├── Logging/                # ILoggingService, UnityLoggingService
-│   │   ├── StateMachine/           # IGameState, GameStateMachine
-│   │   ├── SceneLoading/           # ISceneLoader, AddressablesSceneLoader
-│   │   └── Input/                  # IInputService, DualStickInputService
-│   │
-│   ├── Gameplay/                   # Core gameplay (Slice 1)
-│   │   ├── Player/                 # PlayerController, PlayerMovement
-│   │   ├── Ingredient/             # IngredientItem, IngredientType
-│   │   ├── Station/                # StationBase, CuttingStation, CookingStation, ServingStation, CounterStation
-│   │   ├── Recipe/                 # Recipe, RecipeCatalog, RecipeDefinition
-│   │   ├── Cooking/                # CookingController, ChopController, ServeController
-│   │   └── Match/                  # MatchController, ScoreTracker, WinCondition
-│   │
-│   ├── Network/                    # Multiplayer (Slice 2)
-│   │   ├── NetworkPlayer.cs        # NGO NetworkBehaviour wrapper
-│   │   ├── NetworkStation.cs       # Station network sync
-│   │   ├── NetworkMatch.cs         # Match state sync
-│   │   └── EOSLobby.cs             # EOS lobby/matchmaking
-│   │
-│   ├── Bots/                       # Bot AI (Slice 3)
-│   │   ├── BotController.cs        # Bot player controller
-│   │   ├── BotBrain.cs             # Task planner integration
-│   │   ├── Evaluators/             # FetchEvaluator, ChopEvaluator, CookEvaluator, ServeEvaluator
-│   │   └── AdaptiveDifficulty.cs   # Skill matching logic
-│   │
-│   ├── Progression/                # Progression (Slice 4)
-│   │   ├── Chef/                   # ChefDefinition, ChefUnlock, ChefUpgrade
-│   │   ├── Wallet/                 # IWallet, CoinWallet
-│   │   └── Persistence/            # SaveLoadChefProgress
-│   │
-│   ├── Monetization/               # Monetization (Slice 5)
-│   │   ├── IAP/                    # IIAPService, UnityIAPService
-│   │   ├── Ads/                    # IAdsService, AdMobService
-│   │   └── Cosmetics/              # ChefSkin, KitchenTheme
-│   │
-│   └── UI/                         # UI (Polish)
-│       ├── Screens/                # MainMenuScreen, LobbyScreen, HUDScreen, ResultsScreen, ChefsScreen, ShopScreen
-│       ├── Components/             # RecipeListItem, ChefCard, WalletDisplay
-│       └── Animations/             # UITransition, UITween
-│
 ├── Playcenter/                     # Playcenter SDK (rebuilt from scratch)
 │   ├── Core/
-│   │   ├── Boot/                   # BootSequence, IGameEntry
-│   │   ├── Events/                 # IEventBus, EventBus
-│   │   ├── Logging/                # ILoggingService
-│   │   └── Time/                   # ITimeService
+│   │   ├── DI/                     # PlaycenterCompositionRoot, ServiceLocator
+│   │   ├── Events/                 # IEventBus, EventBus (custom pub/sub)
+│   │   ├── Logging/                # ILoggingService, UnityLoggingService
+│   │   └── Time/                   # ITimeService, UnityTimeService
 │   ├── Services/
-│   │   ├── Auth/                   # IAuthService, EOSAuthService
-│   │   ├── Config/                 # IConfigService, FirebaseConfigService
-│   │   ├── Storage/                # IStorageService, EOSStorageService
-│   │   ├── Analytics/              # IAnalyticsService, FirebaseAnalyticsService
-│   │   ├── Ads/                    # IAdsService, AdMobService
-│   │   ├── IAP/                    # IIAPService, UnityIAPService
-│   │   └── Friends/                # IFriendsService, UnityGamingServicesFriends
+│   │   ├── Auth/                   # IAuthService, EOSAuthService (FULL LOGIC)
+│   │   ├── Config/                 # IConfigService, FirebaseConfigService (FULL LOGIC)
+│   │   ├── Storage/                # IStorageService, EOSCloudStorageService (FULL LOGIC)
+│   │   ├── Analytics/              # IAnalyticsService, FirebaseAnalyticsService (FULL LOGIC)
+│   │   ├── Ads/                    # IAdsService, AdMobService (FULL LOGIC)
+│   │   ├── IAP/                    # IIAPService, UnityIAPService (FULL LOGIC)
+│   │   ├── Friends/                # IFriendsService, UnityGamingServicesFriends (FULL LOGIC)
+│   │   ├── Audio/                  # IAudioService, UnityAudioService (FULL LOGIC)
+│   │   ├── Save/                   # ISaveService, EOSCloudSaveService (FULL LOGIC)
+│   │   └── Wallet/                 # IWalletService, CoinWalletService (FULL LOGIC)
 │   ├── UI/
 │   │   ├── IUIService/             # Screen stack management
 │   │   └── UIToolkit/              # BaseUIScreen, UIScreenAttribute
 │   └── Net/
 │       ├── INetService/            # Network abstraction
-│       └── EOS/                    # EOS transport, lobby, matchmaking
+│       └── EOS/                    # EOS transport, lobby, matchmaking (FULL LOGIC)
+│
+├── Game/                           # RecipeRage game code (gameplay logic ONLY)
+│   ├── DI/                         # GameplayCompositionRoot (listens to PlaycenterCompositionRoot)
+│   ├── Gameplay/                   # Core gameplay (Slice 1)
+│   │   ├── Player/                 # PlayerController, PlayerMovement
+│   │   ├── Ingredient/             # IngredientItem, IngredientType
+│   │   ├── Station/                # StationBase, CuttingStation, CookingStation, ServingStation, PlateStation, CounterStation
+│   │   ├── Recipe/                 # Recipe, RecipeCatalog, RecipeDefinition
+│   │   ├── Cooking/                # CookingController, ChopController, ServeController, PlateController
+│   │   └── Match/                  # MatchController, ScoreTracker, WinCondition, TrophyTracker
+│   ├── Network/                    # Multiplayer (Slice 2)
+│   │   ├── NetworkPlayer.cs        # NGO NetworkBehaviour wrapper
+│   │   ├── NetworkStation.cs       # Station network sync
+│   │   ├── NetworkMatch.cs         # Match state sync
+│   │   └── EOSLobby.cs             # EOS lobby/matchmaking
+│   ├── Bots/                       # Bot AI (Slice 3)
+│   │   ├── BotController.cs        # Bot player controller
+│   │   ├── BotBrain.cs             # Task planner integration
+│   │   ├── Evaluators/             # FetchEvaluator, ChopEvaluator, CookEvaluator, ServeEvaluator, PlateEvaluator
+│   │   └── AdaptiveDifficulty.cs   # Skill matching logic
+│   ├── Progression/                # Progression (Slice 4)
+│   │   ├── Chef/                   # ChefDefinition, ChefUnlock, ChefUpgrade (GAME-SPECIFIC LOGIC)
+│   │   └── Trophy/                 # TrophyService, TrophyTracker (GAME-SPECIFIC LOGIC)
+│   ├── Monetization/               # Monetization (Slice 5)
+│   │   └── Cosmetics/              # ChefSkin, KitchenTheme (GAME-SPECIFIC LOGIC)
+│   └── UI/                         # UI (Polish)
+│       ├── Screens/                # MainMenuScreen, LobbyScreen, HUDScreen, ResultsScreen, ChefsScreen, ShopScreen
+│       ├── Components/             # RecipeListItem, ChefCard, WalletDisplay
+│       └── Animations/             # UITransition, UITween
 │
 └── Art/                            # Art assets
     ├── Characters/                 # 3D chef models (for main menu)
-    ├── Kitchens/                   # 2D kitchen sprites
+    ├── Maps/                       # 4-5 themed maps (Beach, Forest, Boat, etc.)
     ├── UI/                         # UI sprites, icons
     └── VFX/                        # Particles, shaders
 ```
@@ -294,51 +390,125 @@ Playcenter.UI.dll                   # Playcenter UI
 Playcenter.Net.dll                  # Playcenter networking
 ```
 
-### Dependency Injection (Manual Composition Root)
+### Dependency Injection (Separate Composition Roots)
 
-**Example:**
+**Two composition roots: PlaycenterCompositionRoot (SDK) → GameplayCompositionRoot (Game)**
+
+**PlaycenterCompositionRoot (SDK):**
 ```csharp
-// Assets/Game/Core/DI/CompositionRoot.cs
-public sealed class CompositionRoot : MonoBehaviour
+// Assets/Playcenter/Core/DI/PlaycenterCompositionRoot.cs
+public sealed class PlaycenterCompositionRoot : MonoBehaviour
 {
+    public static event Action OnPlaycenterInitialized;
+
     private void Awake()
     {
         // Core services
         var eventBus = new EventBus();
-        var audioService = new UnityAudioService(audioMixer);
-        var saveService = new LocalSaveService();
-        var configService = new FirebaseConfigService();
         var loggingService = new UnityLoggingService();
         var timeService = new UnityTimeService();
-        var sceneLoader = new AddressablesSceneLoader();
-        var inputService = new DualStickInputService();
-        var stateMachine = new GameStateMachine();
 
-        // Gameplay services
-        var recipeCatalog = new RecipeCatalog(recipeScriptableObjects);
-        var cookingController = new CookingController(eventBus, configService);
-        var matchController = new MatchController(eventBus, recipeCatalog);
-
-        // Audio system (event-driven)
-        var audioSystem = new AudioSystem(audioService);
-        audioSystem.Initialize(eventBus);
+        // SDK services (FULL LOGIC)
+        var authService = new EOSAuthService();
+        var configService = new FirebaseConfigService();
+        var storageService = new EOSCloudStorageService();
+        var analyticsService = new FirebaseAnalyticsService();
+        var adsService = new AdMobService();
+        var iapService = new UnityIAPService();
+        var friendsService = new UnityGamingServicesFriends();
+        var audioService = new UnityAudioService(audioMixer);
+        var saveService = new EOSCloudSaveService(storageService);
+        var walletService = new CoinWalletService(saveService, analyticsService);
 
         // Register in service locator
         ServiceLocator.Register<IEventBus>(eventBus);
-        ServiceLocator.Register<IAudioService>(audioService);
-        ServiceLocator.Register<ISaveService>(saveService);
-        ServiceLocator.Register<IConfigService>(configService);
         ServiceLocator.Register<ILoggingService>(loggingService);
         ServiceLocator.Register<ITimeService>(timeService);
-        ServiceLocator.Register<ISceneLoader>(sceneLoader);
-        ServiceLocator.Register<IInputService>(inputService);
-        ServiceLocator.Register<IGameStateMachine>(stateMachine);
-        ServiceLocator.Register<IRecipeCatalog>(recipeCatalog);
-        ServiceLocator.Register<ICookingController>(cookingController);
-        ServiceLocator.Register<IMatchController>(matchController);
+        ServiceLocator.Register<IAuthService>(authService);
+        ServiceLocator.Register<IConfigService>(configService);
+        ServiceLocator.Register<IStorageService>(storageService);
+        ServiceLocator.Register<IAnalyticsService>(analyticsService);
+        ServiceLocator.Register<IAdsService>(adsService);
+        ServiceLocator.Register<IIAPService>(iapService);
+        ServiceLocator.Register<IFriendsService>(friendsService);
+        ServiceLocator.Register<IAudioService>(audioService);
+        ServiceLocator.Register<ISaveService>(saveService);
+        ServiceLocator.Register<IWalletService>(walletService);
+
+        // Initialize SDK
+        StartCoroutine(InitializeSDK());
+    }
+
+    private IEnumerator InitializeSDK()
+    {
+        // Initialize services in order
+        yield return ServiceLocator.Get<IAuthService>().Initialize();
+        yield return ServiceLocator.Get<IConfigService>().Initialize();
+        yield return ServiceLocator.Get<IStorageService>().Initialize();
+        yield return ServiceLocator.Get<IAnalyticsService>().Initialize();
+
+        // Fire event when SDK is ready
+        OnPlaycenterInitialized?.Invoke();
     }
 }
 ```
+
+**GameplayCompositionRoot (Game):**
+```csharp
+// Assets/Game/DI/GameplayCompositionRoot.cs
+public sealed class GameplayCompositionRoot : MonoBehaviour
+{
+    private void Awake()
+    {
+        // Listen to Playcenter SDK initialization
+        PlaycenterCompositionRoot.OnPlaycenterInitialized += OnPlaycenterReady;
+    }
+
+    private void OnPlaycenterReady()
+    {
+        // Get SDK services
+        var eventBus = ServiceLocator.Get<IEventBus>();
+        var saveService = ServiceLocator.Get<ISaveService>();
+        var configService = ServiceLocator.Get<IConfigService>();
+        var walletService = ServiceLocator.Get<IWalletService>();
+        var analyticsService = ServiceLocator.Get<IAnalyticsService>();
+
+        // Game-specific services (GAME LOGIC ONLY)
+        var recipeCatalog = new RecipeCatalog(recipeScriptableObjects);
+        var cookingController = new CookingController(eventBus, configService);
+        var matchController = new MatchController(eventBus, recipeCatalog);
+        var chefProgressionService = new ChefProgressionService(walletService, saveService, analyticsService);
+        var trophyService = new TrophyService(saveService, analyticsService);
+
+        // Audio system (event-driven)
+        var audioSystem = new AudioSystem(ServiceLocator.Get<IAudioService>());
+        audioSystem.Initialize(eventBus);
+
+        // Register game services
+        ServiceLocator.Register<IRecipeCatalog>(recipeCatalog);
+        ServiceLocator.Register<ICookingController>(cookingController);
+        ServiceLocator.Register<IMatchController>(matchController);
+        ServiceLocator.Register<IChefProgressionService>(chefProgressionService);
+        ServiceLocator.Register<ITrophyService>(trophyService);
+
+        // Start game
+        var stateMachine = new GameStateMachine();
+        ServiceLocator.Register<IGameStateMachine>(stateMachine);
+        stateMachine.ChangeState(new MainMenuState());
+    }
+
+    private void OnDestroy()
+    {
+        PlaycenterCompositionRoot.OnPlaycenterInitialized -= OnPlaycenterReady;
+    }
+}
+```
+
+**Why separate composition roots:**
+- ✅ **Clear separation** — SDK initializes first, game initializes after
+- ✅ **Easy to plug in** — Just add GameplayCompositionRoot to scene, it listens to SDK
+- ✅ **Testable** — Can test game logic without SDK (mock OnPlaycenterInitialized)
+- ✅ **Reusable** — SDK can be used in other games without game logic
 
 ### Event-Driven Audio Architecture
 
@@ -431,14 +601,18 @@ public sealed class GameStateMachine
 3. **Premium polish** — Smooth animations, satisfying feedback, high-quality visuals
 4. **Minimal HUD** — Only essential info during match (recipe list, timer, score)
 5. **3D character showcase** — Main menu features 3D chef model (like Brawl Stars)
+6. **Bright colorful palette** — High saturation, Overcooked-style (flat colors, no gradients)
+7. **Soft shadows** — Subtle depth, still flat colors (UI Toolkit-supported styles only)
 
 ### Screen Flow
 
 ```
-Boot → Login → Main Menu → Game Mode Select → Chef Select → Matchmaking → Match → Results
+Boot → Login → Main Menu → Lobby (Chef Select) → Matchmaking → Team Compositions (5s) → Countdown (3-2-1) → Match → Results
                      ↓
               [Chefs] [Shop] [Events] [Settings] [Friends]
 ```
+
+**Note:** Chef selection happens in **Lobby** (before matchmaking), not in a separate pre-match screen. Once you click **Play**, you go directly to matchmaking.
 
 ### Key Screens (Landscape, Premium UI)
 
@@ -560,13 +734,13 @@ Boot → Login → Main Menu → Game Mode Select → Chef Select → Matchmakin
 - Hover/tap: card scales up 1.05x with shadow
 - Play button: scale down 0.95x + haptic feedback
 
-#### 5. Chef Select (Pre-Match)
+#### 5. Lobby Screen (Chef Select, Brawl Stars-Style)
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│ [← Back]  Select Your Chef              Team: 2/2 players      │
+│ [← Back]  Lobby                          Team: 2/2 players      │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
-│  Your Team:                    Enemy Team:                      │
+│  Your Team:                    Enemy Team: (hidden until match) │
 │  [Player1: Gordon L5]          [???]                            │
 │  [You: Select Chef ▼]          [???]                            │
 │                                                                 │
@@ -575,9 +749,8 @@ Boot → Login → Main Menu → Game Mode Select → Chef Select → Matchmakin
 │  │                                                         │   │
 │  │  Gordon                                                 │   │
 │  │  Level 5/10                                             │   │
-│  │  Speed: ████████░░ 5.6 m/s                              │   │
-│  │  Range: ██████░░░░ 2.2m                                 │   │
-│  │  Carry: ████░░░░░░ 2 items                              │   │
+│  │  Ability: +10% movement speed                           │   │
+│  │  ████████░░ 5.6 m/s                                     │   │
 │  │                                                         │   │
 │  └─────────────────────────────────────────────────────────┘   │
 │                                                                 │
@@ -585,15 +758,18 @@ Boot → Login → Main Menu → Game Mode Select → Chef Select → Matchmakin
 │  [Gordon] [Julia] [Marco] [Yuki] [Gustavo] [Remy]            │
 │    L5       L3      L7      L1      L2        L0🔒            │
 │                                                                 │
-│  [Ready!]                                                       │
+│  [Play - Large Button]  (goes directly to matchmaking)        │
+│                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
 **Animations:**
 - 3D chef model rotates when selected
 - Chef cards: horizontal scroll with snap-to-center
-- Selected card: scale up 1.1x with glow
-- Ready button: pulse when all players ready
+- Selected card: scale up 1.1x with soft shadow
+- Play button: pulse when all players ready
+
+**Note:** Chef is locked in when you click **Play**. No pre-match chef select screen.
 
 #### 6. Matchmaking
 ```
@@ -621,7 +797,59 @@ Boot → Login → Main Menu → Game Mode Select → Chef Select → Matchmakin
 - Tips rotate every 5s with fade transition
 - Cancel button: scale down 0.95x + haptic feedback
 
-#### 7. In-Match HUD (Landscape, Minimal)
+#### 7. Team Compositions (5 seconds)
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                                                                 │
+│                    MATCH FOUND!                                 │
+│                                                                 │
+│  Your Team:                    Enemy Team:                      │
+│  ┌──────────────────┐          ┌──────────────────┐            │
+│  │ Player1          │          │ Enemy1           │            │
+│  │ Gordon L5        │          │ Julia L7         │            │
+│  │ ★★☆              │          │ ★★★              │            │
+│  └──────────────────┘          └──────────────────┘            │
+│  ┌──────────────────┐          ┌──────────────────┐            │
+│  │ You              │          │ Enemy2           │            │
+│  │ Marco L7         │          │ Yuki L3          │            │
+│  │ ★★★              │          │ ★☆☆              │            │
+│  └──────────────────┘          └──────────────────┘            │
+│                                                                 │
+│  Map: Beach BBQ                                                 │
+│                                                                 │
+│  Starting in 5... 4... 3... 2... 1...                          │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Animations:**
+- Team cards slide in from left/right (0.3s)
+- Chef models fade in with scale bounce (0.2s stagger)
+- Countdown numbers scale up + fade out (1s each)
+- Map name fades in at bottom
+
+#### 8. Countdown (3-2-1)
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                                                                 │
+│                                                                 │
+│                         3                                       │
+│                  (Large, centered)                              │
+│                                                                 │
+│                                                                 │
+│                                                                 │
+│                                                                 │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Animations:**
+- Number scales up from 0.5x to 2x (0.5s)
+- Number fades out (0.5s)
+- Next number appears immediately
+- "Cook!" text appears after 1 (0.3s scale bounce)
+
+#### 9. In-Match HUD (Landscape, Minimal)
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │ [Team: 5/12]  [⏱️ 3:24]  [Enemy: 4/12]                        │
@@ -646,7 +874,9 @@ Boot → Login → Main Menu → Game Mode Select → Chef Select → Matchmakin
 - Recipe progress: checkmarks animate in with scale bounce
 - Interact/Chop buttons: appear/disappear with fade + slide
 
-#### 8. Results Screen
+**Note:** No points shown in HUD. Focus is purely on completing recipes fast.
+
+#### 10. Results Screen
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                                                                 │
@@ -659,12 +889,16 @@ Boot → Login → Main Menu → Game Mode Select → Chef Select → Matchmakin
 │  │ MVP: You! (8 recipes completed)                         │   │
 │  └─────────────────────────────────────────────────────────┘   │
 │                                                                 │
-│  Rewards:                                                       │
-│  +50 Coins (Win)                                                │
-│  +40 Coins (8 recipes × 5)                                      │
-│  +10 Coins (Perfect recipes bonus)                              │
+│  Trophies:                                                      │
+│  +15 🏆 (Win)                                                   │
 │  ─────────────────────                                          │
-│  Total: +100 Coins                                              │
+│  Total: 1,234 🏆                                                │
+│                                                                 │
+│  Coins:                                                         │
+│  +50 (Win)                                                      │
+│  +40 (8 recipes × 5)                                            │
+│  ─────────────────────                                          │
+│  Total: +90 💰                                                  │
 │                                                                 │
 │  Chef XP:                                                       │
 │  Gordon: +25 XP (Level 5 → 6 progress: 725/1100)              │
@@ -679,11 +913,14 @@ Boot → Login → Main Menu → Game Mode Select → Chef Select → Matchmakin
 **Animations:**
 - "VICTORY!" text: scale bounce with confetti particles
 - Stars: animate in one-by-one with rotation
-- Rewards: count up with coin fly animation
-- XP bar: fills smoothly with glow pulse
+- Trophies: count up with trophy icon fly animation
+- Coins: count up with coin fly animation
+- XP bar: fills smoothly with soft shadow pulse
 - Buttons: slide in from bottom with stagger
 
-#### 9. Chefs Screen (Collection)
+**Note:** Trophies are gained/lost (win +15, loss -8). Coins are only earned and spent (never lost).
+
+#### 11. Chefs Screen (Collection)
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │ [← Back]  My Chefs                      [Sort ▼] [Filter ▼]    │
@@ -695,13 +932,11 @@ Boot → Login → Main Menu → Game Mode Select → Chef Select → Matchmakin
 │  │  (Rotating)      │  Level 5/10                              │
 │  │                  │  ████████░░░░░░░░░░░░  725/1100 XP       │
 │  │                  │                                          │
-│  │                  │  Stats:                                  │
-│  │                  │  Speed: ████████░░ 5.6 m/s (+12%)        │
-│  │                  │  Range: ██████░░░░ 2.2m (+10%)           │
-│  │                  │  Carry: ████░░░░░░ 2 items               │
-│  │                  │  Burn:  ███████░░░ 5.5s (+10%)           │
+│  │                  │  Ability: +10% movement speed            │
+│  │                  │  ████████░░ 5.6 m/s (+6%)                │
 │  │                  │                                          │
 │  │                  │  [Upgrade to L6: 1,100 Coins]            │
+│  │                  │  (+1% movement speed)                    │
 │  │                  │                                          │
 │  └──────────────────┘                                          │
 │                                                                 │
@@ -720,7 +955,7 @@ Boot → Login → Main Menu → Game Mode Select → Chef Select → Matchmakin
 - Stats bars: animate in with stagger when chef selected
 - Upgrade button: pulse when affordable, gray out when not
 
-#### 10. Shop Screen
+#### 12. Shop Screen
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │ [← Back]  Shop                                                  │
@@ -753,8 +988,13 @@ Boot → Login → Main Menu → Game Mode Select → Chef Select → Matchmakin
 
 **Animations:**
 - Daily deal cards: rotate/flip when refreshing
-- Special offer banner: shimmer effect
+- Special offer banner: soft shadow pulse
 - Buy buttons: scale down 0.95x + haptic feedback + coin fly animation
+
+**UI Style:**
+- **Flat colors only** (no gradients, UI Toolkit-supported styles)
+- **Soft shadows** (subtle depth, still flat colors)
+- **Bright colorful palette** (high saturation, Overcooked-style)
 
 ### UI Toolkit Premium Animations
 
@@ -1006,9 +1246,10 @@ public class AudioSystem
 3. Implement NetworkStation
 4. Implement NetworkMatch
 5. Integrate EOS (lobby, matchmaking)
-6. Test 2v2 and 3v3 matches
+6. Implement EOS Cloud Storage for save data
+7. Test 2v2 and 3v3 matches
 
-**Deliverable:** Playable multiplayer prototype (2v2, 3v3)
+**Deliverable:** Playable multiplayer prototype (2v2, 3v3) with cloud save
 
 ### Slice 3: Bots (Week 5)
 
@@ -1025,10 +1266,11 @@ public class AudioSystem
 **Tasks:**
 1. Implement Chef system (definitions, unlock, upgrade)
 2. Implement Wallet (coin management)
-3. Implement Persistence (save/load chef progress)
-4. Test progression flow
+3. Implement Trophy system (win +15, loss -8)
+4. Implement Persistence (save/load chef progress via EOS Cloud Storage)
+5. Test progression flow
 
-**Deliverable:** Working progression system (unlock chefs, upgrade stats, earn coins)
+**Deliverable:** Working progression system (unlock chefs, upgrade stats, earn coins/trophies)
 
 ### Slice 5: Monetization (Week 7)
 
@@ -1046,12 +1288,13 @@ public class AudioSystem
 1. UI polish (animations, transitions, premium feel)
 2. Audio polish (mixing, effects, music)
 3. VFX (particles, shaders)
-4. 3D character models (main menu, chef select)
+4. 3D character models (main menu, lobby, chef select)
 5. Friends system (Unity Gaming Services)
-6. Performance optimization
-7. Bug fixing
+6. 4-5 themed maps (Beach, Forest, Boat, etc.) with dynamic elements
+7. Performance optimization
+8. Bug fixing
 
-**Deliverable:** Production-ready game
+**Deliverable:** Production-ready game with 4-5 maps, premium UI, 3D characters
 
 ---
 
