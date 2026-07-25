@@ -27,7 +27,8 @@
         "Playcenter.UI.Toolkit",
         "Playcenter.EOS",
         "Playcenter.SDK",
-        "Playcenter.SDK.Unity"
+        "Playcenter.SDK.Unity",
+        "Playcenter.MobileCore"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

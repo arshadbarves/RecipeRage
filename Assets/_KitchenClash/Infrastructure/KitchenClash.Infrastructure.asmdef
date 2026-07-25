@@ -24,7 +24,8 @@
         "Playcenter.Shell",
         "Playcenter.Services",
         "Playcenter.UI",
-        "Playcenter.SDK"
+        "Playcenter.SDK",
+        "Playcenter.MobileCore"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

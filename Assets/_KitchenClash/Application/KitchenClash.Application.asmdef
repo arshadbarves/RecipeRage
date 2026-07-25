@@ -7,7 +7,8 @@
         "VContainer",
         "Playcenter.Shell",
         "Playcenter.Services",
-        "Playcenter.UI"
+        "Playcenter.UI",
+        "Playcenter.MobileCore"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
