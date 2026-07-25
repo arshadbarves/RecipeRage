@@ -421,7 +421,7 @@ namespace KitchenClash.Infrastructure.Network
 
         private static void ResetBotRuntimeState()
         {
-            BotClaimRegistry.Shared.Clear();
+            BotOrderClaims.Shared.Clear();
         }
     }
 }

@@ -3,12 +3,12 @@ using NUnit.Framework;
 
 namespace RecipeRage.Tests.EditMode.Gameplay
 {
-    public class BotClaimRegistryTests
+    public class BotOrderClaimsTests
     {
         [Test]
         public void TryClaimOrder_PreventsDifferentBotFromStealingClaim()
         {
-            BotClaimRegistry registry = new();
+            BotOrderClaims registry = new();
 
             Assert.IsTrue(registry.TryClaimOrder(100, "bot-a"));
             Assert.IsFalse(registry.TryClaimOrder(100, "bot-b"));
@@ -18,7 +18,7 @@ namespace RecipeRage.Tests.EditMode.Gameplay
         [Test]
         public void ReleaseOrderForBot_ClearsOrderAndCounterAssignments()
         {
-            BotClaimRegistry registry = new();
+            BotOrderClaims registry = new();
             registry.TryClaimOrder(200, "bot-a");
             registry.AssignCounter(200, "counter-1");
 

@@ -13,7 +13,7 @@ namespace KitchenClash.Infrastructure.Network.Bot
             _matchContext = matchContext;
         }
 
-        public BotPlanningSnapshot Capture(PlayerController player, string botId, BotClaimRegistry claimRegistry)
+        public BotPlanningSnapshot Capture(PlayerController player, string botId, BotOrderClaims claimRegistry)
         {
             return new BotPlanningSnapshot();
         }
@@ -23,7 +23,7 @@ namespace KitchenClash.Infrastructure.Network.Bot
             return null;
         }
 
-        public CounterStation FindNearestAvailableCounter(Vector3 position, string botId, BotClaimRegistry claimRegistry)
+        public CounterStation FindNearestAvailableCounter(Vector3 position, string botId, BotOrderClaims claimRegistry)
         {
             return null;
         }

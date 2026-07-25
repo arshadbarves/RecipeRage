@@ -38,10 +38,8 @@ public class MatchLifetimeScope : LifetimeScope
         builder.Register<MatchHudPort>(Lifetime.Scoped).As<IMatchHudPort>().AsSelf();
         builder.Register<KitchenClash.Presentation.ViewModels.GameplayHudViewModel>(Lifetime.Transient);
 
-        // Bot services
-        builder.Register<BotManager>(Lifetime.Scoped);
-        builder.Register<BotClaimRegistry>(Lifetime.Scoped);
-        builder.Register<BotTaskPlanner>(Lifetime.Scoped);
+        // Bot services (order claims are game-side; planning lives in Playcenter.MobileCore)
+        builder.Register<BotOrderClaims>(Lifetime.Scoped);
 
         // Connectivity: notify match lifecycle for state machine
         builder.Register<MatchConnectivityBridge>(Lifetime.Scoped)

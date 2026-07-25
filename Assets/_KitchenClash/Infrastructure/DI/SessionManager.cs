@@ -1,38 +1,51 @@
 using System;
 using KitchenClash.Application;
 using KitchenClash.Application.Services;
+using KitchenClash.Composition;
 using KitchenClash.Domain;
 using VContainer;
 using VContainer.Unity;
+using Playcenter.MobileCore;
 using Playcenter.Shell;
 using Playcenter.UI;
 
 namespace KitchenClash.Infrastructure.DI
 {
+    /// <summary>
+    /// Game-facing session lifecycle: delegates state transitions to the module's
+    /// fail-closed SessionLifecycleController; keeps the UI-scope side effect and
+    /// the ISessionLifecycle API surface unchanged for callers.
+    /// </summary>
     public class SessionManager : ISessionLifecycle, IInitializable, IDisposable
     {
         private readonly IObjectResolver _container;
         private readonly IEventBus _eventBus;
         private readonly IUIService _uiService;
-        private readonly ISessionScopeInstaller _sessionScopeInstaller;
-
-        private LifetimeScope _sessionScope;
-
-        public IObjectResolver SessionContainer => _sessionScope?.Container;
-        public bool IsSessionActive => _sessionScope != null;
+        private readonly SessionLifecycleController _controller;
 
         [Inject]
         public SessionManager(
             IObjectResolver container,
             IEventBus eventBus,
             IUIService uiService,
-            ISessionScopeInstaller sessionScopeInstaller = null)
+            KitchenClash.Application.ISessionScopeInstaller sessionScopeInstaller = null)
         {
             _container = container;
             _eventBus = eventBus;
             _uiService = uiService;
-            _sessionScopeInstaller = sessionScopeInstaller;
+
+            LifetimeScope rootScope = container.Resolve<LifetimeScope>();
+            _controller = new SessionLifecycleController(
+                new VContainerSessionScopeFactory(rootScope),
+                sessionScopeInstaller != null ? new MenuSessionScopeInstallerAdapter(sessionScopeInstaller) : null);
         }
+
+        public IObjectResolver SessionContainer =>
+            _controller.State == SessionState.Active && _controller.Scope is VContainerSessionScopeHandle handle
+                ? handle.Get<IObjectResolver>()
+                : null;
+
+        public bool IsSessionActive => _controller.State == SessionState.Active;
 
         public void Initialize()
         {
@@ -40,35 +53,27 @@ namespace KitchenClash.Infrastructure.DI
 
         public void CreateSession()
         {
-            if (_sessionScopeInstaller == null)
+            // Controller throws when the installer is missing (installer law) — the
+            // same guard as before, now owned by the module FSM.
+            _controller.CreateAsync().GetAwaiter().GetResult();
+
+            if (_controller.Scope is VContainerSessionScopeHandle handle)
             {
-                throw new InvalidOperationException(
-                    "ISessionScopeInstaller is required. Register MenuSessionScopeInstaller at root.");
+                _uiService.SetCurrentScope(handle.Get<IObjectResolver>());
+                GameLogger.LogInfo("SessionLifetimeScope created.");
             }
-
-            if (_sessionScope != null)
-            {
-                DestroySession();
-            }
-
-            // Install menu/session registrations (IEconomyService, IWallet, …). A bare child
-            // LifetimeScope has no Configure() and cannot resolve session-scoped services.
-            LifetimeScope parentScope = _container.Resolve<LifetimeScope>();
-            _sessionScope = parentScope.CreateChild(builder => _sessionScopeInstaller.Install(builder));
-
-            _uiService.SetCurrentScope(_sessionScope.Container);
-            GameLogger.LogInfo("SessionLifetimeScope created.");
         }
 
         public void DestroySession()
         {
-            if (_sessionScope != null)
+            if (_controller.State != SessionState.Active)
             {
-                _sessionScope.Dispose();
-                _sessionScope = null;
-                _uiService.SetCurrentScope(null);
-                GameLogger.LogInfo("SessionLifetimeScope destroyed.");
+                return;
             }
+
+            _controller.TeardownAsync().GetAwaiter().GetResult();
+            _uiService.SetCurrentScope(null);
+            GameLogger.LogInfo("SessionLifetimeScope destroyed.");
         }
 
         public void Dispose()

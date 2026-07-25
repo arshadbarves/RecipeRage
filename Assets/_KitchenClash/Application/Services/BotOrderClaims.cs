@@ -2,9 +2,9 @@ using System.Collections.Generic;
 
 namespace KitchenClash.Application.Services
 {
-    public sealed class BotClaimRegistry
+    public sealed class BotOrderClaims
     {
-        public static BotClaimRegistry Shared { get; } = new BotClaimRegistry();
+        public static BotOrderClaims Shared { get; } = new BotOrderClaims();
 
         private readonly Dictionary<int, string> _orderClaims = new Dictionary<int, string>();
         private readonly Dictionary<string, int> _botOrders = new Dictionary<string, int>();

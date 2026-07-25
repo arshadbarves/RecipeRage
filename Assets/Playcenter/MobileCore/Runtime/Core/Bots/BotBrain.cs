@@ -15,6 +15,7 @@ namespace Playcenter.MobileCore
         public TTask CurrentTask { get; private set; }
         public string BotId => _botId;
         public Random Random => _random;
+        public TaskPlanner<TSnapshot, TTask> Planner => _planner;
 
         public BotBrain(string botId, TaskPlanner<TSnapshot, TTask> planner, int seed)
         {

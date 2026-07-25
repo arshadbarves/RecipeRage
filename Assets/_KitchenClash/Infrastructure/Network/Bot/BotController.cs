@@ -1,5 +1,6 @@
 using KitchenClash.Domain;
 using KitchenClash.Application.Services;
+using KitchenClash.Application.Services.Evaluators;
 using KitchenClash.Infrastructure.Network.Cooking;
 using KitchenClash.Infrastructure.Network.Stations;
 using Unity.Netcode;
@@ -8,6 +9,7 @@ using VContainer;
 using VContainer.Unity;
 using Playcenter.Shell;
 using Playcenter.Services;
+using Playcenter.MobileCore;
 
 namespace KitchenClash.Infrastructure.Network.Bot
 {
@@ -27,9 +29,9 @@ namespace KitchenClash.Infrastructure.Network.Bot
 
         private BotPlayer _botData;
         private PlayerController _playerController;
-        private BotTaskPlanner _planner;
+        private BotBrain<BotPlanningSnapshot, BotTaskPlan> _brain;
         private BotKitchenSnapshot _snapshot;
-        private readonly BotClaimRegistry _claimRegistry = BotClaimRegistry.Shared;
+        private readonly BotOrderClaims _claimRegistry = BotOrderClaims.Shared;
 
         [Inject] private IMatchContext _matchContext;
 
@@ -53,8 +55,27 @@ namespace KitchenClash.Infrastructure.Network.Bot
         public void Initialize(BotPlayer botData, BotDifficulty difficulty)
         {
             _difficulty = difficulty;
-            _planner = new BotTaskPlanner(difficulty);
+            _brain = CreateBrain(difficulty);
             Initialize(botData);
+        }
+
+        private BotBrain<BotPlanningSnapshot, BotTaskPlan> CreateBrain(BotDifficulty difficulty)
+        {
+            int seed = System.Environment.TickCount;
+            var brain = new BotBrain<BotPlanningSnapshot, BotTaskPlan>(
+                botId: _botData?.BotId ?? $"bot_{System.Guid.NewGuid():N}",
+                planner: new TaskPlanner<BotPlanningSnapshot, BotTaskPlan>(),
+                seed: seed);
+            BotDifficultyConfig config = BotDifficultyConfig.FromDifficulty(difficulty);
+            brain.Planner.Register(new ExtinguishFireEvaluator(config, brain.Random));
+            brain.Planner.Register(new DeliverToServingEvaluator(config));
+            brain.Planner.Register(new BringToCookingEvaluator(config));
+            brain.Planner.Register(new BringToPrepEvaluator(config));
+            brain.Planner.Register(new RecoverBurnedEvaluator(config));
+            brain.Planner.Register(new ClaimOrderEvaluator(config));
+            brain.Planner.Register(new FetchIngredientEvaluator(config, brain.Random));
+            brain.Planner.Register(new WanderEvaluator(config));
+            return brain;
         }
 
         private void Awake()
@@ -70,7 +91,7 @@ namespace KitchenClash.Infrastructure.Network.Bot
             }
 
             _playerController = GetComponent<PlayerController>();
-            _planner ??= new BotTaskPlanner(_difficulty);
+            _brain ??= CreateBrain(_difficulty);
             _snapshot = new BotKitchenSnapshot(_matchContext);
             _lastPosition = transform.position;
             _wanderTarget = transform.position;
@@ -154,7 +175,7 @@ namespace KitchenClash.Infrastructure.Network.Bot
                 planningSnapshot = _snapshot.Capture(_playerController, _botData.BotId, _claimRegistry);
             }
 
-            _currentPlan = _planner.Plan(planningSnapshot);
+            _currentPlan = _brain.Think(planningSnapshot);
             _nextReplanTime = Time.time + _replanInterval;
             _actionDelayTimer = _currentPlan.DelayBeforeAction;
 
@@ -390,9 +411,9 @@ namespace KitchenClash.Infrastructure.Network.Bot
                 _snapshot = new BotKitchenSnapshot(_matchContext);
             }
 
-            if (_planner == null)
+            if (_brain == null)
             {
-                _planner = new BotTaskPlanner(_difficulty);
+                _brain = CreateBrain(_difficulty);
             }
         }
     }
