@@ -1,0 +1,19 @@
+{
+    "name": "Playcenter.MobileCore",
+    "rootNamespace": "Playcenter.MobileCore",
+    "references": [
+        "Playcenter.SDK",
+        "Playcenter.Services",
+        "Playcenter.Shell",
+        "Unity.InputSystem"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
