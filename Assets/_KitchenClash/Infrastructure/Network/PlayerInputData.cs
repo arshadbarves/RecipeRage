@@ -6,6 +6,7 @@ namespace KitchenClash.Infrastructure.Network
     public struct PlayerInputData : INetworkSerializable
     {
         public Vector2 Movement;
+        public Vector2 Aim;
         public bool InteractPressed;
         public bool AbilityPressed;
         public float Timestamp;
@@ -14,6 +15,7 @@ namespace KitchenClash.Infrastructure.Network
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
             serializer.SerializeValue(ref Movement);
+            serializer.SerializeValue(ref Aim);
             serializer.SerializeValue(ref InteractPressed);
             serializer.SerializeValue(ref AbilityPressed);
             serializer.SerializeValue(ref Timestamp);

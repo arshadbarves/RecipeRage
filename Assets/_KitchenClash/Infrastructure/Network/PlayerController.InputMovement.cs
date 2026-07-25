@@ -3,7 +3,6 @@ using Unity.Netcode;
 using UnityEngine;
 using KitchenClash.Domain;
 using Playcenter.Shell;
-using Playcenter.Services;
 
 
 namespace KitchenClash.Infrastructure.Network
@@ -14,13 +13,13 @@ namespace KitchenClash.Infrastructure.Network
 
         private void SetupInput()
         {
-            _inputProvider = InputProviderFactory.CreateForPlatform();
             if (_inputProvider == null)
             {
                 GameLogger.LogError("Input provider not found");
                 return;
             }
 
+            _inputProvider.Initialize();
             _inputProvider.OnMovementInput += HandleMoveInput;
             _inputProvider.OnInteractionInput += HandleInteractInput;
             _inputProvider.OnSpecialAbilityInput += HandleAbilityInput;
@@ -59,24 +58,6 @@ namespace KitchenClash.Infrastructure.Network
             }
         }
 
-        /// <summary>
-        /// Mirrors local IInputProvider state into the root IGameplayInput snapshot each frame.
-        /// Non-breaking: movement still flows exclusively through IInputProvider events.
-        /// </summary>
-        private void PublishGameplayInputFromProvider()
-        {
-            if (_gameplayInputPublisher == null || _inputProvider == null || !IsLocalPlayer)
-            {
-                return;
-            }
-
-            Vector2 move = _inputProvider.GetMovementInput();
-            _gameplayInputPublisher.Publish(
-                new InputAxis2(move.x, move.y),
-                _inputProvider.IsInteractionActive(),
-                _inputProvider.IsSpecialAbilityActive());
-        }
-
         #endregion
 
         #region Movement Processing
@@ -101,7 +82,12 @@ namespace KitchenClash.Infrastructure.Network
 
             Vector2 input = _inputEnabled ? _inputHandler.GetSmoothedInput() : Vector2.zero;
 
-            PlayerInputData inputData = _networkController.CreateInputData(input);
+            Playcenter.MobileCore.InputFrame frame = Playcenter.MobileCore.PlaycenterBootstrap.Instance != null
+                ? Playcenter.MobileCore.PlaycenterBootstrap.Instance.Core.LatestFrame
+                : default;
+            Vector2 aim = new Vector2(frame.Aim.X, frame.Aim.Y);
+
+            PlayerInputData inputData = _networkController.CreateInputData(input, aim);
             _movementController.ApplyMovement(input, _stateController.CurrentState, Time.fixedDeltaTime);
 
             PlayerStateData stateData = _networkController.CreateStateData(transform, _rigidbody, inputData.SequenceNumber);

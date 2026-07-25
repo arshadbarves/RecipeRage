@@ -12,7 +12,6 @@ using Unity.Collections;
 using VContainer;
 using VContainer.Unity;
 using Playcenter.Shell;
-using Playcenter.Services;
 
 
 namespace KitchenClash.Infrastructure.Network
@@ -60,18 +59,13 @@ namespace KitchenClash.Infrastructure.Network
         [Inject] private IEventBus _eventBus;
         [Inject] private ICharacterService _characterService;
         [Inject] private IPlayerNetworkManager _playerNetworkManager;
-        /// <summary>
-        /// Optional sink for the Playcenter IGameplayInput port. Existing IInputProvider
-        /// pipeline remains authoritative for movement; this only publishes a snapshot.
-        /// </summary>
-        [Inject] private IGameplayInputPublisher _gameplayInputPublisher;
+        [Inject] private IInputProvider _inputProvider;
 
         #endregion
 
         #region Components
 
         private Rigidbody _rigidbody;
-        private IInputProvider _inputProvider;
 
         #endregion
 
@@ -165,7 +159,6 @@ namespace KitchenClash.Infrastructure.Network
             _inputProvider?.Update();
             _inputHandler?.UpdateSmoothing();
             _stateController?.UpdateState(_inputHandler?.GetSmoothedInput() ?? Vector2.zero, IsHoldingObject());
-            PublishGameplayInputFromProvider();
 
             if (PrimaryAbility != null)
             {

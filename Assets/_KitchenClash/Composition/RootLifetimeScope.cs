@@ -160,10 +160,17 @@ public class RootLifetimeScope : LifetimeScope
         // Local device settings + gameplay input ports (root-owned; not match-scoped).
         builder.Register<PlayerPrefsSettingsStore>(Lifetime.Singleton).As<ISettingsStore>();
         builder.Register<PlayerPrefsSettingsService>(Lifetime.Singleton).As<ISettingsService>();
-        builder.Register<GameplayInputService>(Lifetime.Singleton)
-            .AsSelf()
-            .As<IGameplayInput>()
-            .As<IGameplayInputPublisher>();
+
+        // MobileCore input: bridge + sole IInputProvider (replaces factory/providers).
+        builder.Register<MobileCoreInputBridge>(resolver =>
+        {
+            var config = resolver.Resolve<IConfigService>();
+            return new MobileCoreInputBridge(new Playcenter.MobileCore.DualStickConfig(
+                deadzone: config.Get("mc_input_deadzone", 0.15f),
+                tapWindowSeconds: config.Get("mc_input_tap_window_ms", 300) / 1000f,
+                tapIdleResetSeconds: config.Get("mc_input_tap_idle_reset_ms", 500) / 1000f));
+        }, Lifetime.Singleton);
+        builder.Register<MobileCoreInputProvider>(Lifetime.Singleton).As<KitchenClash.Application.IInputProvider>();
 
 #if FIREBASE_REMOTE_CONFIG
         builder.Register<KitchenClash.Infrastructure.Firebase.FirebaseConfigProvider>(Lifetime.Singleton).As<IConfigProvider>();

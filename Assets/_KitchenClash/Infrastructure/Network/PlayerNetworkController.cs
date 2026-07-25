@@ -27,9 +27,15 @@ namespace KitchenClash.Infrastructure.Network
 
         public PlayerInputData CreateInputData(Vector2 movement)
         {
+            return CreateInputData(movement, Vector2.zero);
+        }
+
+        public PlayerInputData CreateInputData(Vector2 movement, Vector2 aim)
+        {
             return new PlayerInputData
             {
                 Movement = movement,
+                Aim = aim,
                 InteractPressed = false,
                 AbilityPressed = false,
                 Timestamp = Time.time,
