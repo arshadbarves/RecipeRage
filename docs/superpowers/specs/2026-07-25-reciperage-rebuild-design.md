@@ -202,6 +202,7 @@ FETCH (instant) → CHOP (tap-burst, fixed count) → COOK (autonomous timer) �
 - **Dynamic elements** (moving platforms, falling leaves, ship tilting)
 - **Bright colorful palette** (high saturation, Overcooked-style)
 - **Daily/weekly rotation** (like Brawl Stars)
+- **1 Tutorial map** (forced on first launch, teaches core mechanics)
 
 **Station Types:**
 - **Ingredient Crate:** Spawn raw ingredients (instant pickup)
@@ -211,18 +212,68 @@ FETCH (instant) → CHOP (tap-burst, fixed count) → COOK (autonomous timer) �
 - **Stove/Grill/Campfire:** Cook ingredients (autonomous, burn risk)
 - **Serving Counter:** Deliver completed recipes (instant)
 
+### Tutorial Map (First Launch)
+
+**Forced interactive tutorial** — must complete before playing multiplayer.
+
+**Tutorial Flow:**
+1. **Welcome Screen** — "Welcome to RecipeRage! Let's learn how to cook."
+2. **Movement Tutorial** — "Use the left stick to move." (Player moves to highlighted area)
+3. **Fetch Tutorial** — "Walk to the crate and tap Interact to fetch ingredients." (Player fetches tomato)
+4. **Chop Tutorial** — "Walk to the cutting board, place the tomato, and tap Chop 8 times." (Player chops tomato)
+5. **Cook Tutorial** — "Walk to the stove, place the chopped tomato, and wait for it to cook." (Player cooks tomato, sees progress bar)
+6. **Plate Tutorial** — "Walk to the plate station and take a plate." (Player takes plate)
+7. **Arrange Tutorial** — "Place the cooked tomato on the plate." (Player arranges tomato on plate)
+8. **Serve Tutorial** — "Walk to the serving counter and deliver the plate." (Player serves recipe)
+9. **Burn Tutorial** — "Be careful! If you leave food on the stove too long, it burns." (Player sees burn warning)
+10. **Complete** — "Great job! You're ready to compete. Let's play!"
+
+**Tutorial Map Layout:**
+```
+┌─────────────────────────────────────────────────────────────┐
+│ TUTORIAL KITCHEN (Top-Down View)                           │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  [Ingredient Crate]                                         │
+│                                                             │
+│  [Cutting Board]                                            │
+│                                                             │
+│  [Plate Station]                                            │
+│                                                             │
+│  [Stove]                                                    │
+│                                                             │
+│  [Serving Counter]                                          │
+│                                                             │
+│  (Simple layout, one of each station, no time pressure)    │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Tutorial Features:**
+- **Guided steps** — Highlighted areas, arrows, text prompts
+- **No time limit** — Learn at your own pace
+- **Can't fail** — Burned ingredients reset, no penalties
+- **Skippable after first completion** — Can replay from settings
+- **Teaches core loop** — Fetch → Chop → Cook → Plate → Serve
+- **Teaches burn mechanic** — Shows what happens if you leave food too long
+
 ### Chef System
 
-**6 Chefs** with rarity tiers and **personal utility abilities** (fair for multiplayer):
+**4 Chefs at Launch** (6 slots, 2 locked as "Coming Soon") with rarity tiers and **personal utility abilities** (fair for multiplayer):
 
 | Chef | Rarity | Unlock Cost | Ability | Ability Type |
 |------|--------|-------------|---------|--------------|
 | **Gordon** | Common | Starter | +10% movement speed | Passive |
 | **Julia** | Common | Starter | +15% pickup/drop speed | Passive |
-| **Marco** | Rare | 500 coins | +1 carry capacity | Passive |
-| **Yuki** | Rare | 500 coins | +2s burn grace on YOUR plates | Passive |
+| **Marco** | Rare | 500 coins | +1 carry capacity (max 3 items) | Passive |
 | **Gustavo** | Epic | 2,000 coins | Dash forward 3m (30s cooldown) | Active (1x per match) |
-| **Remy** | Legendary | 5,000 coins | See recipe timers above stoves | Passive |
+| **???** | Rare | Coming Soon | ??? | ??? |
+| **???** | Legendary | Coming Soon | ??? | ??? |
+
+**Default Mechanics (ALL Chefs):**
+- **Carry capacity:** 2 items max (not an ability, just the default)
+- **Burn grace:** Progress bar shown above stoves for ALL players
+- **Recipe timers:** Progress bar shown above stoves for ALL players
+- **Plate capacity:** 1 plate at a time
 
 **Why these abilities are fair:**
 - ✅ **Personal only** — Abilities affect YOU, not shared stations
@@ -234,14 +285,13 @@ FETCH (instant) → CHOP (tap-burst, fixed count) → COOK (autonomous timer) �
 - **Gordon:** +1% movement speed per level (max +10%)
 - **Julia:** +1.5% pickup/drop speed per level (max +15%)
 - **Marco:** +1 carry capacity at L5, +1 at L10 (max 4 items)
-- **Yuki:** +0.2s burn grace per level (max +2s)
 - **Gustavo:** -2s dash cooldown per level (max -20s, min 10s cooldown)
-- **Remy:** Unlock at L1, no upgrades (binary ability)
 
 **NOT Upgradeable (Skill-Based):**
 - Chop speed (pure tapping skill)
 - Cook time (station property, not chef)
 - Recipe completion (team effort)
+- Carry capacity (default 2 items, Marco's ability adds +1/+2)
 
 **Chef Selection (Brawl Stars-Style):**
 - Select chef in **Lobby** (before matchmaking)
@@ -320,7 +370,7 @@ Assets/
 │   │   ├── Logging/                # ILoggingService, UnityLoggingService
 │   │   └── Time/                   # ITimeService, UnityTimeService
 │   ├── Services/
-│   │   ├── Auth/                   # IAuthService, EOSAuthService (FULL LOGIC)
+│   │   ├── Auth/                   # IAuthService, FacebookAuthService, GoogleAuthService, GuestAuthService (FULL LOGIC)
 │   │   ├── Config/                 # IConfigService, FirebaseConfigService (FULL LOGIC)
 │   │   ├── Storage/                # IStorageService, EOSCloudStorageService (FULL LOGIC)
 │   │   ├── Analytics/              # IAnalyticsService, FirebaseAnalyticsService (FULL LOGIC)
@@ -345,7 +395,8 @@ Assets/
 │   │   ├── Station/                # StationBase, CuttingStation, CookingStation, ServingStation, PlateStation, CounterStation
 │   │   ├── Recipe/                 # Recipe, RecipeCatalog, RecipeDefinition
 │   │   ├── Cooking/                # CookingController, ChopController, ServeController, PlateController
-│   │   └── Match/                  # MatchController, ScoreTracker, WinCondition, TrophyTracker
+│   │   ├── Match/                  # MatchController, ScoreTracker, WinCondition, TrophyTracker
+│   │   └── Tutorial/               # TutorialController, TutorialStep, TutorialMap
 │   ├── Network/                    # Multiplayer (Slice 2)
 │   │   ├── NetworkPlayer.cs        # NGO NetworkBehaviour wrapper
 │   │   ├── NetworkStation.cs       # Station network sync
@@ -409,7 +460,7 @@ public sealed class PlaycenterCompositionRoot : MonoBehaviour
         var timeService = new UnityTimeService();
 
         // SDK services (FULL LOGIC)
-        var authService = new EOSAuthService();
+        var authService = new AuthService(); // Supports Facebook, Google, Guest
         var configService = new FirebaseConfigService();
         var storageService = new EOSCloudStorageService();
         var analyticsService = new FirebaseAnalyticsService();
@@ -626,8 +677,8 @@ Boot → Login → Main Menu → Lobby (Chef Select) → Matchmaking → Team Co
 │                 "Cook. Compete. Conquer."                       │
 │                                                                 │
 │                                                                 │
-│            [🔵 Sign in with Epic Games]                         │
-│            [⚫ Sign in with Apple]                              │
+│            [🔵 Sign in with Facebook]                           │
+│            [🔴 Sign in with Google]                             │
 │            [⚪ Play as Guest]                                   │
 │                                                                 │
 │                                                                 │
@@ -639,6 +690,12 @@ Boot → Login → Main Menu → Lobby (Chef Select) → Matchmaking → Team Co
 - Logo fades in with scale bounce (0.3s)
 - Buttons slide in from bottom with stagger (0.1s delay each)
 - Button press: scale down 0.95x + haptic feedback
+
+**Auth Providers:**
+- Facebook
+- Google
+- Guest (anonymous)
+- **No Epic account login** (EOS used for backend, not auth)
 
 #### 2. Main Menu (Landscape, 3D Character)
 ```
@@ -1228,15 +1285,18 @@ public class AudioSystem
    - IngredientCrate (spawn ingredients)
    - CuttingStation (tap-burst chop)
    - CookingStation (autonomous cook, burn)
+   - PlateStation (take plate, arrange ingredients)
    - CounterStation (temporary storage)
    - ServingStation (deliver recipes)
 3. Implement Recipes (ScriptableObjects, catalog)
 4. Implement Cooking Controller (chop, cook, serve logic)
-5. Implement Match Controller (score, win condition)
-6. Create test kitchen scene
-7. Playtest and iterate
+5. Implement Plate Controller (arrange ingredients on plate)
+6. Implement Match Controller (score, win condition)
+7. Create Tutorial Map (guided steps, forced on first launch)
+8. Create test kitchen scene
+9. Playtest and iterate
 
-**Deliverable:** Playable single-player prototype (fetch → chop → cook → serve → score)
+**Deliverable:** Playable single-player prototype with tutorial (fetch → chop → cook → plate → serve → score)
 
 ### Slice 2: Multiplayer (Week 4)
 
