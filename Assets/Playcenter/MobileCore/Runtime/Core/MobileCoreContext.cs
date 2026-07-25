@@ -7,5 +7,7 @@ namespace Playcenter.MobileCore
     public sealed class MobileCoreContext
     {
         public IGameClock Clock { get; set; }
+        public DualStickModel Input { get; set; }
+        public InputFrame LatestFrame { get; internal set; }
     }
 }

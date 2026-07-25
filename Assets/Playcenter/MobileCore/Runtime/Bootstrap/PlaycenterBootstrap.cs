@@ -16,6 +16,9 @@ namespace Playcenter.MobileCore
         public MobileCoreContext Core { get; private set; }
 
         private UnityGameClock _clock;
+        private TouchDualStickProvider _inputProvider;
+
+        [SerializeField] private float _inputDeadzone = 0.15f;
 
         private void Awake()
         {
@@ -30,11 +33,18 @@ namespace Playcenter.MobileCore
             Core = new MobileCoreContext();
             _clock = new UnityGameClock();
             Core.Clock = _clock;
+            Core.Input = new DualStickModel(new DualStickConfig(_inputDeadzone), _clock);
+            _inputProvider = new TouchDualStickProvider(Core.Input);
         }
 
         private void Update()
         {
             _clock?.Tick(Time.deltaTime);
+            _inputProvider?.Pump();
+            if (Core.Input != null)
+            {
+                Core.LatestFrame = Core.Input.Tick();
+            }
         }
 
         private void OnDestroy()
