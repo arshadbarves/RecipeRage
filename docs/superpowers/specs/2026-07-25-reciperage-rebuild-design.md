@@ -396,7 +396,8 @@ Assets/
 │   │   ├── Recipe/                 # Recipe, RecipeCatalog, RecipeDefinition
 │   │   ├── Cooking/                # CookingController, ChopController, ServeController, PlateController
 │   │   ├── Match/                  # MatchController, ScoreTracker, WinCondition, TrophyTracker
-│   │   └── Tutorial/               # TutorialController, TutorialStep, TutorialMap
+│   │   ├── Tutorial/               # TutorialController, TutorialStep, TutorialMap
+│   │   └── Indicators/             # OffScreenIndicator, StationProgressTracker
 │   ├── Network/                    # Multiplayer (Slice 2)
 │   │   ├── NetworkPlayer.cs        # NGO NetworkBehaviour wrapper
 │   │   ├── NetworkStation.cs       # Station network sync
@@ -911,11 +912,11 @@ Boot → Login → Main Menu → Lobby (Chef Select) → Matchmaking → Team Co
 ┌─────────────────────────────────────────────────────────────────┐
 │ [Team: 5/12]  [⏱️ 3:24]  [Enemy: 4/12]                        │
 ├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
+│ 🔥←                                                            │
 │                                                                 │
 │                      [Game World - Top Down]                    │
 │                                                                 │
-│                                                                 │
+│                                              →🍳████████░░ 75% │
 │                                                                 │
 │  Current Recipe: Tomato Soup (2/3)                             │
 │  ✅ Tomato (chopped)  ✅ Onion (cooked)  ⬜ Garlic             │
@@ -925,11 +926,28 @@ Boot → Login → Main Menu → Lobby (Chef Select) → Matchmaking → Team Co
 └─────────────────────────────────────────────────────────────────┘
 ```
 
+**Off-Screen Indicators:**
+- When a station with active progress (cooking, burning) goes off-screen, show an indicator on the HUD edge
+- **Arrow** points toward the station direction (left, right, top, bottom)
+- **Icon** shows what's happening (🍳 cooking, 🔥 burning)
+- **Progress bar** shows current progress (same as on-station bar)
+- **Color coding:**
+  - 🍳 Yellow/Orange = cooking (normal)
+  - 🔥 Red pulsing = burning (urgent!)
+- Indicator fades in/out smoothly when station enters/exits view
+- Multiple indicators stack vertically on the same edge if needed
+
+**Example:**
+- Stove on the right side is cooking (75% done) → `→🍳████████░░ 75%` appears on right edge
+- Stove on the left side is burning → `🔥←` appears on left edge, pulsing red
+
 **Animations:**
 - Score updates: number counts up with bounce
 - Timer: pulses red when < 30s remaining
 - Recipe progress: checkmarks animate in with scale bounce
 - Interact/Chop buttons: appear/disappear with fade + slide
+- Off-screen indicators: fade in/out + slide along edge
+- Burning indicator: pulses red + vibrates (urgent)
 
 **Note:** No points shown in HUD. Focus is purely on completing recipes fast.
 
