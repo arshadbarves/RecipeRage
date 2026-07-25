@@ -1034,7 +1034,10 @@
       <Project>{8d213293-ea21-a929-6b6a-46fefa48db01}</Project>
       <Name>Playcenter.UI.Toolkit</Name>
     </ProjectReference>
-    <ProjectReference Include="Playcenter.SDK.csproj" />
+    <ProjectReference Include="Playcenter.SDK.csproj">
+      <Project>{0eef4f24-ef2a-3d6a-0dbf-36c595447f53}</Project>
+      <Name>Playcenter.SDK</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
