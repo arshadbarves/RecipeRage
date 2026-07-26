@@ -1,0 +1,14 @@
+{
+    "name": "Playcenter.Net",
+    "rootNamespace": "Playcenter.Net",
+    "references": [
+        "Playcenter.Core",
+        "Playcenter.Services",
+        "Unity.Netcode.Runtime"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "autoReferenced": true,
+    "noEngineReferences": false
+}

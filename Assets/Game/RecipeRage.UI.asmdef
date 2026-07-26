@@ -1,0 +1,15 @@
+{
+    "name": "RecipeRage.UI",
+    "rootNamespace": "RecipeRage.UI",
+    "references": [
+        "Playcenter.Core",
+        "Playcenter.Services",
+        "Playcenter.UI",
+        "RecipeRage.Gameplay"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "autoReferenced": true,
+    "noEngineReferences": false
+}
