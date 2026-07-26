@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using RecipeRage;
 using UnityEngine;
+using UnityEngine.UIElements;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 
@@ -358,7 +359,104 @@ namespace RecipeRage.EditorTools
             Debug.Log($"[Scaffolder] Maps: {specs.Length}");
         }
 
-        // ── Helpers ─────────────────────────────────────────────────────────
+        // ── UI wiring (UIDocuments + screen registry) ───────────────────────
+
+        private sealed class ScreenSpec
+        {
+            public string Name;
+            public string UxmlPath;
+            public string ComponentType;
+        }
+
+        public static void GenerateUIWiring()
+        {
+            const string uiRoot = "Assets/Game/UI";
+            var screens = new[]
+            {
+                new ScreenSpec { Name = "LoginScreen", UxmlPath = $"{uiRoot}/UXML/LoginScreen.uxml", ComponentType = "RecipeRage.UI.LoginScreen" },
+                new ScreenSpec { Name = "MainMenuScreen", UxmlPath = $"{uiRoot}/UXML/MainMenuScreen.uxml", ComponentType = "RecipeRage.UI.MainMenuScreen" },
+                new ScreenSpec { Name = "LobbyScreen", UxmlPath = $"{uiRoot}/UXML/LobbyScreen.uxml", ComponentType = "RecipeRage.UI.LobbyScreen" },
+                new ScreenSpec { Name = "MatchmakingScreen", UxmlPath = $"{uiRoot}/UXML/MatchmakingScreen.uxml", ComponentType = "RecipeRage.UI.MatchmakingScreen" },
+                new ScreenSpec { Name = "TeamCompositionScreen", UxmlPath = $"{uiRoot}/UXML/TeamCompositionScreen.uxml", ComponentType = "RecipeRage.UI.TeamCompositionScreen" },
+                new ScreenSpec { Name = "CountdownScreen", UxmlPath = $"{uiRoot}/UXML/CountdownScreen.uxml", ComponentType = "RecipeRage.UI.CountdownScreen" },
+                new ScreenSpec { Name = "HUDScreen", UxmlPath = $"{uiRoot}/UXML/HUDScreen.uxml", ComponentType = "RecipeRage.UI.HUDScreen" },
+                new ScreenSpec { Name = "ResultsScreen", UxmlPath = $"{uiRoot}/UXML/ResultsScreen.uxml", ComponentType = "RecipeRage.UI.ResultsScreen" },
+                new ScreenSpec { Name = "ChefsScreen", UxmlPath = $"{uiRoot}/UXML/ChefsScreen.uxml", ComponentType = "RecipeRage.UI.ChefsScreen" },
+                new ScreenSpec { Name = "ShopScreen", UxmlPath = $"{uiRoot}/UXML/ShopScreen.uxml", ComponentType = "RecipeRage.UI.ShopScreen" },
+                new ScreenSpec { Name = "FriendsScreen", UxmlPath = $"{uiRoot}/UXML/FriendsScreen.uxml", ComponentType = "RecipeRage.UI.FriendsScreen" },
+                new ScreenSpec { Name = "SettingsScreen", UxmlPath = $"{uiRoot}/UXML/SettingsScreen.uxml", ComponentType = "RecipeRage.UI.SettingsScreen" },
+            };
+
+            // PanelSettings (shared across all screens)
+            var panelSettingsPath = $"{uiRoot}/PanelSettings.asset";
+            var panelSettings = AssetDatabase.LoadAssetAtPath<PanelSettings>(panelSettingsPath);
+            if (panelSettings == null)
+            {
+                panelSettings = ScriptableObject.CreateInstance<PanelSettings>();
+                AssetDatabase.CreateAsset(panelSettings, panelSettingsPath);
+            }
+
+            // Open Boot scene, add UI root with all screens + registry
+            var bootScene = EditorSceneManager.OpenScene("Assets/Scenes/Boot.unity", OpenSceneMode.Single);
+            var uiRootGo = new GameObject("UIRoot");
+            var screenComponents = new List<Component>();
+
+            foreach (var spec in screens)
+            {
+                var uxml = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(spec.UxmlPath);
+                if (uxml == null)
+                {
+                    Debug.LogWarning($"[Scaffolder] UXML not found: {spec.UxmlPath}");
+                    continue;
+                }
+
+                var screenGo = new GameObject(spec.Name);
+                screenGo.transform.SetParent(uiRootGo.transform, false);
+
+                var doc = screenGo.AddComponent<UIDocument>();
+                doc.visualTreeAsset = uxml;
+                doc.panelSettings = panelSettings;
+
+                var compType = FindType(spec.ComponentType);
+                if (compType != null)
+                {
+                    var comp = screenGo.AddComponent(compType);
+                    screenComponents.Add(comp);
+                }
+                else
+                {
+                    Debug.LogWarning($"[Scaffolder] Component type not found: {spec.ComponentType}");
+                }
+            }
+
+            // UIScreenRegistry with all screens
+            var registry = uiRootGo.AddComponent<Playcenter.UI.UIScreenRegistry>();
+            var so = new SerializedObject(registry);
+            var prop = so.FindProperty("_screens");
+            prop.arraySize = screenComponents.Count;
+            for (int i = 0; i < screenComponents.Count; i++)
+            {
+                prop.GetArrayElementAtIndex(i).objectReferenceValue = screenComponents[i];
+            }
+            so.ApplyModifiedPropertiesWithoutUndo();
+
+            EditorSceneManager.SaveScene(bootScene);
+            AssetDatabase.SaveAssets();
+            Debug.Log($"[Scaffolder] UI wiring complete: {screenComponents.Count} screens registered");
+        }
+
+        private static System.Type FindType(string fullName)
+        {
+            foreach (var assembly in System.AppDomain.CurrentDomain.GetAssemblies())
+            {
+                var type = assembly.GetType(fullName);
+                if (type != null)
+                {
+                    return type;
+                }
+            }
+            return null;
+        }
 
         private static void Save(Object asset, string path)
         {
