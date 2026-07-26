@@ -1338,7 +1338,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Textures/Arts
+    - Assets
     m_Globs: []
     m_ProductIds: 
     m_AnyWithAssetOrigin: 0
@@ -1362,14 +1362,14 @@ MonoBehaviour:
       m_Data: 87330
     m_ExpandedIDs:
     - m_Data: 0
-    - m_Data: 80376
-    - m_Data: 85898
-    - m_Data: 85900
-    - m_Data: 85902
-    - m_Data: 85904
-    - m_Data: 85906
-    - m_Data: 85908
-    - m_Data: 85910
+    - m_Data: 79002
+    - m_Data: 83930
+    - m_Data: 83932
+    - m_Data: 83934
+    - m_Data: 83936
+    - m_Data: 83938
+    - m_Data: 83940
+    - m_Data: 83942
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1402,14 +1402,14 @@ MonoBehaviour:
       m_Data: 0
     m_ExpandedIDs:
     - m_Data: 0
-    - m_Data: 80376
-    - m_Data: 85898
-    - m_Data: 85900
-    - m_Data: 85902
-    - m_Data: 85904
-    - m_Data: 85906
-    - m_Data: 85908
-    - m_Data: 85910
+    - m_Data: 79002
+    - m_Data: 83930
+    - m_Data: 83932
+    - m_Data: 83934
+    - m_Data: 83936
+    - m_Data: 83938
+    - m_Data: 83940
+    - m_Data: 83942
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 

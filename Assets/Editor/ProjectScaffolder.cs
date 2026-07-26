@@ -96,7 +96,63 @@ namespace RecipeRage.EditorTools
             Object.DestroyImmediate(go);
         }
 
-        // ── Map scenes (3 themed maps, mirrored team kitchens) ─────────────
+        // ── Tutorial scene (simple guided layout, one of each station) ──────
+
+        public static void GenerateTutorialScene()
+        {
+            var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+
+            // Camera (top-down)
+            var camGo = new GameObject("Main Camera");
+            camGo.tag = "MainCamera";
+            camGo.AddComponent<Camera>();
+            camGo.transform.position = new Vector3(0f, 12f, -8f);
+            camGo.transform.rotation = Quaternion.Euler(60f, 0f, 0f);
+
+            var lightGo = new GameObject("Directional Light");
+            lightGo.AddComponent<Light>().type = LightType.Directional;
+
+            // Runtime registry
+            var registryGo = new GameObject("MatchRuntimeRegistry");
+            var registry = registryGo.AddComponent<RecipeRage.Net.MatchRuntimeRegistry>();
+
+            // Floor
+            var floor = GameObject.CreatePrimitive(PrimitiveType.Plane);
+            floor.name = "Floor";
+            floor.transform.position = Vector3.zero;
+
+            // Player spawn
+            var playerSpawn = new GameObject("PlayerSpawn");
+            playerSpawn.transform.position = new Vector3(0f, 0.5f, 5f);
+
+            // One of each station in a simple guided arc (per spec tutorial map)
+            var layout = new MapLayout { SceneName = "Tutorial" };
+            var root = new GameObject("TutorialStations");
+            PlaceStations<RecipeRage.IngredientCrate>(root, 1, -3f, -3f, 2.5f, "Crate");
+            PlaceStations<RecipeRage.CuttingStation>(root, 1, 0f, -3f, 2.5f, "Cutting");
+            PlaceStations<RecipeRage.CookingStation>(root, 1, 3f, -3f, 2.5f, "Cooking");
+            PlaceStations<RecipeRage.PlateStation>(root, 1, -1.5f, 0f, 2.5f, "Plate");
+            PlaceStations<RecipeRage.ServingStation>(root, 1, 1.5f, 0f, 2.5f, "Serving");
+
+            // TutorialController (steps wired in inspector later; component present)
+            var tutorialGo = new GameObject("TutorialController");
+            tutorialGo.AddComponent<RecipeRage.TutorialController>();
+
+            var scenePath = "Assets/Scenes/Tutorial.unity";
+            EnsureDir(scenePath);
+            EditorSceneManager.SaveScene(scene, scenePath);
+
+            // Add to Build Settings (preserve existing)
+            var scenes = new System.Collections.Generic.List<EditorBuildSettingsScene>(EditorBuildSettings.scenes);
+            if (!scenes.Exists(s => s.path == scenePath))
+            {
+                scenes.Add(new EditorBuildSettingsScene(scenePath, true));
+                EditorBuildSettings.scenes = scenes.ToArray();
+            }
+
+            AssetDatabase.SaveAssets();
+            Debug.Log("[Scaffolder] Tutorial scene generated (1 of each station + controller)");
+        }
 
         private sealed class MapLayout
         {

@@ -17,6 +17,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Maps/MapPirateShip.unity
     guid: 641b7f7fe0907423ea59dde4775793de
+  - enabled: 1
+    path: Assets/Scenes/Tutorial.unity
+    guid: 8654f0c1f366e4652a7d97ab1f802177
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: acadb39dda0c644fd8624425e21e877f,
       type: 2}
