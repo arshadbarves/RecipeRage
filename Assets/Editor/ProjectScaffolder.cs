@@ -3,6 +3,7 @@ using System.IO;
 using RecipeRage;
 using UnityEngine;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 
 namespace RecipeRage.EditorTools
 {
@@ -25,6 +26,108 @@ namespace RecipeRage.EditorTools
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             Debug.Log("[Scaffolder] All content assets generated");
+        }
+
+        // ── Boot scene + audio ──────────────────────────────────────────────
+
+        public static void GenerateBootScene()
+        {
+            // Reuse the existing MainMixer.mixer (Master/Music/SFX + 3 exposed volumes).
+            // AudioMixerController is internal API — mixer is authored once and reused.
+            var mixerPath = "Assets/Art/Audio/MainMixer.mixer";
+            var mixer = AssetDatabase.LoadAssetAtPath<UnityEngine.Audio.AudioMixer>(mixerPath);
+            if (mixer == null)
+            {
+                Debug.LogError($"[Scaffolder] Mixer not found at {mixerPath} — copy MainMixer.mixer there first");
+                return;
+            }
+
+            // AudioClipMap (empty entries — clips assigned later)
+            var clipMapPath = "Assets/Art/Audio/AudioClipMap.asset";
+            var clipMap = AssetDatabase.LoadAssetAtPath<Playcenter.Services.AudioClipMap>(clipMapPath);
+            if (clipMap == null)
+            {
+                clipMap = ScriptableObject.CreateInstance<Playcenter.Services.AudioClipMap>();
+                AssetDatabase.CreateAsset(clipMap, clipMapPath);
+            }
+
+            // Boot scene with both composition roots
+            var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+
+            var sdkRoot = new GameObject("PlaycenterCompositionRoot");
+            var sdkComp = sdkRoot.AddComponent<Playcenter.PlaycenterCompositionRoot>();
+            var so = new SerializedObject(sdkComp);
+            so.FindProperty("_mainMixer").objectReferenceValue = mixer;
+            so.FindProperty("_clipMap").objectReferenceValue = clipMap;
+            so.ApplyModifiedPropertiesWithoutUndo();
+
+            var gameRoot = new GameObject("GameplayCompositionRoot");
+            var gameComp = gameRoot.AddComponent<RecipeRage.GameplayCompositionRoot>();
+            var gso = new SerializedObject(gameComp);
+            WireArray(gso, "_allRecipes", LoadAll<RecipeDefinition>($"{DataRoot}/Recipes"));
+            WireArray(gso, "_allChefs", LoadAll<ChefDefinition>($"{DataRoot}/Chefs"));
+            WireArray(gso, "_allMaps", LoadAll<MapDefinition>($"{DataRoot}/Maps"));
+            gso.ApplyModifiedPropertiesWithoutUndo();
+
+            // Camera + light for boot
+            var camGo = new GameObject("Main Camera");
+            camGo.tag = "MainCamera";
+            camGo.AddComponent<Camera>();
+            camGo.transform.position = new Vector3(0f, 12f, -8f);
+            camGo.transform.rotation = Quaternion.Euler(60f, 0f, 0f);
+
+            var lightGo = new GameObject("Directional Light");
+            lightGo.AddComponent<Light>().type = LightType.Directional;
+
+            EnsureDir("Assets/Scenes/Boot.unity");
+            EditorSceneManager.SaveScene(scene, "Assets/Scenes/Boot.unity");
+            EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene("Assets/Scenes/Boot.unity", true) };
+
+            AssetDatabase.SaveAssets();
+            Debug.Log("[Scaffolder] Boot scene generated (composition roots + mixer + clip map + camera)");
+        }
+
+        private static T[] LoadAll<T>(string folder) where T : Object
+        {
+            var list = new List<T>();
+            if (!Directory.Exists(folder))
+            {
+                return list.ToArray();
+            }
+            foreach (var guid in AssetDatabase.FindAssets($"t:{typeof(T).Name}", new[] { folder }))
+            {
+                var path = AssetDatabase.GUIDToAssetPath(guid);
+                var asset = AssetDatabase.LoadAssetAtPath<T>(path);
+                if (asset != null)
+                {
+                    list.Add(asset);
+                }
+            }
+            return list.ToArray();
+        }
+
+        private static void WireArray(SerializedObject so, string propName, Object[] items)
+        {
+            var prop = so.FindProperty(propName);
+            if (prop == null || !prop.isArray)
+            {
+                Debug.LogWarning($"[Scaffolder] Property {propName} not found or not array");
+                return;
+            }
+            prop.arraySize = items.Length;
+            for (int i = 0; i < items.Length; i++)
+            {
+                prop.GetArrayElementAtIndex(i).objectReferenceValue = items[i];
+            }
+        }
+
+        private static void EnsureDir(string assetPath)
+        {
+            var dir = Path.GetDirectoryName(assetPath);
+            if (!Directory.Exists(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
         }
 
         // ── Ingredients (10) ────────────────────────────────────────────────
