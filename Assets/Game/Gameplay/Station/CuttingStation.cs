@@ -67,6 +67,15 @@ namespace RecipeRage
             }
         }
 
+        /// <summary>Server-side chop tap entry (from NetworkCuttingStation RPC).</summary>
+        public void ChopTapFromNetwork()
+        {
+            if (_current != null)
+            {
+                OnChopTap();
+            }
+        }
+
         private static bool HasUnchoppedIngredient(PlayerController player)
         {
             foreach (var item in player.Carry.Items)

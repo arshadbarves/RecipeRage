@@ -19,20 +19,24 @@ namespace RecipeRage
         private readonly Dictionary<CookingStation, OffScreenIndicator> _active =
             new Dictionary<CookingStation, OffScreenIndicator>();
 
-        private CookingStation[] _stations;
+        private System.Func<System.Collections.Generic.IReadOnlyList<CookingStation>> _stationsProvider;
         private Camera _camera;
 
         private void Start()
         {
             _camera = Camera.main;
-            _stations = FindObjectsOfType<CookingStation>(); // Slice 2: MatchRuntimeRegistry
+            var registry = FindFirstObjectByType<Net.MatchRuntimeRegistry>();
+            _stationsProvider = () => registry != null
+                ? registry.CookingStations
+                : (System.Collections.Generic.IReadOnlyList<CookingStation>)new List<CookingStation>();
         }
 
         private void LateUpdate()
         {
             var edgeCounts = new Dictionary<int, int>();
+            var stations = _stationsProvider();
 
-            foreach (var station in _stations)
+            foreach (var station in stations)
             {
                 var shouldShow = station.IsActive && !IsOnScreen(station.transform.position);
 

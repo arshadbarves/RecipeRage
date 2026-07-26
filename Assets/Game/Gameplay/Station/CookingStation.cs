@@ -25,6 +25,8 @@ namespace RecipeRage
         public bool IsBurning => _phase == Phase.Burnt;
         public bool HasReadyItem => _phase == Phase.Ready;
         public bool IsActive => _phase == Phase.Cooking || _phase == Phase.Ready;
+        public string CurrentPhaseName => _phase.ToString();
+        public bool LocalTickEnabled = true;
 
         private void Start()
         {
@@ -35,10 +37,19 @@ namespace RecipeRage
 
         private void Update()
         {
+            if (!LocalTickEnabled)
+            {
+                return;
+            }
+            Tick(Time.deltaTime);
+        }
+
+        public void Tick(float deltaTime)
+        {
             switch (_phase)
             {
                 case Phase.Cooking:
-                    _timer -= Time.deltaTime;
+                    _timer -= deltaTime;
                     Progress01 = 1f - Mathf.Clamp01(_timer / _current.Definition.CookSeconds);
                     if (_timer <= 0f)
                     {
@@ -51,7 +62,7 @@ namespace RecipeRage
                     break;
 
                 case Phase.Ready:
-                    _timer -= Time.deltaTime;
+                    _timer -= deltaTime;
                     Progress01 = Mathf.Clamp01(_timer / _burnGrace); // drains = burn warning
                     if (_timer <= 0f)
                     {
@@ -108,6 +119,12 @@ namespace RecipeRage
                     Progress01 = 0f;
                     break;
             }
+        }
+
+        /// <summary>Server-side entry (from NetworkCookingStation RPC).</summary>
+        public void ServerInteract(PlayerController player)
+        {
+            Interact(player);
         }
 
         public override string GetPrompt() => _phase switch
