@@ -593,7 +593,18 @@ namespace RecipeRage.EditorTools
                 new ScreenSpec { Name = "SettingsScreen", UxmlPath = $"{uiRoot}/UXML/SettingsScreen.uxml", ComponentType = "RecipeRage.UI.SettingsScreen" },
             };
 
-            // PanelSettings (shared across all screens)
+            // Open Boot scene FIRST (loading assets after scene open avoids the
+            // scene-unload invalidating the loaded PanelSettings reference).
+            var bootScene = EditorSceneManager.OpenScene("Assets/Scenes/Boot.unity", OpenSceneMode.Single);
+            var existingRoot = GameObject.Find("UIRoot");
+            if (existingRoot != null)
+            {
+                Object.DestroyImmediate(existingRoot);
+            }
+            var uiRootGo = new GameObject("UIRoot");
+            var screenComponents = new List<Component>();
+
+            // PanelSettings (shared across all screens) — load AFTER scene open
             var panelSettingsPath = $"{uiRoot}/PanelSettings.asset";
             var panelSettings = AssetDatabase.LoadAssetAtPath<PanelSettings>(panelSettingsPath);
             if (panelSettings == null)
@@ -601,11 +612,6 @@ namespace RecipeRage.EditorTools
                 panelSettings = ScriptableObject.CreateInstance<PanelSettings>();
                 AssetDatabase.CreateAsset(panelSettings, panelSettingsPath);
             }
-
-            // Open Boot scene, add UI root with all screens + registry
-            var bootScene = EditorSceneManager.OpenScene("Assets/Scenes/Boot.unity", OpenSceneMode.Single);
-            var uiRootGo = new GameObject("UIRoot");
-            var screenComponents = new List<Component>();
 
             foreach (var spec in screens)
             {
@@ -620,8 +626,13 @@ namespace RecipeRage.EditorTools
                 screenGo.transform.SetParent(uiRootGo.transform, false);
 
                 var doc = screenGo.AddComponent<UIDocument>();
-                doc.visualTreeAsset = uxml;
                 doc.panelSettings = panelSettings;
+                doc.visualTreeAsset = uxml;
+                EditorUtility.SetDirty(doc);
+                if (doc.panelSettings == null)
+                {
+                    Debug.LogWarning($"[Scaffolder] panelSettings assignment failed on {spec.Name} (panelSettings={(panelSettings == null ? "null" : panelSettings.name)})");
+                }
 
                 var compType = FindType(spec.ComponentType);
                 if (compType != null)
