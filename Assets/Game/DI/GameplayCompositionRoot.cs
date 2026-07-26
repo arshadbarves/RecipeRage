@@ -13,6 +13,7 @@ namespace RecipeRage
     {
         [Header("Content")]
         [SerializeField] private RecipeDefinition[] _allRecipes;
+        [SerializeField] private ChefDefinition[] _allChefs;
 
         private IGameStateMachine _stateMachine;
         private IInputService _input;
@@ -73,6 +74,15 @@ namespace RecipeRage
                     skillTracker.TrackRecipeCompleted(300f - m.RemainingSeconds);
                 }
             });
+
+            var chefCatalog = new ChefCatalog(_allChefs);
+            var chefProgression = new ChefProgressionService(
+                chefCatalog,
+                ServiceLocator.Get<IWalletService>(),
+                ServiceLocator.Get<ISaveService>(),
+                ServiceLocator.Get<IAnalyticsService>());
+            ServiceLocator.Register<IChefCatalog>(chefCatalog);
+            ServiceLocator.Register<IChefProgressionService>(chefProgression);
 
             var tutorialDone = ServiceLocator.Get<ISaveService>().Load("tutorial_completed", false);
             _stateMachine.ChangeState(tutorialDone ? (IGameState)new MainMenuState() : new TutorialState());
