@@ -47,7 +47,21 @@ namespace RecipeRage
             var lobbyService = new Playcenter.Net.EOSLobbyService(
                 ServiceLocator.Get<IAuthService>(), ServiceLocator.Get<ILoggingService>());
             ServiceLocator.Register<Playcenter.Net.ILobbyService>(lobbyService);
-            ServiceLocator.Register(new Net.MatchmakingController(lobbyService, ServiceLocator.Get<Playcenter.Net.INetService>()));
+
+            // INetService wraps the scene's NetworkManager (create one if absent).
+            // Registered before MatchmakingController, which depends on it.
+            var networkManager = UnityEngine.Object.FindFirstObjectByType<Unity.Netcode.NetworkManager>();
+            if (networkManager == null)
+            {
+                var nmGo = new GameObject("NetworkManager");
+                nmGo.AddComponent<Unity.Netcode.NetworkManager>();
+                networkManager = nmGo.GetComponent<Unity.Netcode.NetworkManager>();
+                UnityEngine.Object.DontDestroyOnLoad(nmGo);
+            }
+            var netService = new Playcenter.Net.NetService(networkManager);
+            ServiceLocator.Register<Playcenter.Net.INetService>(netService);
+
+            ServiceLocator.Register(new Net.MatchmakingController(lobbyService, netService));
 
             var planner = new Bots.TaskPlanner();
             planner.Register(new Bots.ClearBurntEvaluator());
