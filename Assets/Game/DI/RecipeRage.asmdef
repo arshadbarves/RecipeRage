@@ -1,5 +1,5 @@
 {
-    "name": "RecipeRage.Gameplay",
+    "name": "RecipeRage",
     "rootNamespace": "RecipeRage",
     "references": [
         "Playcenter",
@@ -7,6 +7,8 @@
         "Playcenter.Services",
         "Playcenter.UI",
         "Playcenter.Net",
+        "RecipeRage.Gameplay",
+        "RecipeRage.UI",
         "Unity.Netcode.Runtime",
         "Unity.TextMeshPro"
     ],

@@ -2,10 +2,13 @@
     "name": "RecipeRage.UI",
     "rootNamespace": "RecipeRage.UI",
     "references": [
+        "Playcenter",
         "Playcenter.Core",
         "Playcenter.Services",
         "Playcenter.UI",
-        "RecipeRage.Gameplay"
+        "Playcenter.Net",
+        "RecipeRage.Gameplay",
+        "Unity.Netcode.Runtime"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
