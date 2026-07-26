@@ -1,0 +1,23 @@
+{
+    "name": "RecipeRage.Editor",
+    "rootNamespace": "RecipeRage.EditorTools",
+    "references": [
+        "Playcenter",
+        "Playcenter.Core",
+        "Playcenter.Services",
+        "Playcenter.UI",
+        "Playcenter.Net",
+        "RecipeRage",
+        "RecipeRage.Gameplay",
+        "RecipeRage.UI",
+        "Unity.Netcode.Runtime",
+        "Unity.TextMeshPro"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "autoReferenced": true,
+    "noEngineReferences": false
+}
