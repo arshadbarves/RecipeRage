@@ -11,6 +11,9 @@ namespace RecipeRage
     [DefaultExecutionOrder(-900)]
     public sealed class GameplayCompositionRoot : MonoBehaviour
     {
+        [Header("Content")]
+        [SerializeField] private RecipeDefinition[] _allRecipes;
+
         private IGameStateMachine _stateMachine;
         private IInputService _input;
 
@@ -26,9 +29,18 @@ namespace RecipeRage
             var sceneLoader = new AddressablesSceneLoader();
             _stateMachine = new GameStateMachine();
 
+            var recipeCatalog = new RecipeCatalog(_allRecipes);
+            var matchController = new MatchController(
+                recipeCatalog,
+                ServiceLocator.Get<IConfigService>(),
+                ServiceLocator.Get<IEventBus>(),
+                ServiceLocator.Get<ITimeService>());
+
             ServiceLocator.Register(_input);
             ServiceLocator.Register<ISceneLoader>(sceneLoader);
             ServiceLocator.Register(_stateMachine);
+            ServiceLocator.Register<IRecipeCatalog>(recipeCatalog);
+            ServiceLocator.Register(matchController);
 
             _stateMachine.ChangeState(new MainMenuState());
             ServiceLocator.Get<ILoggingService>().Log("[Game] Gameplay initialized");
@@ -43,6 +55,11 @@ namespace RecipeRage
 
             _input.Tick();
             _stateMachine.Update(ServiceLocator.Get<ITimeService>().DeltaTime);
+
+            if (ServiceLocator.TryGet<MatchController>(out var match))
+            {
+                match.Tick();
+            }
         }
 
         private void OnDestroy()
