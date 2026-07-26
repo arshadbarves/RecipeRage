@@ -13,6 +13,7 @@ namespace Playcenter.Services
     public sealed class EOSCloudStorageService : IStorageService
     {
         private readonly ILoggingService _log;
+        private EOSPlayerDataTransport _transport;
         private string _rootPath;
 
         public bool IsReady { get; private set; }
@@ -20,6 +21,12 @@ namespace Playcenter.Services
         public EOSCloudStorageService(ILoggingService log)
         {
             _log = log;
+        }
+
+        /// <summary>Attach the EOS transport (called by PlaycenterCompositionRoot after auth).</summary>
+        public void SetTransport(EOSPlayerDataTransport transport)
+        {
+            _transport = transport;
         }
 
         public IEnumerator Initialize()
@@ -31,36 +38,56 @@ namespace Playcenter.Services
             yield break;
         }
 
-        public Task<bool> WriteFile(string key, byte[] data)
+        public async Task<bool> WriteFile(string key, byte[] data)
         {
+            // Cloud-first: try EOS transport when available, fall back to local
+            if (_transport != null && _transport.IsAvailable)
+            {
+                if (await _transport.Write(key, data))
+                {
+                    return true;
+                }
+                _log.Log($"[Storage] Cloud write unavailable for {key} — falling back to local");
+            }
+
             try
             {
                 File.WriteAllBytes(GetPath(key), data);
-                return Task.FromResult(true);
+                return true;
             }
             catch (Exception ex)
             {
                 _log.LogError($"[Storage] Write failed for {key}: {ex.Message}");
-                return Task.FromResult(false);
+                return false;
             }
         }
 
-        public Task<byte[]> ReadFile(string key)
+        public async Task<byte[]> ReadFile(string key)
         {
+            // Cloud-first
+            if (_transport != null && _transport.IsAvailable)
+            {
+                var cloudData = await _transport.Read(key);
+                if (cloudData != null)
+                {
+                    return cloudData;
+                }
+            }
+
             var path = GetPath(key);
             if (!File.Exists(path))
             {
-                return Task.FromResult<byte[]>(null);
+                return null;
             }
 
             try
             {
-                return Task.FromResult(File.ReadAllBytes(path));
+                return File.ReadAllBytes(path);
             }
             catch (Exception ex)
             {
                 _log.LogError($"[Storage] Read failed for {key}: {ex.Message}");
-                return Task.FromResult<byte[]>(null);
+                return null;
             }
         }
 

@@ -35,6 +35,8 @@ namespace Playcenter
             var configService = new FirebaseConfigService(loggingService);
             var analyticsService = new FirebaseAnalyticsService(loggingService);
             var authService = new AuthService(saveService, loggingService, analyticsService);
+            var eosTransport = new EOSPlayerDataTransport(authService, loggingService);
+            storageService.SetTransport(eosTransport);
             var adsService = new AdMobService(loggingService, analyticsService);
             var iapService = new UnityIAPService(loggingService, analyticsService);
             var friendsService = new UnityGamingServicesFriends(saveService, loggingService);
