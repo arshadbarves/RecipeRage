@@ -84,6 +84,8 @@ namespace RecipeRage
             ServiceLocator.Register<IChefCatalog>(chefCatalog);
             ServiceLocator.Register<IChefProgressionService>(chefProgression);
 
+            new UI.ResultsPresenter().Initialize(eventBusRef, ServiceLocator.Get<Playcenter.UI.IUIService>());
+
             var trophyService = new TrophyService(
                 ServiceLocator.Get<ISaveService>(),
                 ServiceLocator.Get<IAnalyticsService>());
