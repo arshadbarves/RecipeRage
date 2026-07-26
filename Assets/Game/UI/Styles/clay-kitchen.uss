@@ -1,0 +1,8 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   CLAY KITCHEN — Master Stylesheet
+   Import this single file into every screen's UXML.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@import url("tokens.uss");
+@import url("components.uss");
+@import url("ui-animations.uss");

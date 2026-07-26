@@ -1,0 +1,48 @@
+<UXML xmlns="UnityEngine.UIElements">
+    <Style src="clay-kitchen.uss" />
+    <VisualElement name="shop-screen" class="screen">
+
+        <VisualElement name="topbar" class="topbar">
+            <Button name="back-button" class="btn btn--small btn--ghost" text="← Back" />
+            <Label class="heading" text="Shop" style="font-size:24px;" />
+            <VisualElement name="coin-chip" class="chip chip--gold">
+                <Label name="coin-count" class="chip__label" text="0" />
+            </VisualElement>
+        </VisualElement>
+
+        <ScrollView class="grow" style="padding:24px;">
+            <Label class="section-title" text="Daily Deals" />
+            <VisualElement class="row-layout">
+                <VisualElement class="card center" style="width:180px;padding:16px;">
+                    <Label class="heading" text="100 Coins" style="font-size:20px;" />
+                    <Button name="daily-ad" class="btn btn--accent btn--small" text="📺 Free" style="margin-top:12px;width:100%;" />
+                </VisualElement>
+                <VisualElement class="card center" style="width:180px;padding:16px;">
+                    <Label class="heading" text="50 XP Boost" style="font-size:20px;" />
+                    <Button name="daily-xp" class="btn btn--small" text="25c" style="margin-top:12px;width:100%;" />
+                </VisualElement>
+            </VisualElement>
+
+            <Label class="section-title" text="Starter Pack" />
+            <VisualElement class="card" style="padding:20px;background-color:var(--color-accent-light);">
+                <Label class="heading" text="🎁 STARTER PACK" style="font-size:22px;color:var(--color-accent-dark);" />
+                <Label class="text-soft" text="1,000 Coins + Unlock Marco + Exclusive Skin" style="margin-top:8px;" />
+                <Button name="starter-pack" class="btn btn--accent btn--large" text="$4.99" style="margin-top:16px;width:100%;" />
+            </VisualElement>
+
+            <Label class="section-title" text="Coin Packs" />
+            <VisualElement class="row-layout" style="flex-wrap:wrap;">
+                <Button name="coin-pack-500" class="btn" text="500c — $0.99" style="width:200px;margin:8px;" />
+                <Button name="coin-pack-1200" class="btn" text="1,200c — $1.99" style="width:200px;margin:8px;" />
+                <Button name="coin-pack-3000" class="btn" text="3,000c — $4.99" style="width:200px;margin:8px;" />
+                <Button name="coin-pack-8000" class="btn" text="8,000c — $9.99" style="width:200px;margin:8px;" />
+            </VisualElement>
+
+            <Label class="section-title" text="Chef Unlocks" />
+            <VisualElement class="row-layout">
+                <Button name="unlock-marco" class="btn btn--secondary" text="Marco — 500c" style="width:220px;margin:8px;" />
+                <Button name="unlock-gustavo" class="btn btn--secondary" text="Gustavo — 2,000c" style="width:220px;margin:8px;" />
+            </VisualElement>
+        </ScrollView>
+    </VisualElement>
+</UXML>

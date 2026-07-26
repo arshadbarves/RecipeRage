@@ -1,0 +1,27 @@
+<UXML xmlns="UnityEngine.UIElements">
+    <Style src="clay-kitchen.uss" />
+    <VisualElement name="team-composition-screen" class="screen center">
+
+        <Label class="display heading" text="MATCH FOUND!" style="font-size:44px;margin-bottom:32px;" />
+
+        <VisualElement class="row-layout" style="justify-content:center; align-items:flex-start;">
+            <!-- Your team -->
+            <VisualElement class="card" style="width:320px;margin:16px;padding:20px;">
+                <Label class="heading" text="YOUR TEAM" style="font-size:22px;color:var(--color-primary);margin-bottom:16px;-unity-text-align:middle-center;" />
+                <VisualElement name="your-team" />
+            </VisualElement>
+
+            <!-- VS -->
+            <Label class="heading" text="VS" style="font-size:48px;margin:16px;align-self:center;" />
+
+            <!-- Enemy team -->
+            <VisualElement class="card" style="width:320px;margin:16px;padding:20px;">
+                <Label class="heading" text="ENEMY TEAM" style="font-size:22px;color:var(--color-secondary);margin-bottom:16px;-unity-text-align:middle-center;" />
+                <VisualElement name="enemy-team" />
+            </VisualElement>
+        </VisualElement>
+
+        <Label name="map-name" class="text-soft" text="Map: Beach BBQ" style="font-size:20px;margin-top:24px;" />
+        <Label name="countdown-label" class="heading" text="Starting in 5..." style="font-size:28px;margin-top:12px;color:var(--color-accent-dark);" />
+    </VisualElement>
+</UXML>

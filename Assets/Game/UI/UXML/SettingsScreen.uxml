@@ -1,0 +1,39 @@
+<UXML xmlns="UnityEngine.UIElements">
+    <Style src="clay-kitchen.uss" />
+    <VisualElement name="settings-screen" class="screen">
+
+        <VisualElement name="topbar" class="topbar">
+            <Button name="back-button" class="btn btn--small btn--ghost" text="← Back" />
+            <Label class="heading" text="Settings" style="font-size:24px;" />
+            <VisualElement />
+        </VisualElement>
+
+        <ScrollView class="grow" style="padding:24px;">
+            <Label class="section-title" text="Audio" />
+            <VisualElement class="card" style="padding:20px;">
+                <Label class="row__title" text="Master Volume" />
+                <Slider name="master-volume" low-value="0" high-value="1" value="1" style="margin-bottom:16px;" />
+                <Label class="row__title" text="Music Volume" />
+                <Slider name="music-volume" low-value="0" high-value="1" value="0.7" style="margin-bottom:16px;" />
+                <Label class="row__title" text="SFX Volume" />
+                <Slider name="sfx-volume" low-value="0" high-value="1" value="1" />
+            </VisualElement>
+
+            <Label class="section-title" text="Gameplay" />
+            <VisualElement class="card" style="padding:20px;">
+                <Button name="replay-tutorial-button" class="btn btn--ghost" text="Replay Tutorial" style="width:100%;margin-bottom:12px;" />
+            </VisualElement>
+
+            <Label class="section-title" text="Account" />
+            <VisualElement class="card" style="padding:20px;">
+                <Button name="sign-out-button" class="btn btn--destructive" text="Sign Out" style="width:100%;" />
+            </VisualElement>
+
+            <Label class="section-title" text="Legal" />
+            <VisualElement class="row-layout">
+                <Button name="terms-button" class="btn btn--ghost btn--small" text="Terms of Service" style="margin-right:12px;" />
+                <Button name="privacy-button" class="btn btn--ghost btn--small" text="Privacy Policy" />
+            </VisualElement>
+        </ScrollView>
+    </VisualElement>
+</UXML>

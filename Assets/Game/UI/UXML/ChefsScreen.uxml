@@ -1,0 +1,31 @@
+<UXML xmlns="UnityEngine.UIElements">
+    <Style src="clay-kitchen.uss" />
+    <VisualElement name="chefs-screen" class="screen">
+
+        <VisualElement name="topbar" class="topbar">
+            <Button name="back-button" class="btn btn--small btn--ghost" text="← Back" />
+            <Label class="heading" text="My Chefs" style="font-size:24px;" />
+            <VisualElement class="row-layout">
+                <Button name="sort-button" class="btn btn--small btn--ghost" text="Sort ▼" />
+                <Button name="filter-button" class="btn btn--small btn--ghost" text="Filter ▼" />
+            </VisualElement>
+        </VisualElement>
+
+        <VisualElement class="row-layout grow">
+            <!-- Detail panel -->
+            <VisualElement class="card" style="flex-grow:1; margin:24px; padding:24px;">
+                <VisualElement name="chef-model" style="flex-grow:1;" />
+                <Label name="detail-name" class="heading" text="Gordon" style="font-size:32px;margin-top:12px;-unity-text-align:middle-center;" />
+                <Label name="detail-level" class="text-soft" text="Level 1/10" style="font-size:18px;-unity-text-align:middle-center;" />
+                <VisualElement name="xp-bar" class="bar" style="margin-top:12px;">
+                    <VisualElement name="xp-fill" class="bar__fill bar__fill--xp" style="width:60%;" />
+                </VisualElement>
+                <Label name="ability-label" class="text-soft" text="Ability: +10% Move Speed" style="font-size:16px;margin-top:16px;-unity-text-align:middle-center;" />
+                <Button name="detail-action" class="btn btn--accent btn--large" text="Upgrade: 100c" style="margin-top:20px;width:100%;" />
+            </VisualElement>
+
+            <!-- Grid -->
+            <ScrollView name="chef-grid" style="width:480px; margin:24px;" />
+        </VisualElement>
+    </VisualElement>
+</UXML>

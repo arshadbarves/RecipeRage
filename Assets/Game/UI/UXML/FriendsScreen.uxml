@@ -1,0 +1,29 @@
+<UXML xmlns="UnityEngine.UIElements">
+    <Style src="clay-kitchen.uss" />
+    <VisualElement name="friends-screen" class="screen">
+
+        <VisualElement name="topbar" class="topbar">
+            <Button name="back-button" class="btn btn--small btn--ghost" text="← Back" />
+            <Label class="heading" text="Friends" style="font-size:24px;" />
+            <Label name="my-code" class="chip" text="My Code: ABC123" />
+        </VisualElement>
+
+        <VisualElement class="row-layout grow" style="padding:24px;">
+            <!-- Add friend -->
+            <VisualElement class="card" style="width:380px;padding:20px;">
+                <Label class="heading" text="Add Friend" style="font-size:22px;margin-bottom:12px;" />
+                <TextField name="friend-code-input" style="height:48px;font-size:18px;margin-bottom:12px;" />
+                <Button name="add-button" class="btn" text="Add by Code" style="width:100%;" />
+                <VisualElement class="card card--recessed" style="margin-top:20px;padding:16px;">
+                    <Label class="text-soft" text="Share your code with friends to play together!" style="-unity-text-align:middle-center;font-size:15px;" />
+                </VisualElement>
+            </VisualElement>
+
+            <!-- Friends list -->
+            <VisualElement class="grow" style="margin-left:24px;">
+                <Label class="heading" text="Online (0)" style="font-size:20px;margin-bottom:8px;" />
+                <ScrollView name="friends-list" class="grow" />
+            </VisualElement>
+        </VisualElement>
+    </VisualElement>
+</UXML>

@@ -1,0 +1,35 @@
+<UXML xmlns="UnityEngine.UIElements">
+    <Style src="clay-kitchen.uss" />
+    <VisualElement name="results-screen" class="screen center">
+
+        <Label name="result-title" class="display display--victory heading" text="VICTORY!" style="font-size:64px;margin-bottom:16px;" />
+        <Label name="score-line" class="heading" text="12 vs 10" style="font-size:32px;margin-bottom:32px;" />
+
+        <VisualElement name="mvp-card" class="card" style="width:380px;padding:16px;margin-bottom:24px;background-color:var(--color-accent-light);">
+            <Label name="mvp-label" class="heading" text="MVP: You! (8 recipes)" style="font-size:20px;color:var(--color-accent-dark);-unity-text-align:middle-center;" />
+        </VisualElement>
+
+        <VisualElement name="rewards-container" class="card" style="width:420px;padding:24px;">
+            <VisualElement class="row-layout" style="justify-content:space-between;margin-bottom:12px;">
+                <Label class="heading" text="Trophies" style="font-size:20px;" />
+                <Label name="trophy-delta" class="heading" text="+15 🏆" style="font-size:20px;color:var(--color-success-dark);" />
+            </VisualElement>
+            <VisualElement class="row-layout" style="justify-content:space-between;margin-bottom:16px;">
+                <Label class="heading" text="Coins" style="font-size:20px;" />
+                <Label name="coin-total" class="heading" text="+90 💰" style="font-size:20px;color:var(--color-accent-dark);" />
+            </VisualElement>
+            <Label class="text-soft" text="Chef XP" style="font-size:16px;margin-bottom:6px;" />
+            <VisualElement name="xp-bar" class="bar" style="width:100%;">
+                <VisualElement name="xp-fill" class="bar__fill bar__fill--xp" style="width:60%;" />
+            </VisualElement>
+            <Label name="xp-label" class="text-faint" text="Gordon: +25 XP (725/1100)" style="font-size:14px;margin-top:6px;" />
+        </VisualElement>
+
+        <VisualElement class="row-layout" style="margin-top:32px;">
+            <Button name="play-again-button" class="btn btn--large" text="Play Again" style="margin-right:12px;" />
+            <Button name="main-menu-button" class="btn btn--large btn--ghost" text="Main Menu" />
+        </VisualElement>
+
+        <Button name="double-coins-ad" class="btn btn--accent" text="📺 Watch Ad: 2x Coins" style="margin-top:20px;width:300px;" />
+    </VisualElement>
+</UXML>

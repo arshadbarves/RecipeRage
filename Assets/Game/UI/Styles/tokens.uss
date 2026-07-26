@@ -1,0 +1,88 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   CLAY KITCHEN — Design Tokens (Claymorphism)
+   RecipeRage UI System. Flat colors, soft layered shadows, no gradients.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+    /* ── Color: Brand ── */
+    --color-primary: #EC4899;            /* pink — main actions, team A */
+    --color-primary-dark: #BE185D;       /* pressed / border depth */
+    --color-primary-light: #F9A8D4;      /* hover tint */
+    --color-on-primary: #FFFFFF;
+
+    --color-secondary: #8B5CF6;          /* purple — team B, secondary */
+    --color-secondary-dark: #6D28D9;
+    --color-secondary-light: #C4B5FD;
+    --color-on-secondary: #FFFFFF;
+
+    --color-accent: #F59E0B;             /* gold — CTA, coins, trophies */
+    --color-accent-dark: #B45309;
+    --color-accent-light: #FCD34D;
+    --color-on-accent: #1F2937;
+
+    /* ── Color: Surface ── */
+    --color-background: #FDF2F8;         /* soft pink-white screen bg */
+    --color-surface: #FFFFFF;            /* cards */
+    --color-surface-dim: #FCE7F3;        /* recessed areas */
+    --color-muted: #F3E8F5;              /* disabled / subtle bg */
+
+    /* ── Color: Text ── */
+    --color-foreground: #0F172A;         /* near-black */
+    --color-foreground-soft: #475569;    /* secondary text */
+    --color-foreground-faint: #94A3B8;   /* hints / disabled */
+
+    /* ── Color: Semantic ── */
+    --color-success: #22C55E;
+    --color-success-dark: #15803D;
+    --color-warning: #F59E0B;
+    --color-destructive: #DC2626;        /* burning, defeat, errors */
+    --color-destructive-dark: #991B1B;
+    --color-border: #F1D4E6;             /* hairline borders */
+
+    /* ── Color: Shadow (layered, solid — no gradients) ── */
+    --shadow-color-soft: rgba(190, 24, 93, 0.10);
+    --shadow-color-mid: rgba(15, 23, 42, 0.14);
+    --shadow-color-strong: rgba(15, 23, 42, 0.22);
+
+    /* ── Spacing (8px base) ── */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 24px;
+    --space-6: 32px;
+    --space-7: 48px;
+    --space-8: 64px;
+
+    /* ── Radius (clay rounded) ── */
+    --radius-sm: 12px;
+    --radius-md: 16px;
+    --radius-lg: 22px;
+    --radius-xl: 28px;
+    --radius-pill: 999px;
+
+    /* ── Border width (clay chunky) ── */
+    --border-thin: 2px;
+    --border-thick: 3px;
+    --border-chunky: 4px;
+
+    /* ── Typography ── */
+    --font-heading: "Fredoka", sans-serif;
+    --font-body: "Nunito", sans-serif;
+
+    --text-xs: 14px;
+    --text-sm: 16px;
+    --text-base: 18px;
+    --text-lg: 22px;
+    --text-xl: 28px;
+    --text-2xl: 36px;
+    --text-3xl: 48px;
+    --text-hero: 64px;
+
+    /* ── Motion ── */
+    --duration-fast: 0.15s;
+    --duration-base: 0.2s;
+    --duration-slow: 0.3s;
+    --ease-out: ease-out;
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}

@@ -1,0 +1,34 @@
+<UXML xmlns="UnityEngine.UIElements">
+    <Style src="clay-kitchen.uss" />
+    <VisualElement name="hud-screen" class="screen" style="background-color: rgba(0,0,0,0);">
+
+        <!-- Top bar: scores + timer -->
+        <VisualElement name="hud-top" class="topbar" style="background-color: rgba(255,255,255,0.9);">
+            <VisualElement name="team-score-chip" class="chip" style="background-color:var(--color-primary-light);">
+                <Label name="team-count" class="chip__label" text="0/12" />
+            </VisualElement>
+            <Label name="match-timer" class="heading" text="5:00" style="font-size:32px;" />
+            <VisualElement name="enemy-score-chip" class="chip" style="background-color:var(--color-secondary-light);">
+                <Label name="enemy-count" class="chip__label" text="0/12" />
+            </VisualElement>
+        </VisualElement>
+
+        <!-- Off-screen indicator root (indicators spawn here) -->
+        <VisualElement name="indicator-root" style="position:absolute; top:0; left:0; right:0; bottom:0;"/>
+
+        <!-- Current recipe checklist -->
+        <VisualElement name="recipe-panel" class="card" style="position:absolute; left:16px; top:88px; width:280px; background-color: rgba(255,255,255,0.92);">
+            <Label name="recipe-name" class="heading" text="Tomato Soup" style="font-size:20px;margin-bottom:8px;" />
+            <VisualElement name="recipe-checklist" />
+        </VisualElement>
+
+        <!-- Controls hint (bottom) -->
+        <VisualElement class="row-layout" style="position:absolute; bottom:16px; left:0; right:0; justify-content:space-between; padding-left:24px; padding-right:24px;">
+            <VisualElement name="stick-left" class="card card--recessed" style="width:120px;height:120px;border-radius:999px;"/>
+            <VisualElement class="row-layout">
+                <Button name="interact-button" class="btn btn--accent" text="Interact" style="width:120px;height:64px;margin-right:12px;" />
+                <Button name="chop-button" class="btn" text="Chop" style="width:120px;height:64px;" />
+            </VisualElement>
+        </VisualElement>
+    </VisualElement>
+</UXML>

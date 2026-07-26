@@ -1,0 +1,25 @@
+<UXML xmlns="UnityEngine.UIElements">
+    <Style src="clay-kitchen.uss" />
+    <VisualElement name="matchmaking-screen" class="screen center">
+
+        <VisualElement name="matchmaking-icon" class="center" style="margin-bottom:32px;">
+            <Label class="display heading" text="🍳" style="font-size:96px;" />
+        </VisualElement>
+
+        <Label class="heading" text="Finding players..." style="font-size:32px;margin-bottom:24px;" />
+
+        <VisualElement class="card center" style="width:420px;padding:24px;">
+            <Label name="players-found" class="heading" text="Players found: 1/4" style="font-size:20px;margin-bottom:12px;" />
+            <VisualElement name="matchmaking-bar" class="bar" style="width:100%;">
+                <VisualElement class="bar__fill" style="width:25%;" />
+            </VisualElement>
+            <Label name="wait-time" class="text-soft" text="Estimated wait: 15s" style="margin-top:12px;font-size:16px;" />
+        </VisualElement>
+
+        <Button name="cancel-button" class="btn btn--destructive" text="Cancel" style="margin-top:32px;width:220px;" />
+
+        <VisualElement class="card card--recessed" style="position:absolute;bottom:24px;left:24px;right:24px;padding:16px;">
+            <Label name="tip" class="text-soft" text="💡 Tip: Tap rapidly to chop vegetables faster!" style="-unity-text-align:middle-center;font-size:16px;" />
+        </VisualElement>
+    </VisualElement>
+</UXML>
