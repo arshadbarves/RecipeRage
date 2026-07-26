@@ -23,7 +23,11 @@ namespace Playcenter.UI
         {
             gameObject.SetActive(true);
             OnShow();
+            FontThemeHook?.Invoke(Root);
         }
+
+        /// <summary>Static hook invoked with the screen root after OnShow. Set by the game to apply themes (fonts).</summary>
+        public static System.Action<VisualElement> FontThemeHook;
 
         public void Hide()
         {

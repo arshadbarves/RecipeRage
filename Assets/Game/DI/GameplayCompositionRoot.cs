@@ -106,6 +106,9 @@ namespace RecipeRage
 
             new GameplayAudioWiring().Initialize(eventBusRef, ServiceLocator.Get<IAudioService>());
 
+            // Apply Clay Kitchen fonts (Fredoka headings, Nunito body) to every screen on Show
+            Playcenter.UI.BaseUIScreen.FontThemeHook = root => UI.UIFontTheme.Apply(root);
+
             var trophyService = new TrophyService(
                 ServiceLocator.Get<ISaveService>(),
                 ServiceLocator.Get<IAnalyticsService>());
