@@ -95,6 +95,30 @@ namespace RecipeRage
             return true;
         }
 
+        /// <summary>Client display only: mirrors the server's completed count.</summary>
+        public void ApplyRemoteProgress(int completed)
+        {
+            if (_state != null)
+            {
+                _state.CurrentIndex = completed;
+            }
+        }
+
+        /// <summary>Server-only tick (network matches).</summary>
+        public void TickServer(float deltaTime)
+        {
+            if (_state == null || _state.IsOver)
+            {
+                return;
+            }
+
+            _state.RemainingSeconds -= deltaTime;
+            if (_state.RemainingSeconds <= 0f)
+            {
+                EndMatch(false);
+            }
+        }
+
         private void EndMatch(bool completedAll)
         {
             _state.IsOver = true;
