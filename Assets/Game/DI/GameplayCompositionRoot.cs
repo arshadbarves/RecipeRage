@@ -60,6 +60,20 @@ namespace RecipeRage
             ServiceLocator.Register(planner);
             ServiceLocator.Register(new Bots.BotClaimRegistry());
 
+            // Adaptive difficulty: track human recipe pace, scale bot dwell to match
+            var skillTracker = new Bots.SkillTracker();
+            var adaptiveDifficulty = new Bots.AdaptiveDifficulty(ServiceLocator.Get<IConfigService>());
+            ServiceLocator.Register(skillTracker);
+            ServiceLocator.Register(adaptiveDifficulty);
+            var eventBusRef = ServiceLocator.Get<IEventBus>();
+            eventBusRef.Subscribe<RecipeServedEvent>(e =>
+            {
+                if (ServiceLocator.TryGet<MatchController>(out var m))
+                {
+                    skillTracker.TrackRecipeCompleted(300f - m.RemainingSeconds);
+                }
+            });
+
             var tutorialDone = ServiceLocator.Get<ISaveService>().Load("tutorial_completed", false);
             _stateMachine.ChangeState(tutorialDone ? (IGameState)new MainMenuState() : new TutorialState());
             ServiceLocator.Get<ILoggingService>().Log("[Game] Gameplay initialized");
