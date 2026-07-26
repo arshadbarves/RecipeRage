@@ -43,6 +43,17 @@ namespace RecipeRage
         /// <summary>Called at match start with the player's selected chef modifier.</summary>
         public void ApplyChefModifier(ChefAbilityModifier modifier)
         {
+            // Lazy-init: spawner may call this before Start() runs (same frame as Instantiate).
+            if (_config == null)
+            {
+                _config = ServiceLocator.Get<IConfigService>();
+                _baseMoveSpeed = _config.Get(ConfigKeys.PlayerMoveSpeed, ConfigKeys.Defaults.PlayerMoveSpeed);
+            }
+            if (Carry == null)
+            {
+                Carry = new PlayerCarry(_config);
+            }
+
             _chefModifier = modifier;
             _moveSpeed = _baseMoveSpeed * modifier.MoveSpeedMultiplier;
             Carry.SetCapacityBonus(modifier.CarryCapacityBonus);

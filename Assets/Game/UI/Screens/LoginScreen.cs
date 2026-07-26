@@ -28,7 +28,16 @@ namespace RecipeRage.UI
             var result = await signIn(auth);
             if (result.Success)
             {
-                ServiceLocator.Get<IUIService>().Show<MainMenuScreen>();
+                // First launch: tutorial before main menu (per spec, forced tutorial)
+                var tutorialDone = ServiceLocator.Get<ISaveService>().Load("tutorial_completed", false);
+                if (!tutorialDone)
+                {
+                    ServiceLocator.Get<IGameStateMachine>().ChangeState(new TutorialState());
+                }
+                else
+                {
+                    ServiceLocator.Get<IUIService>().Show<MainMenuScreen>();
+                }
             }
         }
     }

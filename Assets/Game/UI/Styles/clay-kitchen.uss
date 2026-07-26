@@ -79,8 +79,10 @@
     --ease-out: ease-out;
     --ease-spring: ease-out;
 
-    /* screen base appearance */
+    /* screen base appearance — fill the whole panel */
     flex-grow: 1;
+    width: 100%;
+    height: 100%;
     background-color: var(--color-background);
     color: var(--color-foreground);
 }

@@ -144,8 +144,9 @@ namespace RecipeRage
                 chefProgression.AddXp(chefProgression.GetSelectedChef(), 25);
             });
 
-            var tutorialDone = ServiceLocator.Get<ISaveService>().Load("tutorial_completed", false);
-            _stateMachine.ChangeState(tutorialDone ? (IGameState)new MainMenuState() : new TutorialState());
+            // Always land on MainMenu (Login shows if signed out). Tutorial is
+            // triggered after first login, not before — see LoginScreen flow.
+            _stateMachine.ChangeState(new MainMenuState());
             ServiceLocator.Get<ILoggingService>().Log("[Game] Gameplay initialized");
         }
 
