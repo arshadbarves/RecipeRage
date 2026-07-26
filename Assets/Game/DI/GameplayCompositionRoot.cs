@@ -42,7 +42,8 @@ namespace RecipeRage
             ServiceLocator.Register<IRecipeCatalog>(recipeCatalog);
             ServiceLocator.Register(matchController);
 
-            _stateMachine.ChangeState(new MainMenuState());
+            var tutorialDone = ServiceLocator.Get<ISaveService>().Load("tutorial_completed", false);
+            _stateMachine.ChangeState(tutorialDone ? (IGameState)new MainMenuState() : new TutorialState());
             ServiceLocator.Get<ILoggingService>().Log("[Game] Gameplay initialized");
         }
 
