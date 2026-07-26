@@ -8,14 +8,35 @@ namespace RecipeRage.Net
     /// </summary>
     public sealed class MatchRuntimeState : IGameState
     {
-        public void Enter()
+        private string _loadedMapScene;
+
+        public async void Enter()
         {
             ServiceLocator.Get<ILoggingService>().Log("[Flow] Match started");
-            // Scene load via ISceneLoader when maps exist (Slice 5).
-            // Match ticking lives in NetworkMatch (server) / MatchController (offline).
+
+            // Load the daily-rotation map additively (MapRotationService: config current_map override)
+            if (ServiceLocator.TryGet<MapRotationService>(out var mapService)
+                && ServiceLocator.TryGet<ISceneLoader>(out var sceneLoader))
+            {
+                var map = mapService.CurrentMap;
+                if (map != null)
+                {
+                    _loadedMapScene = map.SceneName;
+                    await sceneLoader.LoadSceneAdditive(_loadedMapScene);
+                }
+            }
         }
 
-        public void Exit() { }
+        public async void Exit()
+        {
+            if (!string.IsNullOrEmpty(_loadedMapScene)
+                && ServiceLocator.TryGet<ISceneLoader>(out var sceneLoader))
+            {
+                await sceneLoader.UnloadScene(_loadedMapScene);
+                _loadedMapScene = null;
+            }
+        }
+
         public void Update(float deltaTime) { }
     }
 }

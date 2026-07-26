@@ -14,6 +14,7 @@ namespace RecipeRage
         [Header("Content")]
         [SerializeField] private RecipeDefinition[] _allRecipes;
         [SerializeField] private ChefDefinition[] _allChefs;
+        [SerializeField] private MapDefinition[] _allMaps;
 
         private IGameStateMachine _stateMachine;
         private IInputService _input;
@@ -85,6 +86,9 @@ namespace RecipeRage
             ServiceLocator.Register<IChefProgressionService>(chefProgression);
 
             new UI.ResultsPresenter().Initialize(eventBusRef, ServiceLocator.Get<Playcenter.UI.IUIService>());
+
+            var mapRotation = new MapRotationService(_allMaps, ServiceLocator.Get<IConfigService>());
+            ServiceLocator.Register(mapRotation);
 
             var trophyService = new TrophyService(
                 ServiceLocator.Get<ISaveService>(),
