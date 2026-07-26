@@ -528,7 +528,43 @@ namespace RecipeRage.EditorTools
             Debug.Log($"[Scaffolder] Maps: {specs.Length}");
         }
 
-        // ── UI wiring (UIDocuments + screen registry) ───────────────────────
+        // ── Panel settings (proper theme + scale) ───────────────────────────
+
+        public static void ConfigurePanelSettings()
+        {
+            const string themePath = "Assets/Game/UI/Styles/ClayKitchenTheme.tss";
+            const string panelSettingsPath = "Assets/Game/UI/PanelSettings.asset";
+
+            // Theme asset should exist (written as text); if not, create it
+            var theme = AssetDatabase.LoadAssetAtPath<UnityEngine.UIElements.ThemeStyleSheet>(themePath);
+            if (theme == null)
+            {
+                Debug.LogError($"[Scaffolder] ClayKitchenTheme.tss not found at {themePath} — write it first");
+                return;
+            }
+
+            // Configure PanelSettings: theme + landscape reference resolution
+            var panelSettings = AssetDatabase.LoadAssetAtPath<PanelSettings>(panelSettingsPath);
+            if (panelSettings == null)
+            {
+                panelSettings = ScriptableObject.CreateInstance<PanelSettings>();
+                AssetDatabase.CreateAsset(panelSettings, panelSettingsPath);
+            }
+
+            var so = new SerializedObject(panelSettings);
+            so.FindProperty("themeUss").objectReferenceValue = theme;
+            so.FindProperty("m_ScaleMode").intValue = 1; // ScaleWithScreenSize
+            so.FindProperty("m_ReferenceResolution").vector2Value = new Vector2(1920f, 1080f); // landscape
+            so.FindProperty("m_ScreenMatchMode").intValue = 0; // MatchWidthOrHeight
+            so.FindProperty("m_Match").floatValue = 0.5f; // balance width/height
+            so.FindProperty("m_ReferenceDpi").floatValue = 96f;
+            so.FindProperty("m_FallbackDpi").floatValue = 96f;
+            so.ApplyModifiedPropertiesWithoutUndo();
+
+            EditorUtility.SetDirty(panelSettings);
+            AssetDatabase.SaveAssets();
+            Debug.Log("[Scaffolder] PanelSettings configured (ClayKitchenTheme + 1920x1080 landscape)");
+        }
 
         private sealed class ScreenSpec
         {
