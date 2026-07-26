@@ -1,8 +1,93 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   CLAY KITCHEN — Master Stylesheet
-   Import this single file into every screen's UXML.
+   CLAY KITCHEN — Master Stylesheet (tokens inlined for reliable var() resolution)
+   Unity UI Toolkit resolves var() only when variables are defined on a selector
+   the document root matches, in the SAME stylesheet attached to the UXML.
    ═══════════════════════════════════════════════════════════════════════════ */
 
-@import url("tokens.uss");
+.screen {
+    /* ── Color: Brand ── */
+    --color-primary: #EC4899;
+    --color-primary-dark: #BE185D;
+    --color-primary-light: #F9A8D4;
+    --color-on-primary: #FFFFFF;
+
+    --color-secondary: #8B5CF6;
+    --color-secondary-dark: #6D28D9;
+    --color-secondary-light: #C4B5FD;
+    --color-on-secondary: #FFFFFF;
+
+    --color-accent: #F59E0B;
+    --color-accent-dark: #B45309;
+    --color-accent-light: #FCD34D;
+    --color-on-accent: #1F2937;
+
+    /* ── Color: Surface ── */
+    --color-background: #FDF2F8;
+    --color-surface: #FFFFFF;
+    --color-surface-dim: #FCE7F3;
+    --color-muted: #F3E8F5;
+
+    /* ── Color: Text ── */
+    --color-foreground: #0F172A;
+    --color-foreground-soft: #475569;
+    --color-foreground-faint: #94A3B8;
+
+    /* ── Color: Semantic ── */
+    --color-success: #22C55E;
+    --color-success-dark: #15803D;
+    --color-warning: #F59E0B;
+    --color-destructive: #DC2626;
+    --color-destructive-dark: #991B1B;
+    --color-border: #F1D4E6;
+
+    /* ── Spacing ── */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 24px;
+    --space-6: 32px;
+    --space-7: 48px;
+    --space-8: 64px;
+
+    /* ── Radius ── */
+    --radius-sm: 12px;
+    --radius-md: 16px;
+    --radius-lg: 22px;
+    --radius-xl: 28px;
+    --radius-pill: 999px;
+
+    /* ── Border width ── */
+    --border-thin: 2px;
+    --border-thick: 3px;
+    --border-chunky: 4px;
+
+    /* ── Typography ── */
+    --font-heading: "Fredoka", sans-serif;
+    --font-body: "Nunito", sans-serif;
+
+    --text-xs: 14px;
+    --text-sm: 16px;
+    --text-base: 18px;
+    --text-lg: 22px;
+    --text-xl: 28px;
+    --text-2xl: 36px;
+    --text-3xl: 48px;
+    --text-hero: 64px;
+
+    /* ── Motion ── */
+    --duration-fast: 0.15s;
+    --duration-base: 0.2s;
+    --duration-slow: 0.3s;
+    --ease-out: ease-out;
+    --ease-spring: ease-out;
+
+    /* screen base appearance */
+    flex-grow: 1;
+    background-color: var(--color-background);
+    font-family: var(--font-body);
+    color: var(--color-foreground);
+}
+
 @import url("components.uss");
 @import url("ui-animations.uss");

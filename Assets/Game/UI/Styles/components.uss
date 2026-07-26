@@ -2,16 +2,8 @@
    CLAY KITCHEN — Component Library
    Clay depth = solid border-bottom edge (darker shade) + soft offset shadow.
    Press = translate down + border-bottom shrinks (the "clay squish").
+   Tokens are defined on .screen in clay-kitchen.uss (imported before this file).
    ═══════════════════════════════════════════════════════════════════════════ */
-
-/* ── Base screen ─────────────────────────────────────────────────────────── */
-
-.screen {
-    flex-grow: 1;
-    background-color: var(--color-background);
-    font-family: var(--font-body);
-    color: var(--color-foreground);
-}
 
 /* ── Buttons (clay) ──────────────────────────────────────────────────────── */
 
@@ -221,7 +213,7 @@
     padding-top: var(--space-2);
     padding-bottom: var(--space-2);
     border-bottom-width: var(--border-chunky);
-    border-bottom-color: rgba(0,0,0,0);
+    border-bottom-color: #00000000;
     transition-property: border-bottom-color, scale;
     transition-duration: var(--duration-base);
 }

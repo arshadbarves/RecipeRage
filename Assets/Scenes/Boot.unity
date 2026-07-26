@@ -647,7 +647,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Playcenter::Playcenter.PlaycenterCompositionRoot
   _mainMixer: {fileID: 24100000, guid: 8c1cdc175a52b444f8c9a2cc1864b17e, type: 2}
-  _clipMap: {fileID: 0}
+  _clipMap: {fileID: 11400000, guid: 432ee9999ee4745399bbd3639f049871, type: 2}
 --- !u!4 &990102974
 Transform:
   m_ObjectHideFlags: 0
