@@ -1,4 +1,6 @@
-<UXML xmlns="UnityEngine.UIElements">
+<UXML
+    xmlns="UnityEngine.UIElements"
+    xmlns:ui="UnityEditor.UIElements">
     <Style src="clay-kitchen.uss" />
     <VisualElement name="chefs-screen" class="screen">
 

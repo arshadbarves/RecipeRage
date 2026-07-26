@@ -1,12 +1,5 @@
 {
   "dependencies": {
-    "com.cysharp.unitask": {
-      "version": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask",
-      "depth": 0,
-      "source": "git",
-      "dependencies": {},
-      "hash": "f057abff0f4ea52e4c9699c2831808d6c0a27bcc"
-    },
     "com.playeveryware.eos": {
       "version": "https://github.com/EOS-Contrib/eos_plugin_for_unity_upm.git",
       "depth": 0,
@@ -465,13 +458,6 @@
         "com.unity.modules.jsonserialize": "1.0.0"
       },
       "url": "https://packages.unity.com"
-    },
-    "jp.hadashikick.vcontainer": {
-      "version": "https://github.com/hadashiA/VContainer.git?path=VContainer/Assets/VContainer",
-      "depth": 0,
-      "source": "git",
-      "dependencies": {},
-      "hash": "afaeff82040994f7836afa9f5116eb52a4e54f69"
     },
     "com.unity.modules.accessibility": {
       "version": "1.0.0",
