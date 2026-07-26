@@ -5,18 +5,18 @@
         <Label name="result-title" class="display display--victory heading" text="VICTORY!" style="font-size:64px;margin-bottom:16px;" />
         <Label name="score-line" class="heading" text="12 vs 10" style="font-size:32px;margin-bottom:32px;" />
 
-        <VisualElement name="mvp-card" class="card" style="width:380px;padding:16px;margin-bottom:24px;background-color:var(--color-accent-light);">
-            <Label name="mvp-label" class="heading" text="MVP: You! (8 recipes)" style="font-size:20px;color:var(--color-accent-dark);-unity-text-align:middle-center;" />
+        <VisualElement name="mvp-card" class="card card--gold">
+            <Label name="mvp-label" class="heading text-accent-dark" text="MVP: You! (8 recipes)" style="font-size:20px;-unity-text-align:middle-center;" />
         </VisualElement>
 
         <VisualElement name="rewards-container" class="card" style="width:420px;padding:24px;">
             <VisualElement class="row-layout" style="justify-content:space-between;margin-bottom:12px;">
                 <Label class="heading" text="Trophies" style="font-size:20px;" />
-                <Label name="trophy-delta" class="heading" text="+15 🏆" style="font-size:20px;color:var(--color-success-dark);" />
+                <Label name="trophy-delta" class="heading text-success-dark" text="+15 🏆" style="font-size:20px;" />
             </VisualElement>
             <VisualElement class="row-layout" style="justify-content:space-between;margin-bottom:16px;">
                 <Label class="heading" text="Coins" style="font-size:20px;" />
-                <Label name="coin-total" class="heading" text="+90 💰" style="font-size:20px;color:var(--color-accent-dark);" />
+                <Label name="coin-total" class="heading text-accent-dark" text="+90 💰" style="font-size:20px;" />
             </VisualElement>
             <Label class="text-soft" text="Chef XP" style="font-size:16px;margin-bottom:6px;" />
             <VisualElement name="xp-bar" class="bar" style="width:100%;">

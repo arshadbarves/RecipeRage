@@ -24,8 +24,8 @@
             </VisualElement>
 
             <Label class="section-title" text="Starter Pack" />
-            <VisualElement class="card" style="padding:20px;background-color:var(--color-accent-light);">
-                <Label class="heading" text="🎁 STARTER PACK" style="font-size:22px;color:var(--color-accent-dark);" />
+            <VisualElement class="card card--gold" style="padding:20px;">
+                <Label class="heading text-accent-dark" text="🎁 STARTER PACK" style="font-size:22px;" />
                 <Label class="text-soft" text="1,000 Coins + Unlock Marco + Exclusive Skin" style="margin-top:8px;" />
                 <Button name="starter-pack" class="btn btn--accent btn--large" text="$4.99" style="margin-top:16px;width:100%;" />
             </VisualElement>

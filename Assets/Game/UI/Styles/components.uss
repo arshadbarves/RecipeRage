@@ -194,6 +194,11 @@
 .chip--gold { background-color: var(--color-accent-light); border-bottom-color: var(--color-accent-dark); }
 .chip--gold .chip__label { color: var(--color-accent-dark); }
 
+.chip--team { background-color: var(--color-primary-light); border-bottom-color: var(--color-primary-dark); }
+.chip--enemy { background-color: var(--color-secondary-light); border-bottom-color: var(--color-secondary-dark); }
+
+.card--gold { background-color: var(--color-accent-light); border-bottom-color: var(--color-accent-dark); }
+
 /* ── Bottom tab bar ──────────────────────────────────────────────────────── */
 
 .tabbar {
@@ -404,3 +409,14 @@
 .text-soft { color: var(--color-foreground-soft); }
 .text-faint { color: var(--color-foreground-faint); }
 .heading { font-family: var(--font-heading); -unity-font-style: bold; }
+
+.text-primary { color: var(--color-primary); }
+.text-secondary { color: var(--color-secondary); }
+.text-accent-dark { color: var(--color-accent-dark); }
+.text-success-dark { color: var(--color-success-dark); }
+
+.countdown-number {
+    font-size: 200px;
+    color: #FFFFFF;
+    -unity-text-align: middle-center;
+}
