@@ -110,61 +110,21 @@ namespace RecipeRage.EditorTools
             var plate = Object.FindFirstObjectByType<RecipeRage.PlateStation>();
             var serving = Object.FindFirstObjectByType<RecipeRage.ServingStation>();
 
-            // Instruction UI canvas (screen space overlay) + TMP label
-            var canvasGo = new GameObject("TutorialCanvas");
-            var canvas = canvasGo.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvasGo.AddComponent<UnityEngine.UI.CanvasScaler>();
-            canvasGo.AddComponent<UnityEngine.UI.GraphicRaycaster>();
-
-            var labelGo = new GameObject("InstructionLabel", typeof(RectTransform));
-            labelGo.transform.SetParent(canvasGo.transform, false);
-            // Use legacy UI.Text (no TMP dependency in batch-generated scene);
-            // TutorialController's _instructionLabel is TMPro, so bridge via a
-            // simple adapter below.
-            var uiText = labelGo.AddComponent<UnityEngine.UI.Text>();
-            uiText.text = "Welcome to RecipeRage!";
-            uiText.fontSize = 36;
-            uiText.alignment = TextAnchor.MiddleCenter;
-            uiText.color = Color.white;
-            var builtinFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            if (builtinFont == null)
-            {
-                builtinFont = Resources.GetBuiltinResource<Font>("Arial.ttf");
-            }
-            if (builtinFont != null)
-            {
-                uiText.font = builtinFont;
-            }
-
-            var labelRect = (RectTransform)labelGo.transform;
-            labelRect.anchorMin = new Vector2(0f, 1f);
-            labelRect.anchorMax = new Vector2(1f, 1f);
-            labelRect.pivot = new Vector2(0.5f, 1f);
-            labelRect.anchoredPosition = new Vector2(0f, -40f);
-            labelRect.sizeDelta = new Vector2(0f, 80f);
-
-            // Highlight arrow (simple bouncing pointer)
-            var arrowGo = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            arrowGo.name = "HighlightArrow";
-            arrowGo.transform.localScale = new Vector3(0.4f, 0.8f, 0.4f);
-            Object.DestroyImmediate(arrowGo.GetComponent<BoxCollider>());
-
-            // Build the 10 steps with station targets
+            // Build the 9 rich steps (instruction, button hint, station color, target, condition, progress)
             var steps = new RecipeRage.TutorialStep[]
             {
-                Step("Use the left stick / WASD to move around the kitchen.", null, RecipeRage.TutorialCondition.MovedDistance),
-                Step("Walk to the crate and press Interact to fetch an ingredient.", crate, RecipeRage.TutorialCondition.FetchedIngredient),
-                Step("Place it on the cutting board, then tap Chop rapidly.", cutting, RecipeRage.TutorialCondition.ChoppedIngredient),
-                Step("Place the chopped ingredient on the stove to cook it.", cooking, RecipeRage.TutorialCondition.CookingStarted),
-                Step("Collect it when it's done — don't let it burn!", cooking, RecipeRage.TutorialCondition.CookingCollected),
-                Step("Take a plate from the plate station.", plate, RecipeRage.TutorialCondition.PlateTaken),
-                Step("Arrange the cooked food onto your plate.", plate, RecipeRage.TutorialCondition.IngredientPlated),
-                Step("Serve the dish at the serving counter!", serving, RecipeRage.TutorialCondition.RecipeServed),
-                Step("Careful: food left on the stove too long will burn.", cooking, RecipeRage.TutorialCondition.BurnWarningShown),
+                Step("Move around your kitchen.", "Press WASD / left stick to Move", "#8B5CF6", null, RecipeRage.TutorialCondition.MovedDistance, false),
+                Step("Fetch an ingredient from the crate.", "Press LEFT-CLICK to Fetch", "#F59E0B", crate, RecipeRage.TutorialCondition.FetchedIngredient, false),
+                Step("Chop the ingredient on the cutting board.", "Place it, then press RIGHT-CLICK rapidly to Chop", "#EC4899", cutting, RecipeRage.TutorialCondition.ChoppedIngredient, true),
+                Step("Start cooking on the stove.", "Press LEFT-CLICK to place & start cooking", "#DC2626", cooking, RecipeRage.TutorialCondition.CookingStarted, false),
+                Step("Collect it when ready — don't let it burn!", "Press LEFT-CLICK to Collect", "#22C55E", cooking, RecipeRage.TutorialCondition.CookingCollected, false),
+                Step("Take a plate from the plate station.", "Press LEFT-CLICK to Take a Plate", "#8B5CF6", plate, RecipeRage.TutorialCondition.PlateTaken, false),
+                Step("Arrange the cooked food onto your plate.", "Press LEFT-CLICK to Arrange", "#F59E0B", plate, RecipeRage.TutorialCondition.IngredientPlated, false),
+                Step("Serve the dish at the serving counter!", "Press LEFT-CLICK to Serve", "#22C55E", serving, RecipeRage.TutorialCondition.RecipeServed, false),
+                Step("Careful: food left on the stove too long burns.", "Watch the burn timer on the stove", "#DC2626", cooking, RecipeRage.TutorialCondition.BurnWarningShown, false),
             };
 
-            // Wire TutorialController
+            // Wire TutorialController (steps only — the HUD is a UIDocument)
             var controller = Object.FindFirstObjectByType<RecipeRage.TutorialController>();
             if (controller == null)
             {
@@ -179,25 +139,29 @@ namespace RecipeRage.EditorTools
             {
                 var el = stepsProp.GetArrayElementAtIndex(i);
                 el.FindPropertyRelative("Instruction").stringValue = steps[i].Instruction;
+                el.FindPropertyRelative("ButtonHint").stringValue = steps[i].ButtonHint;
+                el.FindPropertyRelative("StationColorHex").stringValue = steps[i].StationColorHex;
                 el.FindPropertyRelative("Condition").enumValueIndex = (int)steps[i].Condition;
+                el.FindPropertyRelative("TrackProgress").boolValue = steps[i].TrackProgress;
                 el.FindPropertyRelative("HighlightTarget").objectReferenceValue = steps[i].HighlightTarget;
             }
-            so.FindProperty("_highlightArrow").objectReferenceValue = arrowGo;
-            so.FindProperty("_instructionLabel").objectReferenceValue = uiText;
             so.ApplyModifiedPropertiesWithoutUndo();
 
             EditorSceneManager.SaveScene(scene);
             AssetDatabase.SaveAssets();
-            Debug.Log($"[Scaffolder] Tutorial wired: {steps.Length} steps + arrow + instruction UI");
+            Debug.Log($"[Scaffolder] Tutorial wired: {steps.Length} rich steps (UI Toolkit HUD)");
         }
 
-        private static RecipeRage.TutorialStep Step(string instruction, Component target, RecipeRage.TutorialCondition condition)
+        private static RecipeRage.TutorialStep Step(string instruction, string buttonHint, string colorHex, Component target, RecipeRage.TutorialCondition condition, bool trackProgress)
         {
             return new RecipeRage.TutorialStep
             {
                 Instruction = instruction,
+                ButtonHint = buttonHint,
+                StationColorHex = colorHex,
                 HighlightTarget = target != null ? target.transform : null,
-                Condition = condition
+                Condition = condition,
+                TrackProgress = trackProgress
             };
         }
 
@@ -776,6 +740,7 @@ namespace RecipeRage.EditorTools
             var screens = new[]
             {
                 new ScreenSpec { Name = "SplashScreen", UxmlPath = $"{uiRoot}/UXML/SplashScreen.uxml", ComponentType = "RecipeRage.UI.SplashScreen" },
+                new ScreenSpec { Name = "TutorialHUD", UxmlPath = $"{uiRoot}/UXML/TutorialHUD.uxml", ComponentType = "RecipeRage.UI.TutorialHUD" },
                 new ScreenSpec { Name = "LoginScreen", UxmlPath = $"{uiRoot}/UXML/LoginScreen.uxml", ComponentType = "RecipeRage.UI.LoginScreen" },
                 new ScreenSpec { Name = "MainMenuScreen", UxmlPath = $"{uiRoot}/UXML/MainMenuScreen.uxml", ComponentType = "RecipeRage.UI.MainMenuScreen" },
                 new ScreenSpec { Name = "LobbyScreen", UxmlPath = $"{uiRoot}/UXML/LobbyScreen.uxml", ComponentType = "RecipeRage.UI.LobbyScreen" },

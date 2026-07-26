@@ -1,36 +1,31 @@
 using System;
 using Playcenter;
 using Playcenter.Services;
+using Playcenter.UI;
 using UnityEngine;
 
 namespace RecipeRage
 {
     /// <summary>
-    /// Guided first-launch tutorial. Steps advance on gameplay events. No timer,
-    /// no failure — burnt items are cleared and the step retries.
+    /// Guided first-launch tutorial. Steps advance on gameplay events and drive
+    /// the tutorial HUD via ITutorialHUD (implemented in RecipeRage.UI).
+    /// No legacy UI, no TextMeshPro — UI Toolkit only.
     /// </summary>
     public sealed class TutorialController : MonoBehaviour
     {
         [SerializeField] private TutorialStep[] _steps;
-        [SerializeField] private GameObject _highlightArrow;
-        [SerializeField] private UnityEngine.UI.Text _instructionLabel;
 
         private int _currentStep;
         private IEventBus _eventBus;
         private Vector3 _playerStartPosition;
         private PlayerController _player;
+        private ITutorialHUD _hud;
 
         public event Action OnTutorialCompleted;
 
         private void Start()
         {
             _eventBus = ServiceLocator.Get<IEventBus>();
-            _player = FindFirstObjectByType<PlayerController>(); // tutorial scene: single player
-            if (_player != null)
-            {
-                _playerStartPosition = _player.transform.position;
-            }
-
             SubscribeEvents();
             ShowStep(0);
         }
@@ -77,6 +72,17 @@ namespace RecipeRage
                 return;
             }
 
+            // Lazy-find HUD (shown when tutorial scene loads)
+            if (_hud == null)
+            {
+                if (ServiceLocator.TryGet<IUIService>(out var ui) && ui.Current is ITutorialHUD hud)
+                {
+                    _hud = hud;
+                    ShowStep(_currentStep); // refresh now that HUD exists
+                }
+                return;
+            }
+
             if (Current == null)
             {
                 return;
@@ -86,6 +92,27 @@ namespace RecipeRage
                 && Vector3.Distance(_player.transform.position, _playerStartPosition) > 2f)
             {
                 Advance();
+            }
+
+            // Live numeric progress for tracked steps
+            if (Current.TrackProgress)
+            {
+                UpdateNumericProgress();
+            }
+        }
+
+        private void UpdateNumericProgress()
+        {
+            if (_hud == null)
+            {
+                return;
+            }
+
+            // Chop progress: nearest cutting station with an ingredient
+            var cutting = FindFirstObjectByType<CuttingStation>();
+            if (cutting != null && cutting.HasIngredient)
+            {
+                _hud.SetProgress(cutting.Progress01, Mathf.RoundToInt(cutting.Progress01 * 100f) + "%");
             }
         }
 
@@ -97,30 +124,11 @@ namespace RecipeRage
             _currentStep = index;
             if (Current == null)
             {
-                if (_instructionLabel != null)
-                {
-                    _instructionLabel.text = "You're ready. Let's cook!";
-                }
-                if (_highlightArrow != null)
-                {
-                    _highlightArrow.SetActive(false);
-                }
                 OnTutorialCompleted?.Invoke();
                 return;
             }
 
-            if (_instructionLabel != null)
-            {
-                _instructionLabel.text = Current.Instruction;
-            }
-            if (_highlightArrow != null)
-            {
-                _highlightArrow.SetActive(Current.HighlightTarget != null);
-                if (Current.HighlightTarget != null)
-                {
-                    _highlightArrow.transform.position = Current.HighlightTarget.position + Vector3.up * 2f;
-                }
-            }
+            _hud?.ShowStep(_currentStep, _steps.Length, Current);
         }
 
         private void Advance() => ShowStep(_currentStep + 1);

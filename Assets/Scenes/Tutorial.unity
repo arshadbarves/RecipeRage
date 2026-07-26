@@ -270,35 +270,60 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: RecipeRage.Gameplay::RecipeRage.TutorialController
   _steps:
-  - Instruction: Use the left stick / WASD to move around the kitchen.
+  - Instruction: Move around your kitchen.
+    ButtonHint: Press WASD / left stick to Move
+    StationColorHex: '#8B5CF6'
     HighlightTarget: {fileID: 0}
     Condition: 0
-  - Instruction: Walk to the crate and press Interact to fetch an ingredient.
+    TrackProgress: 0
+  - Instruction: Fetch an ingredient from the crate.
+    ButtonHint: Press LEFT-CLICK to Fetch
+    StationColorHex: '#F59E0B'
     HighlightTarget: {fileID: 2113615583}
     Condition: 1
-  - Instruction: Place it on the cutting board, then tap Chop rapidly.
+    TrackProgress: 0
+  - Instruction: Chop the ingredient on the cutting board.
+    ButtonHint: Place it, then press RIGHT-CLICK rapidly to Chop
+    StationColorHex: '#EC4899'
     HighlightTarget: {fileID: 1200152515}
     Condition: 2
-  - Instruction: Place the chopped ingredient on the stove to cook it.
+    TrackProgress: 1
+  - Instruction: Start cooking on the stove.
+    ButtonHint: Press LEFT-CLICK to place & start cooking
+    StationColorHex: '#DC2626'
     HighlightTarget: {fileID: 597026958}
     Condition: 3
-  - Instruction: "Collect it when it's done \u2014 don't let it burn!"
+    TrackProgress: 0
+  - Instruction: "Collect it when ready \u2014 don't let it burn!"
+    ButtonHint: Press LEFT-CLICK to Collect
+    StationColorHex: '#22C55E'
     HighlightTarget: {fileID: 597026958}
     Condition: 4
+    TrackProgress: 0
   - Instruction: Take a plate from the plate station.
+    ButtonHint: Press LEFT-CLICK to Take a Plate
+    StationColorHex: '#8B5CF6'
     HighlightTarget: {fileID: 817597125}
     Condition: 5
+    TrackProgress: 0
   - Instruction: Arrange the cooked food onto your plate.
+    ButtonHint: Press LEFT-CLICK to Arrange
+    StationColorHex: '#F59E0B'
     HighlightTarget: {fileID: 817597125}
     Condition: 6
+    TrackProgress: 0
   - Instruction: Serve the dish at the serving counter!
+    ButtonHint: Press LEFT-CLICK to Serve
+    StationColorHex: '#22C55E'
     HighlightTarget: {fileID: 1657475158}
     Condition: 7
-  - Instruction: 'Careful: food left on the stove too long will burn.'
+    TrackProgress: 0
+  - Instruction: 'Careful: food left on the stove too long burns.'
+    ButtonHint: Watch the burn timer on the stove
+    StationColorHex: '#DC2626'
     HighlightTarget: {fileID: 597026958}
     Condition: 8
-  _highlightArrow: {fileID: 365868213}
-  _instructionLabel: {fileID: 1160018778}
+    TrackProgress: 0
 --- !u!4 &481419657
 Transform:
   m_ObjectHideFlags: 0

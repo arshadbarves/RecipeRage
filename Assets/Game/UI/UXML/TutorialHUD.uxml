@@ -1,0 +1,32 @@
+<UXML xmlns="UnityEngine.UIElements">
+    <Style src="../Styles/clay-kitchen.uss" />
+    <VisualElement name="tutorial-hud" class="screen" style="background-color: rgba(0,0,0,0);">
+
+        <!-- Top instruction panel -->
+        <VisualElement name="instruction-panel" class="card tutorial-panel">
+            <VisualElement name="station-color-dot" class="tutorial-color-dot" />
+            <VisualElement class="grow">
+                <Label name="instruction-text" class="heading tutorial-instruction" text="Welcome!" />
+                <Label name="button-hint" class="tutorial-button-hint" text="Press WASD to move" />
+            </VisualElement>
+        </VisualElement>
+
+        <!-- Step progress (top-right) -->
+        <VisualElement name="step-progress" class="tutorial-step-progress">
+            <Label name="step-count" class="heading tutorial-step-count" text="1 / 9" />
+        </VisualElement>
+
+        <!-- Per-step numeric progress (e.g. chop taps) -->
+        <VisualElement name="numeric-progress" class="tutorial-numeric-progress" style="display:none;">
+            <VisualElement class="bar tutorial-progress-bar">
+                <VisualElement name="progress-fill" class="bar__fill bar__fill--gold" />
+            </VisualElement>
+            <Label name="progress-label" class="tutorial-progress-label" text="0 / 8" />
+        </VisualElement>
+
+        <!-- Arrow indicator (positioned over target station) -->
+        <VisualElement name="arrow-indicator" class="tutorial-arrow">
+            <Label class="tutorial-arrow-text" text="▼" />
+        </VisualElement>
+    </VisualElement>
+</UXML>

@@ -4,6 +4,9 @@ using UnityEngine.SceneManagement;
 
 namespace RecipeRage
 {
+    /// <summary>Published when the tutorial scene finishes loading. RecipeRage.UI shows TutorialHUD.</summary>
+    public readonly struct TutorialStartedEvent { }
+
     /// <summary>
     /// Loads the tutorial scene, waits for completion, marks tutorial_completed,
     /// then returns to the main menu (Boot systems persist — no scene reload needed).
@@ -18,8 +21,11 @@ namespace RecipeRage
                 ui.HideAll();
             }
 
-            SceneManager.LoadSceneAsync("Tutorial").completed += _ =>
+            SceneManager.LoadSceneAsync("Tutorial")!.completed += _ =>
             {
+                // Tell the UI layer to show the tutorial HUD (RecipeRage.UI listens)
+                ServiceLocator.Get<IEventBus>().Publish(new TutorialStartedEvent());
+
                 // Bridge: tutorial completion → CompleteTutorial
                 var controller = UnityEngine.Object.FindFirstObjectByType<TutorialController>();
                 if (controller != null)

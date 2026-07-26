@@ -29,6 +29,11 @@ namespace RecipeRage.UI
             {
                 ui.Show<HUDScreen>();
             });
+
+            eventBus.Subscribe<TutorialStartedEvent>(e =>
+            {
+                ui.Show<TutorialHUD>();
+            });
         }
     }
 }
