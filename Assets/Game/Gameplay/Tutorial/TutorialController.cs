@@ -25,7 +25,7 @@ namespace RecipeRage
         private void Start()
         {
             _eventBus = ServiceLocator.Get<IEventBus>();
-            _player = FindObjectOfType<PlayerController>(); // tutorial scene: single player
+            _player = FindFirstObjectByType<PlayerController>(); // tutorial scene: single player
             if (_player != null)
             {
                 _playerStartPosition = _player.transform.position;
@@ -66,7 +66,18 @@ namespace RecipeRage
 
         private void Update()
         {
-            if (Current == null || _player == null)
+            // Lazy-find player (spawner may create it after our Start ran)
+            if (_player == null)
+            {
+                _player = FindFirstObjectByType<PlayerController>();
+                if (_player != null)
+                {
+                    _playerStartPosition = _player.transform.position;
+                }
+                return;
+            }
+
+            if (Current == null)
             {
                 return;
             }
