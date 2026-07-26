@@ -1,0 +1,13 @@
+.ui-transition {
+    transition-property: opacity, scale, translate;
+    transition-duration: 0.3s;
+    transition-timing-function: ease-out;
+}
+
+.ui-hidden {
+    display: none;
+}
+
+.ui-scale-down {
+    scale: 0.95;
+}
