@@ -77,3 +77,4 @@ Assets/_Recovery.meta
 # Local build output
 /[Bb]in/
 /[Oo]bj/
+.worktrees/
