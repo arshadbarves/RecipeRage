@@ -1,5 +1,5 @@
 <UXML xmlns="UnityEngine.UIElements">
-    <Style src="clay-kitchen.uss" />
+    <Style src="../Styles/clay-kitchen.uss" />
     <VisualElement name="results-screen" class="screen center">
 
         <Label name="result-title" class="display display--victory heading" text="VICTORY!" style="font-size:64px;margin-bottom:16px;" />

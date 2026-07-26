@@ -1,5 +1,5 @@
 <UXML xmlns="UnityEngine.UIElements">
-    <Style src="clay-kitchen.uss" />
+    <Style src="../Styles/clay-kitchen.uss" />
     <VisualElement name="login-screen" class="screen center">
 
         <!-- Logo block -->

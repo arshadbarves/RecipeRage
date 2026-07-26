@@ -1,5 +1,5 @@
 <UXML xmlns="UnityEngine.UIElements">
-    <Style src="clay-kitchen.uss" />
+    <Style src="../Styles/clay-kitchen.uss" />
     <VisualElement name="matchmaking-screen" class="screen center">
 
         <VisualElement name="matchmaking-icon" class="center" style="margin-bottom:32px;">

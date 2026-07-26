@@ -1,5 +1,5 @@
 <UXML xmlns="UnityEngine.UIElements">
-    <Style src="clay-kitchen.uss" />
+    <Style src="../Styles/clay-kitchen.uss" />
     <VisualElement name="team-composition-screen" class="screen center">
 
         <Label class="display heading" text="MATCH FOUND!" style="font-size:44px;margin-bottom:32px;" />
