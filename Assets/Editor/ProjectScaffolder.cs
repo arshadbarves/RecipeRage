@@ -28,7 +28,72 @@ namespace RecipeRage.EditorTools
             Debug.Log("[Scaffolder] All content assets generated");
         }
 
-        // ── Boot scene + audio ──────────────────────────────────────────────
+        // ── Network prefabs ───────────────────────────────────────────────
+
+        public static void GenerateNetworkPrefabs()
+        {
+            const string prefabRoot = "Assets/Game/Network/Prefabs";
+            EnsureDir(prefabRoot + "/x.prefab");
+
+            // NetworkPlayer prefab: capsule visual + CharacterController + PlayerController + NetworkPlayer + NetworkObject + ChefSelectionSync
+            var playerGo = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            playerGo.name = "NetworkPlayer";
+            playerGo.AddComponent<CharacterController>();
+            playerGo.AddComponent<RecipeRage.PlayerController>();
+            playerGo.AddComponent<RecipeRage.Net.NetworkPlayer>();
+            playerGo.AddComponent<Unity.Netcode.NetworkObject>();
+            playerGo.AddComponent<RecipeRage.Net.ChefSelectionSync>();
+            SavePrefab(playerGo, $"{prefabRoot}/NetworkPlayer.prefab");
+
+            // NetworkBot prefab: capsule + NetworkTransform + NetworkBot + NetworkObject + PlayerController + BotController
+            var botGo = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            botGo.name = "NetworkBot";
+            var botCc = botGo.AddComponent<CharacterController>();
+            botGo.AddComponent<RecipeRage.PlayerController>();
+            botGo.AddComponent<RecipeRage.Bots.BotController>();
+            botGo.AddComponent<Unity.Netcode.Components.NetworkTransform>();
+            botGo.AddComponent<RecipeRage.Net.NetworkBot>();
+            botGo.AddComponent<Unity.Netcode.NetworkObject>();
+            SavePrefab(botGo, $"{prefabRoot}/NetworkBot.prefab");
+
+            // NetworkMatch prefab: empty + NetworkMatch + NetworkObject
+            var matchGo = new GameObject("NetworkMatch");
+            matchGo.AddComponent<RecipeRage.Net.NetworkMatch>();
+            matchGo.AddComponent<Unity.Netcode.NetworkObject>();
+            SavePrefab(matchGo, $"{prefabRoot}/NetworkMatch.prefab");
+
+            // NetworkTeamRoster prefab
+            var rosterGo = new GameObject("NetworkTeamRoster");
+            rosterGo.AddComponent<RecipeRage.Net.NetworkTeamRoster>();
+            rosterGo.AddComponent<Unity.Netcode.NetworkObject>();
+            SavePrefab(rosterGo, $"{prefabRoot}/NetworkTeamRoster.prefab");
+
+            // Station prefabs (one per station type with its network wrapper)
+            SaveStationPrefab<RecipeRage.CookingStation, RecipeRage.Net.NetworkCookingStation>(prefabRoot, "CookingStation");
+            SaveStationPrefab<RecipeRage.CuttingStation, RecipeRage.Net.NetworkCuttingStation>(prefabRoot, "CuttingStation");
+            SaveStationPrefab<RecipeRage.ServingStation, RecipeRage.Net.NetworkServingStation>(prefabRoot, "ServingStation");
+
+            AssetDatabase.SaveAssets();
+            Debug.Log("[Scaffolder] Network prefabs generated (player, bot, match, roster, 3 stations)");
+        }
+
+        private static void SaveStationPrefab<TStation, TNetwork>(string root, string name)
+            where TStation : Component
+            where TNetwork : Component
+        {
+            var go = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            go.name = name;
+            go.AddComponent<TStation>();
+            go.AddComponent<TNetwork>();
+            go.AddComponent<Unity.Netcode.NetworkObject>();
+            SavePrefab(go, $"{root}/{name}.prefab");
+        }
+
+        private static void SavePrefab(GameObject go, string path)
+        {
+            PrefabUtility.SaveAsPrefabAsset(go, path);
+            Object.DestroyImmediate(go);
+        }
 
         public static void GenerateBootScene()
         {
