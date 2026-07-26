@@ -26,7 +26,10 @@ namespace RecipeRage
         {
             _eventBus = ServiceLocator.Get<IEventBus>();
             _player = FindObjectOfType<PlayerController>(); // tutorial scene: single player
-            _playerStartPosition = _player.transform.position;
+            if (_player != null)
+            {
+                _playerStartPosition = _player.transform.position;
+            }
 
             SubscribeEvents();
             ShowStep(0);
@@ -63,7 +66,7 @@ namespace RecipeRage
 
         private void Update()
         {
-            if (Current == null)
+            if (Current == null || _player == null)
             {
                 return;
             }
@@ -83,17 +86,29 @@ namespace RecipeRage
             _currentStep = index;
             if (Current == null)
             {
-                _instructionLabel.text = "You're ready. Let's cook!";
-                _highlightArrow.SetActive(false);
+                if (_instructionLabel != null)
+                {
+                    _instructionLabel.text = "You're ready. Let's cook!";
+                }
+                if (_highlightArrow != null)
+                {
+                    _highlightArrow.SetActive(false);
+                }
                 OnTutorialCompleted?.Invoke();
                 return;
             }
 
-            _instructionLabel.text = Current.Instruction;
-            _highlightArrow.SetActive(Current.HighlightTarget != null);
-            if (Current.HighlightTarget != null)
+            if (_instructionLabel != null)
             {
-                _highlightArrow.transform.position = Current.HighlightTarget.position + Vector3.up * 2f;
+                _instructionLabel.text = Current.Instruction;
+            }
+            if (_highlightArrow != null)
+            {
+                _highlightArrow.SetActive(Current.HighlightTarget != null);
+                if (Current.HighlightTarget != null)
+                {
+                    _highlightArrow.transform.position = Current.HighlightTarget.position + Vector3.up * 2f;
+                }
             }
         }
 

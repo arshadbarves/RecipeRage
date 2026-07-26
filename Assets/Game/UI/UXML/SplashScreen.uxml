@@ -1,0 +1,19 @@
+<UXML xmlns="UnityEngine.UIElements">
+    <Style src="../Styles/clay-kitchen.uss" />
+    <VisualElement name="splash-screen" class="screen center" style="background-color: #EC4899;">
+
+        <VisualElement name="logo" class="center">
+            <Label name="logo-title" class="display heading" text="RECIPERAGE"
+                   style="font-size: 84px; color: #FFFFFF; -unity-text-align: middle-center;" />
+            <Label name="logo-tagline" text="Cook. Compete. Conquer."
+                   style="font-size: 26px; color: #FFFFFF; margin-top: 12px; -unity-text-align: middle-center;" />
+        </VisualElement>
+
+        <!-- Loading indicator -->
+        <VisualElement name="loading-bar" class="bar" style="position:absolute; bottom:80px; width:320px;">
+            <VisualElement name="loading-fill" class="bar__fill bar__fill--gold" style="width:100%;" />
+        </VisualElement>
+        <Label name="loading-label" text="Loading..."
+               style="position:absolute; bottom:48px; font-size:18px; color:#FFFFFF; -unity-text-align:middle-center;" />
+    </VisualElement>
+</UXML>

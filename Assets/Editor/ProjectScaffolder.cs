@@ -542,6 +542,7 @@ namespace RecipeRage.EditorTools
             const string uiRoot = "Assets/Game/UI";
             var screens = new[]
             {
+                new ScreenSpec { Name = "SplashScreen", UxmlPath = $"{uiRoot}/UXML/SplashScreen.uxml", ComponentType = "RecipeRage.UI.SplashScreen" },
                 new ScreenSpec { Name = "LoginScreen", UxmlPath = $"{uiRoot}/UXML/LoginScreen.uxml", ComponentType = "RecipeRage.UI.LoginScreen" },
                 new ScreenSpec { Name = "MainMenuScreen", UxmlPath = $"{uiRoot}/UXML/MainMenuScreen.uxml", ComponentType = "RecipeRage.UI.MainMenuScreen" },
                 new ScreenSpec { Name = "LobbyScreen", UxmlPath = $"{uiRoot}/UXML/LobbyScreen.uxml", ComponentType = "RecipeRage.UI.LobbyScreen" },

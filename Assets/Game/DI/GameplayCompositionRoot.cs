@@ -18,11 +18,25 @@ namespace RecipeRage
 
         private IGameStateMachine _stateMachine;
         private IInputService _input;
+        private bool _splashShown;
 
         private void Awake()
         {
             DontDestroyOnLoad(gameObject);
             PlaycenterCompositionRoot.OnPlaycenterInitialized += OnPlaycenterReady;
+        }
+
+        private void ShowSplashOnce()
+        {
+            if (_splashShown)
+            {
+                return;
+            }
+            if (ServiceLocator.TryGet<Playcenter.UI.IUIService>(out var ui))
+            {
+                ui.Show<UI.SplashScreen>();
+                _splashShown = true;
+            }
         }
 
         private void OnPlaycenterReady()
@@ -99,8 +113,6 @@ namespace RecipeRage
             ServiceLocator.Register<IChefCatalog>(chefCatalog);
             ServiceLocator.Register<IChefProgressionService>(chefProgression);
 
-            new UI.ResultsPresenter().Initialize(eventBusRef, ServiceLocator.Get<Playcenter.UI.IUIService>());
-
             var mapRotation = new MapRotationService(_allMaps, ServiceLocator.Get<IConfigService>());
             ServiceLocator.Register(mapRotation);
 
@@ -108,6 +120,11 @@ namespace RecipeRage
 
             // Apply Clay Kitchen fonts (Fredoka headings, Nunito body) to every screen on Show
             Playcenter.UI.BaseUIScreen.FontThemeHook = root => UI.UIFontTheme.Apply(root);
+
+            // UI presenters (RecipeRage.UI knows both gameplay events and screens)
+            var uiService = ServiceLocator.Get<Playcenter.UI.IUIService>();
+            new UI.MainMenuPresenter().Initialize(eventBusRef, uiService, ServiceLocator.Get<IAuthService>());
+            new UI.ResultsPresenter().Initialize(eventBusRef, uiService);
 
             var trophyService = new TrophyService(
                 ServiceLocator.Get<ISaveService>(),
@@ -134,6 +151,9 @@ namespace RecipeRage
 
         private void Update()
         {
+            // Splash shows once screens are registered (before state machine runs).
+            ShowSplashOnce();
+
             if (_stateMachine == null)
             {
                 return;
