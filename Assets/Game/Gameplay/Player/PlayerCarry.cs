@@ -11,6 +11,7 @@ namespace RecipeRage
     {
         private readonly List<IngredientItem> _items = new List<IngredientItem>(4);
         private readonly int _capacity;
+        private int _capacityBonus;
 
         public IReadOnlyList<IngredientItem> Items => _items;
         public Plate Plate { get; private set; }
@@ -21,9 +22,14 @@ namespace RecipeRage
             _capacity = config.Get(ConfigKeys.CarryCapacity, ConfigKeys.Defaults.CarryCapacity);
         }
 
+        public void SetCapacityBonus(int bonus)
+        {
+            _capacityBonus = bonus;
+        }
+
         public bool TryAdd(IngredientItem item)
         {
-            if (_items.Count >= _capacity)
+            if (_items.Count >= _capacity + _capacityBonus)
             {
                 return false;
             }

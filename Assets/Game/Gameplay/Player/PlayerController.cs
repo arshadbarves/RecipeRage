@@ -14,8 +14,11 @@ namespace RecipeRage
         private CharacterController _characterController;
         private IInputService _input;
         private IConfigService _config;
+        private float _baseMoveSpeed;
         private float _moveSpeed;
         private float _interactRange;
+        private ChefAbilityModifier _chefModifier = ChefAbilityModifier.None;
+        private DashAbility _dash;
 
         [HideInInspector] public bool LocalSimulationEnabled = true;
 
@@ -30,9 +33,24 @@ namespace RecipeRage
         {
             _input = ServiceLocator.Get<IInputService>();
             _config = ServiceLocator.Get<IConfigService>();
-            _moveSpeed = _config.Get(ConfigKeys.PlayerMoveSpeed, ConfigKeys.Defaults.PlayerMoveSpeed);
+            _baseMoveSpeed = _config.Get(ConfigKeys.PlayerMoveSpeed, ConfigKeys.Defaults.PlayerMoveSpeed);
+            _moveSpeed = _baseMoveSpeed;
             _interactRange = _config.Get(ConfigKeys.InteractRange, ConfigKeys.Defaults.InteractRange);
             Carry = new PlayerCarry(_config);
+            ApplyChefModifier(ChefAbilityModifier.None);
+        }
+
+        /// <summary>Called at match start with the player's selected chef modifier.</summary>
+        public void ApplyChefModifier(ChefAbilityModifier modifier)
+        {
+            _chefModifier = modifier;
+            _moveSpeed = _baseMoveSpeed * modifier.MoveSpeedMultiplier;
+            Carry.SetCapacityBonus(modifier.CarryCapacityBonus);
+
+            if (modifier.HasDash)
+            {
+                _dash = new DashAbility(_characterController, modifier.DashCooldownSec);
+            }
         }
 
         private void Update()
@@ -43,6 +61,7 @@ namespace RecipeRage
             }
 
             SimulateMove(_input.MoveAxis, Time.deltaTime);
+            _dash?.Tick(_input.MoveAxis, Time.deltaTime);
 
             if (_input.InteractPressed)
             {

@@ -35,6 +35,12 @@ namespace RecipeRage.Net
             {
                 _input = ServiceLocator.Get<IInputService>();
             }
+
+            if (IsServer)
+            {
+                var modifier = ServiceLocator.Get<IChefProgressionService>().GetSelectedModifier();
+                _playerController.ApplyChefModifier(modifier);
+            }
         }
 
         private void Update()

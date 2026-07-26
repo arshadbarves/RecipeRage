@@ -10,6 +10,8 @@ namespace RecipeRage
     {
         private void Start()
         {
+            var modifier = ServiceLocator.Get<IChefProgressionService>().GetSelectedModifier();
+            FindFirstObjectByType<PlayerController>().ApplyChefModifier(modifier);
             ServiceLocator.Get<MatchController>().StartMatch(seed: 42);
         }
     }
