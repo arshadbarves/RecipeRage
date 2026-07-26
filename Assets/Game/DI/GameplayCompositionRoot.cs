@@ -90,6 +90,8 @@ namespace RecipeRage
             var mapRotation = new MapRotationService(_allMaps, ServiceLocator.Get<IConfigService>());
             ServiceLocator.Register(mapRotation);
 
+            new GameplayAudioWiring().Initialize(eventBusRef, ServiceLocator.Get<IAudioService>());
+
             var trophyService = new TrophyService(
                 ServiceLocator.Get<ISaveService>(),
                 ServiceLocator.Get<IAnalyticsService>());
