@@ -17,6 +17,8 @@ namespace RecipeRage
         private float _moveSpeed;
         private float _interactRange;
 
+        [HideInInspector] public bool LocalSimulationEnabled = true;
+
         public PlayerCarry Carry { get; private set; }
 
         private void Awake()
@@ -35,13 +37,32 @@ namespace RecipeRage
 
         private void Update()
         {
-            var move = new Vector3(_input.MoveAxis.x, 0f, _input.MoveAxis.y);
-            _characterController.Move(move * (_moveSpeed * Time.deltaTime));
+            if (!LocalSimulationEnabled)
+            {
+                return;
+            }
+
+            SimulateMove(_input.MoveAxis, Time.deltaTime);
 
             if (_input.InteractPressed)
             {
                 TryInteract();
             }
+        }
+
+        /// <summary>
+        /// Called by NetworkPlayer (server) or Update (offline). Never both.
+        /// </summary>
+        public void SimulateMove(Vector2 moveAxis, float deltaTime)
+        {
+            var move = new Vector3(moveAxis.x, 0f, moveAxis.y);
+            _characterController.Move(move * (_moveSpeed * deltaTime));
+        }
+
+        /// <summary>Server-side interaction entry (from NetworkPlayer RPC).</summary>
+        public void InteractFromNetwork()
+        {
+            TryInteract();
         }
 
         private void TryInteract()
