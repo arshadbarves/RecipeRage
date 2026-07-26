@@ -2,7 +2,7 @@ using Unity.Netcode;
 
 namespace RecipeRage.Net
 {
-    public struct CarriedIngredientState : INetworkSerializable
+    public struct CarriedIngredientState : INetworkSerializable, System.IEquatable<CarriedIngredientState>
     {
         public int IngredientTypeIndex;
         public bool IsChopped;
@@ -15,6 +15,14 @@ namespace RecipeRage.Net
             serializer.SerializeValue(ref IsChopped);
             serializer.SerializeValue(ref IsCooked);
             serializer.SerializeValue(ref IsBurnt);
+        }
+
+        public bool Equals(CarriedIngredientState other)
+        {
+            return IngredientTypeIndex == other.IngredientTypeIndex
+                && IsChopped == other.IsChopped
+                && IsCooked == other.IsCooked
+                && IsBurnt == other.IsBurnt;
         }
     }
 }
