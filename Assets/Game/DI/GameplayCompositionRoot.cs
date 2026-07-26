@@ -84,6 +84,24 @@ namespace RecipeRage
             ServiceLocator.Register<IChefCatalog>(chefCatalog);
             ServiceLocator.Register<IChefProgressionService>(chefProgression);
 
+            var trophyService = new TrophyService(
+                ServiceLocator.Get<ISaveService>(),
+                ServiceLocator.Get<IAnalyticsService>());
+            ServiceLocator.Register<ITrophyService>(trophyService);
+
+            eventBusRef.Subscribe<MatchEndedEvent>(e =>
+            {
+                trophyService.ApplyMatchResult(e.Won);
+
+                // Match rewards: coins + chef XP (spec: 50 win / 20 loss + 5 per recipe)
+                var wallet = ServiceLocator.Get<IWalletService>();
+                var coins = e.Won ? 50 : 20;
+                coins += e.TeamRecipes * 5;
+                wallet.AddCoins(coins);
+
+                chefProgression.AddXp(chefProgression.GetSelectedChef(), 25);
+            });
+
             var tutorialDone = ServiceLocator.Get<ISaveService>().Load("tutorial_completed", false);
             _stateMachine.ChangeState(tutorialDone ? (IGameState)new MainMenuState() : new TutorialState());
             ServiceLocator.Get<ILoggingService>().Log("[Game] Gameplay initialized");
