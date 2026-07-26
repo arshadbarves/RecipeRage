@@ -47,6 +47,19 @@ namespace RecipeRage
             ServiceLocator.Register<Playcenter.Net.ILobbyService>(lobbyService);
             ServiceLocator.Register(new Net.MatchmakingController(lobbyService, ServiceLocator.Get<Playcenter.Net.INetService>()));
 
+            var planner = new Bots.TaskPlanner();
+            planner.Register(new Bots.ClearBurntEvaluator());
+            planner.Register(new Bots.ServeEvaluator());
+            planner.Register(new Bots.CollectCookEvaluator());
+            planner.Register(new Bots.StartCookEvaluator());
+            planner.Register(new Bots.ChopEvaluator());
+            planner.Register(new Bots.TakePlateEvaluator());
+            planner.Register(new Bots.ArrangePlateEvaluator());
+            planner.Register(new Bots.FetchEvaluator());
+            planner.Register(new Bots.WanderEvaluator());
+            ServiceLocator.Register(planner);
+            ServiceLocator.Register(new Bots.BotClaimRegistry());
+
             var tutorialDone = ServiceLocator.Get<ISaveService>().Load("tutorial_completed", false);
             _stateMachine.ChangeState(tutorialDone ? (IGameState)new MainMenuState() : new TutorialState());
             ServiceLocator.Get<ILoggingService>().Log("[Game] Gameplay initialized");
