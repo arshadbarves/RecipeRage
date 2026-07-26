@@ -8,6 +8,15 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Boot.unity
     guid: 20a3380e82f3542a0aacc95e68c1f6f1
+  - enabled: 1
+    path: Assets/Scenes/Maps/MapBeachBBQ.unity
+    guid: 4f9b9b4961818470d8320ab1c45ec220
+  - enabled: 1
+    path: Assets/Scenes/Maps/MapForestCampfire.unity
+    guid: dc875d11e397546ae811ca1fab78b3e7
+  - enabled: 1
+    path: Assets/Scenes/Maps/MapPirateShip.unity
+    guid: 641b7f7fe0907423ea59dde4775793de
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: acadb39dda0c644fd8624425e21e877f,
       type: 2}

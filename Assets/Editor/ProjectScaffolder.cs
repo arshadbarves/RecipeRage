@@ -96,6 +96,119 @@ namespace RecipeRage.EditorTools
             Object.DestroyImmediate(go);
         }
 
+        // ── Map scenes (3 themed maps, mirrored team kitchens) ─────────────
+
+        private sealed class MapLayout
+        {
+            public string SceneName;
+            public int Crates = 2;
+            public int Cutting = 2;
+            public int Cooking = 2;
+            public int Serving = 1;
+            public string Theme;
+        }
+
+        public static void GenerateMapScenes()
+        {
+            var layouts = new[]
+            {
+                new MapLayout { SceneName = "MapBeachBBQ", Crates = 2, Cutting = 2, Cooking = 2, Serving = 1, Theme = "Beach BBQ" },
+                new MapLayout { SceneName = "MapForestCampfire", Crates = 3, Cutting = 2, Cooking = 3, Serving = 2, Theme = "Forest Campfire" },
+                new MapLayout { SceneName = "MapPirateShip", Crates = 2, Cutting = 2, Cooking = 2, Serving = 1, Theme = "Pirate Ship" },
+            };
+
+            foreach (var layout in layouts)
+            {
+                BuildMapScene(layout);
+            }
+
+            AssetDatabase.SaveAssets();
+            Debug.Log($"[Scaffolder] {layouts.Length} map scenes generated");
+        }
+
+        private static void BuildMapScene(MapLayout layout)
+        {
+            var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+
+            // Camera (top-down, angled)
+            var camGo = new GameObject("Main Camera");
+            camGo.tag = "MainCamera";
+            var cam = camGo.AddComponent<Camera>();
+            camGo.transform.position = new Vector3(0f, 16f, -10f);
+            camGo.transform.rotation = Quaternion.Euler(60f, 0f, 0f);
+
+            var lightGo = new GameObject("Directional Light");
+            lightGo.AddComponent<Light>().type = LightType.Directional;
+
+            // Runtime registry (stations register here)
+            var registryGo = new GameObject("MatchRuntimeRegistry");
+            registryGo.AddComponent<RecipeRage.Net.MatchRuntimeRegistry>();
+
+            // Floor (two team halves)
+            var floorA = GameObject.CreatePrimitive(PrimitiveType.Plane);
+            floorA.name = "Floor_TeamA";
+            floorA.transform.position = new Vector3(-11f, 0f, 0f);
+            var floorB = GameObject.CreatePrimitive(PrimitiveType.Plane);
+            floorB.name = "Floor_TeamB";
+            floorB.transform.position = new Vector3(11f, 0f, 0f);
+
+            // Mirrored team kitchens
+            BuildTeamKitchen(-11f, 0, layout); // Team A (left)
+            BuildTeamKitchen(11f, 1, layout);  // Team B (right)
+
+            // Team spawn points
+            var spawns = new GameObject("SpawnPoints");
+            for (int i = 0; i < 3; i++)
+            {
+                var a = new GameObject($"Spawn_TeamA_{i}");
+                a.transform.SetParent(spawns.transform, false);
+                a.transform.position = new Vector3(-11f + (i - 1) * 2f, 0.5f, 6f);
+                var b = new GameObject($"Spawn_TeamB_{i}");
+                b.transform.SetParent(spawns.transform, false);
+                b.transform.position = new Vector3(11f + (i - 1) * 2f, 0.5f, 6f);
+            }
+
+            var scenePath = $"Assets/Scenes/Maps/{layout.SceneName}.unity";
+            EnsureDir(scenePath);
+            EditorSceneManager.SaveScene(scene, scenePath);
+            Debug.Log($"[Scaffolder] Map scene: {layout.SceneName} ({layout.Theme})");
+        }
+
+        private static void BuildTeamKitchen(float centerX, int teamId, MapLayout layout)
+        {
+            var root = new GameObject(teamId == 0 ? "Kitchen_TeamA" : "Kitchen_TeamB");
+            root.transform.position = Vector3.zero;
+
+            // Station layout grid (relative to team center)
+            // Row 1 (back): crates    Row 2: cutting    Row 3: plate+counter    Row 4: cooking    Row 5 (front): serving
+            PlaceStations<RecipeRage.IngredientCrate>(root, layout.Crates, centerX, -4f, 2.5f, "Crate");
+            PlaceStations<RecipeRage.CuttingStation>(root, layout.Cutting, centerX, -1.5f, 2.5f, "Cutting");
+            PlaceStations<RecipeRage.PlateStation>(root, 1, centerX - 1.25f, 1f, 2.5f, "Plate");
+            PlaceStations<RecipeRage.CounterStation>(root, 1, centerX + 1.25f, 1f, 2.5f, "Counter");
+            PlaceStations<RecipeRage.CookingStation>(root, layout.Cooking, centerX, 3.5f, 2.5f, "Cooking");
+            PlaceStations<RecipeRage.ServingStation>(root, layout.Serving, centerX, 6f, 2.5f, "Serving");
+        }
+
+        private static void PlaceStations<T>(GameObject root, int count, float centerX, float z, float spacing, string name) where T : Component
+        {
+            for (int i = 0; i < count; i++)
+            {
+                var go = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                go.name = $"{name}_{i}";
+                go.transform.SetParent(root.transform, false);
+                var offset = (i - (count - 1) / 2f) * spacing;
+                go.transform.position = new Vector3(centerX + offset, 0.5f, z);
+                go.AddComponent<T>();
+
+                // Register with scene registry
+                var registry = Object.FindFirstObjectByType<RecipeRage.Net.MatchRuntimeRegistry>();
+                if (registry != null && go.GetComponent<T>() is RecipeRage.StationBase station)
+                {
+                    registry.RegisterStation(station);
+                }
+            }
+        }
+
         public static void GenerateBootScene()
         {
             // Reuse the existing MainMixer.mixer (Master/Music/SFX + 3 exposed volumes).
