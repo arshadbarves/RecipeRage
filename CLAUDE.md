@@ -4,197 +4,143 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-RecipeRage is a Unity 6.0 (6000.3.0f1) multiplayer cooking competition game. Teams of 2v2 or 3v3 cook dishes under time pressure. Built on VContainer DI, Netcode for GameObjects (NGO), EOS services, and UI Toolkit.
+**RecipeRage** is a Unity 6.0 (6000.3.0f1) multiplayer cooking competition game for mobile (landscape). Two teams (2v2 or 3v3) race to complete a shared recipe list within 5 minutes. Built on **manual DI (composition roots, no container)**, Netcode for GameObjects (NGO) + EOS transport, Firebase, and UI Toolkit.
 
-## Build & Test Commands
+The project is a **from-scratch rebuild**. The old codebase (`Assets/_KitchenClash/`, `Assets/Scripts/`, old `Assets/Playcenter/`, old `wiki/`) is **legacy — do not read, extend, or copy from it**. It will be deleted once the new code works.
+
+## Source of Truth (READ THESE FIRST)
+
+1. **Design spec:** `docs/superpowers/specs/2026-07-25-reciperage-rebuild-design.md` — the GDD. All gameplay, economy, UI, and architecture decisions live here.
+2. **Implementation plans:** `docs/superpowers/plans/2026-07-25-reciperage-*.md` — 6 plans (Phase 0 → Slice 5), 45 tasks with exact code. Execute these task-by-task.
+3. **New code:** `Assets/Playcenter/` + `Assets/Game/` (once built)
+
+`docs/superpowers/archive/` holds pre-rebuild docs for historical reference only — **never follow them**.
+
+## Build & Verify
+
+No test suite initially (owner decision). Verification = compile + run:
 
 ```bash
-# Build a single assembly (Unity generates .csproj files)
-dotnet build RecipeRage.Core.csproj -nologo
+# Compile a single assembly (Unity generates .csproj files after first Editor open)
+dotnet build Playcenter.Core.csproj -nologo
 dotnet build RecipeRage.Gameplay.csproj -nologo
-
-# Run all EditMode unit tests
-dotnet test RecipeRage.Tests.EditMode.csproj --no-build -nologo
-
-# Run a single test class or method
-dotnet test RecipeRage.Tests.EditMode.csproj --filter="ClassName.MethodName" --no-build -nologo
-
-# Run tests in CI mode (non-interactive, single execution)
-CI=true dotnet test RecipeRage.Tests.EditMode.csproj --no-build -nologo
 ```
 
-Full builds and PlayMode tests require the Unity Editor (File → Build Settings → Build; Window → Testing → Test Runner).
+In-editor: open `Assets/Scenes/Boot.unity` → Play → check console for the SDK init log sequence defined in the Phase 0 plan.
 
-## Source-of-Truth Hierarchy
+## Architecture (New)
 
-When architecture docs conflict, resolve in this order:
-1. **Current code**
-2. `wiki/` — LLM-maintained wiki (authoritative design memory, updated to match confirmed decisions)
-3. `Documentation/Architecture/PROJECT_MEMORY.md` — living architecture memory
-4. `KitchenClash_GDD_v3.md` — implementation-facing GDD
-5. `Documentation/Architecture/CURRENT_CODEBASE_AUDIT.md`
-6. `Documentation/KitchenClash_GDD_v3_aspirational.docx` — future phases only
-
-## Wiki & Drift Protocol
-
-**Before starting any implementation task, read the relevant wiki pages first:**
-- Architecture changes → `wiki/Technical.md` + `wiki/LLM-Rules.md`
-- Gameplay changes → `wiki/GameplayDesign.md` + `wiki/Gameplay.md`
-- Character/ability changes → `wiki/Characters.md`
-- Scoring/tuning → `wiki/Gameplay.md` (RC key table)
-- Anything involving forbidden patterns → `wiki/LLM-Rules.md`
-
-**Drift Warning Rule:** If a proposed change, new feature, or implementation decision contradicts
-anything documented in the `wiki/` directory, you MUST issue a drift warning in the format
-defined in `wiki/DRIFT-PROTOCOL.md` and wait for user confirmation before proceeding.
-
-The drift warning format:
-```
-⚠️  DRIFT WARNING
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Wiki says:      [exact quote or summary]   Source: wiki/[Page].md
-You are proposing: [description of conflict]
-Impact:         [what breaks or changes]
-Options:  A) Keep wiki  B) Update wiki  C) Investigate
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
-
-When the user confirms option B: update the wiki page(s), add an updated note, and append to `wiki/log.md`.
-
-## Architecture
-
-### Assembly Structure (Two-Bucket)
+### Two Buckets
 
 ```
-Assets/Scripts/
-  Core/           # Engine-agnostic, project-level input/utilities
-  Gameplay/       # App wiring, state machine, networking, scene management
-  Tests/EditMode/ # NUnit unit tests
+Assets/Playcenter/    # SDK — ALL core logic (auth, config, storage, analytics, ads, IAP,
+                      # friends, audio, save, wallet). Reusable across games.
+   Core/              # DI (ServiceLocator), EventBus, Logging, Time
+   Services/          # Full implementations behind interfaces (stubs where external SDKs pending)
+   UI/                # UIService screen stack, BaseUIScreen (UI Toolkit)
+   Net/               # INetService, EOS transport/lobby
 
-Assets/_KitchenClash/
-  Application/    # Business logic, service interfaces, domain events
-  Domain/         # Domain models
-  Infrastructure/ # Unity/EOS/NGO-specific implementations
-    States/       # Concrete game states
-    Network/      # PlayerController, spawning, NGO objects
-    Gameplay/     # Cooking, abilities, hazards, bot AI
-    EOS/          # Epic Online Services integration
-    Persistence/  # Save/load via EOS Player Data Storage
-  Presentation/   # UI Toolkit screens, view models
-  Composition/    # DI lifetime scopes (do not put business logic here)
-  Data/           # ScriptableObjects, DTOs
+Assets/Game/          # RecipeRage — gameplay logic ONLY (never core services)
+   DI/                # GameplayCompositionRoot
+   Gameplay/          # Player, Stations, Recipes, Cooking, Match, Tutorial, Indicators
+   Network/           # NetworkPlayer/Station/Match, lobby flow, runtime registry
+   Bots/              # Task planner, evaluators, claim registry, adaptive difficulty
+   Progression/       # Chef unlock/upgrade, trophies (game-specific)
+   UI/                # Screens, components, UIAnimation
 ```
 
-### Dependency Injection (VContainer)
+### Dependency Injection — Manual, Two Composition Roots
 
-Three nested scopes — never inject a child-scope service into a parent scope:
+**No VContainer, no container, no reflection.** Two MonoBehaviour composition roots:
 
-**Root (`RootLifetimeScope`)** — `Assets/_KitchenClash/Composition/RootLifetimeScope.cs`
-- App-lifetime singletons: `IEventBus`, `ILoggingService`, `IAuthService`, `IUIService`, `IAppFlow`, `IConfigService`, `IRemoteConfigService`
-- Session boot: `SessionManager`, `ISessionContext`, `MatchmakingPhaseHost` (ITickable)
-- Root networking primitives: `IPlayerNetworkManager`, `INetworkObjectPool`, `INetworkGameManager`
-- Player data: `IPlayerDataService` (economy/character often menu-scoped; handlers use `TryResolve`)
-- All `BaseUIScreen` subclasses registered as Transient via reflection (`[UIScreen]`)
-- **No** `IGameStateManager` / `IState` — hard-purged
+1. `PlaycenterCompositionRoot` (`Assets/Playcenter/Core/DI/`) — constructs + initializes every SDK service, registers in static `ServiceLocator`, fires `OnPlaycenterInitialized`.
+2. `GameplayCompositionRoot` (`Assets/Game/DI/`) — listens for that event, then constructs game services using SDK services.
 
-**Session (`MenuLifetimeScope`)** — `Assets/_KitchenClash/Composition/MenuLifetimeScope.cs`
-- Active-session services: `INetworkingServices` (via `NetworkingServiceContainer`), `ILobbyManager`, `IPlayerManager`, `IMatchmakingService`, `ITeamManager`, `IGameStarter`, `IEconomyService`, `ITutorialService`
-- Does NOT own root network primitives (`INetworkObjectPool`, `INetworkGameManager`)
-- Does NOT re-register `SessionManager` (Root owns cold-boot instance)
+Consumers call `ServiceLocator.Get<IAuthService>()` etc. Never construct services outside composition roots.
 
-**Match (`MatchLifetimeScope`)**
-- Per-match: `IScoreService`, `IOrderService`, `IAbilityService`, `IHazardService`, `IMatchContext`, `BotManager`, `BotClaimRegistry`, `BotTaskPlanner`, `RecipeCatalog`
+### Core Game Rules (from the spec — do not change without a drift warning)
 
-### Product Navigation
-
-**Public API:** `IAppFlow` (from Playcenter.GameFlow) — sole navigator for UI and features.
-- UI screens call `IAppFlow.RequestPlay()`, `IAppFlow.ReturnHome()`, `IAppFlow.RequestPlayAgain()`
-- Side phases: `IAppFlow.EnterSidePhase` / `CompleteSidePhase` via `ISidePhasePort`
-- Phase work lives in port-owned handlers under `Infrastructure/Flow/Handlers/`
-
-### Product Flow (handlers)
-
-```
-BootSequence → (Login side phase if needed) → HomePhase → MatchmakingPhase
-  → Match Intro → Countdown → MatchRuntimePhase → ResultsPhase → HomePhase
-```
-
-- Entry: `GameBootstrapper` (registered as `IStartable`) calls `IAppFlow.StartColdBoot()`
-- Ports (`BootFlowPort`, `HomeFlowPort`, …) delegate Enter/Exit to handlers
-- Matchmaking timeout ticks via Root `MatchmakingPhaseHost` → `MatchmakingPhase.Tick()`
-
-### Match Runtime Bridge
-
-Scene MonoBehaviours are never found via `FindObjectOfType`. Instead:
-
-- `MatchRuntimeSceneBinder` discovers and registers scene objects into `IMatchRuntimeRegistry`
-- Gameplay systems inject `IMatchContext` to access `OrderManager`, `ScoreManager`, `RoundTimer`, `SpawnManager`, `PlayerController`, `IngredientNetworkSpawner`
-- `IngredientCrate` resolves `IngredientNetworkSpawner` through `IMatchContext`, not `FindObjectOfType`
-- `BotKitchenSnapshot` consumes station data from the runtime bridge, not direct scene searches
+- **Loop:** fetch (instant) → chop (tap-burst, fixed count 8/10/12) → cook (autonomous, burns after grace) → plate (arrange) → serve
+- **Matches:** 5 min; 2v2 = 12 recipes, 3v3 = 18; same seeded list both teams; mirrored kitchens
+- **Carry capacity:** 2 for ALL chefs (Marco ability adds +1 at L5/L10)
+- **Progress bars:** cook/burn timers visible to ALL players; off-screen stations get HUD-edge indicators
+- **No points in HUD** — recipe counts only
+- **Chefs:** 4 at launch (Gordon speed, Julia pickup/drop speed, Marco carry, Gustavo dash) + 2 locked. Personal utility abilities only — never chop/cook speed
+- **Economy:** Brawl Stars costs (17,000 coins to max a chef). Coins earned/spent only, never lost. Trophies: win +15, loss -8
+- **Auth:** Facebook, Google, Guest — **no Epic account login** (EOS is transport/storage only). Friends via Unity Gaming Services
+- **Maps:** themed (Beach BBQ, Forest Campfire, Pirate Ship), daily rotation, 1-2 dynamic elements each
+- **Tutorial:** forced interactive map on first launch
+- **UI:** landscape, UI Toolkit, flat colors + soft shadows, **NO gradients**
 
 ### Networking Rules
 
-- `NetworkObjectPool` and `NetworkGameManager` use the `NetworkManager` instance injected by `GameLifetimeScope`, **not** `NetworkManager.Singleton`
-- `IngredientNetworkSpawner` receives `INetworkObjectPool`/`INetworkGameManager` from root scope directly — not via `SessionManager.SessionContainer`
-- `PlayerController` registers with `PlayerNetworkManager` only when `NetworkObject.IsPlayerObject == true`
-- Bots are network objects but are **not** NGO player objects
-- `SpawnManager` uses injected match runtime state for server-only guards, not `NetworkManager.Singleton`
-- Team size follows queue-driven 2v2/3v3 format — no legacy 4-player fallbacks
+- Server-authoritative: stations/match mutate only on server; clients render NetworkVariables
+- Inject the `NetworkManager` instance — **never** use `NetworkManager.Singleton` in gameplay code
+- Bots are network objects but **not** NGO player objects
+- Scene lookups via `MatchRuntimeRegistry` — **never** `FindObjectOfType` in gameplay
 
-### Event Bus
+### Event Bus + Audio
 
-```csharp
-_eventBus.Publish(new ScoreChangedEvent(team, delta, scoreA, scoreB));
-_eventBus.Subscribe<ScoreChangedEvent>(OnScoreChanged);
-_eventBus.Unsubscribe<ScoreChangedEvent>(OnScoreChanged);
+Custom lightweight pub/sub (`EventBus`). Audio is event-driven: gameplay publishes (`IngredientChoppedEvent`, `RecipeServedEvent`, …), `GameplayAudioWiring` (game assembly) maps events to SFX. Gameplay code never calls audio directly.
+
+## Key Patterns (New Code)
+
+### Adding an SDK service
+1. Interface + implementation in `Assets/Playcenter/Services/<Area>/` (FULL logic in SDK)
+2. Construct in `PlaycenterCompositionRoot.Awake()`, register in `ServiceLocator`
+3. Initialize in `InitializeSDK()` coroutine in dependency order
+
+### Adding a game service
+1. Implementation in `Assets/Game/<Area>/` (consumes SDK interfaces)
+2. Construct in `GameplayCompositionRoot.OnPlaycenterReady()`
+
+### Adding a station
+1. Inherit `StationBase` in `Assets/Game/Gameplay/Station/`
+2. Server-authoritative wrapper (`NetworkXxxStation`) in `Assets/Game/Network/`
+3. Publish domain events; never call audio/UI directly
+
+### Adding a screen
+1. `MyScreen : BaseUIScreen` + `[UIScreen]` in `Assets/Game/UI/Screens/`
+2. UXML/USS own layout — code only queries and binds
+3. Register in scene's `UIScreenRegistry`, show via `IUIService.Show<T>()`
+4. Animate via `UIAnimation` (USS transitions, flat colors)
+
+## Execution Workflow
+
+Work = executing the plan series in order:
+
+1. `2026-07-25-reciperage-phase0-foundation.md` (10 tasks)
+2. `2026-07-25-reciperage-slice1-core-gameplay.md` (8)
+3. `2026-07-25-reciperage-slice2-multiplayer.md` (7)
+4. `2026-07-25-reciperage-slice3-bots.md` (6)
+5. `2026-07-25-reciperage-slice4-progression.md` (6)
+6. `2026-07-25-reciperage-slice5-monetization-polish.md` (8)
+
+Each task has exact files, code, verification, and a commit step. Commit format: `type(scope): description` — types: `feat`, `fix`, `docs`, `style`, `refactor`, `chore`.
+
+## Drift Protocol
+
+If a proposed change contradicts the spec (`docs/superpowers/specs/2026-07-25-reciperage-rebuild-design.md`), issue this warning and wait for confirmation:
+
+```
+⚠️  DRIFT WARNING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Spec says:        [exact quote]   Source: spec section [name]
+You are proposing: [description of conflict]
+Impact:           [what breaks or changes]
+Options:  A) Keep spec  B) Update spec  C) Investigate
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
-Type-safe generic events. Use for decoupling systems (UI ↔ gameplay, score ↔ HUD). Tests use `SpyEventBus`.
+On option B: update the spec first, then implement.
 
-### UI System
+## Legacy Cleanup (do this only when instructed)
 
-- All screens inherit `BaseUIScreen`, annotated with `[UIScreen]` for auto-discovery at root DI setup
-- `IUIService` (root-owned) manages the screen stack via `UIScreenStackManager`
-- Templates in UXML, styles in USS — no code-behind layout
-
-## Key Patterns
-
-### Adding a new service
-1. Define `IMyService` interface in `Application/Interfaces/`
-2. Implement in `Infrastructure/Services/`
-3. Register in the appropriate `LifetimeScope.Configure()`: `builder.Register<MyServiceImpl>(Lifetime.Singleton).As<IMyService>()`
-4. Inject via constructor — VContainer resolves automatically
-
-### Adding a new game state
-1. Create `MyState : BaseState` in `Infrastructure/States/`
-2. State is auto-registered as Transient by root scope reflection scan (namespace must be `KitchenClash.Infrastructure.States`)
-3. Trigger with `_stateManager.ChangeState<MyState>()`
-
-### Adding a new UI screen
-1. Create UXML template + USS in `_KitchenClash/UI/`
-2. Create `MyScreen : BaseUIScreen` annotated with `[UIScreen]`
-3. Class is auto-registered Transient by root scope reflection scan
-4. Show with `_uiService.ShowScreen<MyScreen>()`
-
-## Testing Conventions
-
-- Framework: NUnit, location: `Assets/Scripts/Tests/EditMode/`
-- Test naming: `MethodName_Condition_ExpectedResult`
-- Use `SpyEventBus` and `DictionaryConfigService` as test doubles for event bus and config
-- All match-scoped services (`IScoreService` etc.) are unit-testable without Unity runtime
-- Target >80% coverage for all new code
-
-## Task Workflow (conductor)
-
-Tasks are tracked in `plan.md`. Workflow: select task → mark `[~]` → write failing test (Red) → implement (Green) → refactor → verify coverage → commit with message format `type(scope): description` → attach git note summary → mark `[x]` with short SHA in `plan.md`.
-
-Commit types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`  
-Conductor commits: `conductor(plan): ...`, `conductor(checkpoint): ...`
-
-Tech stack changes must be documented in `conductor/tech-stack.md` **before** implementation.
+Delete after new code is verified working: `Assets/_KitchenClash/`, `Assets/Scripts/`, old `wiki/`, `CODEBASE_ANALYSIS.md`, `ANALYSIS_INDEX.md`, `QUICK_REFERENCE.md`, `KitchenClash_GDD_v3.md`, `_bmad*/`, `Documentation/`, `results.xml`, `test_log.txt`, `etc/`, `MockTests.csproj`, old `conductor/` contents.
 
 ## Code Style
 
 - 4-space indentation, CRLF line endings, UTF-8 (enforced via `.editorconfig`)
 - No `this.` qualification; `var` only for obvious types; explicit accessibility modifiers; prefer `readonly` fields
+- Namespaces: `Playcenter.*` (SDK), `RecipeRage.*` (game)
 - Document *why*, not *what*; keep public APIs documented
