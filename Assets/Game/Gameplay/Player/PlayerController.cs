@@ -27,6 +27,14 @@ namespace RecipeRage
         private void Awake()
         {
             _characterController = GetComponent<CharacterController>();
+            // Carry must exist from frame 0 — stations access it on any interact,
+            // before Start() and before ApplyChefModifier.
+            if (Carry == null)
+            {
+                IConfigService config = null;
+                ServiceLocator.TryGet(out config);
+                Carry = new PlayerCarry(config);
+            }
         }
 
         private void Start()
@@ -36,7 +44,11 @@ namespace RecipeRage
             _baseMoveSpeed = _config.Get(ConfigKeys.PlayerMoveSpeed, ConfigKeys.Defaults.PlayerMoveSpeed);
             _moveSpeed = _baseMoveSpeed;
             _interactRange = _config.Get(ConfigKeys.InteractRange, ConfigKeys.Defaults.InteractRange);
-            Carry = new PlayerCarry(_config);
+            // Carry already exists from Awake; only create if somehow missing.
+            if (Carry == null)
+            {
+                Carry = new PlayerCarry(_config);
+            }
             ApplyChefModifier(ChefAbilityModifier.None);
         }
 

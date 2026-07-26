@@ -96,7 +96,57 @@ namespace RecipeRage.EditorTools
             Object.DestroyImmediate(go);
         }
 
-        // ── Player spawners in map/tutorial scenes ──────────────────────────
+        // ── Assign ingredients to crates in scenes ──────────────────────────
+
+        public static void AssignIngredientsToCrates()
+        {
+            var scenePaths = new[]
+            {
+                "Assets/Scenes/Maps/MapBeachBBQ.unity",
+                "Assets/Scenes/Maps/MapForestCampfire.unity",
+                "Assets/Scenes/Maps/MapPirateShip.unity",
+                "Assets/Scenes/Tutorial.unity",
+            };
+
+            var ingredientField = typeof(RecipeRage.IngredientCrate).GetField("_ingredient",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+            foreach (var scenePath in scenePaths)
+            {
+                // Open scene FIRST, then load ingredients (scene unload destroys
+                // previously-loaded SO references — same lesson as PanelSettings).
+                var scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
+
+                var ingredients = new System.Collections.Generic.List<RecipeRage.IngredientDefinition>();
+                foreach (var guid in AssetDatabase.FindAssets("t:IngredientDefinition", new[] { "Assets/Art/Data/Ingredients" }))
+                {
+                    var asset = AssetDatabase.LoadAssetAtPath<RecipeRage.IngredientDefinition>(AssetDatabase.GUIDToAssetPath(guid));
+                    if (asset != null)
+                    {
+                        ingredients.Add(asset);
+                    }
+                }
+
+                if (ingredients.Count == 0)
+                {
+                    Debug.LogError("[Scaffolder] No IngredientDefinition assets found");
+                    return;
+                }
+
+                var crates = Object.FindObjectsByType<RecipeRage.IngredientCrate>(FindObjectsSortMode.None);
+                for (int i = 0; i < crates.Length; i++)
+                {
+                    var ingredient = ingredients[i % ingredients.Count];
+                    ingredientField.SetValue(crates[i], ingredient);
+                    EditorUtility.SetDirty(crates[i]);
+                }
+
+                EditorSceneManager.SaveScene(scene);
+                Debug.Log($"[Scaffolder] Assigned ingredients to {crates.Length} crates in {scenePath}");
+            }
+
+            AssetDatabase.SaveAssets();
+        }
 
         public static void AddPlayerSpawnersToScenes()
         {

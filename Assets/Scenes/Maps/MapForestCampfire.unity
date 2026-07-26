@@ -588,7 +588,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: RecipeRage.Gameplay::RecipeRage.IngredientCrate
   _stationName: Station
-  _ingredient: {fileID: 0}
+  _ingredient: {fileID: 11400000, guid: 8325f0abd74204772883b445e1713d5c, type: 2}
 --- !u!23 &449778732
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1492,7 +1492,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: RecipeRage.Gameplay::RecipeRage.IngredientCrate
   _stationName: Station
-  _ingredient: {fileID: 0}
+  _ingredient: {fileID: 11400000, guid: fc9a0a064bf5d4b90a1110919287a344, type: 2}
 --- !u!23 &578155630
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1964,7 +1964,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: RecipeRage.Gameplay::RecipeRage.IngredientCrate
   _stationName: Station
-  _ingredient: {fileID: 0}
+  _ingredient: {fileID: 11400000, guid: f34394b550edc40228784ff76d424370, type: 2}
 --- !u!23 &674607157
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2314,7 +2314,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: RecipeRage.Gameplay::RecipeRage.IngredientCrate
   _stationName: Station
-  _ingredient: {fileID: 0}
+  _ingredient: {fileID: 11400000, guid: 1e6002755d8e144278902944f080752b, type: 2}
 --- !u!23 &747985697
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -3435,7 +3435,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: RecipeRage.Gameplay::RecipeRage.IngredientCrate
   _stationName: Station
-  _ingredient: {fileID: 0}
+  _ingredient: {fileID: 11400000, guid: 2b5b65542af5f44b0ae441c4ff808c5f, type: 2}
 --- !u!23 &1638355713
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -3883,7 +3883,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: RecipeRage.Gameplay::RecipeRage.IngredientCrate
   _stationName: Station
-  _ingredient: {fileID: 0}
+  _ingredient: {fileID: 11400000, guid: 12ae0fcd6ebd848d2abeb22ba992378c, type: 2}
 --- !u!23 &2063018993
 MeshRenderer:
   m_ObjectHideFlags: 0

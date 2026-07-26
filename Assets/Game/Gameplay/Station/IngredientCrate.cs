@@ -19,11 +19,16 @@ namespace RecipeRage
 
         public override bool CanInteract(PlayerController player)
         {
-            return player.Carry.Items.Count < 4; // hard cap guard; capacity check inside TryAdd
+            return _ingredient != null && player.Carry.Items.Count < 4;
         }
 
         public override void Interact(PlayerController player)
         {
+            if (_ingredient == null)
+            {
+                return;
+            }
+
             var item = new IngredientItem(_ingredient);
             if (player.Carry.TryAdd(item))
             {
@@ -31,6 +36,6 @@ namespace RecipeRage
             }
         }
 
-        public override string GetPrompt() => $"Take {_ingredient.DisplayName}";
+        public override string GetPrompt() => _ingredient != null ? $"Take {_ingredient.DisplayName}" : "Empty Crate";
     }
 }

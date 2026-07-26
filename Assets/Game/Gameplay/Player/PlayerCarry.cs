@@ -19,7 +19,9 @@ namespace RecipeRage
 
         public PlayerCarry(IConfigService config)
         {
-            _capacity = config.Get(ConfigKeys.CarryCapacity, ConfigKeys.Defaults.CarryCapacity);
+            _capacity = config != null
+                ? config.Get(ConfigKeys.CarryCapacity, ConfigKeys.Defaults.CarryCapacity)
+                : ConfigKeys.Defaults.CarryCapacity;
         }
 
         public void SetCapacityBonus(int bonus)
