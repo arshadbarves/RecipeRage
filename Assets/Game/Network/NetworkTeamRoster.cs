@@ -37,10 +37,21 @@ namespace RecipeRage.Net
             var index = 0;
             foreach (var client in NetworkManager.ConnectedClientsList)
             {
+                int chefId = 0;
+                var playerObj = client.PlayerObject;
+                if (playerObj != null)
+                {
+                    var selection = playerObj.GetComponent<ChefSelectionSync>();
+                    if (selection != null)
+                    {
+                        chefId = selection.SelectedChefId.Value;
+                    }
+                }
+
                 Players.Add(new PlayerRosterEntry
                 {
                     ClientId = client.ClientId,
-                    ChefId = 0, // chef selection lands in Slice 4 lobby UI
+                    ChefId = chefId,
                     TeamId = index < teamSize ? 0 : 1
                 });
                 index++;
