@@ -41,6 +41,12 @@ namespace RecipeRage.Net
                 _lobby.OnPlayersChanged -= OnLobbyPlayersChanged;
                 _net.StartHost();
                 OnMatchFound?.Invoke();
+
+                // Flow: matchmaking done → team compositions (5s) → countdown → match
+                if (Playcenter.ServiceLocator.TryGet<IGameStateMachine>(out var stateMachine))
+                {
+                    stateMachine.ChangeState(new TeamCompositionState());
+                }
             }
         }
 
