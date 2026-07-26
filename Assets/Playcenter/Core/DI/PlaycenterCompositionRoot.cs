@@ -74,6 +74,15 @@ namespace Playcenter
             yield return ServiceLocator.Get<IStorageService>().Initialize();
             yield return ServiceLocator.Get<IConfigService>().Initialize();
             yield return ServiceLocator.Get<IAuthService>().Initialize();
+
+            if (ServiceLocator.Get<ISaveService>() is EOSCloudSaveService cloudSave)
+            {
+                yield return cloudSave.Preload(new[]
+                {
+                    "chef_progress", "trophies", "wallet_coins", "tutorial_completed", "friend_code"
+                }).AsCoroutine();
+            }
+
             yield return ServiceLocator.Get<IAnalyticsService>().Initialize();
             yield return ServiceLocator.Get<IAdsService>().Initialize();
             yield return ServiceLocator.Get<IIAPService>().Initialize();
