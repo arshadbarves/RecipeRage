@@ -51,6 +51,8 @@ namespace Playcenter
             var audioSystem = new AudioSystem(audioService);
             audioSystem.Initialize(eventBus);
 
+            var uiService = new Playcenter.UI.UIService();
+
             // Register
             ServiceLocator.Register<IEventBus>(eventBus);
             ServiceLocator.Register<ILoggingService>(loggingService);
@@ -65,6 +67,7 @@ namespace Playcenter
             ServiceLocator.Register<IFriendsService>(friendsService);
             ServiceLocator.Register<IAudioService>(audioService);
             ServiceLocator.Register<IWalletService>(walletService);
+            ServiceLocator.Register<Playcenter.UI.IUIService>(uiService);
 
             StartCoroutine(InitializeSDK());
         }
