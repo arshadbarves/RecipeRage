@@ -96,7 +96,51 @@ namespace RecipeRage.EditorTools
             Object.DestroyImmediate(go);
         }
 
-        // ── Tutorial scene (simple guided layout, one of each station) ──────
+        // ── Player spawners in map/tutorial scenes ──────────────────────────
+
+        public static void AddPlayerSpawnersToScenes()
+        {
+            // Copy NetworkPlayer prefab to Resources for runtime fallback loading
+            const string srcPrefab = "Assets/Game/Network/Prefabs/NetworkPlayer.prefab";
+            const string dstDir = "Assets/Resources/Prefabs";
+            EnsureDir(dstDir + "/x.txt");
+            if (AssetDatabase.LoadAssetAtPath<GameObject>($"{dstDir}/NetworkPlayer.prefab") == null)
+            {
+                AssetDatabase.CopyAsset(srcPrefab, $"{dstDir}/NetworkPlayer.prefab");
+            }
+
+            var scenePaths = new[]
+            {
+                "Assets/Scenes/Maps/MapBeachBBQ.unity",
+                "Assets/Scenes/Maps/MapForestCampfire.unity",
+                "Assets/Scenes/Maps/MapPirateShip.unity",
+                "Assets/Scenes/Tutorial.unity",
+            };
+
+            var playerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(srcPrefab);
+
+            foreach (var scenePath in scenePaths)
+            {
+                var scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
+                if (GameObject.Find("MatchPlayerSpawner") != null)
+                {
+                    continue; // already present
+                }
+
+                var spawnerGo = new GameObject("MatchPlayerSpawner");
+                var spawner = spawnerGo.AddComponent<RecipeRage.MatchPlayerSpawner>();
+                var so = new SerializedObject(spawner);
+                so.FindProperty("_playerPrefab").objectReferenceValue = playerPrefab;
+                so.FindProperty("_teamIndex").intValue = 0;
+                so.FindProperty("_spawnSlot").intValue = 1;
+                so.ApplyModifiedPropertiesWithoutUndo();
+
+                EditorSceneManager.SaveScene(scene);
+                Debug.Log($"[Scaffolder] Player spawner added to {scenePath}");
+            }
+
+            AssetDatabase.SaveAssets();
+        }
 
         public static void GenerateTutorialScene()
         {
