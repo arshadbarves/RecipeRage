@@ -22,15 +22,15 @@ namespace Playcenter
 
         private void Awake()
         {
+
+            // SDK services (FULL logic)
+            var storageService = new EOSCloudStorageService(loggingService);
             DontDestroyOnLoad(gameObject);
 
             // Core primitives
             var eventBus = new EventBus();
             var loggingService = new UnityLoggingService();
             var timeService = new UnityTimeService();
-
-            // SDK services (FULL logic)
-            var storageService = new EOSCloudStorageService(loggingService);
             var saveService = new EOSCloudSaveService(storageService);
             var configService = new FirebaseConfigService(loggingService);
             var analyticsService = new FirebaseAnalyticsService(loggingService);
