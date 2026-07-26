@@ -10,15 +10,15 @@
             </VisualElement>
             <VisualElement class="topbar__group">
                 <VisualElement name="coin-chip" class="chip chip--gold">
-                    <VisualElement class="chip__icon" />
+                    <VisualElement class="chip__icon icon-coin" />
                     <Label name="coin-count" class="chip__label" text="0" />
                 </VisualElement>
                 <VisualElement name="trophy-chip" class="chip">
-                    <VisualElement class="chip__icon" />
+                    <VisualElement class="chip__icon icon-trophy" />
                     <Label name="trophy-count" class="chip__label" text="0" />
                 </VisualElement>
                 <Button name="friends-button" class="btn btn--small btn--ghost" text="Friends" />
-                <Button name="settings-button" class="btn btn--small btn--ghost" text="⚙" />
+                <Button name="settings-button" class="btn btn--small btn--ghost icon-gear" style="width:56px;padding-left:8px;padding-right:8px;" text="" />
             </VisualElement>
         </VisualElement>
 
@@ -39,7 +39,7 @@
                 <VisualElement name="daily-rewards" class="card" style="width:100%;">
                     <Label class="heading" text="Daily Rewards" style="font-size:20px;margin-bottom:12px;" />
                     <VisualElement class="row-layout" style="justify-content:space-between;">
-                        <Button name="daily-ad-button" class="btn btn--accent btn--small" text="Watch Ad: +100 💰" />
+                        <Button name="daily-ad-button" class="btn btn--accent btn--small" text="Watch Ad: +100" />
                     </VisualElement>
                 </VisualElement>
             </VisualElement>
@@ -48,19 +48,19 @@
         <!-- Bottom tab bar -->
         <VisualElement name="tabbar" class="tabbar">
             <VisualElement name="chefs-tab" class="tab tab--active">
-                <VisualElement class="tab__icon" />
+                <VisualElement class="tab__icon icon-chef" />
                 <Label class="tab__label" text="Chefs" />
             </VisualElement>
             <VisualElement name="shop-tab" class="tab">
-                <VisualElement class="tab__icon" />
+                <VisualElement class="tab__icon icon-coin" />
                 <Label class="tab__label" text="Shop" />
             </VisualElement>
             <VisualElement name="events-tab" class="tab">
-                <VisualElement class="tab__icon" />
+                <VisualElement class="tab__icon icon-star" />
                 <Label class="tab__label" text="Events" />
             </VisualElement>
             <VisualElement name="stats-tab" class="tab">
-                <VisualElement class="tab__icon" />
+                <VisualElement class="tab__icon icon-trophy" />
                 <Label class="tab__label" text="Stats" />
             </VisualElement>
         </VisualElement>

@@ -394,6 +394,16 @@
 
 /* ── Utility ─────────────────────────────────────────────────────────────── */
 
+.icon-coin { background-image: resource('UI/Icons/icon_coin'); }
+.icon-trophy { background-image: resource('UI/Icons/icon_trophy'); }
+.icon-chef { background-image: resource('UI/Icons/icon_chef'); }
+.icon-play { background-image: resource('UI/Icons/icon_play'); }
+.icon-chop { background-image: resource('UI/Icons/icon_chop'); }
+.icon-gear { background-image: resource('UI/Icons/icon_gear'); }
+.icon-friends { background-image: resource('UI/Icons/icon_friends'); }
+.icon-star { background-image: resource('UI/Icons/icon_star'); }
+.icon-plate { background-image: resource('UI/Icons/icon_plate'); }
+
 .center { align-items: center; justify-content: center; }
 .row-layout { flex-direction: row; }
 .grow { flex-grow: 1; }

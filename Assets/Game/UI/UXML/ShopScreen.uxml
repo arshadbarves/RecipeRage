@@ -15,7 +15,7 @@
             <VisualElement class="row-layout">
                 <VisualElement class="card center" style="width:180px;padding:16px;">
                     <Label class="heading" text="100 Coins" style="font-size:20px;" />
-                    <Button name="daily-ad" class="btn btn--accent btn--small" text="📺 Free" style="margin-top:12px;width:100%;" />
+                    <Button name="daily-ad" class="btn btn--accent btn--small" text="Free" style="margin-top:12px;width:100%;" />
                 </VisualElement>
                 <VisualElement class="card center" style="width:180px;padding:16px;">
                     <Label class="heading" text="50 XP Boost" style="font-size:20px;" />
@@ -25,7 +25,7 @@
 
             <Label class="section-title" text="Starter Pack" />
             <VisualElement class="card card--gold" style="padding:20px;">
-                <Label class="heading text-accent-dark" text="🎁 STARTER PACK" style="font-size:22px;" />
+                <Label class="heading text-accent-dark" text="STARTER PACK" style="font-size:22px;" />
                 <Label class="text-soft" text="1,000 Coins + Unlock Marco + Exclusive Skin" style="margin-top:8px;" />
                 <Button name="starter-pack" class="btn btn--accent btn--large" text="$4.99" style="margin-top:16px;width:100%;" />
             </VisualElement>

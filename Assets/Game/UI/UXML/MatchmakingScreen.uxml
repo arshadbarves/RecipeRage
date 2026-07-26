@@ -3,7 +3,7 @@
     <VisualElement name="matchmaking-screen" class="screen center">
 
         <VisualElement name="matchmaking-icon" class="center" style="margin-bottom:32px;">
-            <Label class="display heading" text="🍳" style="font-size:96px;" />
+            <VisualElement class="icon-plate" style="width:128px;height:128px;" />
         </VisualElement>
 
         <Label class="heading" text="Finding players..." style="font-size:32px;margin-bottom:24px;" />
@@ -19,7 +19,7 @@
         <Button name="cancel-button" class="btn btn--destructive" text="Cancel" style="margin-top:32px;width:220px;" />
 
         <VisualElement class="card card--recessed" style="position:absolute;bottom:24px;left:24px;right:24px;padding:16px;">
-            <Label name="tip" class="text-soft" text="💡 Tip: Tap rapidly to chop vegetables faster!" style="-unity-text-align:middle-center;font-size:16px;" />
+            <Label name="tip" class="text-soft" text="Tip: Tap rapidly to chop vegetables faster!" style="-unity-text-align:middle-center;font-size:16px;" />
         </VisualElement>
     </VisualElement>
 </UXML>
