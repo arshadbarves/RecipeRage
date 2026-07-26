@@ -96,7 +96,110 @@ namespace RecipeRage.EditorTools
             Object.DestroyImmediate(go);
         }
 
-        // ── Assign ingredients to crates in scenes ──────────────────────────
+        // ── Tutorial scene full wiring (player + steps + arrow + UI) ───────
+
+        public static void WireTutorialScene()
+        {
+            const string scenePath = "Assets/Scenes/Tutorial.unity";
+            var scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
+
+            // Find stations
+            var crate = Object.FindFirstObjectByType<RecipeRage.IngredientCrate>();
+            var cutting = Object.FindFirstObjectByType<RecipeRage.CuttingStation>();
+            var cooking = Object.FindFirstObjectByType<RecipeRage.CookingStation>();
+            var plate = Object.FindFirstObjectByType<RecipeRage.PlateStation>();
+            var serving = Object.FindFirstObjectByType<RecipeRage.ServingStation>();
+
+            // Instruction UI canvas (screen space overlay) + TMP label
+            var canvasGo = new GameObject("TutorialCanvas");
+            var canvas = canvasGo.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvasGo.AddComponent<UnityEngine.UI.CanvasScaler>();
+            canvasGo.AddComponent<UnityEngine.UI.GraphicRaycaster>();
+
+            var labelGo = new GameObject("InstructionLabel", typeof(RectTransform));
+            labelGo.transform.SetParent(canvasGo.transform, false);
+            // Use legacy UI.Text (no TMP dependency in batch-generated scene);
+            // TutorialController's _instructionLabel is TMPro, so bridge via a
+            // simple adapter below.
+            var uiText = labelGo.AddComponent<UnityEngine.UI.Text>();
+            uiText.text = "Welcome to RecipeRage!";
+            uiText.fontSize = 36;
+            uiText.alignment = TextAnchor.MiddleCenter;
+            uiText.color = Color.white;
+            var builtinFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            if (builtinFont == null)
+            {
+                builtinFont = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            }
+            if (builtinFont != null)
+            {
+                uiText.font = builtinFont;
+            }
+
+            var labelRect = (RectTransform)labelGo.transform;
+            labelRect.anchorMin = new Vector2(0f, 1f);
+            labelRect.anchorMax = new Vector2(1f, 1f);
+            labelRect.pivot = new Vector2(0.5f, 1f);
+            labelRect.anchoredPosition = new Vector2(0f, -40f);
+            labelRect.sizeDelta = new Vector2(0f, 80f);
+
+            // Highlight arrow (simple bouncing pointer)
+            var arrowGo = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            arrowGo.name = "HighlightArrow";
+            arrowGo.transform.localScale = new Vector3(0.4f, 0.8f, 0.4f);
+            Object.DestroyImmediate(arrowGo.GetComponent<BoxCollider>());
+
+            // Build the 10 steps with station targets
+            var steps = new RecipeRage.TutorialStep[]
+            {
+                Step("Use the left stick / WASD to move around the kitchen.", null, RecipeRage.TutorialCondition.MovedDistance),
+                Step("Walk to the crate and press Interact to fetch an ingredient.", crate, RecipeRage.TutorialCondition.FetchedIngredient),
+                Step("Place it on the cutting board, then tap Chop rapidly.", cutting, RecipeRage.TutorialCondition.ChoppedIngredient),
+                Step("Place the chopped ingredient on the stove to cook it.", cooking, RecipeRage.TutorialCondition.CookingStarted),
+                Step("Collect it when it's done — don't let it burn!", cooking, RecipeRage.TutorialCondition.CookingCollected),
+                Step("Take a plate from the plate station.", plate, RecipeRage.TutorialCondition.PlateTaken),
+                Step("Arrange the cooked food onto your plate.", plate, RecipeRage.TutorialCondition.IngredientPlated),
+                Step("Serve the dish at the serving counter!", serving, RecipeRage.TutorialCondition.RecipeServed),
+                Step("Careful: food left on the stove too long will burn.", cooking, RecipeRage.TutorialCondition.BurnWarningShown),
+            };
+
+            // Wire TutorialController
+            var controller = Object.FindFirstObjectByType<RecipeRage.TutorialController>();
+            if (controller == null)
+            {
+                var go = new GameObject("TutorialController");
+                controller = go.AddComponent<RecipeRage.TutorialController>();
+            }
+
+            var so = new SerializedObject(controller);
+            var stepsProp = so.FindProperty("_steps");
+            stepsProp.arraySize = steps.Length;
+            for (int i = 0; i < steps.Length; i++)
+            {
+                var el = stepsProp.GetArrayElementAtIndex(i);
+                el.FindPropertyRelative("Instruction").stringValue = steps[i].Instruction;
+                el.FindPropertyRelative("Condition").enumValueIndex = (int)steps[i].Condition;
+                el.FindPropertyRelative("HighlightTarget").objectReferenceValue = steps[i].HighlightTarget;
+            }
+            so.FindProperty("_highlightArrow").objectReferenceValue = arrowGo;
+            so.FindProperty("_instructionLabel").objectReferenceValue = uiText;
+            so.ApplyModifiedPropertiesWithoutUndo();
+
+            EditorSceneManager.SaveScene(scene);
+            AssetDatabase.SaveAssets();
+            Debug.Log($"[Scaffolder] Tutorial wired: {steps.Length} steps + arrow + instruction UI");
+        }
+
+        private static RecipeRage.TutorialStep Step(string instruction, Component target, RecipeRage.TutorialCondition condition)
+        {
+            return new RecipeRage.TutorialStep
+            {
+                Instruction = instruction,
+                HighlightTarget = target != null ? target.transform : null,
+                Condition = condition
+            };
+        }
 
         public static void AssignIngredientsToCrates()
         {

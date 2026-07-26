@@ -13,7 +13,7 @@ namespace RecipeRage
     {
         [SerializeField] private TutorialStep[] _steps;
         [SerializeField] private GameObject _highlightArrow;
-        [SerializeField] private TMPro.TextMeshProUGUI _instructionLabel;
+        [SerializeField] private UnityEngine.UI.Text _instructionLabel;
 
         private int _currentStep;
         private IEventBus _eventBus;

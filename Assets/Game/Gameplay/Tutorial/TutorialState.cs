@@ -6,15 +6,27 @@ namespace RecipeRage
 {
     /// <summary>
     /// Loads the tutorial scene, waits for completion, marks tutorial_completed,
-    /// then returns to the main menu.
+    /// then returns to the main menu (Boot systems persist — no scene reload needed).
     /// </summary>
     public sealed class TutorialState : IGameState
     {
         public void Enter()
         {
-            SceneManager.LoadSceneAsync("Tutorial");
-            // TutorialController.OnTutorialCompleted is wired to CompleteTutorial
-            // via a scene bridge in the Tutorial scene (TutorialSceneBridge below).
+            // Hide menu UI while the tutorial runs (Boot UI persists across scenes)
+            if (ServiceLocator.TryGet<Playcenter.UI.IUIService>(out var ui))
+            {
+                ui.HideAll();
+            }
+
+            SceneManager.LoadSceneAsync("Tutorial").completed += _ =>
+            {
+                // Bridge: tutorial completion → CompleteTutorial
+                var controller = UnityEngine.Object.FindFirstObjectByType<TutorialController>();
+                if (controller != null)
+                {
+                    controller.OnTutorialCompleted += CompleteTutorial;
+                }
+            };
         }
 
         public void Exit() { }
@@ -23,7 +35,15 @@ namespace RecipeRage
         public static void CompleteTutorial()
         {
             ServiceLocator.Get<ISaveService>().Save("tutorial_completed", true);
-            SceneManager.LoadSceneAsync("Boot");
+
+            // Unload tutorial scene; Boot systems (composition roots, UI) persist.
+            var tutorialScene = SceneManager.GetSceneByName("Tutorial");
+            if (tutorialScene.isLoaded)
+            {
+                SceneManager.UnloadSceneAsync(tutorialScene);
+            }
+
+            // Straight to main menu (MainMenuState publishes event → shows MainMenuScreen)
             ServiceLocator.Get<IGameStateMachine>().ChangeState(new MainMenuState());
         }
     }
