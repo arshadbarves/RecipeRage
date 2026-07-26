@@ -165,6 +165,165 @@ namespace RecipeRage.EditorTools
             };
         }
 
+        // ── Wire chef model into player prefab ──────────────────────────────
+
+        public static void WireChefModel()
+        {
+            const string prefabPath = "Assets/Game/Network/Prefabs/NetworkPlayer.prefab";
+            const string chefModelPath = "Assets/Art/Characters/SK_Chef.glb";
+
+            var prefab = PrefabUtility.LoadPrefabContents(prefabPath);
+            var chefModel = AssetDatabase.LoadAssetAtPath<GameObject>(chefModelPath);
+            if (chefModel == null)
+            {
+                Debug.LogError($"[Scaffolder] Chef model not found at {chefModelPath}");
+                PrefabUtility.UnloadPrefabContents(prefab);
+                return;
+            }
+
+            // Remove primitive capsule visuals
+            foreach (var renderer in prefab.GetComponentsInChildren<MeshRenderer>(true))
+            {
+                Object.DestroyImmediate(renderer.gameObject.GetComponent<MeshFilter>());
+                Object.DestroyImmediate(renderer);
+            }
+
+            // Add chef model if not already present
+            if (prefab.transform.Find("Model") == null)
+            {
+                var modelInstance = (GameObject)PrefabUtility.InstantiatePrefab(chefModel, prefab.transform);
+                modelInstance.name = "Model";
+                modelInstance.transform.localPosition = Vector3.zero;
+            }
+
+            PrefabUtility.SaveAsPrefabAsset(prefab, prefabPath);
+            PrefabUtility.UnloadPrefabContents(prefab);
+            Debug.Log("[Scaffolder] Wired chef model into NetworkPlayer prefab");
+        }
+
+        public static void WireBlenderArt()
+        {
+            var models = new System.Collections.Generic.Dictionary<string, string>
+            {
+                { "CookingStation", "Assets/Art/Stations/SM_Stove.glb" },
+                { "CuttingStation", "Assets/Art/Stations/SM_CuttingBoard.glb" },
+                { "ServingStation", "Assets/Art/Stations/SM_ServingCounter.glb" },
+                { "CounterStation", "Assets/Art/Stations/SM_Counter.glb" },
+                { "PlateStation", "Assets/Art/Stations/SM_PlateStation.glb" },
+                { "IngredientCrate", "Assets/Art/Stations/SM_IngredientCrate.glb" },
+            };
+
+            // 1. Update network station prefabs
+            var prefabPaths = new[]
+            {
+                "Assets/Game/Network/Prefabs/CookingStation.prefab",
+                "Assets/Game/Network/Prefabs/CuttingStation.prefab",
+                "Assets/Game/Network/Prefabs/ServingStation.prefab",
+            };
+
+            foreach (var prefabPath in prefabPaths)
+            {
+                var prefab = PrefabUtility.LoadPrefabContents(prefabPath);
+                var stationName = System.IO.Path.GetFileNameWithoutExtension(prefabPath);
+                if (models.TryGetValue(stationName, out var modelPath))
+                {
+                    var model = AssetDatabase.LoadAssetAtPath<GameObject>(modelPath);
+                    if (model != null)
+                    {
+                        foreach (var renderer in prefab.GetComponentsInChildren<MeshRenderer>(true))
+                        {
+                            Object.DestroyImmediate(renderer.gameObject.GetComponent<MeshFilter>());
+                            Object.DestroyImmediate(renderer);
+                        }
+
+                        var modelInstance = (GameObject)PrefabUtility.InstantiatePrefab(model, prefab.transform);
+                        modelInstance.name = "Model";
+                        modelInstance.transform.localPosition = Vector3.zero;
+
+                        PrefabUtility.SaveAsPrefabAsset(prefab, prefabPath);
+                        Debug.Log($"[Scaffolder] Wired {stationName} model into {prefabPath}");
+                    }
+                }
+                PrefabUtility.UnloadPrefabContents(prefab);
+            }
+
+            // 2. Update map + tutorial scenes
+            var scenePaths = new[]
+            {
+                "Assets/Scenes/Maps/MapBeachBBQ.unity",
+                "Assets/Scenes/Maps/MapForestCampfire.unity",
+                "Assets/Scenes/Maps/MapPirateShip.unity",
+                "Assets/Scenes/Tutorial.unity",
+            };
+
+            foreach (var scenePath in scenePaths)
+            {
+                var scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
+                WireSceneStations(models);
+                EditorSceneManager.SaveScene(scene);
+                Debug.Log($"[Scaffolder] Wired station models in {scenePath}");
+            }
+
+            AssetDatabase.SaveAssets();
+        }
+
+        private static void WireSceneStations(System.Collections.Generic.Dictionary<string, string> models)
+        {
+            foreach (var kvp in models)
+            {
+                var model = AssetDatabase.LoadAssetAtPath<GameObject>(kvp.Value);
+                if (model == null)
+                {
+                    continue;
+                }
+
+                var type = FindStationType(kvp.Key);
+                if (type == null)
+                {
+                    continue;
+                }
+
+                var stations = Object.FindObjectsByType(type, FindObjectsSortMode.None);
+                foreach (var stationObj in stations)
+                {
+                    var go = ((Component)stationObj).gameObject;
+
+                    if (go.transform.Find("Model") != null)
+                    {
+                        continue;
+                    }
+
+                    var renderer = go.GetComponent<MeshRenderer>();
+                    if (renderer != null)
+                    {
+                        Object.DestroyImmediate(renderer);
+                    }
+                    var meshFilter = go.GetComponent<MeshFilter>();
+                    if (meshFilter != null)
+                    {
+                        Object.DestroyImmediate(meshFilter);
+                    }
+
+                    var modelInstance = (GameObject)PrefabUtility.InstantiatePrefab(model, go.transform);
+                    modelInstance.name = "Model";
+                    modelInstance.transform.localPosition = Vector3.zero;
+                }
+            }
+        }
+
+        private static System.Type FindStationType(string name)
+        {
+            foreach (var assembly in System.AppDomain.CurrentDomain.GetAssemblies())
+            {
+                var type = assembly.GetType($"RecipeRage.{name}");
+                if (type != null)
+                {
+                    return type;
+                }
+            }
+            return null;
+        }
+
         public static void AssignIngredientsToCrates()
         {
             var scenePaths = new[]
