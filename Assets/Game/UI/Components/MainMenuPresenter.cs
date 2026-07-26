@@ -24,6 +24,11 @@ namespace RecipeRage.UI
                     ui.Show<LoginScreen>();
                 }
             });
+
+            eventBus.Subscribe<Net.MatchHudRequestedEvent>(e =>
+            {
+                ui.Show<HUDScreen>();
+            });
         }
     }
 }
