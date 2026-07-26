@@ -42,6 +42,12 @@ namespace RecipeRage.UI
 
         public void ShowStep(int index, int total, TutorialStep step)
         {
+            // Defensive: elements are null if OnShow didn't run (e.g. screen state issue)
+            if (_instructionText == null)
+            {
+                return;
+            }
+
             _instructionText.text = step.Instruction;
             _buttonHint.text = step.ButtonHint ?? string.Empty;
 

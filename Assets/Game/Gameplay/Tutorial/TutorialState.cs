@@ -21,7 +21,7 @@ namespace RecipeRage
                 ui.HideAll();
             }
 
-            SceneManager.LoadSceneAsync("Tutorial")!.completed += _ =>
+            SceneManager.LoadSceneAsync("Tutorial", LoadSceneMode.Additive)!.completed += _ =>
             {
                 // Tell the UI layer to show the tutorial HUD (RecipeRage.UI listens)
                 ServiceLocator.Get<IEventBus>().Publish(new TutorialStartedEvent());

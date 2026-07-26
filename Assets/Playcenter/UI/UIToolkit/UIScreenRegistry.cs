@@ -12,6 +12,9 @@ namespace Playcenter.UI
 
         private void Start()
         {
+            // Persist UI across scene loads (tutorial, maps load additively/single).
+            DontDestroyOnLoad(gameObject);
+
             var ui = ServiceLocator.Get<IUIService>();
             foreach (var screen in _screens)
             {
