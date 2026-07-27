@@ -160,7 +160,8 @@ namespace RecipeRage
         {
             // Ensure splash is visible before holding (screens register this frame).
             ShowSplashOnce();
-            yield return new WaitForSeconds(2f);
+            // Hold long enough for the premium reveal (black pause + title + subtitle).
+            yield return new WaitForSeconds(3f);
             _stateMachine.ChangeState(new MainMenuState());
         }
 
