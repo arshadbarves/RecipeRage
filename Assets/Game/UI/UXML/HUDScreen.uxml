@@ -1,5 +1,5 @@
 <UXML xmlns="UnityEngine.UIElements">
-    <Style src="../Styles/clay-kitchen.uss" />
+    <Style src="../Styles/playcenter.uss" />
     <VisualElement name="hud-screen" class="screen" style="background-color: rgba(0,0,0,0);">
 
         <!-- Top bar: scores + timer -->

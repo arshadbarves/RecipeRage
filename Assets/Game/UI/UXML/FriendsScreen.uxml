@@ -1,5 +1,5 @@
 <UXML xmlns="UnityEngine.UIElements">
-    <Style src="../Styles/clay-kitchen.uss" />
+    <Style src="../Styles/playcenter.uss" />
     <VisualElement name="friends-screen" class="screen">
 
         <VisualElement name="topbar" class="topbar">

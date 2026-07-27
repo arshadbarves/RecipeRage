@@ -1,8 +1,6 @@
 <UXML xmlns="UnityEngine.UIElements">
     <Style src="../Styles/playcenter.uss" />
     <VisualElement name="splash-screen" class="screen center" style="background-color: #0B0C0E;">
-
-        <!-- Brand only: play(center)red + square dot, STUDIOS subtitle -->
         <VisualElement name="logo" class="center">
             <VisualElement class="row-layout" style="align-items: flex-end;">
                 <Label name="brand-play" text="play" class="heading splash-brand" />
