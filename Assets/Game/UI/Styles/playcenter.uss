@@ -77,42 +77,26 @@
 /* ── Splash screen (Playcenter brand) ─────────────────────────────────────── */
 
 .splash-brand {
-    font-size: 82px;
+    font-size: 52px;
     -unity-font-style: bold;
     color: #FFFFFF;
-    letter-spacing: -3px;
+    letter-spacing: -2px;
 }
 
 .splash-brand--accent { color: #B33232; }
 
 .splash-dot {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
     background-color: #B33232;
-    margin-left: 8px;
-    margin-bottom: 14px;
+    margin-left: 6px;
+    margin-bottom: 9px;
 }
 
 .splash-subtitle {
-    font-size: 14px;
+    font-size: 12px;
     color: #50555E;
-    letter-spacing: 8px;
-    margin-top: 18px;
-    -unity-text-align: middle-center;
-}
-
-.splash-loading-bar {
-    position: absolute;
-    bottom: 80px;
-    width: 280px;
-    height: 4px;
-}
-
-.splash-loading-label {
-    position: absolute;
-    bottom: 52px;
-    font-size: 13px;
-    color: #50555E;
-    letter-spacing: 4px;
+    letter-spacing: 7px;
+    margin-top: 16px;
     -unity-text-align: middle-center;
 }

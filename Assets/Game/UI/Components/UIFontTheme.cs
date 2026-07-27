@@ -4,14 +4,15 @@ using UnityEngine.UIElements;
 namespace RecipeRage.UI
 {
     /// <summary>
-    /// Applies Clay Kitchen fonts at runtime: Fredoka for headings, Nunito for body.
+    /// Applies Playcenter fonts at runtime: Outfit for headings/body,
+    /// Space Grotesk for mono labels (subtitles, brand subtitle).
     /// Fonts load from Resources/Fonts so no USS asset-GUID wiring is needed.
-    /// Attach to UIRoot; it styles every registered screen's root on Show.
     /// </summary>
     public static class UIFontTheme
     {
         private static Font _heading;
         private static Font _body;
+        private static Font _mono;
 
         public static void Apply(VisualElement root)
         {
@@ -22,6 +23,10 @@ namespace RecipeRage.UI
             if (_body == null)
             {
                 _body = Resources.Load<Font>("Fonts/Outfit");
+            }
+            if (_mono == null)
+            {
+                _mono = Resources.Load<Font>("Fonts/SpaceGrotesk");
             }
 
             if (root == null)
@@ -42,6 +47,13 @@ namespace RecipeRage.UI
                 root.Query(className: "display").ForEach(e => e.style.unityFont = new StyleFont(_heading));
                 root.Query(className: "section-title").ForEach(e => e.style.unityFont = new StyleFont(_heading));
                 root.Query<Button>().ForEach(e => e.style.unityFont = new StyleFont(_heading));
+            }
+
+            // Mono labels (subtitle, brand subtitle)
+            if (_mono != null)
+            {
+                root.Query(className: "mono").ForEach(e => e.style.unityFont = new StyleFont(_mono));
+                root.Query(className: "splash-subtitle").ForEach(e => e.style.unityFont = new StyleFont(_mono));
             }
         }
     }

@@ -2,20 +2,15 @@
     <Style src="../Styles/playcenter.uss" />
     <VisualElement name="splash-screen" class="screen center" style="background-color: #0B0C0E;">
 
-        <!-- Brand: play(center)red + square dot, STUDIOS subtitle -->
+        <!-- Brand only: play(center)red + square dot, STUDIOS subtitle -->
         <VisualElement name="logo" class="center">
             <VisualElement class="row-layout" style="align-items: flex-end;">
-                <Label name="brand-play" text="play" class="splash-brand" />
-                <Label name="brand-center" text="center" class="splash-brand splash-brand--accent" />
+                <Label name="brand-play" text="play" class="heading splash-brand" />
+                <Label name="brand-center" text="center" class="heading splash-brand splash-brand--accent" />
                 <VisualElement name="brand-dot" class="splash-dot" />
             </VisualElement>
             <Label name="brand-subtitle" text="STUDIOS" class="splash-subtitle" />
         </VisualElement>
 
-        <!-- Loading indicator -->
-        <VisualElement name="loading-bar" class="bar splash-loading-bar">
-            <VisualElement name="loading-fill" class="bar__fill" style="width:100%;" />
-        </VisualElement>
-        <Label name="loading-label" text="LOADING" class="splash-loading-label" />
     </VisualElement>
 </UXML>

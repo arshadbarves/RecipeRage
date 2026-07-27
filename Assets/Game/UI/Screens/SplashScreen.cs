@@ -13,7 +13,6 @@ namespace RecipeRage.UI
         protected override void OnShow()
         {
             UIAnimation.ScaleBounce(Root.Q<VisualElement>("logo"));
-            UIAnimation.ScalePulse(Root.Q<VisualElement>("loading-bar"), 1.2f);
         }
     }
 }
