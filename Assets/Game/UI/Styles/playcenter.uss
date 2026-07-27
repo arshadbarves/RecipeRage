@@ -78,7 +78,7 @@
 
 .splash-brand {
     font-size: 96px;
-    -unity-font-style: bold;
+    -unity-font-style: normal;
     color: #FFFFFF;
 }
 

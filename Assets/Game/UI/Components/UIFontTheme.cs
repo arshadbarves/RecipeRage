@@ -18,15 +18,15 @@ namespace RecipeRage.UI
         {
             if (_heading == null)
             {
-                _heading = Resources.Load<Font>("Fonts/Outfit");
+                _heading = Resources.Load<Font>("Fonts/Outfit-ExtraBold");
             }
             if (_body == null)
             {
-                _body = Resources.Load<Font>("Fonts/Outfit");
+                _body = Resources.Load<Font>("Fonts/Outfit-Regular");
             }
             if (_mono == null)
             {
-                _mono = Resources.Load<Font>("Fonts/SpaceGrotesk");
+                _mono = Resources.Load<Font>("Fonts/SpaceGrotesk-Medium");
             }
 
             if (root == null)
