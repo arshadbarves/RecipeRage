@@ -1,0 +1,118 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   PLAYCENTER STUDIOS — Design System
+   Dark industrial charcoal, matte red accent, minimal. Flat, no gradients.
+   Typography: Outfit (headings/body), Space Grotesk (mono/labels).
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.screen {
+    /* ── Color: Core ── */
+    --color-bg: #0B0C0E;              /* industrial dark charcoal */
+    --color-bg-raised: #141619;       /* cards / raised surfaces */
+    --color-bg-overlay: #1C1F24;      /* overlays / elevated */
+
+    --color-red: #B33232;             /* signature matte pale red */
+    --color-red-dark: #8F2828;        /* pressed / depth */
+    --color-red-bright: #D64545;      /* hover */
+
+    --color-text: #FFFFFF;            /* pure white */
+    --color-text-dim: #50555E;        /* muted dark gray */
+    --color-text-faint: #3A3F47;      /* faintest */
+
+    --color-border: #23272D;          /* hairline */
+    --color-border-bright: #2E333B;
+
+    --color-success: #3D9A50;
+    --color-gold: #C9A227;            /* coins/trophies (restrained) */
+    --color-purple: #6B5CE7;          /* team B */
+
+    /* ── Spacing (4px base) ── */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 24px;
+    --space-6: 32px;
+    --space-7: 48px;
+    --space-8: 64px;
+
+    /* ── Radius (minimal, slight) ── */
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-lg: 10px;
+    --radius-pill: 999px;
+
+    /* ── Border ── */
+    --border-thin: 1px;
+    --border-thick: 2px;
+
+    /* ── Typography ── */
+    --text-xs: 12px;
+    --text-sm: 14px;
+    --text-base: 16px;
+    --text-lg: 20px;
+    --text-xl: 26px;
+    --text-2xl: 34px;
+    --text-3xl: 48px;
+    --text-hero: 72px;
+
+    /* ── Motion ── */
+    --duration-fast: 0.15s;
+    --duration-base: 0.25s;
+    --ease-out: ease-out;
+
+    /* ── Fill ── */
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    -unity-font-style: normal;
+}
+
+@import url("components.uss");
+@import url("ui-animations.uss");
+
+/* ── Splash screen (Playcenter brand) ─────────────────────────────────────── */
+
+.splash-brand {
+    font-size: 82px;
+    -unity-font-style: bold;
+    color: #FFFFFF;
+    letter-spacing: -3px;
+}
+
+.splash-brand--accent { color: #B33232; }
+
+.splash-dot {
+    width: 10px;
+    height: 10px;
+    background-color: #B33232;
+    margin-left: 8px;
+    margin-bottom: 14px;
+}
+
+.splash-subtitle {
+    font-size: 14px;
+    color: #50555E;
+    letter-spacing: 8px;
+    margin-top: 18px;
+    -unity-text-align: middle-center;
+}
+
+.splash-loading-bar {
+    position: absolute;
+    bottom: 80px;
+    width: 280px;
+    height: 4px;
+}
+
+.splash-loading-label {
+    position: absolute;
+    bottom: 52px;
+    font-size: 13px;
+    color: #50555E;
+    letter-spacing: 4px;
+    -unity-text-align: middle-center;
+}

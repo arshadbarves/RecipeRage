@@ -17,11 +17,11 @@ namespace RecipeRage.UI
         {
             if (_heading == null)
             {
-                _heading = Resources.Load<Font>("Fonts/Fredoka");
+                _heading = Resources.Load<Font>("Fonts/Outfit");
             }
             if (_body == null)
             {
-                _body = Resources.Load<Font>("Fonts/Nunito");
+                _body = Resources.Load<Font>("Fonts/Outfit");
             }
 
             if (root == null)

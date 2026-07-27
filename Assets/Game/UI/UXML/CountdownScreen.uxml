@@ -1,6 +1,6 @@
 <UXML xmlns="UnityEngine.UIElements">
     <Style src="../Styles/clay-kitchen.uss" />
-    <VisualElement name="countdown-screen" class="screen center" style="background-color: rgba(15,23,42,0.6);">
+    <VisualElement name="countdown-screen" class="screen center" style="background-color: rgba(11,12,14,0.85);">
         <Label name="countdown-number" class="display heading countdown-number" text="3" />
     </VisualElement>
 </UXML>

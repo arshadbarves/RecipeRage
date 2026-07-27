@@ -3,11 +3,11 @@
     <VisualElement name="hud-screen" class="screen" style="background-color: rgba(0,0,0,0);">
 
         <!-- Top bar: scores + timer -->
-        <VisualElement name="hud-top" class="topbar" style="background-color: rgba(255,255,255,0.9);">
+        <VisualElement name="hud-top" class="topbar">
             <VisualElement name="team-score-chip" class="chip chip--team">
                 <Label name="team-count" class="chip__label" text="0/12" />
             </VisualElement>
-            <Label name="match-timer" class="heading" text="5:00" style="font-size:32px;" />
+            <Label name="match-timer" class="heading" text="5:00" style="font-size:32px;color:#FFFFFF;" />
             <VisualElement name="enemy-score-chip" class="chip chip--enemy">
                 <Label name="enemy-count" class="chip__label" text="0/12" />
             </VisualElement>
@@ -17,7 +17,7 @@
         <VisualElement name="indicator-root" style="position:absolute; top:0; left:0; right:0; bottom:0;"/>
 
         <!-- Current recipe checklist -->
-        <VisualElement name="recipe-panel" class="card" style="position:absolute; left:16px; top:88px; width:280px; background-color: rgba(255,255,255,0.92);">
+        <VisualElement name="recipe-panel" class="card" style="position:absolute; left:16px; top:88px; width:280px;">
             <Label name="recipe-name" class="heading" text="Tomato Soup" style="font-size:20px;margin-bottom:8px;" />
             <VisualElement name="recipe-checklist" />
         </VisualElement>

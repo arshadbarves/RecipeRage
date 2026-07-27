@@ -1,142 +1,99 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   CLAY KITCHEN — Component Library
-   Clay depth = solid border-bottom edge (darker shade) + soft offset shadow.
-   Press = translate down + border-bottom shrinks (the "clay squish").
-   Tokens are defined on .screen in clay-kitchen.uss (imported before this file).
+   PLAYCENTER STUDIOS — Components (dark, minimal)
+   Tokens defined on .screen in playcenter.uss (imported first).
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* ── Buttons (clay) ──────────────────────────────────────────────────────── */
+/* ── Buttons ─────────────────────────────────────────────────────────────── */
 
 .btn {
-    /* layout */
-    min-height: 56px;
+    min-height: 52px;
     padding-left: var(--space-5);
     padding-right: var(--space-5);
-    padding-top: var(--space-3);
-    padding-bottom: var(--space-3);
     justify-content: center;
     align-items: center;
 
-    /* clay face */
-    background-color: var(--color-primary);
+    background-color: var(--color-red);
     border-top-left-radius: var(--radius-md);
     border-top-right-radius: var(--radius-md);
     border-bottom-left-radius: var(--radius-md);
     border-bottom-right-radius: var(--radius-md);
+    border-bottom-width: var(--border-thick);
+    border-bottom-color: var(--color-red-dark);
+    border-left-width: 0; border-right-width: 0; border-top-width: 0;
 
-    /* clay 3D edge (solid darker bottom) */
-    border-bottom-width: var(--border-chunky);
-    border-bottom-color: var(--color-primary-dark);
-    border-left-width: 0;
-    border-right-width: 0;
-    border-top-width: 0;
-
-    /* text */
-    color: var(--color-on-primary);
+    color: var(--color-text);
     font-size: var(--text-lg);
     -unity-font-style: bold;
     -unity-text-align: middle-center;
 
-    /* motion */
-    transition-property: translate, border-bottom-width, background-color;
+    transition-property: background-color, translate, border-bottom-width;
     transition-duration: var(--duration-base);
     transition-timing-function: var(--ease-out);
 }
 
-.btn:hover {
-    background-color: var(--color-primary-light);
-}
-
-.btn:active {
-    /* clay squish */
-    translate: 0 3px;
-    border-bottom-width: var(--border-thin);
-}
+.btn:hover { background-color: var(--color-red-bright); }
+.btn:active { translate: 0 2px; border-bottom-width: 0; }
 
 .btn:disabled {
-    background-color: var(--color-muted);
-    border-bottom-color: var(--color-foreground-faint);
-    color: var(--color-foreground-faint);
+    background-color: var(--color-bg-overlay);
+    border-bottom-color: var(--color-border);
+    color: var(--color-text-dim);
 }
 
-/* button variants */
+/* variants */
 .btn--secondary {
-    background-color: var(--color-secondary);
-    border-bottom-color: var(--color-secondary-dark);
-    color: var(--color-on-secondary);
+    background-color: var(--color-purple);
+    border-bottom-color: #4C3FB8;
 }
-.btn--secondary:hover { background-color: var(--color-secondary-light); }
+.btn--secondary:hover { background-color: #8579F0; }
 
-.btn--accent {
-    background-color: var(--color-accent);
-    border-bottom-color: var(--color-accent-dark);
-    color: var(--color-on-accent);
+.btn--gold {
+    background-color: var(--color-gold);
+    border-bottom-color: #9A7B1D;
+    color: #141619;
 }
-.btn--accent:hover { background-color: var(--color-accent-light); }
-
-.btn--destructive {
-    background-color: var(--color-destructive);
-    border-bottom-color: var(--color-destructive-dark);
-}
-.btn--destructive:hover { background-color: #EF4444; }
+.btn--gold:hover { background-color: #E3BC2E; }
 
 .btn--ghost {
-    background-color: var(--color-surface);
+    background-color: var(--color-bg-overlay);
     border-bottom-color: var(--color-border);
-    color: var(--color-foreground);
+    color: var(--color-text);
 }
-.btn--ghost:hover { background-color: var(--color-surface-dim); }
+.btn--ghost:hover { background-color: var(--color-border-bright); border-bottom-color: var(--color-red); }
 
-.btn--small {
-    min-height: 44px;
-    padding-left: var(--space-4);
-    padding-right: var(--space-4);
-    font-size: var(--text-base);
-    border-bottom-width: var(--border-thick);
+.btn--destructive {
+    background-color: var(--color-red-dark);
+    border-bottom-color: #6E1E1E;
 }
 
-.btn--large {
-    min-height: 72px;
-    padding-left: var(--space-7);
-    padding-right: var(--space-7);
-    font-size: var(--text-xl);
-    border-bottom-width: 5px;
-}
+.btn--small { min-height: 40px; padding-left: var(--space-4); padding-right: var(--space-4); font-size: var(--text-base); }
+.btn--large { min-height: 68px; padding-left: var(--space-7); padding-right: var(--space-7); font-size: var(--text-xl); }
 
-/* ── Cards (clay) ────────────────────────────────────────────────────────── */
+/* ── Cards ───────────────────────────────────────────────────────────────── */
 
 .card {
-    background-color: var(--color-surface);
+    background-color: var(--color-bg-raised);
     border-top-left-radius: var(--radius-lg);
     border-top-right-radius: var(--radius-lg);
     border-bottom-left-radius: var(--radius-lg);
     border-bottom-right-radius: var(--radius-lg);
-    border-bottom-width: var(--border-thick);
+    border-bottom-width: var(--border-thin);
     border-bottom-color: var(--color-border);
-    border-left-width: 0;
-    border-right-width: 0;
-    border-top-width: 0;
+    border-left-width: 0; border-right-width: 0; border-top-width: 0;
     padding: var(--space-5);
     margin: var(--space-2);
 }
 
 .card--interactive {
-    transition-property: translate, border-bottom-width;
+    transition-property: translate, border-bottom-color;
     transition-duration: var(--duration-base);
-    transition-timing-function: var(--ease-out);
 }
-.card--interactive:hover {
-    translate: 0 -2px;
-    border-bottom-width: var(--border-chunky);
-}
-.card--interactive:active {
-    translate: 0 2px;
-    border-bottom-width: var(--border-thin);
-}
+.card--interactive:hover { translate: 0 -2px; border-bottom-color: var(--color-red); }
+.card--interactive:active { translate: 0 1px; }
 
 .card--recessed {
-    background-color: var(--color-surface-dim);
-    border-bottom-width: 0;
+    background-color: var(--color-bg);
+    border-bottom-color: var(--color-border);
 }
 
 /* ── Top bar ─────────────────────────────────────────────────────────────── */
@@ -145,30 +102,27 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    height: 72px;
+    height: 68px;
     padding-left: var(--space-5);
     padding-right: var(--space-5);
-    background-color: var(--color-surface);
-    border-bottom-width: var(--border-thick);
+    background-color: var(--color-bg-raised);
+    border-bottom-width: var(--border-thin);
     border-bottom-color: var(--color-border);
 }
 
-.topbar__group {
-    flex-direction: row;
-    align-items: center;
-}
+.topbar__group { flex-direction: row; align-items: center; }
 
-/* ── Currency chips (coins / trophies) ───────────────────────────────────── */
+/* ── Currency chips ──────────────────────────────────────────────────────── */
 
 .chip {
     flex-direction: row;
     align-items: center;
-    height: 44px;
+    height: 40px;
     padding-left: var(--space-4);
     padding-right: var(--space-4);
     margin-left: var(--space-2);
     margin-right: var(--space-2);
-    background-color: var(--color-surface-dim);
+    background-color: var(--color-bg-overlay);
     border-top-left-radius: var(--radius-pill);
     border-top-right-radius: var(--radius-pill);
     border-bottom-left-radius: var(--radius-pill);
@@ -177,25 +131,19 @@
     border-bottom-color: var(--color-border);
 }
 
-.chip__icon {
-    width: 24px;
-    height: 24px;
-    margin-right: var(--space-2);
-}
+.chip__icon { width: 20px; height: 20px; margin-right: var(--space-2); }
 
 .chip__label {
     font-size: var(--text-base);
     -unity-font-style: bold;
-    color: var(--color-foreground);
+    color: var(--color-text);
 }
 
-.chip--gold { background-color: var(--color-accent-light); border-bottom-color: var(--color-accent-dark); }
-.chip--gold .chip__label { color: var(--color-accent-dark); }
+.chip--gold { border-bottom-color: var(--color-gold); }
+.chip--gold .chip__label { color: var(--color-gold); }
 
-.chip--team { background-color: var(--color-primary-light); border-bottom-color: var(--color-primary-dark); }
-.chip--enemy { background-color: var(--color-secondary-light); border-bottom-color: var(--color-secondary-dark); }
-
-.card--gold { background-color: var(--color-accent-light); border-bottom-color: var(--color-accent-dark); }
+.chip--team { background-color: #2A1E22; border-bottom-color: var(--color-red); }
+.chip--enemy { background-color: #1E2230; border-bottom-color: var(--color-purple); }
 
 /* ── Bottom tab bar ──────────────────────────────────────────────────────── */
 
@@ -203,9 +151,9 @@
     flex-direction: row;
     justify-content: space-around;
     align-items: center;
-    height: 84px;
-    background-color: var(--color-surface);
-    border-top-width: var(--border-thick);
+    height: 76px;
+    background-color: var(--color-bg-raised);
+    border-top-width: var(--border-thin);
     border-top-color: var(--color-border);
 }
 
@@ -215,164 +163,153 @@
     justify-content: center;
     padding-top: var(--space-2);
     padding-bottom: var(--space-2);
-    border-bottom-width: var(--border-chunky);
+    border-bottom-width: var(--border-thick);
     border-bottom-color: #00000000;
     transition-property: border-bottom-color, scale;
     transition-duration: var(--duration-base);
 }
 
-.tab--active {
-    border-bottom-color: var(--color-primary);
-    scale: 1.05;
-}
+.tab--active { border-bottom-color: var(--color-red); }
 
-.tab__icon {
-    width: 28px;
-    height: 28px;
-    margin-bottom: var(--space-1);
-}
+.tab__icon { width: 24px; height: 24px; margin-bottom: var(--space-1); }
 
 .tab__label {
     font-size: var(--text-xs);
     -unity-font-style: bold;
-    color: var(--color-foreground-soft);
+    color: var(--color-text-dim);
+    letter-spacing: 1px;
 }
 
-.tab--active .tab__label { color: var(--color-primary); }
+.tab--active .tab__label { color: var(--color-text); }
 
-/* ── Progress bars (clay track + fill) ───────────────────────────────────── */
+/* ── Progress bars ───────────────────────────────────────────────────────── */
 
 .bar {
-    height: 20px;
-    background-color: var(--color-surface-dim);
+    height: 8px;
+    background-color: var(--color-bg-overlay);
     border-top-left-radius: var(--radius-pill);
     border-top-right-radius: var(--radius-pill);
     border-bottom-left-radius: var(--radius-pill);
     border-bottom-right-radius: var(--radius-pill);
-    border-bottom-width: var(--border-thin);
-    border-bottom-color: var(--color-border);
     overflow: hidden;
 }
 
 .bar__fill {
     height: 100%;
-    background-color: var(--color-primary);
+    background-color: var(--color-red);
     border-top-left-radius: var(--radius-pill);
     border-bottom-left-radius: var(--radius-pill);
-    border-bottom-width: var(--border-thin);
-    border-bottom-color: var(--color-primary-dark);
 }
 
-.bar__fill--xp { background-color: var(--color-secondary); border-bottom-color: var(--color-secondary-dark); }
-.bar__fill--gold { background-color: var(--color-accent); border-bottom-color: var(--color-accent-dark); }
-.bar__fill--burn { background-color: var(--color-destructive); border-bottom-color: var(--color-destructive-dark); }
+.bar__fill--xp { background-color: var(--color-purple); }
+.bar__fill--gold { background-color: var(--color-gold); }
+.bar__fill--burn { background-color: var(--color-red-bright); }
+.bar__fill--success { background-color: var(--color-success); }
 
-/* ── Badges / pills ──────────────────────────────────────────────────────── */
+/* ── Badges ──────────────────────────────────────────────────────────────── */
 
 .badge {
     padding-left: var(--space-3);
     padding-right: var(--space-3);
     padding-top: var(--space-1);
     padding-bottom: var(--space-1);
-    background-color: var(--color-primary);
-    color: var(--color-on-primary);
+    background-color: var(--color-red);
+    color: var(--color-text);
     font-size: var(--text-xs);
     -unity-font-style: bold;
-    border-top-left-radius: var(--radius-pill);
-    border-top-right-radius: var(--radius-pill);
-    border-bottom-left-radius: var(--radius-pill);
-    border-bottom-right-radius: var(--radius-pill);
-    border-bottom-width: var(--border-thin);
-    border-bottom-color: var(--color-primary-dark);
+    letter-spacing: 1px;
+    border-top-left-radius: var(--radius-sm);
+    border-top-right-radius: var(--radius-sm);
+    border-bottom-left-radius: var(--radius-sm);
+    border-bottom-right-radius: var(--radius-sm);
 }
 
-.badge--rare { background-color: var(--color-secondary); border-bottom-color: var(--color-secondary-dark); }
-.badge--epic { background-color: var(--color-accent); border-bottom-color: var(--color-accent-dark); color: var(--color-on-accent); }
-.badge--locked { background-color: var(--color-foreground-faint); border-bottom-color: var(--color-foreground-soft); }
+.badge--rare { background-color: var(--color-purple); }
+.badge--epic { background-color: var(--color-gold); color: #141619; }
+.badge--locked { background-color: var(--color-bg-overlay); color: var(--color-text-dim); }
 
 /* ── Chef card ───────────────────────────────────────────────────────────── */
 
 .chef-card {
-    width: 140px;
-    height: 180px;
+    width: 130px;
+    height: 170px;
     margin: var(--space-2);
     align-items: center;
     justify-content: flex-end;
-    background-color: var(--color-surface);
+    background-color: var(--color-bg-raised);
     border-top-left-radius: var(--radius-lg);
     border-top-right-radius: var(--radius-lg);
     border-bottom-left-radius: var(--radius-lg);
     border-bottom-right-radius: var(--radius-lg);
-    border-bottom-width: var(--border-thick);
+    border-bottom-width: var(--border-thin);
     border-bottom-color: var(--color-border);
     border-left-width: 0; border-right-width: 0; border-top-width: 0;
-    transition-property: translate, border-bottom-width, scale;
+    transition-property: translate, border-bottom-color, scale;
     transition-duration: var(--duration-base);
-    transition-timing-function: var(--ease-out);
 }
 
-.chef-card:hover { translate: 0 -3px; scale: 1.03; border-bottom-width: var(--border-chunky); }
-.chef-card:active { translate: 0 2px; scale: 0.98; border-bottom-width: var(--border-thin); }
+.chef-card:hover { translate: 0 -2px; border-bottom-color: var(--color-red); }
+.chef-card:active { scale: 0.98; }
 
-.chef-card--selected {
-    border-bottom-color: var(--color-primary);
-    border-bottom-width: var(--border-chunky);
-}
-
-.chef-card--locked {
-    background-color: var(--color-muted);
-    border-bottom-color: var(--color-foreground-faint);
-}
+.chef-card--selected { border-bottom-color: var(--color-red); border-bottom-width: var(--border-thick); }
+.chef-card--locked { background-color: var(--color-bg); border-bottom-color: var(--color-border); }
 
 .chef-card-portrait {
     position: absolute;
-    top: 0; left: 0; right: 0; bottom: 32px;
+    top: 0; left: 0; right: 0; bottom: 30px;
     border-top-left-radius: var(--radius-lg);
     border-top-right-radius: var(--radius-lg);
-    background-color: var(--color-surface-dim);
+    background-color: var(--color-bg-overlay);
 }
 
 .chef-card-label {
-    height: 32px;
+    height: 30px;
     -unity-text-align: middle-center;
     font-size: var(--text-sm);
     -unity-font-style: bold;
-    color: var(--color-foreground);
+    color: var(--color-text);
 }
 
-.chef-card--locked .chef-card-label { color: var(--color-foreground-faint); }
+.chef-card--locked .chef-card-label { color: var(--color-text-dim); }
 
-/* ── Section title ───────────────────────────────────────────────────────── */
+/* ── Titles / text ───────────────────────────────────────────────────────── */
 
 .section-title {
     font-size: var(--text-xl);
     -unity-font-style: bold;
-    color: var(--color-foreground);
+    color: var(--color-text);
     margin: var(--space-4);
+    letter-spacing: 0.5px;
 }
-
-/* ── Headline / display text ─────────────────────────────────────────────── */
 
 .display {
     font-size: var(--text-3xl);
     -unity-font-style: bold;
-    color: var(--color-foreground);
+    color: var(--color-text);
     -unity-text-align: middle-center;
 }
 
-.display--victory { color: var(--color-success-dark); }
-.display--defeat { color: var(--color-destructive); }
+.display--victory { color: var(--color-success); }
+.display--defeat { color: var(--color-red); }
 
-/* ── List rows (friends, shop) ───────────────────────────────────────────── */
+.text-soft { color: var(--color-text-dim); }
+.text-faint { color: var(--color-text-faint); }
+.text-primary { color: var(--color-red); }
+.text-secondary { color: var(--color-purple); }
+.text-accent-dark { color: var(--color-gold); }
+.text-success-dark { color: var(--color-success); }
+.heading { -unity-font-style: bold; }
+
+/* ── List rows ───────────────────────────────────────────────────────────── */
 
 .row {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    min-height: 64px;
+    min-height: 60px;
     padding: var(--space-3);
     margin: var(--space-1);
-    background-color: var(--color-surface);
+    background-color: var(--color-bg-raised);
     border-top-left-radius: var(--radius-md);
     border-top-right-radius: var(--radius-md);
     border-bottom-left-radius: var(--radius-md);
@@ -381,18 +318,10 @@
     border-bottom-color: var(--color-border);
 }
 
-.row__title {
-    font-size: var(--text-base);
-    -unity-font-style: bold;
-    color: var(--color-foreground);
-}
+.row__title { font-size: var(--text-base); -unity-font-style: bold; color: var(--color-text); }
+.row__subtitle { font-size: var(--text-sm); color: var(--color-text-dim); }
 
-.row__subtitle {
-    font-size: var(--text-sm);
-    color: var(--color-foreground-soft);
-}
-
-/* ── Tutorial ────────────────────────────────────────────────────────────── */
+/* ── Tutorial (dark) ─────────────────────────────────────────────────────── */
 
 .tutorial-panel {
     position: absolute;
@@ -404,89 +333,49 @@
     min-width: 520px;
     max-width: 720px;
     padding: 20px 28px;
+    background-color: var(--color-bg-raised);
+    border-bottom-color: var(--color-border);
 }
 
 .tutorial-color-dot {
-    width: 36px;
-    height: 36px;
-    border-top-left-radius: 999px;
-    border-top-right-radius: 999px;
-    border-bottom-left-radius: 999px;
-    border-bottom-right-radius: 999px;
-    background-color: #EC4899;
-    margin-right: 16px;
-    flex-shrink: 0;
-    border-bottom-width: 3px;
-    border-bottom-color: rgba(0,0,0,0.2);
+    width: 32px; height: 32px;
+    border-top-left-radius: 999px; border-top-right-radius: 999px;
+    border-bottom-left-radius: 999px; border-bottom-right-radius: 999px;
+    background-color: #B33232;
+    margin-right: 16px; flex-shrink: 0;
 }
 
-.tutorial-instruction {
-    font-size: 24px;
-    color: #0F172A;
-    -unity-font-style: bold;
-}
-
-.tutorial-button-hint {
-    font-size: 18px;
-    color: #475569;
-    margin-top: 6px;
-}
+.tutorial-instruction { font-size: 22px; color: var(--color-text); -unity-font-style: bold; }
+.tutorial-button-hint { font-size: 16px; color: var(--color-text-dim); margin-top: 4px; }
 
 .tutorial-step-progress {
-    position: absolute;
-    top: 24px;
-    right: 24px;
-    background-color: #FFFFFF;
-    border-top-left-radius: 999px;
-    border-top-right-radius: 999px;
-    border-bottom-left-radius: 999px;
-    border-bottom-right-radius: 999px;
-    padding: 10px 20px;
-    border-bottom-width: 3px;
-    border-bottom-color: #F1D4E6;
+    position: absolute; top: 24px; right: 24px;
+    background-color: var(--color-bg-overlay);
+    border-top-left-radius: 999px; border-top-right-radius: 999px;
+    border-bottom-left-radius: 999px; border-bottom-right-radius: 999px;
+    padding: 8px 18px;
+    border-bottom-width: var(--border-thin);
+    border-bottom-color: var(--color-border);
 }
 
-.tutorial-step-count {
-    font-size: 22px;
-    color: #EC4899;
-    -unity-font-style: bold;
-}
+.tutorial-step-count { font-size: 20px; color: var(--color-red); -unity-font-style: bold; }
 
 .tutorial-numeric-progress {
-    position: absolute;
-    top: 120px;
-    left: 50%;
-    translate: -50% 0;
-    width: 320px;
-    align-items: center;
+    position: absolute; top: 116px; left: 50%;
+    translate: -50% 0; width: 320px; align-items: center;
 }
 
-.tutorial-progress-bar {
-    width: 100%;
-    height: 20px;
-}
+.tutorial-progress-bar { width: 100%; height: 8px; }
+.tutorial-progress-label { font-size: 16px; color: var(--color-text); -unity-font-style: bold; margin-top: 6px; -unity-text-align: middle-center; }
 
-.tutorial-progress-label {
-    font-size: 18px;
-    color: #0F172A;
-    -unity-font-style: bold;
-    margin-top: 6px;
-    -unity-text-align: middle-center;
-}
+.tutorial-arrow { position: absolute; width: 64px; height: 64px; align-items: center; justify-content: center; }
+.tutorial-arrow-text { font-size: 52px; color: #B33232; -unity-font-style: bold; }
 
-.tutorial-arrow {
-    position: absolute;
-    width: 64px;
-    height: 64px;
-    align-items: center;
-    justify-content: center;
-}
+/* ── Utility ─────────────────────────────────────────────────────────────── */
 
-.tutorial-arrow-text {
-    font-size: 56px;
-    color: #F59E0B;
-    -unity-font-style: bold;
-}
+.center { align-items: center; justify-content: center; }
+.row-layout { flex-direction: row; }
+.grow { flex-grow: 1; }
 
 .icon-coin { background-image: resource('UI/Icons/icon_coin'); }
 .icon-trophy { background-image: resource('UI/Icons/icon_trophy'); }
@@ -497,20 +386,3 @@
 .icon-friends { background-image: resource('UI/Icons/icon_friends'); }
 .icon-star { background-image: resource('UI/Icons/icon_star'); }
 .icon-plate { background-image: resource('UI/Icons/icon_plate'); }
-
-.center { align-items: center; justify-content: center; }
-.row-layout { flex-direction: row; }
-.grow { flex-grow: 1; }
-.text-soft { color: var(--color-foreground-soft); }
-.text-faint { color: var(--color-foreground-faint); }
-
-.text-primary { color: var(--color-primary); }
-.text-secondary { color: var(--color-secondary); }
-.text-accent-dark { color: var(--color-accent-dark); }
-.text-success-dark { color: var(--color-success-dark); }
-
-.countdown-number {
-    font-size: 200px;
-    color: #FFFFFF;
-    -unity-text-align: middle-center;
-}

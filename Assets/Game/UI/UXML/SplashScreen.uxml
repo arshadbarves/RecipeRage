@@ -1,19 +1,21 @@
 <UXML xmlns="UnityEngine.UIElements">
-    <Style src="../Styles/clay-kitchen.uss" />
-    <VisualElement name="splash-screen" class="screen center" style="background-color: #EC4899;">
+    <Style src="../Styles/playcenter.uss" />
+    <VisualElement name="splash-screen" class="screen center" style="background-color: #0B0C0E;">
 
+        <!-- Brand: play(center)red + square dot, STUDIOS subtitle -->
         <VisualElement name="logo" class="center">
-            <Label name="logo-title" class="display heading" text="RECIPERAGE"
-                   style="font-size: 84px; color: #FFFFFF; -unity-text-align: middle-center;" />
-            <Label name="logo-tagline" text="Cook. Compete. Conquer."
-                   style="font-size: 26px; color: #FFFFFF; margin-top: 12px; -unity-text-align: middle-center;" />
+            <VisualElement class="row-layout" style="align-items: flex-end;">
+                <Label name="brand-play" text="play" class="splash-brand" />
+                <Label name="brand-center" text="center" class="splash-brand splash-brand--accent" />
+                <VisualElement name="brand-dot" class="splash-dot" />
+            </VisualElement>
+            <Label name="brand-subtitle" text="STUDIOS" class="splash-subtitle" />
         </VisualElement>
 
         <!-- Loading indicator -->
-        <VisualElement name="loading-bar" class="bar" style="position:absolute; bottom:80px; width:320px;">
-            <VisualElement name="loading-fill" class="bar__fill bar__fill--gold" style="width:100%;" />
+        <VisualElement name="loading-bar" class="bar splash-loading-bar">
+            <VisualElement name="loading-fill" class="bar__fill" style="width:100%;" />
         </VisualElement>
-        <Label name="loading-label" text="Loading..."
-               style="position:absolute; bottom:48px; font-size:18px; color:#FFFFFF; -unity-text-align:middle-center;" />
+        <Label name="loading-label" text="LOADING" class="splash-loading-label" />
     </VisualElement>
 </UXML>
