@@ -41,11 +41,9 @@
     --duration-fast: 0.15s;
     --duration-base: 0.25s;
     --ease-out: ease-out;
-    position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
     background-color: var(--color-bg);
     color: var(--color-text);
     -unity-font-style: normal;

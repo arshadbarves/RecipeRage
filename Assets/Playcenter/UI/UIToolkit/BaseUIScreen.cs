@@ -22,8 +22,27 @@ namespace Playcenter.UI
         public void Show()
         {
             gameObject.SetActive(true);
+            StretchToFill(Root);
             OnShow();
             FontThemeHook?.Invoke(Root);
+        }
+
+        /// <summary>
+        /// Forces the UIDocument's root template container to fill the panel
+        /// (height/width 100%). Applied to every screen on Show so all UIs
+        /// stretch to fill the screen consistently.
+        /// </summary>
+        private static void StretchToFill(VisualElement root)
+        {
+            if (root == null)
+            {
+                return;
+            }
+
+            // The template container (rootVisualElement) must be 100% height/width
+            // for the screen content to fill the panel.
+            root.style.height = new Length(100f, LengthUnit.Percent);
+            root.style.width = new Length(100f, LengthUnit.Percent);
         }
 
         /// <summary>Static hook invoked with the screen root after OnShow. Set by the game to apply themes (fonts).</summary>

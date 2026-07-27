@@ -5,7 +5,6 @@
             <VisualElement class="row-layout" style="align-items: flex-end;">
                 <Label name="brand-play" text="play" class="heading splash-brand"/>
                 <Label name="brand-center" text="center" class="heading splash-brand splash-brand--accent"/>
-                <VisualElement name="brand-dot" class="splash-dot"/>
             </VisualElement>
             <Label name="brand-subtitle" text="STUDIOS" class="splash-subtitle"/>
         </VisualElement>
