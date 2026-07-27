@@ -912,6 +912,9 @@ namespace RecipeRage.EditorTools
                 new ScreenSpec { Name = "ShopScreen", UxmlPath = $"{uiRoot}/UXML/ShopScreen.uxml", ComponentType = "RecipeRage.UI.ShopScreen" },
                 new ScreenSpec { Name = "FriendsScreen", UxmlPath = $"{uiRoot}/UXML/FriendsScreen.uxml", ComponentType = "RecipeRage.UI.FriendsScreen" },
                 new ScreenSpec { Name = "SettingsScreen", UxmlPath = $"{uiRoot}/UXML/SettingsScreen.uxml", ComponentType = "RecipeRage.UI.SettingsScreen" },
+                new ScreenSpec { Name = "DailyRewardsScreen", UxmlPath = $"{uiRoot}/UXML/DailyRewardsScreen.uxml", ComponentType = "RecipeRage.UI.DailyRewardsScreen" },
+                new ScreenSpec { Name = "GameModeScreen", UxmlPath = $"{uiRoot}/UXML/GameModeScreen.uxml", ComponentType = "RecipeRage.UI.GameModeScreen" },
+                new ScreenSpec { Name = "ProfileScreen", UxmlPath = $"{uiRoot}/UXML/ProfileScreen.uxml", ComponentType = "RecipeRage.UI.ProfileScreen" },
             };
 
             // Open Boot scene FIRST (loading assets after scene open avoids the

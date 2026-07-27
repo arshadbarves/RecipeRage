@@ -5,8 +5,10 @@
         <!-- Top bar -->
         <VisualElement name="topbar" class="topbar">
             <VisualElement class="topbar__group">
-                <VisualElement name="profile-avatar" class="chip" style="width:56px;height:56px;padding:0;" />
-                <Label name="profile-name" class="heading" text="Chef" style="font-size:20px;margin-left:12px;" />
+                <VisualElement name="profile-area" class="row-layout" style="align-items:center;">
+                    <VisualElement name="profile-avatar" class="chip" style="width:56px;height:56px;padding:0;" />
+                    <Label name="profile-name" class="heading" text="Chef" style="font-size:20px;margin-left:12px;" />
+                </VisualElement>
             </VisualElement>
             <VisualElement class="topbar__group">
                 <VisualElement name="coin-chip" class="chip chip--gold">

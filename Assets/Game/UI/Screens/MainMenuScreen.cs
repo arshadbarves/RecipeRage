@@ -28,29 +28,31 @@ namespace RecipeRage.UI
             var playButton = Root.Q<Button>("play-button");
             playButton.clicked += () =>
             {
-                ServiceLocator.Get<IGameStateMachine>().ChangeState(new LobbyState(teamSize: 2));
+                // PLAY → Game Mode Select (Ranked/Casual/Practice)
+                ui.Show<GameModeScreen>();
             };
             UIAnimation.ScalePulse(playButton);
 
             Root.Q<Button>("chefs-tab").clicked += () => ui.Show<ChefsScreen>();
             Root.Q<Button>("shop-tab").clicked += () => ui.Show<ShopScreen>();
             Root.Q<Button>("friends-button").clicked += () => ui.Show<FriendsScreen>();
+            Root.Q<Button>("settings-button").clicked += () => ui.Show<SettingsScreen>();
+            Root.Q<Button>("events-tab").clicked += () => ui.Show<DailyRewardsScreen>();
+
+            // Profile: tap avatar/name → Profile screen
+            var profileArea = Root.Q<VisualElement>("profile-area");
+            if (profileArea != null)
+            {
+                profileArea.RegisterCallback<ClickEvent>(e => ui.Show<ProfileScreen>());
+            }
 
             var showcase = Root.Q<VisualElement>("chef-showcase");
             _chefShowcase.Bind(showcase);
 
-            // Daily reward stub: watch ad for 100 coins (3/day limit tracked per spec)
-            var adButton = Root.Q<Button>("daily-ad-button");
-            adButton.clicked += () =>
-            {
-                ServiceLocator.Get<IAdsService>().ShowRewardedAd("daily_coins", success =>
-                {
-                    if (success)
-                    {
-                        wallet.AddCoins(100);
-                    }
-                });
-            };
+            // Daily rewards: open the 7-day calendar
+            var dailyButton = Root.Q<Button>("daily-ad-button");
+            dailyButton.text = "Daily Rewards";
+            dailyButton.clicked += () => ui.Show<DailyRewardsScreen>();
         }
 
         protected override void OnHide()

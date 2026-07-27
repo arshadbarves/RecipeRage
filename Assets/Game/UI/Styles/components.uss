@@ -342,7 +342,48 @@
 .tutorial-arrow { position: absolute; width: 64px; height: 64px; align-items: center; justify-content: center; }
 .tutorial-arrow-text { font-size: 52px; color: #B33232; -unity-font-style: normal; }
 
-/* ── Utility ─────────────────────────────────────────────────────────────── */
+/* ── Game mode cards ─────────────────────────────────────────────────────── */
+
+.mode-card {
+    width: 320px;
+    padding: 28px;
+    margin: 16px;
+    align-items: center;
+}
+
+.mode-card__title {
+    font-size: 28px;
+    color: var(--color-text);
+    -unity-font-style: bold;
+}
+
+.mode-card__desc {
+    font-size: 15px;
+    color: var(--color-text-dim);
+    margin-top: 8px;
+    margin-bottom: 16px;
+    -unity-text-align: middle-center;
+}
+
+/* ── Profile ─────────────────────────────────────────────────────────────── */
+
+.profile-avatar {
+    width: 96px;
+    height: 96px;
+    border-top-left-radius: 999px;
+    border-top-right-radius: 999px;
+    border-bottom-left-radius: 999px;
+    border-bottom-right-radius: 999px;
+    background-color: var(--color-bg-overlay);
+    border-bottom-width: var(--border-thick);
+    border-bottom-color: var(--color-red);
+}
+
+.profile-stat {
+    font-size: 32px;
+    color: var(--color-text);
+    -unity-font-style: bold;
+}
 
 .center { align-items: center; justify-content: center; }
 .row-layout { flex-direction: row; }

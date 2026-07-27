@@ -1,0 +1,37 @@
+<UXML xmlns="UnityEngine.UIElements">
+    <Style src="../Styles/playcenter.uss" />
+    <VisualElement name="profile-screen" class="screen">
+
+        <VisualElement name="topbar" class="topbar">
+            <Button name="back-button" class="btn btn--small btn--ghost" text="← Back" />
+            <Label class="heading" text="Profile" style="font-size:24px;" />
+            <VisualElement />
+        </VisualElement>
+
+        <ScrollView class="grow" style="padding: 24px;">
+            <VisualElement class="card center" style="padding: 32px;">
+                <VisualElement name="profile-avatar" class="profile-avatar" />
+                <Label name="profile-name" class="heading" text="Guest Chef" style="font-size: 28px; margin-top: 16px;" />
+                <Label name="profile-id" class="text-faint" text="ID: guest_..." style="margin-top: 4px;" />
+            </VisualElement>
+
+            <VisualElement class="row-layout" style="margin-top: 16px;">
+                <VisualElement class="card center grow">
+                    <Label name="stat-trophies" class="heading profile-stat" text="0" />
+                    <Label class="text-soft" text="Trophies 🏆" />
+                </VisualElement>
+                <VisualElement class="card center grow">
+                    <Label name="stat-coins" class="heading profile-stat" text="0" />
+                    <Label class="text-soft" text="Coins 💰" />
+                </VisualElement>
+                <VisualElement class="card center grow">
+                    <Label name="stat-wins" class="heading profile-stat" text="0" />
+                    <Label class="text-soft" text="Wins" />
+                </VisualElement>
+            </VisualElement>
+
+            <Label class="section-title" text="Chef Collection" />
+            <VisualElement name="chef-summary" class="row-layout" style="flex-wrap: wrap;" />
+        </ScrollView>
+    </VisualElement>
+</UXML>

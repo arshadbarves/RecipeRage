@@ -9,11 +9,25 @@ namespace RecipeRage.UI
     public sealed class ResultsScreen : BaseUIScreen
     {
         private int _lastMatchCoins;
+        private int _lastTeamSize = 2;
+
+        private void OnMatchFound()
+        {
+            var matchmaking = ServiceLocator.Get<Net.MatchmakingController>();
+            matchmaking.OnMatchFound -= OnMatchFound;
+            ServiceLocator.Get<IGameStateMachine>().ChangeState(new Net.TeamCompositionState());
+        }
 
         protected override void OnShow()
         {
             Root.Q<Button>("play-again-button").clicked += () =>
-                ServiceLocator.Get<IGameStateMachine>().ChangeState(new LobbyState(teamSize: 2));
+            {
+                // Play Again: fast requeue — straight to matchmaking with last chef/mode
+                var matchmaking = ServiceLocator.Get<Net.MatchmakingController>();
+                matchmaking.OnMatchFound += OnMatchFound;
+                matchmaking.QuickMatch(_lastTeamSize);
+                ServiceLocator.Get<IUIService>().Show<MatchmakingScreen>();
+            };
             Root.Q<Button>("main-menu-button").clicked += () =>
                 ServiceLocator.Get<IUIService>().Show<MainMenuScreen>();
 

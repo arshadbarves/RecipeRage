@@ -116,6 +116,12 @@ namespace RecipeRage
             var mapRotation = new MapRotationService(_allMaps, ServiceLocator.Get<IConfigService>());
             ServiceLocator.Register(mapRotation);
 
+            var dailyRewards = new DailyRewardsService(
+                ServiceLocator.Get<ISaveService>(),
+                ServiceLocator.Get<IWalletService>(),
+                ServiceLocator.Get<IAnalyticsService>());
+            ServiceLocator.Register(dailyRewards);
+
             new GameplayAudioWiring().Initialize(eventBusRef, ServiceLocator.Get<IAudioService>());
 
             // Apply Clay Kitchen fonts (Fredoka headings, Nunito body) to every screen on Show

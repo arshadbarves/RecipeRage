@@ -1,0 +1,13 @@
+<UXML xmlns="UnityEngine.UIElements">
+    <Style src="../Styles/playcenter.uss" />
+    <VisualElement name="daily-rewards-screen" class="screen center">
+
+        <Label class="display heading" text="Daily Rewards" style="margin-bottom: 8px;" />
+        <Label class="text-soft" text="Come back every day for bigger rewards!" style="margin-bottom: 32px;" />
+
+        <VisualElement name="rewards-grid" class="row-layout" style="flex-wrap: wrap; justify-content: center; max-width: 900px;" />
+
+        <Button name="claim-button" class="btn btn--large btn--gold" text="Claim Reward" style="margin-top: 32px; width: 320px;" />
+        <Button name="back-button" class="btn btn--ghost" text="Back" style="margin-top: 16px; width: 200px;" />
+    </VisualElement>
+</UXML>

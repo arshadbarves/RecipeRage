@@ -1,0 +1,31 @@
+<UXML xmlns="UnityEngine.UIElements">
+    <Style src="../Styles/playcenter.uss" />
+    <VisualElement name="game-mode-screen" class="screen">
+
+        <VisualElement name="topbar" class="topbar">
+            <Button name="back-button" class="btn btn--small btn--ghost" text="← Back" />
+            <Label class="heading" text="Select Game Mode" style="font-size:24px;" />
+            <VisualElement />
+        </VisualElement>
+
+        <VisualElement class="center grow" style="padding: 32px;">
+            <VisualElement name="ranked-card" class="card card--interactive mode-card">
+                <Label class="heading mode-card__title" text="RANKED" />
+                <Label class="text-soft mode-card__desc" text="2v2 or 3v3 • 5 min • Trophy rewards" />
+                <VisualElement class="badge"><Label text="+15 / -8 🏆" /></VisualElement>
+            </VisualElement>
+
+            <VisualElement name="casual-card" class="card card--interactive mode-card">
+                <Label class="heading mode-card__title" text="CASUAL" />
+                <Label class="text-soft mode-card__desc" text="2v2 or 3v3 • 5 min • No trophies, just coins" />
+                <VisualElement class="badge badge--rare"><Label text="Relaxed" /></VisualElement>
+            </VisualElement>
+
+            <VisualElement name="practice-card" class="card card--interactive mode-card">
+                <Label class="heading mode-card__title" text="PRACTICE" />
+                <Label class="text-soft mode-card__desc" text="Solo vs Bots • No time limit • Learn recipes" />
+                <VisualElement class="badge badge--locked"><Label text="Bots" /></VisualElement>
+            </VisualElement>
+        </VisualElement>
+    </VisualElement>
+</UXML>
