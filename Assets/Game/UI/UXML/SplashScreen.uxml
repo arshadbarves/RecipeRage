@@ -1,14 +1,13 @@
-<UXML xmlns="UnityEngine.UIElements">
-    <Style src="../Styles/playcenter.uss" />
-    <VisualElement name="splash-screen" class="screen center" style="background-color: #0B0C0E;">
+<UXML xmlns="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/Game/UI/Styles/playcenter.uss?fileID=7433441132597879392&amp;guid=dc143802266384c7e9e642b38eb2513f&amp;type=3#playcenter"/>
+    <VisualElement name="splash-screen" class="screen center" style="background-color: rgb(11, 12, 14);">
         <VisualElement name="logo" class="center">
             <VisualElement class="row-layout" style="align-items: flex-end;">
-                <Label name="brand-play" text="play" class="heading splash-brand" />
-                <Label name="brand-center" text="center" class="heading splash-brand splash-brand--accent" />
-                <VisualElement name="brand-dot" class="splash-dot" />
+                <Label name="brand-play" text="play" class="heading splash-brand"/>
+                <Label name="brand-center" text="center" class="heading splash-brand splash-brand--accent"/>
+                <VisualElement name="brand-dot" class="splash-dot"/>
             </VisualElement>
-            <Label name="brand-subtitle" text="STUDIOS" class="splash-subtitle" />
+            <Label name="brand-subtitle" text="STUDIOS" class="splash-subtitle"/>
         </VisualElement>
-
     </VisualElement>
 </UXML>

@@ -150,10 +150,18 @@ namespace RecipeRage
                 chefProgression.AddXp(chefProgression.GetSelectedChef(), 25);
             });
 
-            // Always land on MainMenu (Login shows if signed out). Tutorial is
-            // triggered after first login, not before — see LoginScreen flow.
-            _stateMachine.ChangeState(new MainMenuState());
+            // Hold the splash for a minimum display time, then go to MainMenu.
+            // (Login shows if signed out — see MainMenuPresenter.)
+            StartCoroutine(SplashThenMainMenu());
             ServiceLocator.Get<ILoggingService>().Log("[Game] Gameplay initialized");
+        }
+
+        private System.Collections.IEnumerator SplashThenMainMenu()
+        {
+            // Ensure splash is visible before holding (screens register this frame).
+            ShowSplashOnce();
+            yield return new WaitForSeconds(2f);
+            _stateMachine.ChangeState(new MainMenuState());
         }
 
         private void Update()

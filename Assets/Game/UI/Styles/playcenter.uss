@@ -1,31 +1,21 @@
-/* ═══════════════════════════════════════════════════════════════════════════
-   PLAYCENTER STUDIOS — Design System
-   Dark industrial charcoal, matte red accent, minimal. Flat, no gradients.
-   Typography: Outfit (headings/body), Space Grotesk (mono/labels).
-   ═══════════════════════════════════════════════════════════════════════════ */
+@import url("project://database/Assets/Game/UI/Styles/components.uss?fileID=7433441132597879392&guid=4afa00fd0e4aa4f799dcce741390db84&type=3#components");
+@import url("project://database/Assets/Game/UI/Styles/ui-animations.uss?fileID=7433441132597879392&guid=d273e458a8bd74c82b2a7b44f583b7fe&type=3#ui-animations");
 
 .screen {
-    /* ── Color: Core ── */
-    --color-bg: #0B0C0E;              /* industrial dark charcoal */
-    --color-bg-raised: #141619;       /* cards / raised surfaces */
-    --color-bg-overlay: #1C1F24;      /* overlays / elevated */
-
-    --color-red: #B33232;             /* signature matte pale red */
-    --color-red-dark: #8F2828;        /* pressed / depth */
-    --color-red-bright: #D64545;      /* hover */
-
-    --color-text: #FFFFFF;            /* pure white */
-    --color-text-dim: #50555E;        /* muted dark gray */
-    --color-text-faint: #3A3F47;      /* faintest */
-
-    --color-border: #23272D;          /* hairline */
-    --color-border-bright: #2E333B;
-
-    --color-success: #3D9A50;
-    --color-gold: #C9A227;            /* coins/trophies (restrained) */
-    --color-purple: #6B5CE7;          /* team B */
-
-    /* ── Spacing (4px base) ── */
+    --color-bg: rgb(11, 12, 14);
+    --color-bg-raised: rgb(20, 22, 25);
+    --color-bg-overlay: rgb(28, 31, 36);
+    --color-red: rgb(179, 50, 50);
+    --color-red-dark: rgb(143, 40, 40);
+    --color-red-bright: rgb(214, 69, 69);
+    --color-text: rgb(255, 255, 255);
+    --color-text-dim: rgb(80, 85, 94);
+    --color-text-faint: rgb(58, 63, 71);
+    --color-border: rgb(35, 39, 45);
+    --color-border-bright: rgb(46, 51, 59);
+    --color-success: rgb(61, 154, 80);
+    --color-gold: rgb(201, 162, 39);
+    --color-purple: rgb(107, 92, 231);
     --space-1: 4px;
     --space-2: 8px;
     --space-3: 12px;
@@ -34,18 +24,12 @@
     --space-6: 32px;
     --space-7: 48px;
     --space-8: 64px;
-
-    /* ── Radius (minimal, slight) ── */
     --radius-sm: 4px;
     --radius-md: 6px;
     --radius-lg: 10px;
     --radius-pill: 999px;
-
-    /* ── Border ── */
     --border-thin: 1px;
     --border-thick: 2px;
-
-    /* ── Typography ── */
     --text-xs: 12px;
     --text-sm: 14px;
     --text-base: 16px;
@@ -54,13 +38,9 @@
     --text-2xl: 34px;
     --text-3xl: 48px;
     --text-hero: 72px;
-
-    /* ── Motion ── */
     --duration-fast: 0.15s;
     --duration-base: 0.25s;
     --ease-out: ease-out;
-
-    /* ── Fill ── */
     position: absolute;
     left: 0;
     top: 0;
@@ -71,30 +51,21 @@
     -unity-font-style: normal;
 }
 
-@import url("components.uss");
-@import url("ui-animations.uss");
-
-/* ── Splash screen (Playcenter brand) ─────────────────────────────────────── */
-
 .splash-brand {
     font-size: 96px;
     -unity-font-style: normal;
-    color: #FFFFFF;
+    color: rgb(255, 255, 255);
+    -unity-font-definition: url("project://database/Assets/Fonts/Outfit-ExtraBold.ttf?fileID=12800000&guid=7e80d36ecb5914f3b8ff28689b42f5d5&type=3#Outfit-ExtraBold");
 }
 
-.splash-brand--accent { color: #B33232; }
-
-.splash-dot {
-    width: 14px;
-    height: 14px;
-    background-color: #B33232;
-    margin-left: 10px;
-    margin-bottom: 16px;
+.splash-brand--accent {
+    color: rgb(179, 50, 50);
 }
 
 .splash-subtitle {
     font-size: 22px;
-    color: #50555E;
+    color: rgb(80, 85, 94);
     margin-top: 24px;
     -unity-text-align: middle-center;
+    -unity-font-definition: resource("Fonts/SpaceGrotesk");
 }
