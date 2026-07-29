@@ -78,8 +78,9 @@ scene wiring keep working.
 - Tokens defined locally on `.login-screen` (no global token changes):
   `--login-bg #FAFAFC`, `--login-red #B33232`, `--login-red-dark #912424`,
   `--login-text #0D0E11`, `--login-muted #8E939E`, `--login-border #E5E7EB`.
-- Brand title: Outfit ExtraBold, ~5.5vw-equivalent fixed size (56px at 1080p
-  reference; sized via USS `font-size`), lowercase, tight tracking.
+- Brand title: Outfit ExtraBold, `font-size: 56px`, lowercase, tight tracking
+  (HTML uses `clamp(2.4rem, 5.5vw, 3.6rem)`; at 1920×1080 landscape this
+  resolves to ~58px — 56px chosen as the fixed equivalent).
 - Brand subtitle: Space Grotesk, letter-spacing emulated with spaces between
   characters (UI Toolkit has no letter-spacing) — text `S T U D I O S`.
 - Buttons: height 46px, radius 12px, font Outfit 600-equivalent 15px,
